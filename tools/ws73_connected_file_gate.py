@@ -23,6 +23,10 @@ from sparklink.structs import (SleConnectionSubmit, SleConnectionParameters,
     SleConnectionResult, SleControllerSnapshot, SleDiscoverySubmit, SleDiscoveryResult, SleLinkSnapshot)
 
 
+from ws73_native_pair import (connection, stop, drain_events, discovery_operation,
+    await_events, corroborate_discovery, corroborate_transition)
+
+
 def duplicate_result(fd, generation, identifier):
     # Linux generic _IOWR('S', 0x9d, struct sle_connection_result).
     # The duplicate is the same open File, not another NativeAdapter/author.
@@ -32,17 +36,8 @@ def duplicate_result(fd, generation, identifier):
     return SleConnectionResult.from_buffer_copy(raw)
 
 
-def connection(snapshot, peer):
-    return SleConnectionSubmit(version=2, profile=1, operation=1,
-        generation=snapshot.generation, request_id=900, timeout_ms=10000,
-        parameters=SleConnectionParameters(peer_address=peer.address,
-            gt_negotiate=1, frame=1, scan_interval=32, scan_window=32,
-            interval_min=12, interval_max=12, supervision_timeout=508))
 
 
-def stop(snapshot, identifier, operation):
-    if operation not in [2,4]:raise ValueError('typed radio stop only')
-    return SleDiscoverySubmit(version=1,profile=1,generation=snapshot.generation,request_id=identifier,operation=operation)
 
 
 def bound_disconnect(snapshot,link,identifier,*,reason=0x10):
@@ -64,6 +59,12 @@ def mutate_reference(request,mutation):
     elif mutation=='generation':request.generation+=1
     elif mutation=='version':request.version=1
     else:raise ValueError('bounded known reference mutation required')
+
+
+
+
+
+
 
 
 class ConnectedHoldCoordinator(HoldCoordinator):
@@ -237,6 +238,10 @@ def verify_records(r,*,expected_cleanup_reason=0x10):
     return snapshots
 
 
+
+
+
+
 def _corroborate(r, capture, hold=None, stderr=None, expected=None, prelude=None,*,expected_cleanup_reason=0x10):
     if 'security_capabilities' in r:
         if hold is not None:raise CaptureError('limited capability gate excludes reply hold/recovery')
@@ -258,57 +263,11 @@ def _corroborate(r, capture, hold=None, stderr=None, expected=None, prelude=None
     def belongs(row,n,start,end):
         usb=r['usb'][n]
         return (row['bus'],row['device'])==(usb['bus'],usb['device']) and start<=row['wall_ns']<=end
-    proofs=[]
-    for row in r['discovery']:
-        n=row['index']; value=decode(SleDiscoveryResult,row['result']); request=decode(SleDiscoverySubmit,row['input'])
-        recipes={1:[0xc08,0xc02,0xc03,0xc05],2:[0xc05],3:[0x1001,0x1002],4:[0x1002],5:[0xc02,0xc05],6:[0x1001,0x1002,0x1002]}
-        commands=[c for c in capture['commands'] if belongs(c,n,row['start_wall_ns'],row['end_wall_ns'])]
-        if [c['opcode'] for c in commands]!=recipes[request.operation] or value.state!=3 or value.error or value.status:
-            raise CaptureError('exact original successful discovery recipe required')
-        for j,c in enumerate(commands):
-            upper=commands[j+1]['wall_ns']-1 if j+1<len(commands) else row['end_wall_ns']
-            params=(bytes(1) if c['opcode']==0xc08 else bytes([int(request.operation==1),0,0,0,0]) if c['opcode']==0xc05
-                else bytes([0,3,len(marker_data(r['marker']))])+marker_data(r['marker']) if c['opcode']==0xc03
-                else bytes([int(request.operation==3 or request.operation==6 and j==1),0]) if c['opcode']==0x1002
-                else bytes.fromhex('0000010040062003') if c['opcode']==0x1001 else None)
-            if c['opcode']==0xc02:
-                params=bytearray(49);params[2]=2;params[3:6]=(1200).to_bytes(3,'little');params[6:9]=params[3:6]
-                params[9]=7;params[12:18]=bytes(snapshots[n].address);params[25]=127;params[43]=200
-                if request.operation==1:
-                    params[1]=3;params[2]=0;params[34]=1;params[37:39]=(100).to_bytes(2,'little');params[39:41]=params[37:39]
-                params=bytes(params)
-            proofs.append(command_reply(capture,r['usb'][n],c['opcode'],c['wall_ns'],upper,params,
-                bytes([value.selected_power&255]).hex() if c['opcode']==0xc02 else ''))
-    heard=[e for e in capture['reports'] if belongs(e,i,r['scan_start_wall_ns'],r['scan_end_wall_ns'])
-        and all(e[k]==r['scan_match'][k] for k in ['address','data','rssi'])]
-    if not heard:raise CaptureError('independent actual random marker RX required')
+    proofs,heard=corroborate_discovery(r,capture,snapshots)
     links=[]
     for operation,opcode,start,end,key in [(1,0x1401,r['connect_before_wall_ns'],r['connect_after_wall_ns'],'up'),
             (2,0x1403,r['release_before_wall_ns'],r['end_wall_ns'],'down')]:
-        commands=[c for c in capture['commands'] if belongs(c,i,start,end) and c['opcode']==opcode]
-        # Connected revocation has no radio obligations on this target.
-        if len(commands)!=1 or commands[0]['opcode']!=opcode:raise CaptureError('exact actual Create/cleanup Disconnect required')
-        command=commands[0]
-        status=[e for e in capture['native_events'] if belongs(e,i,start,end) and e['event']==1
-            and len(bytes.fromhex(e['params']))==4 and bytes.fromhex(e['params'])[:2]==opcode.to_bytes(2,'little')
-            and bytes.fromhex(e['params'])[3]==0]
-        if len(status)!=1 or command['completion']['wall_ns']>end:raise CaptureError('real OUT and successful Status required')
-        body=bytes.fromhex(command['params'])
-        expected_create=bytes(3)+bytes(snapshots[p].address)+bytes([1,1])+struct.pack('<8H',32,32,12,12,0,508,0,0)
-        if operation==1 and body!=expected_create:
-            raise CaptureError('Create must target actual peer')
-        handle=int.from_bytes(bytes.fromhex(r['up'][i]['params'])[1:3],'little')
-        if not r.get('reply_hold') and handle!=decode(SleConnectionResult,r['connected']).handle:
-            raise CaptureError('author result must match actual physical handle')
-        if operation==2 and body!=handle.to_bytes(2,'little')+bytes([expected_cleanup_reason]):raise CaptureError('exact cleanup handle/reason required')
-        outcomes=[]
-        for n in [i,p]:
-            receipt=r[key][n]
-            events=[e for e in capture['native_events'] if belongs(e,n,start,end)
-                and e['event']==receipt['event'] and e['params']==receipt['params']]
-            if len(events)!=1:raise CaptureError('one independent exact physical outcome on each device required')
-            outcomes.append(events[0])
-        links.append(dict(command=command,status=status[0],outcomes=outcomes))
+        links.append(corroborate_transition(r,capture,snapshots,operation,opcode,start,end,key,expected_cleanup_reason=expected_cleanup_reason))
     if r['case']=='dup':
         if any(belongs(c,i,r['first_close_wall_ns'],r['first_close_quiet_end_ns']) and c['opcode']==0x1403 for c in capture['commands']):
             raise CaptureError('first dup close must not disconnect')
@@ -376,14 +335,25 @@ def corroborate(r, capture, hold=None, stderr=None, expected=None,*,expected_cle
     if 'geometry' in r.get(field,{}):
         from ws73_channel_prefix_hold import corroborate_geometry
         proof['prefix_geometry']=corroborate_geometry(r,capture,field)
+    if 'sibling_business'in r:
+        from ws73_channel_sibling import corroborate as corroborate_sibling
+        proof['sibling_business']=corroborate_sibling(r,capture)
     return proof
 
 
 def run(args):
     reply_hold=getattr(args,'reply_hold',None)
+    from ws73_channel_sibling import boot_enabled
+    sibling_requested=getattr(args,'sibling_business',False)
+    if type(sibling_requested)is not bool or boot_enabled(Path('/proc/cmdline').read_text().split())is not sibling_requested:
+        raise ValueError('explicit matching sibling business request and VM token required')
     snapshot_gate=getattr(args,'link_snapshot',False)
     binding_gate=getattr(args,'peer_binding',False)
     channel_gate=getattr(args,'channel_grant',False)
+    if sibling_requested and (args.case!='release'or args.index!=0 or not channel_gate or reply_hold
+            or any(getattr(args,k,False)for k in ['link_snapshot','peer_binding','channel_scm_rights','channel_directions'])
+            or any(v.startswith(('ws73.channel_link_down=','ws73.channel_deadline=','ws73.channel_security=','ws73.channel_queued_discard=','ws73.session_service='))for v in Path('/proc/cmdline').read_text().split())):
+        raise ValueError('sibling business initially supports standalone basic release0 prefix only')
     protected=int(next((v.split('=',1)[1] for v in Path('/proc/cmdline').read_text().split() if v.startswith('ws73.channel_security=')), '0'))
     if protected not in (0,1,2):raise ValueError('unknown protected lifecycle requirement')
     original_deadline='ws73.security_original_deadline=1' in Path('/proc/cmdline').read_text().split()
@@ -445,7 +415,7 @@ def run(args):
         value=json.loads((args.output/f'hold-{ack}-ack.json').read_text())
         if value['stage']!=ack or value['request']!=marker:raise ValueError('exact actual frame acknowledgement required')
         r['hold_acknowledgements'].append(value);save()
-    handles=[];alias=None;grant=None
+    handles=[];alias=None;grant=None;sibling=None
     try:
         observers=[NativeAdapter(n) for n in [0,1]];handles+=observers
         snapshots=[a.snapshot() for a in observers];r['initial_snapshots']=[bytes(s).hex() for s in snapshots]
@@ -456,7 +426,7 @@ def run(args):
             r['usb'].append(dict(bus=int((path/'busnum').read_text()),device=int((path/'devnum').read_text())))
         models=[v.split('=',1)[1].split(',') for v in Path('/proc/cmdline').read_text().split() if v.startswith('ws73.expected_models=')]
         if models:
-            if len(models)!=1 or len(models[0])!=2:raise ValueError('exact selected Native board models required')
+            if len(models)!=1 or len(models[0])!=(4 if sibling_requested else 2):raise ValueError('exact selected Native board models required')
             from ws73_lab_resources import observe_guest_hcc
             r['hcc_observations']=[observe_guest_hcc(dict(r['usb'][n],port=f'1-{n+1}',index=n,
                 generation=s.generation,address=':'.join(f'{v:02X}' for v in s.address)),models[0][n]) for n,s in enumerate(snapshots)]
@@ -464,20 +434,9 @@ def run(args):
         writers=[NativeAdapter(n,snapshots[n].generation) for n in [0,1]];handles+=writers
         leases=[a.acquire_management(1) for a in writers];r['leases']=leases;save()
         def drain():
-            for n,a in enumerate(observers):
-                while (event:=a.poll_event()) is not None:
-                    r['events'][n].append(dict(event=event.event_code,params=bytes(event.payload[:event.payload_len]).hex(),
-                        generation=event.generation,seq=event.seq,lost=event.lost,wall_ns=time.time_ns()))
+            drain_events(observers,r)
         def discover(n,request):
-            row=dict(index=n,input=bytes(request).hex(),start_wall_ns=time.time_ns());r['discovery'].append(row);save()
-            writers[n].submit_discovery(request); deadline=time.monotonic()+8
-            while True:
-                value=observers[n].discovery_result(request.request_id);drain()
-                if value is not None and value.is_terminal:break
-                if time.monotonic()>deadline:raise TimeoutError('real discovery')
-                time.sleep(.002)
-            row.update(result=bytes(value).hex(),end_wall_ns=time.time_ns());save()
-            if value.state!=3 or value.error or value.status:raise ValueError('real discovery failed')
+            discovery_operation(writers,observers,r,save,drain,n,request)
         for n in [0,1]:
             for identifier,domain in [(101,'advertising'),(102,'scanning')]:discover(n,standby(snapshots[n],identifier,domain))
         i=args.index;p=1-i
@@ -512,13 +471,7 @@ def run(args):
                 time.sleep(.002)
             if result.state!=4:raise ValueError('actual Create failed')
         def outcomes(key,codes,index=None):
-            deadline=time.monotonic()+8
-            while True:
-                drain();values=[[e for e in events if e['event'] in codes] for events in r['events']]
-                if index is not None and len(values[index])==1:return values[index][0]
-                if index is None and all(len(v)==1 for v in values):return [v[0] for v in values]
-                if time.monotonic()>deadline:raise TimeoutError('both actual '+key+' events')
-                time.sleep(.002)
+            return await_events(r,drain,key,codes,index)
         if not reply_hold:
             r['up']=outcomes('up',[0x15,0x1401]);r['connected']=bytes(result).hex();r['connect_after_wall_ns']=time.time_ns()
             if snapshot_gate:r['link_snapshots']['up']=[bytes(a.link_snapshot()).hex() for a in observers];save()
@@ -545,6 +498,9 @@ def run(args):
                 from ws73_session_idle import SessionIdleTrace
                 idle_observer=SessionIdleTrace(r,save)
             grant.exchange('before')
+            if sibling_requested:
+                from ws73_channel_sibling import Sibling
+                sibling=Sibling(r,save,args.output)
             if idle_observer:idle_observer.idle(grant)
             if capabilities:
                 if numeric:r['numeric_comparison']=numeric
@@ -582,6 +538,7 @@ def run(args):
                 from ws73_channel_prefix_hold import PrefixBarrier
                 prefix_barrier=PrefixBarrier(r,save);prefix_barrier.arm(grant)
             else:grant.arm()
+        if sibling:sibling.exchange('while_held')
         r['release_before_wall_ns']=time.time_ns();save()
         if args.case=='release':writers[i].release_management(leases[i],1)
         elif args.case=='close':writers[i].close()
@@ -611,6 +568,8 @@ def run(args):
             grant.withdrawn()
             grant.successor(observers[i],snapshots[i].generation)
             grant.close();grant=None
+        if sibling:
+            sibling.exchange('after_withdrawal');sibling.finish()
         # Intended link loss must not prevent independent peer radio control.
         for identifier,operation in [(104,2),(105,3),(106,4)]:
             req=standby(snapshots[p],identifier,'scanning') if operation==3 else stop(snapshots[p],identifier,operation)
@@ -640,6 +599,7 @@ def run(args):
         r.update(status='FAIL',error=str(error),error_type=type(error).__name__);save();raise
     finally:
         if idle_observer:idle_observer.close()
+        if sibling:sibling.close()
         if grant:grant.close()
         if alias is not None:os.close(alias)
         for handle in handles:handle.close()
@@ -655,5 +615,6 @@ if __name__=='__main__':
     parser.add_argument('--channel-scm-rights',action='store_true',help='transfer native channel fd after ordinary worker closes inherited authority')
     parser.add_argument('--channel-directions',action='store_true',help='real TX-only to RX-only scope, forbidden actions and protected request rejection')
     parser.add_argument('--channel-grant',action='store_true',help='ordinary duplicated sockets and witnessed blocking RX across actual control withdrawal')
+    parser.add_argument('--sibling-business',action='store_true',help='explicit same-kernel four-controller Native release0 prefix and independent ordinary sibling business')
     parser.add_argument('--output',type=Path,required=True)
     run(parser.parse_args())

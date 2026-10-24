@@ -212,6 +212,7 @@ def prepare_from_carrier(args):
         manifest['four_dynamic_benchmark_contract_version']=1
         manifest['four_dynamic_benchmark_close_contract_version']=1
         manifest['four_dynamic_benchmark_pressure_contract_version']=1
+        manifest['channel_sibling_business_contract_version']=1
         manifest['four_owned_contract_version']=1
         manifest['four_delivery_contract_version']=1
         manifest['four_subscription_contract_version']=1
@@ -292,6 +293,7 @@ def prepare_locked(args, build_fd):
     manifest['four_dynamic_benchmark_contract_version'] = 1
     manifest['four_dynamic_benchmark_close_contract_version'] = 1
     manifest['four_dynamic_benchmark_pressure_contract_version'] = 1
+    manifest['channel_sibling_business_contract_version'] = 1
     manifest['four_owned_contract_version'] = 1
     manifest['four_delivery_contract_version'] = 1
     manifest['four_subscription_contract_version'] = 1
@@ -347,7 +349,7 @@ def prepare_locked(args, build_fd):
                   HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
-                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_connection_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_resource_file_gate.py',HERE/'ws73_connected_file_gate.py',HERE/'ws73_session_idle.py',HERE/'ws73_session_service.py',HERE/'ws73_trace_layout.py',HERE/'ws73_channel_grant.py',HERE/'ws73_revoke_prefix.py',HERE/'ws73_channel_prefix_hold.py',HERE/'ws73_channel_link_down.py',HERE/'ws73_channel_deadline.py',HERE/'ws73_security_capabilities.py',HERE/'ws73_security_numeric.py',HERE/'ws73_security_cancel.py',HERE/'ws73_key_agreement.py',HERE/'ws73_protected_grant.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_daemon_hold.py',HERE/'ws73_daemon_removal.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_rom_chip.py',HERE/'ws73_register_reset_init.sh',
+                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_connection_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_resource_file_gate.py',HERE/'ws73_connected_file_gate.py',HERE/'ws73_session_idle.py',HERE/'ws73_session_service.py',HERE/'ws73_trace_layout.py',HERE/'ws73_channel_grant.py',HERE/'ws73_channel_sibling.py',HERE/'ws73_native_pair.py',HERE/'ws73_revoke_prefix.py',HERE/'ws73_channel_prefix_hold.py',HERE/'ws73_channel_link_down.py',HERE/'ws73_channel_deadline.py',HERE/'ws73_security_capabilities.py',HERE/'ws73_security_numeric.py',HERE/'ws73_security_cancel.py',HERE/'ws73_key_agreement.py',HERE/'ws73_protected_grant.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_daemon_hold.py',HERE/'ws73_daemon_removal.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_rom_chip.py',HERE/'ws73_register_reset_init.sh',
                   HERE/'ws73_native_return.py',HERE/'ws73_native_controller_return.py',HERE/'ws73_controller_directory.py',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/controller_event_copy_test.c',
@@ -538,7 +540,7 @@ def prepare_locked(args, build_fd):
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
         for name in ['ws73_lab_resources.py', 'build_resources.py', 'ws73_native_return.py', 'ws73_native_controller_return.py', 'ws73_controller_directory.py', 'ws73_firmware_profile.py', 'ws73_firmware.py']:
             shutil.copy2(HERE/name, share/name)
-        for name in ['ws73_runtime_address.py','ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_measurement.py','ws73_link_payload.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_ssap.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_transport_watch.py','ws73_hcc_memory.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_sender_deadline.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
+        for name in ['ws73_runtime_address.py','ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_measurement.py','ws73_link_payload.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_ssap.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_transport_watch.py','ws73_hcc_memory.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_sender_deadline.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_channel_sibling.py','ws73_native_pair.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -777,6 +779,11 @@ def validate_down_failure_inputs(package):
 
 def _run(args):
     ordinary_identity()
+    sibling_business=getattr(args,'managed_channel_sibling_business',False)
+    if type(sibling_business)is not bool:raise ValueError('boolean Native sibling request required')
+    if sibling_business:
+        from ws73_channel_sibling import requested as sibling_requested
+        sibling_requested(args)
     output=args.output.resolve()
     support=args.command=='support'
     passthrough=bool(getattr(args,'qmp_hotplug',False))
@@ -921,7 +928,7 @@ def _run(args):
         raise ValueError('initializer lifecycle requires separate real QMP-hotplug native VM')
     if parallel and (support or passthrough or recovery or any(getattr(args,k,False) for k in ['hotplug','warm','empty_bulk','event_copy_verify','diagnostic_verify','active_deadline_verify','active_close_verify','setup_release_verify','daemon_hold_case','daemon_cancel_remove','managed_partial_case','managed_queue_verify'])):
         raise ValueError('four-device parallel RF requires separate real VM without other gates')
-    selected_count=3 if early_fault else 4 if parallel else 2
+    selected_count=3 if early_fault else 4 if parallel or sibling_business else 2
     parallel_offset=getattr(args,'parallel_start_offset_ms',0)
     if type(parallel_offset) is not int or not 0 <= parallel_offset <= 125 or (parallel_offset and not parallel):
         raise ValueError('bounded parallel start offset requires explicit four-device diagnostic gate')
@@ -1242,6 +1249,7 @@ def _run(args):
     m['live_link_snapshot_gate']=link_snapshot
     m['live_peer_binding_gate']=peer_binding
     m['live_channel_grant_gate']=channel_grant
+    if sibling_business:m.update(channel_sibling_business_requested=True,channel_sibling_business_contract_version=1,sibling_verifier=file_record(HERE/'ws73_channel_sibling.py'))
     if protected:m.update(live_channel_security_required=protected,protected_security_verifiers=[file_record(HERE/name) for name in ['ws73_protected_grant.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_key_agreement.py']])
     m['live_channel_scm_rights_gate']=channel_scm_rights
     m['live_channel_revoke_prefix_gate']=channel_revoke_prefix
@@ -1276,7 +1284,7 @@ def _run(args):
         m['managed_prefix_geometry_contract_version']=1
     m['live_channel_directions_gate']=channel_directions
     if channel_grant:m['channel_grant_verifier']=file_record(HERE/'ws73_channel_grant.py')
-    if connected_case:m['connected_file_verifier']=file_record(HERE/'ws73_connected_file_gate.py')
+    if connected_case:m['connected_file_verifier']=file_record(HERE/'ws73_connected_file_gate.py');m['native_pair_verifier']=file_record(HERE/'ws73_native_pair.py')
     if queued_gate:
         m['managed_queue_verifier']=file_record(HERE/'ws73_management_queued.py')
     if partial_gate:
@@ -1292,6 +1300,9 @@ def _run(args):
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        if sibling_business:
+            from ws73_channel_sibling import require_preparation
+            require_preparation(package,args.prepared.resolve())
         if channel_revoke_prefix and (type(package.get('managed_prefix_geometry_contract_version')) is not int or package['managed_prefix_geometry_contract_version']!=1):
             raise ValueError('new prepared buffer-geometry contract required before USB attachment;no old-root fallback')
         if partial_rx_target is not None:
@@ -1587,6 +1598,7 @@ def _run(args):
                      (f' ws73.managed_partial=1 ws73.partial_case={partial_case} ws73.partial_domain={partial_domain}' if partial_gate else '')+
                      (' ws73.managed_recreate=1' if resource_recreation else '')+
                      (f' ws73.connected_case={connected_case} ws73.connected_index={connected_index}' if connected_case else '')+
+                     (' ws73.channel_sibling_business=1'if sibling_business else '')+
                      (f' ws73.connected_reply={connected_reply}' if connected_reply else '')+
                      (' ws73.link_snapshot=1' if link_snapshot else '')+
                      (' ws73.link_measurements=1' if link_measurements else '')+
@@ -1786,7 +1798,8 @@ def _run(args):
                     elif active_gate and active == 1:
                         from ws73_active_deadline import metadata_ready
                         peer_metadata = metadata_ready(share)
-                    if active<selected_count and (peer_metadata if (setup_gate or active_gate) and active==1 else ('WS73_TARGET_CAPTURE_READY' if active==0 else f'WS73_TARGET_ADDRESS_SETUP: slot={active-1}' if runtime_addresses else f'WS73_TARGET_READY: slot={active-1}') in text):
+                    sibling_attach=sibling_business and active in(2,3)and(share/f'connected-file/sibling/attach-{active}.json').is_file()
+                    if active<selected_count and (sibling_attach if sibling_business and active>=2 else peer_metadata if (setup_gate or active_gate) and active==1 else ('WS73_TARGET_CAPTURE_READY' if active==0 else f'WS73_TARGET_ADDRESS_SETUP: slot={active-1}' if runtime_addresses else f'WS73_TARGET_READY: slot={active-1}') in text):
                         props=(dict(driver='usb-ws73-test',id=f'ws73_{active}',bus='xhci.0',port=str(active+1),
                                     **{'runtime-discovery':True,'runtime-policy':True,'runtime-fresh-advertiser':True,'runtime-sle-subtypes':True,'runtime-medium':1},
                                     **({'runtime-zlp':True} if getattr(args,'empty_bulk',False) else {}),
@@ -1859,13 +1872,18 @@ def _run(args):
                             address=':'.join(f'{v:02X}' for v in value.address),path=f'1-{n+1}') for n,value in enumerate(snapshots)]
                     else:
                         identities=[json.loads((share/f'ready-{n}.json').read_text()) for n in range(selected_count)]
+                    hcc_rows=list(probe['hcc_observations'])if channel_grant else []
+                    if sibling_business:
+                        from ws73_channel_sibling import identities as sibling_identities
+                        identities+=sibling_identities(probe)
+                        hcc_rows+=probe['sibling_business']['hcc_observations']
                     if physical_boundary:
                         checks=[]
-                        if channel_grant and len(probe['hcc_observations'])!=len(identities):
+                        if channel_grant and len(hcc_rows)!=len(identities):
                             raise ValueError('one HCC observation per actual Native controller required')
                         for slot,model in enumerate(physical_boundary.models):
                             if channel_grant:
-                                observed=probe['hcc_observations'][slot]
+                                observed=hcc_rows[slot]
                                 wanted=dict(identities[slot],port=f'1-{slot+1}')
                                 if any(observed[k]!=wanted[k] for k in ('port','index','generation','bus','device','address')):
                                     raise ValueError('standalone HCC observation differs from actual Native gate identity')
@@ -2285,6 +2303,11 @@ def _run(args):
                         if probe['case']!=connected_case or probe['index']!=connected_index or probe.get('reply_hold')!=connected_reply or bool(probe.get('link_snapshot_gate'))!=link_snapshot or bool(probe.get('peer_binding_gate'))!=peer_binding:raise ValueError('connected File request mismatch')
                         m['connected_file_corroboration']=connected_corroborate(probe,capture,hold.record if connected_reply or channel_revoke_prefix else None,
                             (output/'qemu-stderr.log').read_text() if connected_reply or channel_revoke_prefix else None,hold.record['host_identity_at_arm'] if connected_reply or channel_revoke_prefix else None)
+                        if ('sibling_business'in probe)is not sibling_business:raise ValueError('requested sibling-business evidence mismatch')
+                        if sibling_business:
+                            from ws73_channel_sibling import valid_summary
+                            if not valid_summary(m['connected_file_corroboration'].get('sibling_business',{})):raise ValueError('complete sibling-business proof required')
+                            m['channel_sibling_business_acceptance']=True
                         if bool(probe.get('session_idle'))!=session_idle:raise ValueError('requested Session idle observation mismatch')
                         if session_idle:
                             from ws73_session_idle import corroborate as idle_corroborate
@@ -2418,6 +2441,7 @@ def _run(args):
             raise ValueError('ordinary queue verifier changed during run')
         if ready_peer and file_record(HERE/'ws73_management_ready_peer.py')!=m['managed_ready_peer_verifier']:
             raise ValueError('Ready peer verifier changed during run')
+        if sibling_business and file_record(HERE/'ws73_channel_sibling.py')!=m['sibling_verifier']:raise ValueError('sibling verifier changed during run')
         if channel_grant and file_record(HERE/'ws73_channel_grant.py')!=m['channel_grant_verifier']:raise ValueError('channel Grant verifier changed during run')
         if channel_link_down and file_record(HERE/'ws73_channel_link_down.py')!=m['channel_link_down_verifier']:raise ValueError('direct Down verifier changed during run')
         if channel_deadline and file_record(HERE/'ws73_channel_deadline.py')!=m['channel_deadline_verifier']:raise ValueError('original deadline verifier changed during run')
@@ -2426,6 +2450,7 @@ def _run(args):
         if key_agreement and file_record(HERE/'ws73_key_agreement.py')!=m['security_key_agreement_verifier']:raise ValueError('candidate key agreement verifier changed during run')
         if protected and m['protected_security_verifiers']!=[file_record(HERE/name) for name in ['ws73_protected_grant.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_key_agreement.py']]:raise ValueError('protected prelude verifier changed during execution')
         if security_capabilities and file_record(HERE/'ws73_security_capabilities.py')!=m['security_capabilities_verifier']:raise ValueError('limited capability verifier changed during run')
+        if connected_case and file_record(HERE/'ws73_native_pair.py')!=m['native_pair_verifier']:raise ValueError('Native pair verifier changed during run')
         if connected_case and file_record(HERE/'ws73_connected_file_gate.py')!=m['connected_file_verifier']:
             raise ValueError('connected File verifier changed during run')
         if resource_recreation and file_record(HERE/'ws73_resource_file_gate.py')!=m['managed_resource_verifier']:
@@ -3086,6 +3111,22 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     required=record.get('live_channel_security_required',0)
     connected=record.get('connected_file_corroboration',{})
     if not isinstance(connected,dict):return 1
+    sibling=record.get('channel_sibling_business_requested',False)
+    if type(sibling)is not bool:return 1
+    sibling_tokens=[w for arg in record.get('qemu_args',[])if isinstance(arg,str)for w in arg.split()if w=='ws73.channel_sibling_business'or w.startswith('ws73.channel_sibling_business=')]
+    if sibling:
+        from ws73_channel_sibling import valid_summary
+        native_grant=connected.get('channel_grant',{});begun=native_grant.get('begun_revoke',{})
+        if (sibling_tokens!=['ws73.channel_sibling_business=1']or type(record.get('channel_sibling_business_contract_version'))is not int or record['channel_sibling_business_contract_version']!=1
+                or record.get('status')!='REAL_CHANNEL_GRANT_PASS'or record.get('live_connected_file_case')!='release'or type(record.get('live_connected_file_index'))is not int or record['live_connected_file_index']!=0
+                or record.get('live_channel_grant_gate')is not True or record.get('live_channel_revoke_prefix_gate')is not True
+                or record.get('managed_prefix_geometry_contract_version')!=1
+                or native_grant.get('status')!='REAL_BLOCKED_RX_GRANT_USB_CORROBORATED'
+                or begun.get('status')!='ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS'or begun.get('no_new_submit_after_withdrawal')is not True
+                or type(begun.get('submitted_bytes'))is not int or not 0<begun['submitted_bytes']<2047
+                or connected.get('held_reply',{}).get('status')!='REAL_INCOMPLETE_PDU_BARRIER_CORROBORATED'
+                or record.get('channel_sibling_business_acceptance')is not True or not valid_summary(connected.get('sibling_business',{}))):return 1
+    elif sibling_tokens or any(k in record for k in ['channel_sibling_business_contract_version','channel_sibling_business_acceptance'])or 'sibling_business'in connected:return 1
     geometry_tokens=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith('ws73.prefix_geometry=')]
     geometry_version=record.get('managed_prefix_geometry_contract_version')
     if geometry_version is not None or geometry_tokens:
@@ -3504,6 +3545,7 @@ def main():
             cmd.add_argument('--managed-channel-scm-rights',action='store_true',help='ordinary receiver gets real channel via SCM_RIGHTS after inherited authority closes')
             cmd.add_argument('--managed-channel-directions',action='store_true',help='real TX-only/RX-only one-way delivery and opposite-action/protected-bind denial')
             cmd.add_argument('--managed-channel-security',type=int,choices=[0,1,2],default=0,help='VM-only existing positive mechanism before first protected CUTC bind;then original prefix/File/Down/deadline lifecycle,not Agent/Bond/recovery')
+            cmd.add_argument('--managed-channel-sibling-business',action='store_true',help='dedicated same-kernel four-controller release0 prefix and real ordinary sibling-link replies;no daemon policy qualification')
             cmd.add_argument('--managed-channel-grant',action='store_true',help='real ordinary blocked socket RX across Managed release/final File/dup and successor; separate established File gate')
             cmd.add_argument('--managed-security-kind',choices=['capabilities','key-agreement','unauthenticated-encryption','cancel-pending','original-deadline','numeric-approve','numeric-reject','numeric-late'],default='capabilities',help='explicit capability, candidate proof or unauthenticated encryption mechanism; not Agent/identity/Bond')
             cmd.add_argument('--managed-security-capabilities',action='store_true',help='explicit Managed security negotiation gate; select bounded kind, never Pair/Encrypted')

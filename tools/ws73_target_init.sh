@@ -274,6 +274,7 @@ if grep -q 'ws73.connected_case=' /proc/cmdline; then
     if grep -qw ws73.channel_scm_rights=1 /proc/cmdline; then connected_reply_arg="$connected_reply_arg --channel-scm-rights"; fi
     if grep -qw ws73.channel_directions=1 /proc/cmdline; then connected_reply_arg="$connected_reply_arg --channel-directions"; fi
     if grep -qw ws73.channel_grant=1 /proc/cmdline; then connected_reply_arg="$connected_reply_arg --channel-grant"; fi
+    if grep -qw ws73.channel_sibling_business=1 /proc/cmdline; then connected_reply_arg="$connected_reply_arg --sibling-business"; fi
     if grep -qw ws73.peer_binding=1 /proc/cmdline; then connected_reply_arg="$connected_reply_arg --peer-binding"; fi
     if [ -n "$connected_reply" ]; then connected_reply_arg="--reply-hold $connected_reply"; fi
     LIBSPARKLINK_PATH=/usr/lib/libsparklink.so /bin/python3 /usr/share/sparklink/tools/ws73_connected_file_gate.py $connected_reply_arg --case "$connected_case" --index "$connected_index" --output /evidence/connected-file > /evidence/connected-file-supervisor.log 2>&1 || fail 'established connection File gate'

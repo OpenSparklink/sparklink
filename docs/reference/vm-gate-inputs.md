@@ -412,6 +412,31 @@ C输出包含32条完整十六进制收发记录，版本3的每stdout/stderr预
 离线夹具使用生产receipt与credit观察函数，但USB形状和调度为fixture，
 不属于真实内核并发或空口资格。当前实现需在准确新编译artifact上另行VM实测。
 
+## 同内核的 Managed 撤权与同行业务
+
+开发入口 `--managed-channel-sibling-business` 只接受独立的
+`--setup-release-verify --managed-connected-case release --managed-connected-index 0
+--managed-channel-grant --managed-channel-revoke-prefix` 组合。要求新准备清单的
+`channel_sibling_business_contract_version=1`、当前可执行 init 及一致的 helper hash。
+它使用本线程四个明确叶端口；不与 QMP hotplug 测试、daemon、benchmark、安全、Down、
+期限、queued-discard 或 Session 追踪组合。其他 case／index 明确拒绝，不能由入口推导资格。
+
+这是同一实验内核中、daemon 启动前的 Native 机制门禁。0／1 为原受控组，2／3 为
+独立业务组；controller ID 来自明确选择的真实快照，不能使用组内端点号或枚举顺序替代。
+两组复用原 Native 管理路径、唯一 Session、Grant／credit／Ticket 及同一套普通用户
+socket worker 和载荷校验，不新增 Host 或协议 Engine。额外组仍逐叶核对 SDK110 输入、
+HCC 型号／总线和实际地址；需要 E 临时地址时仍须保存、设置、读回及恢复。
+
+门禁要求实际持有回复期间、以及目标 Managed 撤权后，独立组分别完成双向随机载荷
+校验回复，保留原 fd／lease／generation／lifetime 和原物理连接；复用双端 USB 校验。
+原未完成 PDU、两秒有界 IN81 暂留、阻塞 syscall、撤权后拒绝及不新增提交的断言保持。
+控制器 Complete、NOCP 或 Root 日志不能代替对端应用回复。额外组最后也须以实际
+Managed 清理收敛，不从“关闭了 Python 对象”推导 Free。
+
+入口、离线 fixture 和机制实机资格分别登记。此门禁不等同实际 slkd／SDK 的管理策略、
+每应用独立撤权、完整 fd／callback 排空、NOCP 真值、公平性或自然恢复资格；后续
+release／最后管理 fd／dup／Down／原期限矩阵保持，不能因单个组合通过关闭整项。
+
 ## 受控原期限与生产转换序列输入
 
 新prepare记录`managed_prefix_geometry_contract_version=1`，对应运行凭据

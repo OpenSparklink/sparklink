@@ -181,10 +181,13 @@ def prepare_ssap_commands(context,row):
 def supervise(daemon_pid,*,mode='values',pair=None):
     """New subscription artifacts keep all hot files off the9p export."""
     from ws73_role_snapshot import TOKEN,local_root,profile
+    if mode=='benchmark':
+        from ws73_socket_benchmark import check_pair_boot
+        check_pair_boot(pair,Path('/proc/cmdline').read_text().split())
     if pair is not None:
         profile('subscription'if mode=='subscription'else mode,pair)
-        require_vm('ws73.ssap_subscription=1')
-        if Path('/proc/cmdline').read_text().split().count('ws73.parallel_subscription=1')!=1:
+        require_vm('ws73.socket_benchmark_apps=1'if mode=='benchmark'else'ws73.ssap_subscription=1')
+        if mode!='benchmark' and Path('/proc/cmdline').read_text().split().count('ws73.parallel_subscription=1')!=1:
             raise CaptureError('explicit parallel role supervisor required')
     if mode=='benchmark'or mode=='subscription'and TOKEN in Path('/proc/cmdline').read_text().split():
         benchmark=mode=='benchmark';kind='benchmark'if benchmark else'subscription'
@@ -194,7 +197,8 @@ def supervise(daemon_pid,*,mode='values',pair=None):
         with local_root(kind=kind,pair=pair)as local:
             finished=_supervise(daemon_pid,mode=mode,snapshot_root=local,pair=pair)
         if benchmark:
-            from ws73_socket_benchmark import ROLE_ROOT as root
+            from ws73_socket_benchmark import role_paths
+            root,_,_=role_paths(pair)
         else:
             from ws73_ssap_subscription import role_paths
             root,_=role_paths(pair)
@@ -210,13 +214,15 @@ def _supervise(daemon_pid,*,mode='values',snapshot_root=None,pair=None):
     subscription=mode=='subscription';benchmark=mode=='benchmark'
     require_vm('ws73.socket_benchmark_apps=1'if benchmark else'ws73.ssap_subscription=1'if subscription else'ws73.application_clients=1')
     if benchmark:
-        from ws73_socket_benchmark import ROLE_ROOT as root,validate_role_request as request_check,execute_supervised as execute_phase
+        from ws73_socket_benchmark import role_paths,check_pair_boot,validate_role_request as request_check,execute_supervised as execute_phase
+        check_pair_boot(pair,Path('/proc/cmdline').read_text().split())
+        root,_,input_root=role_paths(pair)
         if snapshot_root is None:raise CaptureError('benchmark requires actual local closed snapshots')
     elif subscription:
         from ws73_ssap_subscription import role_paths,validate_request as request_check,execute_supervised as execute_phase
         root,input_root=role_paths(pair)
     else:root=ROOT;request_check=validate_request
-    if not subscription:input_root=INPUT
+    if not subscription and not benchmark:input_root=INPUT
     from ws73_application_client import channel_pair,process_identity
     root.mkdir(exist_ok=False);root.chmod(0o755)
     supervisor=daemon_identity(os.getpid());daemon=daemon_identity(daemon_pid)
@@ -287,6 +293,7 @@ def _supervise(daemon_pid,*,mode='values',snapshot_root=None,pair=None):
     finished=root/'finished.json'
     value=dict(status='TWO_FINITE_BENCHMARK_PHASES_COMPLETED'if benchmark else'TWO_FINITE_SUBSCRIPTION_PHASES_COMPLETED'if subscription else'TWO_FINITE_ROLE_PAIRS_COMPLETED',daemon=daemon,supervisor=supervisor)
     if benchmark:value['socket_benchmark_role_contract_version']=1
+    if benchmark and pair is not None:value['benchmark_parallel_contract_version']=1
     if pair is not None:value['parallel_pair']=pair
     if snapshot_root:
         value['snapshot_contract_version']=1

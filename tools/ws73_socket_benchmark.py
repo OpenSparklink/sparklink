@@ -40,6 +40,36 @@ STDOUT_LIMIT=65536
 ROLE_REQUEST_FIELDS={'phase','owners','config','application_tool','start_wall_ns','status','applications','events','performance_qualified','clock','socket_benchmark_role_contract_version','tools'}
 
 
+PAIR_FIELD='benchmark_parallel_contract_version'
+
+
+def parallel_pair(row):
+    """Only the canonical two-channel profile can use an explicit pair scope."""
+    if not any(k in row for k in (PAIR_FIELD, 'parallel_pair')):
+        return None
+    pair=row.get('parallel_pair')
+    if (type(row.get(PAIR_FIELD)) is not int or row[PAIR_FIELD]!=1
+            or type(pair) is not int or pair not in (0,1)
+            or row_channel(row) is None or row_channel(row).get('version')!=2
+            or ssap_gate.selected(row) is not None):
+        raise CaptureError('explicit canonical benchmark pair0/1 contract required')
+    return pair
+
+
+def role_paths(pair=None):
+    bounds=snapshot_profile('benchmark',pair)
+    inputs=ROLE_INPUT if pair is None else Path('/evidence/application/parallel-business')/('pair-'+str(pair))
+    return Path(bounds['artifact']),Path(bounds['root']),inputs
+
+
+def check_pair_boot(pair,words):
+    """The paired namespace is unavailable without its dedicated VM request."""
+    from ws73_role_snapshot import require_pair_boot
+    require_pair_boot('benchmark',pair,words)
+    if pair is not None and words.count(ROLE_TOKEN)!=1:
+        raise CaptureError('one original benchmark role VM token required')
+
+
 def channel_configuration(value):
     """Explicit protocol endpoints, not TCIDs, identity or observed capabilities."""
     if type(value)is dict and type(value.get('version'))is int and value['version']in(2,3):
@@ -137,7 +167,7 @@ def channel_from_boot(words,config):
 
 
 def request_fields(row):
-    return ROLE_REQUEST_FIELDS|({RESOURCE_FIELD}if RESOURCE_FIELD in row else set())|({CHANNEL_FIELD}if CHANNEL_FIELD in row else set())|({ssap_gate.FIELD}if ssap_gate.FIELD in row else set())
+    return ROLE_REQUEST_FIELDS|({PAIR_FIELD,'parallel_pair'}if parallel_pair(row)is not None else set())|({RESOURCE_FIELD}if RESOURCE_FIELD in row else set())|({CHANNEL_FIELD}if CHANNEL_FIELD in row else set())|({ssap_gate.FIELD}if ssap_gate.FIELD in row else set())
 
 
 def channel_groups(row):
@@ -272,6 +302,7 @@ def validate_role_sources(package,*,dynamic=False,parallel=False,ssap=False,obse
 
 def validate_role_request(row,phase,*,live=False):
     extra={RESOURCE_FIELD}if RESOURCE_FIELD in row else set()
+    if parallel_pair(row)is not None:extra|={PAIR_FIELD,'parallel_pair'}
     if row_channel(row)is not None:extra.add(CHANNEL_FIELD)
     if ssap_gate.selected(row)is not None:
         extra.add(ssap_gate.FIELD);ssap_gate.workload(row['config'],row_channel(row))
@@ -295,9 +326,13 @@ def validate_role_request(row,phase,*,live=False):
 def execute(run,phase):
     """Control role requests one fixed root-supervised ordinary application pair."""
     from ws73_application_role import read_json
+    pair=getattr(run.args,'benchmark_parallel_pair',None)
+    if pair is not None and Path(run.output).resolve()!=role_paths(pair)[2]:
+        raise CaptureError('paired benchmark request must use its fixed input directory')
     row=dict(phase=len(run.data['connection_control']['phases'])-1,owners=phase['typed_objects'],config=requested_configuration(run.args),application_tool=test_program(run),start_wall_ns=time.time_ns(),status='RUNNING',applications=[],events=[],performance_qualified=False,clock=CLOCK,socket_benchmark_role_contract_version=ROLE_VERSION,benchmark_process_resource_contract_version=1,tools=role_tools())
     channel=requested_channel(run.args)
     if channel is not None:row[CHANNEL_FIELD]=channel
+    if pair is not None:row.update(parallel_pair=pair,**{PAIR_FIELD:1})
     service=ssap_gate.requested(run.args)
     if service is not None:row[ssap_gate.FIELD]=service
     row['tools']=request_tools(row)
@@ -306,7 +341,7 @@ def execute(run,phase):
     with temporary.open('x')as f:json.dump(row,f)
     temporary.chmod(0o600);os.link(temporary,path);temporary.unlink()
     original={k:row[k]for k in row if k not in ('applications','events','status')}
-    response=ROLE_ROOT/f'phase-{row["phase"]}'/'run.json';deadline=time.monotonic()+750
+    response=role_paths(parallel_pair(row))[0]/f'phase-{row["phase"]}'/'run.json';deadline=time.monotonic()+750
     while not response.is_file():
         if time.monotonic()>=deadline:raise CaptureError('original finite benchmark root-supervisor deadline')
         time.sleep(.01)
@@ -446,6 +481,7 @@ def execute_supervised(run,row):
     from ws73_application_client import process_identity,application_environment
     from ws73_north_star import file_record
     require_vm(ROLE_TOKEN)
+    check_pair_boot(parallel_pair(row),Path('/proc/cmdline').read_text().split())
     if ssap_gate.from_boot(Path('/proc/cmdline').read_text().split())!=ssap_gate.selected(row):raise CaptureError('concurrent SSAP boot/request mismatch')
     if not apps_role(row):raise CaptureError('live benchmark requires explicit apps-only contract')
     validate_role_request({k:row[k]for k in request_fields(row)},row['phase'],live=True)
@@ -734,36 +770,41 @@ def check_supervision(row):
 
 def check_report_files(row, share):
     share=Path(share).resolve(strict=True)
+    artifact,runtime,_=role_paths(parallel_pair(row))
     for i,app in enumerate(row['applications']):
-        expected=str(ROLE_RUNTIME/f'phase-{row["phase"]}'/'reports'/f'benchmark-{row["phase"]}-{i}.json')if apps_role(row)else f"/evidence/application/passthrough-control/benchmark-{row['phase']}-{i}.json"
+        expected=str(runtime/f'phase-{row["phase"]}'/'reports'/f'benchmark-{row["phase"]}-{i}.json')if apps_role(row)else f"/evidence/application/passthrough-control/benchmark-{row['phase']}-{i}.json"
         if app['report_path']!=expected or app['report_file']['path']!=expected:raise CaptureError('original benchmark report location')
-        exported=ROLE_ROOT/f'phase-{row["phase"]}'/'reports'/Path(expected).name if apps_role(row)else Path(expected)
+        exported=artifact/f'phase-{row["phase"]}'/'reports'/Path(expected).name if apps_role(row)else Path(expected)
         path=(share/exported.relative_to('/evidence')).resolve(strict=True)
         path.relative_to(share)
         report,record=read_report(path)
         if any(record[k]!=app['report_file'][k] for k in ['sha256','bytes']) or json.dumps(report,sort_keys=True)!=json.dumps(app['report'],sort_keys=True):raise CaptureError('report bytes/hash differ from observed process output')
         for suffix,key in [('stdout','stdout'),('stderr','stderr')]:
-            output=(share/'benchmark-role'/f'phase-{row["phase"]}'/f'benchmark-{row["phase"]}-{i}.{suffix}')if apps_role(row)else path.with_suffix('.'+suffix)
+            output=(share/artifact.relative_to('/evidence')/f'phase-{row["phase"]}'/f'benchmark-{row["phase"]}-{i}.{suffix}')if apps_role(row)else path.with_suffix('.'+suffix)
             text=output.read_text()
             if text!=app[key]:raise CaptureError('original benchmark process log differs')
 
 
-def corroborate(run,capture,share):
+def corroborate(run,capture,share,*,pair=None):
     rows=run.get('socket_benchmark')
+    role_paths(pair)
+    if type(rows)is list and (any(parallel_pair(row)!=pair for row in rows)
+            or pair is not None and not all(apps_role(row)for row in rows)):
+        raise CaptureError('benchmark rows must bind the explicit expected pair and apps-only role')
     if type(rows)is list and any(apps_role(row)for row in rows):
-        verify_role_artifacts(run,share)
+        verify_role_artifacts(run,share,pair=pair)
     proof=_match_payloads(run,capture,share)
     return dict(status='REAL_WS73_LOAD_USB_AND_APPLICATION_OBSERVED_NOT_PERFORMANCE_QUALIFIED',**proof)
 
 
-def diagnose_closed_payloads(run,capture,share):
+def diagnose_closed_payloads(run,capture,share,*,pair=None):
     """Closed app/USB component only;never complete controller acceptance.
 
     No daemon-after fact is invented when the control runner fails. Reuse the
     same closed phase and payload matchers, but issue no full role/proof status.
     The normal corroborate entry still requires original daemon completion.
     """
-    facts=_closed_role_facts(run,share)
+    facts=_closed_role_facts(run,share,pair=pair)
     proof=_match_payloads(run,capture,share)
     return dict(status='DIAGNOSTIC_CLOSED_PAYLOAD_COMPONENT_ONLY',
                 control_completion='NOT_VALIDATED_BY_THIS_DIAGNOSTIC',
@@ -864,11 +905,13 @@ def _match_payloads(run,capture,share):
         if not all(type(row.get(RESOURCE_FIELD))is int and row[RESOURCE_FIELD]==1 for row in rows):raise CaptureError('both resource observation phases required')
     if rows[0]['config']!=rows[1]['config']:raise CaptureError('same requested workload in both physical connection roles required')
     if row_channel(rows[0])!=row_channel(rows[1]):raise CaptureError('same original channel target in both physical roles required')
+    if parallel_pair(rows[0])!=parallel_pair(rows[1]):raise CaptureError('same explicit pair in both physical roles required')
     if ssap_gate.selected(rows[0])!=ssap_gate.selected(rows[1]):raise CaptureError('same original concurrent SSAP profile in both roles required')
     service=ssap_gate.corroborate(rows,capture,proofs)if ssap_gate.selected(rows[0])is not None else None
     result=dict(mode=rows[0]['config']['mode'],round_trips=sum(len(a['report']['outgoing']) for row in rows for a in row['applications']),
                 proofs=proofs,performance_qualified=False,
                 remaining=['repeatstablebaseline/traceoverhead/resources','crossclockmapping/per-layer latency','fullperformance/stress/fairness/recovery qualification'])
+    if parallel_pair(rows[0])is not None:result.update(parallel_pair=parallel_pair(rows[0]),**{PAIR_FIELD:1})
     if RESOURCE_FIELD in rows[0]:result[RESOURCE_FIELD]=1
     if row_channel(rows[0])is not None:result[CHANNEL_FIELD]=row_channel(rows[0])
     if service is not None:result.update({ssap_gate.FIELD:ssap_gate.selected(rows[0]),'ssap':service})
@@ -962,11 +1005,12 @@ def close_continuity(groups,closed):
                 before_reply_sequences=before,after_reply_sequences=after,callback_drain_proved=False,nocp_accuracy_proved=False,safe_reuse=False)
 
 
-def valid_parallel_summary(proof,channel,config,supervision):
+def valid_parallel_summary(proof,channel,config,supervision,*,pair=None):
     """Closed summary shape; paired raw evidence is checked by corroborate."""
     try:
+        role_paths(pair)
         if not is_parallel(channel)or channel_configuration(channel)!=row_channel(proof)or config!=configuration('window'):return False
-        if not valid_role_supervision(supervision)or row_channel(supervision)!=channel:return False
+        if parallel_pair(proof)!=pair or not valid_role_supervision(supervision,pair=pair)or row_channel(supervision)!=channel:return False
         if proof.get('full_fairness_acceptance')is not False or type(proof.get('round_trips'))is not int or proof['round_trips']!=parallel_replies(channel):return False
         close=closes_short(channel)
         if proof.get('channel_close_isolation_acceptance',False)is not close:return False
@@ -994,41 +1038,46 @@ def valid_parallel_summary(proof,channel,config,supervision):
 
 
 
-def verify_role_artifacts(control,evidence):
+def verify_role_artifacts(control,evidence,*,pair=None):
     """Complete original control/daemon scope,not a partial diagnostic."""
-    facts=_closed_role_facts(control,evidence)
+    facts=_closed_role_facts(control,evidence,pair=pair)
     if control['daemon_after']!=facts['daemon']:
         raise CaptureError('complete benchmark unchanged daemon required')
     return dict(status='ACTUAL_ROOT_BENCHMARK_APPS_ONLY_PHASES_CHECKED',**facts,
                 scope='Fixed actual system-bus/apps-only/closed-file supervision,not wire proof/full deployment/stable performance')
 
 
-def _closed_role_facts(control,evidence):
+def _closed_role_facts(control,evidence,*,pair=None):
     """Original root phase bytes/roles,not a substitute for paired data proof."""
     from ws73_application_role import verify_probe
     from ws73_role_snapshot import verify,HELPER
-    evidence=Path(evidence);root=evidence/'benchmark-role';finished=json.loads((root/'finished.json').read_text())
-    if(set(finished)!={'status','daemon','supervisor','snapshot_contract_version','socket_benchmark_role_contract_version'}or finished['status']!=ROLE_STATUS
+    evidence=Path(evidence);artifact,_,_=role_paths(pair);root=evidence/artifact.relative_to('/evidence');finished=json.loads((root/'finished.json').read_text())
+    extra={PAIR_FIELD,'parallel_pair'}if pair is not None else set()
+    if(set(finished)!={'status','daemon','supervisor','snapshot_contract_version','socket_benchmark_role_contract_version'}|extra or finished['status']!=ROLE_STATUS
         or type(finished['snapshot_contract_version'])is not int or finished['snapshot_contract_version']!=1
         or type(finished['socket_benchmark_role_contract_version'])is not int or finished['socket_benchmark_role_contract_version']!=1
         or finished['daemon']!=control['daemon_before']or len(control.get('socket_benchmark',[]))!=2):raise CaptureError('closed benchmark root phases and recorded daemon required')
+    if pair is not None and(type(finished.get('parallel_pair'))is not int or finished['parallel_pair']!=pair
+            or type(finished.get(PAIR_FIELD))is not int or finished[PAIR_FIELD]!=1):raise CaptureError('exact paired benchmark terminal receipt required')
     snapshots=[];channels=[row_channel(row)for row in control['socket_benchmark']]
     if channels[0]!=channels[1]:raise CaptureError('one original channel profile for both closed phases required')
     for phase,row in enumerate(control['socket_benchmark']):
         original=json.loads((root/f'phase-{phase}'/'run.json').read_text())
+        if parallel_pair(row)!=pair:raise CaptureError('original benchmark pair differs from requested namespace')
         if original!=row or not apps_role(row)or row['role_supervisor']!=finished['supervisor']or row['status']!=PENDING:raise CaptureError('original root benchmark phase differs from parent')
         request={k:row[k]for k in request_fields(row)};request.update(status='RUNNING',applications=[],events=[])
         validate_role_request(request,phase)
         verify_probe(row);check_supervision(row);check_report_files(row,evidence)
-        snapshots.append(verify(root/f'phase-{phase}',phase=phase,expected_helper=row['tools'][HELPER]['sha256'],kind='benchmark'))
+        snapshots.append(verify(root/f'phase-{phase}',phase=phase,expected_helper=row['tools'][HELPER]['sha256'],kind='benchmark',pair=pair))
         for app in [row['role_probe'],*row['applications'],*ssap_gate.streams(row)]:
             if len(app['output_files'])!=2:raise CaptureError('complete original benchmark stdout/stderr paths required')
             for name in app['output_files']:
-                relative=Path(name).relative_to('/evidence/benchmark-role/phase-'+str(phase))
+                relative=Path(name).relative_to(artifact/f'phase-{phase}')
                 if '..'in relative.parts or relative.suffix not in('.stdout','.stderr'):raise CaptureError('fixed benchmark stream path required')
                 if (root/f'phase-{phase}'/relative).read_text()!=app['stdout'if relative.suffix=='.stdout'else'stderr']:raise CaptureError('actual benchmark raw stream differs')
     parallel=is_parallel(channels[0]);count=8 if parallel else 4
     result=dict(version=supervision_version(channels[0]),uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=count,report_files=count,phases=2,daemon=finished['daemon'],supervisor=finished['supervisor'],snapshot_files=sum(len(v['files'])for v in snapshots),snapshot_bytes=sum(v['bytes']for v in snapshots),performance_qualified=False)
+    if pair is not None:result.update(parallel_pair=pair,**{PAIR_FIELD:1})
     if parallel:result[CHANNEL_FIELD]=channels[0]
     service=ssap_gate.selected(control['socket_benchmark'][0])
     if any(ssap_gate.selected(row)!=service for row in control['socket_benchmark']):raise CaptureError('same actual closed service profile required')
@@ -1036,8 +1085,10 @@ def _closed_role_facts(control,evidence):
     return result
 
 
-def valid_role_supervision(proof):
+def valid_role_supervision(proof,*,pair=None):
     try:
+        role_paths(pair)
+        if parallel_pair(proof)!=pair:return False
         channel=row_channel(proof);parallel=is_parallel(channel);count=8 if parallel else 4
         service=ssap_gate.selected(proof)
         if service is not None and any(type(proof.get(k))is not int or proof[k]!=v for k,v in dict(ssap_client_processes=48,ssap_provider_processes=4).items()):return False

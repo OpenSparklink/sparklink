@@ -26,13 +26,25 @@ SUPERVISOR='/usr/share/sparklink/tools/ws73_application_role.py'
 
 
 def profile(kind,pair=None):
-    if pair is not None and(type(pair)is not int or pair not in(0,1)or kind!='subscription'):
-        raise CaptureError('fixed subscription pair0/1 only')
+    if pair is not None and(type(pair)is not int or pair not in(0,1)or kind not in('subscription','benchmark')):
+        raise CaptureError('fixed subscription/benchmark pair0/1 only')
     if kind=='subscription':
         suffix=''if pair is None else'-pair-'+str(pair)
         return dict(root='/run/ws73-subscription-role'+suffix,artifact='/evidence/subscription-role'+suffix,token=TOKEN,vm_token='ws73.ssap_subscription=1',limit=LIMIT,file_limit=4*1024*1024,mount='32M')
-    if kind=='benchmark':return dict(root='/run/ws73-benchmark-role',artifact='/evidence/benchmark-role',token='ws73.socket_benchmark_apps=1',vm_token='ws73.socket_benchmark_apps=1',limit=512*1024*1024,file_limit=256*1024*1024,mount='768M')
+    if kind=='benchmark':
+        suffix=''if pair is None else'-pair-'+str(pair)
+        return dict(root='/run/ws73-benchmark-role'+suffix,artifact='/evidence/benchmark-role'+suffix,token='ws73.socket_benchmark_apps=1',vm_token='ws73.socket_benchmark_apps=1',limit=512*1024*1024,file_limit=256*1024*1024,mount='768M')
     raise CaptureError('fixed role snapshot profile required')
+
+
+def require_pair_boot(kind,pair,words):
+    """Reject a mismatched explicit pair before creating or mounting storage."""
+    profile(kind,pair)
+    name='ws73.parallel_benchmark'if kind=='benchmark'else'ws73.parallel_subscription'
+    tokens=[w for w in words if w==name or w.startswith(name+'=')]
+    if (pair is not None and tokens!=[name+'=1']
+            or kind=='benchmark'and pair is None and tokens):
+        raise CaptureError('explicit role pair and parallel VM token must agree')
 
 
 def helper_hash():
@@ -152,8 +164,7 @@ def local_root(*,kind='subscription',pair=None):
     bounds=profile(kind,pair)
     from ws73_application_role import require_vm
     require_vm(bounds['vm_token'])
-    if pair is not None and Path('/proc/cmdline').read_text().split().count('ws73.parallel_subscription=1')!=1:
-        raise CaptureError('explicit four-pair subscription boot required')
+    require_pair_boot(kind,pair,Path('/proc/cmdline').read_text().split())
     if Path('/proc/cmdline').read_text().split().count(bounds['token'])!=1:raise CaptureError('explicit VM snapshot boot required')
     root=Path(bounds['root']);root.mkdir(mode=0o755)
     mounted=False

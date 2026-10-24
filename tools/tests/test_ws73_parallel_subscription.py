@@ -78,7 +78,10 @@ class ParallelSubscription(unittest.TestCase):
         self.assertEqual(role_paths(1)[1],Path('/evidence/application/parallel-business/pair-1'))
         for pair in (True,False,-1,2,'0','../foreign'):
             with self.subTest(pair=pair),self.assertRaises(CaptureError):role_paths(pair)
-        with self.assertRaises(CaptureError):profile('benchmark',0)
+        # Benchmark now has its own explicitly gated pair namespace;it cannot
+        # alias subscription storage or admit any other role kind.
+        self.assertNotEqual(profile('benchmark',0)['root'],profile('subscription',0)['root'])
+        with self.assertRaises(CaptureError):profile('values',0)
         with patch('ws73_application_role.require_vm',side_effect=CaptureError('outside VM')):
             with self.assertRaises(CaptureError):
                 with local_root(pair=0):self.fail('must not mount outside VM')

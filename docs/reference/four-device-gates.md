@@ -27,6 +27,15 @@
 这只核对观察及准入，不证明地址的正式分配、芯片身份认证或跨设备全局 generation。
 历史材料不因新检查加入而升级；新资格仍须绑定实际执行工具与 artifact。
 
+## 动态通道的接线边界
+
+当前四设备业务门禁使用固定 basic 通道。内部 benchmark supervisor 已复用订阅测试的
+pair0／1 隔离方式，分别绑定请求目录、临时存储、关闭后的产物和报告校验，并要求明确的
+版本、pair 与专用 VM token。没有增加收发循环、协议 codec 或 Host。
+这些目录仅隔离测试产物命名，不是同UID进程之间的权限沙箱或daemon故障隔离。
+这组原语仍未接通四设备动态通道 runner；离线路径隔离检查不授予动态多通道、公平性、
+性能或实机资格。普通两设备 benchmark 的无 pair 路径和原工作负载保留。
+
 ## 受控断链的因果编排
 
 新 prepared／run 的 `four_disconnect_progress_contract_version=1` 要求匹配的暂存

@@ -20,12 +20,15 @@ benchmark_trace_requested() {
 benchmark_trace_buffer_kb() {
     benchmark_parallel=0
     benchmark_close=0
+    benchmark_pressure=0
     for benchmark_word do
         case "$benchmark_word" in
             ws73.parallel_benchmark=1) benchmark_parallel=1 ;;
             ws73.parallel_benchmark_case=close-short) benchmark_close=1 ;;
+            ws73.benchmark_pressure=1) benchmark_pressure=1 ;;
         esac
     done
+    if [ "$benchmark_pressure" = 1 ]; then printf '16384'; return 0; fi
     if [ "$benchmark_parallel" = 1 ]; then
         if [ "$benchmark_close" = 1 ]; then printf '16384'; else printf '8192'; fi
         return 0
@@ -586,7 +589,8 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
             benchmark_parallel=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.benchmark_parallel=/){sub(/^ws73.benchmark_parallel=/,"",$i);print $i}}' /proc/cmdline)
             benchmark_active=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.benchmark_active=/){sub(/^ws73.benchmark_active=/,"",$i);print $i}}' /proc/cmdline)
             benchmark_close=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.benchmark_close=/){sub(/^ws73.benchmark_close=/,"",$i);print $i}}' /proc/cmdline)
-            if [ -n "$benchmark_dynamic$benchmark_parallel$benchmark_active$benchmark_close" ]; then
+            benchmark_pressure=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.benchmark_pressure=/){sub(/^ws73.benchmark_pressure=/,"",$i);print $i}}' /proc/cmdline)
+            if [ -n "$benchmark_dynamic$benchmark_parallel$benchmark_active$benchmark_close$benchmark_pressure" ]; then
                 case "$benchmark_dynamic:$benchmark_parallel" in
                     1:) benchmark_selector=--channel-benchmark-dynamic ;;
                     :1) benchmark_selector=--channel-benchmark-parallel ;;
@@ -597,6 +601,10 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
                 if [ -n "$benchmark_close" ]; then
                     [ "$benchmark_parallel:$benchmark_close" = 1:short ] || fail 'explicit parallel short-close profile'
                     connection_arg="$connection_arg --channel-benchmark-close-short"
+                fi
+                if [ -n "$benchmark_pressure" ]; then
+                    [ "$benchmark_parallel:$benchmark_pressure:$benchmark_close" = 1:1: ] || fail 'explicit separate parallel pressure profile'
+                    connection_arg="$connection_arg --channel-benchmark-pressure"
                 fi
             fi
             benchmark_ssap=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.benchmark_ssap=/){sub(/^ws73.benchmark_ssap=/,"",$i);print $i}}' /proc/cmdline)

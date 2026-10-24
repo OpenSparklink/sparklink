@@ -35,6 +35,37 @@ API 返回无法关联原 token／request 时，完整门禁拒绝；旧报告�
 超时仍保留记录并观察迟到；重复、乱序、损坏单列。发端随机输入计时前准备，
 对端真实校验，保留可核对的接收/回复记录。证据有界、不逐包输出或同步落盘。
 
+## 显式双通道软件背压用例
+
+VM runner 的 `--channel-benchmark window --channel-benchmark-parallel
+--channel-benchmark-pressure` 选择独立v4 profile；不能与短通道关闭、四设备或并发SSAP
+选择器混用。默认v2／v3及普通slktest命令保持。它复用现有应用收发循环、schema2、
+Root开始／结束屏障及唯一Session，不增加Host或协议Engine。
+
+| 通道 | 每物理角色发起数 | 应用字节／窗口 |
+| --- | --- | --- |
+| short | 20 | 61／4 |
+| long | 64 | 2042／16 |
+
+两种物理连接角色共168次真实校验回复、8个普通应用进程。完整门禁要求每角色长发起端
+至少一条实际`EAGAIN`，同一预生成载荷后来成功准入并在原10秒期限内收到对端校验回复；
+只提高窗口而没有观察到背压也拒绝该资格。`send_attempts = would_block + 1`、原始计划／
+首次syscall／成功syscall／准入／校验／期限、原连接身份与两端USB载荷hash均须一致。
+短长业务继续使用原并发进展检查。所有64条长请求仍须实际回复，不隐藏超时、丢失或拒绝。
+
+`backpressure_recovery`只在该profile的长通道校验摘要出现，schema2原始报告不改版。
+它记录有限恢复journal与原controller／generation／lifetime身份；进程内时间只作同域
+比较，不能与USB墙钟相减。应用窗口不是controller credit；当前内核每通道TX预算8、
+RX队列16，不能仅凭`EAGAIN`宣布实际queue峰值、NOCP准确、硬件credit耗尽或完整公平性。
+Basic接收队列满可能丢弃；暂停应用读取不能被当成对端流控。撤权、断链、旧lifetime、
+不确定提交记账及callback排空仍按各自门禁验证，不因本用例成功获得资格。
+
+新profile明确启用xHCI追踪，请求16MiB／CPU并保留64MiB文本上限；根据既有v3同量级
+长包实测的282,882事件／48,293,549字节对有界观测存储定界，仍需新artifact实测确认，
+不预设性能收益。原普通双设备预算、四设备v2／v3预算各保持；精确页布局、全部marker、
+完整计数和零overrun／drop均为必需。实现及离线fixture通过不表示已取得实机或性能资格；
+准确结果只见唯一资格入口，失败保留原身份。
+
 ## 报告字段与单位
 
 schema 版本、run id、源角色及 controller/generation/lifetime/channel 身份；

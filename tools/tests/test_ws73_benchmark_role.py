@@ -227,13 +227,13 @@ class BenchmarkRole(unittest.TestCase):
 
 
 class ClosedBenchmarkRoleFixture(unittest.TestCase):
-    def fixture(self,root,channel=None,*,cross_namespace=False):
+    def fixture(self,root,channel=None,*,cross_namespace=False,pressure_eagain=False):
         # Synthetic schema2/wire/role metadata,not actual credentials or mount.
         from test_ws73_socket_benchmark import fixture as legacy_fixture,parallel_fixture
         from test_ws73_application_client import fixture as application_fixture
         from ws73_application_client import application_environment
         import hashlib,shutil
-        run,capture=parallel_fixture(root,channel['channels'][0]['route']['active_endpoint'],cross_namespace=cross_namespace,close_short=gate.closes_short(channel))if gate.is_parallel(channel)else legacy_fixture(root,channel=channel);old_roles,_=application_fixture();daemon=dict(pid=11,start_ticks=31);supervisor=dict(pid=500 if gate.is_parallel(channel)else 12,start_ticks=41)
+        run,capture=parallel_fixture(root,channel['channels'][0]['route']['active_endpoint'],cross_namespace=cross_namespace,close_short=gate.closes_short(channel),pressure=gate.pressures_long(channel),pressure_eagain=pressure_eagain)if gate.is_parallel(channel)else legacy_fixture(root,channel=channel);old_roles,_=application_fixture();daemon=dict(pid=11,start_ticks=31);supervisor=dict(pid=500 if gate.is_parallel(channel)else 12,start_ticks=41)
         run.update(daemon_before=daemon,daemon_after=daemon)
         for row in run['socket_benchmark']:
             phase=row['phase'];source=root/f'local-{phase}';source.mkdir();(source/'reports').mkdir();row['start_wall_ns']=max(1,row['start_wall_ns'])
@@ -249,8 +249,8 @@ class ClosedBenchmarkRoleFixture(unittest.TestCase):
                 if gate.is_parallel(channel):
                     from test_ws73_benchmark_resources import snapshot as resource_snapshot
                     row[gate.RESOURCE_FIELD]=1
-                    base=phase*(20000 if gate.closes_short(channel)else 2000)
-                    app['process_resources']=dict(before=resource_snapshot(app['pid'],base+150),after=resource_snapshot(app['pid'],base+(8050 if gate.closes_short(channel)and i>=2 else 1050),15,6))
+                    base=phase*(20000 if gate.closes_short(channel)or gate.pressures_long(channel)else 2000)
+                    app['process_resources']=dict(before=resource_snapshot(app['pid'],base+150),after=resource_snapshot(app['pid'],base+(8050 if gate.pressures_long(channel)or gate.closes_short(channel)and i>=2 else 1050),15,6))
                 (source/'reports'/f'benchmark-{phase}-{i}.json').write_text(json.dumps(app['report']));(source/f'benchmark-{phase}-{i}.stdout').write_text(app['stdout']);(source/f'benchmark-{phase}-{i}.stderr').write_text('')
             (source/'run.json').write_text(json.dumps(row))
             exported=root/'benchmark-role'/f'phase-{phase}';exported.parent.mkdir(exist_ok=True);snapshot.publish(source,exported,phase=phase,success=True,kind='benchmark')

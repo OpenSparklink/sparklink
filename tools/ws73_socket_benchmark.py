@@ -77,13 +77,16 @@ def check_pair_channel_boot(row,words):
         from ws73_parallel_data import benchmark_case_from_boot
         expected=parallel_channel(0,close_short=benchmark_case_from_boot(words)=='close-short')
         if row_channel(row)!=expected:raise CaptureError('paired Root request must match explicit VM benchmark case')
+    elif pressures_long(row_channel(row))and channel_from_boot(words,row['config'])!=row_channel(row):
+        raise CaptureError('Root pressure request requires exact explicit VM profile')
 
 
 def channel_configuration(value):
     """Explicit protocol endpoints, not TCIDs, identity or observed capabilities."""
-    if type(value)is dict and type(value.get('version'))is int and value['version']in(2,3):
+    if type(value)is dict and type(value.get('version'))is int and value['version']in(2,3,4):
         close=value['version']==3
-        if (set(value)!={'version','kind','channels'}or value['kind']!=('dynamic_basic_parallel_close'if close else'dynamic_basic_parallel')
+        pressure=value['version']==4
+        if (set(value)!={'version','kind','channels'}or value['kind']!=('dynamic_basic_parallel_pressure'if pressure else'dynamic_basic_parallel_close'if close else'dynamic_basic_parallel')
             or type(value['channels'])is not list or len(value['channels'])!=2):
             raise CaptureError('explicit version2 two-channel profile required')
         for group in value['channels']:
@@ -92,7 +95,7 @@ def channel_configuration(value):
                 raise CaptureError('explicit named channel/config/route required')
             channel_configuration(group['route']);validate_configuration(group['config'])
         active=value['channels'][0]['route']['active_endpoint']
-        if value!=parallel_channel(active,close_short=close):raise CaptureError('canonical finite short/long profile required')
+        if value!=parallel_channel(active,close_short=close,pressure=pressure):raise CaptureError('canonical finite short/long profile required')
         return value
     if (type(value)is not dict or set(value)!={'version','kind','ports','aid','active_endpoint'}
         or type(value['version'])is not int or value['version']!=1 or value['kind']!='dynamic_basic'
@@ -104,22 +107,26 @@ def channel_configuration(value):
     return value
 
 
-def parallel_channel(active=0,*,close_short=False):
+def parallel_channel(active=0,*,close_short=False,pressure=False):
     if type(active)is not int or active not in(0,1):raise CaptureError('explicit parallel negotiation role required')
-    if type(close_short)is not bool:raise CaptureError('explicit short-close profile required')
+    if type(close_short)is not bool or type(pressure)is not bool or close_short and pressure:raise CaptureError('explicit exclusive close/pressure profile required')
     groups=[]
-    for name,ports,count,size,window in [('short',[24576,24577],20,61,4),('long',[24578,24579],64 if close_short else 16,2042,8)]:
+    for name,ports,count,size,window in [('short',[24576,24577],20,61,4),('long',[24578,24579],64 if close_short or pressure else 16,2042,16 if pressure else 8)]:
         route=dict(version=1,kind='dynamic_basic',ports=ports,aid=29441,active_endpoint=active)
         groups.append(dict(name=name,route=route,config=configuration('window',window,count=count,size=size)))
-    return dict(version=3 if close_short else 2,kind='dynamic_basic_parallel_close'if close_short else'dynamic_basic_parallel',channels=groups)
+    return dict(version=4 if pressure else 3 if close_short else 2,kind='dynamic_basic_parallel_pressure'if pressure else'dynamic_basic_parallel_close'if close_short else'dynamic_basic_parallel',channels=groups)
 
 
 def is_parallel(channel):
-    return channel is not None and channel.get('version')in(2,3)
+    return channel is not None and channel.get('version')in(2,3,4)
 
 
 def closes_short(channel):
     return channel is not None and channel.get('version')==3
+
+
+def pressures_long(channel):
+    return channel is not None and channel.get('version')==4
 
 
 def supervision_version(channel):
@@ -136,13 +143,14 @@ def requested_channel(args):
     dynamic=getattr(args,'channel_benchmark_dynamic',False)
     parallel=getattr(args,'channel_benchmark_parallel',False)
     close=getattr(args,'channel_benchmark_close_short',False)
+    pressure=getattr(args,'channel_benchmark_pressure',False)
     active=getattr(args,'channel_benchmark_active_endpoint',None)
-    if type(dynamic)is not bool or type(parallel)is not bool or type(close)is not bool or close and not parallel or (active is not None and(type(active)is not int or active not in(0,1))):
+    if type(dynamic)is not bool or type(parallel)is not bool or type(close)is not bool or type(pressure)is not bool or (close or pressure)and not parallel or close and pressure or (active is not None and(type(active)is not int or active not in(0,1))):
         raise CaptureError('explicit dynamic benchmark selector/role required')
     if parallel:
         if dynamic or requested_configuration(args)!=configuration('window'):
             raise CaptureError('parallel target requires separate default short window workload')
-        return channel_configuration(parallel_channel(0 if active is None else active,close_short=close))
+        return channel_configuration(parallel_channel(0 if active is None else active,close_short=close,pressure=pressure))
     if not dynamic:
         if active is not None:raise CaptureError('channel role requires dynamic benchmark')
         return None
@@ -159,16 +167,16 @@ def channel_boot(channel):
     channel_configuration(channel)
     parallel=is_parallel(channel)
     active=channel['channels'][0]['route']['active_endpoint']if parallel else channel['active_endpoint']
-    return ['ws73.benchmark_parallel=1'if parallel else'ws73.benchmark_dynamic=1',f'ws73.benchmark_active={active}']+(['ws73.benchmark_close=short']if closes_short(channel)else[])
+    return ['ws73.benchmark_parallel=1'if parallel else'ws73.benchmark_dynamic=1',f'ws73.benchmark_active={active}']+(['ws73.benchmark_close=short']if closes_short(channel)else[])+(['ws73.benchmark_pressure=1']if pressures_long(channel)else[])
 
 
 def channel_from_boot(words,config):
-    prefixes=('ws73.benchmark_dynamic=','ws73.benchmark_parallel=','ws73.benchmark_active=','ws73.benchmark_close=')
+    prefixes=('ws73.benchmark_dynamic=','ws73.benchmark_parallel=','ws73.benchmark_active=','ws73.benchmark_close=','ws73.benchmark_pressure=')
     selected=[w for w in words if w.startswith(prefixes)]
     if not selected:return None
-    for profile in(1,2,3):
+    for profile in(1,2,3,4):
         for active in(0,1):
-            candidate=parallel_channel(active,close_short=profile==3)if profile>1 else dict(version=1,kind='dynamic_basic',ports=[24576,24577],aid=29441,active_endpoint=active)
+            candidate=parallel_channel(active,close_short=profile==3,pressure=profile==4)if profile>1 else dict(version=1,kind='dynamic_basic',ports=[24576,24577],aid=29441,active_endpoint=active)
             if selected==channel_boot(candidate):
                 if profile>1 and config!=configuration('window'):raise CaptureError('parallel boot requires exact short workload')
                 return candidate
@@ -314,6 +322,7 @@ def validate_role_request(row,phase,*,live=False):
     if parallel_pair(row)is not None:extra|={PAIR_FIELD,'parallel_pair'}
     if row_channel(row)is not None:extra.add(CHANNEL_FIELD)
     if ssap_gate.selected(row)is not None:
+        if pressures_long(row_channel(row)):raise CaptureError('pressure profile has no concurrent SSAP qualification')
         extra.add(ssap_gate.FIELD);ssap_gate.workload(row['config'],row_channel(row))
     if (live or RESOURCE_FIELD in row)and(type(row.get(RESOURCE_FIELD))is not int or row[RESOURCE_FIELD]!=1):raise CaptureError('new live resource checkpoint contract required')
     if(type(phase)is not int or phase not in(0,1)or type(row.get('phase'))is not int or row['phase']!=phase or not apps_role(row)
@@ -853,7 +862,7 @@ def _match_payloads(run,capture,share):
         channel=row_channel(row)
         for group_index,group in enumerate(channel_groups(row)):
             base=2*group_index;apps=row['applications'][base:base+2];route=group['route']
-            check=load_application_reports(*(app['report']for app in apps));legs=[];negotiation=None
+            check=load_application_reports(*(app['report']for app in apps),backpressure=pressures_long(channel)and group['name']=='long');legs=[];negotiation=None
             if route is not None:
                 negotiation=match_negotiation(row,apps,route,base,sdus,start,matched)
             expected=set()
@@ -928,6 +937,7 @@ def _match_payloads(run,capture,share):
     if service is not None:result.update({ssap_gate.FIELD:ssap_gate.selected(rows[0]),'ssap':service})
     if is_parallel(row_channel(rows[0])):result['full_fairness_acceptance']=False
     if closes_short(row_channel(rows[0])):result['channel_close_isolation_acceptance']=True
+    if pressures_long(row_channel(rows[0])):result['software_backpressure_acceptance']=True
     if rows[0]['config']['window']!=WINDOW:result['window']=rows[0]['config']['window']
     if any(rows[0]['config'][k]!=v for k,v in [('count',COUNT),('bytes',SIZE),('interval_us',100000 if rows[0]['config']['mode']=='rate' else 0)]):result['config']=rows[0]['config']
     return result
@@ -1016,6 +1026,35 @@ def close_continuity(groups,closed):
                 before_reply_sequences=before,after_reply_sequences=after,callback_drain_proved=False,nocp_accuracy_proved=False,safe_reuse=False)
 
 
+def check_pressure_recovery(group,owner):
+    """Bind already-validated EAGAIN journals to original owners and USB legs.
+
+    Process-local timestamps are compared only to each other. Wire binding is
+    by the exact payload hash,never subtraction of USB and process clocks.
+    """
+    from ws73_benchmark import REQUEST_NS
+    value=group['application']['backpressure_recovery'];identity=value['source_identity'];records=value['records']
+    if (set(value)!={'version','kind','source_identity','window','count','records','would_block_calls','controller_credit_truth'}
+        or type(value['version'])is not int or value['version']!=1
+        or value['kind']!='actual-software-send-EAGAIN-then-timely-peer-reply'
+        or type(value['window'])is not int or value['window']!=16 or type(value['count'])is not int or value['count']!=64
+        or value['controller_credit_truth']is not False or type(records)is not list or not 1<=len(records)<=64):raise CaptureError('finite actual EAGAIN recovery witness required')
+    expected=dict(controller=owner['owner']['index'],generation=owner['owner']['generation'],handle=owner['object']['handle'],lifetime=owner['object']['lifetime'])
+    if any(type(identity.get(k))is not int or identity[k]!=v for k,v in expected.items()):raise CaptureError('backpressure witness belongs to original connection lifetime')
+    seen=set();total=0
+    for row in records:
+        fields={'index','planned_ns','first_syscall_ns','syscall_ns','admitted_ns','validated_ns','deadline_ns','would_block','send_attempts','frame_sha256'}
+        if set(row)!=fields or any(type(row[k])is not int for k in fields-{'frame_sha256'}):raise CaptureError('typed complete recovery journal required')
+        i=row['index']
+        if not 0<=i<64 or i in seen or row['would_block']<1 or row['send_attempts']!=row['would_block']+1:raise CaptureError('unique actual EAGAIN then admission required')
+        if not 0<=row['planned_ns']<=row['first_syscall_ns']<row['syscall_ns']<=row['admitted_ns']<row['validated_ns']<row['deadline_ns']or row['deadline_ns']!=row['planned_ns']+REQUEST_NS:raise CaptureError('original process-local request deadline required')
+        leg=group['legs'][2*i];wire=bytes.fromhex(leg['tx']['data'])
+        if (leg['tx']['data']!=leg['rx']['data']or len(wire)!=2047 or wire[0]!=identity['remote_tcid']or wire[1:5]!=b'\0\xfb\x07\xf1'
+            or hashlib.sha256(wire[5:]).hexdigest()!=row['frame_sha256']):raise CaptureError('recovered original payload must match both actual USB ends')
+        seen.add(i);total+=row['would_block']
+    if type(value['would_block_calls'])is not int or total!=value['would_block_calls']:raise CaptureError('all observed EAGAIN calls counted')
+
+
 def valid_parallel_summary(proof,channel,config,supervision,*,pair=None):
     """Closed summary shape; paired raw evidence is checked by corroborate."""
     try:
@@ -1025,6 +1064,8 @@ def valid_parallel_summary(proof,channel,config,supervision,*,pair=None):
         if proof.get('full_fairness_acceptance')is not False or type(proof.get('round_trips'))is not int or proof['round_trips']!=parallel_replies(channel):return False
         close=closes_short(channel)
         if proof.get('channel_close_isolation_acceptance',False)is not close:return False
+        pressure=pressures_long(channel)
+        if proof.get('software_backpressure_acceptance',False)is not pressure:return False
         phases=proof['proofs']
         if type(phases)is not list or len(phases)!=2:return False
         for n,phase in enumerate(phases):
@@ -1039,6 +1080,8 @@ def valid_parallel_summary(proof,channel,config,supervision,*,pair=None):
                     or app.get('fixture')is not False or app.get('messages')!=[c['count'],0]):return False
                 expected=[application_request(dict(config=config,benchmark_channel_request=channel),2*g+i)for i in(0,1)]
                 if app.get('channel_requests')!=expected or set(signal)!={'request','response'}or any(set(signal[k])!={'tx','rx'}for k in signal):return False
+                if pressure and g==1:check_pressure_recovery(group,phase['owners'][0])
+                elif 'backpressure_recovery'in app:return False
             if phase['legs']!=[leg for group in groups for leg in group['legs']]:return False
             if phase['concurrent_progress']!=load_progress(groups):return False
             if close:

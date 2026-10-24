@@ -83,16 +83,22 @@ def fixture(share,mode='window',window=4,count=20,channel=None,size=61,tcid_offs
     return dict(socket_benchmark=rows,connection_control=dict(phases=phases),commands=commands),dict(acb_packets=packets,native_events=[])
 
 
-def parallel_fixture(share,active=0,*,cross_namespace=False,close_short=False):
+def parallel_fixture(share,active=0,*,cross_namespace=False,close_short=False,pressure=False,pressure_eagain=False):
     """Two explicit fixture pairs merged into one four-app observation.
 
     This tests production metadata/capture checks, not a successful kernel,
     socket, USB or firmware dependency.
     """
-    channel=gate.parallel_channel(active,close_short=close_short);runs=[];captures=[]
+    channel=gate.parallel_channel(active,close_short=close_short,pressure=pressure);runs=[];captures=[]
     for g,target in enumerate(channel['channels']):
         directory=share/target['name'];directory.mkdir(parents=True)
         c=target['config'];run,capture=fixture(directory,window=c['window'],count=c['count'],size=c['bytes'],channel=target['route'],tcid_offset=2*g,local_tcids=((0x81,0x83)if g==0 else(0x83,0x81))if cross_namespace else None)
+        if pressure_eagain and pressure and g==1:
+            # Explicit finite journal fixture,not a successful socket/USB stub.
+            # Report bytes are sealed below,before any Root snapshot export.
+            for row in run['socket_benchmark']:
+                message=row['applications'][0]['report']['outgoing'][0]
+                message.update(would_block=1,send_attempts=2,first_syscall_ns=message['syscall_ns']-1)
         runs.append(run);captures.append(capture)
     run=runs[0]
     for phase,row in enumerate(run['socket_benchmark']):
@@ -112,7 +118,7 @@ def parallel_fixture(share,active=0,*,cross_namespace=False,close_short=False):
     packets=[p for c in captures for p in c['acb_packets']]
     packets.sort(key=lambda p:p['wall_ns'])
     for record,p in enumerate(packets,1):p['record']=record
-    if close_short:
+    if close_short or pressure:
         from ws73_dynamic_channels import cmtc
         for phase,row in enumerate(run['socket_benchmark']):
             oldbase=phase*2000;base=phase*20000;delta=base-oldbase
@@ -124,13 +130,13 @@ def parallel_fixture(share,active=0,*,cross_namespace=False,close_short=False):
             for event in row['events']:
                 for key in ['wall_ns','monotonic_ns','before_wall_ns','before_monotonic_ns']:
                     if key in event:event[key]+=delta
-                if event['application']>=2 and event['kind']in('quiescent','finish'):
+                if (pressure or event['application']>=2)and event['kind']in('quiescent','finish'):
                     for key in ['wall_ns','monotonic_ns','before_wall_ns','before_monotonic_ns']:
                         if key in event:event[key]+=7000
             row['events'].sort(key=lambda e:(e['wall_ns'],e['application']))
-            for i,app in enumerate(row['applications']):app['end_wall_ns']=base+(1400+i*10 if i<2 else 8500+i*10)
-            row['closed_short']=[dict(application=i,pid=row['applications'][i]['pid'],exit=0,reaped_wall_ns=row['applications'][i]['end_wall_ns'])for i in(0,1)]
-            for g in range(2):
+            for i,app in enumerate(row['applications']):app['end_wall_ns']=base+(1400+i*10 if close_short and i<2 else 8500+i*10)
+            if close_short:row['closed_short']=[dict(application=i,pid=row['applications'][i]['pid'],exit=0,reaped_wall_ns=row['applications'][i]['end_wall_ns'])for i in(0,1)]
+            for g in range(2)if close_short else():
                 a,b=row['applications'][2*g:2*g+2];identity=a['report']['channel_identity'];local,remote=identity['local_tcid'],identity['remote_tcid'];ident=11+g
                 request=cmtc(bytes([18,ident,2,0,local,remote]));response=cmtc(bytes([19,ident,3,0,local,remote,0]))
                 for endpoint,direction,raw,offset in [(0,'out',request,0),(1,'in',request,1),(1,'out',response,9),(0,'in',response,9)]:

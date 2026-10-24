@@ -190,6 +190,7 @@ def main():
     parser.add_argument('--channel-benchmark-dynamic',action='store_true')
     parser.add_argument('--channel-benchmark-parallel',action='store_true')
     parser.add_argument('--channel-benchmark-close-short',action='store_true')
+    parser.add_argument('--channel-benchmark-pressure',action='store_true')
     parser.add_argument('--channel-benchmark-ssap-owned',action='store_true')
     parser.add_argument('--channel-benchmark-ssap-duplex',action='store_true')
     parser.add_argument('--channel-benchmark-credit-observe',action='store_true')

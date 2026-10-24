@@ -120,7 +120,7 @@ def channel_requests(reports, configs):
     return requests
 
 
-def load_application_reports(left, right, *, fixture=False):
+def load_application_reports(left, right, *, fixture=False, backpressure=False):
     """Recompute successful schema2 application closure; not artifact/capture closure.
 
     fixture=True permits only explicitly marked AF_UNIX report fixtures and the
@@ -259,6 +259,16 @@ def load_application_reports(left, right, *, fixture=False):
     if requests is not None:
         result['channel_requests'] = requests
         result['remaining'].append('wire CMTC routing/capability negotiation for requested ports/AID')
+    if type(backpressure)is not bool:raise CaptureError('explicit software backpressure scope required')
+    if backpressure:
+        require(modes==('window','peer')and a==dict(mode='window',count=64,bytes=2042,window=16,interval_us=0), 'canonical finite pressure workload')
+        recovered=[]
+        for row in left['outgoing']:
+            if not row['would_block']:continue
+            require(row['first_syscall_ns']<row['syscall_ns'], 'actual later admission after EAGAIN')
+            recovered.append({**{k:row[k]for k in ['index','planned_ns','first_syscall_ns','syscall_ns','admitted_ns','validated_ns','deadline_ns','would_block','send_attempts']},'frame_sha256':hashlib.sha256(bytes.fromhex(row['frame_hex'])).hexdigest()})
+        require(bool(recovered),'actual send EAGAIN followed by original timely peer reply required')
+        result['backpressure_recovery']=dict(version=1,kind='actual-software-send-EAGAIN-then-timely-peer-reply',source_identity=dict(left['channel_identity']),window=16,count=64,records=recovered,would_block_calls=sum(r['would_block']for r in recovered),controller_credit_truth=False)
     return result
 
 

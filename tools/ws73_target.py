@@ -212,7 +212,7 @@ def prepare_from_carrier(args):
         manifest['four_dynamic_benchmark_contract_version']=1
         manifest['four_dynamic_benchmark_close_contract_version']=1
         manifest['four_dynamic_benchmark_pressure_contract_version']=1
-        manifest['channel_sibling_business_contract_version']=1
+        manifest['channel_sibling_business_contract_version']=2
         manifest['four_owned_contract_version']=1
         manifest['four_delivery_contract_version']=1
         manifest['four_subscription_contract_version']=1
@@ -299,7 +299,7 @@ def prepare_locked(args, build_fd):
     manifest['four_dynamic_benchmark_contract_version'] = 1
     manifest['four_dynamic_benchmark_close_contract_version'] = 1
     manifest['four_dynamic_benchmark_pressure_contract_version'] = 1
-    manifest['channel_sibling_business_contract_version'] = 1
+    manifest['channel_sibling_business_contract_version'] = 2
     manifest['four_owned_contract_version'] = 1
     manifest['four_delivery_contract_version'] = 1
     manifest['four_subscription_contract_version'] = 1
@@ -1255,7 +1255,7 @@ def _run(args):
     m['live_link_snapshot_gate']=link_snapshot
     m['live_peer_binding_gate']=peer_binding
     m['live_channel_grant_gate']=channel_grant
-    if sibling_business:m.update(channel_sibling_business_requested=True,channel_sibling_business_contract_version=1,sibling_verifier=file_record(HERE/'ws73_channel_sibling.py'))
+    if sibling_business:m.update(channel_sibling_business_requested=True,channel_sibling_business_contract_version=2,sibling_verifier=file_record(HERE/'ws73_channel_sibling.py'))
     if protected:m.update(live_channel_security_required=protected,protected_security_verifiers=[file_record(HERE/name) for name in ['ws73_protected_grant.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_key_agreement.py']])
     m['live_channel_scm_rights_gate']=channel_scm_rights
     m['live_channel_revoke_prefix_gate']=channel_revoke_prefix
@@ -3123,14 +3123,15 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     if sibling:
         from ws73_channel_sibling import valid_summary
         native_grant=connected.get('channel_grant',{});begun=native_grant.get('begun_revoke',{})
-        if (sibling_tokens!=['ws73.channel_sibling_business=1']or type(record.get('channel_sibling_business_contract_version'))is not int or record['channel_sibling_business_contract_version']!=1
-                or record.get('status')!='REAL_CHANNEL_GRANT_PASS'or record.get('live_connected_file_case')!='release'or type(record.get('live_connected_file_index'))is not int or record['live_connected_file_index']!=0
+        if (sibling_tokens!=['ws73.channel_sibling_business=1']or type(record.get('channel_sibling_business_contract_version'))is not int or record['channel_sibling_business_contract_version']!=2
+                or record.get('status')!='REAL_CHANNEL_GRANT_PASS'or record.get('live_connected_file_case')not in ('release','close','dup')or type(record.get('live_connected_file_index'))is not int or record['live_connected_file_index']!=0
                 or record.get('live_channel_grant_gate')is not True or record.get('live_channel_revoke_prefix_gate')is not True
                 or record.get('managed_prefix_geometry_contract_version')!=1
                 or native_grant.get('status')!='REAL_BLOCKED_RX_GRANT_USB_CORROBORATED'
                 or begun.get('status')!='ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS'or begun.get('no_new_submit_after_withdrawal')is not True
                 or type(begun.get('submitted_bytes'))is not int or not 0<begun['submitted_bytes']<2047
                 or connected.get('held_reply',{}).get('status')!='REAL_INCOMPLETE_PDU_BARRIER_CORROBORATED'
+                or connected.get('sibling_business',{}).get('case')!=record.get('live_connected_file_case')
                 or record.get('channel_sibling_business_acceptance')is not True or not valid_summary(connected.get('sibling_business',{}))):return 1
     elif sibling_tokens or any(k in record for k in ['channel_sibling_business_contract_version','channel_sibling_business_acceptance'])or 'sibling_business'in connected:return 1
     geometry_tokens=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith('ws73.prefix_geometry=')]
@@ -3551,7 +3552,7 @@ def main():
             cmd.add_argument('--managed-channel-scm-rights',action='store_true',help='ordinary receiver gets real channel via SCM_RIGHTS after inherited authority closes')
             cmd.add_argument('--managed-channel-directions',action='store_true',help='real TX-only/RX-only one-way delivery and opposite-action/protected-bind denial')
             cmd.add_argument('--managed-channel-security',type=int,choices=[0,1,2],default=0,help='VM-only existing positive mechanism before first protected CUTC bind;then original prefix/File/Down/deadline lifecycle,not Agent/Bond/recovery')
-            cmd.add_argument('--managed-channel-sibling-business',action='store_true',help='dedicated same-kernel four-controller release0 prefix and real ordinary sibling-link replies;no daemon policy qualification')
+            cmd.add_argument('--managed-channel-sibling-business',action='store_true',help='dedicated same-kernel four-controller release/close/dup index0 prefix and real ordinary sibling-link replies;no daemon policy qualification')
             cmd.add_argument('--managed-channel-grant',action='store_true',help='real ordinary blocked socket RX across Managed release/final File/dup and successor; separate established File gate')
             cmd.add_argument('--managed-security-kind',choices=['capabilities','key-agreement','unauthenticated-encryption','cancel-pending','original-deadline','numeric-approve','numeric-reject','numeric-late'],default='capabilities',help='explicit capability, candidate proof or unauthenticated encryption mechanism; not Agent/identity/Bond')
             cmd.add_argument('--managed-security-capabilities',action='store_true',help='explicit Managed security negotiation gate; select bounded kind, never Pair/Encrypted')

@@ -19,9 +19,9 @@ from ws73_capture import CaptureError
 import ws73_channel_sibling as gate
 
 
-def fixture():
-    original,outer=grant_fixture();g={k:copy.deepcopy(original[k])for k in ['index','owners','workers','business']}
-    row=dict(version=1,status='SIBLING_NATIVE_BUSINESS_CONTINUITY_PASS',controller_ids=[2,3],index=0,initial_snapshots=[],usb=[],leases=[1,1],hcc_observations=[],management_before=[],management_after=[],links_before=[],links_after=[],cleanup=[],channel_grant=g)
+def fixture(case='release'):
+    original,outer=grant_fixture(case);g={k:copy.deepcopy(original[k])for k in ['index','owners','workers','business']}
+    row=dict(version=gate.CONTRACT_VERSION,case=case,status='SIBLING_NATIVE_BUSINESS_CONTINUITY_PASS',controller_ids=[2,3],index=0,initial_snapshots=[],usb=[],leases=[1,1],hcc_observations=[],management_before=[],management_after=[],links_before=[],links_after=[],cleanup=[],channel_grant=g)
     g.update(controller_ids=[2,3],tx_constraint_required=True,business=[])
     for n,index in enumerate((2,3)):
         snapshot=SleControllerSnapshot(version=1,flags=2,profile=1,valid_fields=1,dev_index=index,generation=7+n)
@@ -35,7 +35,11 @@ def fixture():
         row['links_before'].append(bytes(table).hex());row['links_after'].append(bytes(table).hex())
         free=SleManagementQuery(version=1,generation=snapshot.generation,state=0)
         row['cleanup'].append(dict(controller=index,start_wall_ns=120+10*n,end_wall_ns=125+10*n,result=bytes(free).hex()))
-    for i,(label,start)in enumerate([(x,t)for x,ts in zip(gate.LABELS,[(10,30),(92,95),(111,114)])for t in ts]):
+    times=[(10,30),*([(64,67)]if case=='dup'else[]),(92,95),(111,114)]
+    if case=='dup':
+        outer.update(first_close_wall_ns=40,first_close_quiet_end_ns=60)
+        for sample,when in zip(original['blocking_witness'],[80,90]):sample['wall_ns']=when
+    for i,(label,start)in enumerate([(x,t)for x,ts in zip(gate.stage_labels(case),times)for t in ts]):
         initiator=i%2;payload=message();reply=bytearray(payload);reply[28]=1
         rowdata=dict(label=label,initiator=initiator,payload=payload.hex(),start_wall_ns=start,end_wall_ns=start+2,applications=[])
         for n,owner in enumerate(g['owners']):
@@ -47,17 +51,22 @@ def fixture():
     return outer
 
 
+def summary(case='release'):
+    outer=fixture(case);r=outer['sibling_business'];g=r['channel_grant'];legs=[]
+    owners=[dict(r['usb'][n],controller=o['index'],generation=o['generation'],lifetime=o['lifetime'],handle=o['handle'])for n,o in enumerate(g['owners'])]
+    business=[{k:x[k]for k in ['label','initiator','payload','start_wall_ns','end_wall_ns']}for x in g['business']]
+    for b in business:
+        for n,owner in enumerate(owners):
+            for out in(True,False):
+                reply=(n!=b['initiator'])if out else(n==b['initiator']);payload=bytearray.fromhex(b['payload']);payload[28]=int(reply)
+                legs.append(dict(bus=owner['bus'],device=owner['device'],handle=owner['handle'],direction='out'if out else'in',data=(b'\x1f\0\x3e\0\xf1'+payload).hex(),wall_ns=b['start_wall_ns']+1))
+    proof=dict(version=gate.CONTRACT_VERSION,case=case,after_first_close_round_trips=2 if case=='dup'else 0,status=gate.STATUS,controllers=[2,3],owners=owners,business=business,round_trips=len(business),while_held_round_trips=2,after_withdrawal_round_trips=2,application_UID=1000,daemon_policy_qualified=False,credit_truth=False,full_drain=False,natural_recovery=False,management_unchanged=True,links_unchanged=True,legs=legs,heard=[{}],links=[{},{}],discovery=[{}])
+    return proof
+
+
 class SiblingGate(unittest.TestCase):
     def test_closed_summary_requires_each_real_wire_leg_and_original_role(self):
-        outer=fixture();r=outer['sibling_business'];g=r['channel_grant'];legs=[]
-        owners=[dict(r['usb'][n],controller=o['index'],generation=o['generation'],lifetime=o['lifetime'],handle=o['handle'])for n,o in enumerate(g['owners'])]
-        business=[{k:x[k]for k in ['label','initiator','payload','start_wall_ns','end_wall_ns']}for x in g['business']]
-        for b in business:
-            for n,owner in enumerate(owners):
-                for out in(True,False):
-                    reply=(n!=b['initiator'])if out else(n==b['initiator']);payload=bytearray.fromhex(b['payload']);payload[28]=int(reply)
-                    legs.append(dict(bus=owner['bus'],device=owner['device'],handle=owner['handle'],direction='out'if out else'in',data=(b'\x1f\0\x3e\0\xf1'+payload).hex(),wall_ns=b['start_wall_ns']+1))
-        proof=dict(status=gate.STATUS,controllers=[2,3],owners=owners,business=business,round_trips=6,while_held_round_trips=2,after_withdrawal_round_trips=2,application_UID=1000,daemon_policy_qualified=False,credit_truth=False,full_drain=False,natural_recovery=False,management_unchanged=True,links_unchanged=True,legs=legs,heard=[{}],links=[{},{}],discovery=[{}])
+        proof=summary()
         self.assertTrue(gate.valid_summary(proof))
         for kind in ['missing-leg','payload','device','direction','window','role','phase','credit','daemon','count','missing-radio']:
             bad=copy.deepcopy(proof)
@@ -76,8 +85,11 @@ class SiblingGate(unittest.TestCase):
 
     def test_explicit_host_guest_and_fresh_preparation_contract(self):
         args=SimpleNamespace(command='run',managed_channel_sibling_business=True,managed_connected_case='release',managed_connected_index=0,managed_channel_grant=True,managed_channel_revoke_prefix=True,setup_release_verify=True)
-        self.assertTrue(gate.requested(args))
-        for k,v in [('managed_connected_case','dup'),('managed_connected_index',True),('managed_channel_grant',False),('managed_channel_revoke_prefix',False),('setup_release_verify',False),('qmp_hotplug',True),('managed_channel_queued_discard',True),('session_service_observe',True),('managed_channel_security',1),('four_device_dynamic_benchmark',True)]:
+        for case in ('release','close','dup'):
+            selected=copy.copy(args);selected.managed_connected_case=case
+            self.assertTrue(gate.requested(selected))
+            self.assertTrue(gate.boot_enabled([gate.TOKEN,'ws73.channel_grant=1','ws73.channel_revoke_prefix=1','ws73.connected_case='+case,'ws73.connected_index=0']))
+        for k,v in [('managed_connected_case','down'),('managed_connected_index',True),('managed_channel_grant',False),('managed_channel_revoke_prefix',False),('setup_release_verify',False),('qmp_hotplug',True),('managed_channel_queued_discard',True),('session_service_observe',True),('managed_channel_security',1),('four_device_dynamic_benchmark',True)]:
             bad=copy.copy(args);setattr(bad,k,v)
             with self.subTest(k=k),self.assertRaises(ValueError):gate.requested(bad)
         words=[gate.TOKEN,'ws73.channel_grant=1','ws73.channel_revoke_prefix=1','ws73.connected_case=release','ws73.connected_index=0']
@@ -90,11 +102,11 @@ class SiblingGate(unittest.TestCase):
             names=['ws73_channel_sibling.py','ws73_native_pair.py','ws73_channel_grant.py','ws73_connected_file_gate.py','ws73_channel_prefix_hold.py']
             for n in names:(tools/n).write_bytes((here/n).read_bytes())
             init=root/'root/init';init.write_bytes((here/'ws73_target_init.sh').read_bytes());init.chmod(0o755)
-            package=dict(channel_sibling_business_contract_version=1,inputs=[gate.file_record(here/'ws73_target.py')])
+            package=dict(channel_sibling_business_contract_version=gate.CONTRACT_VERSION,inputs=[gate.file_record(here/'ws73_target.py')])
             gate.require_preparation(package,root)
             with self.assertRaisesRegex(ValueError,'host runner'):
                 gate.require_preparation(dict(package,inputs=[]),root)
-            for value in(None,True,2):
+            for value in(None,True,1,3):
                 with self.assertRaises(ValueError):gate.require_preparation(dict(channel_sibling_business_contract_version=value),root)
             init.chmod(0o644)
             with self.assertRaisesRegex(ValueError,'executable'):gate.require_preparation(package,root)
@@ -120,6 +132,57 @@ class SiblingGate(unittest.TestCase):
             elif kind=='nonce':g['business'][2]=copy.deepcopy(g['business'][0]);g['business'][2].update(label='while_held',start_wall_ns=92,end_wall_ns=94)
             else:g['workers'].pop()
             with self.subTest(kind=kind),self.assertRaises((CaptureError,ValueError,KeyError,IndexError)):gate.verify(bad)
+
+    def test_File_cases_require_exact_stages_and_dup_first_close_business(self):
+        for case in ('release','close','dup'):
+            outer=fixture(case)
+            self.assertIs(gate.verify(outer),outer['sibling_business'])
+            proof=summary(case);self.assertTrue(gate.valid_summary(proof))
+            self.assertEqual(proof['round_trips'],8 if case=='dup'else 6)
+            self.assertEqual(len(proof['legs']),32 if case=='dup'else 24)
+            for kind in ('case','legacy-version','missing-phase','missing-leg'):
+                bad=copy.deepcopy(outer);changed=copy.deepcopy(proof)
+                if kind=='case':
+                    bad['sibling_business']['case']='other';changed['case']='other'
+                elif kind=='legacy-version':
+                    bad['sibling_business']['version']=1;changed['version']=1
+                elif kind=='missing-phase':
+                    del bad['sibling_business']['channel_grant']['business'][2:4];del changed['business'][2:4]
+                else:
+                    bad['sibling_business']['channel_grant']['workers'].pop();changed['legs'].pop()
+                with self.subTest(case=case,kind=kind),self.assertRaises((ValueError,KeyError)):gate.verify(bad)
+                self.assertFalse(gate.valid_summary(changed))
+        for field,value in [('first_close_wall_ns',31),('first_close_quiet_end_ns',65)]:
+            bad=fixture('dup');bad[field]=value
+            with self.subTest(field=field),self.assertRaisesRegex(CaptureError,'first dup close'):gate.verify(bad)
+        bad=fixture('dup');bad['sibling_business']['channel_grant']['business'][2]['end_wall_ns']=81
+        with self.assertRaisesRegex(CaptureError,'ordered finite'):gate.verify(bad)
+
+    def test_supervisor_binds_case_version_and_complete_dup_summary(self):
+        from ws73_target import run_exit_code
+        from test_ws73_prefix_geometry import reported_fixture
+        from ws73_channel_prefix_hold import corroborate_geometry
+        raw,capture,_,_,_=reported_fixture();geometry=corroborate_geometry(raw,capture)
+        for case in ('release','close','dup'):
+            proof=summary(case)
+            base=dict(supervisor_exit=0,qemu_exit=0,status='REAL_CHANNEL_GRANT_PASS',
+                qemu_args=[gate.TOKEN+' ws73.prefix_geometry=1'],
+                channel_sibling_business_requested=True,channel_sibling_business_contract_version=2,
+                live_connected_file_case=case,live_connected_file_index=0,live_channel_grant_gate=True,
+                live_channel_revoke_prefix_gate=True,managed_prefix_geometry_contract_version=1,
+                channel_sibling_business_acceptance=True,
+                connected_file_corroboration=dict(sibling_business=proof,prefix_geometry=geometry,
+                    channel_grant=dict(status='REAL_BLOCKED_RX_GRANT_USB_CORROBORATED',
+                        begun_revoke=dict(status='ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS',no_new_submit_after_withdrawal=True,submitted_bytes=1024)),
+                    held_reply=dict(status='REAL_INCOMPLETE_PDU_BARRIER_CORROBORATED')))
+            self.assertEqual(run_exit_code(base),0)
+            for kind in ('case','version','phase','acceptance'):
+                bad=copy.deepcopy(base)
+                if kind=='case':bad['live_connected_file_case']='close'if case!='close'else'release'
+                elif kind=='version':bad['channel_sibling_business_contract_version']=1
+                elif kind=='phase':bad['connected_file_corroboration']['sibling_business']['business'].pop()
+                else:bad['channel_sibling_business_acceptance']=False
+                with self.subTest(case=case,kind=kind):self.assertNotEqual(run_exit_code(bad),0)
 
     def test_dependencies_reuse_one_pair_oracle_without_circular_fixture_import(self):
         import ws73_connected_file_gate as primary

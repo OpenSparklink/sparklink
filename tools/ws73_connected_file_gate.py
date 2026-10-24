@@ -349,10 +349,10 @@ def run(args):
     snapshot_gate=getattr(args,'link_snapshot',False)
     binding_gate=getattr(args,'peer_binding',False)
     channel_gate=getattr(args,'channel_grant',False)
-    if sibling_requested and (args.case!='release'or args.index!=0 or not channel_gate or reply_hold
+    if sibling_requested and (args.case not in ('release','close','dup')or args.index!=0 or not channel_gate or reply_hold
             or any(getattr(args,k,False)for k in ['link_snapshot','peer_binding','channel_scm_rights','channel_directions'])
             or any(v.startswith(('ws73.channel_link_down=','ws73.channel_deadline=','ws73.channel_security=','ws73.channel_queued_discard=','ws73.session_service='))for v in Path('/proc/cmdline').read_text().split())):
-        raise ValueError('sibling business initially supports standalone basic release0 prefix only')
+        raise ValueError('sibling business supports standalone basic File index0 prefix only')
     protected=int(next((v.split('=',1)[1] for v in Path('/proc/cmdline').read_text().split() if v.startswith('ws73.channel_security=')), '0'))
     if protected not in (0,1,2):raise ValueError('unknown protected lifecycle requirement')
     original_deadline='ws73.security_original_deadline=1' in Path('/proc/cmdline').read_text().split()
@@ -531,6 +531,7 @@ def run(args):
             r['after_first_management']=bytes(observers[i].management_status()).hex()
             if any(e['event'] in [5,0x1405] for events in r['events'] for e in events):raise ValueError('first dup close disconnected actual link')
         if grant and args.case=='dup':grant.exchange('after_first_control_close')
+        if sibling and args.case=='dup':sibling.exchange('after_first_control_close')
         prefix_barrier=None
         if grant and not directional:
             if 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split():

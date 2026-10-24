@@ -209,7 +209,7 @@ ROM 输入、明确的 `compiled_userspace_identity`、原 manifest、磁盘和�
 无法满足此分配下同型号/SDK110约束，须等待明确适配；原代码及证据保留。
 
 同一运行期地址步骤也可用于已有的独立 Managed Grant 回归：显式选择
-`--setup-release-verify --managed-connected-case release|close|dup --managed-channel-grant`，
+`--setup-release-verify --managed-connected-case close --managed-channel-grant`，
 这条模式不与 `--qmp-hotplug`、普通 connection/socket 或 benchmark 模式混用。
 runner 内部仍逐设备经受保护的 QMP 接入；该选项区别不授予其他端口权限。
 启动顺序必须是：原有 untouched Setup／lease 检查 → 共享真实地址配置及读回 →
@@ -415,17 +415,22 @@ C输出包含32条完整十六进制收发记录，版本3的每stdout/stderr预
 ## 同内核的 Managed 撤权与同行业务
 
 开发入口 `--managed-channel-sibling-business` 只接受独立的
-`--setup-release-verify --managed-connected-case release --managed-connected-index 0
+`--setup-release-verify --managed-connected-case close --managed-connected-index 0
 --managed-channel-grant --managed-channel-revoke-prefix` 组合。要求新准备清单的
-`channel_sibling_business_contract_version=1`、当前可执行 init 及一致的 helper hash。
+`channel_sibling_business_contract_version=2`、当前可执行 init 及一致的 helper hash。
 它使用本线程四个明确叶端口；不与 QMP hotplug 测试、daemon、benchmark、安全、Down、
-期限、queued-discard 或 Session 追踪组合。其他 case／index 明确拒绝，不能由入口推导资格。
+期限、queued-discard 或 Session 追踪组合。其中 case 必须显式选择 release、close 或 dup；其他 case／index 明确拒绝，不能由入口推导资格。
 
 这是同一实验内核中、daemon 启动前的 Native 机制门禁。0／1 为原受控组，2／3 为
 独立业务组；controller ID 来自明确选择的真实快照，不能使用组内端点号或枚举顺序替代。
 两组复用原 Native 管理路径、唯一 Session、Grant／credit／Ticket 及同一套普通用户
 socket worker 和载荷校验，不新增 Host 或协议 Engine。额外组仍逐叶核对 SDK110 输入、
 HCC 型号／总线和实际地址；需要 E 临时地址时仍须保存、设置、读回及恢复。
+
+dup 还要求第一次关闭管理 fd 后、最终关闭前，原 owner 保持、原物理连接未断，独立组实际双向回复；
+最后一次关闭仍须命中原受控屏障，不能把第一次 close 当成撤权。release／close 各六次同行往返，
+dup 八次，逐条关联原 worker、载荷和双端 USB。旧 contract1 的 R143 仅保留原 release0 资格；
+新 contract2 的实现与准确产物实测分别记录，不能把改名或扩展入口当作验收。
 
 门禁要求实际持有回复期间、以及目标 Managed 撤权后，独立组分别完成双向随机载荷
 校验回复，保留原 fd／lease／generation／lifetime 和原物理连接；复用双端 USB 校验。

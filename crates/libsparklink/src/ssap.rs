@@ -245,7 +245,32 @@ impl<'a> RemoteSsap<'a> {
         minimum: u32,
         original: crate::Deadline,
     ) -> Result<Vec<u8>> {
-        self.value(handle, None, minimum, original).await
+        self.value(handle, None, minimum, original, wire::READ)
+            .await
+    }
+    /// Read the peer's public static description (SSAP data type1).
+    /// Returns the same decoded value-byte contract as read, not a local value or
+    /// authorizer/provider result. Minimum constrains the physical channel's
+    /// mechanism; it does not grant a descriptor-specific trusted identity.
+    pub async fn read_description(
+        &self,
+        handle: u16,
+        minimum: u32,
+        original: crate::Deadline,
+    ) -> Result<Vec<u8>> {
+        let value = self
+            .value(handle, None, minimum, original, wire::READ_DESCRIPTION)
+            .await?;
+        if value.is_empty()
+            || value.len() > wire::local::MAX_DESCRIPTION_BYTES
+            || value.contains(&0)
+            || std::str::from_utf8(&value).is_err()
+        {
+            return Err(ApplicationError::Io(std::io::Error::from_raw_os_error(
+                nix::libc::EPROTO,
+            )));
+        }
+        Ok(value)
     }
     /// Same five-second ceiling as the existing daemon protocol, established
     /// before identity checks or RPC queueing. No relative deadline is renewed.
@@ -255,6 +280,7 @@ impl<'a> RemoteSsap<'a> {
         value: Option<Vec<u8>>,
         minimum: u32,
         original: crate::Deadline,
+        read_method: &'static str,
     ) -> Result<Vec<u8>> {
         let original = original.capped(slk_channel::deadline::PROTOCOL_WAIT)?;
         let result = tokio::time::timeout_at(
@@ -269,7 +295,11 @@ impl<'a> RemoteSsap<'a> {
                 original.remaining()?;
                 let deadline = contract::deadline_wire(original.stamp());
                 let result: Vec<u8> = match value {
-                    None => proxy.call(wire::READ, &(handle, minimum, deadline)).await?,
+                    None => {
+                        proxy
+                            .call(read_method, &(handle, minimum, deadline))
+                            .await?
+                    }
                     Some(value) => {
                         proxy
                             .call(wire::WRITE, &(handle, value, minimum, deadline))
@@ -297,7 +327,8 @@ impl<'a> RemoteSsap<'a> {
         minimum: u32,
         original: crate::Deadline,
     ) -> Result<Vec<u8>> {
-        self.value(handle, Some(value), minimum, original).await
+        self.value(handle, Some(value), minimum, original, wire::READ)
+            .await
     }
     /// Submit one property WRITE_NO_RSP through the existing daemon actor.
     /// Success means all command fragments entered the software socket path;

@@ -308,6 +308,33 @@ Owned通知/指示源码契约见[接口参考](interfaces.md#客户端配置与
 开始有效撤回后，SDK登记进入Withdrawing：后续本地替换被拒绝，即使撤回答复不确定；
 仍可观察本地值或显式重试原对象清理。Removed后不再读取/替换，不因新caller复活。
 
+### 显式公开的只读属性说明
+
+`SetOwnedLocalDescription(handle:q, description:s, deadline:(ttttt))` 为原 Owned
+属性设置 type1 说明。仅原 unique caller 可提交；controller、登记、管理租约及原期限
+必须仍有效。说明与属性值共同占用现有 8192 字节预算，替换、删除和远端读取使用
+同一数据库锁。它不分配新 handle，不改变属性值或 CPCD。
+
+本实现接受 1..244 个 UTF-8 **字节**，禁止内嵌 NUL；244 是当前实现边界，不是标准
+最大长度，NUL 拒绝来自 D-Bus String 契约。超限/空值/非法输入 EINVAL，非拥有者
+EACCES，预算不足 ENOBUFS，过期 ETIMEDOUT。超时可能发生于提交之后，不能当作回滚。
+
+说明由拥有者**显式选择公开**，远端只读，权限独立于属性值：即使属性读取需要审批
+或没有 READ 位，已登记的公开说明仍可读。type1 不进入属性审批回调，也不接受
+type0/type2 的批准收据。受保护说明、远端修改、动态 Provider 和其他描述符未因此开放。
+已有 type2 CPCD 独立保留；发现列表可同时包含 type1 和 type2。
+
+Rust `ServiceRegistration.set_description`、C `slk_local_service_set_description`、
+Python `LocalService.set_description` 复用这一入口；成功只表示本地提交。
+远端通过 `ReadSsapDescription(handle:q, minimum:u, deadline:(ttttt))->ay`、Rust
+`RemoteSsap.read_description`、C `slk_connection_ssap_read_description` 或 Python
+`connection.ssap().read_description` 读取。返回描述值字节，客户端验证本实现的 UTF-8
+及长度契约，错误 EPROTO，不回退读取属性值。`minimum` 继续约束原通道安全要求，
+不是给说明授予可信身份。缺失说明返回协议错误13，已退休 handle 错误4；不支持的
+远端写入不修改说明、属性或 CPCD。原期限、请求归属、Grant 与唯一 Session 不变。
+
+本段描述源码契约；准确编译产物的离线及实机资格分别读取唯一能力入口。
+
 
 更新等待通过服务 owner 的撤销通知和调用者等待端关闭来唤醒，随后重新检查生产状态。
 通知本身不授予发送权限，也不表示物理清理已完成。未准入的更新只移除自身待发工作；

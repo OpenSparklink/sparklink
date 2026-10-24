@@ -515,14 +515,6 @@ impl Observer {
         minimum: u32,
         deadline: Instant,
     ) -> Result<Vec<u8>, String> {
-        if Instant::now() >= deadline {
-            return Err("SSAP value original deadline".into());
-        }
-        let queries = self.queries.clone();
-        let info = tokio::time::timeout_at(deadline, self.info())
-            .await
-            .map_err(|_| "SSAP value original deadline".to_string())??;
-        let mut bytes = vec![0; usize::from(value_budget(&info))];
         let pdu = match &value {
             Some(value) => ValuePdu::Write {
                 handle,
@@ -535,6 +527,40 @@ impl Observer {
                 data_type: 0,
             },
         };
+        self.value_request(pdu, minimum, deadline).await
+    }
+    /// Only the public read-only type1 subset is exposed here. No generic
+    /// descriptor writer, callback or second protocol transaction is created.
+    pub(crate) async fn read_description(
+        self,
+        handle: u16,
+        minimum: u32,
+        deadline: Instant,
+    ) -> Result<Vec<u8>, String> {
+        self.value_request(
+            ValuePdu::Read {
+                handle,
+                data_type: 1,
+            },
+            minimum,
+            deadline,
+        )
+        .await
+    }
+    async fn value_request(
+        self,
+        pdu: ValuePdu<'_>,
+        minimum: u32,
+        deadline: Instant,
+    ) -> Result<Vec<u8>, String> {
+        if Instant::now() >= deadline {
+            return Err("SSAP value original deadline".into());
+        }
+        let queries = self.queries.clone();
+        let info = tokio::time::timeout_at(deadline, self.info())
+            .await
+            .map_err(|_| "SSAP value original deadline".to_string())??;
+        let mut bytes = vec![0; usize::from(value_budget(&info))];
         let len = pdu
             .encode(value_budget(&info), &mut bytes)
             .map_err(|e| format!("value codec: {e:?}"))?;
@@ -2100,6 +2126,81 @@ async fn exchange_loop(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[tokio::test]
+    async fn description_uses_existing_value_queue_and_original_request_scope() {
+        // Negotiation metadata and the queue consumer are explicit fixtures.
+        // The actual observer constructs/enqueues the request; the consumer
+        // refuses admission rather than simulating a Native/peer success.
+        let info: Info = (0, 7, 13, 1, 249, 249, vec![], vec![], vec![], vec![]);
+        let (_status, state) = watch::channel(Status::Negotiated(info.clone()));
+        let (queries, mut incoming) = mpsc::channel(8);
+        let observer = Observer { state, queries };
+        let original = Instant::now() + Duration::from_secs(1);
+        let task = tokio::spawn(observer.read_description(17, 2, original));
+        let Some(Query::Info(reply)) = incoming.recv().await else {
+            panic!("same info query required before value admission");
+        };
+        reply.send(Ok(info)).unwrap();
+        let Some(Query::Value {
+            bytes,
+            deadline,
+            minimum,
+            reply,
+        }) = incoming.recv().await
+        else {
+            panic!("description must use the existing value queue");
+        };
+        assert_eq!(bytes, [8, 3, 17, 0, 1]);
+        assert_eq!(deadline, original);
+        assert_eq!(minimum, 2);
+        reply
+            .send(Err("fixture rejects Native dependency".into()))
+            .unwrap();
+        assert_eq!(
+            task.await.unwrap().unwrap_err(),
+            "fixture rejects Native dependency"
+        );
+        assert!(incoming.recv().await.is_none());
+
+        // Actual production decoder returns value bytes, not the whole PDU.
+        assert_eq!(
+            client_value_response(249, &[8, 3, 17, 0, 1], &[9, 3, b'x'])
+                .unwrap()
+                .unwrap(),
+            b"x"
+        );
+        assert!(
+            client_value_response(249, &[8, 3, 17, 0, 1], &[9, 11, 13, 0])
+                .unwrap()
+                .is_err()
+        );
+        assert!(client_value_response(249, &[8, 3, 17, 0, 1], &[14, 3]).is_err());
+    }
+
+    #[tokio::test]
+    async fn description_original_deadline_and_failed_actor_never_enqueue() {
+        for status in [
+            Status::Starting,
+            Status::Failed("original lifetime failed".into()),
+        ] {
+            let (_sender, state) = watch::channel(status);
+            let (queries, mut incoming) = mpsc::channel(8);
+            let observer = Observer { state, queries };
+            let original = Instant::now() + Duration::from_millis(20);
+            let result = tokio::time::timeout(
+                Duration::from_millis(250),
+                observer.read_description(17, 0, original),
+            )
+            .await
+            .unwrap();
+            assert!(result.is_err());
+            assert!(matches!(
+                incoming.try_recv(),
+                Err(mpsc::error::TryRecvError::Disconnected)
+            ));
+        }
+    }
 
     struct CommandAuthorizationBarrier {
         seen: mpsc::Sender<(

@@ -93,6 +93,9 @@ pub mod ssap {
         pub const UNREGISTER_OWNED: &str = "UnregisterOwnedLocalService";
         pub const READ_OWNED: &str = "ReadOwnedLocalValue";
         pub const REPLACE_OWNED: &str = "ReplaceOwnedLocalValue";
+        pub const SET_DESCRIPTION_OWNED: &str = "SetOwnedLocalDescription";
+        /// Implementation bound in UTF-8 bytes, not a standard maximum.
+        pub const MAX_DESCRIPTION_BYTES: usize = 244;
         pub type PropertyDefinition = (Vec<u8>, u32, u32, Vec<u8>);
         pub type PropertyRecord = (u16, Vec<u8>, u32, u32);
         pub type ServiceRecord = (u16, u16, Vec<u8>, Vec<PropertyRecord>);
@@ -105,6 +108,7 @@ pub mod ssap {
         );
         pub type OwnedHandleRequest = (u16, crate::Deadline);
         pub type OwnedValueRequest = (u16, Vec<u8>, crate::Deadline);
+        pub type OwnedDescriptionRequest = (u16, String, crate::Deadline);
     }
     pub const DISCOVER: &str = "DiscoverSsap";
     pub const CACHED: &str = "GetCachedSsap";
@@ -121,6 +125,8 @@ pub mod ssap {
     }
     pub const READ_UUID: &str = "ReadSsapByUuid";
     pub const READ: &str = "ReadSsapValue";
+    /// Public read-only type1 description, independent of property permissions.
+    pub const READ_DESCRIPTION: &str = "ReadSsapDescription";
     pub const WRITE: &str = "WriteSsapValue";
     /// Empty return means all command fragments were admitted to the software
     /// socket path, not controller completion or peer receipt/processing.
@@ -520,6 +526,10 @@ mod owned_deadline_contract {
         assert_eq!(
             super::ssap::local::OwnedValueRequest::SIGNATURE.to_string(),
             "(qay(ttttt))"
+        );
+        assert_eq!(
+            super::ssap::local::OwnedDescriptionRequest::SIGNATURE.to_string(),
+            "(qs(ttttt))"
         );
     }
 }

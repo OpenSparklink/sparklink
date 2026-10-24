@@ -38,6 +38,12 @@ class Boundary:
         ctypes.cast(args[5], ctypes.POINTER(ctypes.c_size_t))[0] = 1
         return 0
 
+    def slk_connection_ssap_read_description(self, *args):
+        self.calls.append(('description',args[1],args[2],args[6]))
+        args[3][:3] = [0x64,0x65,0x73]
+        ctypes.cast(args[5], ctypes.POINTER(ctypes.c_size_t))[0] = 3
+        return 0
+
     def slk_connection_ssap_write(self, *args):
         self.calls.append(bytes(args[3]))
         args[5][0] = 0x90
@@ -147,6 +153,23 @@ class PythonConnectionBoundary(unittest.TestCase):
             remote.read(17, deadline_ns=1)
         connection.close()
         self.assertEqual(bridge.closed, [123])
+
+    def test_description_keeps_separate_method_value_result_and_errors(self):
+        bridge=Boundary()
+        with caller(bridge) as client,client.connection(ControllerId(2,7),'/fixture',deadline_ns=1) as link:
+            remote=link.ssap()
+            self.assertEqual(remote.read_description(17,minimum=2,deadline_ns=42),b'des')
+            self.assertEqual(bridge.calls,[('description',17,2,42)])
+            for handle,minimum in [(0,0),(True,0),(65536,0),(17,3),(17,True)]:
+                with self.assertRaises(ValueError):remote.read_description(handle,minimum=minimum,deadline_ns=43)
+            self.assertEqual(len(bridge.calls),1)
+            for code in (errno.EACCES,errno.ETIMEDOUT,errno.ESTALE):
+                bridge.slk_connection_ssap_read_description=lambda *args:-code
+                with self.assertRaises(OSError) as e:remote.read_description(17,deadline_ns=44)
+                self.assertEqual(e.exception.errno,code)
+            old=link._pid;link._pid=-1
+            with self.assertRaises(RuntimeError):remote.read_description(17,deadline_ns=45)
+            link._pid=old
 
     def test_invalid_and_oversized_inputs_never_enter_boundary(self):
         bridge = Boundary()

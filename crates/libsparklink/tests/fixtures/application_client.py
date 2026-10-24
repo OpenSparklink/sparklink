@@ -3,7 +3,7 @@ import errno
 import os
 import threading
 import time
-from sparklink import Client, ControllerId
+from sparklink import Client, ControllerId, LocalProperty, SsapOperations, SsapAccess
 
 PATH = "/org/sparklink/slk2_g7/peer_t01_010203040506/link_000000000000000b"
 def deadline():
@@ -95,6 +95,8 @@ with Client(deadline_ns=deadline()) as client:
     error(errno.ETIMEDOUT, lambda: client.connection(ControllerId(2, 7), PATH, deadline_ns=1))
     error(errno.ESTALE, lambda: client.connection(ControllerId(2, 8), PATH, deadline_ns=deadline()))
     connection = client.connection(ControllerId(2, 7), PATH, deadline_ns=deadline())
+    description_service=client.register_local_service(ControllerId(2,7),b'\x01\0',
+        [LocalProperty(b'\x02\0',SsapOperations(5),SsapAccess(0),b'\x07\x08\x09')],deadline_ns=deadline())
 client.close()
 for kind, sequence in [('published',1),('withdrawn',2)]:
     event = observer.next(deadline_ns=deadline())
@@ -109,9 +111,24 @@ else:
     raise AssertionError("closed client revived")
 # Closing the root does not end the retained original caller. These are finite
 # private-bus fixture replies, never protocol or WS73 delivery qualification.
+with description_service:
+    for text in ['描述','é'*122]:
+        description_service.set_description(17,text,deadline_ns=deadline())
+    error(errno.EINVAL,lambda:description_service.set_description(18,'text',deadline_ns=deadline()))
+    error(errno.ETIMEDOUT,lambda:description_service.set_description(17,'text',deadline_ns=1))
+    for text in ['', 'x'*245, 'é'*123, 'a\0b']:
+        try:description_service.set_description(17,text,deadline_ns=deadline())
+        except ValueError:pass
+        else:raise AssertionError('invalid description accepted')
+    description_service.unregister(deadline_ns=deadline())
+    error(errno.EINVAL,lambda:description_service.set_description(17,'text',deadline_ns=deadline()))
+
 with connection:
     ssap = connection.ssap()
     assert ssap.read(17,minimum=2,deadline_ns=deadline()) == b"\x34\x78"
+    assert ssap.read_description(17,minimum=2,deadline_ns=deadline()) == '描述'.encode('utf8')
+    error(errno.EOPNOTSUPP,lambda:ssap.read_description(18,deadline_ns=deadline()))
+    error(errno.ETIMEDOUT,lambda:ssap.read_description(17,deadline_ns=1))
     assert ssap.write(17,b"\x56\x12",minimum=1,deadline_ns=deadline()) == b"\x90"
     assert ssap.write(17,b"",deadline_ns=deadline()) == b"\x91"
     error(errno.EINVAL, lambda: ssap.write(17,b"\x56\x12",deadline_ns=deadline()))
@@ -129,6 +146,7 @@ with connection:
     error(errno.ESTALE, lambda: ssap.read(19,deadline_ns=deadline()))
     error(errno.ESTALE, lambda: ssap.read(17,minimum=2,deadline_ns=deadline()))
     error(errno.ESTALE, lambda: ssap.write_without_response(17,b"",deadline_ns=deadline()))
+    error(errno.ESTALE,lambda:ssap.read_description(17,deadline_ns=deadline()))
 try:
     ssap.read(17,minimum=2,deadline_ns=deadline())
 except ValueError:

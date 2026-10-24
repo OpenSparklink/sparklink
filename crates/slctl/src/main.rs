@@ -147,12 +147,14 @@ Commands:
   ssap-list                            Inspect local service metadata only
   ssap-register <service-hex> <property-hex> <ops> <access> <value-hex> Configure local database only
   ssap-serve <service-hex> <property-hex> <ops> <access> <value-hex> [ask|allow|deny] Own a foreground local service; policy decision is not peer receipt
+    stdin: value, description TEXT, replace HEX, configuration/notify/indicate CONNECTION, quit
   ssap-remove <start-handle>                 Remove local service (handles not reused)
   ssap-local-read <handle>                   Inspect local database, not peer receipt
   ssap-receive <path> <handle> [notify|indicate|both] [wait-ms] Authenticated CPCD enable, one update, verified disable
   ssap-subscribe <path> <handle> [notify|indicate|both] [count] [lease-ms] Finite leased updates, explicit cleanup; no auto-renew
   ssap-read-uuid <path> <start> <end> <uuid-hex> [minimum] Read actual peer values by UUID
   ssap-read <path> <handle> [minimum]                  Read actual peer value on SMTC
+  ssap-read-description <path> <handle> [minimum]      Read public static type1 description
   ssap-write <path> <handle> <value-hex> [minimum]      Write with peer verification and reply
   ssap-write-command <path> <handle> <value-hex> [minimum] Software admission only; no peer delivery confirmation
   transport-status <path>                    Read current Session queues/debt/state (not drain/reuse proof)

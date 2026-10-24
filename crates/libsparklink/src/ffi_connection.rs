@@ -119,6 +119,62 @@ pub unsafe extern "C" fn slk_connection_ssap_read(
     length: *mut usize,
     deadline_ns: u64,
 ) -> c_int {
+    unsafe {
+        read_result(
+            connection,
+            handle,
+            minimum,
+            (buffer, capacity, length),
+            deadline_ns,
+            ReadTarget::Value,
+        )
+    }
+}
+
+/// Read a public static type1 description on the original physical lifetime.
+/// Returns the same decoded value bytes, errors and output contract as ssap_read;
+/// minimum constrains the channel mechanism, not a descriptor authorization.
+/// No property-value fallback, provider callback, retry or implicit truncation.
+/// # Safety
+/// Identical live connection, fork, exclusive buffer and length requirements as
+/// slk_connection_ssap_read. All regions remain live throughout the call.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_ssap_read_description(
+    connection: *const SlkConnection,
+    handle: u16,
+    minimum: u32,
+    buffer: *mut u8,
+    capacity: usize,
+    length: *mut usize,
+    deadline_ns: u64,
+) -> c_int {
+    unsafe {
+        read_result(
+            connection,
+            handle,
+            minimum,
+            (buffer, capacity, length),
+            deadline_ns,
+            ReadTarget::Description,
+        )
+    }
+}
+
+enum ReadTarget {
+    Value,
+    Description,
+}
+
+// Both read targets share one deadline, executor and output-delivery path.
+unsafe fn read_result(
+    connection: *const SlkConnection,
+    handle: u16,
+    minimum: u32,
+    output: (*mut u8, usize, *mut usize),
+    deadline_ns: u64,
+    target: ReadTarget,
+) -> c_int {
+    let (buffer, capacity, length) = output;
     if connection.is_null() || handle == 0 || minimum > 2 || !output_valid(buffer, capacity, length)
     {
         return -nix::libc::EINVAL;
@@ -128,7 +184,14 @@ pub unsafe extern "C" fn slk_connection_ssap_read(
     let result = Deadline::from_monotonic_ns(deadline_ns).and_then(|deadline| {
         let (deadline, original) = deadline.protocol()?;
         view.inner.call(deadline, move |_| async move {
-            link.ssap().read(handle, minimum, original).await
+            match target {
+                ReadTarget::Description => {
+                    link.ssap()
+                        .read_description(handle, minimum, original)
+                        .await
+                }
+                ReadTarget::Value => link.ssap().read(handle, minimum, original).await,
+            }
         })
     });
     unsafe { copy_result(result, buffer, capacity, length) }

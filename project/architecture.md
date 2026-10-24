@@ -1212,6 +1212,13 @@ by later revocation. Exact source-bound Owned and service-only deployment slices
 capability registry;pending-callback revocation/Down/deadline interleavings, CPCD,
 full clean deployment and Bond remain separately gated.
 
+Owned type1 说明以原属性 handle 定位，由原 caller 显式设置为公开只读元数据；
+属性访问位与 CPCD 权限不自动套用，type0/type2 的审批不能跨类型授予它资格。
+它与属性值共用唯一 DB 的容量、锁和退休路径，读取复用原 Query/Session/Grant；
+不增加状态来源或动态 Provider。接口及限制见
+[说明契约](../docs/reference/ssap-permissions.md#显式公开的只读属性说明)。
+源码实现、离线结果和实际对端校验按各自准确产物登记；公开只读不代表可信身份。
+
 
 ## 历史实现退休约束
 

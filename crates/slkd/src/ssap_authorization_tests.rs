@@ -758,6 +758,333 @@ fn owned_deadline() -> slk_contract::Deadline {
 }
 
 #[tokio::test]
+async fn owned_description_is_public_read_only_and_preserves_property_and_cpcd() {
+    // The bus, owner watches, database and server render are production code;
+    // Native lease/Ready/RX identity remain the explicit setup/packet fixtures.
+    let (_bus, state, _server, caller, mut prompts) = setup(true, Duration::ZERO).await;
+    let (start, handle) = register_operations(&caller, 36, 8 | 512).await;
+    let proxy = zbus::Proxy::new(
+        &caller,
+        "org.sparklink.AuthTest",
+        "/services",
+        "org.sparklink.ServiceManager",
+    )
+    .await
+    .unwrap();
+    let database = store(&state).await;
+    let read = || ValuePdu::Read {
+        handle,
+        data_type: 1,
+    };
+    let missing = render(packet(read(), 1, 0, Duration::from_secs(1)), &database).await;
+    assert_eq!(
+        ValuePdu::decode(249, &missing).unwrap(),
+        ValuePdu::ReadError(13)
+    );
+    let before = database.lock().unwrap().list();
+    let description = "é".repeat(122);
+    assert_eq!(description.len(), 244);
+    proxy
+        .call::<_, _, ()>(
+            "SetOwnedLocalDescription",
+            &(handle, description.clone(), owned_deadline()),
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        database.lock().unwrap().list(),
+        before,
+        "no new handle or permission bits"
+    );
+    for level in 0..=2 {
+        let response = render(packet(read(), 2, level, Duration::from_secs(1)), &database).await;
+        assert_eq!(
+            ValuePdu::decode(249, &response).unwrap(),
+            ValuePdu::ReadValue(description.as_bytes())
+        );
+    }
+    assert!(
+        prompts.try_recv().is_err(),
+        "public description cannot invoke the property authorizer"
+    );
+    {
+        use slk_protocol::ssap::discovery::{EntryClass, FindKind, FindRequest, decode_page};
+        let mut db = database.lock().unwrap();
+        let request = FindRequest {
+            kind: FindKind::Properties,
+            class: EntryClass::Mixed,
+            start,
+            end: handle,
+            uuid: None,
+        };
+        let raw = db.find(request, 249).unwrap();
+        let entries = decode_page(request, 249, &raw).unwrap();
+        assert_eq!(entries.len(), 1);
+        assert_eq!(entries[0].handle, handle);
+        assert_eq!(entries[0].descriptors, [1, 2]);
+        assert_eq!(
+            entries[0].operations,
+            8 | 512,
+            "description does not imply property READ"
+        );
+        assert!(db.value_targets(read(), 0).is_empty());
+        let small = db.answer(read(), 20, 0).unwrap();
+        assert_eq!(
+            ValuePdu::decode(20, &small).unwrap(),
+            ValuePdu::ReadError(16)
+        );
+        for data_type in [1, 3, 4, 255] {
+            let write = ValuePdu::Write {
+                handle,
+                data_type,
+                value: b"changed",
+                verify: true,
+            };
+            assert!(db.value_targets(write, 2).is_empty());
+            let response = db.answer(write, 249, 2).unwrap();
+            assert_eq!(
+                ValuePdu::decode(249, &response).unwrap(),
+                ValuePdu::WriteError { handle, error: 13 }
+            );
+        }
+        for data_type in [3, 4, 255] {
+            let response = db
+                .answer(ValuePdu::Read { handle, data_type }, 249, 0)
+                .unwrap();
+            assert_eq!(
+                ValuePdu::decode(249, &response).unwrap(),
+                ValuePdu::ReadError(13)
+            );
+        }
+        let property = db
+            .answer(
+                ValuePdu::Read {
+                    handle,
+                    data_type: 0,
+                },
+                249,
+                2,
+            )
+            .unwrap();
+        assert_eq!(
+            ValuePdu::decode(249, &property).unwrap(),
+            ValuePdu::ReadError(6)
+        );
+        assert_eq!(db.local_read(handle).unwrap(), [7]);
+    }
+    let mut configurations = crate::ssap_engine_config::ClientConfigurations::default();
+    let request = packet(
+        ValuePdu::Read {
+            handle,
+            data_type: 2,
+        },
+        3,
+        2,
+        Duration::from_secs(1),
+    );
+    let cpcd = server_response(&request, &database, &[], &mut configurations).unwrap();
+    assert_eq!(
+        ValuePdu::decode(249, &cpcd).unwrap(),
+        ValuePdu::ReadValue(&[0, 0])
+    );
+    for invalid in [String::new(), "a".repeat(245), "é".repeat(123)] {
+        let error = proxy
+            .call::<_, _, ()>(
+                "SetOwnedLocalDescription",
+                &(handle, invalid, owned_deadline()),
+            )
+            .await;
+        assert!(matches!(error, Err(zbus::Error::MethodError(name, _, _))
+            if name.as_str() == "org.freedesktop.DBus.Error.InvalidArgs"));
+    }
+    assert_eq!(
+        database.lock().unwrap().set_owned_description(
+            handle,
+            caller.unique_name().unwrap().as_str(),
+            "has\0nul".into()
+        ),
+        Err(crate::ssap_database::LocalValueError::Length)
+    );
+    let owner = database
+        .lock()
+        .unwrap()
+        .configuration_property(handle)
+        .unwrap()
+        .1;
+    owner.revoke(); // retained row before asynchronous retirement must be unreadable
+    let retired = database.lock().unwrap().answer(read(), 249, 0).unwrap();
+    assert_eq!(
+        ValuePdu::decode(249, &retired).unwrap(),
+        ValuePdu::ReadError(4)
+    );
+    assert!(
+        proxy
+            .call::<_, _, ()>(
+                "SetOwnedLocalDescription",
+                &(handle, "late", owned_deadline())
+            )
+            .await
+            .is_err()
+    );
+    database.lock().unwrap().remove(start).unwrap();
+    owner.shutdown().await;
+}
+
+#[tokio::test]
+async fn owned_description_budget_owner_deadline_and_retirement_are_atomic() {
+    let (bus, state, _server, caller, _) = setup(false, Duration::ZERO).await;
+    let (start, handle) = register_operations(&caller, 0, 1).await;
+    let proxy = zbus::Proxy::new(
+        &caller,
+        "org.sparklink.AuthTest",
+        "/services",
+        "org.sparklink.ServiceManager",
+    )
+    .await
+    .unwrap();
+    let database = store(&state).await;
+    assert_eq!(database.lock().unwrap().local_read(handle).unwrap(), [7]);
+    database
+        .lock()
+        .unwrap()
+        .register(
+            vec![3, 0],
+            (0..4)
+                .map(|n| (vec![4 + n, 0], 1, 0, vec![0; 2042]))
+                .collect(),
+        )
+        .unwrap();
+    // 8168 staging + 1 owned value byte + 23 description bytes exhaust8192.
+    proxy
+        .call::<_, _, ()>(
+            "SetOwnedLocalDescription",
+            &(handle, "a".repeat(23), owned_deadline()),
+        )
+        .await
+        .unwrap();
+    let error = proxy
+        .call::<_, _, ()>(
+            "SetOwnedLocalDescription",
+            &(handle, "b".repeat(24), owned_deadline()),
+        )
+        .await;
+    assert!(matches!(error, Err(zbus::Error::MethodError(name, _, _))
+        if name.as_str() == "org.freedesktop.DBus.Error.LimitsExceeded"));
+    proxy
+        .call::<_, _, ()>(
+            "ReplaceOwnedLocalValue",
+            &(handle, Vec::<u8>::new(), owned_deadline()),
+        )
+        .await
+        .unwrap();
+    proxy
+        .call::<_, _, ()>(
+            "SetOwnedLocalDescription",
+            &(handle, "c".repeat(24), owned_deadline()),
+        )
+        .await
+        .unwrap();
+    let foreign = client(&bus).await;
+    let other = zbus::Proxy::new(
+        &foreign,
+        "org.sparklink.AuthTest",
+        "/services",
+        "org.sparklink.ServiceManager",
+    )
+    .await
+    .unwrap();
+    let error = other
+        .call::<_, _, ()>(
+            "SetOwnedLocalDescription",
+            &(handle, "foreign", owned_deadline()),
+        )
+        .await;
+    assert!(matches!(error, Err(zbus::Error::MethodError(name, _, _))
+        if name.as_str() == "org.freedesktop.DBus.Error.AccessDenied"));
+    let original = slk_channel::deadline::Deadline::after(Duration::from_millis(20)).unwrap();
+    let held = state.lock().await;
+    let error = proxy
+        .call::<_, _, ()>(
+            "SetOwnedLocalDescription",
+            &(
+                handle,
+                "late",
+                slk_contract::deadline_wire(original.stamp()),
+            ),
+        )
+        .await;
+    assert!(matches!(error, Err(zbus::Error::MethodError(name, _, _))
+        if name.as_str() == "org.freedesktop.DBus.Error.Timeout"));
+    drop(held);
+    let lease = state.lock().await.native_lease.clone().unwrap();
+    lease.lock().await.accepting = false;
+    assert!(
+        proxy
+            .call::<_, _, ()>(
+                "SetOwnedLocalDescription",
+                &(handle, "revoked", owned_deadline())
+            )
+            .await
+            .is_err()
+    );
+    lease.lock().await.accepting = true;
+    state.lock().await.present = false;
+    assert!(
+        proxy
+            .call::<_, _, ()>(
+                "SetOwnedLocalDescription",
+                &(handle, "retired", owned_deadline())
+            )
+            .await
+            .is_err()
+    );
+    state.lock().await.present = true; // fixture only; production generations never revive this way
+    let response = database
+        .lock()
+        .unwrap()
+        .answer(
+            ValuePdu::Read {
+                handle,
+                data_type: 1,
+            },
+            249,
+            0,
+        )
+        .unwrap();
+    assert_eq!(
+        ValuePdu::decode(249, &response).unwrap(),
+        ValuePdu::ReadValue(&[b'c'; 24])
+    );
+    proxy
+        .call::<_, _, ()>("UnregisterOwnedLocalService", &(start, owned_deadline()))
+        .await
+        .unwrap();
+    // The description's budget is returned with the service; staging never
+    // acquires an Owned setter just because it also has a property handle.
+    {
+        let mut db = database.lock().unwrap();
+        let (_, _, handles) = db
+            .register(vec![9, 0], vec![(vec![10, 0], 1, 0, vec![0; 24])])
+            .unwrap();
+        assert_eq!(
+            db.set_owned_description(
+                handles[0],
+                caller.unique_name().unwrap().as_str(),
+                "x".into()
+            ),
+            Err(crate::ssap_database::LocalValueError::Owner)
+        );
+        assert!(
+            db.register(vec![11, 0], vec![(vec![12, 0], 1, 0, vec![0])])
+                .is_err()
+        );
+        db.retire();
+        db.register(vec![13, 0], vec![(vec![14, 0], 1, 0, vec![0; 2042]); 4])
+            .unwrap();
+    }
+}
+
+#[tokio::test]
 async fn cancelled_owner_initialization_keeps_capacity_until_task_drains() {
     use crate::ssap_authorization::Owner;
     use std::sync::{Arc, Mutex};

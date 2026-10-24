@@ -14,6 +14,7 @@ struct Script {
     registrations: AtomicU64,
     reads: AtomicU64,
     replacements: Mutex<Vec<(u16, Vec<u8>)>>,
+    descriptions: Mutex<Vec<(u16, String)>>,
     removals: AtomicU64,
     owner: Mutex<String>,
     authorizer: Mutex<String>,
@@ -146,6 +147,31 @@ impl Services {
         match self.0.mode.load(Ordering::SeqCst) {
             10 => Err(zbus::fdo::Error::LimitsExceeded(
                 "explicit fixture budget rejection".into(),
+            )),
+            11 => {
+                tokio::time::sleep(Duration::from_millis(100)).await;
+                Ok(())
+            }
+            _ => Ok(()),
+        }
+    }
+    async fn set_owned_local_description(
+        &self,
+        handle: u16,
+        description: String,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<()> {
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        self.0.stamps.lock().unwrap().push(deadline);
+        self.0
+            .descriptions
+            .lock()
+            .unwrap()
+            .push((handle, description));
+        match self.0.mode.load(Ordering::SeqCst) {
+            10 => Err(zbus::fdo::Error::LimitsExceeded(
+                "fixture-only budget refusal".into(),
             )),
             11 => {
                 tokio::time::sleep(Duration::from_millis(100)).await;
@@ -512,4 +538,87 @@ async fn actual_owned_replacement_ffi_has_bounds_original_deadline_and_no_fallba
     );
     assert_eq!(s.replacements.lock().unwrap().len(), 5);
     unsafe { slk_local_service_free(v) };
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn actual_owned_description_ffi_preserves_utf8_bounds_owner_and_original_deadline() {
+    let (_bus, _server, script, client) = fixture().await;
+    let (error, view) = unsafe { acquire(client, ns()) };
+    assert_eq!(error, 0);
+    unsafe { slk_client_close(client) };
+    for text in ["d".to_owned(), "é".repeat(122)] {
+        let original = ns();
+        assert_eq!(
+            unsafe {
+                slk_local_service_set_description(view, 17, text.as_ptr(), text.len(), original)
+            },
+            0
+        );
+        assert_eq!(
+            script.descriptions.lock().unwrap().last(),
+            Some(&(17, text))
+        );
+        assert_eq!(script.stamps.lock().unwrap().last().unwrap().0, original);
+    }
+    let large = [b'a'; 245];
+    let invalid = [0xffu8];
+    let nul = [b'a', 0];
+    for (handle, bytes) in [
+        (0, &large[..1]),
+        (18, &large[..1]),
+        (17, &large[..0]),
+        (17, &large[..]),
+        (17, &invalid[..]),
+        (17, &nul[..]),
+    ] {
+        assert_eq!(
+            unsafe {
+                slk_local_service_set_description(view, handle, bytes.as_ptr(), bytes.len(), ns())
+            },
+            -nix::libc::EINVAL
+        );
+    }
+    assert_eq!(
+        unsafe { slk_local_service_set_description(view, 17, std::ptr::null(), 1, ns()) },
+        -nix::libc::EINVAL
+    );
+    assert_eq!(
+        unsafe { slk_local_service_set_description(view, 17, large.as_ptr(), 1, 0) },
+        -nix::libc::ETIMEDOUT
+    );
+    assert_eq!(script.descriptions.lock().unwrap().len(), 2);
+    script.mode.store(10, Ordering::SeqCst);
+    assert_eq!(
+        unsafe { slk_local_service_set_description(view, 17, large.as_ptr(), 1, ns()) },
+        -nix::libc::ENOBUFS
+    );
+    script.mode.store(11, Ordering::SeqCst);
+    let original = slk_channel::deadline::Deadline::after(Duration::from_millis(20))
+        .unwrap()
+        .stamp()
+        .monotonic_ns;
+    assert_eq!(
+        unsafe { slk_local_service_set_description(view, 17, large.as_ptr(), 1, original) },
+        -nix::libc::ETIMEDOUT
+    );
+    tokio::time::sleep(Duration::from_millis(120)).await;
+    assert_eq!(script.stamps.lock().unwrap().last().unwrap().0, original);
+    script.mode.store(5, Ordering::SeqCst);
+    assert_eq!(
+        unsafe { slk_local_service_unregister(view, ns()) },
+        -nix::libc::ETIMEDOUT
+    );
+    assert_eq!(
+        unsafe { slk_local_service_set_description(view, 17, large.as_ptr(), 1, ns()) },
+        -nix::libc::EINVAL
+    );
+    script.mode.store(0, Ordering::SeqCst);
+    assert_eq!(unsafe { slk_local_service_unregister(view, ns()) }, 0);
+    assert_eq!(
+        unsafe { slk_local_service_set_description(view, 17, large.as_ptr(), 1, ns()) },
+        -nix::libc::EINVAL
+    );
+    assert_eq!(script.descriptions.lock().unwrap().len(), 4);
+    assert!(script.replacements.lock().unwrap().is_empty());
+    unsafe { slk_local_service_free(view) };
 }

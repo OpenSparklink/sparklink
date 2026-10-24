@@ -188,6 +188,41 @@ impl ServiceRegistration {
         original.remaining()?;
         Ok(())
     }
+    /// Set a public, read-only UTF-8 property description (1..244 bytes,no NUL).
+    /// This is an original-owner local commit, not remote publication or delivery.
+    /// It changes neither property permissions nor the property's value. A lost
+    /// reply or timeout can follow commit; never retry an uncertain result.
+    pub async fn set_description(
+        &self,
+        handle: u16,
+        description: String,
+        original: Deadline,
+    ) -> Result<()> {
+        if self.state != RegistrationState::Active
+            || !self.receipt.2.contains(&handle)
+            || description.is_empty()
+            || description.contains('\0')
+            || description.len() > wire::MAX_DESCRIPTION_BYTES
+        {
+            return Err(ApplicationError::Invalid(
+                "inactive/foreign property or invalid description length",
+            ));
+        }
+        let request: wire::OwnedDescriptionRequest = (
+            handle,
+            description,
+            slk_contract::deadline_wire(original.stamp()),
+        );
+        let _: () = bounded(
+            &self.controller.client,
+            original,
+            self.controller
+                .call(wire::MANAGER, wire::SET_DESCRIPTION_OWNED, &request),
+        )
+        .await?;
+        original.remaining()?;
+        Ok(())
+    }
     /// Withdrawal is allowed after local owner-scope loss. It targets only the
     /// original unique daemon + immutable generation path + owner-bound start
     /// handle (not reused within that database). It cannot admit new work.

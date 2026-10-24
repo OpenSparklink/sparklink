@@ -23,6 +23,9 @@ struct Property {
     operations: SsapOperations,
     access: SsapAccess,
     value: Vec<u8>,
+    // Type1 is explicitly public and read-only; property access/operations do
+    // not authorize or restrict it. No separate handle or callback is created.
+    description: Option<Vec<u8>>,
 }
 struct Service {
     end: u16,
@@ -139,6 +142,7 @@ impl Database {
                         operations: SsapOperations::from_bits(ops).expect("validated"),
                         access: SsapAccess::from_bits(access).expect("validated"),
                         value,
+                        description: None,
                     },
                 )
             })
@@ -183,7 +187,11 @@ impl Database {
             .services
             .remove(&start)
             .ok_or("unknown local service")?;
-        self.bytes -= s.properties.values().map(|p| p.value.len()).sum::<usize>();
+        self.bytes -= s
+            .properties
+            .values()
+            .map(|p| p.value.len() + p.description.as_ref().map_or(0, Vec::len))
+            .sum::<usize>();
         if let Some(owner) = s.owner {
             owner.revoke();
         }
@@ -246,6 +254,41 @@ impl Database {
         let next = budget::replacement_bytes(self.bytes, property.value.len(), value.len())
             .ok_or(LocalValueError::Budget)?;
         property.value = value;
+        self.bytes = next;
+        Ok(())
+    }
+    /// Local metadata admission shares the database budget and retirement lock.
+    /// This never writes the property value or the per-client CPCD state.
+    pub(crate) fn set_owned_description(
+        &mut self,
+        handle: u16,
+        owner: &str,
+        description: String,
+    ) -> Result<(), LocalValueError> {
+        let service = self
+            .services
+            .values_mut()
+            .find(|s| {
+                s.properties.contains_key(&handle)
+                    && s.owner
+                        .as_ref()
+                        .is_some_and(|o| o.current() && o.name == owner)
+            })
+            .ok_or(LocalValueError::Owner)?;
+        if description.is_empty()
+            || description.len() > slk_contract::ssap::local::MAX_DESCRIPTION_BYTES
+            || description.contains('\0')
+        {
+            return Err(LocalValueError::Length);
+        }
+        let property = service.properties.get_mut(&handle).expect("owned property");
+        let next = budget::replacement_bytes(
+            self.bytes,
+            property.description.as_ref().map_or(0, Vec::len),
+            description.len(),
+        )
+        .ok_or(LocalValueError::Budget)?;
+        property.description = Some(description.into_bytes());
         self.bytes = next;
         Ok(())
     }
@@ -409,13 +452,17 @@ impl Database {
                             end: *handle,
                             uuid: property.uuid.clone(),
                             operations: property.operations.bits(),
-                            descriptors: if slk_protocol::ssap::client_config::modes(
-                                property.operations,
-                            ) != 0
-                            {
-                                vec![2]
-                            } else {
-                                vec![]
+                            descriptors: {
+                                let mut types = Vec::with_capacity(2);
+                                if property.description.is_some() {
+                                    types.push(1);
+                                }
+                                if slk_protocol::ssap::client_config::modes(property.operations)
+                                    != 0
+                                {
+                                    types.push(2);
+                                }
+                                types
                             },
                             members: 0,
                         });
@@ -737,6 +784,28 @@ impl Database {
     ) -> Result<Vec<u8>, String> {
         let mut out = vec![0; usize::from(mtu)];
         let response = match request {
+            ValuePdu::Read {
+                handle,
+                data_type: 1,
+            } => {
+                match self
+                    .services
+                    .values()
+                    .find(|s| s.properties.contains_key(&handle))
+                {
+                    None => ValuePdu::ReadError(4),
+                    Some(s) if s.owner.as_ref().is_some_and(|o| !o.current()) => {
+                        ValuePdu::ReadError(4)
+                    }
+                    Some(s) => match s.properties[&handle].description.as_deref() {
+                        None => ValuePdu::ReadError(13),
+                        Some(value) if value.len() + 2 > usize::from(mtu) => {
+                            ValuePdu::ReadError(16)
+                        }
+                        Some(value) => ValuePdu::ReadValue(value),
+                    },
+                }
+            }
             ValuePdu::Read { handle, data_type } => match self.property(handle) {
                 None => ValuePdu::ReadError(4),
                 Some(_) if data_type != 0 => ValuePdu::ReadError(13),

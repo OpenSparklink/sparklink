@@ -22,6 +22,7 @@ class Boundary:
         if cap<3:n._obj.value=3;return -errno.ENOBUFS
         buf[:3]=b'abc';n._obj.value=3;return 0
     def slk_local_service_replace(self,v,h,value,n,d):self.replacement=(v.value,h,bytes(value[:n]),d);return self.error
+    def slk_local_service_set_description(self,v,h,value,n,d):self.description=(v.value,h,bytes(value[:n]),d);return self.error
     def slk_local_service_unregister(self,v,d):self.unregistered.append((v.value,d));return self.error
     def slk_local_service_free(self,v):self.freed.append(v.value)
     def slk_client_close(self,v):self.closed.append(v.value)
@@ -100,3 +101,25 @@ class LocalServicesBoundary(unittest.TestCase):
             self.assertEqual(e.exception.errno,errno.ETIMEDOUT)
             v.close()
             with self.assertRaises(RuntimeError):v.replace_local(17,b'data',deadline_ns=6)
+
+    def test_description_uses_utf8_byte_bound_original_owner_and_error(self):
+        b=Boundary()
+        with patch('sparklink.local_services._configure'),caller(b) as c:
+            v=c.register_local_service(ControllerId(2,7),b'ab',[definition()],deadline_ns=1)
+            for text in ['x','description','é'*122]:
+                v.set_description(17,text,deadline_ns=2)
+                self.assertEqual(b.description,(123,17,text.encode('utf8'),2))
+            before=b.description
+            for h,text in [(0,'a'),(True,'a'),(65536,'a'),(17,''),(17,'a'*245),(17,'é'*123),(17,'a\0b')]:
+                with self.assertRaises(ValueError):v.set_description(h,text,deadline_ns=3)
+            for text in [b'abc',42]:
+                with self.assertRaises(TypeError):v.set_description(17,text,deadline_ns=3)
+            self.assertEqual(b.description,before)
+            for code in (errno.EACCES,errno.ETIMEDOUT,errno.ENOBUFS):
+                b.error=-code
+                with self.assertRaises(OSError) as e:v.set_description(17,'text',deadline_ns=4)
+                self.assertEqual(e.exception.errno,code)
+            old=v._pid;v._pid=-1
+            with self.assertRaises(RuntimeError):v.set_description(17,'text',deadline_ns=5)
+            v._pid=old;v.close()
+            with self.assertRaises(RuntimeError):v.set_description(17,'text',deadline_ns=6)

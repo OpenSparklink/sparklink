@@ -230,10 +230,11 @@ impl Context {
                 );
                 Ok(())
             }
-            "ssap-read" | "ssap-write" | "ssap-write-command" => {
+            "ssap-read" | "ssap-read-description" | "ssap-write" | "ssap-write-command" => {
                 let original = libsparklink::Deadline::after(std::time::Duration::from_secs(5))?;
-                if (args[0] == "ssap-read" && !(3..=4).contains(&args.len()))
-                    || (args[0] != "ssap-read" && !(4..=5).contains(&args.len()))
+                let reading = matches!(args[0], "ssap-read" | "ssap-read-description");
+                if (reading && !(3..=4).contains(&args.len()))
+                    || (!reading && !(4..=5).contains(&args.len()))
                 {
                     anyhow::bail!(
                         "SSAP value requires connection path, handle and write hex value"
@@ -257,7 +258,15 @@ impl Context {
                     );
                     return Ok(());
                 }
-                let value = if args[0] == "ssap-read" {
+                let value = if args[0] == "ssap-read-description" {
+                    object
+                        .read_description(
+                            handle,
+                            args.get(3).map_or(Ok(0u32), |v| v.parse())?,
+                            original,
+                        )
+                        .await?
+                } else if args[0] == "ssap-read" {
                     object
                         .read(
                             handle,

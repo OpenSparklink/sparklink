@@ -305,6 +305,48 @@ pub unsafe extern "C" fn slk_local_service_replace(
     result.map_or_else(|e| -e, |()| 0)
 }
 
+/// Set this original owner's public read-only type1 description (1..244 UTF-8
+/// bytes). Success is local commit only, not peer discovery or delivery. Property
+/// value/permissions stay unchanged; timeout may follow commit, without retries.
+/// Invalid length, invalid UTF-8/NUL, inactive or foreign handle returns EINVAL.
+/// # Safety
+/// view remains live without concurrent free or use across fork. description
+/// is an initialized immutable length-byte region, not null, live for the call.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_local_service_set_description(
+    view: *const SlkLocalService,
+    handle: u16,
+    description: *const u8,
+    length: usize,
+    deadline_ns: u64,
+) -> c_int {
+    if view.is_null()
+        || handle == 0
+        || description.is_null()
+        || !(1..=slk_contract::ssap::local::MAX_DESCRIPTION_BYTES).contains(&length)
+    {
+        return -nix::libc::EINVAL;
+    }
+    let view = unsafe { &*view };
+    let result = (|| {
+        let deadline = Deadline::from_monotonic_ns(deadline_ns)?;
+        let original = deadline.request()?;
+        let description =
+            std::str::from_utf8(unsafe { std::slice::from_raw_parts(description, length) })
+                .map_err(|_| nix::libc::EINVAL)?
+                .to_owned();
+        let registration = view.registration.clone();
+        view.executor.call(deadline, move |_| async move {
+            registration
+                .lock()
+                .await
+                .set_description(handle, description, original)
+                .await
+        })
+    })();
+    result.map_or_else(|e| -e, |()| 0)
+}
+
 /// Explicitly unregister this original owner's registration. No controller stop,
 /// peer disconnect, new-owner fallback or blanket removal. Timely success is the
 /// original broker's local removal acknowledgement,not remote peer completion.

@@ -79,6 +79,8 @@ def _library():
         "slk_connection_ssap_read": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
                                       ctypes.c_void_p, ctypes.c_size_t,
                                       ctypes.POINTER(ctypes.c_size_t), ctypes.c_uint64],
+        "slk_connection_ssap_read_description": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
+            ctypes.c_void_p, ctypes.c_size_t, ctypes.POINTER(ctypes.c_size_t), ctypes.c_uint64],
         "slk_connection_ssap_write": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
                                        ctypes.c_void_p, ctypes.c_size_t, ctypes.c_void_p,
                                        ctypes.c_size_t, ctypes.POINTER(ctypes.c_size_t), ctypes.c_uint64],
@@ -392,7 +394,7 @@ class RemoteSsap:
             raise OSError(errno.EMSGSIZE, os.strerror(errno.EMSGSIZE))
         return bytes(value)
 
-    def _call(self, handle, minimum, deadline_ns, value):
+    def _call(self, handle, minimum, deadline_ns, value, read_method="slk_connection_ssap_read"):
         deadline_ns = self._value_scope(handle, minimum, deadline_ns)
         # Fixed memory budget, not negotiated MTU or long-write support. A
         # single operation, never count-query/retry after an executed remote read.
@@ -403,7 +405,7 @@ class RemoteSsap:
         with connection._lock:
             connection._live()
             if value is None:
-                status = connection._lib.slk_connection_ssap_read(
+                status = getattr(connection._lib, read_method)(
                     connection._handle, handle, minimum, output, len(output),
                     ctypes.byref(count), deadline_ns)
             else:
@@ -416,6 +418,15 @@ class RemoteSsap:
 
     def read(self, handle, *, deadline_ns, minimum=0):
         return self._call(handle, minimum, deadline_ns, None)
+
+    def read_description(self, handle, *, deadline_ns, minimum=0):
+        """Read public type1 description;returns its UTF-8 value bytes,as read does.
+
+        Minimum constrains channel security,not descriptor authorization.
+        No property-value fallback,callback or automatic retry.
+        """
+        return self._call(handle, minimum, deadline_ns, None,
+            "slk_connection_ssap_read_description")
 
     def write(self, handle, value, *, deadline_ns, minimum=0):
         """Existing bounded write; oversize explicitly rejected, never sliced."""

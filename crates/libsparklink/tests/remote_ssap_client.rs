@@ -19,6 +19,7 @@ struct State {
     role: AtomicU8,
     calls: AtomicUsize,
     malformed_update: AtomicU8,
+    description_stamps: std::sync::Mutex<Vec<slk_contract::Deadline>>,
     entered: Notify,
     release: Notify,
 }
@@ -70,6 +71,33 @@ impl Link {
             ));
         }
         Ok(vec![0x34, 0x78])
+    }
+    async fn read_ssap_description(
+        &self,
+        handle: u16,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        self.0.calls.fetch_add(1, Ordering::SeqCst);
+        self.0.description_stamps.lock().unwrap().push(original);
+        match handle {
+            13 => return Ok(vec![]),
+            14 => return Ok(vec![b'a'; 245]),
+            15 => return Ok(vec![0xff]),
+            16 => return Ok(vec![b'a', 0]),
+            _ => {}
+        }
+        if handle == 99 {
+            self.0.entered.notify_one();
+            self.0.release.notified().await;
+        } else if (handle, minimum) != (17, 2) {
+            return Err(zbus::fdo::Error::NotSupported(
+                "unmatched description fixture".into(),
+            ));
+        }
+        Ok("独立描述".as_bytes().to_vec())
     }
     fn write_ssap_value(
         &self,
@@ -345,6 +373,7 @@ async fn actual_owned_update_rpc_has_literal_signatures_and_distinct_stages() ->
         ),
         ("GetOwnedSsapConfiguration", vec!["q", "(ttttt)"], vec!["y"]),
         ("WriteSsapCommand", vec!["q", "ay", "u", "(ttttt)"], vec![]),
+        ("ReadSsapDescription", vec!["q", "u", "(ttttt)"], vec!["ay"]),
         (
             "ReceiveSsapUpdate",
             vec!["aq", "y", "(ttttt)"],
@@ -489,5 +518,66 @@ async fn command_wait_keeps_original_deadline_without_retrying_uncertain_admissi
     assert!(matches!(result, Err(ApplicationError::Io(error))
         if error.raw_os_error() == Some(nix::libc::ETIMEDOUT)));
     assert_eq!(state.calls.load(Ordering::SeqCst), 1);
+    Ok(())
+}
+
+#[tokio::test]
+async fn description_read_uses_its_own_method_deadline_and_immutable_identity() -> anyhow::Result<()>
+{
+    let bus = support::Bus::start();
+    let (_server, caller, state) = fixture(&bus.address).await?;
+    let client = Client::from_connection(caller).await?;
+    let link = client.connection(BASE, PATH).await?;
+    let original = deadline();
+    assert_eq!(
+        link.ssap().read_description(17, 2, original).await?,
+        "独立描述".as_bytes()
+    );
+    assert_eq!(
+        state.description_stamps.lock().unwrap()[0].0,
+        original.stamp().monotonic_ns
+    );
+    assert!(
+        matches!(link.ssap().read_description(18,2,deadline()).await,
+        Err(ApplicationError::Bus(zbus::Error::MethodError(name,_,_)))
+        if name.as_str()=="org.freedesktop.DBus.Error.NotSupported")
+    );
+    let expired = libsparklink::Deadline::after(Duration::from_millis(1))?;
+    tokio::time::sleep(Duration::from_millis(5)).await;
+    assert!(
+        matches!(link.ssap().read_description(17,2,expired).await,Err(ApplicationError::Io(e))
+        if e.raw_os_error()==Some(nix::libc::ETIMEDOUT))
+    );
+    assert_eq!(state.calls.load(Ordering::SeqCst), 2);
+    let call = async { link.ssap().read_description(99, 0, deadline()).await };
+    let interleave = async {
+        state.entered.notified().await;
+        state.generation.store(8, Ordering::SeqCst);
+        state.release.notify_one();
+    };
+    let (result, ()) = tokio::time::timeout(Duration::from_secs(5), async {
+        tokio::join!(call, interleave)
+    })
+    .await?;
+    assert!(matches!(result, Err(ApplicationError::Identity(_))));
+    assert_eq!(state.calls.load(Ordering::SeqCst), 3);
+    assert_eq!(state.description_stamps.lock().unwrap().len(), 3);
+    Ok(())
+}
+
+#[tokio::test]
+async fn description_rejects_invalid_peer_text_without_property_fallback() -> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let (_server, caller, state) = fixture(&bus.address).await?;
+    let client = Client::from_connection(caller).await?;
+    let link = client.connection(BASE, PATH).await?;
+    for handle in 13..=16 {
+        assert!(
+            matches!(link.ssap().read_description(handle,0,deadline()).await,
+            Err(ApplicationError::Io(error)) if error.raw_os_error()==Some(nix::libc::EPROTO))
+        );
+    }
+    assert_eq!(state.calls.load(Ordering::SeqCst), 4);
+    assert_eq!(state.description_stamps.lock().unwrap().len(), 4);
     Ok(())
 }

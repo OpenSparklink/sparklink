@@ -28,6 +28,18 @@ local tokens are not reused within this process. value reads the same owner's
 local value and quit unregisters. Owner exit revokes the registration.
 Explicit allow/deny is local service policy, not security Agent approval,
 authentication, encryption or Bond. Existing channel and Engine limits apply.
+.PP
+The foreground command description TEXT explicitly sets public, remotely
+read-only type1 metadata on that owner's property. It accepts 1..244 UTF-8 bytes
+without NUL and shares the existing database byte budget. Property authorization
+or encryption requirements do not protect this public description. A local
+commit receipt is not remote discovery or delivery.
+.TP
+.B ssap-read-description CONNECTION HANDLE [MINIMUM]
+Read a type1 description over the original Connection and sole SSAP Engine.
+MINIMUM constrains channel security (0..2); it does not certify the description.
+The peer value is returned as hex after bounded UTF-8 validation. Missing
+descriptors and retired handles fail; there is no fallback to property data.
 .SH OPTIONS
 .TP
 .B \-h, \-\-help

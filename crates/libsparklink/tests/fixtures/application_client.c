@@ -115,6 +115,12 @@ int main(void) {
     assert(slk_client_connection(client, ids, path, sizeof path-1, deadline(), &link) == -ESTALE && !link);
     ids[0].generation = 7;
     assert(slk_client_connection(client, ids, path, sizeof path-1, deadline(), &link) == 0 && link);
+    struct SlkLocalService *description_service=NULL;
+    struct SlkServiceProperty definition={0};
+    definition.operations=5;definition.uuid_length=2;definition.uuid[0]=2;
+    definition.value_length=3;definition.value[0]=7;definition.value[1]=8;definition.value[2]=9;
+    const uint8_t service_uuid[]={1,0};
+    assert(slk_client_register_local_service(client,ids,service_uuid,2,&definition,1,0,deadline(),&description_service)==0);
     slk_client_close(client);
     slk_client_close(NULL);
     /* This observer survives parent close on the SAME caller/executor. */
@@ -125,6 +131,24 @@ int main(void) {
     }
     slk_controller_events_close(observer);slk_controller_events_close(NULL);
     puts("CURRENT_CONTROLLER_DIRECTORY_LANGUAGE_FIXTURE_PASS_NOT_RF");
+
+    /* New setter on the actual retained C view; metadata fixture,not a peer. */
+    const uint8_t text[]={0xe6,0x8f,0x8f,0xe8,0xbf,0xb0};
+    uint8_t maximum_description[244],oversized_description[245];
+    memset(maximum_description,'d',sizeof maximum_description);
+    memset(oversized_description,'d',sizeof oversized_description);
+    assert(slk_local_service_set_description(description_service,17,text,sizeof text,deadline())==0);
+    assert(slk_local_service_set_description(description_service,17,maximum_description,sizeof maximum_description,deadline())==0);
+    assert(slk_local_service_set_description(description_service,18,text,sizeof text,deadline())==-EINVAL);
+    assert(slk_local_service_set_description(description_service,17,text,0,deadline())==-EINVAL);
+    assert(slk_local_service_set_description(description_service,17,oversized_description,sizeof oversized_description,deadline())==-EINVAL);
+    const uint8_t invalid_utf8[]={0xff},nul_text[]={'a',0};
+    assert(slk_local_service_set_description(description_service,17,invalid_utf8,1,deadline())==-EINVAL);
+    assert(slk_local_service_set_description(description_service,17,nul_text,2,deadline())==-EINVAL);
+    assert(slk_local_service_set_description(description_service,17,text,sizeof text,0)==-ETIMEDOUT);
+    assert(slk_local_service_unregister(description_service,deadline())==0);
+    assert(slk_local_service_set_description(description_service,17,text,sizeof text,deadline())==-EINVAL);
+    slk_local_service_free(description_service);
 
     /* A derived view retains the same broker caller, not a new client/Engine. */
     uint8_t output[8], original[8], value[] = {0x56,0x12};
@@ -139,6 +163,16 @@ int main(void) {
     assert(!memcmp(output,original,sizeof output));
     assert(slk_connection_ssap_read(link,17,2,output,sizeof output,&length,deadline()) == 0 && length == 2);
     assert(output[0]==0x34 && output[1]==0x78);
+    memset(output,0xa5,sizeof output);length=99;
+    assert(slk_connection_ssap_read_description(link,0,0,output,sizeof output,&length,deadline())==-EINVAL);
+    assert(slk_connection_ssap_read_description(link,17,3,output,sizeof output,&length,deadline())==-EINVAL);
+    assert(slk_connection_ssap_read_description(link,17,0,output,sizeof output,&length,0)==-ETIMEDOUT);
+    assert(length==99 && !memcmp(output,original,sizeof output));
+    assert(slk_connection_ssap_read_description(link,17,2,output,1,&length,deadline())==-ENOBUFS && length==sizeof text);
+    assert(!memcmp(output,original,sizeof output));
+    assert(slk_connection_ssap_read_description(link,17,2,output,sizeof output,&length,deadline())==0 && length==sizeof text);
+    assert(!memcmp(output,text,sizeof text));
+    assert(slk_connection_ssap_read_description(link,18,0,output,sizeof output,&length,deadline())==-EOPNOTSUPP);
     assert(slk_connection_ssap_write(link,17,1,value,sizeof value,output,sizeof output,&length,deadline()) == 0 && length==1 && output[0]==0x90);
     assert(slk_connection_ssap_write(link,17,0,NULL,0,output,sizeof output,&length,deadline()) == 0 && length==1 && output[0]==0x91);
     memset(output,0xa5,sizeof output);length=99;
@@ -165,6 +199,7 @@ int main(void) {
     assert(slk_connection_ssap_read(link,19,0,output,sizeof output,&length,deadline()) == -ESTALE);
     assert(slk_connection_ssap_read(link,17,2,output,sizeof output,&length,deadline()) == -ESTALE);
     assert(slk_connection_ssap_write_command(link,17,0,NULL,0,deadline()) == -ESTALE);
+    assert(slk_connection_ssap_read_description(link,17,0,output,sizeof output,&length,deadline()) == -ESTALE);
     assert(length==99 && !memcmp(output,original,sizeof output));
     slk_connection_close(link);
     slk_connection_close(NULL);

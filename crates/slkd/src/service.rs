@@ -25,6 +25,55 @@ impl SsapManagerIface {
     pub fn new(state: SharedState) -> Self {
         Self { state }
     }
+    /// Keep owner, current adapter/management admission and the original
+    /// deadline under the same locks for local value and metadata commits.
+    async fn commit_owned_local(
+        &self,
+        original: Deadline,
+        header: zbus::message::Header<'_>,
+        commit: impl FnOnce(
+            &mut crate::ssap_database::Database,
+            &str,
+        ) -> Result<(), crate::ssap_database::LocalValueError>
+        + Send,
+    ) -> zbus::fdo::Result<()> {
+        owned_request(original, async {
+            let caller = crate::security_policy::sender(&header)?;
+            let state = self.state.lock().await;
+            if !state.present {
+                return Err(zbus::fdo::Error::Failed("adapter retired".into()));
+            }
+            let lease = state.native_lease.as_ref().ok_or_else(|| {
+                zbus::fdo::Error::NotSupported("Native management required".into())
+            })?;
+            let admission = lease
+                .try_lock()
+                .map_err(|_| zbus::fdo::Error::Failed("management handoff busy".into()))?;
+            if !admission.accepting || admission.token.is_none() {
+                return Err(zbus::fdo::Error::Failed("management revoked".into()));
+            }
+            let mut database = state
+                .ssap_database
+                .lock()
+                .map_err(|_| zbus::fdo::Error::Failed("database poisoned".into()))?;
+            original.remaining().map_err(deadline_error)?;
+            commit(&mut database, &caller).map_err(|error| {
+                use crate::ssap_database::LocalValueError;
+                match error {
+                    LocalValueError::Owner => {
+                        zbus::fdo::Error::AccessDenied("property is not owned by caller".into())
+                    }
+                    LocalValueError::Length => {
+                        zbus::fdo::Error::InvalidArgs("local value or description length".into())
+                    }
+                    LocalValueError::Budget => {
+                        zbus::fdo::Error::LimitsExceeded("local database byte budget".into())
+                    }
+                }
+            })
+        })
+        .await
+    }
 }
 
 #[interface(name = "org.sparklink.ServiceManager")]
@@ -200,43 +249,34 @@ impl SsapManagerIface {
                 "local handle/value length".into(),
             ));
         }
-        owned_request(original, async {
-            let caller = crate::security_policy::sender(&header)?;
-            let state = self.state.lock().await;
-            if !state.present {
-                return Err(zbus::fdo::Error::Failed("adapter retired".into()));
-            }
-            let lease = state.native_lease.as_ref().ok_or_else(|| {
-                zbus::fdo::Error::NotSupported("Native management required".into())
-            })?;
-            // Do not sleep holding the state lock behind a management handoff.
-            let admission = lease
-                .try_lock()
-                .map_err(|_| zbus::fdo::Error::Failed("management handoff busy".into()))?;
-            if !admission.accepting || admission.token.is_none() {
-                return Err(zbus::fdo::Error::Failed("management revoked".into()));
-            }
-            let mut database = state
-                .ssap_database
-                .lock()
-                .map_err(|_| zbus::fdo::Error::Failed("database poisoned".into()))?;
-            original.remaining().map_err(deadline_error)?;
-            database
-                .replace_owned_value(handle, &caller, value)
-                .map_err(|error| {
-                    use crate::ssap_database::LocalValueError;
-                    match error {
-                        LocalValueError::Owner => {
-                            zbus::fdo::Error::AccessDenied("property is not owned by caller".into())
-                        }
-                        LocalValueError::Length => {
-                            zbus::fdo::Error::InvalidArgs("local value exceeds limit".into())
-                        }
-                        LocalValueError::Budget => {
-                            zbus::fdo::Error::LimitsExceeded("local database byte budget".into())
-                        }
-                    }
-                })
+        self.commit_owned_local(original, header, move |database, caller| {
+            database.replace_owned_value(handle, caller, value)
+        })
+        .await
+    }
+    /// Set local type1 metadata for this existing Owned property. It is public
+    /// and remotely read-only, independently of property permissions. Success
+    /// is local commit only, not remote discovery or readback.
+    async fn set_owned_local_description(
+        &self,
+        handle: u16,
+        description: String,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<()> {
+        let original =
+            Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).map_err(deadline_error)?;
+        if handle == 0
+            || description.is_empty()
+            || description.len() > slk_contract::ssap::local::MAX_DESCRIPTION_BYTES
+            || description.contains('\0')
+        {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "description requires handle and 1..244 UTF-8 bytes without NUL".into(),
+            ));
+        }
+        self.commit_owned_local(original, header, move |database, caller| {
+            database.set_owned_description(handle, caller, description)
         })
         .await
     }
@@ -386,6 +426,7 @@ mod validation_tests {
             ),
             ("ReadOwnedLocalValue", vec!["q", "(ttttt)"]),
             ("ReplaceOwnedLocalValue", vec!["q", "ay", "(ttttt)"]),
+            ("SetOwnedLocalDescription", vec!["q", "s", "(ttttt)"]),
             ("UnregisterOwnedLocalService", vec!["q", "(ttttt)"]),
         ] {
             let method = xml
@@ -413,6 +454,7 @@ mod validation_tests {
             "UnregisterOwnedLocalService",
             "ReadOwnedLocalValue",
             "ReplaceOwnedLocalValue",
+            "SetOwnedLocalDescription",
             "RegisterLocalService",
             "ListLocalServices",
             "RemoveLocalService",

@@ -9,7 +9,7 @@
 ## 准备身份和权限
 
 VM 内需要运行当前 `slkd`、安装匹配的 Python 绑定与应用库，并授予本进程服务登记
-权限。`sparklink-services` 只授 Owned 三方法，普通通道组不自动拥有服务发布权限。
+权限。`sparklink-services` 授予明确列出的 Owned 方法，普通通道组不自动拥有服务登记权限。
 实机服务组资格来自 UID/GID1005、无额外组/cap 的受控部署；通用安装仍单独验收。
 
 管理者先确认目标 controller Ready，提供当前 `index`、`generation`。完整路径形如
@@ -71,6 +71,25 @@ python3 owned_service.py "$INDEX" "$GENERATION"
 撤回成功表示原 broker 已确认移除本地登记。对端后续访问应按协议拒绝；它不表示
 物理连接断开。自动门禁保存双端 USB、对端校验和发布者值观察，不能仅凭本例的打印
 宣称另一只设备已经收到或处理。
+
+## 显式公开属性说明
+
+需要对外说明属性含义时，在上例同一个 `with service` 内显式设置：
+
+```python
+service.set_description(
+    handle, "实验温度读数",
+    deadline_ns=time.monotonic_ns() + 5_000_000_000,
+)
+```
+
+这是公开只读元数据，不能存放秘密；属性值的加密或审批权限不自动保护说明。
+对端先执行实际属性发现并确认 `descriptors` 包含 `01`，再用
+`connection.ssap().read_description(handle, deadline_ns=...)` 逐字节核对预期 UTF-8。
+CLI 可用 `ssap-read-description CONNECTION HANDLE [MINIMUM]`；`ssap-serve` 的原进程
+支持 `description TEXT`，会显示本地提交回执。另起进程不能修改原 caller 的登记。
+边界与错误见[只读说明契约](../reference/ssap-permissions.md#显式公开的只读属性说明)。
+本段是接口用法，不宣称该示例或最新分支已通过实机验收。
 
 ## 处理失败和退出
 

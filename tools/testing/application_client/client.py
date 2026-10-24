@@ -74,7 +74,7 @@ def ssap_mode():
     if len(sys.argv) not in (8,9):raise ValueError('ssap index generation path operation handle expected [value]')
     index,generation=int(sys.argv[2]),int(sys.argv[3]);path,operation=sys.argv[4:6];handle=int(sys.argv[6])
     writing=operation=='ssap-write'
-    if operation not in ('ssap-read','ssap-write') or len(sys.argv)!=(9 if writing else 8):raise ValueError('one exact read/short write required')
+    if operation not in ('ssap-read','ssap-read-description','ssap-write') or len(sys.argv)!=(9 if writing else 8):raise ValueError('one exact read/short write required')
     error_mode=sys.argv[1]=='ssap-error'
     if not 1<=len(sys.argv[7])<=4084 or writing and not 1<=len(sys.argv[8])<=4084:raise ValueError('bounded test value required')
     expected_errno=int(sys.argv[7]) if error_mode else None
@@ -94,7 +94,9 @@ def ssap_mode():
             if os.read(0,6)!=b'start\n':raise ValueError('explicit original start barrier required')
         remote=link.ssap()
         try:
-            actual=remote.write(handle,value,deadline_ns=deadline) if writing else remote.read(handle,deadline_ns=deadline)
+            if writing:actual=remote.write(handle,value,deadline_ns=deadline)
+            elif operation=='ssap-read-description':actual=remote.read_description(handle,deadline_ns=deadline)
+            else:actual=remote.read(handle,deadline_ns=deadline)
         except OSError as error:
             if not error_mode:raise
             print(json.dumps(dict(stage='ssap_error',api='python',errno=error.errno,operation_success=False,deadline_ns=deadline,returned_ns=time.monotonic_ns())),flush=True)

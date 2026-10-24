@@ -116,6 +116,7 @@ struct Link(
     Arc<AtomicU64>,
     Arc<subscription::Metadata>,
     Arc<Mutex<Vec<CommandCall>>>,
+    Arc<AtomicUsize>,
 );
 #[zbus::interface(name = "org.sparklink.Connection")]
 impl Link {
@@ -223,6 +224,22 @@ impl Link {
             )),
         }
     }
+    fn read_ssap_description(
+        &self,
+        handle: u16,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        self.5.fetch_add(1, Ordering::SeqCst);
+        match (handle, minimum) {
+            (17, 0 | 2) => Ok("描述".as_bytes().to_vec()),
+            _ => Err(zbus::fdo::Error::NotSupported(
+                "finite description fixture".into(),
+            )),
+        }
+    }
     fn write_ssap_value(
         &self,
         handle: u16,
@@ -289,6 +306,7 @@ struct OwnedMetadata {
     removed: AtomicUsize,
     value: Mutex<Vec<u8>>,
     replacements: AtomicUsize,
+    descriptions: Mutex<Vec<(u16, String, slk_contract::Deadline)>>,
 }
 struct OwnedServices(Arc<OwnedMetadata>);
 #[zbus::interface(name = "org.sparklink.ServiceManager")]
@@ -349,6 +367,24 @@ impl OwnedServices {
         assert!(value.len() <= 2042);
         *self.0.value.lock().unwrap() = value;
         self.0.replacements.fetch_add(1, Ordering::SeqCst);
+    }
+    fn set_owned_local_description(
+        &self,
+        handle: u16,
+        text: String,
+        original: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        assert_eq!(handle, 17);
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        assert!((1..=244).contains(&text.len()) && !text.contains('\0'));
+        self.0
+            .descriptions
+            .lock()
+            .unwrap()
+            .push((handle, text, original));
     }
     fn unregister_owned_local_service(
         &self,
@@ -481,6 +517,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     let bus = support::Bus::start();
     let calls = Arc::new(AtomicUsize::new(0));
     let ssap_calls = Arc::new(AtomicUsize::new(0));
+    let description_reads = Arc::new(AtomicUsize::new(0));
     let command_calls = Arc::new(Mutex::new(Vec::new()));
     let lifetime = Arc::new(AtomicU64::new(11));
     let subscriptions = Arc::new(subscription::Metadata::default());
@@ -498,6 +535,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
                 lifetime.clone(),
                 subscriptions.clone(),
                 command_calls.clone(),
+                description_reads.clone(),
             ),
         )?
         .build()
@@ -832,6 +870,19 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         assert!(
             String::from_utf8_lossy(&output.stdout)
                 .contains("CURRENT_CONTROLLER_DIRECTORY_LANGUAGE_FIXTURE_PASS_NOT_RF")
+        );
+    }
+    assert_eq!(
+        description_reads.load(Ordering::SeqCst),
+        5,
+        "new description method only; expired/invalid/stale calls cannot fall back to value"
+    );
+    {
+        let descriptions = owned.descriptions.lock().unwrap();
+        assert_eq!(descriptions.len(), 4);
+        assert_eq!(
+            descriptions.iter().map(|v| v.1.len()).collect::<Vec<_>>(),
+            [6, 244, 6, 244]
         );
     }
     assert_eq!(

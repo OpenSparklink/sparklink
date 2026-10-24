@@ -589,3 +589,14 @@ callback，授权位明确拒绝；后续审批接口需复用现有验证和原
 新role结果回传预算512KiB，原不可信请求仍131072字节；不得成为安装的任意命令broker。
 本地观察不伪造子进程exit或Complete；原输出、实际凭据及两端USB分别校验。
 工具重组不授予整个权限、生命周期、安全或自然恢复资格，仍须新artifact实机证据。
+
+### Owned 属性说明的独立权限
+
+type1 说明是原 Owned 属性的显式公开只读元数据；上层权限与属性值、type2 CPCD
+分别表达。选择只开放有界 UTF-8 的原因是形成最小真实发现/读取链路，不默认开放
+远端可写说明或推断属性的本地授权批准同样覆盖描述符。原 caller 在同一 DB 锁内
+设置，复用总字节预算和 owner/管理租约/期限，删除登记同时回收；不增新 handle。
+ReadSsapDescription 仍经过唯一 actor、Query::Value、原 Session 和 Grant；不新建
+codec、授权状态机或 Provider。公开说明不是安全身份，minimum 只约束请求通道。
+源码契约见[只读说明参考](../reference/ssap-permissions.md#显式公开的只读属性说明)，
+准确资格另见唯一能力入口；此决策不缩减完整服务、权限和恢复验收。

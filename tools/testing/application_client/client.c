@@ -86,7 +86,8 @@ static void hex_print(const uint8_t *p,size_t n) {
 static int ssap_mode(int argc,char **argv) {
     if ((argc!=8 && argc!=9) || !*argv[4] || strlen(argv[4])>256) return 2;
     int writing=!strcmp(argv[5],"ssap-write");
-    if ((!writing && strcmp(argv[5],"ssap-read")) || argc!=(writing?9:8)) return 2;
+    int description=!strcmp(argv[5],"ssap-read-description");
+    if ((!writing && !description && strcmp(argv[5],"ssap-read")) || argc!=(writing?9:8)) return 2;
     uint64_t index=number(argv[2]),generation=number(argv[3]),handle=number(argv[6]);
     if (index>UINT16_MAX || !generation || !handle || handle>UINT16_MAX) return 2;
     int error_mode=!strcmp(argv[1],"ssap-error");
@@ -111,6 +112,7 @@ static int ssap_mode(int argc,char **argv) {
     }
     uintptr_t length=0;
     if (writing) error=slk_connection_ssap_write(link,(uint16_t)handle,0,value,value_n,received,sizeof received,&length,deadline);
+    else if (description) error=slk_connection_ssap_read_description(link,(uint16_t)handle,0,received,sizeof received,&length,deadline);
     else error=slk_connection_ssap_read(link,(uint16_t)handle,0,received,sizeof received,&length,deadline);
     if (error_mode) {
         printf("{\"stage\":\"ssap_error\",\"api\":\"c\",\"errno\":%d,\"operation_success\":%s,\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",-error,error==0?"true":"false",deadline,now_ns());fflush(stdout);

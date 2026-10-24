@@ -1542,6 +1542,35 @@ impl ConnectionIface {
         self.scoped_ssap_value(handle, None, minimum, deadline, header, connection)
             .await
     }
+    /// Read public type1 metadata through the original physical SSAP actor.
+    /// minimum constrains the request channel, not descriptor permissions.
+    async fn read_ssap_description(
+        &self,
+        handle: u16,
+        minimum: u32,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+        #[zbus(connection)] connection: &zbus::Connection,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        if handle == 0 || minimum > 2 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "nonzero description handle and mechanism minimum0..2 required".into(),
+            ));
+        }
+        self.scoped_ssap_call(
+            deadline,
+            slk_channel::deadline::PROTOCOL_WAIT,
+            header,
+            connection,
+            |observer, _caller, original| async move {
+                observer
+                    .read_description(handle, minimum, original)
+                    .await
+                    .map_err(zbus::fdo::Error::Failed)
+            },
+        )
+        .await
+    }
     async fn write_ssap_value(
         &self,
         handle: u16,
@@ -2687,6 +2716,7 @@ mod grant_tests {
         // No backend success fixture or protocol operation is used here.
         for (method, inputs, outputs) in [
             ("ReadSsapValue", vec!["q", "u", "(ttttt)"], vec!["ay"]),
+            ("ReadSsapDescription", vec!["q", "u", "(ttttt)"], vec!["ay"]),
             (
                 "WriteSsapValue",
                 vec!["q", "ay", "u", "(ttttt)"],

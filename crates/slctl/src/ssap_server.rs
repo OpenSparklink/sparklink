@@ -219,6 +219,12 @@ pub(crate) async fn serve(
                         println!("SsapOwnedValue: handle={} value={}",registered.2[0],crate::commands::hex_bytes(&value));
                         continue;
                     }
+                    if let Some(description)=line.strip_prefix("description ") {
+                        registration.set_description(registered.2[0],description.to_owned(),
+                            libsparklink::Deadline::after(std::time::Duration::from_secs(5))?).await?;
+                        println!("SsapOwnedDescription: handle={} bytes={}; local commit only",registered.2[0],description.len());
+                        continue;
+                    }
                     if let Some(value)=line.strip_prefix("replace ") {
                         let value=crate::commands::parse_hex_bytes(value)?;
                         registration.replace_local(registered.2[0],value,

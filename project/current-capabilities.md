@@ -3,6 +3,10 @@
 本页是唯一当前资格入口。源码、编译产物、执行工具、校验工具及必需门禁从下方
 结构化记录读取；报告或文档提交不替代编译身份，局部 PASS 不授整个 HEAD 资格。
 
+Owned type1 说明的[新增源码契约](../docs/reference/ssap-permissions.md#显式公开的只读属性说明)
+不能继承旧属性值或 CPCD 的实机资格。登记/构建/离线检查不等于真实发现和读回；
+具体结果仍须绑定结构化记录中的准确产物，公共源码摘要不披露本地实机执行详情。
+
 | 任务 | 对应准确记录 | 必须保留的边界 |
 | --- | --- | --- |
 | 应用发现租约／共享 scanner | [d9明确Negotiable-T的限定实机与原路径保持](../docs/evidence/application-discovery-negotiable-20261019.json)、[原Fixed-T失败](../docs/evidence/application-discovery-real-attempts-20261019.json)、[接口边界](../docs/reference/application-discovery.md) | 两U的apps-only显式release正向及七尺寸/Owned/C-Python保持取得准确新artifact证据。旧保持测试误选Fixed-T，原失败仍有效；不称已证明其物理根因。caller-loss/TTL/管理STOP/期限/部分初始化、同行业务及完整部署权限仍缺，完整资格不升级 |

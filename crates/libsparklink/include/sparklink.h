@@ -546,6 +546,23 @@ int slk_connection_ssap_read(const struct SlkConnection *connection,
                              uint64_t deadline_ns);
 
 /**
+ * Read a public static type1 description on the original physical lifetime.
+ * Returns the same decoded value bytes, errors and output contract as ssap_read;
+ * minimum constrains the channel mechanism, not a descriptor authorization.
+ * No property-value fallback, provider callback, retry or implicit truncation.
+ * # Safety
+ * Identical live connection, fork, exclusive buffer and length requirements as
+ * slk_connection_ssap_read. All regions remain live throughout the call.
+ */
+int slk_connection_ssap_read_description(const struct SlkConnection *connection,
+                                         uint16_t handle,
+                                         uint32_t minimum,
+                                         uint8_t *buffer,
+                                         uintptr_t capacity,
+                                         uintptr_t *length,
+                                         uint64_t deadline_ns);
+
+/**
  * Execute the existing bounded-write RPC, returning its exact protocol result
  * bytes. No long-write fallback, truncation, method echo or new Engine. The
  * daemon's actual negotiated size/security rules remain authoritative.
@@ -819,6 +836,21 @@ int slk_local_service_replace(const struct SlkLocalService *view,
                               const uint8_t *value,
                               uintptr_t length,
                               uint64_t deadline_ns);
+
+/**
+ * Set this original owner's public read-only type1 description (1..244 UTF-8
+ * bytes). Success is local commit only, not peer discovery or delivery. Property
+ * value/permissions stay unchanged; timeout may follow commit, without retries.
+ * Invalid length, invalid UTF-8/NUL, inactive or foreign handle returns EINVAL.
+ * # Safety
+ * view remains live without concurrent free or use across fork. description
+ * is an initialized immutable length-byte region, not null, live for the call.
+ */
+int slk_local_service_set_description(const struct SlkLocalService *view,
+                                      uint16_t handle,
+                                      const uint8_t *description,
+                                      uintptr_t length,
+                                      uint64_t deadline_ns);
 
 /**
  * Explicitly unregister this original owner's registration. No controller stop,

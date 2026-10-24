@@ -307,11 +307,14 @@ def execute(run, phase, after_application=None):
         if getattr(run.args,'ssap_write_command_policy_verify',False):
             from ws73_ssap_command_policy import execute as command_policy_execute
             command_policy_execute(run,row)
+        if getattr(run.args,'ssap_write_command_deadline_verify',False):
+            from ws73_ssap_command_deadline import execute as command_deadline_execute
+            command_deadline_execute(run,row,lambda deadline:run_applications(run,row,processes,files,deadline))
         if after_application is not None:
             passive_controller_checks(run,row,1,'before-applications')
         if hasattr(run, 'channel_barrier'):
             run.channel_barrier(row)
-        if not (getattr(run.args,'ssap_requester_lifecycle_verify',False) or getattr(run.args,'ssap_update_lifecycle_verify',False)):
+        if not (getattr(run.args,'ssap_requester_lifecycle_verify',False) or getattr(run.args,'ssap_update_lifecycle_verify',False) or getattr(run.args,'ssap_write_command_deadline_verify',False)):
             run_applications(run,row,processes,files)
         if after_application is not None:
             after_application()
@@ -742,6 +745,9 @@ def corroborate(run,capture):
             from ws73_ssap_command_policy import corroborate as command_policy_corroborate
             ssap_command_policy,policy_credit=command_policy_corroborate(row,value_matched,sdus)
             for key in ssap_credit:ssap_credit[key]+=policy_credit[key]
+            from ws73_ssap_command_deadline import corroborate as command_deadline_corroborate
+            ssap_command_deadline,deadline_credit=command_deadline_corroborate(row,value_matched,sdus)
+            for key in ssap_credit:ssap_credit[key]+=deadline_credit[key]
             ssap_sender_deadline=[]
             if row.get('ssap_sender_deadline_required',False):
                 from ws73_ssap_sender_deadline import corroborate as sender_corroborate
@@ -788,6 +794,9 @@ def corroborate(run,capture):
             for sender,receiver,payload in [(owners[0],owners[1],data),(owners[1],owners[0],reply)]:
                 frame=b'\x1f\0'+(len(payload)+1).to_bytes(2,'little')+b'\xf1'+payload
                 legs.append(dict(sequence=sequence,tx=matched(sender,'out',frame),rx=matched(receiver,'in',frame)))
+        if row.get('ssap_command_deadline_required',False):
+            from ws73_ssap_command_deadline import verify_business as command_deadline_business
+            command_deadline_business(row,row['ssap_command_deadline_case'],legs)
         # Each endpoint sends one capability request, one response, the recorded number of business PDUs.
         if prefix:
             pieces=legs[0]['tx']['fragments']
@@ -856,6 +865,7 @@ def corroborate(run,capture):
         if row.get('ssap_owned_required',False):entry['ssap_owned']=ssap_owned
         if row.get('ssap_write_command_required',False):entry['ssap_write_commands']=ssap_write_commands
         if row.get('ssap_command_policy_required',False):entry['ssap_command_policy']=ssap_command_policy
+        if row.get('ssap_command_deadline_required',False):entry['ssap_command_deadline']=ssap_command_deadline
         if row.get('ssap_owned_update_required',False):entry['ssap_owned_updates']=ssap_owned_updates
         if row.get('ssap_subscription_required',False):entry['ssap_subscription']=ssap_subscription
         if row.get('ssap_update_delivery_required',False):entry['ssap_update_delivery']=ssap_update_delivery

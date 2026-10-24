@@ -183,7 +183,7 @@ def admission(app, entry, handle, payload):
 
 
 def execute_command(run, row, case, entry, *, rejected=False, label="write-command"):
-    if type(rejected) is not bool or label not in ("write-command", "command-policy-oversized", "command-policy-denied", "command-policy-allowed"):
+    if type(rejected) is not bool or label not in ("write-command", "command-policy-oversized", "command-policy-denied", "command-policy-allowed", "command-original-deadline"):
         raise CaptureError("explicit finite command invocation required")
     payload, api, handle = case['value'], case['api'], case['handle']
     args = command_arguments(api, entry, handle, payload, mode="ssap-command-reject" if rejected else "ssap-command")

@@ -221,6 +221,7 @@ def main():
     parser.add_argument('--ssap-owned-verify',action='store_true',help='real owner authorization and exit cleanup;not complete SSAP or service-only policy qualification')
     parser.add_argument('--ssap-write-command-verify',action='store_true',help='actual C/Python no-response write,remote Read and original owner checks;dedicated ordinary socket gate')
     parser.add_argument('--ssap-write-command-policy-verify',action='store_true',help='actual command refusal and same-owner deny/allow after original positive cases;requires --ssap-write-command-verify')
+    parser.add_argument('--ssap-write-command-deadline-verify',action='store_true')
     parser.add_argument('--channel-socket-verify',action='store_true')
     parser.add_argument('--acb-transport-probe',action='store_true')
     parser.add_argument('--connection-verify',action='store_true',help='ordinary typed real Connect/Disconnect before RF; excludes connected release/close/dup')
@@ -243,6 +244,9 @@ def main():
     except ValueError as error:parser.error(str(error))
     from ws73_ssap_command_policy import requested as command_policy_requested
     try:command_policy_requested(args,passthrough=args.passthrough)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_command_deadline import requested as command_deadline_requested
+    try:command_deadline_requested(args,passthrough=args.passthrough)
     except ValueError as error:parser.error(str(error))
     from ws73_connection_control import requested_down_failure_observation
     try:requested_down_failure_observation(args)

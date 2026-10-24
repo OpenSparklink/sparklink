@@ -567,6 +567,8 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
             if grep -qw ws73.ssap_write_command=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-write-command-verify"; fi
             command_policy_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys; from ws73_ssap_command_policy import boot_requested; print("--ssap-write-command-policy-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail command-policy-selector
             if [ -n "$command_policy_arg" ]; then connection_arg="$connection_arg $command_policy_arg"; fi
+            command_deadline_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys; from ws73_ssap_command_deadline import boot_requested; print("--ssap-write-command-deadline-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail command-deadline-selector
+            if [ -n "$command_deadline_arg" ]; then connection_arg="$connection_arg $command_deadline_arg"; fi
             if grep -qw ws73.channel_fairness=1 /proc/cmdline; then connection_arg="$connection_arg --channel-fairness-verify"; fi
             if grep -qw ws73.dynamic_channels=1 /proc/cmdline; then connection_arg="$connection_arg --dynamic-channel-verify"; fi
             dynamic_long=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.dynamic_long=/){sub(/^ws73.dynamic_long=/,"",$i);print $i}}' /proc/cmdline)

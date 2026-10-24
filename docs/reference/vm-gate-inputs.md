@@ -1241,3 +1241,30 @@ root 诊断进程、普通业务应用和对端 SDK 调用分别记录身份；�
 访问拒绝、失败和跳过保留在该轮报告。采集完整与业务整轮成功分别检查。
 观测增加控制流量及调度开销，不能将这一配置当成低扰动性能基线。离线夹具和
 无 USB 启动检查也不代表真实固件支持、并发引用排空或业务资格已经通过。
+
+## Write Command 原期限终态与普通通道保持
+
+`--ssap-write-command-deadline-verify` 追加原期限门禁，必须同时选择上述正向和
+policy 门禁。契约版本为 1，guest token 为 `ws73.ssap_command_deadline=1`；
+缺少依赖、重复或未知 token、缺少一阶段证据均拒绝。每个阶段完成原有正例与
+policy 用例后，再用原 C／Python SDK 各提交一次随机序号和载荷的 32 字节命令。
+原 `ask` 所有者不答复，让接收端首片建立的五秒期限到期。
+
+门禁核对接收端 `GetSsapInfo` 的真实 D-Bus `Failed`，只接受生产的
+`original SSAP authorization deadline` 或 `original SSAP obligation deadline`。
+独立的两秒观察预算允许有限次查询，但不延长协议期限；任意 RPC 错误、
+权限失败或“睡够五秒”均不能代替终态。终态之后向原 CLI 写入晚到 `yes <token>`，
+再读取原 Owned 值；该 CLI 会忽略过期输入，没有专门的“晚到答复已拒绝”回执。
+因此判断同时依赖值不变、无批准、持续 Failed 与完整双端捕获。
+
+随后仍由两端普通用户 `slktest` 在原物理 Session 上完成四轮 61 字节实际校验回复。
+普通业务的完整 USB 数据片、应用记录和生命周期身份必须落在终态后的窗口。
+窗口内只允许原 Write Command 的两个 SMTC 端点见证，不允许伪命令响应或隐式
+ExchangeInfo 重启。Failed 后不通过该 Engine 发送远端 Read；本地 Owned 观察和
+普通业务有各自明确职责，不能把普通业务成功写成失败的 SSAP actor 已恢复。
+
+两阶段之间沿已有 Disconnect／新 lifetime 流程重新建链，第二阶段原正向命令
+为第一次终态提供一次新 lifetime 的实际交付见证。第二次终态没有第三次重建，
+不能宣称两次均已恢复。启动、发送、原期限、清理、capture 和程序身份仍由现有
+设施记录；工具源码、离线 fixture 和模型均不授实机资格。该有限门禁不证明
+完整 callback／Native drain、四设备故障域、apps-only 部署或自然自动恢复。

@@ -433,11 +433,19 @@ C输出包含32条完整十六进制收发记录，版本3的每stdout/stderr预
 开发入口 `--managed-channel-sibling-business` 只接受独立的
 `--setup-release-verify --managed-connected-case close --managed-connected-index 0
 --managed-channel-grant --managed-channel-revoke-prefix` 组合。要求新准备清单的
-`channel_sibling_business_contract_version=3`、当前可执行 init 及一致的 helper hash。
+`channel_sibling_business_contract_version=4`、当前可执行 init 及一致的 helper hash。
 它使用本线程四个明确叶端口；不与 QMP hotplug 测试、daemon、benchmark、安全、
 queued-discard 或 Session 追踪组合。其中 case 必须显式选择 release、close 或 dup；
 release 还可单独选择 `--managed-channel-link-down` 或 `--managed-channel-deadline`。
-两种 transition 互斥，也不能与 close／dup 混用；其他 case／index 明确拒绝。
+两种 transition 互斥，也不能与 close／dup 混用；上例 index 也可显式设为 `1`，其他 case／index 明确拒绝。
+contract4 将 victim index 从请求、唯一 `ws73.connected_index=0|1` boot token、
+`ws73.channel_sibling_contract=4`、guest argv、原始 `sibling_request` 与
+`sibling_business.victim_index` 绑定到最终判定；缺失、重复或错配拒绝。
+最终摘要同时保留原 owner 的 controller／generation／lifetime／handle 与 guest USB，
+并核对实际 full-pool `TxStatus`、READ_LOCAL_BUFFER 双向 USB 记录、guest／HCC 映射、
+受控 hold index 和启动时 host 端口；仅把 role0 标签改为 role1 不得通过。
+受控组 index 选择 Create caller／受控 fd；独立 2／3 组自身的 Create index 仍为 0，
+不能随 victim 改成 1。端口必须按受控组两端、独立组两端的显式顺序传入。
 
 这是同一实验内核中、daemon 启动前的 Native 机制门禁。0／1 为原受控组，2／3 为
 独立业务组；controller ID 来自明确选择的真实快照，不能使用组内端点号或枚举顺序替代。
@@ -448,7 +456,8 @@ HCC 型号／总线和实际地址；需要 E 临时地址时仍须保存、设�
 dup 还要求第一次关闭管理 fd 后、最终关闭前，原 owner 保持、原物理连接未断，独立组实际双向回复；
 最后一次关闭仍须命中原受控屏障，不能把第一次 close 当成撤权。release／close 各六次同行往返，
 dup 八次，逐条关联原 worker、载荷和双端 USB。旧 contract1 的 R143 和 contract2 的 R144
-保留原源码及限定资格；新 contract3 的实现与准确产物实测分别记录，不能由扩展入口推导通过。
+以及 contract3 的历史记录保留原源码及限定资格；不能重标为 contract4。
+新 contract4 的两种 victim 角色实现与准确产物实测分别记录，不能由扩展入口推导通过。
 
 Down 沿用两秒真实 IN81 屏障，在原阻塞见证后、真实 Disconnect 前完成同行往返；
 双端 Down 和旧 fd 拒绝后再完成同行往返，共六次。原租约仍保持，不能称为 Managed 撤权。

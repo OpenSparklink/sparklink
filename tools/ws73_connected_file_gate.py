@@ -342,17 +342,18 @@ def corroborate(r, capture, hold=None, stderr=None, expected=None,*,expected_cle
 
 def run(args):
     reply_hold=getattr(args,'reply_hold',None)
-    from ws73_channel_sibling import boot_enabled
+    from ws73_channel_sibling import boot_enabled,require_guest_request
     sibling_requested=getattr(args,'sibling_business',False)
     if type(sibling_requested)is not bool or boot_enabled(Path('/proc/cmdline').read_text().split())is not sibling_requested:
         raise ValueError('explicit matching sibling business request and VM token required')
+    sibling_request=require_guest_request(Path('/proc/cmdline').read_text().split(),args.case,args.index)if sibling_requested else None
     snapshot_gate=getattr(args,'link_snapshot',False)
     binding_gate=getattr(args,'peer_binding',False)
     channel_gate=getattr(args,'channel_grant',False)
-    if sibling_requested and (args.case not in ('release','close','dup')or args.index!=0 or not channel_gate or reply_hold
+    if sibling_requested and (args.case not in ('release','close','dup')or type(args.index)is not int or args.index not in(0,1) or not channel_gate or reply_hold
             or any(getattr(args,k,False)for k in ['link_snapshot','peer_binding','channel_scm_rights','channel_directions'])
             or any(v.startswith(('ws73.channel_security=','ws73.channel_queued_discard=','ws73.session_service='))for v in Path('/proc/cmdline').read_text().split())):
-        raise ValueError('sibling business supports standalone basic File index0 prefix only')
+        raise ValueError('sibling business supports standalone basic File victim index0|1 prefix only')
     protected=int(next((v.split('=',1)[1] for v in Path('/proc/cmdline').read_text().split() if v.startswith('ws73.channel_security=')), '0'))
     if protected not in (0,1,2):raise ValueError('unknown protected lifecycle requirement')
     original_deadline='ws73.security_original_deadline=1' in Path('/proc/cmdline').read_text().split()
@@ -400,6 +401,7 @@ def run(args):
     r=dict(format_version=1,status='STARTING',case=args.case,index=args.index,daemon_running=False,
         synthetic_support=False,physical_acceptance=False,automatic_recovery_acceptance=False,
         start_wall_ns=time.time_ns(),discovery=[],events=[[],[]],marker=secrets.token_hex(16))
+    if sibling_request is not None:r['sibling_request']=sibling_request
     if reply_hold:r.update(reply_hold=reply_hold,markers=[],hold_acknowledgements=[])
     if snapshot_gate:r.update(link_snapshot_gate=True,link_snapshots={})
     if binding_gate:r.update(peer_binding_gate=True,binding_rejections=[])
@@ -615,6 +617,6 @@ if __name__=='__main__':
     parser.add_argument('--channel-scm-rights',action='store_true',help='transfer native channel fd after ordinary worker closes inherited authority')
     parser.add_argument('--channel-directions',action='store_true',help='real TX-only to RX-only scope, forbidden actions and protected request rejection')
     parser.add_argument('--channel-grant',action='store_true',help='ordinary duplicated sockets and witnessed blocking RX across actual control withdrawal')
-    parser.add_argument('--sibling-business',action='store_true',help='explicit same-kernel four-controller Native File/Down/deadline index0 prefix and independent ordinary sibling business')
+    parser.add_argument('--sibling-business',action='store_true',help='explicit same-kernel four-controller Native File/Down/deadline victim index0|1 prefix and independent ordinary sibling business')
     parser.add_argument('--output',type=Path,required=True)
     run(parser.parse_args())

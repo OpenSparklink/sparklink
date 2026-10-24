@@ -212,7 +212,7 @@ def prepare_from_carrier(args):
         manifest['four_dynamic_benchmark_contract_version']=1
         manifest['four_dynamic_benchmark_close_contract_version']=1
         manifest['four_dynamic_benchmark_pressure_contract_version']=1
-        manifest['channel_sibling_business_contract_version']=3
+        manifest['channel_sibling_business_contract_version']=4
         manifest['four_owned_contract_version']=1
         manifest['four_delivery_contract_version']=1
         manifest['four_subscription_contract_version']=1
@@ -299,7 +299,7 @@ def prepare_locked(args, build_fd):
     manifest['four_dynamic_benchmark_contract_version'] = 1
     manifest['four_dynamic_benchmark_close_contract_version'] = 1
     manifest['four_dynamic_benchmark_pressure_contract_version'] = 1
-    manifest['channel_sibling_business_contract_version'] = 3
+    manifest['channel_sibling_business_contract_version'] = 4
     manifest['four_owned_contract_version'] = 1
     manifest['four_delivery_contract_version'] = 1
     manifest['four_subscription_contract_version'] = 1
@@ -1255,7 +1255,7 @@ def _run(args):
     m['live_link_snapshot_gate']=link_snapshot
     m['live_peer_binding_gate']=peer_binding
     m['live_channel_grant_gate']=channel_grant
-    if sibling_business:m.update(channel_sibling_business_requested=True,channel_sibling_business_contract_version=3,sibling_verifier=file_record(HERE/'ws73_channel_sibling.py'))
+    if sibling_business:m.update(channel_sibling_business_requested=True,channel_sibling_business_contract_version=4,sibling_verifier=file_record(HERE/'ws73_channel_sibling.py'))
     if protected:m.update(live_channel_security_required=protected,protected_security_verifiers=[file_record(HERE/name) for name in ['ws73_protected_grant.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_key_agreement.py']])
     m['live_channel_scm_rights_gate']=channel_scm_rights
     m['live_channel_revoke_prefix_gate']=channel_revoke_prefix
@@ -1607,7 +1607,7 @@ def _run(args):
                      (f' ws73.managed_partial=1 ws73.partial_case={partial_case} ws73.partial_domain={partial_domain}' if partial_gate else '')+
                      (' ws73.managed_recreate=1' if resource_recreation else '')+
                      (f' ws73.connected_case={connected_case} ws73.connected_index={connected_index}' if connected_case else '')+
-                     (' ws73.channel_sibling_business=1'if sibling_business else '')+
+                     (' ws73.channel_sibling_business=1 ws73.channel_sibling_contract=4'if sibling_business else '')+
                      (f' ws73.connected_reply={connected_reply}' if connected_reply else '')+
                      (' ws73.link_snapshot=1' if link_snapshot else '')+
                      (' ws73.link_measurements=1' if link_measurements else '')+
@@ -2315,7 +2315,7 @@ def _run(args):
                         if ('sibling_business'in probe)is not sibling_business:raise ValueError('requested sibling-business evidence mismatch')
                         if sibling_business:
                             from ws73_channel_sibling import valid_summary
-                            if not valid_summary(m['connected_file_corroboration'].get('sibling_business',{})):raise ValueError('complete sibling-business proof required')
+                            if not valid_summary(m['connected_file_corroboration'].get('sibling_business',{}),victim_index=connected_index):raise ValueError('complete sibling-business proof required')
                             m['channel_sibling_business_acceptance']=True
                         if bool(probe.get('session_idle'))!=session_idle:raise ValueError('requested Session idle observation mismatch')
                         if session_idle:
@@ -3144,21 +3144,26 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     if type(sibling)is not bool:return 1
     sibling_tokens=[w for arg in record.get('qemu_args',[])if isinstance(arg,str)for w in arg.split()if w=='ws73.channel_sibling_business'or w.startswith('ws73.channel_sibling_business=')]
     if sibling:
-        from ws73_channel_sibling import valid_summary,transition_flags
+        from ws73_channel_sibling import valid_summary,transition_flags,boot_request,valid_primary_binding
         try:
             transition=transition_flags(record.get('live_connected_file_case'),record.get('live_channel_link_down_requested',False),record.get('live_channel_deadline_requested',False))
         except ValueError:return 1
         words=[w for arg in record.get('qemu_args',[])if isinstance(arg,str)for w in arg.split()]
+        try:
+            request=boot_request(words)
+        except ValueError:return 1
+        if request is None or (request['case'],request['victim_index'],request['transition'])!=(record.get('live_connected_file_case'),record.get('live_connected_file_index'),transition):return 1
         for key,wanted in [('ws73.channel_link_down',transition=='down'),('ws73.channel_deadline',transition=='deadline')]:
             if[w for w in words if w==key or w.startswith(key+'=')]!=([key+'=1']if wanted else[]):return 1
         statuses={'withdrawal':'REAL_CHANNEL_GRANT_PASS','down':'REAL_CHANNEL_LINK_DOWN_PREFIX_PASS','deadline':'REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS'}
-        if (sibling_tokens!=['ws73.channel_sibling_business=1']or type(record.get('channel_sibling_business_contract_version'))is not int or record['channel_sibling_business_contract_version']!=3
-                or record.get('status')!=statuses[transition]or type(record.get('live_connected_file_index'))is not int or record['live_connected_file_index']!=0
+        if (sibling_tokens!=['ws73.channel_sibling_business=1']or type(record.get('channel_sibling_business_contract_version'))is not int or record['channel_sibling_business_contract_version']!=4
+                or record.get('status')!=statuses[transition]or type(record.get('live_connected_file_index'))is not int or record['live_connected_file_index']not in(0,1)
                 or record.get('live_channel_grant_gate')is not True or record.get('live_channel_revoke_prefix_gate')is not True
                 or record.get('managed_prefix_geometry_contract_version')!=1
                 or connected.get('sibling_business',{}).get('case')!=record.get('live_connected_file_case')
                 or connected.get('sibling_business',{}).get('transition')!=transition
-                or record.get('channel_sibling_business_acceptance')is not True or not valid_summary(connected.get('sibling_business',{}))):return 1
+                or record.get('channel_sibling_business_acceptance')is not True or not valid_summary(connected.get('sibling_business',{}),victim_index=record['live_connected_file_index'])):return 1
+        if not valid_primary_binding(record):return 1
         if transition=='withdrawal':
             native_grant=connected.get('channel_grant',{});begun=native_grant.get('begun_revoke',{})
             if (native_grant.get('status')!='REAL_BLOCKED_RX_GRANT_USB_CORROBORATED'
@@ -3172,7 +3177,7 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
             if transition=='down':
                 if connected.get('both_leases_preserved')is not True or connected.get('prefix_hold',{}).get('status')!='REAL_INCOMPLETE_PDU_BARRIER_CORROBORATED':return 1
             elif not connected.get('delayed_nocp_records')or connected.get('host_hold',{}).get('status')!='ACTUAL_HOST_HOLD_CORROBORATED':return 1
-    elif sibling_tokens or any(k in record for k in ['channel_sibling_business_contract_version','channel_sibling_business_acceptance'])or 'sibling_business'in connected:return 1
+    elif sibling_tokens or any(w=='ws73.channel_sibling_contract'or w.startswith('ws73.channel_sibling_contract=')for arg in record.get('qemu_args',[])if isinstance(arg,str)for w in arg.split())or any(k in record for k in ['channel_sibling_business_contract_version','channel_sibling_business_acceptance'])or 'sibling_business'in connected:return 1
     geometry_tokens=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith('ws73.prefix_geometry=')]
     geometry_version=record.get('managed_prefix_geometry_contract_version')
     if geometry_version is not None or geometry_tokens:
@@ -3591,7 +3596,7 @@ def main():
             cmd.add_argument('--managed-channel-scm-rights',action='store_true',help='ordinary receiver gets real channel via SCM_RIGHTS after inherited authority closes')
             cmd.add_argument('--managed-channel-directions',action='store_true',help='real TX-only/RX-only one-way delivery and opposite-action/protected-bind denial')
             cmd.add_argument('--managed-channel-security',type=int,choices=[0,1,2],default=0,help='VM-only existing positive mechanism before first protected CUTC bind;then original prefix/File/Down/deadline lifecycle,not Agent/Bond/recovery')
-            cmd.add_argument('--managed-channel-sibling-business',action='store_true',help='dedicated same-kernel four-controller basic File/Down/deadline index0 prefix and real ordinary sibling-link replies;no daemon policy qualification')
+            cmd.add_argument('--managed-channel-sibling-business',action='store_true',help='dedicated same-kernel four-controller basic File/Down/deadline victim index0|1 prefix and real ordinary sibling-link replies;no daemon policy qualification')
             cmd.add_argument('--managed-channel-grant',action='store_true',help='real ordinary blocked socket RX across Managed release/final File/dup and successor; separate established File gate')
             cmd.add_argument('--managed-security-kind',choices=['capabilities','key-agreement','unauthenticated-encryption','cancel-pending','original-deadline','numeric-approve','numeric-reject','numeric-late'],default='capabilities',help='explicit capability, candidate proof or unauthenticated encryption mechanism; not Agent/identity/Bond')
             cmd.add_argument('--managed-security-capabilities',action='store_true',help='explicit Managed security negotiation gate; select bounded kind, never Pair/Encrypted')

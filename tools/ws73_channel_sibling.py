@@ -12,9 +12,9 @@ import time
 
 from ws73_management_setup import decode, setup
 from sparklink.native import NativeAdapter
-from sparklink.structs import SleManagementQuery, SleLinkSnapshot
+from sparklink.structs import SleManagementQuery, SleLinkSnapshot, SleChannelTxStatus
 from ws73_capture import CaptureError, discovery, marker_data
-from ws73_channel_grant import Gate, business_evidence, checked_controller_ids, validate, verify_intents, verify_owner
+from ws73_channel_grant import Address, Gate, business_evidence, checked_controller_ids, validate, verify_intents, verify_owner
 from ws73_native_pair import (connection, stop, drain_events, discovery_operation,
     await_events, check_transport, corroborate_discovery, corroborate_transition)
 from ws73_resource_file_gate import announcement
@@ -25,7 +25,8 @@ from ws73_north_star import file_record
 TOKEN='ws73.channel_sibling_business=1'
 STATUS='ACTUAL_NATIVE_TRANSITION_WITH_SIBLING_BUSINESS_CORROBORATED'
 LABELS=('before_hold','while_held','after_withdrawal')
-CONTRACT_VERSION=3
+CONTRACT_VERSION=4
+CONTRACT_TOKEN='ws73.channel_sibling_contract=4'
 
 
 def transition_flags(case,down=False,deadline=False):
@@ -84,36 +85,53 @@ def requested(args):
     if type(value)is not bool:raise ValueError('boolean Native sibling request required')
     if value:transition_flags(getattr(args,'managed_connected_case',None),getattr(args,'managed_channel_link_down',False),getattr(args,'managed_channel_deadline',False))
     if value and (getattr(args,'command',None)!='run'or getattr(args,'managed_connected_case',None)not in ('release','close','dup')
-            or type(getattr(args,'managed_connected_index',0))is not int or getattr(args,'managed_connected_index',0)!=0
+            or type(getattr(args,'managed_connected_index',None))is not int or getattr(args,'managed_connected_index',None)not in(0,1)
             or getattr(args,'managed_channel_grant',False)is not True
             or getattr(args,'managed_channel_revoke_prefix',False)is not True or getattr(args,'setup_release_verify',False)is not True
             or any(getattr(args,k,False)for k in ['qmp_hotplug','fault_recovery','managed_channel_queued_discard','session_service_observe','managed_channel_idle_observe','managed_channel_security','managed_channel_scm_rights','managed_channel_directions','managed_security_capabilities','managed_link_snapshot','managed_peer_binding','parallel_pairs','four_device_business','four_device_dynamic_benchmark','four_device_disconnect','four_device_burst','four_device_owned','four_device_update_delivery','four_device_shared_subscription','connection_verify'])
             or getattr(args,'managed_connected_reply',None)):
-        raise ValueError('sibling business supports dedicated basic File/Down/deadline index0 prefix only')
+        raise ValueError('sibling business supports dedicated basic File/Down/deadline victim index0|1 prefix only')
     return value
 
 
-def boot_enabled(words):
+def boot_request(words):
     tokens=[w for w in words if w=='ws73.channel_sibling_business'or w.startswith('ws73.channel_sibling_business=')]
-    if not tokens:return False
-    if tokens!=[TOKEN]:raise ValueError('one explicit Native sibling-business token required')
+    contracts=[w for w in words if w=='ws73.channel_sibling_contract'or w.startswith('ws73.channel_sibling_contract=')]
+    if not tokens:
+        if contracts:raise ValueError('sibling contract without explicit request')
+        return None
+    if tokens!=[TOKEN]or contracts!=[CONTRACT_TOKEN]:raise ValueError('one explicit contract4 Native sibling-business request required')
     cases=[w.split('=',1)[1]for w in words if w.startswith('ws73.connected_case=')]
     if len(cases)!=1 or cases[0]not in ('release','close','dup'):raise ValueError('one explicit Native File case required')
-    for word in ['ws73.channel_grant=1','ws73.channel_revoke_prefix=1','ws73.connected_case='+cases[0],'ws73.connected_index=0']:
+    indices=[w for w in words if w=='ws73.connected_index'or w.startswith('ws73.connected_index=')]
+    if indices not in (['ws73.connected_index=0'],['ws73.connected_index=1']):raise ValueError('one explicit Native victim index0|1 required')
+    index=int(indices[0].split('=',1)[1])
+    for word in ['ws73.channel_grant=1','ws73.channel_revoke_prefix=1','ws73.connected_case='+cases[0]]:
         key=word.split('=')[0]
-        if[w for w in words if w==key or w.startswith(key+'=')]!=[word]:raise ValueError('standalone index0 real-prefix sibling mode required')
+        if[w for w in words if w==key or w.startswith(key+'=')]!=[word]:raise ValueError('standalone real-prefix sibling mode required')
     flags=[]
     for key in ('ws73.channel_link_down','ws73.channel_deadline'):
         values=[w for w in words if w==key or w.startswith(key+'=')]
         if values not in ([],[key+'=1']):raise ValueError('one explicit transition boot token required')
         flags.append(bool(values))
-    transition_flags(cases[0],*flags)
-    return True
+    transition=transition_flags(cases[0],*flags)
+    return dict(version=CONTRACT_VERSION,case=cases[0],victim_index=index,transition=transition)
+
+
+def boot_enabled(words):
+    return boot_request(words)is not None
+
+
+def require_guest_request(words,case,index):
+    request=boot_request(words)
+    if request is None or type(index)is not int or index not in(0,1)or (request['case'],request['victim_index'])!=(case,index):
+        raise ValueError('guest case/victim index must match the explicit sibling boot request')
+    return request
 
 
 def require_preparation(package,path):
     if type(package.get('channel_sibling_business_contract_version'))is not int or package['channel_sibling_business_contract_version']!=CONTRACT_VERSION:
-        raise ValueError('sibling business requires fresh explicit preparation contract3')
+        raise ValueError('sibling business requires fresh explicit preparation contract4')
     here=Path(__file__).resolve().parent
     for name in ['ws73_channel_sibling.py','ws73_native_pair.py','ws73_channel_grant.py','ws73_connected_file_gate.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py']:
         if file_record(path/'root/usr/share/sparklink/tools'/name)['sha256']!=file_record(here/name)['sha256']:raise ValueError('sibling preparation/source mismatch: '+name)
@@ -129,7 +147,7 @@ class Sibling:
         self.save=save;self.outer=outer;self.folder=Path(folder)/'sibling';self.folder.mkdir()
         self.handles=[];self.gate=None;self.closed=False
         stage_labels(outer['case'],transition)
-        self.row=dict(version=CONTRACT_VERSION,case=outer['case'],transition=transition,status='STARTING',controller_ids=[2,3],index=0,initial_snapshots=[],usb=[],events=[[],[]],discovery=[],leases=[],hcc_observations=[])
+        self.row=dict(version=CONTRACT_VERSION,case=outer['case'],victim_index=outer['index'],transition=transition,status='STARTING',controller_ids=[2,3],index=0,initial_snapshots=[],usb=[],events=[[],[]],discovery=[],leases=[],hcc_observations=[])
         outer['sibling_business']=self.row;save()
         self.observers=[];self.snapshots=[];self.writers=[]
         try:
@@ -229,7 +247,12 @@ def verify(outer):
     if row.get('transition')!=transition:raise CaptureError('sibling transition must match actual primary record')
     if row.get('version')!=CONTRACT_VERSION or type(row['version'])is not int or row.get('case')!=outer['case']or row['status']!='SIBLING_NATIVE_BUSINESS_CONTINUITY_PASS'or checked_controller_ids(row['controller_ids'])!=[2,3]:raise CaptureError('complete actual sibling Native pair required')
     if len(g['owners'])!=2 or len(g['workers'])!=2 or len(g['business'])!=2*len(labels):raise CaptureError('complete two-endpoint sibling matrix required')
-    if type(outer['index'])is not int or outer['index']!=0 or outer.get('daemon_running')is not False or ('data_deadline'if transition=='deadline'else'prefix_hold')not in outer:raise CaptureError('dedicated pre-daemon index0 prefix gate required')
+    if type(outer['index'])is not int or outer['index']not in(0,1)or outer.get('daemon_running')is not False or ('data_deadline'if transition=='deadline'else'prefix_hold')not in outer:raise CaptureError('dedicated pre-daemon victim index0|1 prefix gate required')
+    request=dict(version=CONTRACT_VERSION,case=outer['case'],victim_index=outer['index'],transition=transition)
+    observed=outer.get('sibling_request')
+    if type(observed)is not dict or observed.keys()!=request.keys()or any(type(observed[k])is not type(v)or observed[k]!=v for k,v in request.items()):raise CaptureError('original sibling boot request must match the primary evidence')
+    if type(row.get('victim_index'))is not int or row['victim_index']!=outer['index']:raise CaptureError('sibling victim index must match the primary evidence')
+    if type(row.get('index'))is not int or row['index']!=0 or type(g.get('index'))is not int or g['index']!=0:raise CaptureError('independent sibling pair retains its own Create index0')
     if row['management_before']!=row['management_after']or row['links_before']!=row['links_after']:raise CaptureError('same sibling files/links must remain live through withdrawal')
     if len(row['initial_snapshots'])!=2 or len(row['hcc_observations'])!=2 or len(row['cleanup'])!=2:raise CaptureError('complete sibling identity/HCC/cleanup matrix required')
     for n,index in enumerate((2,3)):
@@ -270,6 +293,70 @@ def identities(outer):
         for n,(raw,index)in enumerate(zip(row['initial_snapshots'],(2,3),strict=True))]
 
 
+def primary_identity(outer):
+    """Retain the actual primary owner/USB tuple that the wire oracle checked."""
+    index=outer['index'];owner=outer['channel_grant']['owners'][index]
+    address=decode(Address,owner['address']);usb=outer['usb'][index]
+    identity=dict(controller=owner['index'],generation=owner['generation'],lifetime=owner['lifetime'],
+        handle=owner['handle'],bus=usb['bus'],device=usb['device'])
+    if (not valid_victim(identity,index)or (address.controller,address.generation,address.lifetime,address.handle)
+            !=tuple(identity[k]for k in ('controller','generation','lifetime','handle'))):
+        raise CaptureError('actual primary owner and original channel identity required')
+    return identity
+
+
+def valid_victim(value,index):
+    return (type(value)is dict and set(value)=={'controller','generation','lifetime','handle','bus','device'}
+        and all(type(v)is int for v in value.values())and value['controller']==index
+        and 0<value['generation']<2**64 and 0<value['lifetime']<2**64 and 0<=value['handle']<2**16
+        and value['bus']>0 and 1<=value['device']<=127)
+
+
+def valid_primary_binding(record):
+    """Bind this finite sibling verdict to existing primary ABI/USB/hold proof.
+
+    This is not report authentication: raw capture replay remains required.
+    In particular, changing role labels cannot change a retained TxStatus.
+    """
+    try:
+        connected=record['connected_file_corroboration'];proof=connected['sibling_business']
+        index=record['live_connected_file_index'];victim=proof['victim'];transition=proof['transition']
+        if type(index)is not int or index not in(0,1)or not valid_victim(victim,index):return False
+        barrier=connected if transition=='deadline'else connected['prefix_hold'if transition=='down'else'held_reply']
+        tx=decode(SleChannelTxStatus,barrier['actual_full_pool_snapshot'if transition=='deadline'else'full_pool_snapshot'])
+        geometry=connected['prefix_geometry'];plan=geometry['plan']
+        from ws73_channel_prefix_hold import valid_geometry_summary,METHOD,QEMU_SHA256
+        if not valid_geometry_summary(geometry)or barrier['prefix_geometry']!=geometry:return False
+        if ((tx.version,tx.size,tx.controller,tx.generation,tx.lifetime,tx.handle,tx.packet_maximum,tx.capacity,
+             tx.outstanding,tx.connection_debt,tx.flags,tx.active_pdu_bytes,tx.active_pdu_offset)
+                !=(1,64,index,victim['generation'],victim['lifetime'],victim['handle'],plan['packet_maximum'],plan['capacity'],
+                   plan['capacity'],plan['capacity'],3,2047,plan['offset'])or tx.reserved or not tx.pool_exhaustions):return False
+        for packet in geometry['buffers']['command'],geometry['buffers']['reply']:
+            if any(type(packet[k])is not int or packet[k]!=victim[k]for k in ('bus','device')):return False
+        if transition=='down':
+            command=connected['actual_disconnect']
+            if any(type(command[k])is not int or command[k]!=victim[k]for k in ('bus','device'))or command['opcode']!=0x1403 or command['params']!=(victim['handle'].to_bytes(2,'little')+b'\x10').hex():return False
+        allocation=record['physical_resource_allocation'];ports=allocation['selected_ports']
+        if type(ports)is not list or len(ports)!=4 or any(type(p)is not str for p in ports)or len(set(ports))!=4:return False
+        guests=record['guest_identities'];hcc=allocation['hcc_checks']
+        if len(guests)!=4 or len(hcc)!=4:return False
+        guest=guests[index];route=hcc[index];port='1-'+str(index+1)
+        if (type(guest['index'])is not int or guest['index']!=index or guest['path']!=port
+                or any(type(guest[k])is not int or guest[k]!=victim[k]for k in ('generation','bus','device'))
+                or route['host_port']!=ports[index]or route['guest_port']!=port
+                or type(route['generation'])is not int or route['generation']!=victim['generation']):return False
+        hold=record['channel_deadline_hold'if transition=='deadline'else'channel_prefix_hold'];host=hold['host_identity_at_arm']
+        method='BOUNDED8S_HOLD_REAL_IN81_FOR_ORIGINAL5S_PDU_DEADLINE'if transition=='deadline'else METHOD
+        if (type(hold['index'])is not int or hold['index']!=index or hold['complete']is not True or hold['method']!=method
+                or type(hold['hold_budget_ms'])is not int or hold['hold_budget_ms']!=(8000 if transition=='deadline'else 2000)
+                or (transition!='deadline'and hold['qemu_sha256']!=QEMU_SHA256)
+                or host['path']!=ports[index]or type(host['bus'])is not int or host['bus']<1
+                or type(host['address'])is not int or not 1<=host['address']<=127
+                or host['node']!=f"/dev/bus/usb/{host['bus']:03}/{host['address']:03}"):return False
+        return True
+    except(KeyError,TypeError,ValueError,IndexError,OverflowError):return False
+
+
 def corroborate(outer,capture):
     row=verify(outer);g=row['channel_grant'];sdus,legs=business_evidence(g,row,capture)
     # This pair is attached after the victim fixture has already started.
@@ -285,12 +372,15 @@ def corroborate(outer,capture):
     links=[corroborate_transition(row,capture,snapshots,1,0x1401,row['connect_before_wall_ns'],row['connect_after_wall_ns'],'up'),corroborate_transition(row,capture,snapshots,2,0x1403,row['release_before_wall_ns'],row['end_wall_ns'],'down')]
     owners=[dict(row['usb'][n],controller=owner['index'],generation=owner['generation'],lifetime=owner['lifetime'],handle=owner['handle'])for n,owner in enumerate(g['owners'])]
     business=[{k:v[k]for k in ['label','initiator','payload','start_wall_ns','end_wall_ns']}for v in g['business']]
-    result=dict(version=CONTRACT_VERSION,case=outer['case'],transition=row['transition'],phase_bounds=phase_bounds(outer),status=STATUS,controllers=[2,3],owners=owners,business=business,round_trips=len(business),after_first_close_round_trips=2 if outer['case']=='dup'else 0,while_held_round_trips=2,after_withdrawal_round_trips=2 if row['transition']=='withdrawal'else 0,after_transition_round_trips=2,after_late_reply_round_trips=2 if row['transition']=='deadline'else 0,application_UID=1000,daemon_policy_qualified=False,credit_truth=False,full_drain=False,natural_recovery=False,legs=legs,management_unchanged=True,links_unchanged=True,discovery=radio,heard=heard,links=links)
+    result=dict(version=CONTRACT_VERSION,case=outer['case'],victim_index=outer['index'],victim=primary_identity(outer),transition=row['transition'],phase_bounds=phase_bounds(outer),status=STATUS,controllers=[2,3],owners=owners,business=business,round_trips=len(business),after_first_close_round_trips=2 if outer['case']=='dup'else 0,while_held_round_trips=2,after_withdrawal_round_trips=2 if row['transition']=='withdrawal'else 0,after_transition_round_trips=2,after_late_reply_round_trips=2 if row['transition']=='deadline'else 0,application_UID=1000,daemon_policy_qualified=False,credit_truth=False,full_drain=False,natural_recovery=False,legs=legs,management_unchanged=True,links_unchanged=True,discovery=radio,heard=heard,links=links)
     return result
 
 
-def valid_summary(proof):
+def valid_summary(proof,*,victim_index=None):
     try:
+        index=proof['victim_index']
+        if type(index)is not int or index not in(0,1)or not valid_victim(proof['victim'],index):return False
+        if victim_index is not None and (type(victim_index)is not int or victim_index not in(0,1)or index!=victim_index):return False
         transition=proof['transition'];labels=stage_labels(proof['case'],transition);count=2*len(labels)
         verify_stage_order(proof['case'],transition,proof['business'],proof['phase_bounds'])
         expected=dict(version=CONTRACT_VERSION,status=STATUS,controllers=[2,3],round_trips=count,after_first_close_round_trips=2 if proof['case']=='dup'else 0,while_held_round_trips=2,after_withdrawal_round_trips=2 if transition=='withdrawal'else 0,after_transition_round_trips=2,after_late_reply_round_trips=2 if transition=='deadline'else 0,application_UID=1000,daemon_policy_qualified=False,credit_truth=False,full_drain=False,natural_recovery=False,management_unchanged=True,links_unchanged=True)

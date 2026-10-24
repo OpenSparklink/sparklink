@@ -451,6 +451,24 @@ Managed 清理收敛，不从“关闭了 Python 对象”推导 Free。
 每应用独立撤权、完整 fd／callback 排空、NOCP 真值、公平性或自然恢复资格；后续
 release／最后管理 fd／dup／Down／原期限矩阵保持，不能因单个组合通过关闭整项。
 
+### typed Disconnect 的提交边界
+
+typed Disconnect 成功完成队列及作者请求准入后，内核在原 Host 锁内将目标
+generation／lifetime 标为 `Closing`；该锁也保护 Ticket 的实际 USB 提交。
+参数、身份或队列准入失败不关闭连接。`Closing` 通过现有 Session／Grant／Ticket
+路径拒绝该 lifetime 的新业务提交，不撤销其他连接或 controller 的权限。
+
+准入后的作者取消、控制器 Status 拒绝或原期限到期不会重新开放该 lifetime；
+后续显式 Disconnect 仍可清理物理连接。物理 snapshot 在真实 Down 前仍可为 Up，
+本地关闭不制造 Down 或成功结果。在 controller 和管理租约仍有效时，旧 fd 在
+`Closing` 阶段返回 `ENOTCONN`，实际 Down 后返回 `ESTALE`；设备故障及租约撤权
+仍按各自原错误处理。真正的新 lifetime 独立建立权限，不复活旧 fd。
+
+已实际提交的 USB、命令回复及 data credit 债务仍需结清；取消和关闭不退款，
+NOCP 仍沿原记账路径处理。本段描述源码契约，不能证明 NOCP 硬件准确性、完整
+callback 排空或自然恢复。准确 artifact 的实机范围见[当前资格](../../project/current-capabilities.md)，
+单个 Down 组合通过不代表完整生命周期回归闭合。
+
 ## 受控原期限与生产转换序列输入
 
 新prepare记录`managed_prefix_geometry_contract_version=1`，对应运行凭据

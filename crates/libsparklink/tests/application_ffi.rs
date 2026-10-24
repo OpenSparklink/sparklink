@@ -109,11 +109,13 @@ impl Adapter {
         7
     }
 }
+type CommandCall = (u16, u32, Vec<u8>, slk_contract::Deadline);
 struct Link(
     Arc<AtomicUsize>,
     Arc<AtomicUsize>,
     Arc<AtomicU64>,
     Arc<subscription::Metadata>,
+    Arc<Mutex<Vec<CommandCall>>>,
 );
 #[zbus::interface(name = "org.sparklink.Connection")]
 impl Link {
@@ -252,6 +254,10 @@ impl Link {
         slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
             .unwrap();
         self.1.fetch_add(1, Ordering::SeqCst);
+        self.4
+            .lock()
+            .unwrap()
+            .push((handle, minimum, value.clone(), deadline));
         match (handle, minimum, value.as_slice()) {
             (17, 1, [0x56, 0x12]) | (17, 0, []) => Ok(()),
             (17, 0, bytes) if bytes.len() == 2042 && bytes.iter().all(|v| *v == 0xa5) => Ok(()),
@@ -259,6 +265,10 @@ impl Link {
             (17, 0, bytes) if bytes.len() == 2043 => Err(zbus::fdo::Error::InvalidArgs(
                 "fixture-only 2043 command rejection; not negotiated MTU or hardware".into(),
             )),
+            (21, 0, bytes) if bytes.len() == 2043 => Err(zbus::fdo::Error::Timeout(
+                "wrong-error negative control for command rejection helper".into(),
+            )),
+            (22, 0, bytes) if bytes.len() == 2043 => Ok(()), // Unexpected-success negative control.
             (21, 0, [0x56, 0x12]) => Err(zbus::fdo::Error::Timeout(
                 "explicit immediate command error fixture; not elapsed deadline".into(),
             )),
@@ -471,6 +481,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     let bus = support::Bus::start();
     let calls = Arc::new(AtomicUsize::new(0));
     let ssap_calls = Arc::new(AtomicUsize::new(0));
+    let command_calls = Arc::new(Mutex::new(Vec::new()));
     let lifetime = Arc::new(AtomicU64::new(11));
     let subscriptions = Arc::new(subscription::Metadata::default());
     let owned = Arc::new(OwnedMetadata::default());
@@ -486,6 +497,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
                 ssap_calls.clone(),
                 lifetime.clone(),
                 subscriptions.clone(),
+                command_calls.clone(),
             ),
         )?
         .build()
@@ -1106,6 +1118,181 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         ssap_calls.load(Ordering::SeqCst),
         44,
         "eight command RPCs including empty/2042; EOF/invalid/oversized/retired helper cases never enter the method"
+    );
+    // Both actual external SDKs must enter the daemon fixture for the new
+    // 2043 negative mode. This verifies ABI/serialization, not Native/RF.
+    for language in ["c", "python"] {
+        for scenario in [
+            "rejected",
+            "wrong-error",
+            "unexpected-success",
+            "eof",
+            "bad-start",
+            "stale",
+            "invalid-minimum",
+            "undersized",
+            "oversized",
+            "empty",
+            "invalid-hex",
+        ] {
+            lifetime.store(11, Ordering::SeqCst);
+            let payload = match scenario {
+                "undersized" => "a5".repeat(2042),
+                "oversized" => "a5".repeat(2044),
+                "empty" => String::new(),
+                "invalid-hex" => "gg".repeat(2043),
+                _ => "a5".repeat(2043),
+            };
+            let handle = match scenario {
+                "wrong-error" => 21,
+                "unexpected-success" => 22,
+                _ => 17,
+            };
+            let invalid = matches!(
+                scenario,
+                "invalid-minimum" | "undersized" | "oversized" | "empty" | "invalid-hex"
+            );
+            let enters = matches!(scenario, "rejected" | "wrong-error" | "unexpected-success");
+            let before = command_calls.lock().unwrap().len();
+            let mut command = Command::new("timeout");
+            command.arg("20s");
+            if language == "c" {
+                command.arg(&sdk_probe);
+            } else {
+                command
+                    .arg("python3")
+                    .arg(root.join("tools/testing/application_client/client.py"));
+            }
+            let mut process = command
+                .args([
+                    "ssap-command-reject",
+                    "2",
+                    "7",
+                    PATH,
+                    &handle.to_string(),
+                    &payload,
+                    if scenario == "invalid-minimum" {
+                        "1"
+                    } else {
+                        "0"
+                    },
+                ])
+                .env("DBUS_SYSTEM_BUS_ADDRESS", &bus.address)
+                .env("LIBSPARKLINK_PATH", &runtime_library)
+                .env("PYTHONPATH", root.join("bindings/python"))
+                .env("LD_LIBRARY_PATH", &directory)
+                .stdin(Stdio::piped())
+                .stdout(Stdio::piped())
+                .stderr(Stdio::piped())
+                .spawn()?;
+            let mut stdout = std::io::BufReader::new(process.stdout.take().unwrap());
+            let mut barrier = String::new();
+            stdout.read_line(&mut barrier)?;
+            let barrier_value: Option<serde_json::Value> = if invalid {
+                assert!(barrier.is_empty(), "syntax rejection cannot enter the SDK");
+                None
+            } else {
+                let value: serde_json::Value = serde_json::from_str(&barrier)?;
+                assert_eq!(value["stage"], "ssap_command_start_barrier");
+                assert_eq!(value["mode"], "ssap-command-reject");
+                assert_eq!(value["schema_version"], 1);
+                assert_eq!(value["api"], language);
+                assert_eq!(value["client_closed"], true);
+                if scenario == "stale" {
+                    lifetime.store(12, Ordering::SeqCst);
+                }
+                if scenario == "eof" {
+                    drop(process.stdin.take());
+                } else {
+                    process
+                        .stdin
+                        .as_mut()
+                        .unwrap()
+                        .write_all(if scenario == "bad-start" {
+                            b"wrong\n"
+                        } else {
+                            b"start\n"
+                        })?;
+                }
+                Some(value)
+            };
+            let mut remaining = String::new();
+            stdout.read_to_string(&mut remaining)?;
+            let output = process.wait_with_output()?;
+            std::fs::write(
+                directory.join(format!("sdk-{language}-command-reject-{scenario}.stdout")),
+                barrier + &remaining,
+            )?;
+            std::fs::write(
+                directory.join(format!("sdk-{language}-command-reject-{scenario}.stderr")),
+                &output.stderr,
+            )?;
+            assert_eq!(
+                output.status.success(),
+                scenario == "rejected",
+                "{language}/{scenario}"
+            );
+            let calls = command_calls.lock().unwrap();
+            assert_eq!(
+                calls.len(),
+                before + usize::from(enters),
+                "actual daemon entry {language}/{scenario}"
+            );
+            if enters {
+                let (actual_handle, minimum, actual_value, original) = &calls[before];
+                assert_eq!((*actual_handle, *minimum), (handle, 0));
+                assert_eq!(actual_value.as_slice(), vec![0xa5; 2043]);
+                assert_eq!(
+                    Some(original.0),
+                    barrier_value.as_ref().unwrap()["deadline_ns"].as_u64()
+                );
+            }
+            if scenario == "rejected" {
+                assert!(output.stderr.is_empty());
+                assert_eq!(remaining.lines().count(), 1);
+                let receipt: serde_json::Value = serde_json::from_str(
+                    remaining
+                        .strip_prefix("SSAP_COMMAND_REJECTED: ")
+                        .expect("actual SDK rejection receipt"),
+                )?;
+                assert_eq!(receipt["schema_version"], 1);
+                assert_eq!(receipt["mode"], "ssap-command-reject");
+                assert_eq!(receipt["api"], language);
+                assert_eq!(receipt["method"], "WriteSsapCommand");
+                assert_eq!(receipt["index"], 2);
+                assert_eq!(receipt["generation"], 7);
+                assert_eq!(receipt["path"], PATH);
+                assert_eq!(receipt["handle"], 17);
+                assert_eq!(receipt["value"], payload);
+                assert_eq!(receipt["application_bytes"], 2043);
+                assert_eq!(receipt["minimum"], 0);
+                assert_eq!(receipt["sdk_entered"], true);
+                assert_eq!(receipt["errno"], nix::libc::EINVAL);
+                assert_eq!(receipt["operation_success"], false);
+                assert_eq!(receipt["peer_delivery_confirmed"], false);
+                assert_eq!(
+                    receipt["deadline_ns"],
+                    barrier_value.as_ref().unwrap()["deadline_ns"]
+                );
+                let (called, returned, end) = (
+                    receipt["call_ns"].as_u64().unwrap(),
+                    receipt["returned_ns"].as_u64().unwrap(),
+                    receipt["deadline_ns"].as_u64().unwrap(),
+                );
+                assert!(called < returned && returned < end);
+            } else {
+                assert!(
+                    remaining.is_empty(),
+                    "wrong/error/invalid cases cannot report expected rejection"
+                );
+            }
+        }
+    }
+    lifetime.store(11, Ordering::SeqCst);
+    assert_eq!(
+        ssap_calls.load(Ordering::SeqCst),
+        50,
+        "six actual new command RPCs; all other negative modes stop before the method"
     );
     authorization::lifecycle(
         &root,

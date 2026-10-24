@@ -3668,7 +3668,7 @@ def main():
             cmd.add_argument('--ssap-update-lifecycle-verify',action='store_true',help='dedicated same-actor receiver exit,original deadline and confirmed CPCD cleanup;requires update delivery')
             cmd.add_argument('--ssap-sender-deadline-verify',action='store_true',help='original1s SDK deadline with bounded2s real IN81 hold,late ACK and actual peer reply;requires dedicated update delivery')
             cmd.add_argument('--ssap-sender-lifecycle-case',choices=['deadline','owner-after-deadline'],default='deadline',help='same controlled barrier;owner-after-deadline requires actual owner death andpaired oldservice refusals')
-            cmd.add_argument('--ssap-value-lengths-verify',action='store_true',help='dedicated real complete-PDU value lengths/MTU refusal gate;not SSAP protocol fragmentation')
+            cmd.add_argument('--ssap-value-lengths-verify',action='store_true',help='dedicated real value lengths, bounded SSAP sequence fragmentation and MTU refusal gate;not full protocol qualification')
             cmd.add_argument('--ssap-owner-lifecycle-verify',action='store_true',help='actual owner exit/stale prompt/original deadline with ordinary CUTC afterwards')
             cmd.add_argument('--ssap-owner-publisher',choices=['cli','sdk'],default='cli',help='explicit owner frontend;SDK selects C/Python per role,no fallback')
             cmd.add_argument('--ssap-requester-lifecycle-verify',action='store_true',help='actual C/Python requester death/old reply drain and ordinary CUTC while real owner prompt held')

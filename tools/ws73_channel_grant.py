@@ -289,13 +289,28 @@ def worker(data, control, minimum=0):
     finally:data.close()
 
 
+def checked_controller_ids(ids):
+    if type(ids)is not list or len(ids)!=2 or any(type(n)is not int or not 0<=n<16 for n in ids)or len(set(ids))!=2:
+        raise ValueError('two explicit distinct Native controller identities required')
+    return ids
+
+
+def controller_ids(snapshots):
+    """Use the selected snapshots' real IDs, never pair-local enumeration."""
+    return checked_controller_ids([s.dev_index for s in snapshots])
+
+
 class Gate:
     def __init__(self, observers, snapshots, leases, index, record, save, directional=False, scm_rights=False, security=0):
         from ws73_protected_grant import requirement
         if security!=requirement(record):raise ValueError('requested protected binding and original prelude must agree')
         self.directional=directional
+        self.controllers=controller_ids(snapshots)
         self.index=index;self.record=record;self.save=save;self.children=[];self.parents=[]
         self.row=dict(status='STARTING',index=index,owners=[],workers=[],business=[],tx_constraint_required=not directional,start_wall_ns=time.time_ns())
+        if self.controllers!=[0,1]:
+            if record.get('controller_ids')!=self.controllers:raise ValueError('selected pair must declare actual controller IDs')
+            self.row['controller_ids']=self.controllers
         if directional:self.row.update(directional=True,bind_rejections=[])
         if scm_rights:self.row.update(scm_rights=True,transfers=[])
         record['channel_grant']=self.row;save();channels=[];pairs=[]
@@ -304,7 +319,7 @@ class Gate:
             for n,observer in enumerate(observers):
                 table=observer.link_snapshot()
                 if table.flags!=1 or table.count!=1:raise ValueError('one actual physical link per controller')
-                link=table.links[0];address=Address(family=46,controller=n,version=2,generation=snapshots[n].generation,lifetime=link.lifetime,lease=leases[n],handle=link.handle,local_tcid=31,remote_tcid=31,pi=241,directions=(1 if n==index else 2) if directional else 3,security=security)
+                link=table.links[0];address=Address(family=46,controller=self.controllers[n],version=2,generation=snapshots[n].generation,lifetime=link.lifetime,lease=leases[n],handle=link.handle,local_tcid=31,remote_tcid=31,pi=241,directions=(1 if n==index else 2) if directional else 3,security=security)
                 data=socket.socket(46,socket.SOCK_DGRAM|socket.SOCK_CLOEXEC,0)
                 channels.append(data)
                 data.setsockopt(socket.SOL_SOCKET,socket.SO_RCVTIMEO,struct.pack('ll',8,0))
@@ -318,7 +333,7 @@ class Gate:
                         self.row['bind_rejections'].append(dict(controller=n,input=bytes(bad).hex(),errno=actual,wall_ns=time.time_ns()));save()
                 if libc.bind(data.fileno(),ctypes.byref(address),ctypes.sizeof(address)):
                     error=ctypes.get_errno();raise OSError(error,os.strerror(error))
-                self.row['owners'].append(dict(index=n,generation=snapshots[n].generation,lifetime=link.lifetime,handle=link.handle,lease=leases[n],address=bytes(address).hex()))
+                self.row['owners'].append(dict(index=self.controllers[n],generation=snapshots[n].generation,lifetime=link.lifetime,handle=link.handle,lease=leases[n],address=bytes(address).hex()))
                 pairs.append(socket.socketpair(socket.AF_UNIX,socket.SOCK_SEQPACKET))
             for n in range(2):
                 pid=os.fork()
@@ -375,7 +390,7 @@ class Gate:
             self.save()
             tx=decode(SleChannelTxStatus,value['value']);owner=self.row['owners'][self.index];worker=self.row['workers'][self.index]
             if ((value['stage'],value['pid'],value['fd'],tx.version,tx.size,tx.controller,tx.generation,tx.lifetime,tx.handle)
-                    !=('tx_status',worker['pid'],worker['fd'],1,64,self.index,owner['generation'],owner['lifetime'],owner['handle'])or tx.reserved):
+                    !=('tx_status',worker['pid'],worker['fd'],1,64,self.controllers[self.index],owner['generation'],owner['lifetime'],owner['handle'])or tx.reserved):
                 raise ValueError('current original worker and Native pool identity required')
             plan=geometry_plan(tx.packet_maximum,tx.capacity,force_prime)
             if time.monotonic()>deadline or len(row['samples'])>101:raise TimeoutError('bounded actual empty data pool before hold')
@@ -451,7 +466,7 @@ class Gate:
 
     def successor(self, observer, generation):
         from sparklink.native import NativeAdapter
-        with NativeAdapter(self.index,generation) as writer:
+        with NativeAdapter(self.controllers[self.index],generation) as writer:
             lease=writer.acquire_management(1)
             if lease<=self.row['owners'][self.index]['lease']:raise ValueError('strict successor token required')
             self.row['successor']=dict(lease=lease,generation=generation,start_wall_ns=time.time_ns());self.save()
@@ -479,18 +494,26 @@ class Gate:
         self.children=[];self.parents=[]
 
 
+def verify_owner(owner,controller,lease,directions,security):
+    address=Address.from_buffer_copy(bytes.fromhex(owner['address']))
+    if (owner['index']!=controller or owner['lease']!=lease or owner['generation']<=0 or owner['lifetime']<=0
+            or (address.family,address.controller,address.version,address.flags)!=(46,controller,2,0)
+            or (address.generation,address.lifetime,address.lease,address.handle)!=(owner['generation'],owner['lifetime'],owner['lease'],owner['handle'])
+            or (address.local_tcid,address.remote_tcid,address.pi,address.directions,address.security)!=(31,31,241,directions,security)or any(address.reserved)):
+        raise ValueError('exact original v2 socket identity/lease required')
+    return address
+
+
 def verify(row, outer):
     i=outer['index']
     from ws73_protected_grant import requirement
     security=requirement(outer)
+    ids=checked_controller_ids(outer.get('controller_ids',[0,1]))
+    if checked_controller_ids(row.get('controller_ids',[0,1]))!=ids:
+        raise ValueError('Grant and selected physical pair identities must agree')
     if row['status']!='GRANT_GATE_PASS' or row['index']!=i or len(row['owners'])!=2 or len(row['workers'])!=2:raise ValueError('complete Grant gate required')
     for n,owner in enumerate(row['owners']):
-        address=Address.from_buffer_copy(bytes.fromhex(owner['address']))
-        if (owner['index']!=n or owner['lease']!=outer['leases'][n] or owner['generation']<=0 or owner['lifetime']<=0
-                or (address.family,address.controller,address.version,address.flags)!=(46,n,2,0)
-                or (address.generation,address.lifetime,address.lease,address.handle)!=(owner['generation'],owner['lifetime'],owner['lease'],owner['handle'])
-                or (address.local_tcid,address.remote_tcid,address.pi,address.directions,address.security)!=(31,31,241,(1 if n==i else 2) if row.get('directional',False) else 3,security) or any(address.reserved)):
-            raise ValueError('exact original v2 socket identity/lease required')
+        verify_owner(owner,ids[n],outer['leases'][n],(1 if n==i else 2)if row.get('directional',False)else 3,security)
     for n,worker_row in enumerate(row['workers']):
         if worker_row['credentials']['uids']!=[1000]*4 or any(int(v,16) for v in worker_row['credentials']['caps'].values()) or worker_row['original']==worker_row['fd'] or worker_row['original_errno']!=errno.EBADF or worker_row['pid']<=0:raise ValueError('actual ordinary duplicated socket required')
         if row.get('scm_rights',False):

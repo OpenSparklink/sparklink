@@ -26,6 +26,20 @@ from ws73_target import require_benchmark_preparation, valid_parallel_benchmark,
 
 
 class FourPressure(unittest.TestCase):
+    def test_actual_root_request_check_preserves_each_explicit_case(self):
+        # R142 real VM rejected v4 before start because this production Root
+        # check still constructed v2. Exercise that exact entry, not only the
+        # coordinator summary or a successful authorization stub.
+        for case in ('parallel', 'close-short', 'pressure'):
+            words=['ws73.parallel=1', 'ws73.parallel_business=1', 'ws73.parallel_benchmark=1', benchmark.ROLE_TOKEN]
+            if case!='parallel': words.append('ws73.parallel_benchmark_case='+case)
+            channel=benchmark.parallel_channel(close_short=case=='close-short',pressure=case=='pressure')
+            for pair in (0,1):
+                row={benchmark.PAIR_FIELD:1,'parallel_pair':pair,benchmark.CHANNEL_FIELD:channel}
+                benchmark.check_pair_channel_boot(row,words)
+                bad=dict(row,benchmark_channel_request=benchmark.parallel_channel(close_short=case!='close-short'))
+                with self.assertRaises(CaptureError): benchmark.check_pair_channel_boot(bad,words)
+
     def test_explicit_case_boot_cli_and_preparation_source_contract(self):
         control = dict(dynamic_benchmark_mode=True, parallel_benchmark_contract_version=1, parallel_benchmark_case='pressure')
         self.assertEqual(parallel.benchmark_channel(control), benchmark.parallel_channel(pressure=True))

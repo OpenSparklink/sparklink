@@ -75,7 +75,8 @@ def check_pair_channel_boot(row,words):
     pair=parallel_pair(row);check_pair_boot(pair,words)
     if pair is not None:
         from ws73_parallel_data import benchmark_case_from_boot
-        expected=parallel_channel(0,close_short=benchmark_case_from_boot(words)=='close-short')
+        case=benchmark_case_from_boot(words)
+        expected=parallel_channel(0,close_short=case=='close-short',pressure=case=='pressure')
         if row_channel(row)!=expected:raise CaptureError('paired Root request must match explicit VM benchmark case')
     elif pressures_long(row_channel(row))and channel_from_boot(words,row['config'])!=row_channel(row):
         raise CaptureError('Root pressure request requires exact explicit VM profile')

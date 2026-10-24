@@ -48,3 +48,46 @@ checks retained real RX bytes against the existing independent capture decoder;
 it is not a new device run. No raw private captures or firmware are copied here.
 The fixture is not yet a qualified VM initialization gate. See the canonical
 R5f9 plan for staged ownership, original deadlines and remaining real checks.
+
+## Bounded libusb event-loop observation fixture
+
+`tools/ws73_qemu_event_observer.py` derives a **separate test-only** QEMU host
+source from the exact guarded baseline hash in the tool. It writes exclusively
+to a new file. The selected observer binary rejects USB host devices without
+the existing explicit WS73 port and reset/detach opt-outs. Preserve the original
+source, object closure, binary, preparation and all failed runs.
+
+The fixture counts existing libusb event-pump calls/returns and native callback
+entry before the canceled-packet branch, plus request allocation/free. It adds
+a 100 ms metadata heartbeat, limited to 4096 ticks per device and a scan of 128
+pending requests. Closing retires the observer timer before the original abort
+loop; a separate `drained` snapshot means that loop returned, **not** that
+hardware, Linux callbacks, references or protocol debt are proven drained.
+No packet bytes, keys, USB operations, protocol results or credit are generated.
+
+`ws73_usb_lifecycle.parse_native(text, explicit_targets)` checks the closed log,
+finite sequence, endpoint budgets, counters and terminal snapshots. It does not
+replace the original logical-request or application verifier. A budget marker,
+missing endpoint/terminal, held/injected callback, or inconsistent counters fails
+closed. The actual run must independently verify the original QMP no-injection
+contract. The heartbeat itself changes scheduling; results cannot qualify a
+performance improvement. Fixture tests are source/metadata tests, not a BQL,
+kernel-concurrency, libusb, firmware or RF proof. Compile/link provenance and
+real-device execution are separate gates, always VM-only on allocated leaves.
+
+`tools/ws73_qemu_poll_observer.py` derives a further **separate** fixture from
+the pinned complete native-observer source. It reuses that timer; it adds no
+second timer or event pump. For each native sample it snapshots at most eight
+libusb pollfds, calls `poll(..., 0)`, and identifies USB fds using bounded local
+`/proc/self/fd` readlink plus matching `fstat/stat` device/inode metadata. It
+never reads/reaps an URB or opens a device. Null lookup, overflow, syscall or
+identity errors are explicit; they are not successful zero-ready samples.
+
+`ws73_usb_lifecycle.parse_native_poll` requires every original native sample's
+following poll record, fd/readiness cardinality and declared USB identities.
+Error/hangup bits remain errors; readiness is not a completed data packet or
+endpoint attribution. Sampling cannot prove continuous absence between ticks.
+The host's usbfs poll semantics and source identity must be recorded separately
+from the VM kernel; an experiment kernel source is not host-source attestation.
+The additional syscalls also perturb scheduling. No performance, RF root cause,
+physical drain, generation authentication or business delivery is implied.

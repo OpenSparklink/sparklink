@@ -192,7 +192,7 @@ def worker(data, control, minimum=0):
                 send(control,dict(stage='oneway',initiator=command['initiator'],sent=sent,received=arrived,direction_errno=denied,denied_marker=marker.hex(),start_wall_ns=start,end_wall_ns=time.time_ns()))
             elif kind=='prime':
                 payloads=[bytes.fromhex(v) for v in command['payloads']]
-                if len(payloads)!=4 or len(set(payloads))!=4:raise ValueError('four distinct bounded real priming messages required')
+                if not 1<=len(payloads)<=31 or len(set(payloads))!=len(payloads):raise ValueError('distinct bounded real priming messages required')
                 values=[];before=time.time_ns()
                 for payload in payloads:
                     validate(payload,payload,False)
@@ -202,6 +202,30 @@ def worker(data, control, minimum=0):
                     else:
                         arrived=data.recv(249,socket.MSG_TRUNC);validate(arrived,payload,False);values.append(arrived.hex())
                 send(control,dict(stage='primed',sender=command['sender'],values=values,pid=os.getpid(),fd=data.fileno(),start_wall_ns=before,end_wall_ns=time.time_ns()))
+            elif kind=='expired_intent':
+                from sparklink.channel import channel_info
+                start=time.time_ns();before_info=bytes(channel_info(data.fileno())).hex()
+                before=time.monotonic_ns();deadline=before+100_000_000
+                expired=channel_prepare_tx(data.fileno(),minimum,deadline);prepared=time.monotonic_ns()
+                # One absolute setup deadline, before the held PDU is admitted.
+                while True:
+                    remaining=deadline-time.monotonic_ns()
+                    if remaining<=0:break
+                    time.sleep(remaining/1_000_000_000)
+                marker=b'INTENTEX'+secrets.token_bytes(32);submitted=time.monotonic_ns()
+                try:channel_send_constrained(data.fileno(),marker,expired,socket.MSG_DONTWAIT|socket.MSG_NOSIGNAL)
+                except OSError as error:actual=error.errno
+                else:raise ValueError('expired live-binding intent was admitted')
+                after=time.monotonic_ns();after_info=bytes(channel_info(data.fileno())).hex()
+                fresh_before=time.monotonic_ns();fresh=channel_prepare_tx(data.fileno(),minimum,fresh_before+5_000_000_000)
+                fresh_after=time.monotonic_ns()
+                if actual!=errno.ETIMEDOUT or before_info!=after_info:raise ValueError('live binding must reject only the expired intent')
+                send(control,dict(stage='expired_live_intent',pid=os.getpid(),fd=data.fileno(),errno=actual,
+                    marker=marker.hex(),info_before=before_info,info_after=after_info,constraint=bytes(expired).hex(),
+                    before_monotonic_ns=before,prepared_monotonic_ns=prepared,submit_before_monotonic_ns=submitted,
+                    submit_after_monotonic_ns=after,fresh_constraint=bytes(fresh).hex(),
+                    fresh_before_monotonic_ns=fresh_before,fresh_after_monotonic_ns=fresh_after,
+                    start_wall_ns=start,end_wall_ns=time.time_ns(),boot_id=Path('/proc/sys/kernel/random/boot_id').read_text().strip()))
             elif kind=='tx_status':
                 from sparklink.channel import channel_tx_status
                 send(control,dict(stage='tx_status',pid=os.getpid(),fd=data.fileno(),value=bytes(channel_tx_status(data.fileno())).hex(),wall_ns=time.time_ns()))
@@ -213,6 +237,20 @@ def worker(data, control, minimum=0):
                     admission=dict(admission_before_wall_ns=time.time_ns(),admission_before_monotonic_ns=time.monotonic_ns())
                     admission['tx_intent']=transmit(prefix)
                     admission.update(admission_after_wall_ns=time.time_ns(),admission_after_monotonic_ns=time.monotonic_ns())
+                if 'queued' in command:
+                    queued=command['queued']
+                    if (prefix is None or len(queued)!=2 or len(set(queued))!=2
+                            or any(len(bytes.fromhex(v))!=2042 or not bytes.fromhex(v).startswith(b'SLKQUE01') for v in queued)):
+                        raise ValueError('exact two distinct bounded queued lifecycle PDUs required')
+                    admission['queued']=[]
+                    for value in queued:
+                        item=dict(payload=value,before_wall_ns=time.time_ns(),before_monotonic_ns=time.monotonic_ns())
+                        item['tx_intent']=transmit(bytes.fromhex(value))
+                        item.update(after_wall_ns=time.time_ns(),after_monotonic_ns=time.monotonic_ns())
+                        admission['queued'].append(item)
+                    # The later denial exercises the original begun-PDU intent;
+                    # queued submissions must not silently replace that retry.
+                    last_constraint=SleSendConstraint.from_buffer_copy(bytes.fromhex(admission['tx_intent']['constraint']))
                 if command.get('sample_before_block'):
                     if prefix is None:raise ValueError('TX observation requires bounded original PDU')
                     from sparklink.channel import channel_tx_status
@@ -251,13 +289,28 @@ def worker(data, control, minimum=0):
     finally:data.close()
 
 
+def checked_controller_ids(ids):
+    if type(ids)is not list or len(ids)!=2 or any(type(n)is not int or not 0<=n<16 for n in ids)or len(set(ids))!=2:
+        raise ValueError('two explicit distinct Native controller identities required')
+    return ids
+
+
+def controller_ids(snapshots):
+    """Use the selected snapshots' real IDs, never pair-local enumeration."""
+    return checked_controller_ids([s.dev_index for s in snapshots])
+
+
 class Gate:
     def __init__(self, observers, snapshots, leases, index, record, save, directional=False, scm_rights=False, security=0):
         from ws73_protected_grant import requirement
         if security!=requirement(record):raise ValueError('requested protected binding and original prelude must agree')
         self.directional=directional
+        self.controllers=controller_ids(snapshots)
         self.index=index;self.record=record;self.save=save;self.children=[];self.parents=[]
         self.row=dict(status='STARTING',index=index,owners=[],workers=[],business=[],tx_constraint_required=not directional,start_wall_ns=time.time_ns())
+        if self.controllers!=[0,1]:
+            if record.get('controller_ids')!=self.controllers:raise ValueError('selected pair must declare actual controller IDs')
+            self.row['controller_ids']=self.controllers
         if directional:self.row.update(directional=True,bind_rejections=[])
         if scm_rights:self.row.update(scm_rights=True,transfers=[])
         record['channel_grant']=self.row;save();channels=[];pairs=[]
@@ -266,7 +319,7 @@ class Gate:
             for n,observer in enumerate(observers):
                 table=observer.link_snapshot()
                 if table.flags!=1 or table.count!=1:raise ValueError('one actual physical link per controller')
-                link=table.links[0];address=Address(family=46,controller=n,version=2,generation=snapshots[n].generation,lifetime=link.lifetime,lease=leases[n],handle=link.handle,local_tcid=31,remote_tcid=31,pi=241,directions=(1 if n==index else 2) if directional else 3,security=security)
+                link=table.links[0];address=Address(family=46,controller=self.controllers[n],version=2,generation=snapshots[n].generation,lifetime=link.lifetime,lease=leases[n],handle=link.handle,local_tcid=31,remote_tcid=31,pi=241,directions=(1 if n==index else 2) if directional else 3,security=security)
                 data=socket.socket(46,socket.SOCK_DGRAM|socket.SOCK_CLOEXEC,0)
                 channels.append(data)
                 data.setsockopt(socket.SOL_SOCKET,socket.SO_RCVTIMEO,struct.pack('ll',8,0))
@@ -280,7 +333,7 @@ class Gate:
                         self.row['bind_rejections'].append(dict(controller=n,input=bytes(bad).hex(),errno=actual,wall_ns=time.time_ns()));save()
                 if libc.bind(data.fileno(),ctypes.byref(address),ctypes.sizeof(address)):
                     error=ctypes.get_errno();raise OSError(error,os.strerror(error))
-                self.row['owners'].append(dict(index=n,generation=snapshots[n].generation,lifetime=link.lifetime,handle=link.handle,lease=leases[n],address=bytes(address).hex()))
+                self.row['owners'].append(dict(index=self.controllers[n],generation=snapshots[n].generation,lifetime=link.lifetime,handle=link.handle,lease=leases[n],address=bytes(address).hex()))
                 pairs.append(socket.socketpair(socket.AF_UNIX,socket.SOCK_SEQPACKET))
             for n in range(2):
                 pid=os.fork()
@@ -323,10 +376,35 @@ class Gate:
             self.row['business'].append(row);self.save()
         return rows
 
-    def prime(self):
+    def prefix_geometry(self,force_prime=False):
+        from sparklink.structs import SleChannelTxStatus
+        from ws73_management_setup import decode
+        from ws73_channel_prefix_hold import geometry_plan
+        row=dict(version=1,force_prime=force_prime,samples=[],start_wall_ns=time.time_ns(),start_monotonic_ns=time.monotonic_ns())
+        # Retain bounded observations even if setup fails before arm(). This
+        # is fixture evidence, not another production credit/state authority.
+        self.row['prefix_geometry_observation']=row;self.save()
+        deadline=time.monotonic()+.5
+        while True:
+            send(self.parents[self.index],dict(kind='tx_status'));value=receive(self.parents[self.index]);row['samples'].append(value)
+            self.save()
+            tx=decode(SleChannelTxStatus,value['value']);owner=self.row['owners'][self.index];worker=self.row['workers'][self.index]
+            if ((value['stage'],value['pid'],value['fd'],tx.version,tx.size,tx.controller,tx.generation,tx.lifetime,tx.handle)
+                    !=('tx_status',worker['pid'],worker['fd'],1,64,self.controllers[self.index],owner['generation'],owner['lifetime'],owner['handle'])or tx.reserved):
+                raise ValueError('current original worker and Native pool identity required')
+            plan=geometry_plan(tx.packet_maximum,tx.capacity,force_prime)
+            if time.monotonic()>deadline or len(row['samples'])>101:raise TimeoutError('bounded actual empty data pool before hold')
+            if not any([tx.outstanding,tx.connection_debt,tx.flags,tx.queued,tx.busy,tx.active_pdu_bytes,tx.active_pdu_offset]):break
+            time.sleep(.005)
+        row.update(plan=plan,end_wall_ns=time.time_ns(),end_monotonic_ns=time.monotonic_ns())
+        self.save()
+        return row
+
+    def prime(self,count):
         from ws73_management_setup import decode
         from sparklink.structs import SleChannelTxStatus
-        payloads=[message().hex() for _ in range(4)]
+        if type(count)is not int or not 1<=count<=31:raise ValueError('bounded explicit priming count required')
+        payloads=[message().hex() for _ in range(count)]
         row=dict(payloads=payloads,start_wall_ns=time.time_ns(),applications=[],source_pool_samples=[])
         self.row['priming']=row;self.save()
         for n,parent in enumerate(self.parents):send(parent,dict(kind='prime',sender=n==self.index,payloads=payloads))
@@ -335,10 +413,17 @@ class Gate:
         while True:
             send(self.parents[self.index],dict(kind='tx_status'));value=receive(self.parents[self.index]);row['source_pool_samples'].append(value);self.save()
             tx=decode(SleChannelTxStatus,value['value'])
-            if (tx.outstanding,tx.connection_debt,tx.flags,tx.queued,tx.busy,tx.active_pdu_bytes,tx.active_pdu_offset)==(4,4,0,0,0,0,0):break
-            if time.monotonic()>deadline:raise TimeoutError('actual four unpaid priming credits before long PDU')
+            if (tx.outstanding,tx.connection_debt,tx.flags,tx.queued,tx.busy,tx.active_pdu_bytes,tx.active_pdu_offset)==(count,count,0,0,0,0,0):break
+            if time.monotonic()>deadline:raise TimeoutError('actual unpaid priming credits before long PDU')
             time.sleep(.005)
         row.update(end_wall_ns=time.time_ns(),status='PRIMING_RECEIPTS_RECORDED');self.save()
+
+    def expired_intent(self):
+        if 'ws73.intent_phase=2' not in Path('/proc/cmdline').read_text().split():
+            raise ValueError('explicit phase2 live/retired intent contract required')
+        send(self.parents[self.index],dict(kind='expired_intent'))
+        self.row['expired_live_intent']=receive(self.parents[self.index])
+        self.row['intent_phase_contract_version']=2;self.save()
 
     def arm(self, sample_before_block=False):
         request=dict(kind='block')
@@ -346,6 +431,12 @@ class Gate:
         if 'ws73.channel_revoke_prefix=1' in Path('/proc/cmdline').read_text().split():
             payload=b'SLKREV01'+secrets.token_bytes(2034)
             request['prefix']=payload.hex();self.row['revoke_prefix']=dict(payload=payload.hex(),admission_before_wall_ns=time.time_ns())
+        if 'ws73.channel_queued_discard=1' in Path('/proc/cmdline').read_text().split():
+            if 'prefix' not in request or not sample_before_block:
+                raise ValueError('queued lifecycle requires original prefix and actual full-pool snapshot')
+            request['queued']=[(b'SLKQUE01'+secrets.token_bytes(2034)).hex() for _ in range(2)]
+            self.row['queued_discard_contract_version']=1
+            self.row['queue_boot_id']=Path('/proc/sys/kernel/random/boot_id').read_text().strip()
         send(self.parents[self.index],request);value=receive(self.parents[self.index])
         if 'revoke_prefix' in self.row:
             if value.get('prefix')!=request['prefix']:raise ValueError('original worker prefix admission required')
@@ -375,7 +466,7 @@ class Gate:
 
     def successor(self, observer, generation):
         from sparklink.native import NativeAdapter
-        with NativeAdapter(self.index,generation) as writer:
+        with NativeAdapter(self.controllers[self.index],generation) as writer:
             lease=writer.acquire_management(1)
             if lease<=self.row['owners'][self.index]['lease']:raise ValueError('strict successor token required')
             self.row['successor']=dict(lease=lease,generation=generation,start_wall_ns=time.time_ns());self.save()
@@ -403,18 +494,26 @@ class Gate:
         self.children=[];self.parents=[]
 
 
+def verify_owner(owner,controller,lease,directions,security):
+    address=Address.from_buffer_copy(bytes.fromhex(owner['address']))
+    if (owner['index']!=controller or owner['lease']!=lease or owner['generation']<=0 or owner['lifetime']<=0
+            or (address.family,address.controller,address.version,address.flags)!=(46,controller,2,0)
+            or (address.generation,address.lifetime,address.lease,address.handle)!=(owner['generation'],owner['lifetime'],owner['lease'],owner['handle'])
+            or (address.local_tcid,address.remote_tcid,address.pi,address.directions,address.security)!=(31,31,241,directions,security)or any(address.reserved)):
+        raise ValueError('exact original v2 socket identity/lease required')
+    return address
+
+
 def verify(row, outer):
     i=outer['index']
     from ws73_protected_grant import requirement
     security=requirement(outer)
+    ids=checked_controller_ids(outer.get('controller_ids',[0,1]))
+    if checked_controller_ids(row.get('controller_ids',[0,1]))!=ids:
+        raise ValueError('Grant and selected physical pair identities must agree')
     if row['status']!='GRANT_GATE_PASS' or row['index']!=i or len(row['owners'])!=2 or len(row['workers'])!=2:raise ValueError('complete Grant gate required')
     for n,owner in enumerate(row['owners']):
-        address=Address.from_buffer_copy(bytes.fromhex(owner['address']))
-        if (owner['index']!=n or owner['lease']!=outer['leases'][n] or owner['generation']<=0 or owner['lifetime']<=0
-                or (address.family,address.controller,address.version,address.flags)!=(46,n,2,0)
-                or (address.generation,address.lifetime,address.lease,address.handle)!=(owner['generation'],owner['lifetime'],owner['lease'],owner['handle'])
-                or (address.local_tcid,address.remote_tcid,address.pi,address.directions,address.security)!=(31,31,241,(1 if n==i else 2) if row.get('directional',False) else 3,security) or any(address.reserved)):
-            raise ValueError('exact original v2 socket identity/lease required')
+        verify_owner(owner,ids[n],outer['leases'][n],(1 if n==i else 2)if row.get('directional',False)else 3,security)
     for n,worker_row in enumerate(row['workers']):
         if worker_row['credentials']['uids']!=[1000]*4 or any(int(v,16) for v in worker_row['credentials']['caps'].values()) or worker_row['original']==worker_row['fd'] or worker_row['original_errno']!=errno.EBADF or worker_row['pid']<=0:raise ValueError('actual ordinary duplicated socket required')
         if row.get('scm_rights',False):
@@ -476,6 +575,11 @@ def verify_intents(row, outer):
             if m.version!=1 or m.size!=40 or m.flags!=3 or not scope(m,row['owners'][n]) or m.security_epoch!=c.security_epoch or not c.minimum<=m.security<=2:raise ValueError('actual original RX scope/epoch/grade required')
             if c.minimum!=(floor if b['initiator']==n else m.security):raise ValueError('initiator minimum and original reply observation required')
             count+=1
+    phase=row.get('intent_phase_contract_version')
+    if phase is not None:
+        if type(phase)is not int or phase!=2 or 'data_deadline' not in outer:raise ValueError('explicit deadline intent phase2 required')
+        verify_expired_live_intent(row,outer)
+    elif 'expired_live_intent' in row:raise ValueError('unexpected unversioned intent probe')
     armed=row.get('armed',{});prefix=armed.get('tx_intent')
     if 'revoke_prefix' in row:
         if prefix is None:raise ValueError('actual long PDU admission must carry TX intent')
@@ -483,6 +587,12 @@ def verify_intents(row, outer):
         if c.minimum!=floor or not armed['admission_before_monotonic_ns']<=prefix['before_monotonic_ns']<=prefix['after_monotonic_ns']<=armed['admission_after_monotonic_ns']:raise ValueError('prefix cannot refresh original admission deadline')
         original=prefix['constraint']
     else:original=None
+    queued=queued_admissions(row)
+    for entry in queued:
+        c=intent(entry['tx_intent'],row['owners'][outer['index']])
+        if (c.minimum!=floor or not entry['before_monotonic_ns']<=entry['tx_intent']['before_monotonic_ns']
+                <=entry['tx_intent']['after_monotonic_ns']<=entry['after_monotonic_ns']):
+            raise ValueError('queued PDU retains its own original constrained admission')
     if 'data_deadline' in outer:receipts=[outer['data_deadline'][k] for k in ['old_fd_before_release','old_fd_after_release']]
     elif 'data_link_down' in outer:receipts=[outer['data_link_down']['old_fd']]
     else:receipts=[row[k] for k in ['after_withdrawal','after_successor'] if k in row]
@@ -495,19 +605,90 @@ def verify_intents(row, outer):
         expected=raw
         if 'data_deadline' in outer:
             cached=decode(SleSendConstraint,d['constraint'])
-            # Actual production sl_prepare_tx rejects inactive Session first;
-            # sl_tx_access checks the expired constraint before later sl_admit.
             if raw!=errno.ENOTCONN or sb<cached.deadline_monotonic_ns:raise ValueError('original Session timeout before cached expired-intent retry required')
-            expected=errno.ETIMEDOUT
+            # Historical v1 receipts retain their original exact oracle. New
+            # runs distinguish expired live intent from a retired binding:
+            # production sl_tx_access rejects the latter before the constraint.
+            expected=errno.ENOTCONN if phase==2 else errno.ETIMEDOUT
         if d['errors']!={'prepare':raw,'submit':expected}:raise ValueError('fresh prepare and unchanged cached intent need their exact phase-specific errors')
         if original is not None and d['constraint']!=original:raise ValueError('withdrawal retry must use the original admitted intent unchanged')
-    return dict(status='ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED',business_sends=count,prefix_admission=bool(prefix),late_refusals=len(receipts)*2,expired_intent_refusals=len(receipts) if 'data_deadline' in outer else 0,
+    result=dict(status='ORIGINAL_TX_INTENT_LIFECYCLE_RECEIPTS_CORROBORATED',business_sends=count,prefix_admission=bool(prefix),late_refusals=len(receipts)*2,expired_intent_refusals=(1 if phase==2 else len(receipts)) if 'data_deadline' in outer else 0,
                 scope='Actual ordinary fd prepare/send/recv plus existing USB/hold/Down or deadline oracle;local syscall records are not carried on USB,no actual kernel concurrency/credit-reuse/ref-drain proof')
+    if phase==2:result.update(intent_phase_contract_version=2,retired_binding_refusals=len(receipts))
+    return result
+
+
+def verify_expired_live_intent(row,outer):
+    """Validate actual syscall receipts; USB absence is checked independently."""
+    import re
+    from sparklink.structs import SleChannelInfo,SleSendConstraint
+    from ws73_management_setup import decode
+    from ws73_protected_grant import requirement
+    value=row['expired_live_intent'];owner=row['owners'][outer['index']];worker=row['workers'][outer['index']]
+    before,prepared,submit,after,fresh_before,fresh_after=[value[k]for k in ['before_monotonic_ns','prepared_monotonic_ns','submit_before_monotonic_ns','submit_after_monotonic_ns','fresh_before_monotonic_ns','fresh_after_monotonic_ns']]
+    c=decode(SleSendConstraint,value['constraint']);fresh=decode(SleSendConstraint,value['fresh_constraint'])
+    if (value['stage']!='expired_live_intent' or value['errno']!=errno.ETIMEDOUT
+            or (value['pid'],value['fd'])!=(worker['pid'],worker['fd'])
+            or not isinstance(value['boot_id'],str)or not re.fullmatch('[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}',value['boot_id'])
+            or any(type(t)is not int for t in [before,prepared,submit,after,fresh_before,fresh_after])
+            or not 0<before<=prepared<c.deadline_monotonic_ns<=submit<=after<=fresh_before<=fresh_after<fresh.deadline_monotonic_ns
+            or c.deadline_monotonic_ns!=before+100_000_000 or fresh.deadline_monotonic_ns!=fresh_before+5_000_000_000
+            or not fresh_after<row['armed']['admission_before_monotonic_ns']
+            or not value['start_wall_ns']<=value['end_wall_ns']<row['revoke_prefix']['admission_before_wall_ns']):
+        raise ValueError('one actual expired-intent refusal before original held-PDU deadline required')
+    scope=lambda v:(v.controller,v.generation,v.lifetime,v.handle,v.local_tcid,v.remote_tcid,v.pi)
+    expected=(owner['index'],owner['generation'],owner['lifetime'],owner['handle'],31,31,241)
+    for v in [c,fresh]:
+        if (v.version,v.size,v.minimum,v.reserved)!=(1,48,requirement(outer),0)or scope(v)!=expected or not v.security_epoch:raise ValueError('original live fd scoped intent required')
+    if c.security_epoch!=fresh.security_epoch:raise ValueError('unchanged security epoch required across expired live intent')
+    info=decode(SleChannelInfo,value['info_before']);marker=bytes.fromhex(value['marker'])
+    if (value['info_before']!=value['info_after']or (info.version,info.size,info.reserved)!=(1,40,0)
+            or scope(info)!=expected or info.directions!=3 or info.mode!=0
+            or not 40<=info.mtu<=2042 or not info.mtu+5<=info.mps<=2047
+            or len(marker)!=40 or marker[:8]!=b'INTENTEX'):
+        raise ValueError('same actual live channel before/after expired intent required')
+    if row.get('queue_boot_id',value['boot_id'])!=value['boot_id']:raise ValueError('one original guest boot required')
+    return value
+
+
+def queued_admissions(row):
+    """Validate the explicit test profile; never infer a wire or drain result."""
+    version=row.get('queued_discard_contract_version')
+    queued=row.get('armed',{}).get('queued')
+    if version is None and queued is None:
+        return []
+    if type(version) is not int or version!=1 or not isinstance(queued,list) or len(queued)!=2:
+        raise ValueError('explicit queued-discard profile with two admissions required')
+    import re
+    if not isinstance(row.get('queue_boot_id'),str) or not re.fullmatch('[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}',row['queue_boot_id']):
+        raise ValueError('original queued worker boot identity required')
+    from sparklink.structs import SleChannelTxStatus
+    from ws73_management_setup import decode
+    armed=row['armed'];previous_mono=armed['admission_after_monotonic_ns'];previous_wall=armed['admission_after_wall_ns']
+    payloads=[]
+    for entry in queued:
+        raw=bytes.fromhex(entry['payload']);payloads.append(raw)
+        if (len(raw)!=2042 or raw[:8]!=b'SLKQUE01'
+                or any(type(entry[k]) is not int for k in ['before_monotonic_ns','after_monotonic_ns','before_wall_ns','after_wall_ns'])
+                or not previous_mono<=entry['before_monotonic_ns']<=entry['after_monotonic_ns']<armed['monotonic_ns']
+                or not previous_wall<=entry['before_wall_ns']<=entry['after_wall_ns']<armed['wall_ns']):
+            raise ValueError('distinct queued admissions before actual blocked worker required')
+        previous_mono=entry['after_monotonic_ns'];previous_wall=entry['after_wall_ns']
+    tx=decode(SleChannelTxStatus,armed['pre_block_tx_status'])
+    if len(set(payloads))!=2 or tx.queued!=2 or tx.queue_limit!=8 or tx.busy!=1:
+        raise ValueError('actual two queued PDUs behind the original begun PDU required')
+    return queued
 
 
 def business_evidence(row, outer, capture):
     """Shared actual application TX/opposite RX evidence, independent of closure."""
+    if any(len(business['applications'])!=2 for business in row['business']):
+        raise CaptureError('two actual business application receipts required')
     if row.get('tx_constraint_required'):verify_intents(row,outer)
+    if row.get('intent_phase_contract_version')==2:
+        probe=verify_expired_live_intent(row,outer)
+        if any(probe['marker'] in p['data']for p in capture['acb_packets']):
+            raise CaptureError('expired live intent marker reached USB')
     sdus=reassemble_acb(capture);legs=[]
     for business in row['business']:
         for n,application in enumerate(business['applications']):

@@ -26,6 +26,42 @@ WS73 路径不变；UserHost 仍 P4 规划，不是数据或安全 relay 的前�
 仅开放已接通的类型化方法，高阶 API 分批迁移，不以空门面补齐目标树。
 完整参数/错误、fork 与 fd 生命周期见[接口参考](../reference/interfaces.md)。
 
+持续 SSAP 更新使用同一物理 Engine 的 caller-owned 接收租约，不能给每种语言另建
+收发循环或协议状态。它固定原 daemon／controller generation／connection lifetime
+及 Native 安全 epoch，有限队列在满时区分通知丢弃与指示拒绝；协议确认只是队列
+准入，不是应用处理。配置／清理占用原客户端事务序列，持续等待期间让出普通读写。
+资源租期与各次请求、包和首次清理期限分开，续租不刷新后者。
+
+派生订阅保留原 caller，释放父 Client／Connection 观察不隐式断链或撤回其他资源。
+Rust显式close、C／Python显式release才观察自己租约的配置引用清理；本地free、Python
+context 退出或 Rust Drop 不构成清理收据。Drop 的尽力撤回、owner-loss 与有限租期
+也不能当作所有 callback／Native 引用已排空。opaque 租约不继承 socket 的 dup／
+SCM_RIGHTS契约。原单租约切片、共享CPCD多应用分配及同lifetime在途更新的
+交付边界分别验收；不能从一次停用回复推导所有旧消息都已排空或已被应用处理。
+共享接收首先支持已经启用组内的相同属性集合／模式，至多8个caller-owned租约，
+每个独立owner／token／队列／期限；不恢复按语言或应用建立另一套wire Engine。
+关闭一个租约只撤销其路由及引用，最后一个有效引用才通过原事务序列停用CPCD。
+此时共享保留的终态必须有显式REMOTE_RETAINED位，不能伪装成远端停用成功；
+flags=3与最后实际停用后的flags=1分别验收。旧终态只是完成当时的观察，不是当前
+硬件或安全授权。读取消不撤回租约；未知物理清理继续保留义务并隔离actor。
+
+RX在唯一actor解析一次后分流到独立有限队列。ACK1是至少一个有效接收队列准入，
+不表示所有订阅者收到或应用处理；一个队列满不影响另一个。动态过滤／模式集合的
+增减必须另有受控配置事务和授权，不能因共享框架存在就开放；保持原完整目标。
+参考固定NearLink Host f0872df 的按地址／handle保存appId配置与清理路径，但其appId
+不是Linux凭据、generation／lifetime或授权。源码映射、bounded model与准确VM门禁
+分别记录；不将缓存、引用数或模型通过当作真实远端配置／交付证明。
+
+普通应用总线准入、服务拥有者权限与 controller 管理权限仍分别门禁，接口出现不
+构成 apps-only 资格。逐方法迁移已有原期限的远端读写、单次接收及持续租约，不使用
+整个 Connection 接口的 broad allow。发现／UUID／信息等尚未完成原期限审计的入口
+继续留在原角色范围，后续整改不成为先验收受约束业务的全控制面前置。
+
+权限探针必须区分总线准入与协议成功：非法参数到达真实 daemon 预检而被拒绝，只
+说明策略路径；正向数据仍需真实 SDK 应用、原凭据及对端处理证据。新版本门禁固定
+应用组身份、无额外管理组和零 capabilities，不能继承旧管理组记录。服务拥有者的
+本地审批／数据库观察与远端应用分别记录，协议 ACK 也不充当独立业务回复。
+
 派生C/Python Connection引用与Client引用共享原caller／执行器；关闭Client不关闭仍
 被Connection引用的caller，最后本地引用才join。Connection固定现有Rust视图的
 identity，远端SSAP读／短写使用同一RemoteSsap方法和daemon Engine。对象释放不

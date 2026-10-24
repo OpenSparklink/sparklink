@@ -1,10 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Parser/association fixtures only;no actual kernel tracing or hardware."""
 import copy
+from pathlib import Path
+import sys
 import unittest
 from unittest.mock import patch
 
-from ws73_session_service import EVENTS, STATUS, parse, join, vm_guard, cleanup
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+from ws73_session_service import EVENTS, STATUS, parse, parse_aborted, _read_trace, _check_kernel_strings, join, vm_guard, cleanup, operation_timings, failed_operation_timings, bind_business
 from ws73_trace_layout import buffer_kib
 
 
@@ -34,7 +37,7 @@ def fixture():
         for stage,delta,result in [(0,120_000,-115),(2,130_000,0),(1,140_000,0)]:event('tx',delta,stage=stage,result=result,**tx)
         event('work',160_000,**(w|dict(stage=1,attempts=1,bytes=8,elapsed_ns=60_000)))
         owners[ctl,ctl+1,1]=dict(bus=1,device=ctl+2,handle=0,epoch=4)
-        capture['acb_packets'].append(dict(bus=1,device=ctl+2,handle=0,direction='out',boundary=0,data='00'*8,wall_ns=WALL+BASE+125_000))
+        capture['acb_packets'].append(dict(record=ctl+1,bus=1,device=ctl+2,handle=0,direction='out',boundary=0,data='00'*8,wall_ns=WALL+BASE+125_000))
     def line(t,cpu,name,body):return f' worker-123 [{cpu:03d}] .... {t//10**9}.{t%10**9//1000:06d}: {name}: {body}'
     rows=[line(BASE,0,'tracing_mark_write','SLK_SERVICE_BEGIN:'+row['cookie'])]
     rows.extend(line(t,cpu,name,body) for t,cpu,name,body in sorted(records))
@@ -45,6 +48,274 @@ def fixture():
 
 
 class ServiceTrace(unittest.TestCase):
+    def test_queue_discard_stage_requires_explicit_v2_and_queue_event(self):
+        text, row, owners, capture = fixture()
+        changed = text.replace('deadline=5042 stage=2', 'deadline=5042 stage=3')
+        parsed = parse(changed, row | dict(queue_retirement_contract_version=2))
+        with self.assertRaisesRegex(ValueError, 'no accepted prefix'):
+            join(parsed, owners, capture)
+        for value in (1, True, 2.0, 3):
+            with self.subTest(version=value), self.assertRaises(ValueError):
+                parse(changed, row | dict(queue_retirement_contract_version=value))
+        with self.assertRaises(ValueError):
+            parse(changed, row)
+        for name in ('sparklink_session_work', 'sparklink_session_tx'):
+            bad = text.splitlines()
+            line = next(n for n, v in enumerate(bad) if name+':' in v and 'stage=1' in v)
+            bad[line] = bad[line].replace('stage=1', 'stage=3')
+            with self.subTest(event=name), self.assertRaises(ValueError):
+                parse('\n'.join(bad), row | dict(queue_retirement_contract_version=2))
+
+    def test_never_dequeued_discard_has_a_terminal_without_USB_or_credit(self):
+        text, row, owners, capture = fixture()
+        parsed = parse(text, row)
+        parsed['rows'] = [v for v in parsed['rows'] if not
+                          (v['ctl'] == 0 and v['event'] == 'queue' and v['stage'] == 1)]
+        for v in parsed['rows']:
+            if v['ctl'] != 0:
+                continue
+            if v['event'] == 'queue' and v['stage'] == 2:
+                v['stage'] = 3
+            elif v['event'] == 'tx':
+                v.update(slot=-1, sequence=99)  # Unrelated control submission.
+            elif v['event'] == 'work' and v['stage'] == 1:
+                v.update(attempts=0, bytes=0)
+        proof = join(parsed, owners, capture)
+        self.assertEqual(proof['queued_discarded_operations'], 1)
+        op = operation_timings(parsed, owners, capture)['operations'][0]
+        self.assertEqual(op['retirement_kind'], 'queued_discard_no_physical_prefix')
+        self.assertEqual(op['retirement_ns'], BASE+150_000)
+        self.assertEqual(op['accepted_usb_records'], [])
+        self.assertIsNone(op['admission_to_first_acceptance'])
+        for kind in ('duplicate', 'changed-deadline', 'missing-admission'):
+            bad = copy.deepcopy(parsed)
+            terminal = next(v for v in bad['rows'] if v['event'] == 'queue' and v['stage'] == 3)
+            if kind == 'duplicate':
+                bad['rows'].append(copy.deepcopy(terminal))
+            elif kind == 'changed-deadline':
+                terminal['deadline'] += 1
+            else:
+                bad['rows'] = [v for v in bad['rows'] if not (v['ctl'] == 0 and v['event'] == 'queue' and v['stage'] == 0)]
+            with self.subTest(kind=kind), self.assertRaises(ValueError):
+                join(bad, owners, capture)
+
+    def test_requeued_discard_requires_definite_unstarted_refusal(self):
+        text, row, owners, capture = fixture()
+        parsed = parse(text, row)
+        original = [copy.deepcopy(v) for v in parsed['rows'] if v['ctl'] == 0 and v['event'] == 'tx']
+        parsed['rows'] = [v for v in parsed['rows'] if not (v['ctl'] == 0 and v['event'] == 'tx' and v['stage'] == 2)]
+        for v in parsed['rows']:
+            if v['ctl'] == 0 and v['event'] == 'tx' and v['stage'] == 1:
+                v.update(result=-11, wait=1)
+            elif v['ctl'] == 0 and v['event'] == 'queue' and v['stage'] == 2:
+                v.update(stage=3, mono_ns=BASE+155_000)
+        for v in original:
+            v.update(slot=-1, sequence=99, mono_ns=BASE+{0:145_000, 2:146_000, 1:148_000}[v['stage']])
+            parsed['rows'].append(v)
+        capture['acb_packets'][0]['wall_ns'] = WALL+BASE+145_500
+        self.assertEqual(join(parsed, owners, capture)['queued_discarded_operations'], 1)
+        for result in (0, -5, -125):
+            bad = copy.deepcopy(parsed)
+            next(v for v in bad['rows'] if v['event'] == 'tx' and v['ctl'] == 0 and v['slot'] == 0 and v['stage'] == 1)['result'] = result
+            with self.subTest(result=result), self.assertRaises(ValueError):
+                join(bad, owners, capture)
+
+    def test_failure_trace_seals_after_owned_process_cleanup_attempt(self):
+        source = (Path(__file__).resolve().parents[1]/'ws73_target_init.sh').read_text()
+        failure = source[source.index('fail() {'):source.index('mkdir -p /evidence/device-failure')]
+        abort = failure.index('ws73_session_service.py abort')
+        self.assertGreater(abort, failure.index('wait "$application_role_supervisor"'))
+        self.assertGreater(abort, failure.index('kill -TERM "$daemon"'))
+        self.assertLess(abort, failure.index('kill -INT "$capture"'))
+
+    def test_aborted_and_completed_entries_are_mutually_exclusive(self):
+        text, row, owners, capture = fixture()
+        with self.assertRaises(ValueError):
+            parse_aborted(text, row)
+        aborted = row | dict(status='ABORTED_NOT_QUALIFIED')
+        with self.assertRaises(ValueError):
+            parse(text, aborted)
+        self.assertEqual(parse_aborted(text, aborted), parse(text, row))
+        # Structural parsing does not erase incomplete physical obligations.
+        parsed = parse_aborted(text, aborted)
+        parsed['rows'] = [v for v in parsed['rows']
+                          if not (v['event'] == 'queue' and v['stage'] == 2)]
+        with self.assertRaises(ValueError):
+            operation_timings(parsed, owners, capture)
+        for change in (dict(clock='local'), dict(instance_removed=False),
+                       dict(status='RUNNING_NOT_QUALIFIED'), dict(requested_buffer_kb=4096)):
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                parse_aborted(text, aborted | change)
+
+    def test_original_trace_files_are_checked_in_both_modes(self):
+        import hashlib
+        import json
+        import tempfile
+        text, row, _, _ = fixture()
+        for state in (STATUS, 'ABORTED_NOT_QUALIFIED'):
+            with self.subTest(state=state), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                current = copy.deepcopy(row) | dict(status=state)
+                current['formats'] = {}
+                for name in EVENTS:
+                    raw = 'fixture format ' + name
+                    (root/(name+'.format')).write_text(raw)
+                    current['formats'][name] = hashlib.sha256(raw.encode()).hexdigest()
+                (root/'trace.txt').write_text(text)
+                current['trace_sha256'] = hashlib.sha256(text.encode()).hexdigest()
+                (root/'header_page.txt').write_text(current['header_page'])
+                for cpu, raw in current['stats'].items():
+                    (root/(cpu+'-stats.txt')).write_text(raw)
+                (root/'run.json').write_text(json.dumps(current))
+                self.assertEqual(_read_trace(root), (text, current))
+                for name in ('trace.txt', 'header_page.txt', 'cpu0-stats.txt',
+                             'sparklink_session_queue.format'):
+                    path = root/name
+                    original = path.read_text()
+                    path.write_text(original+'changed')
+                    with self.subTest(file=name), self.assertRaises(ValueError):
+                        _read_trace(root)
+                    path.write_text(original)
+
+    def test_failed_analysis_requires_separate_explicit_cli_scope(self):
+        import subprocess
+        program = Path(__file__).resolve().parents[1]/'ws73_session_service.py'
+        for args in (['analyze-failed-benchmark', '/absent'],
+                     ['analyze-benchmark', '/absent', '--failed-phase', '0'],
+                     ['start', '--failed-phase', '0'],
+                     ['analyze-failed-benchmark', '/absent', '--failed-phase', '2']):
+            with self.subTest(args=args):
+                result = subprocess.run([sys.executable, str(program), *args],
+                                        text=True, capture_output=True, timeout=5)
+                self.assertEqual(result.returncode, 2)
+                self.assertNotIn('Traceback', result.stderr)
+
+    def test_uname_version_and_proc_version_are_distinct_checked_formats(self):
+        trace = dict(kernel_release='7.0.0-lab+', kernel_version='#139 SMP build-date')
+        control = dict(kernel_release='7.0.0-lab+',
+                       kernel_version='Linux version 7.0.0-lab+ (builder@host) (clang (release)) #139 SMP build-date\n')
+        _check_kernel_strings(trace, control)
+        for change in (dict(kernel_release='old-release'),
+                       dict(kernel_version=trace['kernel_version']),
+                       dict(kernel_version=control['kernel_version'].replace('#139', '#138')),
+                       dict(kernel_version=control['kernel_version'].replace('7.0.0-lab+', 'old')),
+                       dict(kernel_version=control['kernel_version']+'extra'),
+                       dict(kernel_version=control['kernel_version'].replace('builder@host', 'builder\n@host'))):
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                _check_kernel_strings(trace, control | change)
+
+    def test_failed_diagnostic_keeps_unobserved_retirement_and_never_qualifies(self):
+        text, row, owners, capture = fixture()
+        parsed = parse_aborted(text, row | dict(status='ABORTED_NOT_QUALIFIED'))
+        parsed['rows'] = [v for v in parsed['rows'] if not
+                          (v['ctl'] == 0 and v['event'] == 'queue' and v['stage'] == 2)]
+        observed = failed_operation_timings(parsed, owners, capture)
+        self.assertEqual(len(observed['operations']), 2)
+        self.assertEqual(observed['unclosed_software_operations'][0]['observed_stages'], [0, 1])
+        self.assertIsNone(observed['operations'][0]['retirement_ns'])
+        self.assertIsNone(observed['operations'][0]['admission_to_retirement'])
+        self.assertEqual(observed['operations'][0]['accepted_usb_records'], [1])
+        with self.assertRaises(ValueError):
+            operation_timings(parsed, owners, capture)
+        with self.assertRaises(ValueError):
+            join(parsed, owners, capture)
+
+    def test_failed_diagnostic_does_not_skip_missing_admission_commit_or_usb(self):
+        for missing in ('admission', 'dequeue-with-actual-submit', 'commit', 'usb',
+                        'old-generation', 'changed-deadline'):
+            text, row, owners, capture = fixture()
+            parsed = parse_aborted(text, row | dict(status='ABORTED_NOT_QUALIFIED'))
+            if missing == 'admission':
+                parsed['rows'] = [v for v in parsed['rows'] if not (v['ctl'] == 0 and v['event'] == 'queue' and v['stage'] == 0)]
+            elif missing == 'dequeue-with-actual-submit':
+                parsed['rows'] = [v for v in parsed['rows'] if not (v['ctl'] == 0 and v['event'] == 'queue' and v['stage'] in (1, 2))]
+            elif missing == 'commit':
+                parsed['rows'] = [v for v in parsed['rows'] if not (v['ctl'] == 0 and v['event'] == 'tx' and v['stage'] == 2)]
+            elif missing == 'usb':
+                capture['acb_packets'].pop()
+            elif missing == 'old-generation':
+                parsed['rows'][0]['gen'] += 4
+            else:
+                next(v for v in parsed['rows'] if v['event'] == 'queue' and v['stage'] == 2)['deadline'] += 1
+            with self.subTest(missing=missing), self.assertRaises(ValueError):
+                failed_operation_timings(parsed, owners, capture)
+
+    def test_dynamic_scope_annotation_keeps_exact_control_consent_and_usb_join(self):
+        from ws73_dynamic_channels import cmtc,request
+        text,row,owners,capture=fixture();p=parse(text,row)
+        legacy=join(p,owners,capture)
+        self.assertTrue(legacy['scope'].endswith('dynamic CMTC consent excluded'))
+        wire=cmtc(request(7,0x80,[24576,24577],29441,249,254))
+        p['rows']=[v for v in p['rows']if not(v['ctl']==0 and v['event']=='queue')]
+        for v in p['rows']:
+            if v['ctl']!=0:continue
+            if v['event']=='tx':v.update(slot=-1,len=len(wire))
+            elif v['event']=='work'and v['stage']==1:v.update(attempts=0,bytes=0)
+        capture['acb_packets'][0]['data']=wire.hex()
+        result=join(p,owners,capture)
+        self.assertEqual(result['accepted_usb_packets'],2)
+        self.assertEqual(result['operations'],1)
+        self.assertIn('include dynamic CMTC envelopes',result['scope'])
+        self.assertIn('not CMTC negotiation success',result['scope'])
+        for bad in('missing-usb','missing-consent','wrong-length'):
+            altered=copy.deepcopy(capture);trace=copy.deepcopy(p)
+            if bad=='missing-usb':altered['acb_packets'].pop(0)
+            elif bad=='missing-consent':trace['rows']=[v for v in trace['rows']if not(v['event']=='tx'and v['ctl']==0 and v['stage']==2)]
+            else:altered['acb_packets'][0]['data']='00'
+            with self.subTest(bad=bad),self.assertRaises(ValueError):join(trace,owners,altered)
+
+    def test_operation_timings_keep_admission_call_and_acceptance_separate(self):
+        text,row,owners,capture=fixture()
+        result=operation_timings(parse(text,row),owners,capture)
+        self.assertEqual(result['clock'],'mono');self.assertEqual(result['quantum_ns'],1000)
+        for op in result['operations']:
+            self.assertEqual(op['admission_to_dequeue']['observed_ns'],60_000)
+            self.assertEqual(op['admission_to_first_attempt']['observed_ns'],70_000)
+            self.assertEqual(op['admission_to_first_acceptance'],dict(observed_ns=80_000,lower_ns=79_000,upper_ns=81_000))
+            self.assertEqual(op['admission_to_retirement']['observed_ns'],100_000)
+            self.assertEqual(op['accepted_fragment_span']['observed_ns'],0)
+            self.assertEqual(op['calls'][0]['duration']['observed_ns'],20_000)
+            self.assertEqual(op['accepted_usb_records'],[op['controller']+1])
+            self.assertEqual(op['deadline_jiffies'],5042)
+            self.assertNotIn('delivered',op)
+
+    def test_operation_timings_cannot_bypass_original_join(self):
+        text,row,owners,capture=fixture();p=parse(text,row)
+        for event,stage in [('queue',0),('queue',2),('work',1),('tx',2)]:
+            bad=copy.deepcopy(p)
+            bad['rows'].remove(next(v for v in bad['rows']if v['event']==event and v['stage']==stage))
+            with self.subTest(event=event,stage=stage),self.assertRaises(ValueError):operation_timings(bad,owners,capture)
+        bad=copy.deepcopy(capture);bad['acb_packets'][0]['wall_ns']+=10**9
+        with self.assertRaises(ValueError):operation_timings(p,owners,bad)
+
+    def test_uncertain_acceptance_retains_obligation_without_claiming_success(self):
+        text,row,owners,capture=fixture();p=parse(text,row)
+        next(v for v in p['rows']if v['event']=='tx'and v['ctl']==0 and v['stage']==1)['result']=-5
+        op=operation_timings(p,owners,capture)['operations'][0]
+        self.assertEqual(op['uncertain_acceptances'],1)
+        self.assertEqual(op['accepted_fragments'],1)
+        self.assertEqual(op['calls'][0]['result'],-5)
+        self.assertEqual(op['accepted_usb_records'],[1])
+
+    def test_business_ids_require_exact_complete_usb_fragment_records(self):
+        def fixture_rows():
+            timings=dict(operations=[dict(accepted_usb_records=[11,12]),dict(accepted_usb_records=[21]),dict(accepted_usb_records=[31])])
+            rows=[dict(phase=1,source=0,sequence=83,frame_sha256='a'*64,
+                       records=[dict(fragment_records=[11,12]),{},dict(fragment_records=[21]),{}])]
+            return timings,rows
+        timings,rows=fixture_rows();bind_business(timings,rows)
+        self.assertEqual(timings['operations'][0]['business']['sequence'],83)
+        self.assertEqual(timings['operations'][1]['business']['direction'],'reply')
+        self.assertIsNone(timings['operations'][2]['business'])
+        for kind in ['missing-first','missing-tail','reversed','duplicate-business','duplicate-operation']:
+            timings,rows=fixture_rows()
+            if kind=='missing-first':rows[0]['records'][0]['fragment_records']=[99,12]
+            elif kind=='missing-tail':rows[0]['records'][0]['fragment_records']=[11]
+            elif kind=='reversed':rows[0]['records'][0]['fragment_records']=[12,11]
+            elif kind=='duplicate-business':rows.append(copy.deepcopy(rows[0]))
+            else:timings['operations'].append(copy.deepcopy(timings['operations'][0]))
+            with self.subTest(kind=kind),self.assertRaises(ValueError):bind_business(timings,rows)
+
     def test_software_and_usb_acceptance_are_not_peer_completion(self):
         text,row,owners,capture=fixture();p=parse(text,row);out=join(p,owners,capture)
         self.assertEqual(out['services'],2);self.assertEqual(out['accepted_usb_packets'],2)
@@ -135,6 +406,14 @@ class ServiceTrace(unittest.TestCase):
         self.assertEqual(out['credit_waits'],1)
         self.assertEqual(out['accepted_usb_packets'],2)
         self.assertEqual(out['complete_transport_operations'],2)
+        op=operation_timings(p,owners,capture)['operations'][0]
+        self.assertEqual(op['reported_credit_waits'],1)
+        self.assertEqual(op['attempts'],2)
+        self.assertEqual(op['accepted_fragments'],1)
+        self.assertEqual(op['accepted_usb_records'],[1])
+        self.assertEqual(op['inter_attempt_gaps'][0]['duration']['observed_ns'],20_000)
+        self.assertEqual(op['admission_to_first_attempt']['observed_ns'],30_000)
+        self.assertEqual(op['admission_to_first_acceptance']['observed_ns'],80_000)
         next(v for v in p['rows'] if v['event']=='tx' and v['service']==2 and v['stage']==1)['result']=-5
         with self.assertRaisesRegex(ValueError,'repeated dequeue'):join(p,owners,capture)
 
@@ -181,5 +460,9 @@ class ServiceTrace(unittest.TestCase):
 
     def test_trace_buffer_rounding_shared_with_benchmark(self):
         self.assertEqual(buffer_kib('field: char data; offset:16; size:4080;',1024,4),(1027,4080))
-        for value in [True,1024.0,-1,9000]:
+        # The generic calculator now covers the measured 16 MiB close profile.
+        # Live collectors still admit only their exact configured profile;
+        # paired trace tests independently reject an arbitrary 9000 KiB value.
+        self.assertEqual(buffer_kib('field: char data; offset:16; size:4080;',16384,4),(16387,4080))
+        for value in [True,1024.0,-1,16385]:
             with self.assertRaises(ValueError):buffer_kib('field: char data; offset:16; size:4080;',value,4)

@@ -1,5 +1,43 @@
 # VM 回归输入契约（集成／测试参考）
 
+Managed 连接清理门禁当前逐字节要求 SLE 主动断链原因 `0x10`，与 Native daemon
+一致；`0x13` 不是 SLE 的远端主动断链原因。历史捕获只在离线显式选择
+`expected_cleanup_reason=0x13` 时按旧身份复核，当前执行器不从捕获内容自动放宽。
+真实 Disconnect OUT、Status、双端 Down 和原期限仍分别核对，原因值正确不代表对端已断链。
+
+新鲜 Native 载体的 `compiled_userspace_identity` 来自已核验 service bundle 的
+构建提交；准备工具的当前 HEAD 单独记录。复用入口仍要求明确编译身份，缺失时拒绝，
+不能用文档或工具提交给既有 ELF 重新标记身份。
+
+## 显式链路发送载荷偏好
+
+可选 `--link-payload-preference reported-acb-maximum` 仅用于独立的双设备 Native
+连接／业务门禁。每个连接角色下，对两端各提交一次
+`slctl link-payload-preference CONNECTION OCTETS 5000`；`OCTETS` 取该端真实
+ReadBufferSize 返回的 ACB 最大长度，须能编码为非零 16 位值。这是参考 Host 的
+显式实验参数，不是新的默认初始化步骤，也不证明该值在固件中有效。
+
+命令复用现有 Managed 队列、物理 Session、命令 credit、提交票据和五秒原期限。
+须使用包含新内核 ABI、CLI 与固定 helper 的新产物；旧查询 ioctl 已退休，不能
+只替换一个二进制。启动参数、原始调用、完整 generation／lifetime／handle、
+请求参数及双端捕获必须一致。每端原始 DLI `0x1804` 参数为 handle LE16、
+requested octets LE16；实测 SDK110 E 的成功 Complete 返回 handle LE16，没有请求长度回显。
+
+独立核对器要求两端、两角色共四次真实确认及原 handle 回显，不重试、降级或接受多余回复数据。
+缺失、错身份、错参数、超时和部分场景均拒绝完整门禁。确认只表示保留请求的
+控制器命令成功，不能更新或证明有效数据长度、DTAP／SSAP MTU、Ready、安全、
+性能或对端业务交付；晚到／重复完成的硬件假设仍需单独验证。工作负载仍须通过
+原有随机载荷及对端实际回复门禁。测试故障及旧资格保留，不由新名字或新确认覆盖。
+
+## 有限链路观察
+
+可选 `--link-measurements` 在现有双设备连接／应用门禁中、业务工作负载开始前，
+经普通管理角色的真实 `slctl link-measurement` 对两端读取 RSSI 与 PHY，并交换连接角色。
+须使用包含该契约的新镜像；准备工具固定 guest helper，启动参数与原始记录必须一致。
+门禁关联原 generation／lifetime、真实 DLI 请求及 Complete；RSSI 无效值、固件拒绝、
+缺包或不完整场景均不能通过。PHY 八字节仅保留线值，不授 PHY 策略或射频资格。
+这些查询不刷新应用租约、协议原期限或负载参数；查询结果与对端业务校验分别验收。
+
 读者：制作实验镜像与运行硬件门禁的集成、测试人员。本页解释 runner 的输入
 及匹配约束，**不能据此从零构建可运行 VM**；完整构建操作链仍属唯一计划 DQ3
 待交付。不再把输入清单命名为“准备 VM 操作指南”。适用当前未发布 runner；
@@ -20,6 +58,17 @@
 三个 native 输入共同描述实验 VM；它们不自动授予 Ready、连接或安全资格。
 Installed、transport 可用和每设备 Ready 分开观察。内核及所有真实 WS73 操作保持
 VM-only，主机不安装实验内核、驱动或服务。普通应用业务权限与环境管理/捕获权限分开。
+
+该 VM profile 固定使用 `init=/init`。打包器在创建磁盘或调用 `mkfs.btrfs` 前，要求
+staged root 的 `init` 是非空、具有执行位的普通文件；缺失、目录、符号链接和仅有读取
+权限均拒绝。覆盖 helper 时须保留目标执行模式，字节 hash 相同不能证明模式正确。
+此检查只保证入口的基本文件条件，不验证解释器、动态链接器、镜像可启动性或设备资格；
+仍须保留打包错误并独立执行无 USB 启动检查，不把入口修复计作 WS73 故障恢复。
+
+外部 C SDK 小程序的 `CC` 为单个编译器可执行文件，默认 `cc`；不接受隐式 shell
+参数或缺失时回退。调用保留符号链接名称，使 `cc → ccache` 等按名称分发的入口
+能正确工作。manifest 分别记录实际调用路径／参数、解析后入口文件的 hash 和该
+调用返回的编译器版本；wrapper 的 hash 不是整条底层工具链已被认证的证明。
 
 ## 固件证据范围是必选输入
 
@@ -43,8 +92,39 @@ mode 作为外部预期。生产终态检查使用原始参数；删除或降级
 没有新契约的历史记录仅按旧范围解析，不自动获得上传资格。
 
 该门禁只证明所观察到的成功 USB ROM 输入，不认证执行固件或真实冷断电；两项
-标志持续为 false。不通过复位、切电、重新命名或放宽断言制造缺失见证。当前混合
-E/U 和逐设备固件来源交接仍未合格，资源白名单与型号输入检查始终独立强制。
+标志持续为 false。不通过复位、切电、重新命名或放宽断言制造缺失见证。混合输入
+须独立核对逐叶五文件闭包与新 HCC；暖态业务、实际上传和完整混合启动分别判定，
+不互授资格。资源白名单与型号输入检查始终独立强制。
+
+## 型号、地址和配置来源
+
+HCC 型号／总线回复与 DLI 无线地址是不同证据。相同 VID/PID、固件输入通过或
+地址查询成功，都不证明每板地址唯一，也不构成芯片身份认证。RAM 固件加载不
+表示已经完成持久地址配置；主固件和两份校准的来源应与地址来源分开记录。
+
+真实设备对开始发现／建链前必须核对双方地址；重复值保留为原失败，不自动生成
+替代地址来取得通过。另行明确授权的临时运行期配置可使用现有类型化 Native
+`--runtime-addresses` 门禁，须在 daemon／广播／建链前完成真实0405 Complete和0406
+读回，按每设备核对同行未改变。它不证明出厂唯一或正式分配，不能改写原重复地址失败。
+此门禁只接受本线程分配的两只 E 端口各一次（见下方资源边界），允许显式交换顺序；地址参数按所列端口顺序
+对应 guest slot，不能按枚举编号或读回结果重新选配。交换顺序时，调用者须同时
+排列每物理端口的预定地址，并将保存的原地址按物理端口映射后恢复。型号／固件、
+占用、0405 Complete、0406 读回和同行隔离检查仍分别执行；排列支持本身不授予实机资格。
+初始化常量、静态数据流、运行期读回和实际配置生效分别
+标注：在固件中找到常量不证明动态分支已执行，固件读回零值也不证明物理 eFuse
+为空。未查明时保留原始回复及准确镜像／板级输入身份，不诊断板卡损坏。
+
+地址配置需单独核对规范、权限、原期限、真实 Complete、读回和生命周期条件；
+本输入契约不开放 raw 写或eFuse／Flash／NV写；当前未发布的运行期入口及其
+Setup／Diagnostic／原File／每注册一次限制见[接口契约](interfaces.md)。
+
+## 冻结 daemon 配置
+
+daemon 配置由现有 `prepare --native-discovery-config` 路径交给准确的 staged
+`slkd` 校验，并冻结整份配置 hash 与策略预期。SSAP 安全等级等非无线字段的变化
+也需要创建新的 prepared artifact、重新冻结这些凭据；已封存镜像保持原样。
+guest 启动时核对配置与凭据，缺失或不一致即拒绝。准备校验通过仅证明该配置被
+对应 daemon 接受；实际安全机制、固件兼容和对端业务仍需各自实机门禁。
 
 ## 当前共享硬件边界
 
@@ -65,14 +145,77 @@ root fd 可能不可见，不能把只读进程快照称作绝对独占证明。
 保存此次观察与 XML hash，仍不是型号、业务、恢复或绝对独占资格。
 
 `prepare --board-model U|E` 要求对应 SDK110 的主固件与两份校准全部 hash 一致；
-新物理执行要求此 provenance 和新 guest 的 HCC 检查。纯 support 模拟入口不需
-物理配置。新 prepared/run 必须位于该配置的线程独立运行根；旧封存根保持原样。
-当前驱动只有一个固件目录，同一个 guest 只允许同型号；混合 E/U 及无法证明
-每设备 RAM 固件来源的 runtime-only 接管拒绝。不得修改旧 manifest 来绕过检查。
+新物理执行要求此 provenance 和新 guest 的 HCC 检查；准备镜像也须明确选择型号，
+不能隐式选择 U。纯 support 不操作物理设备，不授型号或固件资格。
+新 prepared/run 必须位于该配置的线程独立运行根；旧封存根保持原样。
+每设备输入迁移后，驱动不读取全局默认镜像。旧单型号准备契约仍拒绝混合选择；
+显式逐叶契约按下节核对各型号。无法证明逐设备来源的 runtime-only 接管继续拒绝。
+源码接通不代表新产物或混合冷启动已实测；准确状态见唯一[资格入口](../../project/current-capabilities.md)。
+不得修改旧 manifest 来绕过检查。
 板级 `bsle_custom.bin`／`pm_config.bin` 仍须显式提供并记录，型号匹配不证明板级资格。
+
+### 每设备 OS 输入配置
+
+新 `ws73_native_service_bundle.py` 要求 `--board-model U|E`，输入暂存于
+`usr/share/sparklink/firmware-inputs/<model>/`，不作为驱动默认搜索路径。准备工具核对
+bundle 与明确的五份输入后，生成独立 USB2 端口目录及 `ws73-firmware-profiles.json`，
+消费暂存文件；新镜像不保留旧全局镜像回退。旧 bundle 须用原版本工具重放，不能
+将旧 manifest 改成新格式继续使用。
+
+| 项目 | 新输入契约 |
+| --- | --- |
+| 驱动请求目录 | `sparklink/ws73/by-path/<controller>-usb2-<route>/`，相对 firmware loader 根；不是 USB device number 或 VID/PID。 |
+| 实验 guest 布局 | 显式 xHCI PCI `0000:00:02.0`、USB2 直接端口 1–4；逐叶 QMP 附加仍须通过独立白名单及占用检查。 |
+| `profile.bin` | 恰好 172 字节：8 字节 `WS73P001`，型号 U=0／E=2，USB=0，两字节保留零，再依次为下列五文件的完整 SHA256 原始32字节。 |
+| 五文件顺序 | `ws73.bin`、`wifi_cali.bin`、`btc_cali.bin`、`bsle_custom.bin`、`pm_config.bin`；前三者保留原64字节小写 ASCII payload SHA 头。配置分别为140／4字节。 |
+| 冷 ROM 下载 | 三个启动文件须全部校验成功才开始原 ROM 操作；同端口 ROM→运行期仅接受相同输入闭包。 |
+| 暖态初始化 | 校验 profile 及两份运行配置，再以新 HCC 查询核对所选型号／USB；不伪造当次启动镜像上传。 |
+| sysfs `firmware_profile` | 只观察 OS 输入目录、预期型号和本次文件校验位；`execution_attested=0`。不能代替 HCC、Native Ready、实际上传或执行镜像认证。 |
+
+文件校验位属于本次 USB 接口实例。ROM 重枚举后，新的运行期实例可以仍只显示
+`filesystem_checked=18`（两份运行配置）；不能据此判断此前未下载或已下载三镜像。
+实际上传须另核对成功 OUT 字节、QUIT、同物理端口的新 USB 实例与后续 HCC／DLI
+时间线。暖态首次接管和随后一次受控重载分别记录，不继承彼此的上传资格。
+
+未知型号、SDIO／UART、短／非法配置、缺文件、hash 不符或待重枚举闭包变化均拒绝；
+没有全局 U 回退。profile 不是冷 ROM 型号自动识别，也不认证芯片、地址或固件。
+宿主不安装实验驱动；该布局只说明明确配置如何进入现有 VM 原生路径。
+开发准备 API `ws73_lab_resources.prepare_device_inputs(root, selections)` 可以为新私有
+root 明确列出每个物理叶子、型号、SDK110目录和板级输入目录，复用同一五文件
+provisioner。列表顺序就是固定 guest USB2 端口顺序；不扫描挑选或按 device number
+映射。`device_input_contract_version=1` 的 `device_inputs.entries` 同时保留逐叶固件和
+板级 provenance，拒绝并存的单型号 `explicit_firmware`／`board_configuration` 别名。
+该表示的板级和上传观察契约版本为2，必须完整保留端口、route、型号及文件身份；
+单型号旧表示仍为1。每次附加重新检查实际准备目录，缺叶、交换顺序、错误型号、
+残留全局文件或任一五文件变化均拒绝。标准 `prepare --from-prepared CARRIER
+--device-inputs PLAN --output NEW` 复用此 API 和明确封存载体；不重新编译内核或 Rust。
+`PLAN` 是精确 `{ "version": 1, "entries": [...] }`，每项只包含 `host_port`、`model`、
+`firmware_dir`、`board_dir`；相对目录以计划文件所在目录为基准，列表顺序为 guest route。
+不能并存 `--board-model`、全局固件／配置、构建或额外 staging 参数。载体须保留完整
+ROM 输入、明确的 `compiled_userspace_identity`、原 manifest、磁盘和对应私有 root。
+准备器校验原文件闭包、QEMU data、mode／symlink快照，复制到新目录，替换已验证的
+旧输入目录，暂存当前共享工具再封存；不原地修改旧载体。原编译身份、父载体与新
+工具提交／hash分别保留。失败写为FAIL，新目录不得作为PREPARED使用；不覆盖重试。
+这不是另一套启动／Host，也不代表新载体已取得混合实机、冷启动或自动选型资格。
+
+新 native bundle 要求同目录的 `ws73-board-config.json`、可取得的原始 INI 和当前
+导出器。准备入口通过生产导出器重放编码，拒绝旧工具哈希、短文件、symlink、参数或
+源文件不一致。显式板型的新 prepared/run 记录 `board_configuration_contract_version=1`，
+将输入 proof 绑定所选 U/E；实际 Root 的两个目录均须匹配，并在每次 QMP 叶子接入前
+复查。该 proof 的范围固定为输入 provenance，不是板级、镜像运行或 RF 资格。
+历史捕获按原契约解码，不能通过给旧 manifest 补字段取得新资格。
 新 guest 先记录实际 `HCC_GET_CHIP_TYPE`，与显式型号和 USB 总线不符则失败。
 这不是冷 ROM 自动选择，也不是芯片认证。历史三设备 SDK111 reference 诊断
 无法满足此分配下同型号/SDK110约束，须等待明确适配；原代码及证据保留。
+
+同一运行期地址步骤也可用于已有的独立 Managed Grant 回归：显式选择
+`--setup-release-verify --managed-connected-case close --managed-channel-grant`，
+这条模式不与 `--qmp-hotplug`、普通 connection/socket 或 benchmark 模式混用。
+runner 内部仍逐设备经受保护的 QMP 接入；该选项区别不授予其他端口权限。
+启动顺序必须是：原有 untouched Setup／lease 检查 → 共享真实地址配置及读回 →
+connected File／Grant 门禁 → 捕获封存及独立核对。此模式在 daemon 前结束；
+成功配置地址不能替代撤权、实际业务、credit、原期限或清理结果。原 Native
+connected 广播已经显式使用 negotiable-T 参数，不添加第二套广播实现或改变默认值。
 
 禁止整 hub／主控制器透传、复位、切电；单口恢复若无法证明无连带影响先协调。
 现有构建 wrapper 与物理 runner 通过共享 build lock 和 VM lease 握手：合计
@@ -92,12 +235,49 @@ root fd 可能不可见，不能把只读进程快照称作绝对独占证明。
 退出检查不替代用例、原件、scope、两端载荷和抓包校验。报告工具的新源码若只重放
 旧原件，应标为离线校验，不能把新工具提交写成原 VM 的执行身份。
 
+运行期地址核对只在共用捕获完成解码和计数核对后附加证据，不能生成其他专用
+门禁的成功状态或跳过连接／业务核对。所解析记录的原字节与最终 hash 必须一致，
+verifier pin 不符即拒绝。早期初始化故障与 daemon／fd 死亡等独立模式仍须经过
+相同的清理、固件范围及 QEMU／supervisor 终态流程，并保留各自专用业务及范围摘要；
+状态标签不能代替这些摘要。旧失败不因核对器修复而改写，新工具 artifact 须另验。
+
+PB 分片门禁按每个实际发送 controller 的 DLI buffer 上限核对完整 DTAP PDU，
+包含通道头；不能固定用 249／250 应用字节分界推断所有型号均分片。
+`long_pdu_acceptance` 只表示全部相关业务 TX 确实分片且通过顺序／长度核对；
+较大应用消息在 E 上单包通过时不授予该分片资格。NOCP 数量与对端应用仍另核对，
+旧失败原件不因核对器修复升级。
+
+运行期地址的 File 生命周期门禁在 daemon 启动前执行：只经现有 Native UAPI，
+保留真实成功 IN81 回复后再触发 release、最后 fd 关闭、dup 或原始期限。
+未核实设置的既有策略是隔离 controller，不能用 Free 或 Ready 代替未知清理；
+迟到回复不得重新授予身份或改变原超时结果。同行实际 Ready 和扫描启停只能
+证明控制隔离，不能描述为同行应用业务交付、引用排空或非人工恢复。
+QMP 已释放不等于 guest 已收到；最终状态检查前须由独立 fd 的既有 Native seam
+trace 确认当前 generation 的真实 RX，不能用固定 sleep 代替。该 ingress 观察仍不
+等于 callback／worker 已排空，后者另有引用和退出门禁。
+探针在终态断言前保存同一次 snapshot ioctl 的原始字节及墙钟／单调时钟区间；
+即使断言失败，收集器也必须保留这组操作数。之后的新查询不能替换原点快照。
+请求结果、Host 状态发布和 jiffies 期限分别核对，墙钟区间本身不证明精确的
+内核到期时点；不得为得到通过而改断言、加固定等待或延长原始预算。
+采用统一到期实现的内核在 Runtime→Host 锁内采样一次 jiffies，先处理该时点已
+到期的物理义务／既有故障，再终结作者账本；worker、诊断准入和结果查询共用它。
+快照查询仍只观察。排队但未选择的普通查询可以作者超时而不制造硬件故障；
+已开始的义务不得被取消或超时凭空退款。实现状态与准确新 artifact 的实机资格
+分别记录，源码或离线函数测试不能替代原期限、迟到 RX 及同行业务回归。
+该开发探针及原始 USB／QMP 核对的实机状态由准确资格记录单独说明。
+
 ## Down 期限失败后的被动观察
 
 `--connection-down-failure-observe-seconds` 仅用于现有真实双设备 Native VM 的
 `--qmp-hotplug --connection-verify --channel-socket-verify` 普通门禁。
-取值为0（默认关闭）、6或12秒，不能叠加其他故障、Agent或生命周期子门禁。
+取值为0（默认关闭）、6或12秒。除下述明确组合外，不能叠加其他故障、Agent或生命周期子门禁。
 新选项需要重新封存包含匹配 Host／guest 工具的 prepared root；旧镜像不会自动获得。
+
+另一明确组合为 `--ssap-subscription-verify --ssap-subscription-inflight-release-verify`
+与 `--security-agent numeric-approve`。它仍要求真实双设备、连接和 socket 门禁；
+续租、满队列、进程退出及其他选择器不能混入。Host 与 guest 都重新校验同一
+订阅场景，相关布尔值必须为真布尔类型；新增组合只改变失败后是否保留观察窗口，
+不改变保护等级、在途释放断言、正常流量或原期限。实际执行资格单独记录。
 
 原两端 canonical Down 共同5秒判定保持不变。只有它失败后，工具先保存原FAIL，
 再在清理前休眠并继续已有抓包，期间不发起测试控制请求；随后仍抛出原失败。
@@ -109,6 +289,23 @@ root fd 可能不可见，不能把只读进程快照称作绝对独占证明。
 其他控制流量的混杂。被动窗口、后续清理和实际Down分别标时，不能将清理触发的
 流量解释为自然事件。此观察不授RF时延、自动恢复或多URB优化资格，实机范围按
 准确 artifact 的[能力记录](../../project/current-capabilities.md)核对。
+
+## 原始断链时序的离线观察
+
+`ws73_connection_control.observe_down_timing()` 是内部只读核对函数，复用原捕获
+解码器及 OUT／Status 关联。输入须有两端目标的有效 capture span、原 Create／
+Disconnect 命令窗口及分别匹配对端地址和 handle 的真实 Up；后续 Up／handle 复用、
+重复 Down、身份不符或原五秒预算被改写均拒绝。缺失 Down 只记作该区间未观察到，
+不能升级为静默、成功或设备故障证明。
+
+输出分别记录设备／generation、物理连接角色、请求 reason、真实 Down reason、
+相对 USB Disconnect 与原观察起点的时间，以及原始状态／错误。阶段编号不是物理
+连接角色；交换两只设备后，发起方可能仍是同一物理角色。控制器完成、两端 Down、
+canonical 属性收敛和对端应用交付分别判断，迟到事件不补过原门禁。
+
+观察始终返回 `gate_awarded=false`。其时间线属于原 guest 的捕获／wall clock，
+不提供纯 RF 或精确单向时延；raw supervision 字段不自动换算成实际无线参数或根因。
+重放旧捕获属于离线证据，不授新源码、固件、硬件或恢复资格。
 
 ## 公共 C/Python 客户端的专用门禁
 
@@ -166,6 +363,15 @@ CLI 本身没有自动批准功能。每端分别启动 Agent 和原作者请求
 
 ## 动态通道门禁输入
 
+固定通道的 `--channel-socket-close-prefix` 是独立门禁：须显式选择一条2042字节
+消息，保留首个USB提交、最后fd关闭／进程退出与末片提交的顺序，验证对端完整
+数据及未开始队列不再提交。随后调用同一SSAP操作协调器，在另一SMTC上完成
+真实读写；关闭前的业务或本地缓存不能替代。前缀校验、SSAP调用和其错误传播
+均为完整门禁的一部分，缺少后续调用不能将前半段改记通过。
+保存的最终报告还必须保留请求对应的连接、对象与通道证明；仅有成功标签和
+进程退出码不够。prefix-close 明确计为对端完整交付，不计发送端已收到回复；
+原始捕获重放负责校验实际时序和数据，最终摘要检查不能替代该重放。
+
 `--dynamic-channel-verify` 要求独立 connection/socket VM 门禁，保留普通固定通道
 回归；在同一真实 Session 上验证两动态通道、不对称 TCID 与 A关闭/B继续业务。
 不能与四设备模式、安全 Agent、prefix-close 或固定通道 burst 特殊模式混用。
@@ -206,7 +412,82 @@ C输出包含32条完整十六进制收发记录，版本3的每stdout/stderr预
 离线夹具使用生产receipt与credit观察函数，但USB形状和调度为fixture，
 不属于真实内核并发或空口资格。当前实现需在准确新编译artifact上另行VM实测。
 
+## 同内核的撤权、断链、原期限与同行业务
+
+开发入口 `--managed-channel-sibling-business` 只接受独立的
+`--setup-release-verify --managed-connected-case close --managed-connected-index 0
+--managed-channel-grant --managed-channel-revoke-prefix` 组合。要求新准备清单的
+`channel_sibling_business_contract_version=3`、当前可执行 init 及一致的 helper hash。
+它使用本线程四个明确叶端口；不与 QMP hotplug 测试、daemon、benchmark、安全、
+queued-discard 或 Session 追踪组合。其中 case 必须显式选择 release、close 或 dup；
+release 还可单独选择 `--managed-channel-link-down` 或 `--managed-channel-deadline`。
+两种 transition 互斥，也不能与 close／dup 混用；其他 case／index 明确拒绝。
+
+这是同一实验内核中、daemon 启动前的 Native 机制门禁。0／1 为原受控组，2／3 为
+独立业务组；controller ID 来自明确选择的真实快照，不能使用组内端点号或枚举顺序替代。
+两组复用原 Native 管理路径、唯一 Session、Grant／credit／Ticket 及同一套普通用户
+socket worker 和载荷校验，不新增 Host 或协议 Engine。额外组仍逐叶核对 SDK110 输入、
+HCC 型号／总线和实际地址；需要 E 临时地址时仍须保存、设置、读回及恢复。
+
+dup 还要求第一次关闭管理 fd 后、最终关闭前，原 owner 保持、原物理连接未断，独立组实际双向回复；
+最后一次关闭仍须命中原受控屏障，不能把第一次 close 当成撤权。release／close 各六次同行往返，
+dup 八次，逐条关联原 worker、载荷和双端 USB。旧 contract1 的 R143 和 contract2 的 R144
+保留原源码及限定资格；新 contract3 的实现与准确产物实测分别记录，不能由扩展入口推导通过。
+
+Down 沿用两秒真实 IN81 屏障，在原阻塞见证后、真实 Disconnect 前完成同行往返；
+双端 Down 和旧 fd 拒绝后再完成同行往返，共六次。原租约仍保持，不能称为 Managed 撤权。
+原期限使用独立八秒 fixture，PDU 原期限仍为五秒；在实际超时前、超时后但释放 held IN 前、
+实际释放后各做双向同行业务，加上建立后的基线共八次。释放后的阶段还须在主连接清理前完成。
+每个阶段与 guest 因果时间窗、原始回复、USB 两端证据绑定；过晚结果或自动有界释放一律失败，
+不延长协议期限。这些有限阶段不等于连续五秒满负载隔离、NOCP 硬件准确性或完整 drain 证明。
+
+门禁要求实际持有回复期间、以及目标 Managed 撤权后，独立组分别完成双向随机载荷
+校验回复，保留原 fd／lease／generation／lifetime 和原物理连接；复用双端 USB 校验。
+原未完成 PDU、两秒有界 IN81 暂留、阻塞 syscall、撤权后拒绝及不新增提交的断言保持。
+控制器 Complete、NOCP 或 Root 日志不能代替对端应用回复。额外组最后也须以实际
+Managed 清理收敛，不从“关闭了 Python 对象”推导 Free。
+
+入口、离线 fixture 和机制实机资格分别登记。此门禁不等同实际 slkd／SDK 的管理策略、
+每应用独立撤权、完整 fd／callback 排空、NOCP 真值、公平性或自然恢复资格；后续
+release／最后管理 fd／dup／Down／原期限矩阵保持，不能因单个组合通过关闭整项。
+
+### typed Disconnect 的提交边界
+
+typed Disconnect 成功完成队列及作者请求准入后，内核在原 Host 锁内将目标
+generation／lifetime 标为 `Closing`；该锁也保护 Ticket 的实际 USB 提交。
+参数、身份或队列准入失败不关闭连接。`Closing` 通过现有 Session／Grant／Ticket
+路径拒绝该 lifetime 的新业务提交，不撤销其他连接或 controller 的权限。
+
+准入后的作者取消、控制器 Status 拒绝或原期限到期不会重新开放该 lifetime；
+后续显式 Disconnect 仍可清理物理连接。物理 snapshot 在真实 Down 前仍可为 Up，
+本地关闭不制造 Down 或成功结果。在 controller 和管理租约仍有效时，旧 fd 在
+`Closing` 阶段返回 `ENOTCONN`，实际 Down 后返回 `ESTALE`；设备故障及租约撤权
+仍按各自原错误处理。真正的新 lifetime 独立建立权限，不复活旧 fd。
+
+已实际提交的 USB、命令回复及 data credit 债务仍需结清；取消和关闭不退款，
+NOCP 仍沿原记账路径处理。本段描述源码契约，不能证明 NOCP 硬件准确性、完整
+callback 排空或自然恢复。准确 artifact 的实机范围见[当前资格](../../project/current-capabilities.md)，
+单个 Down 组合通过不代表完整生命周期回归闭合。
+
 ## 受控原期限与生产转换序列输入
+
+新prepare记录`managed_prefix_geometry_contract_version=1`，对应运行凭据
+`ws73.prefix_geometry=1`。当前受控前缀门禁在接管USB前拒绝缺少该版本的旧root；
+历史报告仍保留原源码及固定条件，不能改字段升级资格。
+
+门禁先通过原普通进程查询同一controller／generation／lifetime的空闲发送池，
+有限0.5秒观察要求队列、busy、active PDU和旧debt均清空。ACB片长须为66..2046、
+容量为2..32；这是有界夹具范围，超出时明确拒绝，不截断实际buffer声明。
+当整个池足以提交2047字节PDU时，先由真实对端校验capacity−1条不同的61字节单向
+消息，实际Native快照须显示相同未支付debt且没有active PDU，再以长PDU占用最后
+一个slot。否则保留原来的多片耗尽路径。Direct Down仍要求预填充。
+
+空池快照、原始0402回复、预填充的应用收据及双端包、满池快照与未完成offset必须
+一致；任何完整PDU、额外源端包、缺失对端校验、提前NOCP或错误归还数量均拒绝。
+0402可来自同一USB实例先前的共享Native初始化，不能人为把时间下界设为connected
+子门禁开始后。片长不是RF包长、SSAP MTU或独立NOCP真实性证明。夹具观察、预填充
+和下列2／8秒hold不改变生产5秒原期限，也不是正常通信的固定等待或性能优化。
+离线输入域检查不授予真实内核并发、固件credit、完整复用或新实机资格。
 
 `--managed-channel-deadline` 需要独立的pre-daemon Managed channel gate、
 `--managed-connected-case release`、`--managed-channel-grant` 与
@@ -231,11 +512,12 @@ seed/case/操作轨迹，编译失败不算性质反例；PASS也不证明NOCP�
 ## 未完成PDU的Down与空闲观测输入
 
 `--managed-channel-link-down` 与上述独立Managed channel gate、release、Grant和
-revoke-prefix组合使用普通2秒真实IN暂缓。当前工具要求primed模式：四条不同
-61字节消息由对端真实校验，源端实际TX快照为四份未支付debt、空队列且flags=0；
-长PDU先耗尽剩余一份，须观察ACTIVE/BEGUN、未完成offset和五份debt。收到对端
+revoke-prefix组合使用普通2秒真实IN暂缓。当前工具要求primed模式：capacity−1条不同
+61字节消息由对端真实校验，源端实际TX快照为相同未支付debt、空队列且flags=0；
+长PDU先耗尽剩余一份，须观察ACTIVE/BEGUN、未完成offset和完整池debt。收到对端
 真实Down后才显式释放原完成。缺前提、限时自动释放或前缀已完整均失败，不能
-以guest成功标记覆盖USB核对。四条单向预备消息不计作四次往返。
+以guest成功标记覆盖USB核对。单向预备消息不计作往返；历史容量5的四条预备消息
+保留原条件，不自动授予不同buffer的新设备资格。
 
 `--managed-channel-idle-observe` 仅适用于独立release/Grant/revoke-prefix门禁，
 指定index 0或1；不得和Down、deadline或其他专项模式合并。仅在带scratch标识
@@ -316,28 +598,31 @@ pre-daemon File/Grant 受控测试，不等同实际 slkd Agent/授权部署或 
 新 basic Grant 请求可以观察新 epoch，不能因此更新缓存旧 intent 或 protected Grant。
 
 原2秒/8秒 QEMU fixture 只暂扣真实成功 IN81，不能生成回复、NOCP、credit 或恢复。
-必须保留完整的 held/released 因果握手、满池5个实际 debt、确切不完整前缀和原5秒
-期限；不能降低断言以适应当前输出。两个 controller 的 Ready/lease/扫描隔离不代表
+必须保留完整的 held/released 因果握手、实际满池 debt、确切不完整前缀和原5秒
+期限。旧固定几何记录仍按其原五个 debt 核对，新版本按同一 controller 的真实
+buffer 报告与状态快照核对容量；不能降低断言以适应当前输出。两个 controller 的 Ready/lease/扫描隔离不代表
 四设备独立业务隔离。USB 写成功/NOCP 与对端应用校验仍分开。此新增门禁的源码、
 实机资格和旧失败记录分别维护；当前实现不等于新镜像已通过该矩阵。
 
 
-原期限后的错误分阶段判断：生产 `sl_prepare_tx` 首先拒绝已失败 Session（ENOTCONN）；
-携带原已过期限制的 send 在 `sl_tx_access` 检查限制时返回 ETIMEDOUT，先于之后的
-准入状态检查。撤权/旧 lifetime 仍保留 EACCES/ESTALE 的原检查。门禁分别记录新
+原期限后的错误分阶段判断：内核 `98b8bb4afa89` 的首次发送准入与最终入队均先拒绝
+已失效 Session／Binding（ENOTCONN），然后检查缓存 intent；同一有效且已授权 Session
+上的过期 intent 仍返回 ETIMEDOUT。Session 失败不等于 Binding 已销毁。撤权／旧 lifetime
+仍保留 EACCES／ESTALE 的更早检查，畸形 ancillary 保留解析错误。门禁分别记录新
 prepare 与缓存 submit 的单调 before/after；期限用例必须证实原限制在重试前已过期，
 不能简单要求所有阶段 errno 相同，也不能任意接受错误。跨期限不明确的样本不授通过。
 
 ## 混合型号的运行期接管
 
-`ws73_target.py prepare --native-runtime-only` 要求完整 Native VM profile；该产物
-校验完输入后从 `/lib/firmware` 与 `/usr/lib/firmware` 两条查找路径移除三份 ROM
-镜像，保留 BSLE/PM 板级输入，记录移除的原 hash。运行入口要求所选设备均已是
-五端点运行期接口；两端点或未知描述符明确拒绝。意外回到ROM后缺镜像即失败，
-不能借用另一型号的镜像自动下载。已封存磁盘的hash仍由原prepared校验检查。
+旧 `prepare --native-runtime-only` 现场入口及其生产镜像删除函数已退休，格式的历史
+fixture及封存磁盘解码仍保留：曾移除三份 ROM 镜像、保留 BSLE/PM 输入。
+当前物理守卫拒绝这种没有合格逐设备
+来源交接的接管；五端点、删除镜像或先前另一 VM 的上传均不能补齐该来源。
 
-先在每型号独立VM中受控下载匹配110及校准，并通过实际USB字节核对，再用该模式
-执行混合E/U业务门禁。`ws73_model_evidence.py`复用现有成对USB读取器，要求唯一
+新混合载体使用显式逐叶输入计划，保留每个固定 guest route 的五文件闭包，复用
+原驱动和 Native 流程。暖态初始化与实际 ROM 上传分别记录；发生上传时逐叶核对
+对应 SDK110 镜像、QUIT、新枚举及 HCC，不从暖态 Ready 或旧 VM 继承上传 PASS。
+`ws73_model_evidence.py`复用现有成对USB读取器，要求唯一
 GET_CHIP_TYPE请求、同一USB身份的实际成功回复和后续DLI查询，原消息/长度/状态/
 型号/总线不符即拒绝。该工具没有设备访问；结果不认证硅片、执行固件或真实业务。
 
@@ -462,3 +747,390 @@ Root collector同时等待Rust、C、Python的实际初始输出屏障，三者�
 已映射应用库分别核对；原始maps有界保留，缺失、错误库、Native库或来源不符拒绝。
 每个进程正常退出且原daemon、目录游标/身份、Native返回及对端业务门禁一致才通过。
 该检查不是Native Ready/Down/drain、物理拔插、自然恢复或完整语言SDK资格。
+
+
+## SSAP 通知／指示长度门禁
+
+`--ssap-update-delivery-verify`复用同一真实numeric-approve、类型2审批和SDK消费者。
+新prepared声明契约2，固定应用值32、2036、2037、2042字节，各测试通知与指示、两个
+方向及交换连接角色。协商线上MTU2042时，2036是单项更新完整PDU上限，2037及2042
+需要真实SSAP分片；回写业务回复仍经原verified-write。schema1保留原32字节语义，
+不能转作新契约通过；包版本、工具、完整矩阵和分片缺失均拒绝。
+
+新回执ABI和C/Python调用者必须一起封存。通知软件准入、指示接收队列ACK及对端
+应用实际校验/回写分别核对；原始双端SSAP片与DLI片分别重组，并按实际TX片数记账。
+单次协议原期限、日志/队列预算不放宽，USB成功或ACK不能替代业务回复。
+该门禁不证明持续订阅、全部片数、其他MTU、完整生命周期、安全/Bond或自然恢复。
+准确artifact及未决条件只见[当前资格](../../project/current-capabilities.md)。
+
+## SSAP 持续订阅与应用回复门禁
+
+`run --ssap-subscription-verify`是独立的有限场景，要求新 prepared 中的
+`ssap_subscription_contract_version=1`、显式 protected2 SSAP 配置、
+`--channel-socket-verify --security-agent numeric-approve`，不与其他专项场景组合。
+它复用唯一 Session、现有订阅 SDK／Engine、原 C／Python 消费者及 VM role
+监督器；选项存在及离线 fixture 通过均不授实机资格。
+
+新 prepared 还必须声明 `ssap_subscription_snapshot_contract_version=1`，对应实际
+boot token `ws73.subscription_snapshot=1`。监督器在32 MiB guest本地tmpfs中写入
+热日志及进度；阶段内固定子进程结束、文件关闭后，只将结构化输出路径迁到
+证据位置，原始进程字节不改写。每阶段最多64个文件／16 MiB、单文件4 MiB，
+核对完整清单及hash后原子发布目录。根完成标记在本地存储成功卸载后才产生。
+共享9p出口不再承载这条门禁的实时追加读取；不吞掉I/O错误或自动重试。
+
+阶段 `snapshot.json`、实际生产工具hash、两阶段完成标记及真实监督器exit均
+是必要条件；缺失、篡改、超限、异常退出或仅留下staging目录不能通过。
+旧记录缺少该声明时仍绑定原身份，新执行不能用旧prepared或旧证明代替。
+这里的封存契约不宣称断电持久化、全系统文件引用证明或自然硬件恢复。
+
+固定矩阵是两个发送方向、交换连接角色、通知和指示各一个30秒租约，
+每租约连续3条随机32字节更新，共24条。读取者 UID/GID1004、服务拥有者
+UID/GID1005 均无附加组或 capability；发现观察仍由管理测试角色执行。
+应用逐条检查完整载荷后经原 verified-write 回写不同载荷，拥有者再实际检查
+存储值。协议 ACK 仅表示接收队列准入，不替代该应用检查和回复。
+
+每个租约要求原5秒创建／读取／清理期限、连续序号、安全 epoch／等级、
+零丢弃、一次启用与确认停用、真实进程原始输出和双端 USB／HCC 配对。
+缺少原始流、角色、对端捕获、业务回复或清理不得通过。根监督器仅接受固定
+身份和路径的有限请求，不提供任意命令服务，也不授普通应用管理或抓包权限。
+
+该门禁不证明续租、满队列、多应用共享 CPCD、撤权／断链／epoch 变化、
+完整引用排空、自然恢复或长期性能；准确 artifact 的结果仍只读取
+[当前资格](../../project/current-capabilities.md)。
+
+附加 `--ssap-subscription-renewal-verify` 要求新 prepared 显式声明
+`ssap_subscription_renewal_contract_version=1`，并保留上述基础门禁。每租约先使用
+1000ms 有限租期，第一条更新实际校验／回写后，通过同一 SDK、token 和安全 epoch
+续为30000ms；两个后续更新必须发生在旧到期上界之后。上界取原获取实际返回时刻
+加原租期，避免保守时间戳的采样误差被当成过期证据。等待屏障只用于有限测试调度，
+不延长任一创建／读取／续租／发送／清理的原期限。
+
+新门禁要求8次真实续租、16次旧到期上界后的校验回写、原24次业务、确认停用、
+原始进程流及双端USB闭包；续租不应额外重写CPCD。旧连续订阅的contract1证据不能
+升级为续租通过，缺失声明、boot／请求／记录不符或旧token／epoch均失败。
+这仍不覆盖满队列、续租与到期／关闭竞争、多应用、全部生命周期或自然恢复。
+
+附加 `--ssap-subscription-pressure-verify` 使用独立的新 prepared 声明
+`ssap_subscription_pressure_contract_version=1`，与续租场景互斥。每个30秒租约
+先发送16条更新，再发一条溢出更新；现有 SDK 一次读取真实有限 batch，C／Python
+helper 将其有界保留并逐条调用原校验／verified-write。随后一条新随机更新必须
+恢复交付。不得用新的读取覆盖尚未校验的缓存，也不能带未校验条目成功退出。
+
+通知必须实际丢弃并计数；指示须收到真实拒绝 ACK 且原 API 返回错误，超时或
+软件成功不算拒绝。原队列前16条不能被挤出，epoch／顺序保持，溢出条目不得
+制造应用回复，恢复条目序号应为18。八租约共144次发送、136次实际校验回写，
+四次通知丢弃、四次指示拒绝及八次确认停用分别核对；各操作原五秒期限不变。
+缺少原 batch、真实拒绝、完整进程流、对端包或恢复交付不能通过。
+缓冲期间多条消息的应用处理区间会重叠；相同字节的指示ACK必须在各自实际
+SDK发送原始时间窗内唯一匹配，不能从整段填队列至回写区间任挑一条ACK。
+
+这是订阅接收队列门禁，不能证明controller data credit、软件发送队列耗尽、
+完整生命周期、多应用、公平性、性能或自然恢复。新增选项及离线检查不授实机
+资格，旧连续／续租结果不能改名充当本场景结果。
+
+## SSAP 接收者退出与确认清理门禁
+
+未发布 runner 的 `--ssap-update-lifecycle-verify` 只能与
+`--ssap-update-delivery-verify`、实际 numeric-approve 机制及普通短包双设备门禁
+一起使用；不组合其他故障、长度或压力场景。它复用同一 Session、actor、SDK
+消费者和双端核对器，不安装测试 Host。选项存在不代表新 artifact 已取得实机资格。
+
+固定场景为启用审批挂起时接收进程退出、已观察真实启用回复后退出，以及原接收
+期限到期。每个场景要求实际类型2审批、双端启用/停用回复、零配置观察和同一 actor
+上的后续真实读取；审批挂起窗口还须完成普通通道应用校验回复。启用状态查询不能
+代替接收端 USB 回复屏障。live capture 前缀的长度/hash 须从封存原始捕获重建，
+最终仍须完整双端捕获与零丢包统计。原始捕获权限保持独立：现有 Host 测试协调循环只接受十二个有身份、固定类型及有限预算的回复观察请求，不接受路径或任意报文查询；普通应用不因此获得捕获读取权限。Host 解码时钟与 guest 接收屏障时钟分别记录，不跨时钟域相减。每次快照最多16MiB，单次请求最多2秒和64次观察；期限或预算耗尽保持失败，不放宽原协议期限。
+
+专用 C/Python 消费者的 `update-error` 参数为 index、generation、Connection 路径、
+handle、mode、errno 和原始毫秒预算；当前只接受 ETIMEDOUT 和50至5000毫秒。
+错误必须来自真实公共 SDK，意外成功或其他错误均失败，不合成超时结果。
+接收者退出不取消已经开始的物理义务；没有确认停用的场景不得计作清理通过。
+作者原期限与固定清理预算分别记录，不能用延长原期限隐藏未知结果。
+
+该有限场景不证明全部撤权、断链、安全 epoch、最后引用、无编号ACK/NOCP复用、
+多应用订阅或故障恢复组合；准确资格与缺口仍只读取唯一能力记录。
+
+<a id="ssap-完整-pdu-长度门禁"></a>
+
+## 持续订阅接收进程退出门禁
+
+维护者选项 `--ssap-subscription-owner-loss-verify` 仅与独立的
+`--ssap-subscription-verify`、protected2 和 numeric-approve 门禁组合，
+不能与 renewal 或 pressure 用例混用。需要新 prepared root、匹配的 Host／guest
+工具及已关闭文件的本地 phase snapshot；这项接口不代表已有实机资格。
+
+每个方向和连接角色分别测试通知与指示。UID1004 的真实 C／Python 接收进程先
+校验三条随机更新并写回不同业务值；root VM 监督器随后只对自己持有的该子进程
+发送 SIGKILL，记录实际 `-9` 退出。不能以正常 quit、SDK Drop 或伪造 release
+替代进程死亡。UID1005 服务拥有者、daemon、generation、lifetime 与物理 Session
+保持不变；之后新接收进程使用同一安全 epoch、新 token 完成三条新业务回复。
+
+配置归零只说明服务端处理了停用。门禁还须在死亡时选定的原始五秒观察预算内，
+经现有 UID1000 控制角色调用同一连接的真实值读取，作为接收 actor 释放客户端
+事务的收敛屏障；保留最多16次原 Busy 拒绝及最终成功，其他错误或超时均失败。
+最终双端 USB 原件须证明停用回复先于该读取请求，且读取完成先于替代进程启动。
+UID1000 此次读取是测试屏障，不能替代 UID1004 应用实际校验和回复的交付证据。
+不新增捕获代理、协议 Engine 或生产数据旁路。
+
+完整有限矩阵为16个 lease、8次实际退出／重新订阅、48条更新及不同业务回复、
+8次真实读取屏障，另有8次替代 lease 的显式释放。全部原始进程输出、请求、
+源码／工具身份和双端捕获均须保留。它不证明在途退出、lease 自然到期、
+Grant 撤销、断链、无编号回复复用、全部引用排空、多应用共享或自然恢复。
+
+## 持续订阅的在途释放门禁
+
+当前执行复用已有短通道前缀门禁固定的两秒 IN81 fixture，记录实际 binary hash 与
+`fixture.version=1`、`hold_budget_ms=2000`、无协议匹配器的明确契约。旧 sequence
+fixture 的未版本化回执仅保留原身份的离线验证，不能作为当前执行的 fallback。
+当前 hash 缺少契约、契约与 hash 不符、八秒预算或未知 binary 均拒绝。身份与源码
+核对不是实际暂扣证明：后续 QMP、原始字节、双端 ACK／disable 和期限断言仍全部必需。
+
+`--ssap-subscription-inflight-release-verify` 是独立的 protected2／numeric-approve
+订阅场景，不与续租、满队列、进程退出或其他选择器组合。新 prepared 必须声明
+inflight-release contract1、闭合快照和准确新消费者／工具；仅接受现有固定 hash
+的两秒真实 IN81 暂扣 fixture。源码接线和离线 fixture 不代表实机资格。
+
+每个连接角色各一次：真实指示已到接收端，ACK 已从接收端发出，但尚未进入
+服务端 guest 时，普通应用通过原 SDK 请求释放订阅。Host 必须在原始捕获中
+观察到 CPCD 停用请求 TX，且此时服务端 ACK RX 仍不存在，才允许显式释放
+暂扣的原 USB 数据。不能用配置查询、日志、固定睡眠或成功 USB 写入替代屏障。
+暂扣 aggregate 可能包含 NOCP，不能自动称为 ACK 或证明 credit 的 lifetime 归属。
+
+专用测试消费者的 `release-observe` 只额外输出调用起点和调用前选定的原五秒
+期限，实际调用仍复用普通 `release` 的 SDK 路径。服务端实际指示完成、接收端
+确认清理和新进程／新 token 在同一 Session／epoch 完成业务校验回复分别核对。
+关闭导致已接受更新被丢弃时，必须记录 discard1，不能计作应用交付；这不抹去
+原指示的物理义务。最终检查准确双端包、暂扣原件 hash、显式释放计数、零自动
+释放／丢包／错误，以及 Host／guest 的原始握手与封存文件。
+
+有限矩阵为10个 lease、32次更新，其中30次实际不同业务回写及两次已接受后
+关闭丢弃；两次在途释放后均须新租约继续业务，另保留普通短通道与广播扫描。
+这不包含 lease 自然到期、在途进程死亡、Grant／epoch／Down、共享 CPCD、
+全部引用排空、无编号完成复用或自然恢复；这些仍有独立未决门禁。
+
+## SSAP 应用值长度及分片门禁
+
+未发布 runner 的 `--ssap-value-lengths-verify` 要求独立的
+`--qmp-hotplug --connection-verify --channel-socket-verify` 普通基础模式，
+4轮、61字节 CUTC；不能组合 Agent、SDK、其他生命周期、动态通道或压力选择器。
+新 prepared root 必须封存匹配 Host／guest 工具。此选项描述开发门禁，不授予资格。
+
+保留双方向各4次32字节事务，再测试应用值0、1、248至255、1024及2037至2042字节。
+两端实际 ExchangeInfo 均须是当前 lifetime 的2042字节协商结果。SSAP verified
+write 开销5字节，read response开销2字节，单项 UUID response开销4字节；
+不能把应用长度、SSAP PDU、DTAP帧或DLI分片长度混作同一边界。零字节及1字节
+无法容纳随机序号，使用原命令窗口、身份及精确载荷匹配；较长值保留随机载荷和序号。
+
+版本4要求两端实际协商标准扩展消息控制码及分片序号；仅完整PDU内可容纳的值
+不能代替分片门禁。应用值最大2042字节，规范化WRITE_REQ最大2047字节，每个实际
+SSAP分片仍不超过2042字节物理MTU。起始/结束片各有独立双端USB/HCC/DLI证据，
+序号、写入操作位和顺序均须匹配；credit仍按各片实际ACB数相加，不按逻辑SDU退款。
+2043、2048、2050字节写入必须明确拒绝且对端完整原值不变，之后合法事务继续。
+原来的2038/2042字节完整PDU拒绝仅属于版本1–3，不改写成新分片资格。
+
+当前入口使用普通UID1000控制角色的真实CLI调用及本地管理staging，再经唯一
+用户态Engine与对端实际读取、写入和UUID读取核对；staging本身不是远端交付证明。
+其他协商MTU、完整C/Python写入及拒绝矩阵、更新/发现/无序号分片、完整重组故障和恢复资格继续开放。
+
+历史版本3额外对两端本地2038至2042字节值执行真实发现、
+按发现所得handle读取和UUID读取，再核对对端完整本地值。2042字节MTU下，read最大
+完整值是2040字节，单项UUID最大完整值是2038字节；更大值必须返回READ_RSP的
+不支持分片错误16，不能静默截断或换成通用错误响应。随后原32字节及写入长度矩阵
+仍须成功。版本3还复用已有C/Python公开应用消费者，在2038、2039、2040字节上
+实际读取完整值；两端及交换连接角色合计12次，保留原启动屏障、UID1000零cap凭据、
+5秒期限、冻结SDK/执行文件身份、原输出和双端USB包。不得用CLI成功替代这些调用。
+这不授予apps-only角色的SSAP权限或完整C/Python长度矩阵。旧版本1/2/3保留原契约、拒绝和源码身份，不补写新增门禁。
+版本4在这五个长度上均要求完整read及UUID结果，以及实际C/Python读取，两方向与
+交换角色合计20次；不能以CLI代替。新运行须记录版本4、准确新SDK/Host/guest、全部
+片级原件及最后supervisor终态，历史捕获不能取得这一资格。分片语义见
+[原理解释](../explanation/ssap-value-fragments.md)。
+
+新prepare还记录`ssap_exchange_contract_version=2`，与真实协商输出的十字节序号能力
+格式一致；旧封存root缺字段时仅按历史六字节格式1核对，不转授新源码资格。
+原`--ssap-initialization-stage exchange`的QEMU selector精确匹配六字节回复，不能
+用于格式2；新入口在USB接管前明确NotSupported，等待替换selector和新原期限／撤权
+实机证据。原冻结selector、断言及失败/通过记录保留，CMTC专项和数据门禁继续并行；
+不把该工具迁移冒充生命周期验收完成，也不以退回旧协议offer绕过。
+
+
+### 在途订阅的自然租约到期
+
+`--ssap-subscription-inflight-release-verify` 仍选择现有的有限在途清理夹具；
+默认 `--ssap-subscription-inflight-case release` 保留原应用主动释放语义。
+显式 `--ssap-subscription-inflight-case expiry` 使用独立的 expiry contract 1、
+boot 身份与终态判据，不能将旧 release 报告改名为到期资格。必须重新准备完整
+Host／guest 工具和镜像；`expiry` 不与额外 Down 被动观察窗口合并。
+
+到期用例仅将每个角色第一只接收者的第一次 indication 租约设为原始 1000 ms。
+真实 indication TX、对端 RX 和 ACK TX 均须在到期前发生；保持原 ACK RX 的
+有界 USB 延迟期间，不向接收应用发送 release、renew 或 read。现有 Session actor
+必须按原租约自主发出 CPCD disable。Host 捕获真实 disable TX 且原 ACK RX 尚未
+到达，才允许交还原 USB 字节。之后原发送须完成、清理须获真实回复，接收应用
+才能读取 EXPIRED 终态；在途已接受的一包记 discarded，不计业务交付。
+
+终态已确认时不再发送 release；仍在 Closing 时，实际 release 仅等待原到期清理，
+不能重启清理期限。两种结果都要求 reason=EXPIRED、discarded=1、空应用批次，
+以及相同 Session／安全 epoch 下的新 token 和后续真实校验回写。完成到期及
+清理仍受原 expires 加 5 秒上限约束。生产 SDK、Host、credit 和 Engine 不增加旁路。
+
+捕获与应用均在同一 guest，使用有界 realtime／monotonic 采样区间核对 ACK TX
+早于原 expires、disable TX 不早于 expires；不跨主机时钟计算单向时延。该检查
+依赖记录的 guest 时钟映射，模型／parser fixture 通过不等于实际定时或实机通过。
+这是明确的单租约在途到期门禁，仍不覆盖多应用共享 CPCD、Grant／epoch 撤销、
+完整 fd／引用排空、NOCP 正确性或自然恢复。历史失败和原断链门禁保持。
+
+### 两个应用共享同一 SSAP 配置
+
+`--ssap-subscription-verify --ssap-subscription-shared-verify` 是独立的保护等级2、
+`numeric-approve` 门禁，与续租、队列压力、owner-loss及在途夹具分开，保留普通
+4×61字节通道回归。必须重新准备 contract 1 和相同Host／guest工具；不能通过旧
+单租约记录改名获得共享资格。
+
+同一物理actor上两个实际普通应用进程分别取得相同属性／模式的不同token和队列。
+先让两者各自校验更新并写回不同随机值；第一应用实际release须得到flags=3，
+另一应用随后继续完成业务；重新加入的进程须得到新token和原epoch。最后一个
+引用释放须有实际双端CPCD停用及flags=1。通知／指示、两个方向和连接角色分别执行。
+
+夹具复用原SDK的read/check/writeback和有限监督器，不增加协议发送捷径。每组7个
+发布、12个实际独立业务回复、3个应用租约；完整矩阵8组、56发布、96回复，16次
+共享保留释放和8次最终停用。原始USB中每组只允许一次启用和最后一次停用，不能
+仅靠本地configuration观察、协议ACK或终态日志作证。每次release保留SDK实际原
+5秒起止；子进程和热文件全部关闭后按原快照契约发布。
+
+ACK1在共享组中只代表至少一个有效队列接受，不能证明所有应用收到。此门禁针对
+相同过滤／模式、无队列溢出的实际交付；不同集合／模式动态合并、共享压力、
+所有在途退出／Grant／epoch／引用排空、四设备和自然恢复仍各有独立门禁。
+
+Shared-gate security epochs are local to each controller/connection. Each reader
+lease is matched to its own endpoint’s actual Native SCM security receipt;
+provider authorization is matched to the server endpoint’s receipt. Equal epochs
+across peers are not required. Missing, stale or changed endpoint context fails
+the gate; a verifier fix does not rewrite an earlier failed run.
+
+The separate `--ssap-subscription-shared-case expiry` and `owner-exit` cases
+require `--ssap-subscription-shared-verify` and a fresh prepared lifetime
+contract. They retain the existing protected SDK, supervision and paired-wire
+path. Each group publishes one additional unread update while both owners live,
+then withdraws the first owner. The expiry case uses its original 2000 ms lease,
+observes EXPIRED with retained configuration and one discarded packet, and never
+issues release to cause expiry. The exit case kills only the known ordinary
+reader child inside the disposable VM; its complete pre-exit stream and actual
+exit are required. The surviving caller checks further payloads and replies,
+a fresh caller joins, and only the final reference performs wire disable.
+
+These cases each require eight groups, 24 leases, 56 publications and 96 actual
+checked writebacks across both connection roles. An unread publication at owner
+exit is not claimed as observed application delivery or an inspected dead-owner
+tombstone. The expiry read does not prove timer execution before all possible
+queries. Neither case is kernel Grant revocation, security-epoch withdrawal,
+callback/reference drain, recovery or performance qualification. New gate source
+and offline checks alone do not qualify a compiled artifact; use the canonical
+capability record for the exact run. Existing release evidence keeps its original
+case and identity.
+
+The separate `--ssap-subscription-shared-case pressure` requires a fresh
+`ssap_subscription_shared_pressure_contract_version=1` prepared bundle, the
+same protected numeric-approve shared gate, and its exact boot/request/source
+closure. It cannot relabel the single-reader pressure or lifetime cases.
+Each group publishes 17 random 32-byte values while reader A does not read;
+reader B must check and write back every value. A then drains exactly the first
+16 packets, observes one notification drop or one locally refused indication,
+and checks each cached value before sending a distinct writeback. The next
+publication must reach both readers, with A's sequence gap and cumulative loss
+preserved. A releases only its token; B continues, a fresh A joins, and only
+the final B release disables the remote configuration.
+
+The finite matrix requires 22 publications and 41 actual checked writebacks per
+group: eight groups, 176 publications, 328 writebacks, eight ordered drains and
+eight resumptions. B has no losses; the slow queues report four notification
+drops and four local indication refusals in total. Wire indication ACK1 remains
+required because B accepted the update; it is not evidence that A received the
+overflow or that either application processed it. Root transcript and snapshot
+budgets are explicitly bounded for this larger profile: at most 64 reader JSON
+lines and 128 provider value observations (126 are required), with a 4 MiB
+closed phase JSON limit. The provider marker and exact helper source are part
+of the sealed closure; a missing marker or exhausted budget fails before
+issuing another value command. Old profiles retain 24 reader lines, 80 maximum
+provider observations and their original closed JSON limits. The ordinary
+4×61-byte socket baseline remains separate.
+Source/offline checks do not qualify a new artifact, full load/fairness,
+controller credit, Grant withdrawal, drain, recovery, or performance.
+
+Native `--channel-benchmark rate|window|duplex` now requires a fresh apps-only
+benchmark prepared contract. The existing fixed VM role supervisor starts the
+actual `slktest` children as UID/GID 1004 with no extra groups or capabilities;
+the controller manager stays UID 1000. No alternate live control-role benchmark
+loop is retained. Historical control-role reports keep their original identity
+and are decoded as such.
+
+Both endpoints still arm before `start`, become quiescent before `finish`, and
+keep the existing original protocol/application deadlines. Reports are written
+by the applications in a bounded guest-local directory, then exported with full
+raw streams after the children close. The benchmark snapshot profile bounds a
+phase to 512 MiB, each file to 256 MiB and tmpfs to 768 MiB; its VM uses 2 GiB RAM.
+The SSAP snapshot profile remains separate at its existing limits. Budget errors
+fail the gate and never truncate reports. Unchanged schema2 metrics and the real
+ordinary socket path are reused; no per-message D-Bus/data Engine is added.
+
+The first qualification gate uses 20 messages, 61 bytes and window 4 across both
+connection roles. It tests application permissions, paired report/capture
+closure and measurement correctness. It does not qualify all load combinations,
+a stable latency/throughput baseline, full stress or an optimization benefit.
+Use the canonical capability record for exact compiled and executed identities.
+
+### Queued PDU retirement during the File/Grant lifecycle gate
+
+`--managed-channel-queued-discard` is an explicit test profile, requiring
+`--managed-channel-grant`, `--managed-channel-revoke-prefix`,
+`--session-service-observe` and an explicit connected File case. It reuses the
+same ordinary constrained socket worker, physical Session, original five-second
+TX intents and pinned real-IN81 barrier. Protected, directional, fd-transfer
+and unrelated benchmark modes are not part of this profile.
+
+The worker admits the original random 2042-byte begun PDU and two additional,
+distinct random 2042-byte PDUs. Its actual TX status must show exactly two
+queued objects, queue limit eight and the original busy PDU. Each queued send
+has its own unchanged absolute intent. Later denial retries still use the
+original begun-PDU intent, not the last queued send's newer intent.
+
+The existing release, final File close, dup first/final close, physical Down
+and original-deadline oracles remain mandatory. An additional Session trace
+join matches each queued syscall's monotonic interval to exactly one original
+generation/lifetime/epoch admission and one stage-3 terminal, with no accepted
+USB prefix or sibling discard. The begun PDU has a separate admission and
+partial physical prefix; it is not counted as a queued discard. The legacy
+`partial_retired_operations` counter includes all not-fully-submitted objects,
+including unsubmitted queued discards; `queued_discarded_operations` distinguishes
+them explicitly.
+
+Missing identities, queue status, terminals, accepted-packet accounting or trace
+loss rejects the whole profile. Local retirement does not prove credit refunds,
+controller completion, callback/reference drain or natural recovery. The test
+adds no business round trips: existing peer-checked business remains separate.
+This source contract alone does not qualify an artifact; consult the canonical
+capability record for exact executed gates and remaining conditions.
+
+## 显式 HCC 原始观测
+
+未发布的 `--channel-benchmark-hcc-memory-observe` 是专用 VM 的诊断选项。它要求
+已有 `--channel-benchmark-ssap-owned --channel-benchmark-credit-observe`、原
+128 条 × 2042 字节／window 8 动态通道负载和 `full-load-v2` Session 观测；不改变
+Owner、调用和业务原期限。默认未启用，常规故障采集也不会读取该属性。
+
+该选项只在原两个 guest 端口 `1-1`、`1-2` 对应的 interface 0 读取
+`hcc_memory_observation`。内核属性权限为 `0400`，每次读取发出固定的
+class/interface-IN `a1/05/0000/0000` 四字节控制请求，USB 超时为 250 ms。
+先保留实际普通用户的 `EACCES`，再由 root 子进程读取；管理诊断权限不授予普通
+应用。采集复用既有有界监督器，最多每秒一组、128 组，无重试；任一端点首次出错
+后，本阶段该端点后续槽位只生成实际进程的跳过记录，不再发出 USB 查询。
+
+成功输出携带 controller id、generation、原始小端字、内核单调时间和固定
+`semantics_verified=0`。全零、全一或其他四字节回复只表示收到了原始字，不能证明
+其是有效剩余内存；错误、短回复、停止及旧 generation 不填零，也不授予 Ready。
+该查询不是 DLI 命令／数据 credit、对端业务交付、自然恢复或硬件身份认证。
+SDK SLE 的 HCC 流控开关与该诊断不同，不据原始字启用新的发送门控或归还 credit。
+
+root 诊断进程、普通业务应用和对端 SDK 调用分别记录身份；原始输出、退出、期限、
+访问拒绝、失败和跳过保留在该轮报告。采集完整与业务整轮成功分别检查。
+观测增加控制流量及调度开销，不能将这一配置当成低扰动性能基线。离线夹具和
+无 USB 启动检查也不代表真实固件支持、并发引用排空或业务资格已经通过。

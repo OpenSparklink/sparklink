@@ -10,6 +10,55 @@ import json
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
+RAW_STRING = re.compile(r'(?:br|r)(#{0,255})"')
+CHARACTER = re.compile(r"'(?:\\.|[^'\\\n])'")
+
+
+def argument_match_ranges(text):
+    """Exclude positional argument selectors from the root command surface.
+
+    This is a limited source guard, not a Rust AST or interface proof. Mask
+    strings/comments before balancing braces; malformed input fails closed.
+    Root labels and the existing dangling-label negative controls stay checked.
+    """
+    code=list(text);i=0
+    while i<len(text):
+        start=i
+        if text.startswith('//',i):
+            end=text.find('\n',i);i=len(text) if end<0 else end
+        elif text.startswith('/*',i):
+            depth=1;i+=2
+            while depth and i<len(text):
+                if text.startswith('/*',i):depth+=1;i+=2
+                elif text.startswith('*/',i):depth-=1;i+=2
+                else:i+=1
+            if depth:raise ValueError('unterminated Rust comment')
+        else:
+            raw=RAW_STRING.match(text,i)
+            if raw:
+                end=text.find('"'+raw[1],raw.end())
+                if end<0:raise ValueError('unterminated raw Rust string')
+                i=end+1+len(raw[1])
+            elif text[i]=='"':
+                i+=1
+                while i<len(text) and text[i]!='"':
+                    i+=2 if text[i]=='\\' else 1
+                if i>=len(text):raise ValueError('unterminated Rust string')
+                i+=1
+            elif (character:=CHARACTER.match(text,i)):
+                i=character.end()
+            else:i+=1;continue
+        code[start:i]=['\n' if c=='\n' else ' ' for c in text[start:i]]
+    masked=''.join(code);ranges=[]
+    for match in re.finditer(r'\bmatch\s+args\s*\[\s*[1-9][0-9]*\s*\]\s*\{',masked):
+        depth=1;i=match.end()
+        while depth and i<len(masked):
+            if masked[i]=='{':depth+=1
+            elif masked[i]=='}':depth-=1
+            i+=1
+        if depth:raise ValueError('unbalanced argument match')
+        ranges.append((match.start(),i))
+    return ranges
 
 
 def check(policy, files):
@@ -37,7 +86,15 @@ def check(policy, files):
     for name in set(re.findall(r'^\s*async fn (\w+)',text,re.M)) & retired:
         errors.append(f'retired adapter/device method: {name}')
     reject('python_types','bindings/python/sparklink/structs.py',r'^class (\w+)\(')
-    reject('slctl_commands','crates/slctl/src/commands.rs',r'"([a-z][a-z-]*)"\s*(?:if[^\n]*?)?=>')
+    path='crates/slctl/src/commands.rs'
+    if path not in files:errors.append('missing current source: '+path)
+    else:
+        try:ranges=argument_match_ranges(files[path])
+        except ValueError as error:errors.append('invalid slctl command surface: '+str(error))
+        else:
+            for match in re.finditer(r'"([a-z][a-z-]*)"\s*(?:if[^\n]*?)?=>',files[path]):
+                if match[1] in policy['slctl_commands'] and not any(start<=match.start()<end for start,end in ranges):
+                    errors.append(f'retired slctl_commands: {path}:{match[1]}')
     for name in policy['slkconfig_variants']:
         text = files.get('crates/slkconfig/src/main.rs','')
         if 'enum Command {' not in text:

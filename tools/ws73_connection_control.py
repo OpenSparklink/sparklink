@@ -76,13 +76,27 @@ def requested_down_failure_observation(args, *, passthrough=None):
         return 0
     real = getattr(args, 'passthrough', False) if passthrough is None else passthrough
     allowed = {'passthrough', 'qmp_hotplug', 'connection_verify', 'channel_socket_verify'}
+    inflight = getattr(args, 'ssap_subscription_inflight_release_verify', False)
+    if type(inflight) is not bool:
+        raise ValueError('typed in-flight passive observation selector required')
+    if inflight:
+        # Reuse the existing exact workload validator,not a looser second
+        # selector. This only permits quiet capture after the original FAIL.
+        from ws73_ssap_subscription import requested,requested_inflight_case
+        if requested_inflight_case(args)!='release':raise ValueError('passive Down observation remains a separate release-only gate')
+        if (type(real) is not bool or real is not True
+                or any(type(getattr(args,k,None)) is not bool or getattr(args,k) is not True
+                       for k in ('connection_verify','channel_socket_verify','ssap_subscription_verify'))
+                or not requested(args,passthrough=real)):
+            raise ValueError('passive capture requires the exact protected in-flight subscription gate')
+        allowed |= {'ssap_subscription_verify','ssap_subscription_inflight_release_verify'}
     if (not real or not getattr(args, 'connection_verify', False)
             or not getattr(args, 'channel_socket_verify', False)
             or any(value is True and key not in allowed for key, value in vars(args).items())
             or any(getattr(args, key, None) for key in [
-                'security_agent', 'channel_benchmark', 'managed_partial_case',
+                *([] if inflight else ['security_agent']), 'channel_benchmark', 'managed_partial_case',
                 'managed_connected_case', 'daemon_hold_case'])):
-        raise ValueError('passive Down failure capture requires a dedicated real ordinary socket gate')
+        raise ValueError('passive Down failure capture requires a dedicated ordinary or protected in-flight socket gate')
     return seconds
 
 
@@ -233,6 +247,10 @@ def connect_phase(run, phase, kind, previous_objects=(), number=0):
     phase['reference']=link_reference(row['stdout'],caller,peer,phase['connect']['handle'])
     from ws73_connection_objects import observe, reject_old
     phase['typed_objects']=[observe(run,owner,remote) for owner,remote in [(caller,peer),(peer,caller)]]
+    if getattr(run.args,'link_payload_preference',None) is not None:
+        from ws73_link_payload import execute as payload_execute
+        for entry in phase['typed_objects']:
+            payload_execute(run,entry)
     phase['stale_object_rejections']=[]
     for old in previous_objects:
         phase['stale_object_rejections'].append(reject_old(run,old,'while-reused-handle-live'));run.save()
@@ -253,6 +271,21 @@ def observe_phase_down(run, phase):
     # failure; no local connected/disconnected state means radio OFF.
     run.stop(peer, 'advertise')
     run.check(caller); run.check(peer)
+
+
+def disconnect_phase(run,phase,selected):
+    """One existing typed submission and original bounded physical Down proof."""
+    if 'disconnect_command' in phase:
+        raise CaptureError('connection phase already has a Disconnect submission')
+    caller=phase['caller']
+    phase['disconnect_command'] = len(run.data['commands'])
+    row = run.command([str(run.args.slctl), '--adapter', caller['path'],
+        'disconnect-object',selected['path']], 18, collection='commands')
+    phase['disconnect'] = result(row['stdout'], caller, 2)
+    if row['exit'] or phase['disconnect']['handle'] != phase['connect']['handle']:
+        raise CaptureError('exact established handle must disconnect')
+    observe_phase_down(run, phase)
+    phase['disconnect_completed_wall_ns']=time.time_ns();run.save()
 
 
 def execute(run, a, b):
@@ -287,9 +320,22 @@ def execute(run, a, b):
                 agent_execute(run,phase)
             if hasattr(run, 'connection_barrier'):
                 run.connection_barrier('linked',phase)
+            def finish_connection():
+                if hasattr(run, 'connection_barrier'):
+                    run.connection_barrier('business-done',phase)
+                disconnect_phase(run,phase,selected)
+                if hasattr(run, 'connection_barrier'):
+                    run.connection_barrier('down',phase)
+            completion=None
             if getattr(run.args, 'channel_socket_verify', False):
                 from ws73_channel_socket import execute as channel_execute
-                channel_execute(run, phase)
+                factory=getattr(run,'channel_completion',None)
+                completion=factory(phase,finish_connection) if factory is not None else None
+                if completion is not None:
+                    if any(getattr(run.args,k,False)for k in ['application_client_verify','channel_benchmark','channel_fairness_verify','dynamic_channel_verify']):
+                        raise CaptureError('completion Disconnect requires a dedicated regular channel gate')
+                    channel_execute(run,phase,after_application=completion)
+                else:channel_execute(run, phase)
             if getattr(run.args, 'application_client_verify', False):
                 from ws73_application_client import execute as application_execute
                 application_execute(run, phase)
@@ -302,18 +348,10 @@ def execute(run, a, b):
             if getattr(run.args, 'dynamic_channel_verify', False):
                 from ws73_dynamic_channels import execute as dynamic_execute
                 dynamic_execute(run, phase)
-            if hasattr(run, 'connection_barrier'):
-                run.connection_barrier('business-done',phase)
-            phase['disconnect_command'] = len(run.data['commands'])
-            row = run.command([str(run.args.slctl), '--adapter', caller['path'],
-                'disconnect-object',selected['path']], 18, collection='commands')
-            phase['disconnect'] = result(row['stdout'], caller, 2)
-            if row['exit'] or phase['disconnect']['handle'] != phase['connect']['handle']:
-                raise CaptureError('exact established handle must disconnect')
-            observe_phase_down(run, phase)
+            if completion is None:finish_connection()
+            elif 'disconnect_completed_wall_ns' not in phase:
+                raise CaptureError('application completion did not finish the actual Disconnect')
             previous_objects=phase['typed_objects']
-            if hasattr(run, 'connection_barrier'):
-                run.connection_barrier('down',phase)
             phase['end_wall_ns'] = time.time_ns(); run.save()
         record['status'] = 'CONNECTION_CONTROL_EVIDENCE_PENDING'
     except BaseException as error:
@@ -378,6 +416,197 @@ def corroborate_wire_operation(run, phase, capture, operation, command_row, hand
             raise CaptureError('peer Down must match its independently observed Up handle')
         outcomes.append(events[0])
     return dict(command=command, status=status, outcomes=outcomes)
+
+
+CONNECTION_POLICY_BYTES = ('filter', 'own_address_type', 'gt_negotiate', 'frame')
+CONNECTION_POLICY_WORDS = ('scan_interval', 'scan_window', 'interval_min', 'interval_max',
+                           'latency', 'supervision_timeout', 'event_min', 'event_max')
+
+
+def observe_down_timing(run, capture):
+    """Inspect successful OR failed original phases, without awarding a gate.
+
+    Reuse the actual decoder and OUT/Status matcher. An absent Down is only an
+    observation over this capture, not proof of hardware silence. A late Down
+    never repairs the original deadline or canonical-property gate. No protocol
+    timeout, RF-only latency, current-source qualification or root cause is
+    inferred from these timestamps or raw supervision values.
+    """
+    span = capture.get('rx_capture_span', {})
+    if span.get('version') != 1 or not span.get('selected_records'):
+        raise CaptureError('validated target capture span required for Down observation')
+    first, last = span['earliest']['wall_ns'], span['latest']['wall_ns']
+    phases = run['connection_control']['phases']
+    if not 1 <= len(phases) <= 2 or first > last:
+        raise CaptureError('bounded original connection phases and ordered span required')
+    rows = []
+    for number, phase in enumerate(phases):
+        if 'disconnect_command' not in phase:
+            rows.append(dict(phase=number, observation='NO_ORIGINAL_DISCONNECT', gate_awarded=False))
+            continue
+        caller, peer = phase['caller'], phase['peer']
+        identities = [(o['bus'], o['device']) for o in (caller, peer)]
+        if (identities[0] == identities[1] or any(type(o['generation']) is not int or o['generation'] <= 0 for o in (caller, peer))
+                or any(list(i) not in span['targets'] for i in identities)):
+            raise CaptureError('two distinct original controller identities required')
+        if any(not any((v['bus'], v['device'], v['generation'], v['address']) ==
+                (o['bus'], o['device'], o['generation'], o['address']) for v in run['initial']) for o in (caller, peer)):
+            raise CaptureError('original controller registration/address mapping required')
+        start_row = run['commands'][phase['connect_command']]
+        stop_row = run['commands'][phase['disconnect_command']]
+        stop = stop_row['start_wall_ns']
+        cutoff = phases[number+1]['start_wall_ns'] if number+1 < len(phases) else last
+        exclusive_end = cutoff if number+1 < len(phases) else last+1
+        if not first <= start_row['start_wall_ns'] <= start_row['end_wall_ns'] < stop <= stop_row['end_wall_ns'] <= cutoff <= last:
+            raise CaptureError('original command order and capture interval required')
+        create, _ = corroborate_wire_status(capture, caller, 0x1401, start_row)
+        wire, status = corroborate_wire_status(capture, caller, 0x1403, stop_row)
+        body = bytes.fromhex(create['params'])
+        if (len(body) != 27 or body[2] != phase['peer_address_type']
+                or body[3:9] != bytes.fromhex(peer['address'].replace(':', ''))):
+            raise CaptureError('original Create target/type required')
+        params = bytes.fromhex(wire['params'])
+        if len(params) != 3:
+            raise CaptureError('bounded original Disconnect parameters required')
+        observation = phase.get('down_property_observation')
+        deadline = None
+        if observation is not None:
+            if (observation.get('version') not in (1, 2)
+                    or observation.get('budget_seconds') != DOWN_OBSERVATION_BUDGET_SECONDS
+                    or not stop_row['end_wall_ns'] <= observation['start_wall_ns'] <= cutoff):
+                raise CaptureError('original unextended Down observation window required')
+            deadline = observation['start_wall_ns'] + DOWN_OBSERVATION_BUDGET_SECONDS * 1_000_000_000
+        ends = []
+        for owner, remote in [(caller, peer), (peer, caller)]:
+            identity = owner['bus'], owner['device']
+            events = [e for e in capture['native_events'] if (e['bus'], e['device']) == identity]
+            up = [e for e in events if e['event'] in (0x15, 0x1401)
+                  and start_row['start_wall_ns'] <= e['wall_ns'] < stop]
+            if len(up) != 1:
+                raise CaptureError('one independent original Up per controller required')
+            payload = bytes.fromhex(up[0]['params'])
+            if (len(payload) < 11 or payload[0] or payload[3] > 1 or payload[4] != 0
+                    or payload[5:11] != bytes.fromhex(remote['address'].replace(':', ''))):
+                raise CaptureError('actual successful Up peer/type/role required')
+            handle = int.from_bytes(payload[1:3], 'little')
+            link_role = payload[3]
+            if owner == caller and params[:2] != payload[1:3]:
+                raise CaptureError('Disconnect must target actual caller handle')
+            if any(e['event'] in (0x15, 0x1401) and stop <= e['wall_ns'] < exclusive_end for e in events):
+                raise CaptureError('later Up/reuse invalidates original Down interval')
+            downs = [e for e in events if e['event'] in (5, 0x1405) and stop <= e['wall_ns'] < exclusive_end]
+            matching = []
+            for event in downs:
+                payload = bytes.fromhex(event['params'])
+                if len(payload) < 4:
+                    raise CaptureError('truncated physical Down')
+                if int.from_bytes(payload[1:3], 'little') == handle:
+                    if payload[0]:
+                        raise CaptureError('unsuccessful physical Down is not a timing receipt')
+                    matching.append(event)
+            if len(matching) > 1:
+                raise CaptureError('duplicate original Down is ambiguous')
+            event = matching[0] if matching else None
+            ends.append(dict(controller=dict(bus=identity[0], device=identity[1], generation=owner['generation']),
+                role='caller' if owner == caller else 'peer', link_role=link_role, handle=handle, up=up[0], down=event,
+                observation='CAPTURED' if event else 'NOT_OBSERVED_IN_CAPTURE_INTERVAL',
+                reason=bytes.fromhex(event['params'])[3] if event else None,
+                from_usb_disconnect_ns=event['wall_ns']-wire['wall_ns'] if event else None,
+                from_original_observation_ns=event['wall_ns']-observation['start_wall_ns'] if event and observation else None,
+                raw_down_no_later_than_original_deadline=event['wall_ns'] <= deadline if event and deadline else None))
+        if {end['link_role'] for end in ends} != {0, 1}:
+            raise CaptureError('independent complementary physical roles required')
+        rows.append(dict(phase=number, observation='TIMING_OBSERVED_NOT_GATE', gate_awarded=False,
+            create=create, raw_supervision_timeout=int.from_bytes(body[21:23], 'little'),
+            disconnect=wire, status=status, wire_reason=params[2], cutoff_wall_ns=cutoff,
+            original_observation=observation, original_deadline_wall_ns=deadline, ends=ends))
+    return dict(version=1, observation='ORIGINAL_DOWN_TIMING_ONLY', gate_awarded=False,
+        original_run_status=run['status'], original_control_status=run['connection_control'].get('status'),
+        original_error=run.get('error'), phases=rows,
+        scope='Original guest capture/wall timeline only;not RF-only or single-way latency, canonical snapshot acceptance, new qualification, deadline extension or root-cause proof. Controller generation/lifetime belongs to retained Host observations,not additional wire identity.')
+
+
+def explicit_connection_policy(text):
+    """Reference observation input, not a second daemon config validator.
+
+    Experiments must spell out every field and separately retain validation by
+    the exact staged daemon. No Python defaults or captured-byte echo is used.
+    """
+    import tomllib
+    policy = tomllib.loads(text).get('ws73', {}).get('connection')
+    if not isinstance(policy, dict) or set(policy) != set(
+            (*CONNECTION_POLICY_BYTES, *CONNECTION_POLICY_WORDS, 'timeout_ms')):
+        raise CaptureError('all explicit connection policy fields required for observation')
+    for names, limit in [(CONNECTION_POLICY_BYTES, 255), (CONNECTION_POLICY_WORDS, 65535),
+                          (('timeout_ms',), 10000)]:
+        if any(type(policy[name]) is not int or not 0 <= policy[name] <= limit for name in names):
+            raise CaptureError('typed encodable connection policy observation required')
+    if not policy['timeout_ms'] or not 0 < policy['interval_min'] <= policy['interval_max']:
+        raise CaptureError('positive timeout and ordered explicit interval required')
+    return policy
+
+
+def configured_create_body(policy, peer_type, address):
+    """SDK110/libws73 27-byte dialect, independent of the captured command."""
+    peer = bytes.fromhex(address.replace(':', ''))
+    if type(peer_type) is not int or peer_type not in (0, 1) or len(peer) != 6:
+        raise CaptureError('exact peer type/address required')
+    return (bytes([policy['filter'], policy['own_address_type'], peer_type]) + peer
+            + bytes([policy['gt_negotiate'], policy['frame']])
+            + b''.join(policy[name].to_bytes(2, 'little') for name in CONNECTION_POLICY_WORDS))
+
+
+def observe_connection_policy(run, capture, policy):
+    """Bind explicit input to real Create and both successful SDK110 outcomes.
+
+    Use a separately frozen/hashed staged config validated by the daemon.
+    Only raw returned fields are claimed; no PHY, unit conversion or RF timing.
+    Failed business gates remain failed even when this observation succeeds.
+    """
+    phases = run['connection_control']['phases']
+    if len(phases) != 2:
+        raise CaptureError('both connection roles required for policy observation')
+    rows = []
+    for number, phase in enumerate(phases):
+        command = run['commands'][phase['connect_command']]
+        links = run['commands'][phase['links_command']]
+        if (command['exit'] or links['exit'] or links['args'][-1] != 'connections'
+                or command['end_wall_ns'] > links['end_wall_ns']):
+            raise CaptureError('original bounded successful Create and canonical observation required')
+        reference = link_reference(links['stdout'], phase['caller'], phase['peer'],
+                                   phase['connect']['handle'])
+        bounded = phase | dict(end_wall_ns=links['end_wall_ns'])
+        wire = corroborate_wire_operation(run, bounded, capture, 1, command,
+                                          reference['handle'], {}, reference)
+        if wire['command']['params'] != configured_create_body(
+                policy, phase['peer_address_type'], phase['peer']['address']).hex():
+            raise CaptureError('whole Create body differs from explicit staged connection policy')
+        outcomes = []
+        for event in wire['outcomes']:
+            body = bytes.fromhex(event['params'])
+            if len(body) != 30:
+                raise CaptureError('exact SDK110 30-byte connection outcome required')
+            interval, latency, supervision = (int.from_bytes(body[n:n+2], 'little')
+                                              for n in (23, 25, 27))
+            if not policy['interval_min'] <= interval <= policy['interval_max']:
+                raise CaptureError('returned raw interval outside explicit requested range')
+            outcomes.append(dict(bus=event['bus'], device=event['device'], record=event['record'],
+                                 handle=int.from_bytes(body[1:3], 'little'), role=body[3],
+                                 raw_interval=interval, raw_latency=latency,
+                                 raw_supervision_timeout=supervision, raw_tail_byte=body[29],
+                                 raw_parameters=event['params']))
+        if any(outcomes[0][key] != outcomes[1][key] for key in (
+                'raw_interval', 'raw_latency', 'raw_supervision_timeout')):
+            raise CaptureError('two actual connection parameter outcomes disagree')
+        if outcomes[0]['role'] == outcomes[1]['role']:
+            raise CaptureError('two opposite actual connection roles required')
+        rows.append(dict(phase=number, requested=policy, create=wire['command'], outcomes=outcomes))
+    return dict(version=1, status='EXPLICIT_CREATE_AND_RAW_CONNECTION_PARAMETERS_OBSERVED',
+                phases=rows, performance_qualified=False,
+                scope='Independent explicit config bytes and real SDK110 USB outcomes only. '
+                      'Host timeout is requested policy,not attested by wire. Raw interval '
+                      'is not converted into milliseconds,PHY or isolated RF delay. '
+                      'No business qualification or recovery inferred; original verdict retained.')
 
 
 def corroborate(run, capture, *, expected_disconnect_reason=0x10):

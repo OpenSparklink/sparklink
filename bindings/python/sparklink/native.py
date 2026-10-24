@@ -14,6 +14,7 @@ from .structs import (
     SciDevInfo, SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
+    SleLinkCommandSubmit, SleLinkCommandResult,
     SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus, SleSessionTxStatus,
     SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel, SleSecurityNumericConfirm, SleConnectionSecurity, SleMessageSecurity, SleSendConstraint,
 )
@@ -36,6 +37,7 @@ def _get_native_lib():
         SleControllerSnapshot, SleRegistrationSnapshot, SleManagementQuery, SleDiscoverySubmit,
         SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
         SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
+        SleLinkCommandSubmit, SleLinkCommandResult,
         SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel, SleSecurityNumericConfirm, SleConnectionSecurity,
     )):
         raise OSError("native UAPI requires ctypes with 8-byte structure alignment")
@@ -66,6 +68,8 @@ def _get_native_lib():
         "slk_controller_event": [handle, ctypes.POINTER(SleControllerEventQuery)],
         "slk_snoop": [handle, ctypes.POINTER(SleSnoopQuery)],
         "slk_diagnostic_submit": [handle, ctypes.POINTER(SleDiagnosticSubmit)],
+        "slk_link_command_submit": [handle, ctypes.POINTER(SleLinkCommandSubmit)],
+        "slk_link_command_result": [handle, u64, u32, u64, ctypes.POINTER(SleLinkCommandResult)],
         "slk_diagnostic_result": [handle, u64, u32, ctypes.POINTER(SleDiagnosticResult)],
     }
     for name, arguments in signatures.items():
@@ -301,6 +305,36 @@ class NativeAdapter:
             raise ValueError("request must have this generation and a nonzero request id")
         self._invoke('slk_diagnostic_submit', ctypes.byref(request))
         return request.seq
+
+    def submit_link_command(self, request):
+        """Managed same-File typed command/cancel; admission is not completion.
+
+        kind1/2 queries use argument0;kind3 uses a nonzero payload preference.
+        Its Complete is not an effective MTU and cancellation cannot undo it.
+
+        Explicit privileged Native API, not an application controller lease.
+        Reuse the original ID/scope after uncertain copyout, never renew it.
+        """
+        if not isinstance(request, SleLinkCommandSubmit):
+            raise TypeError("SleLinkCommandSubmit required")
+        if request.generation != self.generation:
+            raise ValueError("request must have this generation")
+        self._invoke('slk_link_command_submit', ctypes.byref(request))
+        return request.seq
+
+    def link_command_result(self, seq=0, request_id=0):
+        """Same-File history; current-identity and available-value flags differ.
+
+        Missing/evicted returns None. state1 is pending, not a success.
+        CAP_NET_ADMIN still required; lease release cannot revive an old value.
+        """
+        seq = _unsigned(seq, 32, "seq")
+        request_id = _unsigned(request_id, 64, "request_id")
+        if not seq and not request_id:
+            raise ValueError("sequence or original request_id required")
+        result = SleLinkCommandResult()
+        present = self._invoke('slk_link_command_result', self.generation, seq, request_id, ctypes.byref(result))
+        return result if present else None
 
     def diagnostic_result(self, seq):
         """Non-consuming result for this fd, generation and admitted raw sequence.

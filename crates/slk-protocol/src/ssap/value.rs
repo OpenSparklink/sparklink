@@ -1,5 +1,8 @@
 //! T/XS 20001-2025 tables 50, 69/72 and 76/77. Base, single-value,
-//! complete-PDU subset; no extended control, fragments or multi-item promise.
+//! complete logical-PDU codec; no extended control or multi-item promise.
+//! The caller supplies a bounded normalized-PDU budget. Per-datagram MTU and
+//! negotiated fragment headers are enforced by fragments::Plan, outside this
+//! codec; ValueError::Mtu means this supplied budget would be exceeded.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ValueError {
     Length,
@@ -40,8 +43,8 @@ pub enum ValuePdu<'a> {
 }
 /// cbindgen:ignore
 impl<'a> ValuePdu<'a> {
-    pub fn decode(mtu: u16, raw: &'a [u8]) -> Result<Self, ValueError> {
-        if mtu < 2 || raw.len() > usize::from(mtu) {
+    pub fn decode(budget: u16, raw: &'a [u8]) -> Result<Self, ValueError> {
+        if budget < 2 || raw.len() > usize::from(budget) {
             return Err(ValueError::Mtu);
         }
         if raw.len() < 2 {
@@ -92,7 +95,7 @@ impl<'a> ValuePdu<'a> {
             _ => Err(ValueError::Unsupported),
         }
     }
-    pub fn encode(&self, mtu: u16, output: &mut [u8]) -> Result<usize, ValueError> {
+    pub fn encode(&self, budget: u16, output: &mut [u8]) -> Result<usize, ValueError> {
         let len = match self {
             Self::Read { .. } => 5,
             Self::ReadValue(v) => 2usize.checked_add(v.len()).ok_or(ValueError::Mtu)?,
@@ -104,7 +107,7 @@ impl<'a> ValuePdu<'a> {
             Self::Written => 2,
             Self::WriteError { .. } | Self::Error { .. } => 6,
         };
-        if mtu < 2 || len > usize::from(mtu) {
+        if budget < 2 || len > usize::from(budget) {
             return Err(ValueError::Mtu);
         }
         if output.len() < len {

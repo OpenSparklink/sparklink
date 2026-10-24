@@ -42,6 +42,25 @@ VM中由HCC核对；E两口仍仅用户布置及ROM描述、未作新HCC验收�
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
 
+当前实施批次（不是新产物资格，直接读取唯一记录）：
+```json
+{
+  "id": "WP03-WP18-R5f12-application-discovery",
+  "production_behavior": "Per-controller caller-owned bounded scanner leases through existing Native management guard/recipes/results. Rust Client and slctl own filtering/read/release,not management credentials. Last lease requests actual STOP; manager handoff/retirement fences late work; unknown cleanup staysFault,notOff/Free.",
+  "state": "NEGOTIABLE_BASELINE_AND_EXPLICIT_DISCOVERY_SCOPED_PASS_FIXED_T_FAIL_RETAINED_FULL_LIFECYCLE_OPEN",
+  "records": [
+    "application-discovery-offline-r5f12",
+    "application-discovery-fence-r5f12",
+    "application-discovery-real-r5f12",
+    "application-discovery-negotiable-r5f12"
+  ],
+  "exit_ref": "application-discovery-real-r5f12.required_gates; see canonical implementation-plan R5f12 for steps",
+  "next": "Continue bounded real caller-loss/TTL/manager-stop/original-deadline/partial-init andpeerbusiness isolation/permissions,newC-Python discoveryAPI. Preserve source-bound successfulNegT baseline;FixedT failures remain valid separateunqualified contrast,not same-condition regression or provenfirmwareRCA. Data/security/SSAP/multichannel/fourdevice andcleanup/recovery continue inparallel;no controlcensus prerequisite.",
+  "scope": "Complete originalS0-S6/19WP/10FV/12DG/VM-only/strictallocation/SDK110/shared12or8 unchanged. Data/security/SSAP/multichannel/fourdevice/lifecycle/cleanup/recovery/deployment remainOPEN in parallel;not all control permutations as prerequisites. UserHostP4;E/mixed/coldROM/naturalRCA/nonmanualrecovery not qualified."
+}
+```
+
+
 选定保留产物（不是当前工作树整体资格）：**K2fc/Ud9：共享发现显式release及Negotiable-T七尺寸/Owned/C-Python限定实机**。
 仅记录范围：`real_device` / `PASS`。
 compiled_kernel `2fc210af68ee3bce0eed3553117d8be635dfdd15`。

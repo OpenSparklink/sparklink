@@ -221,6 +221,88 @@ impl Adapter {
         Ok(())
     }
 
+    /// One volatile setup per registration;no storage or allocation authority.
+    /// Only a real later 0406 readback can validate the current metadata. This
+    /// does not expose raw mutation through the metadata diagnostic whitelist.
+    pub fn runtime_address_submit(&self, request: &mut SleRuntimeAddressSubmit) -> Result<()> {
+        if request.version != 1
+            || request.flags != 0
+            || request.generation == 0
+            || request.request_id == 0
+            || request.seq != 0
+            || request.reserved != [0; 6]
+            || !matches!(request.action, 1 | 2)
+            || !(1..=5000).contains(&request.timeout_ms)
+            || request.address == [0; 6]
+            || request.address == [255; 6]
+        {
+            return Err(Error::InvalidParam(
+                "invalid volatile runtime address request",
+            ));
+        }
+        let original = *request;
+        let mut value = original;
+        // SAFETY: complete initialized fixed ABI;kernel validates authority and
+        // exact registration. Only commit successful validated copyout below.
+        unsafe { ioctl::sl_runtime_address_submit(self.raw_fd(), &mut value)? };
+        if value.seq == 0 || (SleRuntimeAddressSubmit { seq: 0, ..value }) != original {
+            return Err(Error::InvalidParam(
+                "invalid volatile address admission response",
+            ));
+        }
+        *request = value;
+        Ok(())
+    }
+
+    /// Typed Managed link command. Kernel checks the original lease epoch and exact
+    /// physical lifetime at admission, selection and atomic USB submission.
+    /// Identical retries return the original seq/deadline, not another sample.
+    pub fn link_command_submit(&self, request: &mut SleLinkCommandSubmit) -> Result<()> {
+        validate_link_command_submit(request)?;
+        let original = *request;
+        let mut value = original;
+        // SAFETY: initialized fixed ABI, synchronous borrow; original storage
+        // is committed only after validating the complete successful copyout.
+        unsafe { ioctl::sl_link_command_submit(self.raw_fd(), &mut value)? };
+        if value.seq == 0 || (SleLinkCommandSubmit { seq: 0, ..value }) != original {
+            return Err(Error::InvalidParam(
+                "invalid link observation admission response",
+            ));
+        }
+        *request = value;
+        Ok(())
+    }
+
+    /// Nonconsuming same-File history, including after lease release. Either
+    /// seq or caller-known request_id permits recovery from submit EFAULT.
+    /// Pending is Some(state1); None means missing/evicted, never success.
+    pub fn link_command_result(
+        &self,
+        generation: u64,
+        seq: u32,
+        request_id: u64,
+    ) -> Result<Option<SleLinkCommandResult>> {
+        if generation == 0 || (seq == 0 && request_id == 0) {
+            return Err(Error::InvalidParam("link observation identity required"));
+        }
+        let mut value = SleLinkCommandResult {
+            version: 1,
+            generation,
+            seq,
+            request_id,
+            ..Default::default()
+        };
+        // SAFETY: initialized output-capable fixed ABI, no retained pointer.
+        match unsafe { ioctl::sl_link_command_result(self.raw_fd(), &mut value) } {
+            Ok(_) => {
+                validate_link_command_result(&value, generation, seq, request_id)?;
+                Ok(Some(value))
+            }
+            Err(nix::Error::ENOENT) => Ok(None),
+            Err(error) => Err(Error::Ioctl(error)),
+        }
+    }
+
     /// Fetch a result admitted by this exact fd/generation. Requires the same
     /// file to hold Diagnostic and CAP_NET_ADMIN; ENOENT means missing/evicted.
     /// No cursor, shared event dequeue or legacy response fallback is used.
@@ -557,6 +639,96 @@ fn validate_security_observation(
     Ok(())
 }
 
+fn validate_link_command_submit(value: &SleLinkCommandSubmit) -> Result<()> {
+    if value.version != 1
+        || !matches!(value.action, 1 | 2)
+        || value.generation == 0
+        || value.lease_epoch == 0
+        || value.request_id == 0
+        || value.lifetime == 0
+        || value.deadline_monotonic_ns == 0
+        || value.seq != 0
+        || !(1..=5000).contains(&value.timeout_ms)
+        || value.role > 1
+        || !matches!(value.kind, 1..=3)
+        || value.reserved != 0
+        || value.reserved_tail != 0
+        || ((value.kind == 3) != (value.argument != 0))
+        || value.address == [0; 6]
+        || value.address == [255; 6]
+    {
+        return Err(Error::InvalidParam(
+            "invalid Managed link observation request",
+        ));
+    }
+    Ok(())
+}
+
+fn validate_link_command_result(
+    value: &SleLinkCommandResult,
+    generation: u64,
+    seq: u32,
+    request_id: u64,
+) -> Result<()> {
+    let invalid = || Error::InvalidParam("invalid link observation result response");
+    if value.version != 1
+        || value.flags & !7 != 0
+        || value.generation != generation
+        || value.seq == 0
+        || (seq != 0 && value.seq != seq)
+        || value.request_id == 0
+        || (request_id != 0 && value.request_id != request_id)
+        || value.lease_epoch == 0
+        || value.lifetime == 0
+        || value.deadline_monotonic_ns == 0
+        || value.role > 1
+        || !matches!(value.kind, 1..=3)
+        || value.address == [0; 6]
+        || value.address == [255; 6]
+        || value.reserved != [0; 2]
+        || ((value.kind == 3) != (value.argument != 0))
+        || usize::from(value.data_len) > value.data.len()
+    {
+        return Err(invalid());
+    }
+    let valid = match value.state {
+        1 => {
+            value.error == 0
+                && value.status == 0
+                && value.data_len == 0
+                && value.data == [0; 10]
+                && value.flags & 6 == 0
+        }
+        2 => {
+            let len = match value.kind {
+                1 => 3,
+                2 => 10,
+                _ => 2,
+            };
+            value.error == 0
+                && value.status == 0
+                && value.flags & 4 != 0
+                && usize::from(value.data_len) == len
+                && u16::from_le_bytes([value.data[0], value.data[1]]) == value.handle
+                && value.data[len..].iter().all(|v| *v == 0)
+                && (value.flags & 2 != 0)
+                    == (value.kind == 2 || value.kind == 1 && value.data[2] != 127)
+        }
+        3 => {
+            value.data_len == 0
+                && value.data == [0; 10]
+                && value.flags & 2 == 0
+                && ((value.error < 0 && value.status == 0 && value.flags & 4 == 0)
+                    || (value.error == 0 && value.status != 0 && value.flags & 4 != 0))
+        }
+        _ => false,
+    };
+    if !valid {
+        return Err(invalid());
+    }
+    Ok(())
+}
+
 fn validate_diagnostic_submit(value: &SleDiagnosticSubmit) -> Result<()> {
     if value.version != 1
         || value.flags != 0
@@ -609,6 +781,248 @@ mod native_validation_tests {
     use super::*;
 
     #[test]
+    fn managed_query_layout_and_invalid_inputs_are_checked_before_syscall() {
+        assert_eq!(std::mem::size_of::<SleLinkCommandSubmit>(), 72);
+        assert_eq!(std::mem::size_of::<SleLinkCommandResult>(), 88);
+        assert_eq!(std::mem::offset_of!(SleLinkCommandSubmit, kind), 66);
+        assert_eq!(std::mem::offset_of!(SleLinkCommandResult, data), 78);
+        let good = SleLinkCommandSubmit {
+            version: 1,
+            action: 1,
+            generation: 2,
+            lease_epoch: 3,
+            request_id: 4,
+            lifetime: 5,
+            deadline_monotonic_ns: 100_000_000,
+            timeout_ms: 5000,
+            address: [1; 6],
+            kind: 1,
+            ..Default::default()
+        };
+        validate_link_command_submit(&good).unwrap();
+        for bad in [
+            SleLinkCommandSubmit {
+                generation: 0,
+                ..good
+            },
+            SleLinkCommandSubmit {
+                lease_epoch: 0,
+                ..good
+            },
+            SleLinkCommandSubmit {
+                request_id: 0,
+                ..good
+            },
+            SleLinkCommandSubmit {
+                lifetime: 0,
+                ..good
+            },
+            SleLinkCommandSubmit { seq: 1, ..good },
+            SleLinkCommandSubmit {
+                timeout_ms: 5001,
+                ..good
+            },
+            SleLinkCommandSubmit { action: 3, ..good },
+            SleLinkCommandSubmit { kind: 3, ..good },
+            SleLinkCommandSubmit { role: 2, ..good },
+            SleLinkCommandSubmit {
+                reserved: 1,
+                ..good
+            },
+            SleLinkCommandSubmit {
+                reserved_tail: 1,
+                ..good
+            },
+            SleLinkCommandSubmit {
+                argument: 1526,
+                ..good
+            },
+        ] {
+            assert!(validate_link_command_submit(&bad).is_err());
+        }
+        for argument in [1, 254, 1526, u16::MAX] {
+            validate_link_command_submit(&SleLinkCommandSubmit {
+                kind: 3,
+                argument,
+                ..good
+            })
+            .unwrap();
+        }
+    }
+
+    #[test]
+    fn query_samples_status_current_identity_and_invalid_rssi_are_distinct() {
+        let base = SleLinkCommandResult {
+            version: 1,
+            generation: 2,
+            lease_epoch: 3,
+            request_id: 4,
+            lifetime: 5,
+            deadline_monotonic_ns: 100_000_000,
+            seq: 6,
+            handle: 7,
+            kind: 1,
+            address: [1; 6],
+            state: 1,
+            ..Default::default()
+        };
+        validate_link_command_result(&base, 2, 6, 4).unwrap();
+        for sample in 0..=255 {
+            let mut r = SleLinkCommandResult {
+                state: 2,
+                flags: 4 | if sample == 127 { 0 } else { 2 },
+                data_len: 3,
+                ..base
+            };
+            r.data[..3].copy_from_slice(&[7, 0, sample]);
+            validate_link_command_result(&r, 2, 6, 4).unwrap();
+            r.flags ^= 2;
+            assert!(validate_link_command_result(&r, 2, 6, 4).is_err());
+        }
+        let cancelled = SleLinkCommandResult {
+            state: 3,
+            error: -125,
+            ..base
+        };
+        validate_link_command_result(&cancelled, 2, 0, 4).unwrap();
+        let failed = SleLinkCommandResult {
+            state: 3,
+            status: 0x0c,
+            flags: 4,
+            ..base
+        };
+        validate_link_command_result(&failed, 2, 6, 0).unwrap();
+        for bad in [
+            SleLinkCommandResult {
+                generation: 3,
+                ..base
+            },
+            SleLinkCommandResult { flags: 2, ..base },
+            SleLinkCommandResult {
+                data_len: 11,
+                ..base
+            },
+            SleLinkCommandResult { state: 2, ..base },
+            SleLinkCommandResult { state: 3, ..base },
+            SleLinkCommandResult {
+                reserved: [1; 2],
+                ..base
+            },
+        ] {
+            assert!(validate_link_command_result(&bad, 2, 6, 4).is_err());
+        }
+        let ack = SleLinkCommandResult {
+            kind: 3,
+            argument: 1526,
+            state: 2,
+            flags: 5,
+            data_len: 2,
+            data: [
+                base.handle as u8,
+                (base.handle >> 8) as u8,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            ],
+            ..base
+        };
+        validate_link_command_result(&ack, 2, 6, 4).unwrap();
+        for bad in [
+            SleLinkCommandResult { argument: 0, ..ack },
+            SleLinkCommandResult { kind: 1, ..ack },
+            SleLinkCommandResult { flags: 7, ..ack },
+            SleLinkCommandResult {
+                handle: ack.handle ^ 1,
+                ..ack
+            },
+            SleLinkCommandResult {
+                data_len: 0,
+                data: [0; 10],
+                ..ack
+            },
+            SleLinkCommandResult { data_len: 1, ..ack },
+            SleLinkCommandResult {
+                data: [1; 10],
+                ..ack
+            },
+        ] {
+            assert!(validate_link_command_result(&bad, 2, 6, 4).is_err());
+        }
+    }
+
+    #[test]
+    fn runtime_address_submit_is_typed_and_preserves_syscall_failure() {
+        assert_eq!(std::mem::size_of::<SleRuntimeAddressSubmit>(), 48);
+        assert_eq!(std::mem::align_of::<SleRuntimeAddressSubmit>(), 8);
+        assert_eq!(std::mem::offset_of!(SleRuntimeAddressSubmit, address), 36);
+        let adapter = Adapter::open("/dev/null").unwrap();
+        let good = SleRuntimeAddressSubmit {
+            version: 1,
+            generation: 7,
+            request_id: 2,
+            timeout_ms: 5000,
+            action: 1,
+            address: [0xa6, 0x7b, 0x73, 0x10, 0xe0, 1],
+            ..Default::default()
+        };
+        for bad in [
+            SleRuntimeAddressSubmit { version: 2, ..good },
+            SleRuntimeAddressSubmit { flags: 1, ..good },
+            SleRuntimeAddressSubmit {
+                generation: 0,
+                ..good
+            },
+            SleRuntimeAddressSubmit {
+                request_id: 0,
+                ..good
+            },
+            SleRuntimeAddressSubmit {
+                timeout_ms: 0,
+                ..good
+            },
+            SleRuntimeAddressSubmit {
+                timeout_ms: 5001,
+                ..good
+            },
+            SleRuntimeAddressSubmit { seq: 1, ..good },
+            SleRuntimeAddressSubmit { action: 3, ..good },
+            SleRuntimeAddressSubmit {
+                address: [0; 6],
+                ..good
+            },
+            SleRuntimeAddressSubmit {
+                address: [255; 6],
+                ..good
+            },
+            SleRuntimeAddressSubmit {
+                reserved: [1; 6],
+                ..good
+            },
+        ] {
+            let mut value = bad;
+            assert!(matches!(
+                adapter.runtime_address_submit(&mut value),
+                Err(Error::InvalidParam(_))
+            ));
+            assert_eq!(value, bad);
+        }
+        for action in [1, 2] {
+            let mut value = SleRuntimeAddressSubmit { action, ..good };
+            let original = value;
+            assert!(matches!(
+                adapter.runtime_address_submit(&mut value),
+                Err(Error::Ioctl(nix::errno::Errno::ENOTTY))
+            ));
+            assert_eq!(value, original);
+        }
+    }
+
+    #[test]
     fn diagnostic_admission_guards_and_errno_preserve_caller_request() {
         let good = SleDiagnosticSubmit {
             version: 1,
@@ -637,6 +1051,10 @@ mod native_validation_tests {
                 ..good
             },
             SleDiagnosticSubmit { action: 3, ..good },
+            SleDiagnosticSubmit {
+                opcode: 0x0405,
+                ..good
+            },
             SleDiagnosticSubmit {
                 opcode: 0x0c05,
                 ..good

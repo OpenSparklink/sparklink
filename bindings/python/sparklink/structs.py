@@ -106,6 +106,36 @@ class SleSnoopQuery(ctypes.Structure):
     ]
 
 
+class SleLinkCommandSubmit(ctypes.Structure):
+    _align_ = 8
+    _fields_ = [
+        ("version", ctypes.c_uint32), ("action", ctypes.c_uint32),
+        ("generation", ctypes.c_uint64), ("lease_epoch", ctypes.c_uint64),
+        ("request_id", ctypes.c_uint64), ("lifetime", ctypes.c_uint64),
+        ("deadline_monotonic_ns", ctypes.c_uint64),
+        ("timeout_ms", ctypes.c_uint32), ("seq", ctypes.c_uint32),
+        ("handle", ctypes.c_uint16), ("role", ctypes.c_uint8),
+        ("address_type", ctypes.c_uint8), ("address", ctypes.c_uint8 * 6),
+        ("kind", ctypes.c_uint8), ("reserved", ctypes.c_uint8),
+        ("argument", ctypes.c_uint16), ("reserved_tail", ctypes.c_uint16),
+    ]
+
+
+class SleLinkCommandResult(ctypes.Structure):
+    _align_ = 8
+    _fields_ = [
+        ("version", ctypes.c_uint32), ("flags", ctypes.c_uint32),
+        ("generation", ctypes.c_uint64), ("lease_epoch", ctypes.c_uint64),
+        ("request_id", ctypes.c_uint64), ("lifetime", ctypes.c_uint64),
+        ("deadline_monotonic_ns", ctypes.c_uint64),
+        ("seq", ctypes.c_uint32), ("state", ctypes.c_uint32), ("error", ctypes.c_int32),
+        ("handle", ctypes.c_uint16), ("kind", ctypes.c_uint8), ("status", ctypes.c_uint8),
+        ("role", ctypes.c_uint8), ("address_type", ctypes.c_uint8), ("address", ctypes.c_uint8 * 6),
+        ("data_len", ctypes.c_uint16), ("argument", ctypes.c_uint16),
+        ("reserved", ctypes.c_uint8 * 2), ("data", ctypes.c_uint8 * 10),
+    ]
+
+
 class SleDiagnosticSubmit(ctypes.Structure):
     _align_ = 8
     _fields_ = [

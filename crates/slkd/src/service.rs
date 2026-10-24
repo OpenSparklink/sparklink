@@ -59,8 +59,10 @@ impl SsapManagerIface {
                     .map_err(|e| zbus::fdo::Error::InvalidArgs(e.into()))?;
                 let ops = slk_protocol::SsapOperations::from_bits(*ops)
                     .map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
-                if ops.bits() & !5 != 0
-                    || access.needs_local_authorization() && authorizer.as_str() == "/"
+                if !slk_protocol::ssap::client_config::supported_owned(
+                    ops,
+                    authorizer.as_str() != "/",
+                ) || access.needs_local_authorization() && authorizer.as_str() == "/"
                 {
                     return Err(zbus::fdo::Error::NotSupported(
                         "operation or local authorizer unavailable".into(),

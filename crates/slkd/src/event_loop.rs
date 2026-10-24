@@ -161,7 +161,7 @@ pub(crate) async fn start_ssap_after_security(
             _ => return,
         }
     };
-    if let Err(error) = owner.start_ssap().await {
+    if let Err(error) = owner.start_ssap_after_security().await {
         tracing::warn!(%error, "SMTC security requirement not satisfied; no fallback or rebind");
     }
 }

@@ -5,7 +5,7 @@ import re
 
 def buffer_kib(header, requested_kib, subbuffer_kib):
     if (len(header) > 4096 or type(requested_kib) is not int
-            or not 0 < requested_kib <= 8192 or type(subbuffer_kib) is not int
+            or not 0 < requested_kib <= 16384 or type(subbuffer_kib) is not int
             or subbuffer_kib not in (4, 8, 16, 32, 64)):
         raise ValueError('actual bounded trace subbuffer layout')
     fields = re.findall(r'field: char data;\s*offset:(\d+);\s*size:(\d+);', header)

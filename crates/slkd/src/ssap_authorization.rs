@@ -113,6 +113,13 @@ impl Owner {
     pub(crate) fn current(&self) -> bool {
         *self.active.borrow()
     }
+    /// Notification only: admission must still recheck under the DB mutex.
+    /// Subscribe before checking the value so an earlier or concurrent revoke
+    /// cannot leave an existing operation asleep until its original deadline.
+    pub(crate) async fn withdrawn(&self) {
+        let mut active = self.active.subscribe();
+        let _ = active.wait_for(|current| !*current).await;
+    }
     /// Database removal/owner loss call this under the SAME database mutex as
     /// value admission. Revocation does not undo already committed writes.
     pub(crate) fn revoke(&self) {
@@ -202,9 +209,12 @@ fn revoke(database: &Weak<Mutex<crate::ssap_database::Database>>, owner: &Weak<O
 
 pub(crate) struct Target {
     pub(crate) handle: u16,
+    pub(crate) data_type: u8,
     pub(crate) owner: Arc<Owner>,
 }
 pub(crate) struct Approval {
     pub(crate) handle: u16,
+    pub(crate) data_type: u8,
+    pub(crate) write: bool,
     pub(crate) owner: Arc<Owner>,
 }

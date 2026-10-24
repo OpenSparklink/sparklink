@@ -58,6 +58,13 @@ class OutputCollector(unittest.TestCase):
         proc,app,reader,_=self.spawn("import os;os.write(1,b'x'*128)",maximum=64)
         with self.assertRaises(CaptureError):self.finish(proc,app,reader)
         self.assertEqual(app['output_collection_error']['operation'],'byte-budget')
+    def test_cleanup_keeps_original_collection_failure_and_separate_followup(self):
+        proc,app,reader,_=self.spawn("import os;os.write(1,b'x'*128)",maximum=64)
+        with self.assertRaises(CaptureError):self.finish(proc,app,reader)
+        proc.wait(timeout=2)
+        with self.assertRaises(CaptureError):reader.final(app)
+        self.assertEqual(app['output_collection_error']['operation'],'byte-budget')
+        self.assertEqual(app['output_collection_followup_errors'][0]['operation'],'final-artifact-identity')
     def test_sink_errors_and_short_write_fail_closed(self):
         for mode in ['error','short']:
             proc,app,reader,_=self.spawn("print('output')",sink_mode=mode)

@@ -3,6 +3,8 @@
 use slk_protocol::SleAddr;
 pub mod controller_events;
 pub mod discovery;
+pub mod link_parameter;
+pub mod link_query;
 pub mod security;
 
 /// Absolute CLOCK_MONOTONIC ns, UUID high/low (big-endian bytes), namespace
@@ -74,8 +76,11 @@ pub mod ssap {
     pub type SsapAuthorizationIdentity = (u16, u64, u64, u16, u64, u32, u8, u8, u8);
     /// Request ID, original context, local property, write?, original monotonic
     /// deadline, proposed write value (empty for reads). Reads disclose no value
-    /// to the authorizer before its decision. This is a D-Bus-only tuple contract.
-    pub type SsapAuthorizationPrompt = (u64, SsapAuthorizationIdentity, u16, bool, u64, Vec<u8>);
+    /// to the authorizer before its decision. The final byte is the original
+    /// SSAP data type (property value0 or client configuration2); it is part of the policy
+    /// scope, not inferred from the handle or granted by a local decision.
+    pub type SsapAuthorizationPrompt =
+        (u64, SsapAuthorizationIdentity, u16, bool, u64, Vec<u8>, u8);
 
     /// Local manager staging and caller-owned registration are distinct roles.
     pub mod local {
@@ -103,7 +108,17 @@ pub mod ssap {
     }
     pub const DISCOVER: &str = "DiscoverSsap";
     pub const CACHED: &str = "GetCachedSsap";
-    pub const OBSERVE: &str = "ObserveSsapIncoming";
+    pub const RECEIVE: &str = "ReceiveSsapUpdate";
+    pub const OWNED_UPDATE: &str = "SendOwnedSsapUpdate";
+    pub const OWNED_CONFIGURATION: &str = "GetOwnedSsapConfiguration";
+    /// stage1: notification software admission only; stage2: indication accepted
+    /// by the peer's protocol receive queue. Neither means application processing.
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type)]
+    pub struct UpdateReceipt {
+        pub stage: u8,
+        pub pdu: Vec<u8>,
+        pub acknowledgement: Vec<u8>,
+    }
     pub const READ_UUID: &str = "ReadSsapByUuid";
     pub const READ: &str = "ReadSsapValue";
     pub const WRITE: &str = "WriteSsapValue";
@@ -111,6 +126,81 @@ pub mod ssap {
     pub type Entry = (u8, u16, u16, Vec<u8>, u32, Vec<u8>, u8);
     pub type Discovery = (Vec<Entry>, Vec<(Vec<u8>, Vec<u8>)>);
     pub type Incoming = (bool, Vec<u8>);
+    /// One caller-owned leased receive scope on the original physical actor.
+    /// A protocol ACK means bounded queue acceptance,not application handling.
+    pub mod subscription {
+        pub const CREATE: &str = "SubscribeSsapUpdates";
+        pub const READ: &str = "ReadSsapUpdates";
+        pub const RENEW: &str = "RenewSsapSubscription";
+        pub const CLOSE: &str = "CloseSsapSubscription";
+        pub const CAPACITY: usize = 16;
+        pub const BYTE_BUDGET: usize = 32768;
+        pub const STARTING: u8 = 0;
+        pub const ACTIVE: u8 = 1;
+        pub const CLOSING: u8 = 2;
+        pub const CLOSED: u8 = 3;
+        pub const RELEASED: u8 = 1;
+        pub const EXPIRED: u8 = 2;
+        pub const OWNER_LOST: u8 = 3;
+        pub const INITIALIZATION_CANCELLED: u8 = 4;
+        /// This lease's routing and configuration ownership are released.
+        /// Without REMOTE_RETAINED,the last remote configuration was verified off.
+        pub const CLEANUP_CONFIRMED: u32 = 1;
+        /// At this lease's terminal observation,other same-scope leases still
+        /// owned the remote CPCD. Not a claim that it is currently enabled.
+        pub const REMOTE_RETAINED: u32 = 2;
+        #[derive(
+            Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type,
+        )]
+        pub struct Info {
+            pub version: u32,
+            pub controller: u16,
+            pub generation: u64,
+            pub lifetime: u64,
+            pub handle: u16,
+            pub security_epoch: u64,
+            pub token: u64,
+            pub expires_ns: u64,
+            pub handles: Vec<u16>,
+            pub modes: u8,
+            pub state: u8,
+            pub capacity: u16,
+        }
+        #[derive(
+            Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type,
+        )]
+        pub struct Packet {
+            pub sequence: u64,
+            pub security_epoch: u64,
+            pub security_level: u32,
+            pub indication: bool,
+            pub pdu: Vec<u8>,
+        }
+        #[derive(
+            Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type,
+        )]
+        pub struct Batch {
+            pub info: Info,
+            pub last_sequence: u64,
+            pub dropped_notifications: u64,
+            pub refused_indications: u64,
+            pub discarded_on_close: u64,
+            pub flags: u32,
+            pub reason: u8,
+            pub packets: Vec<Packet>,
+        }
+        pub fn valid_request(handles: &[u16], modes: u8, duration_ms: u32) -> bool {
+            !handles.is_empty()
+                && handles.len() <= 32
+                && !handles.contains(&0)
+                && handles
+                    .iter()
+                    .enumerate()
+                    .all(|(i, h)| !handles[..i].contains(h))
+                && (1..=3).contains(&modes)
+                && (250..=60000).contains(&duration_ms)
+        }
+    }
     pub type UuidValues = (Vec<(u16, bool, u16, Vec<u8>)>, Vec<u8>, Vec<u8>);
     pub type ExchangeInfo = (
         u16,
@@ -236,10 +326,18 @@ mod tests {
     fn authorizer_contract_preserves_literal_field_order_and_signatures() {
         use zvariant::Type;
         let identity: ssap::SsapAuthorizationIdentity = (2, 7, 11, 3, 19, 1, 10, 10, 0);
-        let prompt: ssap::SsapAuthorizationPrompt = (23, identity, 29, true, 31, vec![37]);
+        let prompt: ssap::SsapAuthorizationPrompt = (23, identity, 29, true, 31, vec![37], 0);
         assert_eq!(
             prompt,
-            (23, (2, 7, 11, 3, 19, 1, 10, 10, 0), 29, true, 31, vec![37])
+            (
+                23,
+                (2, 7, 11, 3, 19, 1, 10, 10, 0),
+                29,
+                true,
+                31,
+                vec![37],
+                0
+            )
         );
         assert_eq!(
             ssap::SsapAuthorizationIdentity::SIGNATURE.to_string(),
@@ -247,7 +345,7 @@ mod tests {
         );
         assert_eq!(
             ssap::SsapAuthorizationPrompt::SIGNATURE.to_string(),
-            "(t(qttqtuyyy)qbtay)"
+            "(t(qttqtuyyy)qbtayy)"
         );
     }
 

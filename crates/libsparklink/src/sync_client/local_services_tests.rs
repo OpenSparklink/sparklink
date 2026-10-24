@@ -42,6 +42,7 @@ fn approval_prompt(deadline: u64) -> slk_contract::ssap::SsapAuthorizationPrompt
         false,
         deadline,
         vec![],
+        0,
     )
 }
 #[zbus::interface(name = "org.sparklink.ServiceManager")]

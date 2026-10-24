@@ -80,9 +80,17 @@ class ObserverPolicyTests(unittest.TestCase):
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'OpenChannel'},
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'OpenChannelScoped'},
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'PrepareDynamicChannel'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'ReadSsapValue'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'WriteSsapValue'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'ReceiveSsapUpdate'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'SubscribeSsapUpdates'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'ReadSsapUpdates'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'RenewSsapSubscription'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'CloseSsapSubscription'},
         ])
         self.assertFalse(any('own' in r for r in rules))
-        # Contract change: applications own only their bounded discovery lease.
+        # Contract change: bounded SSAP client calls join owned discovery/channel use.
+        # This does not grant controller management or foreign Owned mutation.
         # A controller scan/stop/cancel, connection teardown or future method
         # remains management authority; do not replace this with a broad allow.
         adapter_members={r['send_member']for r in rules if r.get('send_interface')=='org.sparklink.Adapter'}

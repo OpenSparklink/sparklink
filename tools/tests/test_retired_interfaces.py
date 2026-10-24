@@ -22,6 +22,25 @@ class RetiredEntryGuard(unittest.TestCase):
         self.assertEqual(check(self.policy,self.files),[])
         self.assertTrue((ROOT/'bindings/python/tests/retired_structs.py').is_file())
 
+    def test_argument_selector_is_not_a_restored_root_command(self):
+        path='crates/slctl/src/commands.rs';files=copy.deepcopy(self.files)
+        # Braces in strings/comments cannot truncate the argument match and
+        # hide a later public root entry. Existing retirement policy unchanged.
+        files[path]+='\nlet kind = match args[2] { "phy" => { let _ = r#"}"#; /* { /* } */ } */ 2 }, _ => 0 };\n'
+        self.assertEqual(check(self.policy,files),[])
+        files[path]+='\n"phy" => restored(),\n'
+        self.assertTrue(check(self.policy,files))
+
+    def test_valid_root_phy_restoration_and_incomplete_match_are_rejected(self):
+        path='crates/slctl/src/commands.rs'
+        files=copy.deepcopy(self.files)
+        self.assertIn('match args[0] {',files[path])
+        files[path]=files[path].replace('match args[0] {','match args[0] {\n "phy" => Ok(()),',1)
+        self.assertTrue(check(self.policy,files))
+        for addition in ['\nlet kind=match args[2] {','\n/* unclosed','\nlet x=r#"unclosed']:
+            files=copy.deepcopy(self.files);files[path]+=addition
+            with self.subTest(addition=addition):self.assertTrue(check(self.policy,files))
+
     def test_each_retired_surface_and_missing_source_fail_closed(self):
         cases=[
             ('crates/slk-native/src/adapter.rs','\npub fn start_scan() {}'),

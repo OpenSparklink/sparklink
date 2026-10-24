@@ -63,7 +63,7 @@ def corroborate(r,capture,*,prefix_only=False):
     legs=[]
     if not prefix_only:
         _,legs=business_evidence(g,r,capture)
-        control(capture,r['usb'][i],0x1403,g['owners'][i]['handle'].to_bytes(2,'little')+b'\x13',row['cleanup_before_wall_ns'],row['cleanup_after_wall_ns'],status=True)
+        control(capture,r['usb'][i],0x1403,g['owners'][i]['handle'].to_bytes(2,'little')+b'\x10',row['cleanup_before_wall_ns'],row['cleanup_after_wall_ns'],status=True)
         for enabled in [True,False]:control(capture,r['usb'][1-i],0x1002,bytes([enabled,0]),row['cleanup_after_wall_ns'],row['scan_checked_wall_ns'])
     installs=[]
     if installation:

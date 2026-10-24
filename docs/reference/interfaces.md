@@ -36,7 +36,8 @@ Rust `libsparklink::Client` 只通过实际slkd申请通道；保持调用者总
 复用已有方法，接收fd检查实际AF_SPARKLINK；失败不降级，不暴露管理lease。
 `slk-contract`是独立的值类型/路径/方法名契约；slkd直接依赖Native、Channel和契约，不依赖SDK。
 SSAP审批的`SsapAuthorizationIdentity`和`SsapAuthorizationPrompt`也只由该层定义；
-`slk-protocol`不再导出这两个D-Bus类型。字段、签名、审批及期限语义保持不变。
+`slk-protocol`不再导出这两个D-Bus类型。未发布的审批元组末尾增加原始`data_type:y`，
+当前只准入属性值0；旧的无类型元组明确拒绝。该字段不授予描述符访问或安全资格。
 Rust Client提供成员/连接观察、fd申请与下述已有远端SSAP方法的类型化封装；
 通用Operation/跨进程原始Deadline/EventStream尚未开放，future取消不承诺撤销已开始的物理义务。
 内核/daemon/工具既有原期限、最后关闭和Grant规则继续执行。slktest移用SDK申请fd，负载、计时和验收断言仍在工具，业务不逐包过D-Bus。
@@ -125,11 +126,14 @@ generation、physical lifetime、handle和peer身份。它只是观察／调用�
 可安全重试的size query**。其他失败二者不变。超出65535的回复为EOVERFLOW。
 write输入允许空值，长度超65535为EMSGSIZE；这个语言内存上限不是协商MTU或长写
 支持，实际大小／安全要求继续由daemon及通道拒绝，不截断输入。
-权限继续按实际system bus策略逐方法拒绝；当前`sparklink-apps`仅开放只读
+权限继续按实际system bus策略逐方法拒绝；`sparklink-apps`开放只读
 `Connection.GetInfo` 预检与既有 `OpenChannel`／`OpenChannelScoped`／
-`PrepareDynamicChannel`，没有开放SSAP或管理权。只读预检不制造Ready或授予权限；
-新规则的应用组实机资格另取，不能继承17b4管理组门禁。现有管理组可用的RPC不等于
-普通应用角色的SSAP授权已经完成，后者仍需独立策略／实际权限门禁。
+`PrepareDynamicChannel`，以及已有原期限约束的 `ReadSsapValue`、`WriteSsapValue`、
+`ReceiveSsapUpdate` 和下方四个持续接收方法。原身份、远端权限与机制事实仍由唯一
+Engine 校验；组成员不是 Native Grant 或服务所有者。管理权未开放。`DiscoverSsap`、
+`GetCachedSsap`、`ReadSsapByUuid`、`GetSsapInfo` 尚未通过本批原期限／调用者审计，
+继续只由管理角色调用；不能宣称完整 SSAP 客户端权限迁移完成。
+新规则的实际 system bus／应用组实机资格须单独取得，不继承管理组历史门禁。
 C调用者须提供真实有效、独占、无别名且满足声明长度的内存区域；坏指针属于FFI
 调用者契约，不能用来代替内核EFAULT门禁。
 
@@ -205,8 +209,8 @@ Owned 的 register/read_local/unregister 显式接收原 Deadline；三条 D-Bus
 C/Python 的基础 Owned 视图复用同一个 Rust `ServiceRegistration`：
 `slk_client_register_local_service`／`Client.register_local_service`，随后通过
 `slk_local_service_receipt/read/unregister/free`／`LocalService.receipt/read_local/unregister/close`
-访问。支持 READ/WRITE_WITH_RSP 和有界初值，当前语言视图没有 authorizer callback，
-需要本地授权位时明确 EOPNOTSUPP。管理 staging 与安全 Agent 仍是独立用途。
+访问。支持有界初值及显式 `authorization=requests` 审批；没有审批入口时授权位与
+更新能力明确拒绝。管理 staging 与安全 Agent 仍是独立用途。
 回执不是远端发布；跨语言生命周期、错误和布局见[SSAP 权限](ssap-permissions.md)。
 实机范围始终绑定准确编译 artifact，不从新增 API 名字推导资格。
 
@@ -239,7 +243,10 @@ index/generation和物理lifetime/handle/role/地址类型/地址。`connection.
 | `read(handle, minimum)` | `ReadSsapValue` | 原机制要求；错误原样传播，无弱化fallback |
 | `write(handle, value, minimum)` | `WriteSsapValue` | 原短写协议；不截断、不echo、不实现新长写 |
 | `read_by_uuid(start, end, data_type, uuid, minimum)` | `ReadSsapByUuid` | 返回每项结果及原trace；不是本地构造成功 |
-| `observe(handles, modes, wait_ms)` | `ObserveSsapIncoming` | 只观察实际入站；不是向对端订阅，也不表示应用已经处理 |
+| `receive_update(handles, modes, wait_ms)` / `receive_until(..., Deadline)` | `ReceiveSsapUpdate` | 单次CPCD启用/接收/验证停用；需真实认证及拥有者授权；不覆盖已有配置 |
+| `subscribe(handles, modes, duration_ms, Deadline)` | `SubscribeSsapUpdates` | 持有原 caller／lifetime 的有限接收租约；读取、续租与关闭复用同一 Engine，当前一 actor 一个租约 |
+| `send_owned_update(handle, indication, Deadline)` | `SendOwnedSsapUpdate` | 同一原caller拥有的本地属性；stage1软件准入，stage2对端接收队列ACK，均非应用处理 |
+| `owned_configuration(handle, Deadline)` | `GetOwnedSsapConfiguration` | 观察原caller属性在本Session的配置，不制造Ready、授权或新配置 |
 | `exchange_info()` | `GetSsapInfo` | 真实协商观察，核对返回完整身份；不是服务发现或安全资格 |
 | `connection.transport_status()` | `GetTransportStatus` | 只读现有Session，不能排空credit或证明复用屏障 |
 
@@ -322,6 +329,10 @@ UnknownMethod，旧Encrypted/Paired属性为UnknownProperty。现行per-Connecti
 `RegisterAgent(o path, s method) → t epoch` 绑定该 controller 的一个 Agent 唯一总线所有者；
 明确接受 `sdk111-no-mitm` 或 `sdk111-numeric-comparison`；未知方法不降级。`UnregisterAgent(o path, t epoch)` 核对原 caller/path/epoch 后撤销原注册，普通通道权限
 不授予 controller 管理或 Agent 注册权。默认不自动批准。
+
+上述字符串标识当前实现的具体机制配方，不能据其名称判断设备正在运行的固件版本
+或兼容范围。选定镜像、实际上传、运行期 HCC 与真实协议交付分别留证；未知方法
+仍明确拒绝，不自动选择另一机制。
 
 `org.sparklink.Connection` 的原生命周期对象提供：
 
@@ -508,10 +519,16 @@ Connection 只读属性 `SsapSecurityRequirement`（D-Bus `u`）返回首次 SMT
 无降级/重绑行为见[SSAP权限与通道要求](ssap-permissions.md)。不改变本地 staging
 与实际远端操作的区分，也不授属性级认证、本地授权或 Bond。
 
-旧未接通facade仍NotSupported。数据库配置不是远端发布；原始门禁及安全/失败
+已退休的旧facade不再提供。数据库配置不是远端发布；原始门禁及安全/失败
 语义见准确资格和证据，不转授为完整服务支持。
 
-后续U8438594收紧本地注册：仅READ/WRITE_WITH_RSP（mask0x05）接通，
+唯一 SSAP actor 因错误退出时，daemon 记录一次 `SSAP lifetime actor failed`，带
+controller、generation、lifetime、handle、I/O kind、原始 errno（若有）及错误文本。
+日志不含协议载荷或密钥，也不改变退出、撤权或原期限。调用者看到的
+`actor stopped during ...` 可能只是待回复 oneshot 已关闭；定位根因须关联同一
+lifetime 的终态记录和真实通道／USB证据，不能把日志或状态更新当作成功交付。
+
+历史U8438594收紧本地注册：当时仅READ/WRITE_WITH_RSP（mask0x05）接通，
 WRITE_NO_RSP、descriptor、notify/indicate等声明明确NotSupported；共享权限类型
 仍保留标准完整语义。此拒绝只有生产数据库/实际D-Bus离线门禁，不转授Ub5实机资格。
 
@@ -535,21 +552,112 @@ UUID须2/16字节，范围非零且start≤end；无效本地参数为InvalidArg
 实机只验每端一个custom property，其他类别与错误矩阵仍待扩大；
 [源码映射和精确范围](../evidence/ssap-read-uuid-progress-20261014.json)。
 
-### 单次本地更新观察（U8e92f97；不是远端订阅）
+<a id="单次客户端配置与更新事务新源码接线实机待验收"></a>
 
-Connection.ObserveSsapIncoming(handles:aq,modes:y,wait_ms:u)返回(indication:b,raw:ay)。
-1..32个唯一非零handle、modes1通知/2指示/3两者、wait10..10000ms；InvalidArgs拒绝
-非法参数。必须有本lifetime实际发现的property及匹配Notify/Indicate能力，缺少时
+### 单次客户端配置与更新事务（实验接口）
+
+Connection.ReceiveSsapUpdate(handles:aq,modes:y,deadline:(ttttt))返回单个结构`(bay)`
+（indication:b、raw:ay），不是两个D-Bus返回参数。
+1..32个唯一非零handle、modes1通知/2指示/3两者、绝对期限最多10秒；InvalidArgs拒绝
+非法参数。准入使用本lifetime完整层级发现更新的建议性缓存；过滤发现的结果不替换
+该缓存。必须有其中实际发现的property及匹配Notify/Indicate能力，缺少时
 NotSupported。只允许一个call-owned等待者；busy、原期限、caller退出、Actor失败
-或断链为Failed，不静默成功。CLI为`ssap-observe CONNECTION HANDLE [notify|indicate|both] [WAIT_MS]`。
+或断链为Failed，不静默成功。CLI为`ssap-receive CONNECTION HANDLE [notify|indicate|both] [WAIT_MS]`。
 
-本地兴趣不写CCC。D-Bus owner-loss匹配先于owner检查/等待安装，已知调用者退出
-撤销等待。完整property packet原子交给一个oneshot接收槽；没有持续订阅/多应用
-router，满槽没有承诺无丢包。NTF不产生回复；IND只有活接收槽接受后ACK1，未知、
-过期、不匹配或不支持事件ACK0。ACK1不是CLI处理成功；确认发送仍受原物理期限。
-多条同handle实例、分包和事件投递未支持；malformed packet当前失败SSAP actor。
-真实正向更新/TX/CCC/security尚未验收。仅原路径回归与能力拒绝有实机证据。
+同一actor依次读取CPCD，只有旧配置为零才启用，收到一包后验证停用再返回；读取、
+启用与业务等待共用原绝对期限。取消或超时不抹去可能已生效的配置，清理有单独固定
+5秒上限；无法确认时该SSAP actor失败，不能重开同lifetime伪装Free。不会清除已有
+非零配置。一个call拥有客户端事务序列，其他竞争调用明确busy；尚无持续多应用聚合。
 
+清理收到匹配原写请求和handle的类型化 `WriteError(4)` 时，该属性被明确报告为
+不可用：当前接收仍返回失败，内部收到的值不会作为成功结果交付，也不宣称CPCD已
+验证为零。该请求的失败回复已到达，其他handle仍按同一清理期限处理；独立业务
+不因这个已知失败自动退休。未知失败、超时、错误handle及仅有相同字样的错误字符串
+不适用这一分支，仍须保守退休。它不更改Native授权、安全等级或credit。
+
+完整property packet进入有界内部槽；IND的ACK1只表示该接收准入，不代表调用者
+处理、最终RPC返回或业务回复。未知、已知关闭、过期、不匹配或事件ACK0；NTF无回复。
+旧ObserveSsapIncoming/ssap-observe入口已退休，无兼容别名；历史记录保留原命令身份。
+多条同handle实例、事件投递及未协商序号的长报文仍不支持；已协商的单值序号
+分片范围见[片段边界](../explanation/ssap-value-fragments.md)。malformed packet失败SSAP actor。
+正向更新、传输及机制的限定资格按准确产物读取；不能继承旧本地观察的结果，
+也不能把有限正向范围当作完整安全或生命周期资格。
+受保护SMTC的初始化保留原错误类型；只有已完成且未返回fd的确定安全准入拒绝，
+才能在真实安全完成事件后join并重新尝试。新bind仍由内核核对原租约及实际机制；
+未知失败、超时、已启动Engine与退休owner不重开。原拒绝的公开错误名称/正文保持。
+接口存在不授予资格，须核对当前能力入口中准确产物的限定记录；持续订阅、多应用和
+完整生命周期仍有独立门禁。不得通过基本回退、第二Engine或同lifetime重绑绕过。
+
+
+### 持续 SSAP 接收租约（开发中，未发布）
+
+以下是同一 Connection／SSAP actor 的源码接线，不是新 Host 或 wire Engine。
+Rust／C／Python／CLI 已复用同一客户端。系统总线策略以逐方法 allowlist 向
+`sparklink-apps` 开放这四个原期限／原 caller 绑定的方法；实际权限与新的持续更新
+实机门禁单独记录，源码、无副作用的错误预检或私有总线 fixture 不构成实机资格。
+加入管理组的历史调用不能作为普通应用权限分离已完成的证明。
+单次 `ReceiveSsapUpdate` 的原语义保留。当前源码允许一个物理 actor 的同属性集合、
+同模式共享组最多8个租约；全daemon原watch预算仍16。只有已经实际启用且仍有有效
+拥有者的组可以共享，controller／generation／lifetime／安全epoch必须一致。
+不同属性集合或模式、初始化／清理中、无有效拥有者及容量已满明确拒绝；不覆盖旧
+CPCD。这是分批实现范围，不能据此宣称动态过滤／模式合并或完整多应用资格。
+同一集合的句柄顺序可以不同，各调用者保留自己的原顺序和token。
+
+| 方法 | 输入 | 结果及限制 |
+| --- | --- | --- |
+| `SubscribeSsapUpdates` | `handles:aq, modes:y, duration_ms:u, deadline:(ttttt)` | 1..32 个实际发现的唯一 property；租期 250..60000 ms，创建原期限最多 5 秒；返回原 controller／generation／lifetime／安全 epoch、token、到期及状态 |
+| `ReadSsapUpdates` | `token:t, wait:b, deadline:(ttttt)` | 一个在途 reader，原期限最多 10 秒；返回有限批次、序号及累计丢弃／拒绝计数；重新检查实际 Native 上下文及原 epoch |
+| `RenewSsapSubscription` | `token:t, duration_ms:u, deadline:(ttttt)` | 原 caller 且仍 Active 才能续租；不会续订创建、读取、在途包或首次清理期限 |
+| `CloseSsapSubscription` | `token:t, deadline:(ttttt)` | 仅关闭自己的 token；撤回自己的路由／配置引用；REMOTE_RETAINED区分共享保留与最后远端停用，不隐式断链 |
+
+未发布接口的结构布局／大小保持，新增flags语义要求daemon和Rust／C／Python同步部署；
+旧客户端遇到未知位应拒绝，不做静默降级。接口已接线与实机／形式化通过分别按
+当前能力入口中的准确产物记录；原单租约历史资格不转授新的共享行为。
+
+租约到期是本地单调时钟观察，独立于最多5秒的 Native 发送期限。创建和续租共用
+250..60000ms 的过期计算；长租约不放宽每次实际发送、创建、读取或清理的原期限，
+也不是长期发送授权。后续变更必须分别回归长租约和超过5秒 TX 仍被拒绝的负对照。
+
+每个租约独立队列最多16个完整PDU／32768字节；一个队列满不阻塞其他接收者。
+各队列独立记录通知丢弃／指示未准入。线上指示ACK1只表示至少一个匹配且有效的
+队列接受了完整包，不保证每个订阅者接收，更不表示任何应用处理；全部拒绝才ACK0。
+需要业务交付时，每个目标应用必须独立校验和回复。返回包带原 Native 安全收据及
+递增序号；取消读取不释放租约，远端回复是否已被消费可能不确定，不能自动重试或
+凭 RPC 超时补造交付。取消后实际未被本地 oneshot 接受的批次才允许原样放回队列。
+
+原D-Bus unique owner退出或租约到期只清理自己的token及队列；丢弃排队包并报告数量。
+仍有有效共享者时，关闭结果为CLOSED／flags=3：bit0 CLEANUP_CONFIRMED表示该租约的
+路由／配置引用已撤回，bit1 REMOTE_RETAINED表示完成当时仍有兄弟租约保有远端CPCD。
+这不是远端停用成功事件，也不承诺该观察之后的硬件状态。最后一个租约才发送实际
+停用并等待验证回复，成功flags=1；bit1单独出现非法。首次物理清理最多5秒，
+未知结果失败／隔离同一actor，不报告Free。每租约至多8个关闭等待者；actor仅保留
+最后16个owner／token终态观察，淘汰后旧token不可用且绝不会重获权限。等待更新时让出原客户端请求
+通道供普通读写使用，配置／清理仍通过同一请求序列。它是有限 D-Bus 租约，不提供
+应用 socket 的 dup、SCM_RIGHTS 或最终 fd 释放承诺；不授 controller 管理权限。
+
+Rust 通过 `connection.ssap().subscribe(handles, modes, duration_ms, Deadline)` 获取
+`ssap::subscription::Subscription`，调用 `read(wait, Deadline)`、
+`renew(duration_ms, Deadline)`、`close(Deadline)`。它保留原 caller，释放父 Connection
+视图不会断链或结束此租约。`info()` 是最后验证的观察；`is_closed()` 仅表示本地读取／
+续租准入已结束，不是远端清理证明。Drop 仅在已有 Tokio runtime 中尝试撤回，不能替代
+显式清理；未知续租结果不自动重试，也不能刷新原读取、包或首次清理期限。
+
+| 语言入口 | 结果与所有权 |
+| --- | --- |
+| C `slk_connection_ssap_subscribe` | 非零原句柄列表、modes1..3、租期250..60000ms；输出独占 `SlkSsapSubscription*`，父 Client／Connection 可先释放 |
+| C `slk_ssap_subscription_info/read/renew/release/free` | Info为120字节；Packet为2072字节；完整Batch为33312字节，最多16包；read无peek／长度查询或截断。release观察远端清理，free只释放本地；错误保留输出，当前并发操作返回EAGAIN |
+| Python `connection.ssap().subscribe(...)` | `read(deadline_ns=..., wait=True)`、`renew(duration_ms, deadline_ns=...)`、`release(deadline_ns=...)`；`close()`／context退出仅本地释放。禁止fork后使用；不另建D-Bus客户端或SSAP codec |
+
+C 输出须为完整、独占、正确对齐的结构区域；无效地址属于调用者违反 FFI 契约，不等同于
+内核坏用户地址测试。未使用的数组／保留字节归零。Rust 统一检查原身份、epoch、递增序号、
+计数及包预算，复用现有 Update decoder；Python 只检查 ABI 表示并转换不可变值。
+已被远端消费、但本地等待结束的批次可能不确定；不会偷偷重读或称为无损投递。
+
+`slctl ssap-subscribe CONNECTION HANDLE [notify|indicate|both] [COUNT] [LEASE_MS]`
+是有限交互命令：默认至少8个完整PDU、60000ms租期，无自动续租；COUNT1..4096，
+LEASE_MS250..60000。完整批次可能超过COUNT，全部显示，不截断。先实际发现所需属性，
+每次读取原期限最多5秒；到期／中断／错误后仍尝试同一token清理。未收到目标数量或
+清理未确认时失败，不能把日志或协议ACK当作对端应用校验回复。日常交互不替代 slktest。
 
 ## Delegated channel TX status（未发布 v1）
 
@@ -660,11 +768,29 @@ handle和reserved为u16；version=1、reserved=0、12位handle。Rust、生成C�
 
 ## 客户端配置与 SSAP 更新的当前限制
 
-`ObserveSsapIncoming` 是本地限时接收兴趣，既不是远端CPCD写入，也不保证应用处理。
-远端配置、生产通知发送与指示确认账本仍未接通。标准T/XS20001-2025表40对CPCD
-写入要求认证和授权；`sdk111-no-mitm`和Agent同意均不足以满足，当前拒绝保持。
-只读写公开值的历史资格不能升级成通知订阅、安全或Profile资格。配置须由唯一
-ConnectionSession按物理lifetime独立持有，不按可复用handle或地址继承。
+单次CPCD事务及Owned发送的资格只由当前能力入口中的准确artifact记录授权，不能
+继承历史属性读写或旧本地观察PASS。表40要求CPCD写认证和授权；no-mitm/Agent同意不满足。
+配置由唯一物理actor按lifetime持有，拥有者退休或安全epoch变化使旧配置失效。
+本地替换不自动通知。SendOwnedSsapUpdate只发送原caller当前拥有的属性快照，仍受
+协商能力、CPCD、原期限及每次Native提交检查约束；没有序号分片协商时，超出线上
+MTU明确拒绝。协商后仍限定单值2042字节，通知/指示逻辑PDU最多2048，不能截断。
+
+一次最多一个待决指示，关闭/取消后仍等待匹配ACK或有限退休；ACK没有wire事务号，
+重复/晚到ACK和可靠传输假设仍须独立验证，不宣称解决了所有复用竞争。C/Python的
+未发布的SlkSsapUpdate改为2064字节，PDU数组2048字节，ACK偏移2056，显式保留5字节。
+必须同步重编C调用者与共享库、更新Python绑定；不与旧2056字节布局混用，无兼容期。
+stage1仅在全部片软件准入后返回，stage2还需真实匹配ACK，stage3为收到且已验证停用；
+它们都不表示对端应用处理。首片启动一次原排空期限，部分流撤回不能忘记物理义务。
+完整持续订阅、provider及多应用/故障矩阵继续开放；分片机制见
+[原理解释](../explanation/ssap-value-fragments.md)，新artifact资格不由历史更新记录授予。
+
+客户端值请求的部分 SSAP 片准入，与单个通道 PDU 的 ACB 前缀是不同阶段。
+回复只有在原请求全部片软件准入、原排空期限尚未到达且安全上下文匹配时，
+才能结清该请求。作者取消不能让部分请求获得成功，也不能抹去已准入流；后续片
+仍受原发送期限约束，首片排空期限不续期。完整流的晚回复可以结清原义务，
+但不能给已经退出或到期的作者补成功。无法确认部分流时，保守退休原 actor。
+本地 socket 背压测试不验证 Native 准入、USB、credit 或空口；其结果不能升级为
+真实 WS73 部分 SSAP 准入资格。
 
 ## 动态基础通道：已接线，实机待验收
 
@@ -816,11 +942,13 @@ slkd Engine 的真实内核 RX 观察可用于生产值访问；管理 staging �
 
 ### 原限制过期与失效 Session 的错误阶段
 
-PREPARE_TX 在 Session 不再活动时返回 ENOTCONN；在原 Runtime/Grant 仍有效的情况下，
-sendmsg 的 `sl_tx_access` 会先检查携带限制的原始期限，原限制过期返回 ETIMEDOUT，
-先于后续 `sl_admit` 的活动状态判断。因此原 PDU 超时后，新 prepare 和缓存旧限制的
-submit 可以分别返回 ENOTCONN 与 ETIMEDOUT；这不表示新准入或续期。撤权/旧 lifetime
-等更早的范围检查仍可返回 EACCES/ESTALE，不能任意接受所有错误或猜测优先级。
+从内核 `98b8bb4afa89` 起，首次发送准入和最终入队都在同一 Session 锁下先检查
+Session 活动性及 Binding 存活，再检查缓存限制。Session Failed／Closed 或 Binding
+退休时，原 Runtime／Grant 仍有效的新 prepare 和缓存 submit 均返回 ENOTCONN；
+Session 失败不要求 Binding 立刻销毁。有效且已授权的 Session 上，原限制过期仍返回
+ETIMEDOUT，不刷新原期限。撤权／旧 lifetime 等更早的 Runtime 范围检查仍可返回
+EACCES／ESTALE；畸形 ancillary 保留解析错误。旧内核的错误顺序只适用于其历史记录，
+不能套用为新实现的期望，也不能任意接受所有错误。
 
 一次重试被拒绝不能抹去之前已准入并开始的 USB/PB 前缀或未结清物理义务。errno
 不能充当“对端没有执行”、协议 credit 退款、排空或安全 handle 复用的证据。可复现门禁
@@ -992,3 +1120,85 @@ ABI布局、指针契约、权限、生命周期、外部消费者或实机资�
 未接通业务事件被拒绝并计数。WS73 Native发现/连接/ACB/安全使用原本的独立
 lifetime-bound入口，不能从历史标准事件名称推导当前能力。原始状态与限定资格见
 [能力记录](../../project/current-capabilities.md)。
+
+## 实验性运行期地址配置
+
+Native Rust 管理封装 `Adapter::runtime_address_submit` 与
+`slkconfig --adapter INDEX --generation GENERATION runtime-address ADDRESS`
+接通未发布的 `SL_IOCTL_RUNTIME_ADDRESS_SUBMIT`（0xd7，48 字节）。
+它只接受 WS73 profile 1 的未使用 Setup，要求 CAP_NET_ADMIN 及原 File 独占
+Diagnostic lease；普通应用 SDK、C/Python 应用 API 不开放此管理操作。
+六字节按显式控制器顺序传输，不套用 Wi-Fi/Bluetooth 的分配位规则，
+不代表厂商、联盟或认证地址；没有 eFuse、Flash 或 NV 写入入口。
+
+每次注册最多一次配置。请求携带 generation、单调 request_id、原始
+1..5000 ms 期限；完全相同请求重试仅取回原 seq，不重复发送。
+已有命令队列、credit 和提交票据发送 DLI 0x0405。真实 status-only Complete
+只证明设置命令完成；随后必须在原期限内取得匹配六字节的真实 0x0406 回复，
+才在 Runtime 锁与 Host 锁保护下发布当前地址。读回前元数据无效，Managed 被拒绝。
+CLI 先真实查询并输出原地址，再设置、读回并检查 Runtime 快照。
+libws 的本地地址缓存不能作为控制器读回证据。
+
+取消或最后关闭不抹去已提交的物理义务；未核实设置在释放时隔离为不确定状态，
+不能宣布 Free/Ready。进一步改变地址须经已有重新初始化流程获得新生命周期身份。
+旧 own-address 的广播参数返回 ESTALE；不进行活动连接迁移。
+CLI 成功也不证明发现、建链、对端应用交付、断电保持或生产唯一身份。
+新入口的实际资格仍按项目能力记录的准确 artifact 单独核对。
+
+
+## Managed 类型化链路命令
+
+未发布的 `SL_IOCTL_LINK_COMMAND_SUBMIT`／`RESULT` 为 0xda／0xdb，当前结构为72／88字节。
+旧查询专用0xd8／0xd9已退休，不复用编号或保留兼容门面。
+Native Rust `link_command_submit`／`link_command_result`、显式 Native C
+`slk_link_command_submit`／`slk_link_command_result` 和 Python `sparklink.native`
+使用同一实现；普通应用 API 不会取得 Native fd 或管理 lease。
+
+输入携带原 File 的 Managed epoch、generation、完整 connection lifetime、handle、
+role、地址类型／地址，以及原始 `CLOCK_MONOTONIC` 纳秒期限。Native 调用者必须使用
+同一内核时钟域；不得使用另一主机、旧启动或任意时钟偏移。`timeout_ms`1..5000限制
+剩余预算，不是排队或 ioctl 等锁后重新授予的相对期限。完全相同的 request_id／
+范围／期限重试只取回原 seq；不同参数拒绝，旧编号不复用。
+
+kind1为RSSI、kind2为PHY，argument必须为0；kind3为链路payload偏好，argument是非零16位
+请求值。action1提交，action2撤销原作者。命令仍通过原 Host 队列、
+command credit 和原子提交票据，准入／出队／实际提交均检查原身份及权限。
+成功 Status 只确认接受；查询的真实 Complete 必须匹配完整长度与 echoed handle。
+kind3按实测SDK110 E方言要求Complete返回两字节handle LE16，必须匹配原handle；不制造
+请求参数回显或有效长度。空数据、错误handle或其他长度会
+拒绝并保留失败，不能静默选择另一种解码。
+不开放任意 opcode，也不在 Native Host 占用时取得 Diagnostic 或走 libusb 旁路。
+
+结果不消费记录，可用 seq 或原 request_id查询，释放 lease 后同 File 仍可读取历史。
+state1等待、2控制器成功、3本地／控制器失败；flags1仅表示锁内快照时连接与lease身份
+仍当前，flags2表示值可用，flags4表示确有控制器状态。CURRENT 不表示样本新鲜度，
+也不授权后续提交。本地负errno不能伪装成控制器 Complete。RSSI的127是无效哨兵；
+PHY保留八个原始线字段，SDK方言解释和空口行为另行验证。取消、关闭、撤权或到期
+不抹去已开始的物理义务；迟到回复不能覆盖原作者终态。
+
+`org.sparklink.Connection.ReadLinkMeasurement(kind,timeout_ms)` 是 control-role 管理
+RPC，虽以Read开头也不向默认观察者或apps-only组开放。daemon使用原Managed fd，
+每controller的查询和偏好设置共用一个操作预算；等待回复时不持有租约准入锁。调用者退出／原期限结束会
+通知实际阻塞任务撤销原请求；该任务保留fd与预算直至真正退出，不宣称USB drain。
+显式管理客户端为 `Controller.management().read_link_measurement`；CLI是
+`slctl --adapter ADAPTER link-measurement CONNECTION rssi|phy [timeout-ms]`。
+CLI输出真实结果后，若没有成功、当前且有效的测量则失败退出，不生成默认值。
+
+`org.sparklink.Connection.SetLinkPayloadPreference(requested_octets, deadline)` 也是control-role
+管理RPC，默认观察者与apps-only组不获准调用。deadline复用现有五字段原始时钟域戳，
+包含boot/time namespace身份和CLOCK_MONOTONIC期限，不是重新开始的相对预算。
+SDK `Controller.management().set_link_payload_preference(path,octets,timeout_ms)` 在首次
+工作前创建同一个原期限；连接查询、RPC和返回检查都受它约束，daemon验证时钟域并
+将原始纳秒期限原样交给Kernel票据。CLI为
+`slctl --adapter ADAPTER link-payload-preference CONNECTION OCTETS [TIMEOUT_MS]`。
+
+回复 `Acknowledgment` 绑定完整连接身份、原request_id／期限和 `requested_octets`。
+这个字段只复述原请求，不是协商结果。state2仅表示真实控制器命令成功；kind3永远不
+设置value-available位，也不更改controller ACB上限、DTAP MTU／MPS、SSAP MTU、Ready
+或安全状态。取消／关闭不能撤销已经生效的控制器偏好，也不能抹去在途义务。
+编码范围1..65535不保证固件支持；未设置自动fallback或默认初始化步骤。
+
+这些是开发源码契约。`ENOTTY`／`EOPNOTSUPP`表示接口或模式缺失，`EPERM`表示权限／
+作者不符，`ESTALE`表示身份或epoch失效，`ETIMEDOUT`表示原期限结束，`ENOENT`表示
+结果缺失／淘汰。准确实机资格只由[能力入口](../../project/current-capabilities.md)授予；
+编译、ffi负向测试、有效线格式和命令 Complete 均不能替代对端应用交付或无线根因证据。

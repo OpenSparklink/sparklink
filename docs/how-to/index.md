@@ -21,6 +21,7 @@ own-a-local-service
 :maxdepth: 1
 
 export-board-inputs
+configure-experimental-ws73-addresses
 capture-controller-snoop
 capture-and-check-discovery
 check-business-roundtrip

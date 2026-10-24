@@ -322,6 +322,7 @@ impl Client {
 
 /// Pinned physical lifetime observation, not ownership of the physical link.
 /// Dropping this object does not disconnect or revoke another application's fd.
+#[derive(Clone)]
 pub struct ApplicationConnection {
     pub(crate) client: Client,
     pub(crate) controller: ControllerId,

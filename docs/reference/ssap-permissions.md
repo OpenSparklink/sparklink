@@ -23,6 +23,13 @@
 
 ## 当前源码与拒绝规则
 
+系统总线角色与属性权限位是两层约束。`sparklink-apps` 只获得原期限约束的远端
+读写、单次接收及持续接收租约调用；不获得 controller 管理、Owned 服务修改或
+安全安装权限。服务拥有者、实际链路机制／epoch 和远端属性审批仍独立检查。
+无原期限的发现／UUID／信息入口本批未扩权。确切方法见[接口参考](interfaces.md)。
+实际 system bus 中错误预检只能证明策略允许请求到达 daemon；正向业务仍须对端
+应用校验、回复及两端包证据，不能以 InvalidArgs、协议 ACK 或本地入队替代。
+
 实际生产语义由 Rust `slk_protocol::SsapOperations` 与唯一用户态Engine消费。
 旧内核 `SL_SSAP_OP_*` 和valid/allows/fits_legacy helper已退出公开头，只保留在
 有来源hash的私有C测试见证中；它不是内核SSAP服务接口。
@@ -33,8 +40,16 @@ legacy narrowing 仅保留历史 ABI/权限回归，不再有生产 facade 消�
 旧 AddProperty/WriteProperty/RemoteService.Write/CallMethod 等未发布入口已删除，
 CLI 和观察者白名单同步退休。原权限、超限和不截断语义由实际 codec/数据库及
 现有纯测试保留；不再把历史 248/252 输入限值描述成当前 Engine 的协商 MTU。
+
+完整PDU阶段按opcode开销限制远端值：read最多为协商MTU减2字节，单项UUID读取
+最多为MTU减4字节。本地数据库的2042字节预算不代表该值能装进任意响应。
+未协商本地支持的有序号分片格式时，超过完整响应MTU的两种读取都返回READ_RSP错误16，
+不截断、不换成通用错误响应、不更改属性值；同一actor仍可继续处理后续合法请求。
 真实读写仍核对操作位、连接身份、安全上下文、原期限和本地授权；登记成功不能
-代替对端收到。通知/指示和长写的未实现部分继续明确拒绝。
+代替对端收到。新开发路径对已协商分片序号的单值read/UUID/verified-write复用同一Engine，逻辑值
+预算2042字节；每片独立经过Native约束。更新/发现分片、事务号并发、无序号分片和
+完整失败矩阵仍未支持。机制见[分片解释](../explanation/ssap-value-fragments.md)，
+实际资格仍只由当前能力页的准确产物记录决定。
 
 `org.sparklink.ServiceManager.RegisterLocalService` 是现有唯一用户态数据库的
 入口，当前只接通 READ 和 WRITE_WITH_RSP（mask `0x05`）；其他有效操作位返回
@@ -234,8 +249,10 @@ C 用 slk_local_service_authorization_fd 取得调用者负责关闭的 CLOEXEC 
 SlkAuthorizationRequest，再等待通知；EAGAIN表示没有可交付请求。fd转交仅转交就绪观察，
 不能据此在另一进程批准。对象禁止fork后使用；普通dup/exec不改变原sender或请求身份。
 
-request_info 返回2120字节的只读原上下文，value偏移72；包含controller/generation、
-lifetime/handle、epoch/level、TCID/PI、属性、原期限和本地token。读请求无值，写请求
+request_info 返回2120字节的只读原上下文，data_type偏移70、value偏移72；包含controller/generation、
+lifetime/handle、epoch/level、TCID/PI、属性、数据类型、原期限和本地token。data_type为
+属性值0或客户端配置2；其他类型拒绝。配置2只在声明更新/CPCD能力、真实等级2的
+两字节写请求中交付，独立于属性access；不能由同句柄的属性值批准推导配置批准。读请求无值，写请求
 只有被提议的0..2042字节；reserved/tail及未用字节归零。request_reply只接受0/1，
 直接进入原pending的一次性答复，不经同步RPC executor。0只表示本地决策准入，
 不是daemon提交、USB完成、协议确认或对端应用处理。重复／陈旧答复ESTALE，过期
@@ -246,6 +263,12 @@ Python service.next_authorization() 非阻塞；带 deadline_ns 时按一个不�
 原快照、reply(bool)答复并close/context退出。未答复的请求被释放即拒绝；请求保活的是
 本地审批上下文，不是Client、登记或物理连接。调用者应及时释放每个请求，不能靠保留
 旧句柄后再使用新token取得资格。任何批准都要经过同一Rust guard及daemon最终复核。
+
+未发布的`AuthorizeValue`输入为`(t(qttqtuyyy)qbtayy)`，末尾`y`是原SSAP数据类型，
+写入方向仍由原`b`字段表达。旧六字段输入在签名解码阶段拒绝；固定zbus版本返回
+`org.freedesktop.zbus.Error`及明确的旧/新签名差异，不进入审批队列，没有兼容期。daemon的批准
+收据同时绑定当前服务owner、句柄、数据类型及方向；批准不能跨目标或读写方向使用。
+C/Python及CLI快照显示该类型，SDK不依据对象路径或可修改的显示文字推断类型。
 
 合法unregister请求先停止本地审批，再尝试异步撤回；失败也不重开审批。free与daemon
 owner失效会唤醒等待者。该通知不是controller/connection状态流；物理退休、旧lifetime
@@ -276,7 +299,20 @@ controller/管理租约和登记必须仍有效，提交与远端写入/移除�
 Rust `ServiceRegistration.replace_local`、C `slk_local_service_replace` 与 Python
 `LocalService.replace_local` 使用这一入口，调用成功只表示本地提交，不发通知或指示。
 超时/答复丢失可能发生在提交之后，效果不确定；不自动重试。对端须另行实际读取，仍
-遵守协商MTU及现有无SSAP分片限制。动态provider回调、CCC、主动通知/指示发送仍未接通。
+遵守协商能力、物理MTU和逻辑值预算；仅已协商的单值分片走上述路径，不能推断
+通知/指示或provider也支持分片。动态provider仍未接通；新CPCD及
+Owned通知/指示源码契约见[接口参考](interfaces.md#客户端配置与-ssap-更新的当前限制)，
+主动发送资格按当前能力入口的准确artifact及限定范围读取，旧本地替换PASS不升级
+为主动发送、持续订阅或完整生命周期资格。
 
 开始有效撤回后，SDK登记进入Withdrawing：后续本地替换被拒绝，即使撤回答复不确定；
 仍可观察本地值或显式重试原对象清理。Removed后不再读取/替换，不因新caller复活。
+
+
+更新等待通过服务 owner 的撤销通知和调用者等待端关闭来唤醒，随后重新检查生产状态。
+通知本身不授予发送权限，也不表示物理清理已完成。未准入的更新只移除自身待发工作；
+已准入更新保留首片建立的排空期限，作者原期限不续期。owner 撤销时，尚未完成准入的
+分片序列使该 SSAP actor 退休；已全部准入的指示继续履行有界 ACK 排空义务，退出的
+作者不再收到成功结果。ACK、软件准入和对端应用实际处理继续分别表达。
+调用者退出后，未完成准入的更新继续监听原 owner 撤销；全部准入且作者已退出时
+停用该监听分支，保留 ACK 排空，避免重复通知导致空转。

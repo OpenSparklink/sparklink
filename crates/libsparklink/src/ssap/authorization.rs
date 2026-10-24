@@ -43,9 +43,36 @@ pub fn admit(
 ) -> zbus::fdo::Result<Option<Instant>> {
     check_sender(context.daemon_owner, sender)?;
     let id = prompt.1;
+    let permitted = match prompt.6 {
+        0 => {
+            context
+                .access
+                .check_authorization_result(id.5, prompt.3, true)
+                .is_ok()
+                && context.operations.contains(if prompt.3 {
+                    SsapOperations::WRITE_WITH_RSP
+                } else {
+                    SsapOperations::READ
+                })
+        }
+        2 => {
+            prompt.3
+                && context.operations.contains(SsapOperations::CLIENT_CFG_WR)
+                && slk_protocol::ssap::client_config::decode(
+                    &prompt.5,
+                    slk_protocol::ssap::client_config::modes(context.operations),
+                )
+                .is_ok()
+                && slk_protocol::ssap::client_config::WRITE_ACCESS
+                    .check_authorization_result(id.5, true, true)
+                    .is_ok()
+        }
+        _ => false,
+    };
     if context.owner_lost
         || prompt.0 == 0
         || context.property != Some(prompt.2)
+        || !permitted
         || id.0 != context.controller.index
         || id.1 != context.controller.generation
         || id.2 == 0
@@ -54,15 +81,6 @@ pub fn admit(
         || (id.6, id.7, id.8) != (10, 10, 0)
         || prompt.5.len() > 2042
         || !prompt.3 && !prompt.5.is_empty()
-        || context
-            .access
-            .check_authorization_result(id.5, prompt.3, true)
-            .is_err()
-        || !context.operations.contains(if prompt.3 {
-            SsapOperations::WRITE_WITH_RSP
-        } else {
-            SsapOperations::READ
-        })
     {
         return Ok(None);
     }

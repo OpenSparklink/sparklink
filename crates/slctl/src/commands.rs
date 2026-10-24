@@ -166,23 +166,18 @@ impl Context {
                 );
                 Ok(())
             }
-            "ssap-observe" => {
+            "ssap-receive" => {
                 if !(3..=5).contains(&args.len()) {
                     anyhow::bail!(
-                        "ssap-observe CONNECTION HANDLE [notify|indicate|both] [WAIT_MS]"
+                        "ssap-receive CONNECTION HANDLE [notify|indicate|both] [WAIT_MS]"
                     );
                 }
                 let link = self.application_connection(args[1]).await?;
                 let object = link.ssap();
                 let handle: u16 = args[2].parse()?;
-                let modes: u8 = match args.get(3).copied().unwrap_or("both") {
-                    "notify" => 1,
-                    "indicate" => 2,
-                    "both" => 3,
-                    _ => anyhow::bail!("invalid local receive mode"),
-                };
+                let modes = crate::ssap_subscription::mode(args.get(3).copied().unwrap_or("both"))?;
                 let wait: u32 = args.get(4).copied().unwrap_or("5000").parse()?;
-                let (indication, raw) = object.observe(vec![handle], modes, wait).await?;
+                let (indication, raw) = object.receive_update(vec![handle], modes, wait).await?;
                 let packet = slk_protocol::ssap::updates::Update::decode(65535, &raw)
                     .map_err(|e| anyhow::anyhow!("incoming codec: {e:?}"))?;
                 if packet.indication != indication {
@@ -199,6 +194,10 @@ impl Context {
                     );
                 }
                 Ok(())
+            }
+            "ssap-subscribe" if args.len() >= 3 => {
+                let link = self.application_connection(args[1]).await?;
+                crate::ssap_subscription::run(&link, &args[2..]).await
             }
             "ssap-read-uuid" => {
                 if !(5..=6).contains(&args.len()) {
@@ -470,6 +469,56 @@ impl Context {
                     anyhow::bail!("usage: peer-info <typed-peer-path>");
                 }
                 self.cmd_peer_info(args[1]).await
+            }
+            "link-payload-preference" => {
+                if !(3..=4).contains(&args.len()) {
+                    anyhow::bail!(
+                        "usage: link-payload-preference <connection-path> <octets> [timeout-ms]"
+                    );
+                }
+                let requested_octets = args[2].parse::<u16>()?;
+                let timeout_ms = args.get(3).map(|v| v.parse()).transpose()?.unwrap_or(5000);
+                if requested_octets == 0 || !(1..=5000).contains(&timeout_ms) {
+                    anyhow::bail!("nonzero16bit payload preference and1..5000ms required");
+                }
+                let value = self
+                    .controller()
+                    .await?
+                    .management()
+                    .set_link_payload_preference(args[1], requested_octets, timeout_ms)
+                    .await?;
+                println!(
+                    "NativeLinkPayloadAcknowledgment: {}",
+                    serde_json::to_string(&value)?
+                );
+                if value.state != 2 || value.flags != 5 {
+                    anyhow::bail!("no successful current controller acknowledgment");
+                }
+                Ok(())
+            }
+            "link-measurement" => {
+                if !(3..=4).contains(&args.len()) {
+                    anyhow::bail!(
+                        "usage: link-measurement <connection-path> <rssi|phy> [timeout-ms]"
+                    );
+                }
+                let kind = match args[2] {
+                    "rssi" => 1,
+                    "phy" => 2,
+                    _ => anyhow::bail!("kind must be rssi or phy"),
+                };
+                let timeout_ms = args.get(3).map(|v| v.parse()).transpose()?.unwrap_or(5000);
+                let value = self
+                    .controller()
+                    .await?
+                    .management()
+                    .read_link_measurement(args[1], kind, timeout_ms)
+                    .await?;
+                println!("NativeLinkMeasurement: {}", serde_json::to_string(&value)?);
+                if value.state != 2 || value.flags & 7 != 7 {
+                    anyhow::bail!("no successful current valid measurement");
+                }
+                Ok(())
             }
             "connection-info" | "disconnect-object" => {
                 if args.len() != 2 {
@@ -1252,7 +1301,7 @@ fn print_native_result(r: slk_protocol::DiscoveryResultRecord) -> anyhow::Result
     Ok(())
 }
 
-fn parse_hex_bytes(hex: &str) -> anyhow::Result<Vec<u8>> {
+pub(crate) fn parse_hex_bytes(hex: &str) -> anyhow::Result<Vec<u8>> {
     let hex = hex.strip_prefix("0x").unwrap_or(hex);
     if !hex.len().is_multiple_of(2) {
         anyhow::bail!("hex string must have even length");

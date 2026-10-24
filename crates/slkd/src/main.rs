@@ -11,6 +11,7 @@ mod controller_events;
 mod dbus_iface;
 mod discovery;
 mod event_loop;
+mod link_command;
 #[cfg(test)]
 mod profile_runtime;
 mod radio;
@@ -21,6 +22,9 @@ mod service;
 mod ssap_authorization;
 mod ssap_database;
 mod ssap_engine;
+mod ssap_engine_config;
+mod ssap_receive_transaction;
+mod ssap_subscription;
 mod state;
 
 use std::{path::PathBuf, sync::Arc};

@@ -29,6 +29,25 @@ class _ControllerId(ctypes.Structure):
                 ("reserved", ctypes.c_uint8 * 6)]
 
 
+class _SsapUpdate(ctypes.Structure):
+    _fields_ = [("stage", ctypes.c_uint32), ("pdu_length", ctypes.c_uint16),
+                ("acknowledgement_length", ctypes.c_uint16),
+                ("pdu", ctypes.c_uint8 * 2048), ("acknowledgement", ctypes.c_uint8 * 3),
+                ("reserved", ctypes.c_uint8 * 5)]
+
+
+@dataclass(frozen=True)
+class SsapUpdate:
+    """stage1 software admission;2 peer queue ACK;3 received/disabled.
+
+    None of these stages means a peer application processed the business value.
+    pdu is the complete existing SSAP packet;this binding has no wire Engine.
+    """
+    stage: int
+    pdu: bytes
+    acknowledgement: bytes
+
+
 def _integer(value, bits, name, nonzero=False):
     if type(value) is not int or not int(nonzero) <= value < (1 << bits):
         raise ValueError(f"{name} must be an unsigned {bits}-bit integer")
@@ -63,6 +82,12 @@ def _library():
         "slk_connection_ssap_write": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
                                        ctypes.c_void_p, ctypes.c_size_t, ctypes.c_void_p,
                                        ctypes.c_size_t, ctypes.POINTER(ctypes.c_size_t), ctypes.c_uint64],
+        "slk_connection_ssap_receive": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
+                                        ctypes.POINTER(_SsapUpdate), ctypes.c_uint64],
+        "slk_connection_ssap_send_owned": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
+                                           ctypes.POINTER(_SsapUpdate), ctypes.c_uint64],
+        "slk_connection_ssap_owned_configuration": [ctypes.c_void_p, ctypes.c_uint16,
+            ctypes.POINTER(ctypes.c_uint8), ctypes.c_uint64],
     }
     for name, arguments in signatures.items():
         function = getattr(lib, name)
@@ -281,10 +306,72 @@ class RemoteSsap:
     Methods return exactly the existing Rust RemoteSsap result bytes. This is a
     protocol result, not evidence that a peer application processed a write.
     Local timeout does not undo a possibly committed remote operation. The
-    current RPC has no new cross-process original-deadline field.
+    original absolute deadline includes local queueing and daemon work.
     """
     def __init__(self, connection):
         self._connection = connection
+
+    def subscribe(self, handles, *, deadline_ns, modes=3, duration_ms=5000):
+        """Finite caller-owned CPCD lease through the existing Rust client.
+
+        One lease per physical actor currently. release observes remote cleanup;
+        local close alone is not confirmation. No implicit retry or reconnect.
+        """
+        from .ssap_subscription import SsapSubscription
+        return SsapSubscription._acquire(self._connection, handles, modes, duration_ms, deadline_ns)
+
+    def _update(self, operation, handle, mode, deadline_ns):
+        _integer(handle, 16, "handle", nonzero=True)
+        deadline_ns = _deadline(deadline_ns)
+        output = _SsapUpdate()
+        connection = self._connection
+        connection._live()
+        with connection._lock:
+            connection._live()
+            fn = getattr(connection._lib, operation)
+            _result(fn(connection._handle, handle, mode, ctypes.byref(output), deadline_ns))
+        expected = 3 if operation == 'slk_connection_ssap_receive' else 2 if mode else 1
+        ack = bytes(output.acknowledgement[:output.acknowledgement_length])
+        if (output.stage != expected or not 6 <= output.pdu_length <= 2048
+                or output.acknowledgement_length > 3 or any(output.reserved)
+                or any(output.pdu[output.pdu_length:])
+                or any(output.acknowledgement[output.acknowledgement_length:])
+                or ack != (b'\x11\x03\x01' if expected == 2 else b'')):
+            import errno
+            raise OSError(errno.EPROTO, 'invalid SSAP update ABI receipt')
+        return SsapUpdate(output.stage, bytes(output.pdu[:output.pdu_length]), ack)
+
+    def receive_update(self, handle, *, deadline_ns, modes=3):
+        """Enable,receive one,and verify disable;original wait<=10s,no retry.
+
+        Pre-existing settings are not overwritten. Unknown cleanup makes this
+        physical SSAP actor unusable;timeout does not prove remote cleanup.
+        """
+        if type(modes) is not int or modes not in (1, 2, 3):
+            raise ValueError('modes must be 1,2,3')
+        return self._update('slk_connection_ssap_receive', handle, modes, deadline_ns)
+
+    def send_owned_update(self, handle, *, deadline_ns, indication=False):
+        """Only this original caller's active owned DB property;<=5s,no retry."""
+        if type(indication) is not bool:
+            raise TypeError('indication must be boolean')
+        return self._update('slk_connection_ssap_send_owned', handle, int(indication), deadline_ns)
+
+    def owned_configuration(self, handle, *, deadline_ns):
+        """Read-only Session configuration for an original-caller owned property."""
+        _integer(handle, 16, 'handle', nonzero=True)
+        deadline_ns = _deadline(deadline_ns)
+        connection = self._connection
+        value = ctypes.c_uint8()
+        connection._live()
+        with connection._lock:
+            connection._live()
+            _result(connection._lib.slk_connection_ssap_owned_configuration(
+                connection._handle, handle, ctypes.byref(value), deadline_ns))
+        if value.value & ~3:
+            import errno
+            raise OSError(errno.EPROTO, 'reserved configuration bits')
+        return value.value
 
     def _call(self, handle, minimum, deadline_ns, value):
         _integer(handle, 16, "handle", nonzero=True)

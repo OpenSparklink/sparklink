@@ -74,8 +74,8 @@ def credentials(pid):
 
 
 def verify_retired_uapi_receipt(receipt):
-    expected = ('RETIRED_UAPI_ENOTTY_PASS: uid=1000 cases=101 unchanged=101 '
-                'checks=303 invalid_user_address=1 mixed_stats=ENOTTY')
+    expected = ('RETIRED_UAPI_ENOTTY_PASS: uid=1000 cases=103 unchanged=103 '
+                'checks=309 invalid_user_address=1 mixed_stats=ENOTTY')
     if (type(receipt.get('exit')) is not int or receipt['exit'] != 0
             or receipt.get('stdout', '').strip() != expected
             or receipt.get('stderr', '').strip()):
@@ -92,6 +92,25 @@ def channel_security_for_agent(mode):
     if mode is not None and mode not in MODES:
         raise CaptureError('unknown Agent mode cannot choose a weaker channel test')
     return {'approve':1,'cli-approve':1,'numeric-approve':2}.get(mode,0)
+
+
+def wait_application(process, deadline, progress=None):
+    """Observe an owned child without refreshing its original absolute budget.
+
+    A progress callback coordinates a test supervisor, never the child's socket
+    RX/TX or protocol deadlines. The actual applications keep running.
+    """
+    if progress is None:
+        process.wait(timeout=max(.001,deadline-time.monotonic()))
+        return
+    while process.poll() is None:
+        progress()
+        remaining=deadline-time.monotonic()
+        if remaining<=0:raise subprocess.TimeoutExpired(process.args,0)
+        try:process.wait(timeout=min(.02,remaining))
+        except subprocess.TimeoutExpired:continue
+    progress()
+    if time.monotonic()>deadline:raise subprocess.TimeoutExpired(process.args,0)
 
 
 def run_applications(run,row,processes,files,original_deadline=None):
@@ -113,8 +132,9 @@ def run_applications(run,row,processes,files,original_deadline=None):
     if original_deadline is not None:
         deadline=min(deadline,original_deadline)
     waiting=sorted(processes,key=lambda item:item[1]['role']!='initiator') if row['close_prefix'] else processes
+    observer=getattr(run,'channel_application_progress',None)
     for proc,app in waiting:
-        proc.wait(timeout=max(.001,deadline-time.monotonic()))
+        wait_application(proc,deadline,(lambda:observer(row)) if observer is not None else None)
         app['stdout'],app['stderr']=[Path(p).read_text() for p in app['output_files']]
         app.update(exit=proc.returncode,end_wall_ns=time.time_ns());run.save()
         if proc.returncode:raise CaptureError('actual socket application failed: '+app['stderr'])
@@ -126,17 +146,122 @@ def run_applications(run,row,processes,files,original_deadline=None):
         row['end_wall_ns']=time.time_ns()
         prefix_application_frames(row)
         row['after_close_ssap_start_wall_ns']=time.time_ns()
+        from ws73_ssap_value import execute as ssap_value_execute
         ssap_value_execute(run,row) # actual other Channel traffic after fd release
     else:application_frames(row)
 
 
-def execute(run, phase):
+def passive_controller_checks(run,row,expected_connections,stage):
+    """Retain the same passive probes at an explicit physical-link state."""
+    if type(expected_connections) is not int or expected_connections not in (0,1):
+        raise CaptureError('explicit connected/down passive observation required')
+    collections=['controller_event_positions','retired_uapi_refusals','controller_link_summaries','controller_event_copy','genl_registry']
+    before={key:len(run.data.get(key,[]))for key in collections}
+    stage_record=dict(stage=stage,expected_connections=expected_connections,start_wall_ns=time.time_ns())
+    row.setdefault('passive_controller_checks',[]).append(stage_record);run.save()
+    # Passive VFS checks use current full records; old read/stats never
+    # re-enter the producer. Older packages have no such test artifact and
+    # retain their original qualification, not a new copy-gate receipt.
+    probe = Path(run.args.slctl).parent/'controller-event-copy-probe'
+    if not probe.is_file() and Path('/scratch-root-uuid').is_file():
+        probe = Path('/bin/controller-event-copy-probe')
+    if probe.is_file():
+        for entry in row['owners']:
+            owner = entry['owner']
+            position = run.command([str(run.args.slctl),'--adapter',owner['path'],'events'],
+                                   10, collection='controller_event_positions')
+            expected = rf'^ControllerEventPosition: index={owner["index"]} generation={owner["generation"]} sequence=(\d+)$'
+            if position['exit'] or len(re.findall(expected,position['stdout'],re.M)) != 1:
+                raise CaptureError('actual canonical event-position interface failed')
+            retired_probe = Path(run.args.slctl).parent/'retired-uapi-probe'
+            if not retired_probe.is_file() and Path('/scratch-root-uuid').is_file():
+                retired_probe = Path('/bin/retired-uapi-probe')
+            if retired_probe.is_file():
+                refused = run.command([str(retired_probe),str(owner['index'])],10,collection='retired_uapi_refusals')
+                verify_retired_uapi_receipt(refused)
+            summary = run.command([str(run.args.slctl),'--adapter',owner['path'],'stats'],
+                                  10,collection='controller_link_summaries')
+            pattern = rf'^ControllerLinkSummary: index={owner["index"]} generation={owner["generation"]} revision=([1-9]\d*) event_sequence=([1-9]\d*) connections={expected_connections}$'
+            if summary['exit'] or len(re.findall(pattern,summary['stdout'],re.M)) != 1:
+                raise CaptureError('actual validated physical link summary failed')
+            receipt = run.command([str(probe),str(owner['index']),str(owner['generation'])],
+                                  10, collection='controller_event_copy')
+            expected = f'CONTROLLER_EVENT_COPY_PASS: uid=1000 index={owner["index"]} generation={owner["generation"]} partial=4 retry=4 peer_replay=4 readiness_preserved=4 removed_read=1 removed_stats=2'
+            if receipt['exit'] or receipt['stdout'].strip() != expected:
+                raise CaptureError('actual ControllerEvent copy/alias/replay gate failed')
+    registry_probe = Path(run.args.slctl).parent/'genl-registry-probe'
+    if not registry_probe.is_file() and Path('/scratch-root-uuid').is_file():
+        registry_probe = Path('/bin/genl-registry-probe')
+    if registry_probe.is_file():
+        receipt = run.command([str(registry_probe)],10,collection='genl_registry')
+        expected = r'^GENL_REGISTRY_PASS: uid=1000 count=\d+ version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1$'
+        if receipt['exit'] or not re.fullmatch(expected,receipt['stdout'].strip()):
+            raise CaptureError('actual registry-only netlink/retired mutation gate failed')
+    stage_record.update(end_wall_ns=time.time_ns(),collections={key:[before[key],len(run.data.get(key,[]))]for key in collections})
+    run.save()
+
+
+def validate_passive_controller_stages(run,row,phase):
+    """The new Disconnect contract retains every probe at both link states."""
+    stages=row.get('passive_controller_checks',[])
+    if any(type(s.get('expected_connections'))is not int for s in stages)or [(s.get('stage'),s.get('expected_connections'))for s in stages]!=[
+            ('before-applications',1),('after-applications-and-down',0)]:
+        raise CaptureError('both connected and after-Down passive checks required')
+    apps=row['applications'];begin=min(a['start_wall_ns']for a in apps);end=max(a['end_wall_ns']for a in apps)
+    command=run['commands'][phase['disconnect_command']]
+    if not (row['start_wall_ns']<=stages[0]['start_wall_ns']<=stages[0]['end_wall_ns']<=begin
+            and end<=command['start_wall_ns']<=phase['down_property_observation']['end_wall_ns']
+            <=phase['disconnect_completed_wall_ns']<=stages[1]['start_wall_ns']<=stages[1]['end_wall_ns']<=row['end_wall_ns']):
+        raise CaptureError('passive checks must bracket apps and actual observed Down')
+    keys=['controller_event_positions','retired_uapi_refusals','controller_link_summaries','controller_event_copy','genl_registry']
+    for stage in stages:
+        ranges=stage.get('collections',{})
+        if set(ranges)!=set(keys):raise CaptureError('all original passive probe groups required')
+        for key in keys:
+            span=ranges[key];count=1 if key=='genl_registry'else 2;records=run.get(key,[])
+            if (not isinstance(span,list)or len(span)!=2 or any(type(n)is not int for n in span)
+                    or not 0<=span[0]<=span[1]<=len(records)or span[1]-span[0]!=count):
+                raise CaptureError('exact complete passive probe slice required')
+            for i,receipt in enumerate(records[span[0]:span[1]]):
+                if (receipt['exit']or not stage['start_wall_ns']<=receipt['start_wall_ns']<=receipt['end_wall_ns']<=stage['end_wall_ns']):
+                    raise CaptureError('actual successful passive receipt required')
+                if key=='genl_registry':
+                    if (len(receipt['args'])!=1 or Path(receipt['args'][0]).name!='genl-registry-probe'
+                            or not re.fullmatch(r'GENL_REGISTRY_PASS: uid=1000 count=4 version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1',receipt['stdout'].strip())):
+                        raise CaptureError('actual four-controller registry preservation required')
+                    continue
+                owner=row['owners'][i]['owner'];cli=run['slctl']['path'];args=receipt['args']
+                if key=='controller_event_positions':
+                    expected=[cli,'--adapter',owner['path'],'events']
+                    pattern=rf'^ControllerEventPosition: index={owner["index"]} generation={owner["generation"]} sequence=(\d+)$'
+                elif key=='controller_link_summaries':
+                    expected=[cli,'--adapter',owner['path'],'stats']
+                    pattern=rf'^ControllerLinkSummary: index={owner["index"]} generation={owner["generation"]} revision=([1-9]\d*) event_sequence=([1-9]\d*) connections={stage["expected_connections"]}$'
+                elif key=='retired_uapi_refusals':
+                    if len(args)!=2 or Path(args[0]).name!='retired-uapi-probe'or args[1]!=str(owner['index']):raise CaptureError('exact retired-UAPI probe affinity required')
+                    verify_retired_uapi_receipt(receipt);continue
+                else:
+                    if (len(args)!=3 or Path(args[0]).name!='controller-event-copy-probe'
+                            or args[1:]!=[str(owner['index']),str(owner['generation'])]
+                            or receipt['stdout'].strip()!=f'CONTROLLER_EVENT_COPY_PASS: uid=1000 index={owner["index"]} generation={owner["generation"]} partial=4 retry=4 peer_replay=4 readiness_preserved=4 removed_read=1 removed_stats=2'):
+                        raise CaptureError('actual original ControllerEvent copy probes required')
+                    continue
+                if args!=expected or len(re.findall(pattern,receipt['stdout'],re.M))!=1:raise CaptureError('passive metadata receipt identity/state mismatch')
+
+
+def execute(run, phase, after_application=None):
+    if after_application is not None and not callable(after_application):
+        raise CaptureError('explicit application completion callback required')
     row = dict(dtap_limits_version=1,cmtc_local_capability=dict(mtu=2042,mps=2047),cmtc_identifier=0,phase=len(run.data['connection_control']['phases'])-1, owners=phase['typed_objects'],
                rounds=getattr(run.args,'channel_socket_rounds',4), message_bytes=getattr(run.args,'channel_socket_bytes',61),
-               boundary_check=getattr(run.args,'channel_socket_boundaries',False), close_prefix=getattr(run.args,'channel_socket_close_prefix',False), burst=getattr(run.args,'channel_socket_burst',False), tx_status_required=True, channel_info_required=True, ssap_exchange_required=True, session_start_wall_ns=phase['start_wall_ns'], ssap_receipts=[], status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
+               boundary_check=getattr(run.args,'channel_socket_boundaries',False), close_prefix=getattr(run.args,'channel_socket_close_prefix',False), burst=getattr(run.args,'channel_socket_burst',False), tx_status_required=True, channel_info_required=True, ssap_exchange_required=True, ssap_exchange_contract=2, session_start_wall_ns=phase['start_wall_ns'], ssap_receipts=[], status='RUNNING', start_wall_ns=time.time_ns(), applications=[])
     row['message_security_required']=not (row['close_prefix'] or row['burst'])
     row['tx_constraint_required']=row['message_security_required']
     row['application_tool']=test_program(run)
+    if after_application is not None:
+        if row['close_prefix'] or row['burst'] or row['boundary_check']:
+            raise CaptureError('early Disconnect requires dedicated regular channel exercise')
+        row['post_application_disconnect']=True
     row['security_requirement']=channel_security_for_agent(getattr(run.args,'security_agent',None))
     if run.data.get('security_agent') and run.data['security_agent'][-1].get('ssap_security_requirement'):
         row['ssap_security_requirement']=run.data['security_agent'][-1]['ssap_security_requirement']
@@ -158,54 +283,34 @@ def execute(run, phase):
         if getattr(run.args,'ssap_owned_update_verify',False):
             from ws73_ssap_owned_update import execute as update_execute
             update_execute(run,row)
+        if getattr(run.args,'ssap_sender_deadline_verify',False):
+            from ws73_ssap_sender_deadline import execute as sender_execute
+            sender_execute(run,row)
+        if getattr(run.args,'ssap_subscription_verify',False):
+            from ws73_ssap_subscription import request as subscription_request
+            subscription_request(run,row)
+        if getattr(run.args,'ssap_update_delivery_verify',False):
+            from ws73_ssap_update_delivery import execute as delivery_execute
+            delivery_execute(run,row)
         if getattr(run.args,'ssap_owner_lifecycle_verify',False):
             from ws73_ssap_owner_lifecycle import execute as owner_lifecycle_execute
             owner_lifecycle_execute(run,row)
         if getattr(run.args,'ssap_requester_lifecycle_verify',False):
             from ws73_ssap_requester_lifecycle import execute as requester_execute
             requester_execute(run,row,lambda deadline:run_applications(run,row,processes,files,deadline))
+        if getattr(run.args,'ssap_update_lifecycle_verify',False):
+            from ws73_ssap_receive_lifecycle import execute as receive_execute
+            receive_execute(run,row,lambda deadline:run_applications(run,row,processes,files,deadline))
+        if after_application is not None:
+            passive_controller_checks(run,row,1,'before-applications')
         if hasattr(run, 'channel_barrier'):
             run.channel_barrier(row)
-        if not getattr(run.args,'ssap_requester_lifecycle_verify',False):
+        if not (getattr(run.args,'ssap_requester_lifecycle_verify',False) or getattr(run.args,'ssap_update_lifecycle_verify',False)):
             run_applications(run,row,processes,files)
-        # Passive VFS checks use current full records; old read/stats never
-        # re-enter the producer. Older packages have no such test artifact and
-        # retain their original qualification, not a new copy-gate receipt.
-        probe = Path(run.args.slctl).parent/'controller-event-copy-probe'
-        if not probe.is_file() and Path('/scratch-root-uuid').is_file():
-            probe = Path('/bin/controller-event-copy-probe')
-        if probe.is_file():
-            for entry in row['owners']:
-                owner = entry['owner']
-                position = run.command([str(run.args.slctl),'--adapter',owner['path'],'events'],
-                                       10, collection='controller_event_positions')
-                expected = rf'^ControllerEventPosition: index={owner["index"]} generation={owner["generation"]} sequence=(\d+)$'
-                if position['exit'] or len(re.findall(expected,position['stdout'],re.M)) != 1:
-                    raise CaptureError('actual canonical event-position interface failed')
-                retired_probe = Path(run.args.slctl).parent/'retired-uapi-probe'
-                if not retired_probe.is_file() and Path('/scratch-root-uuid').is_file():
-                    retired_probe = Path('/bin/retired-uapi-probe')
-                if retired_probe.is_file():
-                    refused = run.command([str(retired_probe),str(owner['index'])],10,collection='retired_uapi_refusals')
-                    verify_retired_uapi_receipt(refused)
-                summary = run.command([str(run.args.slctl),'--adapter',owner['path'],'stats'],
-                                      10,collection='controller_link_summaries')
-                pattern = rf'^ControllerLinkSummary: index={owner["index"]} generation={owner["generation"]} revision=([1-9]\d*) event_sequence=([1-9]\d*) connections=1$'
-                if summary['exit'] or len(re.findall(pattern,summary['stdout'],re.M)) != 1:
-                    raise CaptureError('actual validated physical link summary failed')
-                receipt = run.command([str(probe),str(owner['index']),str(owner['generation'])],
-                                      10, collection='controller_event_copy')
-                expected = f'CONTROLLER_EVENT_COPY_PASS: uid=1000 index={owner["index"]} generation={owner["generation"]} partial=4 retry=4 peer_replay=4 readiness_preserved=4 removed_read=1 removed_stats=2'
-                if receipt['exit'] or receipt['stdout'].strip() != expected:
-                    raise CaptureError('actual ControllerEvent copy/alias/replay gate failed')
-        registry_probe = Path(run.args.slctl).parent/'genl-registry-probe'
-        if not registry_probe.is_file() and Path('/scratch-root-uuid').is_file():
-            registry_probe = Path('/bin/genl-registry-probe')
-        if registry_probe.is_file():
-            receipt = run.command([str(registry_probe)],10,collection='genl_registry')
-            expected = r'^GENL_REGISTRY_PASS: uid=1000 count=\d+ version=2 retired=31 extra_attr=1 no_multicast=1 count_preserved=1$'
-            if receipt['exit'] or not re.fullmatch(expected,receipt['stdout'].strip()):
-                raise CaptureError('actual registry-only netlink/retired mutation gate failed')
+        if after_application is not None:
+            after_application()
+        passive_controller_checks(run,row,0 if after_application is not None else 1,
+                                  'after-applications-and-down' if after_application is not None else 'after-applications')
         row['status']='ORDINARY_CHANNEL_SOCKET_EVIDENCE_PENDING'
     except BaseException as error:
         import traceback
@@ -402,6 +507,34 @@ def controller_budget(entry):
     return buffers[0],buffers[1]
 
 
+def physical_tx_fragments(row, leg):
+    """Check the current Session cursor contract against this sender's DLI bound.
+
+    DTAP bytes include the five-byte channel header. An application length of
+    250 does not imply PB fragmentation on a controller with a larger packet.
+    The actual reassembler/NOCP and opposite RX checks remain independent.
+    """
+    tx=leg['tx']
+    senders=[entry for entry in row['owners'] if
+             (entry['owner']['bus'],entry['owner']['device'])==(tx['bus'],tx['device'])]
+    if len(senders)!=1:raise CaptureError('one original physical sender metadata required')
+    maximum,_=controller_budget(senders[0])
+    raw=bytes.fromhex(tx['data']);pieces=tx.get('fragments',[tx])
+    count=(len(raw)+maximum-1)//maximum
+    if not raw or len(pieces)!=count:
+        raise CaptureError('actual TX fragment count must match sender controller DLI bound')
+    expected_pb=[0] if count==1 else [1]+[2]*(count-2)+[3]
+    if [p.get('boundary',0)for p in pieces]!=expected_pb:
+        raise CaptureError('actual TX requires ordered full or first/middle/last PB')
+    offset=0
+    for piece in pieces:
+        data=bytes.fromhex(piece['data'])
+        if len(data)!=min(maximum,len(raw)-offset) or data!=raw[offset:offset+len(data)]:
+            raise CaptureError('each actual TX fragment must match bounded ordered PDU bytes')
+        offset+=len(data)
+    return dict(controller_acb_maximum=maximum,packet_count=count,fragmented=count>1)
+
+
 def tx_status_receipts(row):
     samples=[]
     if not row.get('tx_status_required',False):return samples # historical never upgrades
@@ -508,6 +641,31 @@ def protected_ssap_wire(row,capture,sdus):
         packets+=len(frames);controllers.append(dict(index=owner['index'],generation=obj['generation'],lifetime=obj['lifetime'],handle=handle,cipher_record=events[0]['record'],packets=len(frames)))
     return dict(required=required,controllers=controllers,packets=packets,scope='Same SMTC actual post-install TX/opposite RX and ordinary peer database checks;not attribute authorization,Bond or RF cipher attestation')
 
+def reject_unattributed_ssap(row, sdus):
+    """Check the residual SDUs after the versioned evidence matchers consume them.
+
+    Preserve historical gate decoding; current sequence/update contracts must
+    also account for updates, acknowledgements and the extended opcode bit.
+    This is capture attribution, not permission to accept an unknown PDU.
+    """
+    tracked = ((1,4,5,6,7,8,9,10,11,13,14) if row.get('ssap_access_required',False)
+               else (1,4,5,6,7,8,9,13,14) if row.get('ssap_discovery_required',False)
+               else (8,9,13,14))
+    current = (row.get('ssap_value_lengths_version') == 4
+               or row.get('ssap_update_delivery_version') == 2
+               or row.get('ssap_subscription_required',False))
+    if current:
+        tracked += (15,16,17)
+    for packet in sdus:
+        raw = packet['data']
+        if (not raw.startswith('0a00') or len(raw) < 10
+                or not row['start_wall_ns'] <= packet['wall_ns'] <= row['end_wall_ns']):
+            continue
+        opcode = int(raw[8:10],16)
+        if (opcode & 0x7f if current else opcode) in tracked:
+            raise CaptureError('extra/unattributed SSAP value USB packet')
+
+
 def corroborate(run,capture):
     rows=run.get('channel_socket')
     if rows is None or len(rows)!=2:raise CaptureError('two connection direction phases required')
@@ -565,7 +723,27 @@ def corroborate(run,capture):
                 from ws73_ssap_owned import corroborate as owned_corroborate
                 ssap_owned,owned_credit=owned_corroborate(row,value_matched)
                 for key in ssap_credit:ssap_credit[key]+=owned_credit[key]
+            ssap_sender_deadline=[]
+            if row.get('ssap_sender_deadline_required',False):
+                from ws73_ssap_sender_deadline import corroborate as sender_corroborate
+                ssap_sender_deadline,sender_credit=sender_corroborate(row,value_matched)
+                for key in ssap_credit:ssap_credit[key]+=sender_credit[key]
+            ssap_receive_lifecycle=[]
+            if row.get('ssap_receive_lifecycle_required',False):
+                from ws73_ssap_receive_lifecycle import corroborate as receive_corroborate
+                ssap_receive_lifecycle,receive_credit=receive_corroborate(row,value_matched,sdus)
+                for key in ssap_credit:ssap_credit[key]+=receive_credit[key]
             ssap_owned_updates=[]
+            ssap_update_delivery=[]
+            ssap_subscription=[]
+            if row.get('ssap_subscription_required',False):
+                from ws73_ssap_subscription import corroborate as subscription_corroborate
+                ssap_subscription,subscription_credit=subscription_corroborate(row,value_matched)
+                for key in ssap_credit:ssap_credit[key]+=subscription_credit[key]
+            if row.get('ssap_update_delivery_required',False):
+                from ws73_ssap_update_delivery import corroborate as delivery_corroborate
+                ssap_update_delivery,delivery_credit=delivery_corroborate(row,value_matched)
+                for key in ssap_credit:ssap_credit[key]+=delivery_credit[key]
             if row.get('ssap_owned_update_required',False):
                 from ws73_ssap_owned_update import corroborate as update_corroborate
                 ssap_owned_updates,update_credit=update_corroborate(row,value_matched)
@@ -580,7 +758,7 @@ def corroborate(run,capture):
                 from ws73_ssap_requester_lifecycle import corroborate as requester_corroborate
                 ssap_requester_lifecycle,requester_credit=requester_corroborate(row,value_matched,sdus)
                 for key in ssap_credit:ssap_credit[key]+=requester_credit[key]
-            if any(p['data'].startswith('0a00') and len(p['data'])>=10 and int(p['data'][8:10],16) in ((1,4,5,6,7,8,9,10,11,13,14) if row.get('ssap_access_required',False) else (1,4,5,6,7,8,9,13,14) if row.get('ssap_discovery_required',False) else (8,9,13,14)) and row['start_wall_ns']<=p['wall_ns']<=row['end_wall_ns'] for p in sdus):raise CaptureError('extra/unattributed SSAP value USB packet')
+            reject_unattributed_ssap(row,sdus)
         legs=[]
         for sequence,(data,reply) in enumerate(zip(sent,replies)):
             if data[8:24] in all_nonces:raise CaptureError('random nonce reused across direction phases')
@@ -628,7 +806,10 @@ def corroborate(run,capture):
                 value=fields[0];o=owner['owner'];obj=owner['object']
                 if tuple(map(int,value[:4]))!=(o['index'],o['generation'],obj['lifetime'],obj['handle']):raise CaptureError('SSAP owner/lifetime mismatch')
                 mtu=int(value[4]);negotiated=int(value[5]);req,rsp,peer_req,response=map(bytes.fromhex,value[6:])
-                expected_req=bytes([2,3])+mtu.to_bytes(2,'little')+bytes([1,2]);expected_rsp=bytes([3,3])+mtu.to_bytes(2,'little')+bytes([1,2])
+                version=row.get('ssap_exchange_contract',1)
+                if type(version)is not int or version not in (1,2):raise CaptureError('known exact ExchangeInfo contract required')
+                extra=b'\x04\0\0\0'if version==2 else b'';control=7 if version==2 else 3
+                expected_req=bytes([2,control])+mtu.to_bytes(2,'little')+bytes([1,2])+extra;expected_rsp=bytes([3,control])+mtu.to_bytes(2,'little')+bytes([1,2])+extra
                 if (req,rsp,peer_req,response)!=(expected_req,expected_rsp,expected_req,expected_rsp) or negotiated!=mtu:raise CaptureError('exact real basic ExchangeInfo required')
                 receiver=next(e for e in owners if e!=owner)
                 ssap_legs=[]
@@ -655,13 +836,17 @@ def corroborate(run,capture):
         if row.get("ssap_discovery_required",False): entry["ssap_discovery"] = ssap_discovery
         if row.get('ssap_owned_required',False):entry['ssap_owned']=ssap_owned
         if row.get('ssap_owned_update_required',False):entry['ssap_owned_updates']=ssap_owned_updates
+        if row.get('ssap_subscription_required',False):entry['ssap_subscription']=ssap_subscription
+        if row.get('ssap_update_delivery_required',False):entry['ssap_update_delivery']=ssap_update_delivery
+        if row.get('ssap_receive_lifecycle_required',False):entry['ssap_receive_lifecycle']=ssap_receive_lifecycle
+        if row.get('ssap_sender_deadline_required',False):entry['ssap_sender_deadline']=ssap_sender_deadline
         if row.get('ssap_owner_lifecycle_required',False):entry['ssap_owner_lifecycle']=ssap_owner_lifecycle
         if row.get('ssap_requester_lifecycle_required',False):entry['ssap_requester_lifecycle']=ssap_requester_lifecycle
         if protected is not None:entry['protected_ssap']=protected
         proofs.append(entry)
     proof=dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',round_trips=sum(row['rounds'] for row in rows if not row.get('close_prefix',False)),proofs=proofs,
                 scope=f"uid1000/caps0 two applications; CMTC/basic CUTC31 PI241; {rows[0].get('message_bytes',61)}-byte peer-validated payload; both USB/HCC/A3 ends and NOCP",
-                long_pdu_acceptance=all(row.get('message_bytes',61)>249 and not row.get('close_prefix',False) for row in rows),credit_exhaustion_acceptance=False,four_device_acceptance=False)
+                long_pdu_acceptance=False,credit_exhaustion_acceptance=False,four_device_acceptance=False)
     if any(row.get('burst',False) for row in rows):
         if not all(row.get('burst',False) for row in rows):raise CaptureError('both connection roles must observe real pressure')
         proof['software_backpressure_acceptance']=True
@@ -669,17 +854,12 @@ def corroborate(run,capture):
     if any(row.get('close_prefix',False) for row in rows):
         proof['prefix_close_phases']=sum(bool(row.get('close_prefix',False)) for row in rows)
         proof['physical_prefix_delivery_acceptance']=all(row.get('close_prefix',False) for row in rows)
-    if proof['long_pdu_acceptance'] or proof.get('physical_prefix_delivery_acceptance',False):
-        for row,phase in zip(rows,proofs):
-            for leg in phase['legs']:
-                pieces=leg['tx'].get('fragments',[])
-                if len(pieces)<2 or [piece.get('boundary',0) for piece in pieces]!=[1]+[2]*(len(pieces)-2)+[3]:
-                    raise CaptureError('long PDU requires actual ordered first/middle/last TX fragments')
-                senders=[entry for entry in row['owners'] if (entry['owner']['bus'],entry['owner']['device'])==(leg['tx']['bus'],leg['tx']['device'])]
-                if len(senders)!=1:raise CaptureError('one original physical sender metadata required')
-                maximum,_=controller_budget(senders[0])
-                if any(not 1<=len(bytes.fromhex(piece['data']))<=maximum for piece in pieces):
-                    raise CaptureError('each actual WS73 TX packet must respect its controller DLI bound')
+    fragmented=[]
+    for row,phase in zip(rows,proofs):
+        for leg in phase['legs']:
+            shape=physical_tx_fragments(row,leg)
+            fragmented.append(shape['fragmented'])
+    proof['long_pdu_acceptance']=bool(fragmented) and all(fragmented) and not any(row.get('close_prefix',False) for row in rows)
     if any(row.get('boundary_check',False) for row in rows):
         proof['application_boundary_rejections']=sum(len(rejected_frames(row)) for row in rows)
         proof['application_message_bytes']=rows[0].get('message_bytes',61)

@@ -374,6 +374,53 @@ pub unsafe extern "C" fn slk_diagnostic_submit(
     }
 }
 
+/// Typed Managed link command; returns 0 or -errno. Unchanged on failure.
+/// Admission is not completion; cancellation does not undo an on-wire preference.
+/// # Safety
+/// Non-null pointers are valid, aligned, nonoverlapping; request is writable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_link_command_submit(
+    adapter: *const SlkAdapter,
+    request: *mut SleLinkCommandSubmit,
+) -> c_int {
+    let (Some(adapter), Some(request)) = (unsafe { adapter.as_ref() }, unsafe { request.as_mut() })
+    else {
+        return -nix::libc::EINVAL;
+    };
+    adapter
+        .inner
+        .link_command_submit(request)
+        .map_or_else(errno, |()| 0)
+}
+
+/// Same-File nonconsuming result: 1=record (possibly pending),0=absent,-errno.
+/// Output is unchanged on absence/error. seq or original request_id required.
+/// # Safety
+/// Non-null pointers are valid, aligned, nonoverlapping; output is writable.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_link_command_result(
+    adapter: *const SlkAdapter,
+    generation: u64,
+    seq: u32,
+    request_id: u64,
+    out: *mut SleLinkCommandResult,
+) -> c_int {
+    let (Some(adapter), Some(out)) = (unsafe { adapter.as_ref() }, unsafe { out.as_mut() }) else {
+        return -nix::libc::EINVAL;
+    };
+    match adapter
+        .inner
+        .link_command_result(generation, seq, request_id)
+    {
+        Ok(Some(value)) => {
+            *out = value;
+            1
+        }
+        Ok(None) => 0,
+        Err(error) => errno(error),
+    }
+}
+
 /// Admit a typed Native connection procedure under this fd's Managed lease.
 /// Returns 0 or -errno; admission is not connection or physical cancellation.
 /// # Safety
@@ -529,5 +576,61 @@ pub unsafe extern "C" fn slk_connection_security(
             0
         }
         Err(error) => errno(error),
+    }
+}
+
+#[cfg(test)]
+mod link_query_ffi_tests {
+    use super::*;
+    #[test]
+    fn query_ffi_valid_pointer_failures_preserve_outputs() {
+        let adapter = SlkAdapter {
+            inner: crate::Adapter::open("/dev/null").unwrap(),
+        };
+        let mut request = SleLinkCommandSubmit {
+            version: 1,
+            action: 1,
+            generation: 2,
+            lease_epoch: 3,
+            request_id: 4,
+            lifetime: 5,
+            deadline_monotonic_ns: 100_000_000,
+            timeout_ms: 100,
+            address: [1; 6],
+            kind: 1,
+            ..Default::default()
+        };
+        let original = request;
+        let mut result = SleLinkCommandResult {
+            data: [0x5a; 10],
+            ..Default::default()
+        };
+        let canary = result;
+        // SAFETY: valid, aligned stack objects with disjoint borrows; null
+        // checks do not claim support for arbitrary invalid non-null pointers.
+        unsafe {
+            assert_eq!(
+                slk_link_command_submit(std::ptr::null(), &mut request),
+                -nix::libc::EINVAL
+            );
+            assert_eq!(
+                slk_link_command_submit(&adapter, std::ptr::null_mut()),
+                -nix::libc::EINVAL
+            );
+            assert_eq!(
+                slk_link_command_submit(&adapter, &mut request),
+                -nix::libc::ENOTTY
+            );
+            assert_eq!(request, original);
+            assert_eq!(
+                slk_link_command_result(&adapter, 2, 1, 0, &mut result),
+                -nix::libc::ENOTTY
+            );
+            assert_eq!(result, canary);
+            assert_eq!(
+                slk_link_command_result(&adapter, 2, 1, 0, std::ptr::null_mut()),
+                -nix::libc::EINVAL
+            );
+        }
     }
 }

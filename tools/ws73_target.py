@@ -6,7 +6,10 @@ Environment readiness is not physical North Star acceptance. The explicit
 support command uses synthetic USB and cannot produce physical acceptance.
 """
 import argparse
+import copy
 from datetime import datetime, timezone
+import errno
+import hashlib
 import importlib.util
 import json
 import math
@@ -28,11 +31,13 @@ from ws73_capture import CaptureError, check_capture_stats, read_capture
 import ws73_vm_native_root as native_vm
 import ws73_lab_resources as resources
 import ws73_firmware_upload_evidence as firmware_evidence
+import ws73_firmware_profile as firmware_profile
 from build_resources import build_lock, configuration as build_configuration, workspace as build_workspace, environment as build_environment
 
 USERSPACE = Path(__file__).resolve().parents[1]
 FIRMWARE_EVIDENCE_HELPERS = ('ws73_firmware_upload_evidence.py', 'ws73_boot_code_evidence.py',
-                             'ws73_model_evidence.py', 'ws73_capture.py')
+                             'ws73_model_evidence.py', 'ws73_capture.py',
+                             'ws73_firmware_profile.py', 'ws73_firmware.py')
 # Local workspaces keep both repositories side by side. CI checks out the
 # pinned kernel selftests inside its workspace instead of assuming that layout.
 LINUX = Path(os.environ.get('SPARKLINK_KERNEL_SOURCE', USERSPACE.parent / 'linux')).resolve()
@@ -92,40 +97,265 @@ def copy_elf(source, target, root):
 
 
 def prepare(args):
+    if getattr(args,'native_verification_openssl',None)is not None and getattr(args,'from_prepared',None)is None:
+        raise ValueError('explicit verifier staging requires --from-prepared')
     # Hold through copying/sealing binaries from the shared debug target too.
     with build_lock() as build_fd:
+        if getattr(args, 'from_prepared', None) is not None:
+            return prepare_from_carrier(args)
         return prepare_locked(args, build_fd)
+
+
+def carrier_root_files(root, expected=None):
+    """Check the retained regular-file closure and snapshot link/mode inputs.
+
+    The source is an explicitly retained private carrier, not an executing-image
+    attestation. Never follow a source pathname outside that private root.
+    """
+    if root.is_symlink() or not root.is_dir():
+        raise ValueError('regular retained carrier root directory required')
+    root = root.resolve(strict=True)
+    files, metadata = {}, {}
+    for path in sorted(root.rglob('*')):
+        relative = str(path.relative_to(root))
+        if path.is_symlink():
+            metadata[relative] = dict(link=os.readlink(path))
+        elif path.is_file():
+            if path.resolve() != path or not path.is_relative_to(root):
+                raise ValueError('retained carrier file escapes private root')
+            files[relative] = file_record(path)
+            metadata[relative] = dict(mode=path.stat().st_mode & 0o7777)
+        elif not path.is_dir():
+            raise ValueError('retained carrier contains unsupported special file')
+    if expected is not None:
+        records = {}
+        for row in expected:
+            relative = str(Path(row['path']).relative_to(root))
+            if relative in records:
+                raise ValueError('duplicate retained carrier file')
+            records[relative] = row
+        if files != records:
+            raise ValueError('retained carrier root file closure changed')
+    return dict(files=files, metadata=metadata)
+
+
+def prepare_from_carrier(args):
+    """Canonical per-leaf preparation; reuse frozen artifacts, not a second Host."""
+    ordinary_identity()
+    exclusive = ('kernel_build', 'qemu', 'busybox', 'dbus_daemon', 'tcpdump', 'python', 'firmware_dir',
+                 'runtime_config_dir', 'board_model', *native_vm.OPTIONS,
+                 'native_return_probe', 'native_channel_fd_probe',
+                 'acb_probe_module', 'controller_directory_clients', 'discovery_lifetime_probe',
+                 'native_return_fixture')
+    if any(getattr(args, n, None) for n in exclusive) or getattr(args, 'native_runtime_only', False):
+        raise ValueError('carrier preparation refuses global firmware, build and additional staging options')
+    plan_path = getattr(args, 'device_inputs', None)
+    if plan_path is None:
+        raise ValueError('carrier preparation requires an explicit device input plan')
+    plan_path = plan_path.resolve(strict=True)
+    plan_identity = file_record(plan_path)
+    selection = json.loads(plan_path.read_text())
+    if (not isinstance(selection, dict) or set(selection) != {'version', 'entries'}
+            or type(selection['version']) is not int or selection['version'] != 1):
+        raise ValueError('version1 exact device input plan required')
+    selections = copy.deepcopy(selection['entries'])
+    if not isinstance(selections, list):
+        raise ValueError('ordered device input entries required')
+    for entry in selections:
+        if not isinstance(entry, dict) or set(entry) != {'host_port', 'model', 'firmware_dir', 'board_dir'}:
+            raise ValueError('exact explicit leaf/model/firmware/board fields required')
+        for key in ('firmware_dir', 'board_dir'):
+            value = Path(entry[key])
+            entry[key] = str((plan_path.parent / value).resolve(strict=True))
+    # Validate every leaf/file/provenance before copying or packing a carrier.
+    with tempfile.TemporaryDirectory(prefix='ws73-input-check-') as temporary:
+        selected = resources.prepare_device_inputs(Path(temporary), selections)
+    source = args.from_prepared.resolve(strict=True)
+    package = prepared(source)
+    if ('native_vm' not in package or package['native_vm'].get('runtime_only')
+            or not re.fullmatch('[0-9a-f]{40}', package.get('compiled_userspace_identity', ''))):
+        raise ValueError('retained Native carrier with explicit compiled identity and boot inputs required')
+    original_root = source / 'root'
+    original = carrier_root_files(original_root, package['guest_files'])
+    original_qemu = carrier_root_files((source / 'qemu-data').resolve(), package['native_vm']['qemu_data'])
+    firmware_profile.verify(original_root, package['firmware_profiles'])
+    output = args.output.resolve()
+    if output.is_relative_to(source) or source.is_relative_to(output):
+        raise ValueError('fresh sibling preparation directory required')
+    output.mkdir(mode=0o700, parents=True, exist_ok=False)
+    manifest = copy.deepcopy(package)
+    manifest.update(status='PREPARING', physical_acceptance=False,
+                    scope='Explicit per-leaf preparation from retained Native artifacts;not a new compilation or hardware qualification',
+                    started_at=datetime.now(timezone.utc).isoformat())
+    try:
+        root = output / 'root'
+        subprocess.run(['cp', '--reflink=auto', '-a', str(original_root), str(root)], check=True)
+        cloned = carrier_root_files(root)
+        if ({n: r['sha256'] for n, r in cloned['files'].items()}
+                != {n: r['sha256'] for n, r in original['files'].items()}
+                or cloned['metadata'] != original['metadata']):
+            raise ValueError('carrier clone differs from retained root')
+        for name in ('bzImage', 'kernel.config', 'initramfs.cpio.gz'):
+            native_vm.checked_copy(source / name, output / name)
+        shutil.copytree(source / 'qemu-data', output / 'qemu-data', symlinks=True)
+        manifest['native_vm']['qemu_data'] = [file_record(p) for p in sorted((output / 'qemu-data').rglob('*')) if p.is_file()]
+        for entry in package['firmware_profiles']['entries'].values():
+            shutil.rmtree(firmware_profile.inside(root, Path('lib/firmware') / entry['directory']))
+        (root / firmware_profile.PLAN).unlink()
+        staged = resources.prepare_device_inputs(root, selections)
+        if staged != selected:
+            raise ValueError('selected inputs changed while copying carrier')
+        for key in ('explicit_firmware', 'board_configuration'):
+            manifest.pop(key, None)
+        manifest.update(staged)
+        manifest['four_disconnect_progress_contract_version']=1
+        manifest['four_dynamic_benchmark_contract_version']=1
+        manifest['four_dynamic_benchmark_close_contract_version']=1
+        manifest['four_dynamic_benchmark_pressure_contract_version']=1
+        manifest['channel_sibling_business_contract_version']=3
+        manifest['four_owned_contract_version']=1
+        manifest['four_delivery_contract_version']=1
+        manifest['four_subscription_contract_version']=1
+        manifest['four_subscription_lifetime_contract_version']=1
+        manifest['four_subscription_pressure_contract_version']=1
+        inputs = [file_record(source / 'manifest.json'), file_record(source / 'root.btrfs'), plan_identity]
+        # The current test entry point is source,not part of the frozen Rust ELF.
+        shutil.copy2(HERE/'ws73_target_init.sh',root/'init');(root/'init').chmod(0o755)
+        inputs.append(file_record(HERE/'ws73_target_init.sh'))
+        tool_root = root / 'usr/share/sparklink/tools'
+        # Existing carriers predate these shared fixture helpers. A fresh
+        # preparation must stage the new dependency closure, not just refresh
+        # filenames already present in the retained root.
+        paths = set(tool_root.glob('*.py')) | {tool_root / name for name in
+            ('ws73_native_pair.py', 'ws73_channel_sibling.py')}
+        for path in sorted(paths):
+            client = native_vm.STAGED_PYTHON_CLIENTS.get(path.name)
+            current = HERE / (client if client is not None else path.name)
+            if not current.is_file():
+                raise ValueError('retained carrier contains a retired or private staged tool: ' + path.name)
+            if client is not None and current.read_bytes() != path.read_bytes():
+                raise ValueError('frozen SDK consumer differs from its current explicit source: ' + path.name)
+            shutil.copy2(current, path)
+            inputs.append(file_record(current))
+        for entry in staged['device_inputs']['entries']:
+            proof = entry['board_configuration']
+            inputs += [file_record(Path(proof[key]['path'])) for key in ('manifest', 'source', 'exporter')]
+        for entry in selections:
+            inputs += [file_record(Path(entry['firmware_dir']) / n) for n in resources.IMAGES]
+            inputs += [file_record(Path(entry['board_dir']) / n) for n in ('bsle_custom.bin', 'pm_config.bin')]
+        inputs += [file_record(Path(__file__)), file_record(resources.POLICY)]
+        head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=USERSPACE, text=True).strip()
+        manifest.update(inputs=inputs, userspace_head=head,
+                        carrier_parent=dict(manifest=file_record(source / 'manifest.json'),
+                                            artifact=file_record(source / 'root.btrfs'), root_inputs=original),
+                        new_production_compilation=False)
+        manifest['native_vm']['parent_carrier_userspace_head'] = package['native_vm']['userspace_head']
+        manifest['native_vm']['userspace_head'] = head
+        if getattr(args,'native_discovery_config',None)is not None:
+            native_vm.stage_discovery_config(args.native_discovery_config,native_vm.retained_daemon(root),root,manifest)
+        if getattr(args,'native_verification_openssl',None)is not None:
+            native_vm.stage_numeric_verifier(args.native_verification_openssl,root,manifest,copy_elf)
+        ports = [s['host_port'] for s in selections]
+        resources.check_firmware(manifest, ports, output)
+        resources.check_board_configuration(manifest, ports, output)
+        manifest['guest_files'] = [file_record(p) for p in sorted(root.rglob('*')) if p.is_file() and not p.is_symlink()]
+        staged_root = carrier_root_files(root, manifest['guest_files'])
+        native_vm.pack(args, manifest, root)
+        if (carrier_root_files(original_root, package['guest_files']) != original
+                or carrier_root_files((source / 'qemu-data').resolve(), package['native_vm']['qemu_data']) != original_qemu
+                or carrier_root_files(root, manifest['guest_files']) != staged_root
+                or prepared(source) != package
+                or any(file_record(r['path']) != r for r in inputs + package['userspace_sources'])):
+            raise ValueError('carrier or source inputs changed while preparing')
+        manifest['artifacts'] = [file_record(output / n) for n in ('bzImage', 'kernel.config', 'initramfs.cpio.gz', 'root.btrfs')]
+        manifest['status'] = 'PREPARED'
+    except Exception as error:
+        manifest.update(status='FAIL', error=str(error))
+    finally:
+        manifest['finished_at'] = datetime.now(timezone.utc).isoformat()
+        write_json(output / 'manifest.json', manifest)
+    print(manifest['status'], output / 'manifest.json')
+    return 0 if manifest['status'] == 'PREPARED' else 1
 
 
 def prepare_locked(args, build_fd):
     ordinary_identity()
+    if getattr(args, 'device_inputs', None) is not None:
+        raise ValueError('per-leaf input preparation requires an explicit retained carrier')
+    args.tcpdump = getattr(args, 'tcpdump', None) or Path('/usr/bin/tcpdump')
+    args.python = getattr(args, 'python', None) or Path(sys.executable)
+    required = ('kernel_build', 'qemu', 'busybox', 'dbus_daemon', 'firmware_dir', 'runtime_config_dir')
+    if any(getattr(args, name, None) is None for name in required):
+        raise ValueError('complete build, runtime and explicit model inputs required')
+    if getattr(args, 'board_model', None) not in ['U', 'E']:
+        raise ValueError('explicit U/E firmware input profile required;no global default')
     output = args.output.resolve()
     output.mkdir(mode=0o700, parents=True, exist_ok=False)
     manifest = {'version':1, 'scope':'isolated development environment preparation',
                 'physical_acceptance':False, 'status':'PREPARING', 'inputs':[],
                 'board_qualification':'NOT_ASSERTED', 'started_at':datetime.now(timezone.utc).isoformat()}
+    manifest['runtime_address_contract_version'] = 1
+    manifest['four_disconnect_progress_contract_version'] = 1
+    manifest['four_dynamic_benchmark_contract_version'] = 1
+    manifest['four_dynamic_benchmark_close_contract_version'] = 1
+    manifest['four_dynamic_benchmark_pressure_contract_version'] = 1
+    manifest['channel_sibling_business_contract_version'] = 3
+    manifest['four_owned_contract_version'] = 1
+    manifest['four_delivery_contract_version'] = 1
+    manifest['four_subscription_contract_version'] = 1
+    manifest['four_subscription_lifetime_contract_version'] = 1
+    manifest['four_subscription_pressure_contract_version'] = 1
+    manifest['managed_prefix_geometry_contract_version'] = 1
     manifest['firmware_evidence_contract_version'] = 1
+    manifest['link_measurement_contract_version'] = 1
+    manifest['link_payload_preference_contract_version'] = 1
+    manifest['socket_benchmark_role_contract_version'] = 1
+    manifest['benchmark_ssap_contract_version'] = 2
+    manifest['benchmark_credit_observation_contract_version'] = 1
+    manifest['benchmark_hcc_observation_contract_version'] = 1
+    manifest['benchmark_link_probe_contract_version'] = 1
+    manifest['benchmark_trace_contract_version'] = 1
+    manifest['benchmark_process_resource_contract_version'] = 1
+    from ws73_ssap_initialization import CURRENT_EXCHANGE_CONTRACT
+    manifest['ssap_exchange_contract_version'] = CURRENT_EXCHANGE_CONTRACT
+    manifest['ssap_update_delivery_contract_version'] = 2
+    manifest['application_role_contract_version'] = 2
+    manifest['ssap_subscription_contract_version'] = 1
+    manifest['ssap_subscription_shared_contract_version'] = 1
+    manifest['ssap_subscription_shared_lifetime_contract_version'] = 1
+    manifest['ssap_subscription_shared_pressure_contract_version'] = 1
+    manifest['ssap_subscription_renewal_contract_version'] = 1
+    manifest['ssap_subscription_pressure_contract_version'] = 1
+    manifest['ssap_subscription_owner_loss_contract_version'] = 1
+    manifest['ssap_subscription_inflight_release_contract_version'] = 1
+    manifest['ssap_subscription_inflight_expiry_contract_version'] = 1
+    manifest['ssap_subscription_snapshot_contract_version'] = 1
     try:
         module_profile = native_vm.enabled(args)
+        lifetime_probe=getattr(args,'discovery_lifetime_probe',False)
+        if lifetime_probe and not module_profile:raise ValueError('discovery lifetime SDK probe requires isolated native VM')
         config_required(args.kernel_build / '.config', module_profile)
         lab = lab_module()
         images = lab.firmware(args)
         board = board_files(args.runtime_config_dir)
         if getattr(args, 'board_model', None):
             manifest['explicit_firmware'] = resources.explicit_firmware(args.board_model, args.firmware_dir)
+            manifest['board_configuration'] = resources.board_configuration(args.runtime_config_dir, args.board_model)
+            manifest['board_configuration_contract_version'] = 1
             manifest['resource_contract_version'] = 1
         inputs = [args.kernel_build/'arch/x86/boot/bzImage',args.kernel_build/'.config',
                   args.qemu,args.busybox,args.dbus_daemon,args.tcpdump,args.python,
                   USERSPACE/'data/dbus/sparklink.conf',Path(__file__),HERE/'ws73_target_init.sh',
-                  HERE/'ws73_vm_native_root.py',HERE/'ws73_application_client.py',HERE/'ws73_application_role.py',HERE/'ws73_application_discovery.py',
-                  HERE/'ws73_discovery_policy_capture.py',
+                  HERE/'ws73_usb_partial_diagnostic.py',HERE/'ws73_usb_lifecycle.py',
+                  HERE/'ws73_vm_native_root.py',HERE/'ws73_application_client.py',HERE/'ws73_application_role.py',HERE/'ws73_role_snapshot.py',HERE/'ws73_application_discovery.py',
+                  HERE/'ws73_discovery_policy_capture.py', HERE/'ws73_runtime_address.py', HERE/'ws73_firmware_profile.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',HERE/'ws73_credit_observation.py',
-                  HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_owned_update.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_initialization.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
+                  HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_measurement.py',HERE/'ws73_link_payload.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_ssap.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_benchmark_resources.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_transport_watch.py',HERE/'ws73_hcc_memory.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_owned_update.py',HERE/'ws73_ssap_update_delivery.py',HERE/'ws73_ssap_subscription.py',HERE/'ws73_ssap_shared.py',HERE/'ws73_ssap_receive_lifecycle.py',HERE/'ws73_ssap_sender_deadline.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_initialization.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
                   HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
-                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_connection_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_resource_file_gate.py',HERE/'ws73_connected_file_gate.py',HERE/'ws73_session_idle.py',HERE/'ws73_session_service.py',HERE/'ws73_trace_layout.py',HERE/'ws73_channel_grant.py',HERE/'ws73_revoke_prefix.py',HERE/'ws73_channel_prefix_hold.py',HERE/'ws73_channel_link_down.py',HERE/'ws73_channel_deadline.py',HERE/'ws73_security_capabilities.py',HERE/'ws73_security_numeric.py',HERE/'ws73_security_cancel.py',HERE/'ws73_key_agreement.py',HERE/'ws73_protected_grant.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_daemon_hold.py',HERE/'ws73_daemon_removal.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_rom_chip.py',HERE/'ws73_register_reset_init.sh',
+                  HERE/'ws73_diagnostic_cancel.py',HERE/'ws73_diagnostic_hold.py',HERE/'ws73_diagnostic_deadline.py',HERE/'ws73_diagnostic_autonomous.py',HERE/'ws73_active_deadline.py',HERE/'ws73_management_setup.py',HERE/'ws73_management_queued.py',HERE/'ws73_management_queue_ready_peer.py',HERE/'ws73_connection_queued.py',HERE/'ws73_managed_queue_probe.c',HERE/'ws73_management_partial.py',HERE/'ws73_resource_file_gate.py',HERE/'ws73_connected_file_gate.py',HERE/'ws73_session_idle.py',HERE/'ws73_session_service.py',HERE/'ws73_trace_layout.py',HERE/'ws73_channel_grant.py',HERE/'ws73_channel_sibling.py',HERE/'ws73_native_pair.py',HERE/'ws73_revoke_prefix.py',HERE/'ws73_channel_prefix_hold.py',HERE/'ws73_channel_link_down.py',HERE/'ws73_channel_deadline.py',HERE/'ws73_security_capabilities.py',HERE/'ws73_security_numeric.py',HERE/'ws73_security_cancel.py',HERE/'ws73_key_agreement.py',HERE/'ws73_protected_grant.py',HERE/'ws73_management_ready_peer.py',HERE/'ws73_host_later_hold.py',HERE/'ws73_management_eviction.py',HERE/'ws73_daemon_hold.py',HERE/'ws73_daemon_removal.py',HERE/'ws73_vm_register_reset.py',HERE/'ws73_rom_chip.py',HERE/'ws73_register_reset_init.sh',
                   HERE/'ws73_native_return.py',HERE/'ws73_native_controller_return.py',HERE/'ws73_controller_directory.py',
                   LINUX/'tools/testing/selftests/sparklink/sparklink_event_copy_test.c',
                   LINUX/'tools/testing/selftests/sparklink/controller_event_copy_test.c',
@@ -157,6 +387,9 @@ def prepare_locked(args, build_fd):
                 manifest['inputs'].append(entry)
         manifest['inputs'] += [file_record(HERE / 'ws73_lab_resources.py'), file_record(resources.POLICY), file_record(HERE / 'build_resources.py'),
                                file_record(USERSPACE / 'project/build-resource-policy.json')]
+        if 'board_configuration' in manifest:
+            manifest['inputs'] += [file_record(Path(manifest['board_configuration'][key]['path'])) for key in ('manifest', 'source', 'exporter')]
+        if lifetime_probe:manifest['inputs'].append(file_record(USERSPACE/'crates/libsparklink/examples/discovery_lifetime.rs'))
         source_files = subprocess.check_output(['git','ls-files','crates','bindings/python/sparklink','Cargo.toml','Cargo.lock'],cwd=USERSPACE,text=True).splitlines()
         source_files += subprocess.check_output(['git','ls-files','--others','--exclude-standard','crates','bindings/python/sparklink'],cwd=USERSPACE,text=True).splitlines()
         manifest['userspace_sources'] = [file_record(USERSPACE/p) for p in sorted(set(source_files))]
@@ -172,6 +405,9 @@ def prepare_locked(args, build_fd):
             subprocess.run(['cargo','build','--offline','--locked','-p','slkd','-p','slctl','-p','slktest','-p','slkconfig',
                             '-p','slkmon','-p','slkdump','--bins','--examples'],cwd=USERSPACE,
                            env=build_env,pass_fds=(build_fd,),stdout=log,stderr=subprocess.STDOUT,check=True)
+            if lifetime_probe:
+                subprocess.run(['cargo','build','--offline','--locked','-p','libsparklink','--example','discovery_lifetime'],cwd=USERSPACE,
+                               env=build_env,pass_fds=(build_fd,),stdout=log,stderr=subprocess.STDOUT,check=True)
             subprocess.run(['gcc','-std=c11','-D_POSIX_C_SOURCE=200809L','-Wall','-Wextra','-Werror',
                             '-I'+str(USERSPACE/'crates/slk-native/include'),str(HERE/'ws73_bindings_probe.c'),
                             '-L'+str(build_target/'debug'),'-Wl,-rpath,/usr/lib','-l:libslk_native.so',
@@ -280,6 +516,7 @@ def prepare_locked(args, build_fd):
         programs['bus-policy-probe'] = build_target/'debug/examples/bus_policy_probe'
         programs['ws73-security-agent-probe'] = build_target/'debug/examples/native_security_agent_probe'
         programs['native-bindings-probe'] = output/'native-bindings-probe'
+        if lifetime_probe:programs['discovery-lifetime-probe']=build_target/'debug/examples/discovery_lifetime'
         shared_library=build_target/'debug/liblibsparklink.so'
         native_shared_library=build_target/'debug/libslk_native.so'
         manifest['unstripped_programs'] = [file_record(p) for p in [*programs.values(),shared_library,native_shared_library]]
@@ -292,6 +529,7 @@ def prepare_locked(args, build_fd):
         for filename in ('libsparklink.so', 'libslk_native.so'):
             subprocess.run(['strip','--strip-debug',str(root/'usr/lib'/filename)],check=True)
         manifest['native_security_agent_probe']=file_record(root/'bin/ws73-security-agent-probe')
+        if lifetime_probe:manifest['discovery_lifetime_probe']=dict(binary=file_record(root/'bin/discovery-lifetime-probe'),source=file_record(USERSPACE/'crates/libsparklink/examples/discovery_lifetime.rs'))
         shutil.copytree(USERSPACE/'bindings/python/sparklink',root/'usr/share/sparklink/python/sparklink',
                         ignore=shutil.ignore_patterns('__pycache__'))
         python = args.python.resolve()
@@ -306,9 +544,9 @@ def prepare_locked(args, build_fd):
         for extension in (stdlib/'lib-dynload').glob('*.so'):
             copy_elf(extension,destination/'lib-dynload'/extension.name,root)
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
-        for name in ['ws73_lab_resources.py', 'build_resources.py', 'ws73_native_return.py', 'ws73_native_controller_return.py', 'ws73_controller_directory.py']:
+        for name in ['ws73_lab_resources.py', 'build_resources.py', 'ws73_native_return.py', 'ws73_native_controller_return.py', 'ws73_controller_directory.py', 'ws73_firmware_profile.py', 'ws73_firmware.py']:
             shutil.copy2(HERE/name, share/name)
-        for name in ['ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_timeline.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
+        for name in ['ws73_runtime_address.py','ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_measurement.py','ws73_link_payload.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_ssap.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_transport_watch.py','ws73_hcc_memory.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_sender_deadline.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_channel_sibling.py','ws73_native_pair.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -330,6 +568,9 @@ def prepare_locked(args, build_fd):
 <include>/etc/sparklink.conf</include></busconfig>''')
         if module_profile:
             native_vm.stage(args, manifest, root, USERSPACE, copy_elf)
+        else:
+            manifest['firmware_profiles'] = firmware_profile.provision(root, args.board_model)
+            manifest['firmware_input_contract_version'] = 1
             if getattr(args, 'acb_probe_module', None) is not None:
                 from ws73_acb_transport_probe import stage_module
                 stage_module(args.acb_probe_module, root, manifest)
@@ -341,7 +582,7 @@ def prepare_locked(args, build_fd):
             manifest['native_channel_fd_probe']=before
 
         if getattr(args,'controller_directory_clients',False):
-            source=HERE/'testing/controller_events/client.py';target=root/'usr/share/sparklink/tools/ws73_controller_directory_client.py'
+            source=HERE/native_vm.STAGED_PYTHON_CLIENTS['ws73_controller_directory_client.py'];target=root/'usr/share/sparklink/tools/ws73_controller_directory_client.py'
             shutil.copy2(source,target)
             from ws73_controller_directory import stage_clients
             manifest['controller_directory_clients']=stage_clients(root,python.name,manifest['controller_directory_client_compile'])
@@ -456,7 +697,8 @@ USB_LIFECYCLE_EVENTS = (
     'usb_port_attach', 'usb_port_detach',
     'usb_host_open_started', 'usb_host_open_success', 'usb_host_open_failure',
     'usb_host_close', 'usb_host_claim_interface', 'usb_host_release_interface',
-    'usb_host_req_complete', 'usb_host_req_data', 'usb_host_reset',
+    'usb_host_req_complete', 'usb_host_req_data', 'usb_host_req_canceled',
+    'usb_host_req_control', 'usb_host_req_emulated', 'usb_host_reset',
     'usb_xhci_slot_address', 'usb_xhci_slot_disable',
     'usb_xhci_ep_stop', 'usb_xhci_ep_reset', 'usb_xhci_ep_state',
     'usb_xhci_ep_set_dequeue', 'usb_xhci_ep_disable',
@@ -543,16 +785,30 @@ def validate_down_failure_inputs(package):
 
 def _run(args):
     ordinary_identity()
+    sibling_business=getattr(args,'managed_channel_sibling_business',False)
+    if type(sibling_business)is not bool:raise ValueError('boolean Native sibling request required')
+    if sibling_business:
+        from ws73_channel_sibling import requested as sibling_requested
+        sibling_requested(args)
     output=args.output.resolve()
     support=args.command=='support'
     passthrough=bool(getattr(args,'qmp_hotplug',False))
     recovery=bool(getattr(args,'fault_recovery',False))
     disconnect_isolation=bool(getattr(args,'four_device_disconnect',False))
     parallel_burst=bool(getattr(args,'four_device_burst',False))
-    business=parallel_burst or disconnect_isolation or bool(getattr(args,'four_device_business',False))
+    parallel_owned=bool(getattr(args,'four_device_owned',False))
+    parallel_delivery=bool(getattr(args,'four_device_update_delivery',False))
+    parallel_subscription=bool(getattr(args,'four_device_shared_subscription',False))
+    parallel_benchmark=bool(getattr(args,'four_device_dynamic_benchmark',False))
+    parallel_benchmark_case=getattr(args,'four_device_benchmark_case','parallel')
+    if type(parallel_benchmark_case)is not str or parallel_benchmark_case not in ('parallel','close-short','pressure')or parallel_benchmark_case!='parallel'and not parallel_benchmark:
+        raise ValueError('explicit benchmark case requires dedicated four-device benchmark')
+    business=parallel_benchmark or parallel_subscription or parallel_delivery or parallel_owned or parallel_burst or disconnect_isolation or bool(getattr(args,'four_device_business',False))
     if business:
         validate_business_mode(args)
     parallel=business or bool(getattr(args,'parallel_pairs',False))
+    from ws73_runtime_address import requested as address_requested
+    runtime_addresses=address_requested(args)
     early_fault=bool(getattr(args,'early_bootstrap_fault',False))
     if early_fault and (support or passthrough or recovery or parallel or any(getattr(args,n,False) for n in ['connection_verify','channel_socket_verify','diagnostic_verify','managed_partial_case','managed_connected_case','channel_daemon_crash'])):
         raise ValueError('early bootstrap fault requires separate native three-device VM')
@@ -573,12 +829,25 @@ def _run(args):
     benchmark_mode=getattr(args,'channel_benchmark',None)
     benchmark_window=getattr(args,'channel_benchmark_window',4)
     benchmark_xhci=getattr(args,'channel_benchmark_xhci','on')
-    from ws73_socket_benchmark import requested_configuration
+    from ws73_socket_benchmark import requested_configuration,requested_channel,is_parallel,channel_boot,pressures_long
     benchmark_config=requested_configuration(args)
+    benchmark_channel=requested_channel(args)
+    import ws73_benchmark_ssap as benchmark_ssap
+    benchmark_service=benchmark_ssap.requested(args)
+    if pressures_long(benchmark_channel)and(benchmark_service is not None or benchmark_xhci!='on'):
+        raise ValueError('pressure workload requires separate enabled-trace benchmark without concurrent SSAP')
+    benchmark_verifier_names=['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_application_role.py','ws73_role_snapshot.py']+(['ws73_dynamic_channels.py']if benchmark_channel is not None else[])+(['ws73_channel_fairness.py']if is_parallel(benchmark_channel)else[])
+    if benchmark_service is not None:benchmark_verifier_names+=benchmark_ssap.verifiers(benchmark_service)
     if benchmark_xhci not in ('on','off') or (not benchmark_mode and benchmark_xhci!='on'):raise ValueError('explicit benchmark required for xHCI comparison')
     if benchmark_mode and (benchmark_mode not in ['rate','window','duplex'] or not passthrough or not connection_verify or support or parallel or acb_probe or agent_mode or dynamic_channels or getattr(args,'daemon_link_resync',False) or getattr(args,'channel_socket_verify',False)):
         raise ValueError('benchmark requires separate two-device real connection VM without other application gates')
     channel_socket=bool(getattr(args,'channel_socket_verify',False))
+    link_measurements=bool(getattr(args,'link_measurements',False))
+    link_payload=getattr(args,'link_payload_preference',None)
+    if link_payload is not None and (link_payload!='reported-acb-maximum' or support or parallel or not passthrough or not connection_verify or not getattr(args,'qmp_hotplug',False) or not (channel_socket or benchmark_mode) or agent_mode or dynamic_channels or getattr(args,'fault_recovery',False)):
+        raise ValueError('link payload preference requires separate explicit paired native workload gate')
+    if link_measurements and (support or parallel or not passthrough or not connection_verify or not getattr(args,'qmp_hotplug',False) or not (channel_socket or benchmark_mode) or agent_mode or dynamic_channels or getattr(args,'fault_recovery',False)):
+        raise ValueError('link observations require a dedicated real two-controller connection/application gate')
     from ws73_application_discovery import requested as discovery_requested
     application_discovery=discovery_requested(args)
     application_clients=bool(getattr(args,'application_client_verify',False))
@@ -594,6 +863,25 @@ def _run(args):
     channel_burst=bool(getattr(args,'channel_socket_burst',False))
     ssap_owned=bool(getattr(args,'ssap_owned_verify',False))
     owned_update=bool(getattr(args,'ssap_owned_update_verify',False))
+    from ws73_ssap_update_delivery import requested as delivery_requested
+    update_delivery=delivery_requested(args,passthrough=passthrough)
+    from ws73_ssap_subscription import requested as subscription_requested
+    subscription=subscription_requested(args,passthrough=passthrough)
+    subscription_shared=getattr(args,'ssap_subscription_shared_verify',False)
+    from ws73_ssap_subscription import requested_shared_case
+    subscription_shared_case=requested_shared_case(args,four_pair=parallel_subscription)
+    subscription_renewal=getattr(args,'ssap_subscription_renewal_verify',False)
+    subscription_pressure=getattr(args,'ssap_subscription_pressure_verify',False)
+    subscription_owner_loss=getattr(args,'ssap_subscription_owner_loss_verify',False)
+    subscription_inflight=getattr(args,'ssap_subscription_inflight_release_verify',False)
+    from ws73_ssap_subscription import requested_inflight_case
+    subscription_inflight_case=requested_inflight_case(args)
+    from ws73_ssap_receive_lifecycle import requested as receive_lifecycle_requested
+    receive_lifecycle=receive_lifecycle_requested(args,passthrough=passthrough)
+    from ws73_ssap_sender_deadline import requested as sender_deadline_requested
+    sender_deadline=sender_deadline_requested(args,passthrough=passthrough)
+    from ws73_ssap_value import lengths_requested
+    value_lengths=lengths_requested(args,passthrough=passthrough)
     owner_lifecycle=bool(getattr(args,'ssap_owner_lifecycle_verify',False))
     owner_publisher=getattr(args,'ssap_owner_publisher','cli')
     if owner_publisher not in ('cli','sdk') or (owner_publisher!='cli' and not owner_lifecycle):raise ValueError('SDK owner publisher requires explicit lifecycle gate')
@@ -646,7 +934,7 @@ def _run(args):
         raise ValueError('initializer lifecycle requires separate real QMP-hotplug native VM')
     if parallel and (support or passthrough or recovery or any(getattr(args,k,False) for k in ['hotplug','warm','empty_bulk','event_copy_verify','diagnostic_verify','active_deadline_verify','active_close_verify','setup_release_verify','daemon_hold_case','daemon_cancel_remove','managed_partial_case','managed_queue_verify'])):
         raise ValueError('four-device parallel RF requires separate real VM without other gates')
-    selected_count=3 if early_fault else 4 if parallel else 2
+    selected_count=3 if early_fault else 4 if parallel or sibling_business else 2
     parallel_offset=getattr(args,'parallel_start_offset_ms',0)
     if type(parallel_offset) is not int or not 0 <= parallel_offset <= 125 or (parallel_offset and not parallel):
         raise ValueError('bounded parallel start offset requires explicit four-device diagnostic gate')
@@ -679,6 +967,17 @@ def _run(args):
     session_idle=bool(getattr(args,'managed_channel_idle_observe',False))
     if session_idle and (not channel_revoke_prefix or channel_deadline or channel_link_down or connected_case!='release' or connected_reply or bool(getattr(args,'managed_channel_directions',False)) or channel_scm_rights):raise ValueError('separate release/prefix normal2s real Session idle observation required')
     session_service=bool(getattr(args,'session_service_observe',False))
+    service_profile=getattr(args,'session_service_profile',None)
+    if benchmark_ssap.observing(benchmark_service)and(not session_service or service_profile!='full-load-v2' or not getattr(args,'qmp_hotplug',False)):
+        raise ValueError('bounded credit observation requires the separate full-load-v2 Session trace/QMP benchmark')
+    if service_profile is not None and (service_profile!='full-load-v2' or not session_service):
+        raise ValueError('explicit Session service profile requires separate service observation')
+    queued_discard=bool(getattr(args,'managed_channel_queued_discard',False))
+    if queued_discard and (not session_service or not channel_revoke_prefix or not channel_grant
+            or connected_case not in ('release','close','dup') or connected_reply or session_idle
+            or channel_scm_rights or bool(getattr(args,'managed_channel_directions',False))
+            or getattr(args,'managed_channel_security',0) or getattr(args,'managed_security_capabilities',False)):
+        raise ValueError('queued discard requires standalone basic Managed prefix/Session trace lifecycle gate')
     if session_service and (args.command!='run' or support or parallel or dynamic_channels or agent_mode or channel_close or session_idle or connected_reply or getattr(args,'managed_security_capabilities',False) or not (channel_socket or channel_grant or benchmark_mode)):
         raise ValueError('Session service trace requires separate real fixed-channel data or Managed Grant gate')
     protected=getattr(args,'managed_channel_security',0)
@@ -757,6 +1056,8 @@ def _run(args):
     if diagnostic and (support or not recovery):
         raise ValueError('live diagnostic gate requires real fault-recovery VM mode')
     firmware_mode = None if support else firmware_evidence.requested_mode(args)
+    from ws73_usb_partial_diagnostic import requested as partial_rx_requested
+    partial_rx_target=partial_rx_requested(args)
     output.mkdir(mode=0o700,parents=True,exist_ok=False)
     m={'version':1,'scope':'synthetic environment support' if support else 'physical development environment',
        'physical_acceptance':False,'status':'STARTING','started_at':datetime.now(timezone.utc).isoformat(),
@@ -770,16 +1071,23 @@ def _run(args):
         m['firmware_evidence_helpers'] = [file_record(HERE/name) for name in FIRMWARE_EVIDENCE_HELPERS]
         m['runner_inputs'] += m['firmware_evidence_helpers']
     if ssap_initialization:m['runner_inputs'] += [file_record(HERE/name) for name in ('ws73_ssap_initialization.py','ws73_diagnostic_hold.py','ws73_channel_prefix_hold.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_daemon_hold.py') ]
+    m['runtime_addresses_requested']=runtime_addresses
+    if runtime_addresses:m['runtime_address_verifier']=file_record(HERE/'ws73_runtime_address.py')
     m['early_bootstrap_fault_requested']=early_fault
     if early_fault:m['early_bootstrap_verifier']=file_record(HERE/'ws73_early_fault.py')
     m['four_device_parallel_rf']=parallel and not business
     m['four_device_parallel_business']=business
     m['four_device_disconnect_requested']=disconnect_isolation
     m['four_device_burst_requested']=parallel_burst
+    m['four_device_owned_requested']=parallel_owned
+    m['four_device_update_delivery_requested']=parallel_delivery
+    m['four_device_shared_subscription_requested']=parallel_subscription
+    if parallel_benchmark:m['four_device_dynamic_benchmark_requested']=True
+    if parallel_benchmark_case!='parallel':m['four_benchmark_case']=parallel_benchmark_case
     if business:m['parallel_business_verifier']=file_record(HERE/'ws73_parallel_data.py')
     m['parallel_start_offset_ms']=parallel_offset
     if parallel:
-        m['scope']='four real WS73 two-pair 2042-byte burst and observed budgets' if parallel_burst else 'four real WS73 controlled pair disconnect with surviving business' if disconnect_isolation else 'four real WS73 two-pair connected business' if business else 'four real WS73 two-pair RF timing contrast' if parallel_offset else 'four real WS73 two-pair RF'
+        m['scope']='four real WS73 two-pair dynamic short-long application benchmark'if parallel_benchmark else 'four real WS73 two-pair protected shared subscriptions'if parallel_subscription else 'four real WS73 two-pair protected update delivery'if parallel_delivery else 'four real WS73 two-pair owned SSAP approvals and owner loss'if parallel_owned else 'four real WS73 two-pair 2042-byte burst and observed budgets' if parallel_burst else 'four real WS73 controlled pair disconnect with surviving business' if disconnect_isolation else 'four real WS73 two-pair connected business' if business else 'four real WS73 two-pair RF timing contrast' if parallel_offset else 'four real WS73 two-pair RF'
     if parallel:m['parallel_verifier']=file_record(HERE/'ws73_parallel.py')
     m['qmp_guest_hotplug']=passthrough
     m['connection_verify_requested']=connection_verify
@@ -797,10 +1105,17 @@ def _run(args):
     m['dynamic_channel_acceptance']=False
     m['socket_benchmark_requested']=benchmark_mode
     if benchmark_mode:
+        m['socket_benchmark_role_contract_version']=1
+        m['benchmark_trace_contract_version']=1
+        m['benchmark_process_resource_contract_version']=1
+        m['socket_benchmark_apps_acceptance']=False
         m['socket_benchmark_window_requested']=benchmark_window
         m['socket_benchmark_config_requested']=benchmark_config
+        if benchmark_channel is not None:m['benchmark_channel_request']=benchmark_channel
+        if benchmark_service is not None:
+            m[benchmark_ssap.FIELD]=benchmark_service;m['benchmark_ssap_acceptance']=False
         m['socket_benchmark_xhci_requested']=benchmark_xhci
-        m['benchmark_verifiers']=[file_record(HERE/name) for name in ['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py']]
+        m['benchmark_verifiers']=[file_record(HERE/name) for name in benchmark_verifier_names]
     m['socket_benchmark_acceptance']=False
     m['performance_qualified']=False
     m['channel_socket_verification_requested']=channel_socket
@@ -816,6 +1131,14 @@ def _run(args):
     m['channel_socket_rounds_requested']=channel_rounds if channel_socket else None
     m['connection_down_failure_observe_seconds']=down_failure_observe
     m['channel_socket_bytes_requested']=channel_bytes if channel_socket else None
+    if link_payload is not None:
+        m['link_payload_preference_requested']=link_payload
+        m['link_payload_preference_verifier']=file_record(HERE/'ws73_link_payload.py')
+        m['runner_inputs'].append(m['link_payload_preference_verifier'])
+    if link_measurements:
+        m['link_measurements_requested']=True
+        m['link_measurement_verifier']=file_record(HERE/'ws73_link_measurement.py')
+        m['runner_inputs'].append(m['link_measurement_verifier'])
     m['channel_socket_close_prefix_requested']=channel_close
     m['channel_socket_burst_requested']=channel_burst
     m['channel_socket_boundaries_requested']=channel_boundaries
@@ -824,7 +1147,41 @@ def _run(args):
     m['ordinary_channel_info_acceptance']=False
     m['ssap_exchange_info_acceptance']=False
     m['ssap_value_acceptance']=False
+    m['ssap_value_lengths_requested']=value_lengths
+    m['ssap_value_lengths_acceptance']=False
+    if value_lengths:m['ssap_value_lengths_contract_version']=4
+    if value_lengths:m['ssap_value_lengths_verifier']=file_record(HERE/'ws73_ssap_value.py')
     m['ssap_access_acceptance']=False
+    m['ssap_subscription_requested']=subscription
+    m['ssap_subscription_acceptance']=False
+    m['ssap_subscription_shared_requested']=subscription_shared
+    m['ssap_subscription_shared_acceptance']=False
+    m['ssap_subscription_shared_case']=subscription_shared_case
+    if subscription_shared_case!='release':m['ssap_subscription_shared_pressure_contract_version'if subscription_shared_case=='pressure'else'ssap_subscription_shared_lifetime_contract_version']=1
+    m['ssap_subscription_renewal_requested']=subscription_renewal
+    m['ssap_subscription_renewal_acceptance']=False
+    m['ssap_subscription_pressure_requested']=subscription_pressure
+    m['ssap_subscription_pressure_acceptance']=False
+    m['ssap_subscription_owner_loss_requested']=subscription_owner_loss
+    m['ssap_subscription_owner_loss_acceptance']=False
+    m['ssap_subscription_inflight_release_requested']=subscription_inflight
+    m['ssap_subscription_inflight_release_acceptance']=False
+    if subscription_inflight_case=='expiry':
+        m['ssap_subscription_inflight_case']='expiry'
+        m['ssap_subscription_inflight_expiry_acceptance']=False
+    if subscription_inflight:m['ssap_subscription_inflight_verifier']=file_record(HERE/'ws73_ssap_sender_deadline.py')
+    if subscription:m['ssap_subscription_verifier']=file_record(HERE/'ws73_ssap_subscription.py')
+    m['ssap_update_delivery_requested']=update_delivery
+    m['ssap_update_delivery_acceptance']=False
+    m['ssap_receive_lifecycle_requested']=receive_lifecycle
+    m['ssap_receive_lifecycle_acceptance']=False
+    m['ssap_sender_deadline_requested']=sender_deadline
+    from ws73_ssap_sender_deadline import lifecycle_case
+    m['ssap_sender_lifecycle_case']=lifecycle_case(args)
+    m['ssap_sender_deadline_acceptance']=False
+    if sender_deadline:m['ssap_sender_deadline_verifier']=file_record(HERE/'ws73_ssap_sender_deadline.py')
+    if receive_lifecycle:m['ssap_receive_lifecycle_verifier']=file_record(HERE/'ws73_ssap_receive_lifecycle.py')
+    if update_delivery:m['ssap_update_delivery_verifier']=file_record(HERE/'ws73_ssap_update_delivery.py')
     m['ssap_owned_update_requested']=owned_update
     m['ssap_owned_update_acceptance']=False
     if owned_update:m['ssap_owned_update_verifier']=file_record(HERE/'ws73_ssap_owned_update.py')
@@ -861,7 +1218,11 @@ def _run(args):
     if observer_policy:m['observer_policy_verifier']=file_record(HERE/'ws73_observer_policy.py')
     m['initializer_lifecycle_requested']=initializer_lifecycle
     if initializer_lifecycle:m['initializer_lifecycle_verifier']=file_record(HERE/'ws73_initialization_lifecycle.py')
-    m['artificial_guest_transport_fault']=recovery
+    m['artificial_guest_transport_fault']=recovery or partial_rx_target is not None
+    if partial_rx_target is not None:
+        m['usb_partial_rx_diagnostic_requested']=True
+        m['usb_partial_rx_diagnostic']={}
+        m['runner_inputs'] += [file_record(HERE/name)for name in ('ws73_usb_partial_diagnostic.py','ws73_usb_lifecycle.py')]
     m['live_event_copy_requested']=event_copy
     m['live_diagnostic_requested']=diagnostic
     m['live_diagnostic_deadline_requested']=deadline_gate
@@ -894,11 +1255,16 @@ def _run(args):
     m['live_link_snapshot_gate']=link_snapshot
     m['live_peer_binding_gate']=peer_binding
     m['live_channel_grant_gate']=channel_grant
+    if sibling_business:m.update(channel_sibling_business_requested=True,channel_sibling_business_contract_version=3,sibling_verifier=file_record(HERE/'ws73_channel_sibling.py'))
     if protected:m.update(live_channel_security_required=protected,protected_security_verifiers=[file_record(HERE/name) for name in ['ws73_protected_grant.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_key_agreement.py']])
     m['live_channel_scm_rights_gate']=channel_scm_rights
     m['live_channel_revoke_prefix_gate']=channel_revoke_prefix
+    if queued_discard:m['queued_discard_contract_version']=1
     m['session_service_observation_requested']=session_service
     m['session_service_acceptance']=False
+    if service_profile is not None:
+        from ws73_session_service import FULL_LOAD_PROFILE
+        m.update(session_service_collector_contract_version=2,session_service_collector_profile=dict(FULL_LOAD_PROFILE))
     if session_service:m['session_service_verifiers']=[file_record(HERE/name) for name in ['ws73_session_service.py','ws73_trace_layout.py']]
     m['session_idle_observation_requested']=session_idle
     if session_idle:m['session_idle_verifier']=file_record(HERE/'ws73_session_idle.py')
@@ -913,15 +1279,18 @@ def _run(args):
     if key_agreement:m['security_key_agreement_verifier']=file_record(HERE/'ws73_key_agreement.py')
     if security_capabilities:m['security_capabilities_verifier']=file_record(HERE/'ws73_security_capabilities.py')
     m['live_channel_deadline_requested']=channel_deadline
-    if channel_deadline:m['channel_deadline_verifier']=file_record(HERE/'ws73_channel_deadline.py')
+    if channel_deadline:
+        m['channel_deadline_verifier']=file_record(HERE/'ws73_channel_deadline.py')
+        m['intent_phase_contract_version']=2
     m['live_channel_link_down_requested']=channel_link_down
     if channel_link_down:m['channel_link_down_verifier']=file_record(HERE/'ws73_channel_link_down.py')
     if channel_revoke_prefix:
         m['revoke_prefix_verifier']=file_record(HERE/'ws73_revoke_prefix.py')
-        if not channel_deadline:m['prefix_hold_verifier']=file_record(HERE/'ws73_channel_prefix_hold.py')
+        m['prefix_hold_verifier']=file_record(HERE/'ws73_channel_prefix_hold.py')
+        m['managed_prefix_geometry_contract_version']=1
     m['live_channel_directions_gate']=channel_directions
     if channel_grant:m['channel_grant_verifier']=file_record(HERE/'ws73_channel_grant.py')
-    if connected_case:m['connected_file_verifier']=file_record(HERE/'ws73_connected_file_gate.py')
+    if connected_case:m['connected_file_verifier']=file_record(HERE/'ws73_connected_file_gate.py');m['native_pair_verifier']=file_record(HERE/'ws73_native_pair.py')
     if queued_gate:
         m['managed_queue_verifier']=file_record(HERE/'ws73_management_queued.py')
     if partial_gate:
@@ -932,10 +1301,23 @@ def _run(args):
     if active_gate:
         m['active_deadline_verifier']=file_record(HERE/'ws73_active_deadline.py')
     process=monitor=channel=None
+    partial_rx=None
     physical_boundary=None
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        if sibling_business:
+            from ws73_channel_sibling import require_preparation
+            require_preparation(package,args.prepared.resolve())
+        if channel_revoke_prefix and (type(package.get('managed_prefix_geometry_contract_version')) is not int or package['managed_prefix_geometry_contract_version']!=1):
+            raise ValueError('new prepared buffer-geometry contract required before USB attachment;no old-root fallback')
+        if partial_rx_target is not None:
+            from ws73_usb_partial_diagnostic import validate_inputs as validate_partial_rx
+            validate_partial_rx(package)
+        from ws73_ssap_initialization import exchange_contract
+        m['ssap_exchange_contract_version']=exchange_contract(package)
+        from ws73_ssap_update_delivery import contract_version as delivery_contract
+        m['ssap_update_delivery_contract_version']=delivery_contract(package)
         if directory_events:
             from ws73_controller_directory import staged_program
             m['controller_directory_program']=staged_program(args.prepared.resolve()/'root',package['guest_files'])
@@ -953,12 +1335,59 @@ def _run(args):
             if file_record(probe)!=package['native_return_probe']['program']:raise ValueError('prepared owner probe changed')
             m['native_return_probe']=package['native_return_probe']
         if ssap_initialization:
-            from ws73_ssap_initialization import validate_qemu
-            validate_qemu(package['qemu']['path'], initialization_stage)
+            from ws73_ssap_initialization import validate_qemu,check_selector_contract
+            selector_version=check_selector_contract(package,initialization_stage)
+            validate_qemu(package['qemu']['path'], initialization_stage,selector_version)
+        if sender_deadline:
+            from ws73_ssap_sender_deadline import validate_qemu,validate_inputs
+            validate_qemu(package['qemu']['path'])
+            validate_inputs(package)
         if application_discovery and 'native_vm' not in package:
             raise ValueError('application discovery requires the verified native VM profile')
+        if application_discovery and getattr(args,'application_discovery_case','release')=='ttl':
+            if 'discovery_lifetime_probe' not in package:raise ValueError('TTL requires prepared actual SDK lifetime probe')
+            from ws73_application_discovery import validate_probe
+            probe=dict(path='/bin/discovery-lifetime-probe',sha256=package['discovery_lifetime_probe']['binary']['sha256'])
+            validate_probe(probe,args.prepared/'root',package['guest_files']);m['application_discovery_probe']=probe
+        if subscription:
+            if type(package.get('ssap_subscription_contract_version'))is not int or package['ssap_subscription_contract_version']!=1 or 'native_vm'not in package:raise ValueError('subscription requires newly prepared native contract1')
+            m['ssap_subscription_contract_version']=1
+            if subscription_shared:
+                if type(package.get('ssap_subscription_shared_contract_version'))is not int or package['ssap_subscription_shared_contract_version']!=1:raise ValueError('fresh shared-owner prepared contract1 required')
+                from ws73_ssap_sender_deadline import validate_inputs
+                validate_inputs(package,subscription=True,shared=True)
+                if subscription_shared_case!='release':
+                    field='ssap_subscription_shared_pressure_contract_version'if subscription_shared_case=='pressure'else'ssap_subscription_shared_lifetime_contract_version'
+                    if type(package.get(field))is not int or package[field]!=1:raise ValueError('fresh prepared shared case contract1 required')
+                m['ssap_subscription_shared_contract_version']=1
+                m['ssap_subscription_shared_verifier']=file_record(HERE/'ws73_ssap_shared.py')
+            if type(package.get('ssap_subscription_snapshot_contract_version'))is not int or package['ssap_subscription_snapshot_contract_version']!=1:raise ValueError('subscription requires new closed local phase snapshots')
+            m['ssap_subscription_snapshot_contract_version']=1
+            if subscription_renewal:
+                if type(package.get('ssap_subscription_renewal_contract_version'))is not int or package['ssap_subscription_renewal_contract_version']!=1:raise ValueError('renewal requires explicit new prepared renewal contract1')
+                m['ssap_subscription_renewal_contract_version']=1
+            if subscription_pressure:
+                if type(package.get('ssap_subscription_pressure_contract_version'))is not int or package['ssap_subscription_pressure_contract_version']!=1:raise ValueError('pressure requires explicit new prepared pressure contract1')
+                m['ssap_subscription_pressure_contract_version']=1
+            if subscription_owner_loss:
+                if type(package.get('ssap_subscription_owner_loss_contract_version'))is not int or package['ssap_subscription_owner_loss_contract_version']!=1:raise ValueError('owner loss requires explicit new prepared contract1')
+                m['ssap_subscription_owner_loss_contract_version']=1
+            if subscription_inflight:
+                if type(package.get('ssap_subscription_inflight_release_contract_version'))is not int or package['ssap_subscription_inflight_release_contract_version']!=1:raise ValueError('in-flight release requires explicit new prepared contract1')
+                from ws73_ssap_sender_deadline import validate_qemu,validate_inputs
+                validate_qemu(package['qemu']['path']);validate_inputs(package,subscription=True)
+                m['ssap_subscription_inflight_release_contract_version']=1
+                if subscription_inflight_case=='expiry':
+                    if type(package.get('ssap_subscription_inflight_expiry_contract_version'))is not int or package['ssap_subscription_inflight_expiry_contract_version']!=1:raise ValueError('fresh explicit in-flight expiry prepared contract1 required')
+                    m['ssap_subscription_inflight_expiry_contract_version']=1
+        if benchmark_mode:
+            from ws73_socket_benchmark import validate_role_sources
+            validate_role_sources(package,dynamic=benchmark_channel is not None,parallel=is_parallel(benchmark_channel),ssap=benchmark_service is not None,observe=benchmark_ssap.observing(benchmark_service),hcc=benchmark_ssap.observing_hcc(benchmark_service),link_probe=benchmark_ssap.probing_link(benchmark_service))
         if application_clients and 'native_vm' not in package:
             raise ValueError('application clients require the verified native VM profile')
+        if application_clients:
+            if type(package.get('application_role_contract_version'))is not int or package['application_role_contract_version']!=2:raise ValueError('application role contract2 requires newly prepared exact artifacts')
+            m['application_role_contract_version']=2
         if owner_publisher=='sdk' and 'native_vm' not in package:
             raise ValueError('SDK lifecycle publisher requires verified native VM')
         if agent_mode and ('native_vm' not in package or 'native_security_agent_probe' not in package):raise ValueError('Agent requires native VM and staged real witness')
@@ -982,7 +1411,8 @@ def _run(args):
             ssap_requirement=tomllib.loads((args.prepared/'root/etc/sparklink/main.conf').read_text()).get('ssap',{}).get('channel_security',0)
             if type(ssap_requirement) is not int or ssap_requirement not in (0,1,2):raise ValueError('invalid frozen SMTC policy')
             m['live_ssap_security_requirement']=ssap_requirement
-            if ssap_requirement and (agent_mode,ssap_requirement) not in [('approve',1),('numeric-approve',2)]:raise ValueError('protected SMTC qualification requires matching positive Agent mechanism')
+            if (parallel_subscription or parallel_delivery or update_delivery or subscription) and ssap_requirement!=2:raise ValueError('update delivery/subscription requires explicit protected2 SSAP prepared config')
+            if ssap_requirement and ('numeric-approve'if parallel_delivery or parallel_subscription else agent_mode,ssap_requirement) not in [('approve',1),('numeric-approve',2)]:raise ValueError('protected SMTC qualification requires matching positive Agent mechanism')
 
         if 'discovery_config' in package:
             m['discovery_config'] = package['discovery_config']
@@ -992,6 +1422,32 @@ def _run(args):
             raise ValueError('four-device gate requires qualified scratch-root native VM')
         if parallel and 'policy_expectation' not in package:
             raise ValueError('current four-device gate requires frozen policy expectation')
+        if disconnect_isolation:
+            if (type(package.get('four_disconnect_progress_contract_version'))is not int
+                    or package['four_disconnect_progress_contract_version']!=1):
+                raise ValueError('current Disconnect gate requires new causal-progress preparation')
+            for name in ['ws73_parallel_data.py','ws73_channel_socket.py','ws73_connection_control.py']:
+                staged=args.prepared/'root/usr/share/sparklink/tools'/name
+                if file_record(staged)['sha256']!=file_record(HERE/name)['sha256']:
+                    raise ValueError('current Disconnect preparation/source mismatch: '+name)
+            m['four_disconnect_progress_contract_version']=1
+        if parallel_benchmark:
+            require_benchmark_preparation(package,args.prepared,case=parallel_benchmark_case)
+            m['four_dynamic_benchmark_contract_version']=1
+            if parallel_benchmark_case=='close-short':m['four_dynamic_benchmark_close_contract_version']=1
+            if parallel_benchmark_case=='pressure':m['four_dynamic_benchmark_pressure_contract_version']=1
+        if parallel_owned:
+            require_owned_preparation(package,args.prepared)
+            m['four_owned_contract_version']=1
+        if parallel_subscription:
+            require_subscription_preparation(package,args.prepared,case=subscription_shared_case)
+            m['four_subscription_contract_version']=1
+            m['four_subscription_security_requirement']=2
+            if subscription_shared_case!='release':m['four_subscription_pressure_contract_version'if subscription_shared_case=='pressure'else'four_subscription_lifetime_contract_version']=1
+        if parallel_delivery:
+            require_delivery_preparation(package,args.prepared)
+            m['four_delivery_contract_version']=1
+            m['four_delivery_security_requirement']=2
         if 'policy_expectation' in package:
             m['policy_expectation'] = package['policy_expectation']
         if event_copy:
@@ -1009,9 +1465,27 @@ def _run(args):
         if not support:
             if package.get('resource_contract_version') != 1:
                 raise ValueError('old prepared guest lacks explicit model/HCC resource contract; prepare a new artifact')
-            if package.get('firmware_evidence_contract_version') != 1:
+            if link_payload is not None:
+                if package.get('link_payload_preference_contract_version') != 1:
+                    raise ValueError('new prepared link command and CLI artifact required')
+                guest_path=str(args.prepared.resolve()/'root/usr/share/sparklink/tools/ws73_link_payload.py')
+                pins=[row for row in package['guest_files'] if row['path']==guest_path]
+                if len(pins)!=1 or pins[0]['sha256']!=m['link_payload_preference_verifier']['sha256']:
+                    raise ValueError('prepared link payload helper differs from host verifier')
+            if link_measurements:
+                if package.get('link_measurement_contract_version') != 1:
+                    raise ValueError('new prepared link observation contract required')
+                guest_path=str(args.prepared.resolve()/'root/usr/share/sparklink/tools/ws73_link_measurement.py')
+                guest_pins=[row for row in package['guest_files'] if row['path']==guest_path]
+                if len(guest_pins)!=1 or guest_pins[0]['sha256']!=m['link_measurement_verifier']['sha256']:
+                    raise ValueError('prepared guest link observation helper differs from host verifier')
+            firmware_version = 2 if 'device_input_contract_version' in package else 1
+            if (type(package.get('firmware_evidence_contract_version')) is not int
+                    or package['firmware_evidence_contract_version'] != firmware_version):
                 raise ValueError('old prepared artifact lacks explicit firmware evidence contract; prepare a new artifact')
             physical_boundary=resources.PhysicalBoundary(args.ports, package, args.prepared.resolve())
+            if runtime_addresses and (physical_boundary.models!=['E','E'] or package.get('runtime_address_contract_version')!=1):
+                raise ValueError('fresh explicitly prepared E/E volatile address guest required')
             m['physical_resource_allocation']={'policy':file_record(resources.POLICY),
                 'guard':file_record(HERE/'ws73_lab_resources.py'),
                 'selected_ports':list(args.ports),
@@ -1019,6 +1493,11 @@ def _run(args):
                 'firmware':physical_boundary.firmware,'observations':physical_boundary.observations,
                 'firmware_scope':'STAGED_INPUT_HASHES_ONLY_NOT_A_LOADED_IMAGE_WITNESS',
                 'model_basis':'USER_PLACEMENT_UNTIL_GUEST_HCC_CHECK', 'vm_only':True}
+            m['board_configuration_contract_version']=2 if 'device_input_contract_version' in package else 1
+            m['firmware_evidence_contract_version']=firmware_version
+            m['physical_resource_allocation']['board_configuration']=physical_boundary.board_configuration
+            m['firmware_input_contract_version']=1
+            m['physical_resource_allocation']['input_profiles']=package['firmware_profiles']
         lab=lab_module();devices={d['path']:d for d in lab.inventory()};m['inventory_before']=devices
         if not support:
             native_vm.check_runtime_only(package, devices, args.ports)
@@ -1037,19 +1516,27 @@ def _run(args):
         if any(c in str(share) for c in [',','\n']):raise ValueError('QEMU evidence share path must not contain option delimiters')
         with tempfile.TemporaryDirectory(prefix='ws73-target-') as tmp:
             serial=Path(tmp)/'serial.sock';qmp=Path(tmp)/'qmp.sock'
-            command=[package['qemu']['path'],'-machine','q35,accel=kvm','-cpu','host','-m','1024M','-smp',('1' if queued_gate else '2'),
+            command=[package['qemu']['path'],'-machine','q35,accel=kvm','-cpu','host','-m',('3072M'if parallel_benchmark else '2048M'if benchmark_mode else'1024M'),'-smp',('1' if queued_gate else '2'),
                      '-display','none','-monitor','none','-no-reboot','-nic','none',
                      '-chardev',f'socket,id=console,path={serial},server=on,wait=off','-serial','chardev:console',
                      '-qmp',f'unix:{qmp},server=on,wait=off','-kernel',str(args.prepared.resolve()/'bzImage'),
                      '-initrd',str(args.prepared.resolve()/'initramfs.cpio.gz'),
                      '-append','console=ttyS0 loglevel=5 log_buf_len=4M panic=1 oops=panic'+
                      (' ws73.expected_models='+','.join(physical_boundary.models) if physical_boundary else '')+
+                     (' ws73.firmware_profiles=1' if physical_boundary else '')+
+                     (' ws73.runtime_addresses='+','.join(runtime_addresses) if runtime_addresses else '')+
+                     (' ws73.prefix_geometry=1' if channel_revoke_prefix else '')+
                      (' ws73.support=1' if support else '')+
                      (' ws73.passthrough=1' if passthrough else '')+
                      (' ws73.parallel=1' if parallel else '')+
                      (' ws73.parallel_business=1' if business else '')+
                      (' ws73.parallel_disconnect=1' if disconnect_isolation else '')+
                      (' ws73.parallel_burst=1' if parallel_burst else '')+
+                     (' ws73.parallel_benchmark=1 ws73.socket_benchmark_apps=1'if parallel_benchmark else '')+
+                     (f' ws73.parallel_benchmark_case={parallel_benchmark_case}'if parallel_benchmark_case!='parallel'else '')+
+                     (' ws73.parallel_owned=1'if parallel_owned else '')+
+                     (' ws73.parallel_delivery=1'if parallel_delivery else '')+
+                     (' ws73.parallel_subscription=1 ws73.ssap_subscription=1 ws73.ssap_subscription_shared=1 ws73.subscription_snapshot=1'if parallel_subscription else '')+
                      (f' ws73.parallel_offset={parallel_offset}' if parallel else '')+
                      (' ws73.daemon_remove=1' if daemon_remove else '')+
                      (' ws73.initializer_lifecycle=1' if initializer_lifecycle else '')+
@@ -1063,9 +1550,23 @@ def _run(args):
                      (' ws73.channel_burst=1' if channel_burst else '')+
                      (' ws73.ssap_owned=1' if ssap_owned else '')+
                      (' ws73.ssap_owned_update=1' if owned_update else '')+
+                     (' ws73.ssap_update_delivery=1' if update_delivery else '')+
+                     (' ws73.ssap_subscription=1' if subscription else '')+
+                     (' ws73.ssap_subscription_shared=1' if subscription_shared else '')+
+                     (' ws73.subscription_shared_case='+subscription_shared_case if subscription_shared_case!='release'else '')+
+                     (' ws73.ssap_subscription_renewal=1' if subscription_renewal else '')+
+                     (' ws73.ssap_subscription_pressure=1' if subscription_pressure else '')+
+                     (' ws73.ssap_subscription_owner_loss=1' if subscription_owner_loss else '')+
+                     (' ws73.ssap_subscription_inflight_release=1' if subscription_inflight else '')+
+                     (' ws73.subscription_inflight_case=expiry' if subscription_inflight_case=='expiry' else '')+
+                     (' ws73.subscription_snapshot=1' if subscription else '')+
+                     (' ws73.ssap_receive_lifecycle=1' if receive_lifecycle else '')+
+                     (' ws73.ssap_sender_deadline=1' if sender_deadline else '')+
+                     (' ws73.ssap_sender_case='+m['ssap_sender_lifecycle_case'] if sender_deadline and m['ssap_sender_lifecycle_case']!='deadline' else '')+
+                     (' ws73.ssap_value_lengths=1' if value_lengths else '')+
                      (' ws73.application_clients=1' if application_clients else '')+
                      (' ws73.application_discovery=1' if application_discovery else '')+
-                     (' ws73.application_discovery_case=owner-loss' if application_discovery and getattr(args,'application_discovery_case','release')=='owner-loss' else '')+
+                     (' ws73.application_discovery_case='+args.application_discovery_case if application_discovery and getattr(args,'application_discovery_case','release')!='release' else '')+
                      (' ws73.ssap_owner_lifecycle=1' if owner_lifecycle else '')+
                      (' ws73.ssap_owner_sdk=1' if owner_publisher=='sdk' else '')+
                      (' ws73.ssap_requester_lifecycle=1' if requester_lifecycle else '')+
@@ -1077,7 +1578,10 @@ def _run(args):
                      (' ws73.ssap_service_policy=1' if service_policy else '')+
                      (' ws73.dynamic_channels=1' if dynamic_channels else '')+
                      (' ws73.channel_fairness=1' if fairness else '')+
+                     (' ws73.socket_benchmark_apps=1'if benchmark_mode else '')+
                      (f' ws73.benchmark_mode={benchmark_mode} ws73.benchmark_window={benchmark_window} ws73.benchmark_xhci={benchmark_xhci} ws73.benchmark_count={benchmark_config["count"]} ws73.benchmark_bytes={benchmark_config["bytes"]} ws73.benchmark_interval_us={benchmark_config["interval_us"]}' if benchmark_mode else '')+
+                     (' '+ ' '.join(channel_boot(benchmark_channel))if benchmark_channel is not None else'')+
+                     (' '+ ' '.join(benchmark_ssap.boot(benchmark_service))if benchmark_service is not None else'')+
                      (' ws73.dynamic_burst=1' if dynamic_burst else '')+
                      (f' ws73.dynamic_long={dynamic_long}' if dynamic_long is not None else '')+
                      (f' ws73.channel_socket=1 ws73.channel_rounds={channel_rounds} ws73.channel_bytes={channel_bytes}' if channel_socket else '')+
@@ -1100,17 +1604,22 @@ def _run(args):
                      (f' ws73.managed_partial=1 ws73.partial_case={partial_case} ws73.partial_domain={partial_domain}' if partial_gate else '')+
                      (' ws73.managed_recreate=1' if resource_recreation else '')+
                      (f' ws73.connected_case={connected_case} ws73.connected_index={connected_index}' if connected_case else '')+
+                     (' ws73.channel_sibling_business=1'if sibling_business else '')+
                      (f' ws73.connected_reply={connected_reply}' if connected_reply else '')+
                      (' ws73.link_snapshot=1' if link_snapshot else '')+
+                     (' ws73.link_measurements=1' if link_measurements else '')+
+                     (' ws73.link_payload_preference='+link_payload if link_payload is not None else '')+
                      (' ws73.peer_binding=1' if peer_binding else '')+
                      (' ws73.channel_daemon_crash=1 ws73.channel_daemon_index='+str(channel_death_index) if channel_death else '')+
                      (' ws73.channel_grant=1' if channel_grant else '')+
                      (f' ws73.channel_security={protected}' if protected else '')+
                      (' ws73.channel_revoke_prefix=1' if channel_revoke_prefix else '')+
+                     (' ws73.channel_queued_discard=1' if queued_discard else '')+
                      (' ws73.channel_link_down=1' if channel_link_down else '')+
-                     (' ws73.channel_deadline=1' if channel_deadline else '')+
+                     (' ws73.channel_deadline=1 ws73.intent_phase=2' if channel_deadline else '')+
                      (' ws73.session_idle=1' if session_idle else '')+
                      (' ws73.session_service=1' if session_service else '')+
+                     (' ws73.session_service_profile=full-load-v2' if service_profile is not None else '')+
                      (' ws73.security_capabilities=1' if security_capabilities else '')+
                      (' ws73.security_cancel_pending=1' if cancel_pending else '')+
                      (' ws73.security_original_deadline=1' if original_deadline else '')+
@@ -1127,7 +1636,7 @@ def _run(args):
                      (f' ws73.real_later_step=1 ws73.partial_step={real_step}' if real_later else '')+
                      (' ws73.empty_bulk=1' if getattr(args,'empty_bulk',False) else '')+
                      (' ws73.hotplug=1' if getattr(args,'hotplug',False) else ''),
-                     '-device','qemu-xhci,id=xhci,p2=8,p3=8',
+                     '-device',firmware_profile.QEMU_DEVICE,
                      '-fsdev',f'local,id=evidence,path={share},security_model=mapped-xattr',
                      '-device','virtio-9p-pci,fsdev=evidence,mount_tag=evidence']
             if not support:
@@ -1156,9 +1665,20 @@ def _run(args):
                 hold=None
                 install_hold=None
                 initialization_hold=None
+                receive_capture=None
+                sender_hold=None
+                if sender_deadline:
+                    from ws73_ssap_sender_deadline import Coordinator
+                    sender_hold=Coordinator(share,output,m.setdefault('ssap_sender_deadline_hold',{}),package['qemu']['path'])
+                if subscription_inflight:
+                    from ws73_ssap_sender_deadline import Coordinator
+                    sender_hold=Coordinator(share,output,m.setdefault('ssap_subscription_inflight_hold',{}),package['qemu']['path'],purpose='subscription-'+subscription_inflight_case)
+                if receive_lifecycle:
+                    from ws73_ssap_receive_lifecycle import CaptureCoordinator
+                    receive_capture=CaptureCoordinator(share,output,m.setdefault('ssap_receive_capture_observations',{}))
                 if ssap_initialization:
                     from ws73_ssap_initialization import Coordinator
-                    initialization_hold=Coordinator(share,m.setdefault('ssap_initialization_hold',{}),package['qemu']['path'],initialization_stage)
+                    initialization_hold=Coordinator(share,m.setdefault('ssap_initialization_hold',{}),package['qemu']['path'],initialization_stage,exchange_contract(package))
                 if agent_mode=='install-cancel':
                     from ws73_security_install_hold import InstallCoordinator
                     install_hold=InstallCoordinator(share,m.setdefault('security_install_hold',{}),package['qemu']['path'])
@@ -1191,6 +1711,9 @@ def _run(args):
                     from ws73_diagnostic_hold import HoldCoordinator
                     hold=HoldCoordinator(share,m.setdefault('diagnostic_hold',{}))
                 active=0;addresses={port:devices[port]['address'] for port in getattr(args,'ports',[])};transcript=bytearray();support_input=False;hotplug_phase=0
+                if partial_rx_target is not None:
+                    from ws73_usb_partial_diagnostic import Coordinator,requested_phase
+                    partial_rx=Coordinator(share,output,m['usb_partial_rx_diagnostic'],partial_rx_target,args.ports,phase=requested_phase(args))
                 watcher=lab.ReattachmentWatcher(addresses,m.setdefault('reattach',[]),owned=opened_usb_node)
                 timeout_seal=None
                 while process.poll() is None:
@@ -1217,11 +1740,15 @@ def _run(args):
                         if data:channel.sendall(data)
                         else:raise ValueError('interactive physical environment requires a terminal; no automatic hotplug confirmation')
                     text=transcript.decode(errors='replace')
+                    if partial_rx:
+                        partial_rx.poll(monitor,lambda i:live_runtime_owner(args.ports[i],process.pid,lab.inventory()))
                     if hold:
                         if hold.phase == 'arm_ready' and (hold.folder/'hold-arm_ready.json').exists():
                             hold.record['host_identity_at_arm'] = live_runtime_owner(
                                 args.ports[connected_index if connected_reply or channel_revoke_prefix else 0], process.pid, lab.inventory())
                         hold.poll(monitor)
+                    if receive_capture:receive_capture.poll()
+                    if sender_hold:sender_hold.poll(monitor,lambda i:live_runtime_owner(args.ports[i],process.pid,lab.inventory()))
                     if initialization_hold:
                         initialization_hold.poll(monitor,lambda i:live_runtime_owner(args.ports[i],process.pid,lab.inventory()))
                     if install_hold:
@@ -1277,7 +1804,8 @@ def _run(args):
                     elif active_gate and active == 1:
                         from ws73_active_deadline import metadata_ready
                         peer_metadata = metadata_ready(share)
-                    if active<selected_count and (peer_metadata if (setup_gate or active_gate) and active==1 else ('WS73_TARGET_CAPTURE_READY' if active==0 else f'WS73_TARGET_READY: slot={active-1}') in text):
+                    sibling_attach=sibling_business and active in(2,3)and(share/f'connected-file/sibling/attach-{active}.json').is_file()
+                    if active<selected_count and (sibling_attach if sibling_business and active>=2 else peer_metadata if (setup_gate or active_gate) and active==1 else ('WS73_TARGET_CAPTURE_READY' if active==0 else f'WS73_TARGET_ADDRESS_SETUP: slot={active-1}' if runtime_addresses else f'WS73_TARGET_READY: slot={active-1}') in text):
                         props=(dict(driver='usb-ws73-test',id=f'ws73_{active}',bus='xhci.0',port=str(active+1),
                                     **{'runtime-discovery':True,'runtime-policy':True,'runtime-fresh-advertiser':True,'runtime-sle-subtypes':True,'runtime-medium':1},
                                     **({'runtime-zlp':True} if getattr(args,'empty_bulk',False) else {}),
@@ -1323,9 +1851,7 @@ def _run(args):
                     m['early_bootstrap_corroboration']=early_corroborate(record,capture,share)
                     m['capture_packets']=packets;m['guest_identities']=identities
                     m['status']='REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS'
-                    print(m['status'],output/'manifest.json')
-                    return 0
-                if channel_death:
+                elif channel_death:
                     from ws73_channel_daemon_crash import corroborate as death_corroborate
                     record=json.loads((share/'channel-daemon-crash/control/run.json').read_text())
                     if text.count('WS73_TARGET_DAEMON_CHANNEL_PASS')!=1 or text.count('WS73_TARGET_DAEMON_CHANNEL_FINISHED')!=1 or record['daemon_channel']['index']!=channel_death_index:raise ValueError('explicit completed daemon fd death gate required')
@@ -1337,384 +1863,548 @@ def _run(args):
                     m['capture_packets']=packets;m['guest_identities']=identities
                     if file_record(HERE/'ws73_channel_daemon_crash.py')!=m['channel_daemon_verifier']:raise ValueError('daemon verifier changed during run')
                     m['status']='REAL_DAEMON_CHANNEL_DEATH_PASS'
-                    print(m['status'],output/'manifest.json')
-                    return 0
-                if support and ('WS73_TARGET_SUPPORT: PASS' not in text or 'WS73_TARGET_INPUT_PASS: uid=1000 caps=0 tty=1' not in text):raise ValueError('synthetic environment support/input proof missing')
-                if not support and not passthrough and not recovery and not parallel and not channel_grant and 'WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0' not in text:raise ValueError('physical environment readiness missing')
-                if passthrough and 'WS73_TARGET_PASSTHROUGH_SUPPORT: PASS' not in text:raise ValueError('QMP passthrough proof missing')
-                if recovery and (hotplug_phase!=1 or 'WS73_TARGET_RECOVERY_SUPPORT: PASS' not in text):
-                    raise ValueError('artificial transport recovery proof missing')
-                if parallel and ('WS73_TARGET_PARALLEL_BUSINESS: PASS' if business else 'WS73_TARGET_PARALLEL_RF: PASS') not in text:raise ValueError('four-device parallel USB proof missing')
-                if channel_grant:
-                    from ws73_connected_file_gate import verify_records as verify_connected
-                    probe=json.loads((share/'connected-file/run.json').read_text())
-                    snapshots=verify_connected(probe)
-                    identities=[dict(probe['usb'][n],index=n,generation=value.generation,
-                        address=':'.join(f'{v:02X}' for v in value.address),path=f'1-{n+1}') for n,value in enumerate(snapshots)]
                 else:
-                    identities=[json.loads((share/f'ready-{n}.json').read_text()) for n in range(selected_count)]
-                if physical_boundary:
-                    checks=[]
-                    for slot,model in enumerate(physical_boundary.models):
-                        observed=json.loads((share/f'ready-{slot}.json').read_text())
-                        chip=resources.check_hcc(observed['hcc_chip']['raw'],model)
-                        checks.append(dict(host_port=args.ports[slot],guest_port=observed['port'],
-                                           generation=observed['generation'],**chip))
-                    m['physical_resource_allocation']['hcc_checks']=checks
-                if getattr(args,'hotplug',False) or passthrough:
-                    if hotplug_phase!=2:raise ValueError('both synthetic hotplug phases required')
-                    pattern=r'^WS73_TARGET_PASSTHROUGH_(REMOVE|READD)_READY$' if passthrough else r'^WS73_TARGET_CONTROL_(REMOVE|READD)_READY$'
-                    markers=re.findall(pattern,text,re.M)
-                    if markers!=['REMOVE','READD']:raise ValueError('missing/duplicate/out-of-order synthetic control confirmations')
-                    control=json.loads((share/('application/passthrough-control/run.json' if passthrough else 'application/support-control/run.json')).read_text())
-                    identities=[*control['initial'],control['replacement']]
-                    if passthrough and initializer_lifecycle != ('initialization_lifecycle' in control):
-                        raise ValueError('initializer lifecycle request and control evidence must agree')
-                if recovery:
-                    control=json.loads((share/'application/recovery-control/run.json').read_text())
-                    identities=[*control['initial'],control['replacement']]
-                    injection=(output/'qemu-stderr.log').read_text()
-                    markers=re.findall(r'WS73_TEST_RUNTIME_IN_ERROR: dev (\d+):(\d+) ep 81 host_status=0 discarded_bytes=(\d+) injected_count=(\d+)',injection)
-                    expected=m['fault_injection']['host_identity_at_arm']
-                    if len(markers)!=1 or tuple(map(int,markers[0][:2]))!=(expected['bus'],expected['address']) or int(markers[0][2])<=0 or markers[0][3]!='1':
-                        raise ValueError('exact one target-only artificial successful-host-transfer injection required')
-                    trace=(output/'usb-lifecycle.log').read_text()
-                    m['fault_injection']['initial_rom_closes'] = verify_recovery_lifecycle(
-                        trace, m['fault_injection']['armed_wall_ns'], [devices[p] for p in args.ports])
-                    m['fault_injection']['consumed_marker']=markers[0]
-                if channel_grant:
-                    if text.count('WS73_TARGET_CHANNEL_GRANT_FINISHED')!=1:raise ValueError('standalone Grant finish proof missing')
-                    control={}
-                packets=check_capture_stats((share/'capture-stats.txt').read_text())
-                capture=read_capture(share/'ws73.pcap',[(r['bus'],r['device']) for r in identities])
-                if packets!=capture['packet_count']:raise ValueError('sealed capture packet count mismatch')
-                m['capture_packets']=packets;m['guest_identities']=identities
-                if parallel:
-                    if business:
-                        from ws73_parallel_data import corroborate as corroborate_parallel
+                    if support and ('WS73_TARGET_SUPPORT: PASS' not in text or 'WS73_TARGET_INPUT_PASS: uid=1000 caps=0 tty=1' not in text):raise ValueError('synthetic environment support/input proof missing')
+                    if not support and not passthrough and not recovery and not parallel and not channel_grant and 'WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0' not in text:raise ValueError('physical environment readiness missing')
+                    if passthrough and 'WS73_TARGET_PASSTHROUGH_SUPPORT: PASS' not in text:raise ValueError('QMP passthrough proof missing')
+                    if recovery and (hotplug_phase!=1 or 'WS73_TARGET_RECOVERY_SUPPORT: PASS' not in text):
+                        raise ValueError('artificial transport recovery proof missing')
+                    if parallel and ('WS73_TARGET_PARALLEL_BUSINESS: PASS' if business else 'WS73_TARGET_PARALLEL_RF: PASS') not in text:raise ValueError('four-device parallel USB proof missing')
+                    if channel_grant:
+                        from ws73_connected_file_gate import verify_records as verify_connected
+                        probe=json.loads((share/'connected-file/run.json').read_text())
+                        snapshots=verify_connected(probe)
+                        identities=[dict(probe['usb'][n],index=n,generation=value.generation,
+                            address=':'.join(f'{v:02X}' for v in value.address),path=f'1-{n+1}') for n,value in enumerate(snapshots)]
                     else:
-                        from ws73_parallel import corroborate as corroborate_parallel
-                    control_path=share/('application/parallel-business/run.json' if business else 'application/parallel-control/run.json')
-                    control=json.loads(control_path.read_text())
-                    if business and control.get('burst_mode',False)!=parallel_burst:
-                        raise ValueError('explicit burst request and actual guest scope disagree')
-                    if business and control.get('disconnect_isolation',False)!=disconnect_isolation:
-                        raise ValueError('explicit disconnect request and actual guest scope disagree')
-                    if not business and control['second_pair_start_offset_ms']!=parallel_offset:
-                        raise ValueError('guest start offset differs from actual requested diagnostic')
-                    expectation = control['policy_expectation']
-                    if (expectation['data'] != package['policy_expectation']['data']
-                            or expectation['file']['sha256'] != package['policy_expectation']['guest_sha256']):
-                        raise ValueError('actual parallel policy expectation differs from frozen preparation')
-                    if business:
+                        identities=[json.loads((share/f'ready-{n}.json').read_text()) for n in range(selected_count)]
+                    hcc_rows=list(probe['hcc_observations'])if channel_grant else []
+                    if sibling_business:
+                        from ws73_channel_sibling import identities as sibling_identities
+                        identities+=sibling_identities(probe)
+                        hcc_rows+=probe['sibling_business']['hcc_observations']
+                    if physical_boundary:
+                        checks=[]
+                        if channel_grant and len(hcc_rows)!=len(identities):
+                            raise ValueError('one HCC observation per actual Native controller required')
+                        for slot,model in enumerate(physical_boundary.models):
+                            if channel_grant:
+                                observed=hcc_rows[slot]
+                                wanted=dict(identities[slot],port=f'1-{slot+1}')
+                                if any(observed[k]!=wanted[k] for k in ('port','index','generation','bus','device','address')):
+                                    raise ValueError('standalone HCC observation differs from actual Native gate identity')
+                            else:
+                                observed=json.loads((share/f'ready-{slot}.json').read_text())
+                            chip=resources.check_hcc(observed['hcc_chip']['raw'],model)
+                            checks.append(dict(host_port=args.ports[slot],guest_port=observed['port'],
+                                               generation=observed['generation'],input_profile=observed['input_profile'],**chip))
+                        m['physical_resource_allocation']['hcc_checks']=checks
+                    if getattr(args,'hotplug',False) or passthrough:
+                        if hotplug_phase!=2:raise ValueError('both synthetic hotplug phases required')
+                        pattern=r'^WS73_TARGET_PASSTHROUGH_(REMOVE|READD)_READY$' if passthrough else r'^WS73_TARGET_CONTROL_(REMOVE|READD)_READY$'
+                        markers=re.findall(pattern,text,re.M)
+                        if markers!=['REMOVE','READD']:raise ValueError('missing/duplicate/out-of-order synthetic control confirmations')
+                        control=json.loads((share/('application/passthrough-control/run.json' if passthrough else 'application/support-control/run.json')).read_text())
+                        identities=[*control['initial'],control['replacement']]
+                        if passthrough and initializer_lifecycle != ('initialization_lifecycle' in control):
+                            raise ValueError('initializer lifecycle request and control evidence must agree')
+                    if recovery:
+                        control=json.loads((share/'application/recovery-control/run.json').read_text())
+                        identities=[*control['initial'],control['replacement']]
+                        injection=(output/'qemu-stderr.log').read_text()
+                        markers=re.findall(r'WS73_TEST_RUNTIME_IN_ERROR: dev (\d+):(\d+) ep 81 host_status=0 discarded_bytes=(\d+) injected_count=(\d+)',injection)
+                        expected=m['fault_injection']['host_identity_at_arm']
+                        if len(markers)!=1 or tuple(map(int,markers[0][:2]))!=(expected['bus'],expected['address']) or int(markers[0][2])<=0 or markers[0][3]!='1':
+                            raise ValueError('exact one target-only artificial successful-host-transfer injection required')
+                        trace=(output/'usb-lifecycle.log').read_text()
+                        m['fault_injection']['initial_rom_closes'] = verify_recovery_lifecycle(
+                            trace, m['fault_injection']['armed_wall_ns'], [devices[p] for p in args.ports])
+                        m['fault_injection']['consumed_marker']=markers[0]
+                    if channel_grant:
+                        if text.count('WS73_TARGET_CHANNEL_GRANT_FINISHED')!=1:raise ValueError('standalone Grant finish proof missing')
+                        control={}
+                    packets=check_capture_stats((share/'capture-stats.txt').read_text())
+                    capture=read_capture(share/'ws73.pcap',[(r['bus'],r['device']) for r in identities],observe_rx=sender_deadline or subscription_inflight)
+                    if packets!=capture['packet_count']:raise ValueError('sealed capture packet count mismatch')
+                    m['capture_packets']=packets;m['guest_identities']=identities
+                    if runtime_addresses:
+                        m.update(corroborate_runtime_addresses(share,capture,runtime_addresses,m['runtime_address_verifier']))
+                    if parallel:
+                        if business:
+                            from ws73_parallel_data import corroborate as corroborate_parallel
+                        else:
+                            from ws73_parallel import corroborate as corroborate_parallel
+                        control_path=share/('application/parallel-business/run.json' if business else 'application/parallel-control/run.json')
+                        control=json.loads(control_path.read_text())
+                        if business and control.get('burst_mode',False)!=parallel_burst:
+                            raise ValueError('explicit burst request and actual guest scope disagree')
+                        if business and control.get('disconnect_isolation',False)!=disconnect_isolation:
+                            raise ValueError('explicit disconnect request and actual guest scope disagree')
+                        if not business and control['second_pair_start_offset_ms']!=parallel_offset:
+                            raise ValueError('guest start offset differs from actual requested diagnostic')
+                        expectation = control['policy_expectation']
+                        if (expectation['data'] != package['policy_expectation']['data']
+                                or expectation['file']['sha256'] != package['policy_expectation']['guest_sha256']):
+                            raise ValueError('actual parallel policy expectation differs from frozen preparation')
+                        if business:
+                            from ws73_channel_socket import validate_application_tools
+                            validate_application_tools(control,args.prepared/'root',package['guest_files'])
+                        if control.get('dynamic_benchmark_mode',False)is not parallel_benchmark:raise ValueError('explicit paired benchmark request/worker mismatch')
+                        from ws73_parallel_data import benchmark_case
+                        if benchmark_case(control)!=parallel_benchmark_case:raise ValueError('explicit paired benchmark case/worker mismatch')
+                        if parallel_benchmark:
+                            from ws73_socket_benchmark import validate_role_tools
+                            for worker in control['workers']:validate_role_tools(worker['run'],args.prepared/'root',package['guest_files'])
+                        if control.get('owned_ssap_mode',False)is not parallel_owned:raise ValueError('original Owned request and worker evidence mismatch')
+                        if control.get('update_delivery_mode',False)is not parallel_delivery:raise ValueError('original protected delivery request/worker mismatch')
+                        if control.get('shared_subscription_mode',False)is not parallel_subscription:raise ValueError('original shared subscription request/worker mismatch')
+                        if parallel_subscription:
+                            from ws73_parallel_data import subscription_case as parallel_case
+                            if parallel_case(control)!=subscription_shared_case:raise ValueError('original shared lifetime request/worker mismatch')
+                            from ws73_ssap_subscription import validate_tools as validate_subscription_tools,require_current_output
+                            for worker in control['workers']:
+                                data=worker['run']
+                                if data['artifacts']['security_agent_probe']!=delivery_probe_identity(args.prepared/'root',package['guest_files']):raise ValueError('executed subscription Agent witness differs from sealed artifact')
+                                for row in data['channel_socket']:
+                                    require_current_output(row)
+                                    validate_subscription_tools(row['ssap_subscription_tools'],args.prepared/'root',package['guest_files'])
+                        if parallel_delivery:
+                            from ws73_ssap_update_delivery import validate_tools as validate_update_tools
+                            for worker in control['workers']:
+                                data=worker['run']
+                                if data['artifacts']['security_agent_probe']!=delivery_probe_identity(args.prepared/'root',package['guest_files']):raise ValueError('executed Agent witness differs from sealed artifact')
+                                for row in data['channel_socket']:
+                                    if type(row.get('ssap_update_delivery_output_contract_version'))is not int or row['ssap_update_delivery_output_contract_version']!=1:raise ValueError('current delivery requires original bounded pipe observations')
+                                    validate_update_tools(row['ssap_update_delivery_tools'],args.prepared/'root',package['guest_files'])
+                        m['parallel_corroboration']=corroborate_parallel(control,capture,**({'evidence':share}if parallel_subscription or parallel_benchmark else{}))
+                        m['parallel_control']=file_record(control_path)
+                    if daemon_remove:
+                        from ws73_daemon_removal import corroborate as corroborate_removal
+                        m['daemon_removal']['corroboration']=corroborate_removal(control['daemon_removal'],hold.record,capture,(output/'qemu-stderr.log').read_text(),hold.record['host_identity_at_arm'])
+                        m['live_daemon_removal']=file_record(share/'application/passthrough-control/run.json')
+                    if passthrough and connection_verify != ('connection_control' in control):
+                        raise ValueError('explicit connection request and guest evidence must agree')
+                    if connection_verify:
+                        from ws73_connection_control import corroborate as connection_corroborate
+                        if control['connection_control']['advertising_kind']!=connection_advertising:
+                            raise ValueError('guest connection posture differs from explicit parent request')
+                        m['connection_corroboration']=connection_corroborate(control,capture)
+                        if control['connection_control'].get('connection_objects'):
+                            from ws73_connection_objects import corroborate as object_corroborate
+                            m['connection_object_corroboration']=object_corroborate(control,capture,m['connection_corroboration'])
+                        from ws73_link_measurement import corroborate as measurement_corroborate
+                        if control.get('link_measurements_requested',False)!=link_measurements:
+                            raise ValueError('explicit link observation request/evidence mismatch')
+                        measured=measurement_corroborate(control,capture,link_measurements)
+                        if link_measurements:
+                            if file_record(HERE/'ws73_link_measurement.py')!=m['link_measurement_verifier']:
+                                raise ValueError('link observation verifier changed during run')
+                            m['link_measurement_corroboration']=measured
+                            m['link_measurement_acceptance']=True
+                        from ws73_link_payload import corroborate as payload_corroborate
+                        if control.get('link_payload_preference_requested')!=link_payload:
+                            raise ValueError('link payload boot/request mismatch')
+                        payload_proof=payload_corroborate(control,capture,link_payload)
+                        if link_payload is not None:
+                            if file_record(HERE/'ws73_link_payload.py')!=m['link_payload_preference_verifier']:
+                                raise ValueError('link payload verifier changed during run')
+                            m['link_payload_preference_corroboration']=payload_proof
+                            m['link_payload_preference_acceptance']=True
+                        if link_resync != ('link_resync' in control):raise ValueError('explicit link resync request/evidence mismatch')
+                        if link_resync:
+                            from ws73_link_resync import corroborate as resync_corroborate
+                            m['link_resync_corroboration']=resync_corroborate(control,capture)
+                    if native_return != ('native_return' in control):raise ValueError('Native return request/evidence mismatch')
+                    if native_return:
+                        from ws73_native_return import verify_root, corroborate as native_corroborate
+                        verify_root(control,share,package['native_return_fixture']['library']['sha256'])
+                        m['native_return_corroboration']=native_corroborate(control,capture)
+                        m['native_return_acceptance']=True
+                    if bool(native_controller) != ('native_controller_return' in control):raise ValueError('controller Native return request/evidence mismatch')
+                    if native_controller:
+                        from ws73_native_controller_return import corroborate as controller_corroborate
+                        proof=controller_corroborate(control,capture,share,package['native_return_fixture']['library']['sha256'])
+                        if proof['role'] != native_controller:raise ValueError('controller Native return role mismatch')
+                        if proof['owner_probe_binary']['sha256'] != package['native_return_probe']['program']['sha256']:raise ValueError('actual owner probe differs from pinned prepared binary')
+                        m['native_controller_return_corroboration']=proof
+                        m['native_controller_return_acceptance']=True
+                    if directory_events:
+                        from ws73_controller_directory import corroborate_all as directory_corroborate
+                        if text.count('WS73_TARGET_CONTROLLER_DIRECTORY_PASS')!=1:raise ValueError('root-reaped ordinary directory observer required')
+                        if file_record(HERE/'ws73_controller_directory.py')!=m['controller_directory_verifier']:raise ValueError('directory verifier changed during run')
+                        observed=json.loads((share/'controller-directory/result.json').read_text())
+                        m['controller_directory_corroboration']=directory_corroborate(observed,control,m['controller_directory_program']['sha256'],m['controller_directory_verifier']['sha256'],m['controller_directory_clients'])
+                        m['controller_directory_acceptance']=True
+                    if ssap_initialization != ('ssap_initialization' in control):raise ValueError('SSAP initialization request/evidence mismatch')
+                    if ssap_initialization:
+                        from ws73_ssap_initialization import corroborate as initialize_corroborate, verify_fd_supervisor
+                        verify_fd_supervisor(control,share)
+                        m['ssap_initialization_corroboration']=initialize_corroborate(control,capture,m['ssap_initialization_hold'],(output/'qemu-stderr.log').read_text())
+                        m['ssap_initialization_acceptance']=True
+                    if bool(agent_mode) != ('security_agent' in control):raise ValueError('Agent request/evidence mismatch')
+                    if agent_mode:
+                        from ws73_security_agent import corroborate as agent_corroborate
+                        if any(v['mode']!=agent_mode for v in control['security_agent']):raise ValueError('explicit Agent mode mismatch')
+                        if agent_mode.startswith('cli-'):
+                            from ws73_security_cli import validate_binary
+                            validate_binary(control['slctl'],args.prepared/'root',package['guest_files'])
+                        m['security_agent_corroboration']=agent_corroborate(control,capture)
+                        if any(v.get('ssap_security_requirement',0)!=m.get('live_ssap_security_requirement',0) for v in control['security_agent']):raise ValueError('actual SMTC witness differs from frozen configuration')
+
+                        if agent_mode=='install-cancel':
+                            from ws73_security_install_hold import corroborate as install_corroborate
+                            m['security_install_hold']['corroboration']=install_corroborate(m['security_install_hold'],control,capture,(output/'qemu-stderr.log').read_text())
+                    if acb_probe != ('acb_transport_probe' in control):raise ValueError('explicit ACB probe request/evidence mismatch')
+                    if acb_probe:
+                        from ws73_acb_transport_probe import corroborate as acb_corroborate
+                        m['acb_transport_selftest_corroboration']=acb_corroborate(control,capture,(share/'kernel.log').read_text())
+                        m['expected_external_selftest_taint']=4096
+                    if bool(benchmark_mode) != ('socket_benchmark' in control):raise ValueError('benchmark explicit request/evidence mismatch')
+                    if benchmark_mode:
+                        from ws73_socket_benchmark import corroborate as benchmark_corroborate,row_channel
                         from ws73_channel_socket import validate_application_tools
                         validate_application_tools(control,args.prepared/'root',package['guest_files'])
-                    m['parallel_corroboration']=corroborate_parallel(control,capture)
-                    m['parallel_control']=file_record(control_path)
-                if daemon_remove:
-                    from ws73_daemon_removal import corroborate as corroborate_removal
-                    m['daemon_removal']['corroboration']=corroborate_removal(control['daemon_removal'],hold.record,capture,(output/'qemu-stderr.log').read_text(),hold.record['host_identity_at_arm'])
-                    m['live_daemon_removal']=file_record(share/'application/passthrough-control/run.json')
-                if passthrough and connection_verify != ('connection_control' in control):
-                    raise ValueError('explicit connection request and guest evidence must agree')
-                if connection_verify:
-                    from ws73_connection_control import corroborate as connection_corroborate
-                    if control['connection_control']['advertising_kind']!=connection_advertising:
-                        raise ValueError('guest connection posture differs from explicit parent request')
-                    m['connection_corroboration']=connection_corroborate(control,capture)
-                    if control['connection_control'].get('connection_objects'):
-                        from ws73_connection_objects import corroborate as object_corroborate
-                        m['connection_object_corroboration']=object_corroborate(control,capture,m['connection_corroboration'])
-                    if link_resync != ('link_resync' in control):raise ValueError('explicit link resync request/evidence mismatch')
-                    if link_resync:
-                        from ws73_link_resync import corroborate as resync_corroborate
-                        m['link_resync_corroboration']=resync_corroborate(control,capture)
-                if native_return != ('native_return' in control):raise ValueError('Native return request/evidence mismatch')
-                if native_return:
-                    from ws73_native_return import verify_root, corroborate as native_corroborate
-                    verify_root(control,share,package['native_return_fixture']['library']['sha256'])
-                    m['native_return_corroboration']=native_corroborate(control,capture)
-                    m['native_return_acceptance']=True
-                if bool(native_controller) != ('native_controller_return' in control):raise ValueError('controller Native return request/evidence mismatch')
-                if native_controller:
-                    from ws73_native_controller_return import corroborate as controller_corroborate
-                    proof=controller_corroborate(control,capture,share,package['native_return_fixture']['library']['sha256'])
-                    if proof['role'] != native_controller:raise ValueError('controller Native return role mismatch')
-                    if proof['owner_probe_binary']['sha256'] != package['native_return_probe']['program']['sha256']:raise ValueError('actual owner probe differs from pinned prepared binary')
-                    m['native_controller_return_corroboration']=proof
-                    m['native_controller_return_acceptance']=True
-                if directory_events:
-                    from ws73_controller_directory import corroborate_all as directory_corroborate
-                    if text.count('WS73_TARGET_CONTROLLER_DIRECTORY_PASS')!=1:raise ValueError('root-reaped ordinary directory observer required')
-                    if file_record(HERE/'ws73_controller_directory.py')!=m['controller_directory_verifier']:raise ValueError('directory verifier changed during run')
-                    observed=json.loads((share/'controller-directory/result.json').read_text())
-                    m['controller_directory_corroboration']=directory_corroborate(observed,control,m['controller_directory_program']['sha256'],m['controller_directory_verifier']['sha256'],m['controller_directory_clients'])
-                    m['controller_directory_acceptance']=True
-                if ssap_initialization != ('ssap_initialization' in control):raise ValueError('SSAP initialization request/evidence mismatch')
-                if ssap_initialization:
-                    from ws73_ssap_initialization import corroborate as initialize_corroborate, verify_fd_supervisor
-                    verify_fd_supervisor(control,share)
-                    m['ssap_initialization_corroboration']=initialize_corroborate(control,capture,m['ssap_initialization_hold'],(output/'qemu-stderr.log').read_text())
-                    m['ssap_initialization_acceptance']=True
-                if bool(agent_mode) != ('security_agent' in control):raise ValueError('Agent request/evidence mismatch')
-                if agent_mode:
-                    from ws73_security_agent import corroborate as agent_corroborate
-                    if any(v['mode']!=agent_mode for v in control['security_agent']):raise ValueError('explicit Agent mode mismatch')
-                    if agent_mode.startswith('cli-'):
-                        from ws73_security_cli import validate_binary
-                        validate_binary(control['slctl'],args.prepared/'root',package['guest_files'])
-                    m['security_agent_corroboration']=agent_corroborate(control,capture)
-                    if any(v.get('ssap_security_requirement',0)!=m.get('live_ssap_security_requirement',0) for v in control['security_agent']):raise ValueError('actual SMTC witness differs from frozen configuration')
-
-                    if agent_mode=='install-cancel':
-                        from ws73_security_install_hold import corroborate as install_corroborate
-                        m['security_install_hold']['corroboration']=install_corroborate(m['security_install_hold'],control,capture,(output/'qemu-stderr.log').read_text())
-                if acb_probe != ('acb_transport_probe' in control):raise ValueError('explicit ACB probe request/evidence mismatch')
-                if acb_probe:
-                    from ws73_acb_transport_probe import corroborate as acb_corroborate
-                    m['acb_transport_selftest_corroboration']=acb_corroborate(control,capture,(share/'kernel.log').read_text())
-                    m['expected_external_selftest_taint']=4096
-                if bool(benchmark_mode) != ('socket_benchmark' in control):raise ValueError('benchmark explicit request/evidence mismatch')
-                if benchmark_mode:
-                    from ws73_socket_benchmark import corroborate as benchmark_corroborate
-                    from ws73_channel_socket import validate_application_tools
-                    validate_application_tools(control,args.prepared/'root',package['guest_files'])
-                    if any(r['config']!=benchmark_config for r in control['socket_benchmark']):raise ValueError('actual benchmark differs from exact requested workload')
-                    m['socket_benchmark_corroboration']=benchmark_corroborate(control,capture,share)
-                    from ws73_benchmark_timeline import check_xhci
-                    m['socket_benchmark_xhci_observation']=check_xhci(share,benchmark_xhci)
-                    if m['benchmark_verifiers']!=[file_record(HERE/name) for name in ['ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py']]:raise ValueError('benchmark verifier changed during execution')
-                    m['socket_benchmark_acceptance']=True
-                if channel_socket != ('channel_socket' in control):raise ValueError('explicit socket request/evidence mismatch')
-                if application_discovery != ('application_discovery' in control):raise ValueError('explicit application discovery request/evidence mismatch')
-                if application_discovery:
-                    from ws73_application_discovery import corroborate as discovery_corroborate,verify_supervisor_artifacts
-                    verifier=m['application_discovery_verifier']
-                    if file_record(HERE/'ws73_application_discovery.py')!=verifier:raise ValueError('discovery verifier changed during run')
-                    staged=args.prepared/'root/usr/share/sparklink/tools/ws73_application_discovery.py'
-                    if file_record(staged)['sha256']!=verifier['sha256']:raise ValueError('staged discovery verifier differs from host')
-                    from ws73_application_discovery import validate_tool
-                    validate_tool(control['slctl'],args.prepared/'root',package['guest_files'])
-                    expected=dict(path='/usr/share/sparklink/tools/ws73_application_discovery.py',sha256=verifier['sha256'])
-                    m['application_discovery_supervision']=verify_supervisor_artifacts(control,share,expected)
-                    m['application_discovery_corroboration']=discovery_corroborate(control,capture)
-                    from ws73_application_discovery import case as discovery_case
-                    if discovery_case(m['application_discovery_corroboration'])!=m['application_discovery_case']:
-                        raise ValueError('original explicit discovery termination differs from actual evidence')
-                    m['application_discovery_acceptance']=True
-                if application_clients != ('application_clients' in control):raise ValueError('explicit application client request/evidence mismatch')
-                if application_clients:
-                    from ws73_application_client import corroborate as client_corroborate
-                    if file_record(HERE/'ws73_application_client.py')!=m['application_client_verifier']:raise ValueError('application client verifier changed during execution')
-                    from ws73_application_role import verify_supervisor_artifacts
-                    if file_record(HERE/'ws73_application_role.py')!=m['application_role_verifier']:raise ValueError('application role verifier changed during execution')
-                    m['application_role_supervision']=verify_supervisor_artifacts(control,share)
-                    m['application_client_corroboration']=client_corroborate(control,capture)
-                    for row in control['application_clients']:
-                        for key in ['c','python','library']:
-                            receipt=row['tools'][key];staged=args.prepared/'root'/receipt['path'].lstrip('/')
-                            matches=[x for x in package['guest_files'] if x['path']==str(staged)]
-                            if not staged.is_file() or len(matches)!=1 or matches[0]['sha256']!=receipt['sha256'] or file_record(staged)['sha256']!=receipt['sha256']:raise ValueError('application client differs from sealed image')
-                    m['application_client_acceptance']=True
-                if channel_socket:
-                    from ws73_channel_socket import corroborate as channel_corroborate
-                    if any(row.get('message_bytes',61)!=channel_bytes or row.get('boundary_check',False)!=channel_boundaries for row in control['channel_socket']):raise ValueError('socket message size or boundary request differs from actual gate')
-                    if any(row['rounds']!=channel_rounds for row in control['channel_socket']):raise ValueError('socket round count differs from explicit request')
-                    if not all(row.get('channel_info_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires original capability receipts')
-                    from ws73_channel_socket import validate_application_tools
-                    binary=validate_application_tools(control,args.prepared/'root',package['guest_files'])
-                    if any(row.get('application_tool')!=binary for row in control['channel_socket']):raise ValueError('channel applications must use same sealed slktest')
-                    if owned_update and file_record(HERE/'ws73_ssap_owned_update.py')!=m['ssap_owned_update_verifier']:raise ValueError('owned update verifier changed during execution')
-                    if any(bool(row.get('ssap_owned_update_required',False))!=owned_update for row in control['channel_socket']):raise ValueError('owned update request/evidence mismatch')
-                    if any(bool(row.get('ssap_owner_lifecycle_required',False))!=owner_lifecycle for row in control['channel_socket']):raise ValueError('owner lifecycle request/evidence mismatch')
-                    if owner_lifecycle and any(row.get('ssap_owner_publisher','cli')!=owner_publisher for row in control['channel_socket']):raise ValueError('owner publisher selector/evidence mismatch')
-                    if any(bool(row.get('ssap_requester_lifecycle_required',False))!=requester_lifecycle for row in control['channel_socket']):raise ValueError('requester lifecycle request/evidence mismatch')
-                    if any(bool(row.get('ssap_owned_required',False))!=ssap_owned for row in control['channel_socket']):raise ValueError('owned SSAP request/evidence mismatch')
-                    m['channel_socket_corroboration']=channel_corroborate(control,capture)
-                    m['ssap_owned_update_acceptance']=owned_update
-                    m['ssap_owned_acceptance']=ssap_owned
-                    m['ssap_owner_lifecycle_acceptance']=owner_lifecycle
-                    m['ssap_requester_lifecycle_acceptance']=requester_lifecycle
-                    if not all(row.get('tx_status_required') is True for row in control['channel_socket']):raise ValueError('current gate requires actual TX-budget snapshots')
-                    m['ordinary_channel_tx_status_acceptance']=True
-                    m['ordinary_channel_info_acceptance']=True
-                    if not all(row.get('ssap_exchange_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires real SMTC ExchangeInfo')
-                    m['ssap_exchange_info_acceptance']=True
-                    if not all(row.get('ssap_value_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires actual SSAP values')
-                    m['ssap_value_acceptance']=True
-                    if not channel_close and not channel_burst:
-                        if not all(row.get('ssap_access_required') is True for row in control['channel_socket']):raise ValueError('current normal socket gate requires original per-attribute access evidence')
-                        m['ssap_access_acceptance']=True
-                    if not all(row.get('ssap_read_uuid_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires actual ReadByUUID values')
-                    m['ssap_read_uuid_acceptance']=True
-                    if not all(row.get('ssap_update_local_rejection_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires unsupported local update capability refusal')
-                    m['ssap_local_update_rejection_acceptance']=True
-                    if not all(row.get('ssap_discovery_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires actual SSAP discovery')
-                    m['ssap_discovery_acceptance']=True
-                    if any(row.get('close_prefix',False)!=channel_close for row in control['channel_socket']):raise ValueError('prefix-close request and original evidence disagree')
-                    if any(row.get('burst',False)!=channel_burst for row in control['channel_socket']):raise ValueError('burst request and original evidence disagree')
-                    m['ordinary_software_backpressure_acceptance']=channel_burst
-                    m['ordinary_prefix_close_acceptance']=channel_close
-                    m['ordinary_channel_socket_acceptance']=not channel_close
-                if fairness != ('channel_fairness' in control):raise ValueError('concurrent channel request and original evidence disagree')
-                if fairness:
-                    from ws73_channel_fairness import corroborate as fairness_corroborate
-                    m['channel_fairness_corroboration']=fairness_corroborate(control,capture)
-                    if file_record(HERE/'ws73_channel_fairness.py')!=m['channel_fairness_verifier']:raise ValueError('concurrent channel verifier changed during execution')
-                    m['channel_fairness_acceptance']=True
-                if dynamic_channels != ('dynamic_channels' in control):raise ValueError('dynamic request and original evidence disagree')
-                if dynamic_channels:
-                    from ws73_dynamic_channels import corroborate as dynamic_corroborate
-                    m['dynamic_channel_corroboration']=dynamic_corroborate(control,capture)
-                    expected_status='DYNAMIC_BASIC_CHANNEL_BURST_CREDIT_SCOPED_PASS' if dynamic_burst else 'DYNAMIC_BASIC_TWO_CHANNEL_USB_AND_APPLICATION_SCOPED_PASS' if dynamic_long is None else 'DYNAMIC_BASIC_CHANNEL_LONG_AND_SLOT_BOUND_SCOPED_PASS'
-                    if m['dynamic_channel_corroboration']['status']!=expected_status or (dynamic_long is not None and m['dynamic_channel_corroboration'].get('long_bytes')!=dynamic_long):raise ValueError('original dynamic workload and requested long size disagree')
-                    if dynamic_burst and any(p.get('post_close_drain',{}).get('status')!='POST_CLOSE_NATIVE_TERMINAL_AND_DEBT_ZERO_CORROBORATED' for p in m['dynamic_channel_corroboration']['proofs']):raise ValueError('current dynamic burst requires explicit post-close Native observation')
-                    m['dynamic_channel_acceptance']=True
-                if daemon_crash != (share/'daemon-crash/run.json').exists():
-                    raise ValueError('explicit daemon crash request and evidence must agree')
-                if daemon_crash:
-                    crash_record=json.loads((share/'daemon-crash/run.json').read_text())
-                    old_pid=crash_record['phases'][0]['pid']
-                    if re.findall(r'^WS73_TARGET_DAEMON_CRASH_EXIT: pid=(\d+) status=(\d+)$',text,re.M)!=[(str(old_pid),'137')]:
-                        raise ValueError('actual guest SIGKILL/reap console evidence required')
-                    if re.findall(r'^WS73_TARGET_DAEMON_CRASH_PHASE: (\w+)$',text,re.M)!=['before','free','after']:
-                        raise ValueError('ordered actual guest crash phases required')
-                    from ws73_daemon_crash import corroborate as crash_corroborate
-                    m['daemon_crash_corroboration']=crash_corroborate(json.loads((share/'daemon-crash/run.json').read_text()),control,capture)
-                if service_policy != (share/'service-policy/run.json').exists():raise ValueError('explicit service-role request/evidence mismatch')
-                if service_policy:
-                    from ws73_ssap_service_policy import corroborate as service_policy_corroborate
-                    m['ssap_service_policy_corroboration']=service_policy_corroborate(json.loads((share/'service-policy/run.json').read_text()),control)
-                    m['ssap_service_policy_acceptance']=True
-                if observer_policy != (share/'observer-policy/run.json').exists():
-                    raise ValueError('explicit observer policy request and evidence must agree')
-                if observer_policy:
-                    from ws73_observer_policy import corroborate as observer_corroborate
-                    policy_record=json.loads((share/'observer-policy/run.json').read_text())
-                    m['observer_policy_corroboration']=observer_corroborate(policy_record,control,capture)
-                if initializer_lifecycle:
-                    from ws73_initialization_lifecycle import corroborate_wire as initializer_wire
-                    m['initializer_lifecycle_corroboration']=initializer_wire(control,capture)
-                if setup_gate:
-                    from ws73_management_setup import corroborate as corroborate_setup
-                    probe=json.loads((share/'setup-release/run.json').read_text())
-                    m['setup_release_corroboration']=corroborate_setup(probe,capture)
-                    m['live_setup_release']=file_record(share/'setup-release/run.json')
-                if connected_case:
-                    from ws73_connected_file_gate import corroborate as connected_corroborate
-                    probe=json.loads((share/'connected-file/run.json').read_text())
-                    if channel_grant and not channel_directions and not probe.get('channel_grant',{}).get('tx_constraint_required'):raise ValueError('current lifecycle gate requires original typed TX intents')
-                    if bool(probe.get('channel_grant',{}).get('directional',False))!=channel_directions:raise ValueError('requested directional Grant gate mismatch')
-                    if bool(probe.get('channel_grant',{}).get('scm_rights',False))!=channel_scm_rights:raise ValueError('requested SCM_RIGHTS Grant gate mismatch')
-                    if bool(probe.get('channel_grant'))!=channel_grant:raise ValueError('requested real channel Grant gate mismatch')
-                    if probe.get('channel_security_requirement',0)!=protected:raise ValueError('requested protected Grant cannot downgrade')
-                    if bool(probe.get('channel_grant',{}).get('revoke_prefix'))!=channel_revoke_prefix:raise ValueError('requested actual revoke-prefix gate mismatch')
-                    if channel_link_down and not probe.get('prefix_hold',{}).get('primed',False):raise ValueError('requested primed-debt physicalDown barrier missing')
-                    if bool(probe.get('data_link_down'))!=channel_link_down:raise ValueError('requested direct physical Down gate mismatch')
-                    if bool(probe.get('prefix_hold'))!=(channel_revoke_prefix and not channel_deadline):raise ValueError('requested causal incomplete-PDU barrier missing or unexpected')
-                    if channel_revoke_prefix and not channel_deadline and file_record(HERE/'ws73_channel_prefix_hold.py')!=m['prefix_hold_verifier']:raise ValueError('prefix barrier verifier changed during run')
-                    if bool(probe.get('data_deadline'))!=channel_deadline:raise ValueError('requested original PDU deadline gate mismatch')
-                    if bool(probe.get('unauthenticated_encryption',False))!=encryption:raise ValueError('explicit installation gate mismatch')
-                    if bool(probe.get('security_original_deadline',False))!=original_deadline:raise ValueError('original security deadline gate mismatch')
-                    if bool(probe.get('security_cancel_pending',False))!=cancel_pending:raise ValueError('passive cancellation gate mismatch')
-                    if probe.get('numeric_comparison')!=numeric:raise ValueError('requested original-author numeric mode mismatch')
-                    if bool(probe.get('key_agreement',False))!=key_agreement:raise ValueError('requested candidate key agreement gate mismatch')
-                    if bool(probe.get('security_capabilities'))!=security_capabilities:raise ValueError('requested limited security capability gate mismatch')
-                    if channel_revoke_prefix and file_record(HERE/'ws73_revoke_prefix.py')!=m['revoke_prefix_verifier']:raise ValueError('revoke-prefix verifier changed during run')
-                    if probe['case']!=connected_case or probe['index']!=connected_index or probe.get('reply_hold')!=connected_reply or bool(probe.get('link_snapshot_gate'))!=link_snapshot or bool(probe.get('peer_binding_gate'))!=peer_binding:raise ValueError('connected File request mismatch')
-                    m['connected_file_corroboration']=connected_corroborate(probe,capture,hold.record if connected_reply or channel_revoke_prefix else None,
-                        (output/'qemu-stderr.log').read_text() if connected_reply or channel_revoke_prefix else None,hold.record['host_identity_at_arm'] if connected_reply or channel_revoke_prefix else None)
-                    if bool(probe.get('session_idle'))!=session_idle:raise ValueError('requested Session idle observation mismatch')
-                    if session_idle:
-                        from ws73_session_idle import corroborate as idle_corroborate
-                        if file_record(HERE/'ws73_session_idle.py')!=m['session_idle_verifier']:raise ValueError('Session idle verifier changed during run')
-                        m['session_idle_observation']=idle_corroborate(probe,share)
-                    m['live_connected_file']=file_record(share/'connected-file/run.json')
-                if partial_gate:
-                    from ws73_management_partial import corroborate as corroborate_partial
-                    if resource_recreation:
-                        from ws73_resource_file_gate import corroborate as corroborate_partial
-                    probe=json.loads((share/'managed-partial/run.json').read_text())
-                    if probe.get('selected_domain_cleanup',False) is not selected_cleanup:raise ValueError('actual selected-domain cleanup must match requested gate')
-                    if probe.get('real_later_step',False) is not real_later or probe.get('initialization_step',0)!=(real_step if real_later else 0):raise ValueError('actual later selected step mismatch')
-                    if probe.get('ordinary_queue_eviction',False) is not ordinary_eviction:raise ValueError('actual ordinary queue gate mismatch')
-                    if probe.get('active_ready_peer',False) is not ready_peer:raise ValueError('actual Ready peer must match requested gate')
-                    if probe.get('scan_parameter_cleanup',False) is not parameter_cleanup:raise ValueError('actual scan parameter cleanup must match requested gate')
-                    m['managed_partial_hold']['corroboration']=corroborate_partial(probe,hold.record,capture,(output/'qemu-stderr.log').read_text(),hold.record['host_identity_at_arm'])
-                    m['live_managed_partial']=file_record(share/'managed-partial/run.json')
-                if daemon_hold:
-                    from ws73_daemon_hold import corroborate as corroborate_daemon
-                    control=json.loads((share/'application/recovery-control/run.json').read_text())
-                    record=control['daemon_hold']
-                    if record.get('case')!=daemon_hold:raise ValueError('actual daemon held caller case mismatch')
-                    m['daemon_hold']['corroboration']=corroborate_daemon(record,hold.record,capture,(output/'qemu-stderr.log').read_text(),hold.record['host_identity_at_arm'])
-                    m['live_daemon_hold']=file_record(share/'application/recovery-control/run.json')
-                if queued_gate:
-                    from ws73_management_queued import corroborate as corroborate_queued
-                    probe=json.loads((share/'managed-queue/run.json').read_text())
-                    if probe.get('ready_peer',False) is not queue_peer:raise ValueError('actual Ready queue peer selector mismatch')
-                    if probe.get('connection_queue',False) is not queue_connections:raise ValueError('actual native connection queue request mismatch')
-                    m['managed_queue_corroboration']=corroborate_queued(probe,capture)
-                    m['live_managed_queue']=file_record(share/'managed-queue/run.json')
-                if active_gate:
-                    from ws73_active_deadline import corroborate
-                    probe=json.loads((share/'active-deadline/run.json').read_text())
-                    if ('last_file_close' in probe) != active_close_gate:
-                        raise ValueError('actual close evidence must match requested gate')
-                    m['active_deadline_hold']['corroboration']=corroborate(
-                        probe,hold.record,capture,(output/'qemu-stderr.log').read_text(),
-                        (share/'kernel.log').read_text(),identities[0],identities[1],hold.record['host_identity_at_arm'])
-                    m['live_active_deadline']=file_record(share/'active-deadline/run.json')
-                if event_copy:
-                    from ws73_event_copy_probe import verify_cases
-                    probe=json.loads((share/'application/event-copy/run.json').read_text())
-                    if probe.get('status')!='LIVE_EVENT_COPY_PASS' or probe.get('probe_exit')!=0:
-                        raise ValueError('live copy probe failure')
-                    verify_cases(probe['cases'])
-                    if (probe['daemon_before']!=probe['daemon_after'] or
-                            probe['daemon_after']!=control['daemon_before'] or
-                            probe['bus_before']!=probe['bus_after'] or
-                            probe['bus_after']!=control['bus_before']):
-                        raise ValueError('copy and RF gates require the same daemon/bus owner')
-                    m['live_event_copy']=file_record(share/'application/event-copy/run.json')
-                if diagnostic:
-                    from ws73_diagnostic_probe import verify_records
-                    probe=json.loads((share/'diagnostic/run.json').read_text())
-                    if probe.get('status')!='DIAGNOSTIC_RESULT_LIVE_PASS' or probe.get('probe_exit')!=0:
-                        raise ValueError('live diagnostic probe failure')
-                    if (probe.get('format_version') != (7 if autonomous_gate else 6 if deadline_gate else 5 if cancellation else 4)
-                            or probe.get('cancellation_requested',False) is not cancellation
-                            or probe.get('deadline_requested',False) is not deadline_gate
-                            or probe.get('autonomous_requested',False) is not autonomous_gate
-                            or probe.get('admission_copyout_requested') is not True
-                            or probe.get('admission_eviction_requested') is not True
-                            or probe.get('legacy_poll_copy_requested') is not True):
-                        raise ValueError('current live diagnostic admission gate required')
-                    verify_records(probe['records'], admission=True, eviction=True, legacy_poll=True,cancellation=cancellation,deadline=deadline_gate,autonomous=autonomous_gate)
-                    if cancellation:
-                        if not hold or not hold.record['complete'] or probe.get('host_hold_acknowledgements') != hold.record['observations']:
-                            raise ValueError('actual host hold and matching guest acknowledgments required')
-                        from ws73_diagnostic_hold import corroborate_host_hold
-                        from ws73_capture import corroborate_diagnostic
-                        _,cancel_proofs=corroborate_diagnostic(control,capture,probe)
-                        m['diagnostic_hold']['corroboration']=corroborate_host_hold(
-                            hold.record,probe,cancel_proofs,(output/'qemu-stderr.log').read_text(),hold.record['host_identity_at_arm'])
-                    if len(probe['cli_queries'])!=4:
-                        raise ValueError('actual diagnostic CLI query gates missing')
-                    m['live_diagnostic']=file_record(share/'diagnostic/run.json')
-                m['empty_bulk_completions']=len(capture['empty_bulk_completions'])
-                if getattr(args,'empty_bulk',False) and not all(any((e['bus'],e['device'])==(r['bus'],r['device']) for e in capture['empty_bulk_completions']) for r in identities):
-                    raise ValueError('successful empty bulk completions missing from either selected USB identity')
-                if daemon_remove:
-                    # Re-read the final serialized record, not the live coordinator:
-                    # later qualification must not erase/mutate earlier evidence.
-                    from ws73_daemon_removal import verify_sealed_record
-                    verify_sealed_record(control['daemon_removal'],m['daemon_removal'],capture,(output/'qemu-stderr.log').read_text())
-                m['status']='FOUR_DEVICE_PARALLEL_BURST_PASS' if parallel_burst else 'FOUR_DEVICE_DISCONNECT_ISOLATION_PASS' if disconnect_isolation else 'FOUR_DEVICE_PARALLEL_BUSINESS_PASS' if business else 'REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS' if agent_mode else 'REAL_NUMERIC_COMPARISON_MECHANISM_PASS' if numeric else 'REAL_SECURITY_ORIGINAL_DEADLINE_PASS' if original_deadline else 'REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS' if encryption else 'REAL_CANDIDATE_KEY_AGREEMENT_PASS' if key_agreement else 'REAL_LIMITED_SECURITY_CAPABILITIES_PASS' if security_capabilities else 'REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS' if channel_deadline else 'REAL_CHANNEL_LINK_DOWN_PREFIX_PASS' if channel_link_down else 'REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
-                if timeout_seal is not None:
-                    m['graceful_timeout']['state']='SEALED'
-                    m['status']='FAIL'
-                    m['error']='environment timeout; capture sealed; physical control not accepted'
+                        if any(r['config']!=benchmark_config for r in control['socket_benchmark']):raise ValueError('actual benchmark differs from exact requested workload')
+                        if any(row_channel(r)!=benchmark_channel for r in control['socket_benchmark']):raise ValueError('actual benchmark differs from original channel target')
+                        if any(benchmark_ssap.selected(r)!=benchmark_service for r in control['socket_benchmark']):raise ValueError('actual concurrent SSAP differs from original request')
+                        m['socket_benchmark_corroboration']=benchmark_corroborate(control,capture,share)
+                        from ws73_benchmark_timeline import check_xhci
+                        m['socket_benchmark_xhci_observation']=check_xhci(share,benchmark_xhci,pressure=pressures_long(benchmark_channel))
+                        if m['benchmark_verifiers']!=[file_record(HERE/name) for name in benchmark_verifier_names]:raise ValueError('benchmark verifier changed during execution')
+                        from ws73_socket_benchmark import verify_role_artifacts,validate_role_tools,valid_role_supervision
+                        validate_role_tools(control,args.prepared/'root',package['guest_files'])
+                        m['socket_benchmark_role_supervision']=verify_role_artifacts(control,share)
+                        if not valid_role_supervision(m['socket_benchmark_role_supervision']):raise ValueError('actual benchmark apps-only supervisor required')
+                        if benchmark_service is not None:
+                            if not benchmark_ssap.valid_summary(m['socket_benchmark_corroboration']):raise ValueError('actual SSAP/channel before-during-after and original SDK proofs required')
+                            m['benchmark_ssap_acceptance']=True
+                        m['socket_benchmark_apps_acceptance']=True
+                        m['socket_benchmark_acceptance']=True
+                    if channel_socket != ('channel_socket' in control):raise ValueError('explicit socket request/evidence mismatch')
+                    if application_discovery != ('application_discovery' in control):raise ValueError('explicit application discovery request/evidence mismatch')
+                    if application_discovery:
+                        from ws73_application_discovery import corroborate as discovery_corroborate,verify_supervisor_artifacts
+                        verifier=m['application_discovery_verifier']
+                        if file_record(HERE/'ws73_application_discovery.py')!=verifier:raise ValueError('discovery verifier changed during run')
+                        staged=args.prepared/'root/usr/share/sparklink/tools/ws73_application_discovery.py'
+                        if file_record(staged)['sha256']!=verifier['sha256']:raise ValueError('staged discovery verifier differs from host')
+                        from ws73_application_discovery import validate_tool
+                        validate_tool(control['slctl'],args.prepared/'root',package['guest_files'])
+                        expected=dict(path='/usr/share/sparklink/tools/ws73_application_discovery.py',sha256=verifier['sha256'])
+                        m['application_discovery_supervision']=verify_supervisor_artifacts(control,share,expected)
+                        m['application_discovery_corroboration']=discovery_corroborate(control,capture)
+                        from ws73_application_discovery import case as discovery_case
+                        if discovery_case(m['application_discovery_corroboration'])!=m['application_discovery_case']:
+                            raise ValueError('original explicit discovery termination differs from actual evidence')
+                        if m['application_discovery_case']=='sdk-release':
+                            from ws73_application_discovery import validate_sdk_clients
+                            for row in control['application_discovery']:
+                                validate_sdk_clients(row['request']['clients'],args.prepared/'root',package['guest_files'])
+                        if m['application_discovery_case']=='ttl':
+                            from ws73_application_discovery import validate_probe
+                            validate_probe(m['application_discovery_corroboration']['probe'],args.prepared/'root',package['guest_files'])
+                            if m['application_discovery_corroboration']['probe']!=m['application_discovery_probe']:raise ValueError('original actual SDK probe identity changed')
+                        m['application_discovery_acceptance']=True
+                    if application_clients != ('application_clients' in control):raise ValueError('explicit application client request/evidence mismatch')
+                    if application_clients:
+                        from ws73_application_client import corroborate as client_corroborate
+                        if file_record(HERE/'ws73_application_client.py')!=m['application_client_verifier']:raise ValueError('application client verifier changed during execution')
+                        from ws73_application_role import verify_supervisor_artifacts
+                        if file_record(HERE/'ws73_application_role.py')!=m['application_role_verifier']:raise ValueError('application role verifier changed during execution')
+                        m['application_role_supervision']=verify_supervisor_artifacts(control,share)
+                        m['application_client_corroboration']=client_corroborate(control,capture)
+                        for row in control['application_clients']:
+                            for key in ['c','python','library']:
+                                receipt=row['tools'][key];staged=args.prepared/'root'/receipt['path'].lstrip('/')
+                                matches=[x for x in package['guest_files'] if x['path']==str(staged)]
+                                if not staged.is_file() or len(matches)!=1 or matches[0]['sha256']!=receipt['sha256'] or file_record(staged)['sha256']!=receipt['sha256']:raise ValueError('application client differs from sealed image')
+                        m['application_client_acceptance']=True
+                    if channel_socket:
+                        from ws73_channel_socket import corroborate as channel_corroborate
+                        if any(row.get('message_bytes',61)!=channel_bytes or row.get('boundary_check',False)!=channel_boundaries for row in control['channel_socket']):raise ValueError('socket message size or boundary request differs from actual gate')
+                        if any(row['rounds']!=channel_rounds for row in control['channel_socket']):raise ValueError('socket round count differs from explicit request')
+                        if not all(row.get('channel_info_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires original capability receipts')
+                        from ws73_channel_socket import validate_application_tools
+                        binary=validate_application_tools(control,args.prepared/'root',package['guest_files'])
+                        if any(row.get('application_tool')!=binary for row in control['channel_socket']):raise ValueError('channel applications must use same sealed slktest')
+                        if update_delivery:
+                            from ws73_ssap_update_delivery import validate_tools as validate_delivery_tools
+                            if file_record(HERE/'ws73_ssap_update_delivery.py')!=m['ssap_update_delivery_verifier']:raise ValueError('delivery verifier changed during execution')
+                            for row in control['channel_socket']:validate_delivery_tools(row['ssap_update_delivery_tools'],args.prepared/'root',package['guest_files'])
+                        if subscription:
+                            from ws73_ssap_subscription import validate_tools as validate_subscription_tools,verify_supervisor_artifacts,require_current_output
+                            if file_record(HERE/'ws73_ssap_subscription.py')!=m['ssap_subscription_verifier']:raise ValueError('subscription verifier changed during run')
+                            for row in control['channel_socket']:
+                                require_current_output(row)
+                                validate_subscription_tools(row['ssap_subscription_tools'],args.prepared/'root',package['guest_files'])
+                            m['ssap_subscription_supervision']=verify_supervisor_artifacts(control,share)
+                            from ws73_ssap_subscription import renewal_required
+                            if any(renewal_required(row)!=subscription_renewal for row in control['channel_socket']):raise ValueError('renewal request/evidence mismatch')
+                            from ws73_ssap_subscription import pressure_required,owner_loss_required,inflight_required,inflight_case,shared_required
+                            if any(shared_required(row)!=subscription_shared or pressure_required(row)!=subscription_pressure or owner_loss_required(row)!=subscription_owner_loss or inflight_required(row)!=subscription_inflight or inflight_case(row)!=subscription_inflight_case for row in control['channel_socket']):raise ValueError('subscription scenario request/evidence mismatch')
+                        if any(bool(row.get('ssap_subscription_required',False))!=subscription for row in control['channel_socket']):raise ValueError('subscription request/evidence mismatch')
+                        if any(bool(row.get('ssap_update_delivery_required',False))!=update_delivery for row in control['channel_socket']):raise ValueError('update delivery request/evidence mismatch')
+                        if owned_update and file_record(HERE/'ws73_ssap_owned_update.py')!=m['ssap_owned_update_verifier']:raise ValueError('owned update verifier changed during execution')
+                        if any(bool(row.get('ssap_owned_update_required',False))!=owned_update for row in control['channel_socket']):raise ValueError('owned update request/evidence mismatch')
+                        if any(bool(row.get('ssap_owner_lifecycle_required',False))!=owner_lifecycle for row in control['channel_socket']):raise ValueError('owner lifecycle request/evidence mismatch')
+                        if owner_lifecycle and any(row.get('ssap_owner_publisher','cli')!=owner_publisher for row in control['channel_socket']):raise ValueError('owner publisher selector/evidence mismatch')
+                        if any(bool(row.get('ssap_requester_lifecycle_required',False))!=requester_lifecycle for row in control['channel_socket']):raise ValueError('requester lifecycle request/evidence mismatch')
+                        if any(bool(row.get('ssap_owned_required',False))!=ssap_owned for row in control['channel_socket']):raise ValueError('owned SSAP request/evidence mismatch')
+                        if receive_lifecycle:
+                            from ws73_ssap_receive_lifecycle import validate_prefixes,validate_coordination
+                            if file_record(HERE/'ws73_ssap_receive_lifecycle.py')!=m['ssap_receive_lifecycle_verifier']:raise ValueError('receive lifecycle verifier changed during execution')
+                            validate_prefixes(control['channel_socket'],share/'ws73.pcap')
+                            validate_coordination(control['channel_socket'],m['ssap_receive_capture_observations'])
+                        if any(bool(row.get('ssap_receive_lifecycle_required',False))!=receive_lifecycle for row in control['channel_socket']):raise ValueError('receive lifecycle request/evidence mismatch')
+                        m['channel_socket_corroboration']=channel_corroborate(control,capture)
+                        if any(bool(row.get('ssap_sender_deadline_required',False))!=sender_deadline for row in control['channel_socket']):raise ValueError('sender deadline request/evidence mismatch')
+                        if sender_deadline and any(row.get('ssap_sender_lifecycle_case','deadline')!=m['ssap_sender_lifecycle_case']for row in control['channel_socket']):raise ValueError('sender lifecycle case/evidence mismatch')
+                        if sender_deadline:
+                            from ws73_ssap_sender_deadline import valid_summary as sender_summary,corroborate_holds,validate_prefixes as sender_prefixes
+                            if file_record(HERE/'ws73_ssap_sender_deadline.py')!=m['ssap_sender_deadline_verifier'] or not sender_summary(m['channel_socket_corroboration']):raise ValueError('exact sender deadline verifier and two-ended proof required')
+                            sender_prefixes(m['ssap_sender_deadline_hold'],share/'ws73.pcap')
+                            m['ssap_sender_deadline_corroboration']=corroborate_holds(m['ssap_sender_deadline_hold'],control,capture,(output/'qemu-stderr.log').read_text())
+                        m['ssap_sender_deadline_acceptance']=sender_deadline
+                        if any(bool(row.get('ssap_value_lengths_required',False))!=value_lengths for row in control['channel_socket']):raise ValueError('SSAP lengths request/evidence mismatch')
+                        if value_lengths:
+                            from ws73_ssap_update_delivery import validate_tools as validate_read_tools
+                            for row in control['channel_socket']:validate_read_tools(row['ssap_read_limit_tools'],args.prepared/'root',package['guest_files'])
+                            from ws73_ssap_value import valid_length_summary
+                            if file_record(HERE/'ws73_ssap_value.py')!=m['ssap_value_lengths_verifier'] or not valid_length_summary(m['channel_socket_corroboration'],expected_version=4):raise ValueError('exact SSAP length verifier and complete evidence required')
+                        m['ssap_value_lengths_acceptance']=value_lengths
+                        m['ssap_receive_lifecycle_acceptance']=receive_lifecycle
+                        if update_delivery:
+                            from ws73_ssap_update_delivery import valid_summary as valid_delivery
+                            if not valid_delivery(m['channel_socket_corroboration'],expected_version=m['ssap_update_delivery_contract_version']):raise ValueError('exact prepared update delivery version/length closure required')
+                        if subscription:
+                            from ws73_ssap_subscription import valid_summary as valid_subscription
+                            if not valid_subscription(m['channel_socket_corroboration']):raise ValueError('complete continuous subscription proof required')
+                            from ws73_ssap_subscription import valid_snapshot_supervision
+                            if not valid_snapshot_supervision(m['ssap_subscription_supervision']):raise ValueError('complete closed local snapshot proof required')
+                            if subscription_renewal:
+                                from ws73_ssap_subscription import valid_renewal_summary,valid_renewal_supervision
+                                if not valid_renewal_summary(m['channel_socket_corroboration'])or not valid_renewal_supervision(m['ssap_subscription_supervision']):raise ValueError('actual renewal and post-original-expiry closure required')
+                            if subscription_pressure:
+                                from ws73_ssap_subscription import valid_pressure_summary,valid_pressure_supervision
+                                if not valid_pressure_summary(m['channel_socket_corroboration'])or not valid_pressure_supervision(m['ssap_subscription_supervision']):raise ValueError('actual full queue/drain/checked resume closure required')
+                            if subscription_owner_loss:
+                                from ws73_ssap_subscription import valid_owner_loss_summary,valid_owner_loss_supervision
+                                if not valid_owner_loss_summary(m['channel_socket_corroboration'])or not valid_owner_loss_supervision(m['ssap_subscription_supervision']):raise ValueError('actual reader death,paired cleanup/read barrier and fresh lease replies required')
+                            if subscription_inflight:
+                                from ws73_ssap_subscription import valid_inflight_summary,valid_inflight_supervision
+                                from ws73_ssap_sender_deadline import corroborate_holds,validate_prefixes
+                                if file_record(HERE/'ws73_ssap_sender_deadline.py')!=m['ssap_subscription_inflight_verifier']:raise ValueError('in-flight physical verifier changed during run')
+                                if not valid_inflight_summary(m['channel_socket_corroboration'],case=subscription_inflight_case)or not valid_inflight_supervision(m['ssap_subscription_supervision'],case=subscription_inflight_case):raise ValueError('actual in-flight release/discard and fresh-lease replies required')
+                                validate_prefixes(m['ssap_subscription_inflight_hold'],share/'ws73.pcap')
+                                cases=[row['ssap_subscription'][0]['leases'][1]['inflight_release']for row in control['channel_socket']]
+                                m['ssap_subscription_inflight_corroboration']=corroborate_holds(m['ssap_subscription_inflight_hold'],control,capture,(output/'qemu-stderr.log').read_text(),cases=cases,purpose='subscription-'+subscription_inflight_case)
+                        if subscription_shared:
+                            from ws73_ssap_subscription import valid_shared_summary,valid_shared_supervision
+                            from ws73_ssap_shared import configuration_wire
+                            if file_record(HERE/'ws73_ssap_shared.py')!=m['ssap_subscription_shared_verifier']or not valid_shared_summary(m['channel_socket_corroboration'],case=subscription_shared_case)or not valid_shared_supervision(m['ssap_subscription_supervision'],case=subscription_shared_case):raise ValueError('exact shared owner/application/cleanup proofs required')
+                            m['ssap_subscription_shared_wire']=configuration_wire(control,capture)
+                        m['ssap_subscription_shared_acceptance']=subscription_shared
+                        m['ssap_subscription_acceptance']=subscription
+                        m['ssap_subscription_renewal_acceptance']=subscription_renewal
+                        m['ssap_subscription_pressure_acceptance']=subscription_pressure
+                        m['ssap_subscription_owner_loss_acceptance']=subscription_owner_loss
+                        m['ssap_subscription_inflight_release_acceptance']=subscription_inflight and subscription_inflight_case=='release'
+                        if subscription_inflight_case=='expiry':m['ssap_subscription_inflight_expiry_acceptance']=True
+                        m['ssap_update_delivery_acceptance']=update_delivery
+                        m['ssap_owned_update_acceptance']=owned_update
+                        m['ssap_owned_acceptance']=ssap_owned
+                        m['ssap_owner_lifecycle_acceptance']=owner_lifecycle
+                        m['ssap_requester_lifecycle_acceptance']=requester_lifecycle
+                        if not all(row.get('tx_status_required') is True for row in control['channel_socket']):raise ValueError('current gate requires actual TX-budget snapshots')
+                        m['ordinary_channel_tx_status_acceptance']=True
+                        m['ordinary_channel_info_acceptance']=True
+                        if not all(row.get('ssap_exchange_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires real SMTC ExchangeInfo')
+                        from ws73_ssap_initialization import exchange_contract
+                        if any(row.get('ssap_exchange_contract',1)!=exchange_contract(package)for row in control['channel_socket']):raise ValueError('actual SSAP exchange differs from prepared source contract')
+                        m['ssap_exchange_info_acceptance']=True
+                        if not all(row.get('ssap_value_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires actual SSAP values')
+                        m['ssap_value_acceptance']=True
+                        if not channel_close and not channel_burst:
+                            if not all(row.get('ssap_access_required') is True for row in control['channel_socket']):raise ValueError('current normal socket gate requires original per-attribute access evidence')
+                            m['ssap_access_acceptance']=True
+                        if not all(row.get('ssap_read_uuid_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires actual ReadByUUID values')
+                        m['ssap_read_uuid_acceptance']=True
+                        if not all(row.get('ssap_update_local_rejection_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires unsupported local update capability refusal')
+                        m['ssap_local_update_rejection_acceptance']=True
+                        if not all(row.get('ssap_discovery_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires actual SSAP discovery')
+                        m['ssap_discovery_acceptance']=True
+                        if any(row.get('close_prefix',False)!=channel_close for row in control['channel_socket']):raise ValueError('prefix-close request and original evidence disagree')
+                        if any(row.get('burst',False)!=channel_burst for row in control['channel_socket']):raise ValueError('burst request and original evidence disagree')
+                        m['ordinary_software_backpressure_acceptance']=channel_burst
+                        m['ordinary_prefix_close_acceptance']=channel_close
+                        m['ordinary_channel_socket_acceptance']=not channel_close
+                    if fairness != ('channel_fairness' in control):raise ValueError('concurrent channel request and original evidence disagree')
+                    if fairness:
+                        from ws73_channel_fairness import corroborate as fairness_corroborate
+                        m['channel_fairness_corroboration']=fairness_corroborate(control,capture)
+                        if file_record(HERE/'ws73_channel_fairness.py')!=m['channel_fairness_verifier']:raise ValueError('concurrent channel verifier changed during execution')
+                        m['channel_fairness_acceptance']=True
+                    if dynamic_channels != ('dynamic_channels' in control):raise ValueError('dynamic request and original evidence disagree')
+                    if dynamic_channels:
+                        from ws73_dynamic_channels import corroborate as dynamic_corroborate
+                        m['dynamic_channel_corroboration']=dynamic_corroborate(control,capture)
+                        expected_status='DYNAMIC_BASIC_CHANNEL_BURST_CREDIT_SCOPED_PASS' if dynamic_burst else 'DYNAMIC_BASIC_TWO_CHANNEL_USB_AND_APPLICATION_SCOPED_PASS' if dynamic_long is None else 'DYNAMIC_BASIC_CHANNEL_LONG_AND_SLOT_BOUND_SCOPED_PASS'
+                        if m['dynamic_channel_corroboration']['status']!=expected_status or (dynamic_long is not None and m['dynamic_channel_corroboration'].get('long_bytes')!=dynamic_long):raise ValueError('original dynamic workload and requested long size disagree')
+                        if dynamic_burst and any(p.get('post_close_drain',{}).get('status')!='POST_CLOSE_NATIVE_TERMINAL_AND_DEBT_ZERO_CORROBORATED' for p in m['dynamic_channel_corroboration']['proofs']):raise ValueError('current dynamic burst requires explicit post-close Native observation')
+                        m['dynamic_channel_acceptance']=True
+                    if daemon_crash != (share/'daemon-crash/run.json').exists():
+                        raise ValueError('explicit daemon crash request and evidence must agree')
+                    if daemon_crash:
+                        crash_record=json.loads((share/'daemon-crash/run.json').read_text())
+                        old_pid=crash_record['phases'][0]['pid']
+                        if re.findall(r'^WS73_TARGET_DAEMON_CRASH_EXIT: pid=(\d+) status=(\d+)$',text,re.M)!=[(str(old_pid),'137')]:
+                            raise ValueError('actual guest SIGKILL/reap console evidence required')
+                        if re.findall(r'^WS73_TARGET_DAEMON_CRASH_PHASE: (\w+)$',text,re.M)!=['before','free','after']:
+                            raise ValueError('ordered actual guest crash phases required')
+                        from ws73_daemon_crash import corroborate as crash_corroborate
+                        m['daemon_crash_corroboration']=crash_corroborate(json.loads((share/'daemon-crash/run.json').read_text()),control,capture)
+                    if service_policy != (share/'service-policy/run.json').exists():raise ValueError('explicit service-role request/evidence mismatch')
+                    if service_policy:
+                        from ws73_ssap_service_policy import corroborate as service_policy_corroborate
+                        m['ssap_service_policy_corroboration']=service_policy_corroborate(json.loads((share/'service-policy/run.json').read_text()),control)
+                        m['ssap_service_policy_acceptance']=True
+                    if observer_policy != (share/'observer-policy/run.json').exists():
+                        raise ValueError('explicit observer policy request and evidence must agree')
+                    if observer_policy:
+                        from ws73_observer_policy import corroborate as observer_corroborate
+                        policy_record=json.loads((share/'observer-policy/run.json').read_text())
+                        m['observer_policy_corroboration']=observer_corroborate(policy_record,control,capture)
+                    if initializer_lifecycle:
+                        from ws73_initialization_lifecycle import corroborate_wire as initializer_wire
+                        m['initializer_lifecycle_corroboration']=initializer_wire(control,capture)
+                    if setup_gate:
+                        from ws73_management_setup import corroborate as corroborate_setup
+                        probe=json.loads((share/'setup-release/run.json').read_text())
+                        m['setup_release_corroboration']=corroborate_setup(probe,capture)
+                        m['live_setup_release']=file_record(share/'setup-release/run.json')
+                    if connected_case:
+                        from ws73_connected_file_gate import corroborate as connected_corroborate
+                        probe=json.loads((share/'connected-file/run.json').read_text())
+                        if channel_grant and not channel_directions and not probe.get('channel_grant',{}).get('tx_constraint_required'):raise ValueError('current lifecycle gate requires original typed TX intents')
+                        if bool(probe.get('channel_grant',{}).get('directional',False))!=channel_directions:raise ValueError('requested directional Grant gate mismatch')
+                        if bool(probe.get('channel_grant',{}).get('scm_rights',False))!=channel_scm_rights:raise ValueError('requested SCM_RIGHTS Grant gate mismatch')
+                        if bool(probe.get('channel_grant'))!=channel_grant:raise ValueError('requested real channel Grant gate mismatch')
+                        if probe.get('channel_security_requirement',0)!=protected:raise ValueError('requested protected Grant cannot downgrade')
+                        if bool(probe.get('channel_grant',{}).get('revoke_prefix'))!=channel_revoke_prefix:raise ValueError('requested actual revoke-prefix gate mismatch')
+                        if probe.get('channel_grant',{}).get('queued_discard_contract_version')!=(1 if queued_discard else None):raise ValueError('requested queued-discard profile mismatch')
+                        if channel_link_down and not probe.get('prefix_hold',{}).get('primed',False):raise ValueError('requested primed-debt physicalDown barrier missing')
+                        if bool(probe.get('data_link_down'))!=channel_link_down:raise ValueError('requested direct physical Down gate mismatch')
+                        if bool(probe.get('prefix_hold'))!=(channel_revoke_prefix and not channel_deadline):raise ValueError('requested causal incomplete-PDU barrier missing or unexpected')
+                        if channel_revoke_prefix and file_record(HERE/'ws73_channel_prefix_hold.py')!=m['prefix_hold_verifier']:raise ValueError('prefix barrier verifier changed during run')
+                        if channel_revoke_prefix and probe.get('data_deadline'if channel_deadline else'prefix_hold',{}).get('geometry',{}).get('version')!=1:raise ValueError('requested actual reported-buffer geometry missing')
+                        if bool(probe.get('data_deadline'))!=channel_deadline:raise ValueError('requested original PDU deadline gate mismatch')
+                        if probe.get('channel_grant',{}).get('intent_phase_contract_version')!=(2 if channel_deadline else None):raise ValueError('requested live/retired intent phases mismatch')
+                        if bool(probe.get('unauthenticated_encryption',False))!=encryption:raise ValueError('explicit installation gate mismatch')
+                        if bool(probe.get('security_original_deadline',False))!=original_deadline:raise ValueError('original security deadline gate mismatch')
+                        if bool(probe.get('security_cancel_pending',False))!=cancel_pending:raise ValueError('passive cancellation gate mismatch')
+                        if probe.get('numeric_comparison')!=numeric:raise ValueError('requested original-author numeric mode mismatch')
+                        if bool(probe.get('key_agreement',False))!=key_agreement:raise ValueError('requested candidate key agreement gate mismatch')
+                        if bool(probe.get('security_capabilities'))!=security_capabilities:raise ValueError('requested limited security capability gate mismatch')
+                        if channel_revoke_prefix and file_record(HERE/'ws73_revoke_prefix.py')!=m['revoke_prefix_verifier']:raise ValueError('revoke-prefix verifier changed during run')
+                        if probe['case']!=connected_case or probe['index']!=connected_index or probe.get('reply_hold')!=connected_reply or bool(probe.get('link_snapshot_gate'))!=link_snapshot or bool(probe.get('peer_binding_gate'))!=peer_binding:raise ValueError('connected File request mismatch')
+                        m['connected_file_corroboration']=connected_corroborate(probe,capture,hold.record if connected_reply or channel_revoke_prefix else None,
+                            (output/'qemu-stderr.log').read_text() if connected_reply or channel_revoke_prefix else None,hold.record['host_identity_at_arm'] if connected_reply or channel_revoke_prefix else None)
+                        if ('sibling_business'in probe)is not sibling_business:raise ValueError('requested sibling-business evidence mismatch')
+                        if sibling_business:
+                            from ws73_channel_sibling import valid_summary
+                            if not valid_summary(m['connected_file_corroboration'].get('sibling_business',{})):raise ValueError('complete sibling-business proof required')
+                            m['channel_sibling_business_acceptance']=True
+                        if bool(probe.get('session_idle'))!=session_idle:raise ValueError('requested Session idle observation mismatch')
+                        if session_idle:
+                            from ws73_session_idle import corroborate as idle_corroborate
+                            if file_record(HERE/'ws73_session_idle.py')!=m['session_idle_verifier']:raise ValueError('Session idle verifier changed during run')
+                            m['session_idle_observation']=idle_corroborate(probe,share)
+                        m['live_connected_file']=file_record(share/'connected-file/run.json')
+                    if partial_gate:
+                        from ws73_management_partial import corroborate as corroborate_partial
+                        if resource_recreation:
+                            from ws73_resource_file_gate import corroborate as corroborate_partial
+                        probe=json.loads((share/'managed-partial/run.json').read_text())
+                        if probe.get('selected_domain_cleanup',False) is not selected_cleanup:raise ValueError('actual selected-domain cleanup must match requested gate')
+                        if probe.get('real_later_step',False) is not real_later or probe.get('initialization_step',0)!=(real_step if real_later else 0):raise ValueError('actual later selected step mismatch')
+                        if probe.get('ordinary_queue_eviction',False) is not ordinary_eviction:raise ValueError('actual ordinary queue gate mismatch')
+                        if probe.get('active_ready_peer',False) is not ready_peer:raise ValueError('actual Ready peer must match requested gate')
+                        if probe.get('scan_parameter_cleanup',False) is not parameter_cleanup:raise ValueError('actual scan parameter cleanup must match requested gate')
+                        m['managed_partial_hold']['corroboration']=corroborate_partial(probe,hold.record,capture,(output/'qemu-stderr.log').read_text(),hold.record['host_identity_at_arm'])
+                        m['live_managed_partial']=file_record(share/'managed-partial/run.json')
+                    if daemon_hold:
+                        from ws73_daemon_hold import corroborate as corroborate_daemon
+                        control=json.loads((share/'application/recovery-control/run.json').read_text())
+                        record=control['daemon_hold']
+                        if record.get('case')!=daemon_hold:raise ValueError('actual daemon held caller case mismatch')
+                        m['daemon_hold']['corroboration']=corroborate_daemon(record,hold.record,capture,(output/'qemu-stderr.log').read_text(),hold.record['host_identity_at_arm'])
+                        m['live_daemon_hold']=file_record(share/'application/recovery-control/run.json')
+                    if queued_gate:
+                        from ws73_management_queued import corroborate as corroborate_queued
+                        probe=json.loads((share/'managed-queue/run.json').read_text())
+                        if probe.get('ready_peer',False) is not queue_peer:raise ValueError('actual Ready queue peer selector mismatch')
+                        if probe.get('connection_queue',False) is not queue_connections:raise ValueError('actual native connection queue request mismatch')
+                        m['managed_queue_corroboration']=corroborate_queued(probe,capture)
+                        m['live_managed_queue']=file_record(share/'managed-queue/run.json')
+                    if active_gate:
+                        from ws73_active_deadline import corroborate
+                        probe=json.loads((share/'active-deadline/run.json').read_text())
+                        if ('last_file_close' in probe) != active_close_gate:
+                            raise ValueError('actual close evidence must match requested gate')
+                        m['active_deadline_hold']['corroboration']=corroborate(
+                            probe,hold.record,capture,(output/'qemu-stderr.log').read_text(),
+                            (share/'kernel.log').read_text(),identities[0],identities[1],hold.record['host_identity_at_arm'])
+                        m['live_active_deadline']=file_record(share/'active-deadline/run.json')
+                    if event_copy:
+                        from ws73_event_copy_probe import verify_cases
+                        probe=json.loads((share/'application/event-copy/run.json').read_text())
+                        if probe.get('status')!='LIVE_EVENT_COPY_PASS' or probe.get('probe_exit')!=0:
+                            raise ValueError('live copy probe failure')
+                        verify_cases(probe['cases'])
+                        if (probe['daemon_before']!=probe['daemon_after'] or
+                                probe['daemon_after']!=control['daemon_before'] or
+                                probe['bus_before']!=probe['bus_after'] or
+                                probe['bus_after']!=control['bus_before']):
+                            raise ValueError('copy and RF gates require the same daemon/bus owner')
+                        m['live_event_copy']=file_record(share/'application/event-copy/run.json')
+                    if diagnostic:
+                        from ws73_diagnostic_probe import verify_records
+                        probe=json.loads((share/'diagnostic/run.json').read_text())
+                        if probe.get('status')!='DIAGNOSTIC_RESULT_LIVE_PASS' or probe.get('probe_exit')!=0:
+                            raise ValueError('live diagnostic probe failure')
+                        if (probe.get('format_version') != (7 if autonomous_gate else 6 if deadline_gate else 5 if cancellation else 4)
+                                or probe.get('cancellation_requested',False) is not cancellation
+                                or probe.get('deadline_requested',False) is not deadline_gate
+                                or probe.get('autonomous_requested',False) is not autonomous_gate
+                                or probe.get('admission_copyout_requested') is not True
+                                or probe.get('admission_eviction_requested') is not True
+                                or probe.get('legacy_poll_copy_requested') is not True):
+                            raise ValueError('current live diagnostic admission gate required')
+                        verify_records(probe['records'], admission=True, eviction=True, legacy_poll=True,cancellation=cancellation,deadline=deadline_gate,autonomous=autonomous_gate)
+                        if cancellation:
+                            if not hold or not hold.record['complete'] or probe.get('host_hold_acknowledgements') != hold.record['observations']:
+                                raise ValueError('actual host hold and matching guest acknowledgments required')
+                            from ws73_diagnostic_hold import corroborate_host_hold
+                            from ws73_capture import corroborate_diagnostic
+                            _,cancel_proofs=corroborate_diagnostic(control,capture,probe)
+                            m['diagnostic_hold']['corroboration']=corroborate_host_hold(
+                                hold.record,probe,cancel_proofs,(output/'qemu-stderr.log').read_text(),hold.record['host_identity_at_arm'])
+                        if len(probe['cli_queries'])!=4:
+                            raise ValueError('actual diagnostic CLI query gates missing')
+                        m['live_diagnostic']=file_record(share/'diagnostic/run.json')
+                    m['empty_bulk_completions']=len(capture['empty_bulk_completions'])
+                    if getattr(args,'empty_bulk',False) and not all(any((e['bus'],e['device'])==(r['bus'],r['device']) for e in capture['empty_bulk_completions']) for r in identities):
+                        raise ValueError('successful empty bulk completions missing from either selected USB identity')
+                    if daemon_remove:
+                        # Re-read the final serialized record, not the live coordinator:
+                        # later qualification must not erase/mutate earlier evidence.
+                        from ws73_daemon_removal import verify_sealed_record
+                        verify_sealed_record(control['daemon_removal'],m['daemon_removal'],capture,(output/'qemu-stderr.log').read_text())
+                    m['status']='FOUR_DEVICE_PARALLEL_DYNAMIC_BENCHMARK_PASS'if parallel_benchmark else 'FOUR_DEVICE_PARALLEL_SHARED_SUBSCRIPTION_PASS'if parallel_subscription else 'FOUR_DEVICE_PARALLEL_UPDATE_DELIVERY_PASS'if parallel_delivery else 'FOUR_DEVICE_PARALLEL_OWNED_SSAP_PASS'if parallel_owned else 'FOUR_DEVICE_PARALLEL_BURST_PASS' if parallel_burst else 'FOUR_DEVICE_DISCONNECT_ISOLATION_PASS' if disconnect_isolation else 'FOUR_DEVICE_PARALLEL_BUSINESS_PASS' if business else 'REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS' if agent_mode else 'REAL_NUMERIC_COMPARISON_MECHANISM_PASS' if numeric else 'REAL_SECURITY_ORIGINAL_DEADLINE_PASS' if original_deadline else 'REAL_PASSIVE_AUTHOR_CANCEL_PASS' if cancel_pending else 'REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS' if encryption else 'REAL_CANDIDATE_KEY_AGREEMENT_PASS' if key_agreement else 'REAL_LIMITED_SECURITY_CAPABILITIES_PASS' if security_capabilities else 'REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS' if channel_deadline else 'REAL_CHANNEL_LINK_DOWN_PREFIX_PASS' if channel_link_down else 'REAL_CHANNEL_GRANT_PASS' if channel_grant else ('FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS' if parallel_offset else 'FOUR_DEVICE_PARALLEL_RF_PASS') if parallel else 'FAULT_RECOVERY_SUPPORT_PASS' if recovery else 'PASSTHROUGH_SUPPORT_PASS' if passthrough else 'SUPPORT_PASS' if support else 'ENVIRONMENT_FINISHED'
+                    if timeout_seal is not None:
+                        m['graceful_timeout']['state']='SEALED'
+                        m['status']='FAIL'
+                        m['error']='environment timeout; capture sealed; physical control not accepted'
         if agent_mode and agent_mode.startswith('cli-') and file_record(HERE/'ws73_security_cli.py')!=m['security_cli_verifier']:
             raise ValueError('CLI witness changed during execution')
         if agent_mode and file_record(HERE/'ws73_security_agent.py')!=m['security_agent_verifier']:
@@ -1730,6 +2420,8 @@ def _run(args):
             from ws73_session_service import corroborate as service_corroborate
             control_path=share/('connected-file/run.json' if channel_grant else 'application/passthrough-control/run.json')
             m['session_service_observation']=service_corroborate(json.loads(control_path.read_text()),capture,share)
+            if m.get('session_service_collector_profile')!=m['session_service_observation'].get('collector_profile'):
+                raise ValueError('actual Session collector profile must match original request')
             if m['session_service_verifiers']!=[file_record(HERE/name) for name in ['ws73_session_service.py','ws73_trace_layout.py']]:
                 raise ValueError('Session observation verifier changed during execution')
             m['session_service_acceptance']=True
@@ -1755,6 +2447,7 @@ def _run(args):
             raise ValueError('ordinary queue verifier changed during run')
         if ready_peer and file_record(HERE/'ws73_management_ready_peer.py')!=m['managed_ready_peer_verifier']:
             raise ValueError('Ready peer verifier changed during run')
+        if sibling_business and file_record(HERE/'ws73_channel_sibling.py')!=m['sibling_verifier']:raise ValueError('sibling verifier changed during run')
         if channel_grant and file_record(HERE/'ws73_channel_grant.py')!=m['channel_grant_verifier']:raise ValueError('channel Grant verifier changed during run')
         if channel_link_down and file_record(HERE/'ws73_channel_link_down.py')!=m['channel_link_down_verifier']:raise ValueError('direct Down verifier changed during run')
         if channel_deadline and file_record(HERE/'ws73_channel_deadline.py')!=m['channel_deadline_verifier']:raise ValueError('original deadline verifier changed during run')
@@ -1763,6 +2456,7 @@ def _run(args):
         if key_agreement and file_record(HERE/'ws73_key_agreement.py')!=m['security_key_agreement_verifier']:raise ValueError('candidate key agreement verifier changed during run')
         if protected and m['protected_security_verifiers']!=[file_record(HERE/name) for name in ['ws73_protected_grant.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_key_agreement.py']]:raise ValueError('protected prelude verifier changed during execution')
         if security_capabilities and file_record(HERE/'ws73_security_capabilities.py')!=m['security_capabilities_verifier']:raise ValueError('limited capability verifier changed during run')
+        if connected_case and file_record(HERE/'ws73_native_pair.py')!=m['native_pair_verifier']:raise ValueError('Native pair verifier changed during run')
         if connected_case and file_record(HERE/'ws73_connected_file_gate.py')!=m['connected_file_verifier']:
             raise ValueError('connected File verifier changed during run')
         if resource_recreation and file_record(HERE/'ws73_resource_file_gate.py')!=m['managed_resource_verifier']:
@@ -1782,6 +2476,13 @@ def _run(args):
             try:process.wait(timeout=5)
             except subprocess.TimeoutExpired:process.kill();process.wait()
         if process is not None:m['qemu_exit']=process.returncode
+        if partial_rx is not None:
+            from ws73_usb_partial_diagnostic import finalize as finalize_partial_rx
+            try:
+                targets={(m['inventory_before'][p]['bus'],m['inventory_before'][p]['address'])for p in args.ports}
+                finalize_partial_rx(m['usb_partial_rx_diagnostic'],(output/'qemu-stderr.log').read_text(),targets)
+            except (ValueError,KeyError,OSError,TypeError,StopIteration)as error:
+                m['usb_partial_rx_diagnostic'].update(status='DIAGNOSTIC_UNPROVED',complete=False,error=str(error))
         if monitor:monitor.close()
         if channel:channel.close()
         m['guest_files']=[file_record(p) for p in sorted((output/'guest-output').rglob('*')) if p.is_file() and not p.is_symlink()] if (output/'guest-output').exists() else []
@@ -1818,12 +2519,110 @@ def _run(args):
     return code
 
 
+def corroborate_runtime_addresses(share, capture, addresses, verifier):
+    """Add address evidence only; never replace the remaining run verdict.
+
+    Caller supplies the decoded, count-checked shared capture. Freeze the JSON
+    bytes actually verified and recheck the source pin before publishing any
+    metadata. No status, acceptance or supervisor completion is awarded here.
+    """
+    from ws73_runtime_address import corroborate
+    path = share/'runtime-address/run.json'
+    raw = path.read_bytes()
+    proof = list(corroborate(json.loads(raw), capture, addresses).values())
+    evidence = file_record(path)
+    if path.stat().st_size != len(raw) or evidence['sha256'] != hashlib.sha256(raw).hexdigest():
+        raise ValueError('address record changed during corroboration')
+    if file_record(HERE/'ws73_runtime_address.py') != verifier:
+        raise ValueError('address verifier changed during run')
+    return dict(runtime_address_corroboration=proof, runtime_address_record=evidence)
+
+
+def delivery_probe_identity(root,guest_files):
+    path=root/'bin/ws73-security-agent-probe'
+    if path.is_symlink()or not path.is_file():raise ValueError('exact staged security witness required')
+    expected=file_record(path)
+    if expected not in guest_files:raise ValueError('security witness differs from sealed root')
+    return dict(path='/bin/ws73-security-agent-probe',sha256=expected['sha256'])
+
+
+def require_delivery_preparation(package,path):
+    if type(package.get('four_delivery_contract_version'))is not int or package['four_delivery_contract_version']!=1:
+        raise ValueError('protected delivery requires freshly matched preparation')
+    root=path/'root'
+    for name in ['ws73_parallel_data.py','ws73_channel_socket.py','ws73_connection_control.py','ws73_security_agent.py','ws73_ssap_update_delivery.py','ws73_ssap_owned.py','ws73_dynamic_channels.py']:
+        if file_record(root/'usr/share/sparklink/tools'/name)['sha256']!=file_record(HERE/name)['sha256']:
+            raise ValueError('protected delivery source mismatch: '+name)
+    entry=root/'init'
+    if entry.is_symlink()or not entry.is_file()or not entry.stat().st_mode&0o111 or file_record(entry)['sha256']!=file_record(HERE/'ws73_target_init.sh')['sha256']:
+        raise ValueError('protected delivery requires current executable init')
+    import tomllib
+    level=tomllib.loads((root/'etc/sparklink/main.conf').read_text()).get('ssap',{}).get('channel_security',0)
+    if type(level)is not int or level!=2:raise ValueError('protected delivery requires frozen level2 SMTC config')
+    witness=delivery_probe_identity(root,package['guest_files'])
+    if witness['sha256']!=package.get('native_security_agent_probe',{}).get('sha256'):
+        raise ValueError('security witness must retain exact compiled artifact identity')
+    verifier=package.get('native_verification_openssl',{})
+    if verifier.get('guest_path')!='/usr/bin/openssl'or type(verifier.get('validation_exit'))is not int or verifier['validation_exit']!=0 or not verifier.get('files'):
+        raise ValueError('explicit validated guest CMAC oracle required')
+    if [r['sha256']for r in verifier['files']if r['guest_path']=='/usr/bin/openssl']!=[verifier.get('source',{}).get('sha256')]:
+        raise ValueError('exact validated OpenSSL binary must be in guest closure')
+    for row in verifier['files']:
+        entry=firmware_profile.inside(root,Path(row['guest_path'].lstrip('/')))
+        actual=file_record(entry)
+        if actual['sha256']!=row['sha256']or actual not in package['guest_files']:
+            raise ValueError('guest CMAC oracle closure differs from sealed inputs')
+
+
+def require_benchmark_preparation(package,path,*,case='parallel'):
+    if type(case)is not str or case not in ('parallel','close-short','pressure'):raise ValueError('explicit supported four benchmark case required')
+    if case=='close-short'and(type(package.get('four_dynamic_benchmark_close_contract_version'))is not int or package['four_dynamic_benchmark_close_contract_version']!=1):
+        raise ValueError('short close requires fresh four benchmark close contract1')
+    if case=='pressure'and(type(package.get('four_dynamic_benchmark_pressure_contract_version'))is not int or package['four_dynamic_benchmark_pressure_contract_version']!=1):
+        raise ValueError('software pressure requires fresh four benchmark pressure contract1')
+    if type(package.get('four_dynamic_benchmark_contract_version'))is not int or package['four_dynamic_benchmark_contract_version']!=1:
+        raise ValueError('four dynamic benchmark requires fresh explicit preparation')
+    from ws73_socket_benchmark import validate_role_sources
+    validate_role_sources(package,dynamic=True,parallel=True)
+    for name in ['ws73_parallel_data.py','ws73_parallel.py','ws73_connection_control.py','ws73_trace_layout.py']:
+        if file_record(path/'root/usr/share/sparklink/tools'/name)['sha256']!=file_record(HERE/name)['sha256']:
+            raise ValueError('four benchmark preparation/source mismatch: '+name)
+    entry=path/'root/init'
+    if entry.is_symlink()or not entry.is_file()or not entry.stat().st_mode&0o111 or file_record(entry)['sha256']!=file_record(HERE/'ws73_target_init.sh')['sha256']:
+        raise ValueError('four benchmark requires current executable VM init')
+
+
+def require_subscription_preparation(package,path,*,case='release'):
+    if type(package.get('four_subscription_contract_version'))is not int or package['four_subscription_contract_version']!=1:
+        raise ValueError('shared subscriptions require explicit current preparation')
+    if type(case)is not str or case not in ('release','expiry','owner-exit','pressure'):raise ValueError('explicit supported four-pair shared case required')
+    field='four_subscription_pressure_contract_version'if case=='pressure'else'four_subscription_lifetime_contract_version'
+    if case!='release'and(type(package.get(field))is not int or package[field]!=1):raise ValueError('selected shared case requires fresh preparation')
+    require_delivery_preparation(package,path)
+    for name in ['ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_role_snapshot.py','ws73_application_role.py','ws73_target_guest.py']:
+        if file_record(path/'root/usr/share/sparklink/tools'/name)['sha256']!=file_record(HERE/name)['sha256']:
+            raise ValueError('shared subscription source mismatch: '+name)
+
+
+def require_owned_preparation(package,path):
+    if type(package.get('four_owned_contract_version'))is not int or package['four_owned_contract_version']!=1:
+        raise ValueError('Owned SSAP requires freshly matched explicit preparation')
+    for name in ['ws73_parallel_data.py','ws73_ssap_owned.py','ws73_channel_socket.py','ws73_dynamic_channels.py']:
+        if file_record(path/'root/usr/share/sparklink/tools'/name)['sha256']!=file_record(HERE/name)['sha256']:
+            raise ValueError('Owned SSAP preparation/source mismatch: '+name)
+    entry=path/'root/init'
+    if entry.is_symlink()or not entry.is_file()or not entry.stat().st_mode&0o111 or file_record(entry)['sha256']!=file_record(HERE/'ws73_target_init.sh')['sha256']:
+        raise ValueError('Owned SSAP requires current executable VM init')
+
+
 def validate_business_mode(args):
     # Dedicated positive gate: never silently combine injection, RF diagnostics
     # or two-device options with a four-controller business qualification.
-    if (args.command!='run' or sum(bool(getattr(args,k,False)) for k in ['four_device_business','four_device_disconnect','four_device_burst'])!=1
+    case=getattr(args,'four_device_benchmark_case','parallel')
+    if (type(case)is not str or case not in ('parallel','close-short','pressure')or case!='parallel'and not getattr(args,'four_device_dynamic_benchmark',False)
+            or args.command!='run' or sum(bool(getattr(args,k,False)) for k in ['four_device_business','four_device_disconnect','four_device_burst','four_device_owned','four_device_update_delivery','four_device_shared_subscription','four_device_dynamic_benchmark'])!=1
             or any(v for k,v in vars(args).items()
-            if isinstance(v,bool) and k not in ['four_device_business','four_device_disconnect','four_device_burst'])
+            if isinstance(v,bool) and k not in ['four_device_business','four_device_disconnect','four_device_burst','four_device_owned','four_device_update_delivery','four_device_shared_subscription','four_device_dynamic_benchmark'])
             or getattr(args,'parallel_start_offset_ms',0)
             or any(getattr(args,k,None) for k in ['security_agent','daemon_hold_case',
                 'managed_partial_case','managed_connected_case','managed_connected_reply',
@@ -1832,6 +2631,69 @@ def validate_business_mode(args):
             or getattr(args,'channel_socket_bytes',61)!=61
             or getattr(args,'channel_socket_rounds',4)!=4):
         raise ValueError('four-device business requires dedicated real VM without other gates')
+
+
+def valid_parallel_benchmark(record):
+    """Only the dedicated complete four-pair contract can accept this scope."""
+    from ws73_parallel_data import verify_records,benchmark_parallel_proof,benchmark_case,benchmark_case_from_boot,benchmark_channel,BENCHMARK_SCOPE
+    try:
+        if (record.get('status')!='FOUR_DEVICE_PARALLEL_DYNAMIC_BENCHMARK_PASS'
+                or record.get('scope')!=BENCHMARK_SCOPE
+                or type(record.get('four_dynamic_benchmark_contract_version'))is not int
+                or record['four_dynamic_benchmark_contract_version']!=1
+                or record.get('four_device_dynamic_benchmark_requested')is not True
+                or record.get('four_device_parallel_business')is not True
+                or record.get('four_device_parallel_rf')is not False
+                or any(record.get(k,False)is not False for k in ['four_device_disconnect_requested','four_device_burst_requested','four_device_owned_requested','four_device_update_delivery_requested','four_device_shared_subscription_requested'])
+                or record.get('qemu_exit')!=0):return False
+        case=record.get('four_benchmark_case','parallel')
+        if type(case)is not str or case not in ('parallel','close-short','pressure')or 'four_benchmark_case'in record and case=='parallel':return False
+        close=case=='close-short';pressure=case=='pressure'
+        if pressure:
+            if type(record.get('four_dynamic_benchmark_pressure_contract_version'))is not int or record['four_dynamic_benchmark_pressure_contract_version']!=1:return False
+        elif 'four_dynamic_benchmark_pressure_contract_version'in record:return False
+        if close:
+            if type(record.get('four_dynamic_benchmark_close_contract_version'))is not int or record['four_dynamic_benchmark_close_contract_version']!=1:return False
+        elif 'four_dynamic_benchmark_close_contract_version'in record:return False
+        words=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()]
+        if benchmark_case_from_boot(words)!=case:return False
+        for token in ['ws73.parallel=1','ws73.parallel_business=1','ws73.parallel_benchmark=1','ws73.socket_benchmark_apps=1']:
+            key=token.split('=')[0]
+            if [w for w in words if w==key or w.startswith(key+'=')]!=[token]:return False
+        if any(w.startswith(('ws73.parallel_burst=','ws73.parallel_disconnect=','ws73.parallel_owned=','ws73.parallel_delivery=','ws73.parallel_subscription=','ws73.benchmark_'))for w in words):return False
+        proof=record['parallel_corroboration'];control=proof['parallel_benchmark_control'];owners=verify_records(control)
+        if benchmark_case(control)!=case:return False
+        if close:
+            if proof.get('channel_close_isolation_acceptance')is not True:return False
+        elif 'channel_close_isolation_acceptance'in proof:return False
+        if pressure:
+            if proof.get('software_backpressure_acceptance')is not True:return False
+        elif 'software_backpressure_acceptance'in proof:return False
+        if type(proof.get('parallel_benchmark_contract_version'))is not int or proof['parallel_benchmark_contract_version']!=1:return False
+        if len(owners)!=4 or proof.get('status')!='FOUR_REAL_PARALLEL_DYNAMIC_BENCHMARK_CORROBORATED':return False
+        if proof['dynamic_benchmark']!=benchmark_parallel_proof(proof['pairs'],control):return False
+        from ws73_benchmark_timeline import verify_paired_trace
+        verify_paired_trace(control,proof['paired_trace'])
+        from ws73_socket_benchmark import parallel_replies
+        replies=parallel_replies(benchmark_channel(control))
+        for k,v in dict(controller_count=4,round_trips=2*replies,ordinary_uid=1004,coordinator_uid=1000,dynamic_channel_acceptance=True,fixed_basic_channel_business_acceptance=False,performance_qualified=False,fairness_acceptance=False,controller_credit_correctness_proof=False,fault_isolation_acceptance=False,automatic_fault_recovery_acceptance=False,protected_ssap_acceptance=False,full_goal_complete=False).items():
+            if type(proof.get(k))is not type(v)or proof[k]!=v:return False
+        overlaps=proof['overlaps']
+        if len(overlaps)!=2:return False
+        from ws73_parallel_data import overlap_window
+        for phase,overlap in enumerate(overlaps):
+            if overlap['role_phase']!=phase or overlap['overlap_wall_ns']!=overlap_window(overlap['business_windows']):return False
+            expected=[]
+            for pair in proof['pairs']:
+                legs=pair['channel']['proofs'][phase]['legs']
+                if len(legs)!=replies or len(pair['connections'])!=2:return False
+                window=[min(v['tx']['wall_ns']for v in legs),max(v['rx']['wall_ns']for v in legs)]
+                steps=pair['connections'][phase]['steps']
+                if max(v['wall_ns']for v in steps[0]['outcomes'])>window[0]or min(v['wall_ns']for v in steps[1]['outcomes'])<window[1]:return False
+                expected.append(window)
+            if expected!=overlap['business_windows']:return False
+        return True
+    except(CaptureError,KeyError,TypeError,ValueError,IndexError,AttributeError):return False
 
 
 def valid_parallel_burst(proof):
@@ -1863,9 +2725,24 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     # One finalization contract for every mode, not just SSAP lifecycle gates.
     # _run alone computes its result before writing supervisor_exit. A saved
     # record without that receipt cannot be interpreted as a completed PASS.
+    # A deliberately canceled USB observation can never qualify the original
+    # unmodified application/recovery gate, even if some workloads completed.
+    if 'usb_partial_rx_diagnostic_requested'in record:
+        return 1
     if type(supervisor_pending) is not bool:
         return 1
+    from ws73_link_payload import exit_gate as payload_exit_gate
+    if not payload_exit_gate(record):
+        return 1
+    from ws73_link_measurement import exit_gate as measurement_exit_gate
+    if not measurement_exit_gate(record):
+        return 1
     if not firmware_evidence.exit_gate(record, expected_firmware_mode):
+        return 1
+    if not firmware_profile.exit_gate(record):
+        return 1
+    from ws73_lab_resources import board_configuration_exit_gate
+    if not board_configuration_exit_gate(record):
         return 1
     if 'supervisor_exit' in record:
         if type(record['supervisor_exit']) is not int or record['supervisor_exit'] != 0:
@@ -1874,6 +2751,86 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         return 1
     if type(record.get('qemu_exit')) is not int or record['qemu_exit'] != 0:
         return 1
+    # These summaries are reconstructed from raw evidence during _run. Saved
+    # reports must retain them as well; a PASS label is not their replacement.
+    addresses=record.get('runtime_addresses_requested')
+    address_tokens=[v for arg in record.get('qemu_args',[]) if isinstance(arg,str) for v in arg.split() if v.startswith('ws73.runtime_addresses=')]
+    if addresses is not None:
+        from ws73_runtime_address import parse_addresses
+        try:addresses=parse_addresses(addresses)
+        except (ValueError,TypeError):return 1
+        if (address_tokens!=['ws73.runtime_addresses='+','.join(addresses)] or
+                len(record.get('runtime_address_corroboration',[]))!=2 or
+                not record.get('runtime_address_record') or not record.get('runtime_address_verifier')):return 1
+    elif address_tokens or record.get('runtime_address_corroboration'):return 1
+    connection=record.get('connection_verify_requested',False)
+    channel=record.get('channel_socket_verification_requested',False)
+    prefix=record.get('channel_socket_close_prefix_requested',False)
+    if any(type(v) is not bool for v in [connection,channel,prefix]):return 1
+    early=record.get('early_bootstrap_fault_requested',False)
+    death=record.get('channel_daemon_crash_requested',False)
+    if type(early)is not bool or type(death)is not bool or early and death:return 1
+    if early or death:
+        # Dedicated modes have their own actual corroborators and scopes, but
+        # still require the common firmware/board/QEMU/supervisor contract.
+        if addresses is not None or connection or channel or prefix:return 1
+        if early:
+            proof=record.get('early_bootstrap_corroboration',{})
+            valid=(record.get('status')=='REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS'
+                and isinstance(proof,dict) and set(proof)=={'during_fault','after_retry'})
+            if valid:
+                for case in proof.values():
+                    if not isinstance(case,dict):return 1
+                    data=case.get('data',{});links=case.get('connection')
+                    if (not isinstance(links,list) or len(links)!=2 or any(not isinstance(p,dict)or not p for p in links)
+                        or not isinstance(data,dict)
+                        or data.get('status')!='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED'
+                        or type(data.get('round_trips'))is not int or data['round_trips']!=4
+                        or not isinstance(data.get('proofs'),list) or len(data['proofs'])!=2
+                        or any(not isinstance(p,dict)or not p for p in data['proofs'])):return 1
+            return 0 if valid else 1
+        proof=record.get('channel_daemon_corroboration',{})
+        if not isinstance(proof,dict):return 1
+        valid=(record.get('status')=='REAL_DAEMON_CHANNEL_DEATH_PASS'
+            and proof.get('status')=='REAL_DAEMON_CHANNEL_DEATH_USB_CORROBORATED'
+            and type(record.get('channel_daemon_index'))is int and record['channel_daemon_index']in(0,1)
+            and type(proof.get('first_blocked_errno'))is int and proof['first_blocked_errno']in(errno.EACCES,errno.ESTALE)
+            and type(proof.get('business_round_trips'))is int and proof['business_round_trips']==2
+            and isinstance(proof.get('legs'),list) and len(proof['legs'])==8
+            and all(isinstance(p,dict)and p for p in proof['legs'])
+            and isinstance(proof.get('original_up'),list) and len(proof['original_up'])==2
+            and all(isinstance(p,dict)and p for p in proof['original_up'])
+            and all(proof.get(k)is True for k in ['actual_daemon_death','successor_does_not_renew_old_fd','common_owner_both_leases_withdrawn'])
+            and all(proof.get(k)is False for k in ['independent_device_business_isolation','physical_acceptance','automatic_recovery_acceptance','full_grant_complete'])
+            and isinstance(proof.get('physical_down_before_wake'),list)
+            and len(proof['physical_down_before_wake'])==(1 if proof.get('first_blocked_errno')==errno.ESTALE else 0)
+            and all(isinstance(p,dict)and p for p in proof['physical_down_before_wake']))
+        return 0 if valid else 1
+    if connection:
+        for key in ['connection_corroboration','connection_object_corroboration']:
+            proof=record.get(key)
+            if not isinstance(proof,list) or len(proof)!=2 or any(not isinstance(p,dict) or not p for p in proof):return 1
+    if channel:
+        proof=record.get('channel_socket_corroboration',{})
+        rounds=record.get('channel_socket_rounds_requested',4)
+        if (not isinstance(proof,dict) or proof.get('status')!='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED'
+                or type(rounds) is not int or rounds<=0
+                or type(proof.get('round_trips')) is not int or proof['round_trips']!=(0 if prefix else rounds*2)):
+            return 1
+    if prefix:
+        proof=record.get('channel_socket_corroboration',{})
+        phases=proof.get('proofs',[]) if isinstance(proof,dict) else []
+        if (not channel or record.get('channel_socket_rounds_requested')!=1 or record.get('channel_socket_bytes_requested')!=2042
+                or record.get('ordinary_prefix_close_acceptance') is not True
+                or record.get('ordinary_channel_socket_acceptance') is not False
+                or proof.get('physical_prefix_delivery_acceptance') is not True
+                or type(proof.get('prefix_close_phases')) is not int or proof['prefix_close_phases']!=2
+                or not isinstance(phases,list) or len(phases)!=2):return 1
+        for n,phase in enumerate(phases):
+            if (not isinstance(phase,dict) or phase.get('phase')!=n
+                    or not isinstance(phase.get('prefix_close'),dict)
+                    or phase['prefix_close'].get('other_channel_after_close') is not True
+                    or not isinstance(phase.get('ssap_values'),list) or not phase['ssap_values']):return 1
     from ws73_application_discovery import valid_summary as valid_discovery, boot_case, case as discovery_case, supervision_summary
     discovery=record.get('application_discovery_requested',False)
     if type(discovery) is not bool:return 1
@@ -1883,6 +2840,12 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         variant=boot_case([token for arg in record.get('qemu_args',[]) if isinstance(arg,str) for token in arg.split()])
         if record.get('application_discovery_case','release')!=variant:return 1
     except CaptureError:return 1
+    if variant=='ttl':
+        from ws73_application_discovery import validate_probe
+        try:validate_probe(record.get('application_discovery_probe',{}))
+        except (CaptureError,KeyError,TypeError):return 1
+        if record.get('application_discovery_corroboration',{}).get('probe')!=record['application_discovery_probe']:return 1
+    elif 'application_discovery_probe' in record:return 1
     if discovery:
         postures=[token for arg in record.get('qemu_args',[]) if isinstance(arg,str)
                   for token in arg.split() if token.startswith('ws73.connection_advertising=')]
@@ -1942,8 +2905,10 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     initialization=record.get('ssap_initialization_requested',False)
     if type(initialization)is not bool:return 1
     if initialization:
-        from ws73_ssap_initialization import valid_summary, profile
-        try:spec=profile(record.get('ssap_initialization_stage','cmtc'))
+        from ws73_ssap_initialization import valid_summary, profile, exchange_contract
+        try:
+            selector_version=exchange_contract(record)
+            spec=profile(record.get('ssap_initialization_stage','cmtc'),selector_version)
         except ValueError:return 1
         ordinary=record.get('channel_socket_corroboration',{})
         held=record.get('ssap_initialization_hold',{})
@@ -1954,11 +2919,154 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                 or type(ordinary.get('round_trips'))is not int or ordinary['round_trips']!=8
                 or held.get('method')!=spec['method'] or held.get('qemu_sha256')!=spec['qemu'] or held.get('complete')is not True
                 or held.get('stage','cmtc')!=spec['stage']
+                or type(held.get('exchange_contract',1)) is not int or held.get('exchange_contract',1)!=selector_version
                 or record.get('ssap_initialization_corroboration',{}).get('stage','cmtc')!=spec['stage']
-                or not valid_summary(record.get('ssap_initialization_corroboration',{}))):return 1
+                or not valid_summary(record.get('ssap_initialization_corroboration',{}),expected_version=selector_version)):return 1
     elif record.get('ssap_initialization_acceptance')or record.get('ssap_initialization_corroboration'):return 1
     channel_proof=record.get('channel_socket_corroboration',{})
     if not isinstance(channel_proof,dict):return 1
+    length_gate=record.get('ssap_value_lengths_requested',False)
+    if type(length_gate)is not bool:return 1
+    length_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_value_lengths=1']
+    if length_boot!=(['ws73.ssap_value_lengths=1']if length_gate else[]):return 1
+    if length_gate:
+        from ws73_ssap_value import valid_length_summary
+        if record.get('ssap_value_lengths_acceptance')is not True or record.get('ordinary_channel_socket_acceptance')is not True or record.get('qemu_exit')!=0 or not valid_length_summary(channel_proof,expected_version=record.get('ssap_value_lengths_contract_version',1)):return 1
+    elif record.get('ssap_value_lengths_acceptance')or any(v.get('length_gate')for p in channel_proof.get('proofs',[])for v in p.get('ssap_values',[])):return 1
+    parallel_subscription=record.get('status')=='FOUR_DEVICE_PARALLEL_SHARED_SUBSCRIPTION_PASS'
+    subscription=record.get('ssap_subscription_requested',False)
+    if type(subscription)is not bool or parallel_subscription and subscription:return 1
+    subscription_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_subscription=1']
+    if subscription_boot!=(['ws73.ssap_subscription=1']if subscription or parallel_subscription else[]):return 1
+    if subscription:
+        from ws73_ssap_subscription import valid_summary as subscription_summary,valid_supervision as subscription_supervision
+        if (type(record.get('ssap_subscription_contract_version'))is not int or record['ssap_subscription_contract_version']!=1 or record.get('ssap_subscription_acceptance')is not True
+                or record.get('status')!='REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS'
+                or record.get('live_security_agent_requested')!='numeric-approve'
+                or record.get('ordinary_channel_socket_acceptance')is not True
+                or record.get('live_ssap_security_requirement')!=2
+                or record.get('qemu_exit')!=0
+                or not subscription_summary(record.get('channel_socket_corroboration',{}))
+                or not subscription_supervision(record.get('ssap_subscription_supervision',{}))):return 1
+    elif record.get('ssap_subscription_acceptance')or record.get('ssap_subscription_supervision')or any(p.get('ssap_subscription')for p in record.get('channel_socket_corroboration',{}).get('proofs',[])):return 1
+    shared=record.get('ssap_subscription_shared_requested',False)
+    if type(shared)is not bool or shared and not subscription:return 1
+    from ws73_ssap_subscription import shared_boot,boot_shared_case,shared_case as validate_shared_case
+    try:
+        shared_case=validate_shared_case(dict(record,ssap_subscription_shared_required=shared or parallel_subscription,**({'ssap_subscription_shared_contract_version':1}if parallel_subscription else{})))
+        if boot_shared_case([v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()],shared or parallel_subscription)!=shared_case:return 1
+        if shared_boot([v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()])!=(shared or parallel_subscription):return 1
+    except CaptureError:return 1
+    if shared:
+        from ws73_ssap_subscription import valid_shared_summary,valid_shared_supervision
+        from ws73_ssap_shared import valid_configuration_summary
+        wire=record.get('ssap_subscription_shared_wire',{})
+        verifier=record.get('ssap_subscription_shared_verifier',{})
+        if(type(record.get('ssap_subscription_shared_contract_version'))is not int or record['ssap_subscription_shared_contract_version']!=1
+            or type(record.get('ssap_subscription_snapshot_contract_version'))is not int or record['ssap_subscription_snapshot_contract_version']!=1
+            or set(verifier)!={'path','sha256'}or not isinstance(verifier['path'],str)or not verifier['path'].endswith('/ws73_ssap_shared.py')or not isinstance(verifier['sha256'],str)or not re.fullmatch('[0-9a-f]{64}',verifier['sha256'])
+            or record.get('ssap_subscription_shared_acceptance')is not True or not valid_shared_summary(channel_proof,case=shared_case)or not valid_shared_supervision(record.get('ssap_subscription_supervision',{}),case=shared_case)
+            or not valid_configuration_summary(wire)):return 1
+    elif(record.get('ssap_subscription_shared_acceptance')or record.get('ssap_subscription_shared_contract_version')is not None
+        or record.get('ssap_subscription_shared_wire')or record.get('ssap_subscription_supervision',{}).get('shared_contract_version')is not None
+        or any(v.get('shared_contract_version')is not None for p in channel_proof.get('proofs',[])for v in p.get('ssap_subscription',[]))):return 1
+    renewal=record.get('ssap_subscription_renewal_requested',False)
+    snapshot=record.get('ssap_subscription_snapshot_contract_version')
+    snapshot_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.subscription_snapshot=1']
+    if snapshot is not None:
+        from ws73_ssap_subscription import valid_snapshot_supervision
+        if(type(snapshot)is not int or snapshot!=1 or not subscription or snapshot_boot!=['ws73.subscription_snapshot=1']
+                or not valid_snapshot_supervision(record.get('ssap_subscription_supervision',{}))):return 1
+    elif snapshot_boot!=(['ws73.subscription_snapshot=1']if parallel_subscription else[])or record.get('ssap_subscription_supervision',{}).get('snapshot_contract_version')is not None:return 1
+    if type(renewal)is not bool or renewal and not subscription:return 1
+    renewal_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_subscription_renewal=1']
+    if renewal_boot!=(['ws73.ssap_subscription_renewal=1']if renewal else[]):return 1
+    if renewal:
+        from ws73_ssap_subscription import valid_renewal_summary,valid_renewal_supervision
+        if (type(record.get('ssap_subscription_renewal_contract_version'))is not int or record['ssap_subscription_renewal_contract_version']!=1
+                or record.get('ssap_subscription_renewal_acceptance')is not True
+                or not valid_renewal_summary(channel_proof)or not valid_renewal_supervision(record.get('ssap_subscription_supervision',{}))):return 1
+    elif(record.get('ssap_subscription_renewal_acceptance')or record.get('ssap_subscription_renewal_contract_version')is not None
+            or record.get('ssap_subscription_supervision',{}).get('renewal_contract_version')is not None
+            or any(v.get('renewal_contract_version')is not None for p in channel_proof.get('proofs',[])for v in p.get('ssap_subscription',[]))):return 1
+    pressure=record.get('ssap_subscription_pressure_requested',False)
+    if type(pressure)is not bool or pressure and(not subscription or renewal):return 1
+    pressure_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_subscription_pressure=1']
+    if pressure_boot!=(['ws73.ssap_subscription_pressure=1']if pressure else[]):return 1
+    if pressure:
+        from ws73_ssap_subscription import valid_pressure_summary,valid_pressure_supervision
+        if(type(record.get('ssap_subscription_pressure_contract_version'))is not int or record['ssap_subscription_pressure_contract_version']!=1
+                or record.get('ssap_subscription_pressure_acceptance')is not True
+                or not valid_pressure_summary(channel_proof)or not valid_pressure_supervision(record.get('ssap_subscription_supervision',{}))):return 1
+    elif(record.get('ssap_subscription_pressure_acceptance')or record.get('ssap_subscription_pressure_contract_version')is not None
+            or record.get('ssap_subscription_supervision',{}).get('pressure_contract_version')is not None
+            or any(v.get('pressure_contract_version')is not None for p in channel_proof.get('proofs',[])for v in p.get('ssap_subscription',[]))):return 1
+    owner_loss=record.get('ssap_subscription_owner_loss_requested',False)
+    if type(owner_loss)is not bool or owner_loss and(not subscription or renewal or pressure):return 1
+    loss_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_subscription_owner_loss=1']
+    if loss_boot!=(['ws73.ssap_subscription_owner_loss=1']if owner_loss else[]):return 1
+    if owner_loss:
+        from ws73_ssap_subscription import valid_owner_loss_summary,valid_owner_loss_supervision
+        if(type(record.get('ssap_subscription_owner_loss_contract_version'))is not int or record['ssap_subscription_owner_loss_contract_version']!=1
+                or record.get('ssap_subscription_owner_loss_acceptance')is not True
+                or not valid_owner_loss_summary(channel_proof)or not valid_owner_loss_supervision(record.get('ssap_subscription_supervision',{}))):return 1
+    elif(record.get('ssap_subscription_owner_loss_acceptance')or record.get('ssap_subscription_owner_loss_contract_version')is not None
+            or record.get('ssap_subscription_supervision',{}).get('owner_loss_contract_version')is not None
+            or any(v.get('owner_loss_contract_version')is not None for p in channel_proof.get('proofs',[])for v in p.get('ssap_subscription',[]))):return 1
+    inflight=record.get('ssap_subscription_inflight_release_requested',False)
+    if type(inflight)is not bool or inflight and(not subscription or renewal or pressure or owner_loss):return 1
+    inflight_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_subscription_inflight_release=1']
+    if inflight_boot!=(['ws73.ssap_subscription_inflight_release=1']if inflight else[]):return 1
+    from ws73_ssap_subscription import boot_inflight_case,inflight_case as check_inflight_case
+    try:
+        case=check_inflight_case(dict(ssap_subscription_inflight_release_required=inflight,ssap_subscription_inflight_release_contract_version=record.get('ssap_subscription_inflight_release_contract_version'),**{k:record[k]for k in ('ssap_subscription_inflight_case','ssap_subscription_inflight_expiry_contract_version')if k in record}))
+        if boot_inflight_case([v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()],inflight)!=case:return 1
+    except (CaptureError,ValueError,KeyError):return 1
+    if not inflight and record.get('ssap_subscription_inflight_expiry_acceptance')is not None:return 1
+    if inflight:
+        from ws73_ssap_subscription import valid_inflight_summary,valid_inflight_supervision
+        from ws73_ssap_sender_deadline import valid_hold_summary
+        if(type(record.get('ssap_subscription_inflight_release_contract_version'))is not int or record['ssap_subscription_inflight_release_contract_version']!=1
+                or snapshot!=1 or (record.get('ssap_subscription_inflight_expiry_acceptance')is not True or record.get('ssap_subscription_inflight_release_acceptance')is not False if case=='expiry'else record.get('ssap_subscription_inflight_release_acceptance')is not True or record.get('ssap_subscription_inflight_expiry_acceptance')is not None)
+                or not valid_inflight_summary(channel_proof,case=case)or not valid_inflight_supervision(record.get('ssap_subscription_supervision',{}),case=case)
+                or not valid_hold_summary(record.get('ssap_subscription_inflight_hold',{}),record.get('ssap_subscription_inflight_corroboration',{}),purpose='subscription-'+case)):return 1
+    elif(record.get('ssap_subscription_inflight_release_acceptance')or record.get('ssap_subscription_inflight_release_contract_version')is not None
+            or record.get('ssap_subscription_inflight_hold')or record.get('ssap_subscription_inflight_corroboration')
+            or record.get('ssap_subscription_supervision',{}).get('inflight_release_contract_version')is not None
+            or any(v.get('inflight_release_contract_version')is not None for p in channel_proof.get('proofs',[])for v in p.get('ssap_subscription',[]))):return 1
+    delivery=record.get('ssap_update_delivery_requested',False)
+    if type(delivery)is not bool:return 1
+    delivery_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_update_delivery=1']
+    if delivery_boot!=(['ws73.ssap_update_delivery=1']if delivery else[]):return 1
+    if delivery:
+        from ws73_ssap_update_delivery import valid_summary as delivery_summary
+        if (record.get('status')!='REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS'
+                or record.get('live_security_agent_requested')!='numeric-approve'
+                or record.get('qemu_exit')!=0 or record.get('ssap_update_delivery_acceptance')is not True
+                or record.get('ordinary_channel_socket_acceptance')is not True
+                or record.get('live_ssap_security_requirement')!=2 or not delivery_summary(channel_proof,expected_version=record.get('ssap_update_delivery_contract_version',1))):return 1
+    elif record.get('ssap_update_delivery_acceptance')or any(p.get('ssap_update_delivery')for p in channel_proof.get('proofs',[])):return 1
+    receive=record.get('ssap_receive_lifecycle_requested',False)
+    if type(receive)is not bool:return 1
+    receive_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_receive_lifecycle=1']
+    if receive_boot!=(['ws73.ssap_receive_lifecycle=1']if receive else[]):return 1
+    if receive:
+        from ws73_ssap_receive_lifecycle import valid_summary as receive_summary,valid_observer_summary
+        if not delivery or record.get('ssap_receive_lifecycle_acceptance')is not True or not receive_summary(channel_proof)or not valid_observer_summary(record.get('ssap_receive_capture_observations')):return 1
+    elif record.get('ssap_receive_lifecycle_acceptance')or record.get('ssap_receive_capture_observations')or any(p.get('ssap_receive_lifecycle')for p in channel_proof.get('proofs',[])):return 1
+    sender=record.get('ssap_sender_deadline_requested',False)
+    if type(sender)is not bool:return 1
+    sender_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_sender_deadline=1']
+    if sender_boot!=(['ws73.ssap_sender_deadline=1']if sender else[]):return 1
+    if sender:
+        from ws73_ssap_sender_deadline import valid_summary as sender_summary,valid_hold_summary,boot_case
+        selected=record.get('ssap_sender_lifecycle_case','deadline')
+        try:actual_case=boot_case([t for arg in record.get('qemu_args',[])if isinstance(arg,str)for t in arg.split()],True)
+        except (ValueError,TypeError):return 1
+        if (not delivery or record.get('ssap_sender_deadline_acceptance')is not True or not sender_summary(channel_proof)
+                or actual_case!=selected or any(p['ssap_sender_deadline'][0].get('lifecycle_case','deadline')!=selected for p in channel_proof.get('proofs',[]))
+                or not valid_hold_summary(record.get('ssap_sender_deadline_hold',{}),record.get('ssap_sender_deadline_corroboration',{}))):return 1
+    elif record.get('ssap_sender_lifecycle_case','deadline')!='deadline' or any(t.startswith('ws73.ssap_sender_case=')for arg in record.get('qemu_args',[])if isinstance(arg,str)for t in arg.split())or record.get('ssap_sender_deadline_acceptance')or record.get('ssap_sender_deadline_hold')or any(p.get('ssap_sender_deadline')for p in channel_proof.get('proofs',[])):return 1
     update=record.get('ssap_owned_update_requested',False)
     if type(update)is not bool:return 1
     update_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.ssap_owned_update=1']
@@ -1989,12 +3097,14 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     if clients:
         from ws73_application_client import valid_summary
         from ws73_application_role import valid_supervision
+        if type(record.get('application_role_contract_version'))is not int or record['application_role_contract_version']!=2:return 1
         if not valid_supervision(record.get('application_role_supervision',{})):return 1
         if record.get('status')!='PASSTHROUGH_SUPPORT_PASS' or record.get('qemu_exit')!=0 or record.get('application_client_acceptance') is not True or not valid_summary(record.get('application_client_corroboration',{})):return 1
     required=record.get('live_ssap_security_requirement',0)
     if type(required) is not int or required not in (0,1,2):return 1
     if not required and (any(v.get('ssap_security_requirement',0) for v in record.get('security_agent_corroboration',{}).get('phases',[])) or any(v.get('protected_ssap') for v in record.get('channel_socket_corroboration',{}).get('proofs',[]))):return 1
-    if required:
+    # The dedicated four-pair status validates both per-pair security tuples below.
+    if required and record.get('status')not in ('FOUR_DEVICE_PARALLEL_UPDATE_DELIVERY_PASS','FOUR_DEVICE_PARALLEL_SHARED_SUBSCRIPTION_PASS'):
         security=record.get('security_agent_corroboration',{}).get('phases',[])
         business=record.get('channel_socket_corroboration',{}).get('proofs',[])
         if (record.get('status')!='REAL_AGENT_POLICY_AND_NATIVE_DELIVERY_PASS'
@@ -2007,6 +3117,46 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     required=record.get('live_channel_security_required',0)
     connected=record.get('connected_file_corroboration',{})
     if not isinstance(connected,dict):return 1
+    sibling=record.get('channel_sibling_business_requested',False)
+    if type(sibling)is not bool:return 1
+    sibling_tokens=[w for arg in record.get('qemu_args',[])if isinstance(arg,str)for w in arg.split()if w=='ws73.channel_sibling_business'or w.startswith('ws73.channel_sibling_business=')]
+    if sibling:
+        from ws73_channel_sibling import valid_summary,transition_flags
+        try:
+            transition=transition_flags(record.get('live_connected_file_case'),record.get('live_channel_link_down_requested',False),record.get('live_channel_deadline_requested',False))
+        except ValueError:return 1
+        words=[w for arg in record.get('qemu_args',[])if isinstance(arg,str)for w in arg.split()]
+        for key,wanted in [('ws73.channel_link_down',transition=='down'),('ws73.channel_deadline',transition=='deadline')]:
+            if[w for w in words if w==key or w.startswith(key+'=')]!=([key+'=1']if wanted else[]):return 1
+        statuses={'withdrawal':'REAL_CHANNEL_GRANT_PASS','down':'REAL_CHANNEL_LINK_DOWN_PREFIX_PASS','deadline':'REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS'}
+        if (sibling_tokens!=['ws73.channel_sibling_business=1']or type(record.get('channel_sibling_business_contract_version'))is not int or record['channel_sibling_business_contract_version']!=3
+                or record.get('status')!=statuses[transition]or type(record.get('live_connected_file_index'))is not int or record['live_connected_file_index']!=0
+                or record.get('live_channel_grant_gate')is not True or record.get('live_channel_revoke_prefix_gate')is not True
+                or record.get('managed_prefix_geometry_contract_version')!=1
+                or connected.get('sibling_business',{}).get('case')!=record.get('live_connected_file_case')
+                or connected.get('sibling_business',{}).get('transition')!=transition
+                or record.get('channel_sibling_business_acceptance')is not True or not valid_summary(connected.get('sibling_business',{}))):return 1
+        if transition=='withdrawal':
+            native_grant=connected.get('channel_grant',{});begun=native_grant.get('begun_revoke',{})
+            if (native_grant.get('status')!='REAL_BLOCKED_RX_GRANT_USB_CORROBORATED'
+                or begun.get('status')!='ACTUAL_BEGUN_PDU_WITHDRAWAL_PREFIX_PASS'or begun.get('no_new_submit_after_withdrawal')is not True
+                or type(begun.get('submitted_bytes'))is not int or not 0<begun['submitted_bytes']<2047
+                or connected.get('held_reply',{}).get('status')!='REAL_INCOMPLETE_PDU_BARRIER_CORROBORATED'):return 1
+        else:
+            expected='REAL_BEGUN_LINK_DOWN_CORROBORATED'if transition=='down'else'REAL_ORIGINAL5S_BEGUN_DEADLINE_CORROBORATED'
+            if (connected.get('status')!=expected or type(connected.get('submitted_bytes'))is not int or not 0<connected['submitted_bytes']<2047
+                or connected.get('partial_pdu_application_round_trips')!=0):return 1
+            if transition=='down':
+                if connected.get('both_leases_preserved')is not True or connected.get('prefix_hold',{}).get('status')!='REAL_INCOMPLETE_PDU_BARRIER_CORROBORATED':return 1
+            elif not connected.get('delayed_nocp_records')or connected.get('host_hold',{}).get('status')!='ACTUAL_HOST_HOLD_CORROBORATED':return 1
+    elif sibling_tokens or any(k in record for k in ['channel_sibling_business_contract_version','channel_sibling_business_acceptance'])or 'sibling_business'in connected:return 1
+    geometry_tokens=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith('ws73.prefix_geometry=')]
+    geometry_version=record.get('managed_prefix_geometry_contract_version')
+    if geometry_version is not None or geometry_tokens:
+        from ws73_channel_prefix_hold import valid_geometry_summary
+        if (type(geometry_version)is not int or geometry_version!=1 or geometry_tokens!=['ws73.prefix_geometry=1']
+                or record.get('live_channel_revoke_prefix_gate')is not True
+                or not valid_geometry_summary(connected.get('prefix_geometry'))):return 1
     proof=connected.get('protected_security')
     if type(required) is not int or required not in (0,1,2):return 1
     if required:
@@ -2032,14 +3182,112 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         if (record.get('session_service_acceptance') is not True or record.get('qemu_exit')!=0
                 or proof.get('status')!='REAL_SESSION_SERVICE_AND_USB_SUBMITS_CORROBORATED'
                 or any(type(proof.get(k)) is not int or proof[k]<=0 for k in ['services','attempts','accepted_usb_packets','operations'])):return 1
-    if not record.get('socket_benchmark_requested') and (record.get('socket_benchmark_acceptance') or 'socket_benchmark_corroboration' in record or 'socket_benchmark_config_requested' in record):return 1
+    from ws73_session_service import FULL_LOAD_PROFILE,PROFILE_TOKEN
+    collector_version=record.get('session_service_collector_contract_version')
+    collector=record.get('session_service_collector_profile')
+    collector_proof=record.get('session_service_observation',{})
+    collector_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith(PROFILE_TOKEN)]
+    if collector_version is not None:
+        if (type(collector_version)is not int or collector_version!=2 or requested is not True
+                or collector!=FULL_LOAD_PROFILE or collector_boot!=[PROFILE_TOKEN+'full-load-v2']
+                or type(collector_proof.get('collector_contract_version'))is not int
+                or collector_proof['collector_contract_version']!=2 or collector_proof.get('collector_profile')!=collector):return 1
+    elif collector is not None or collector_boot or 'collector_profile'in collector_proof or 'collector_contract_version'in collector_proof:return 1
+    from ws73_session_service import valid_queued_summary
+    queued_version=record.get('queued_discard_contract_version')
+    queued_proof=record.get('session_service_observation',{}).get('queued_discard_lifecycle')
+    queued_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith('ws73.channel_queued_discard=')]
+    if queued_version is not None:
+        queued_mode='deadline' if record.get('live_channel_deadline_requested') else 'down' if record.get('live_channel_link_down_requested') else record.get('live_connected_file_case')
+        if (type(queued_version)is not int or queued_version!=1 or queued_boot!=['ws73.channel_queued_discard=1']
+                or not requested or not record.get('live_channel_grant_gate')or not record.get('live_channel_revoke_prefix_gate')
+                or not valid_queued_summary(queued_proof)
+                or queued_proof['mode']!=queued_mode or queued_proof['controller']!=record.get('live_connected_file_index')
+                or record.get('session_service_observation',{}).get('queued_discarded_operations')!=2):return 1
+    elif queued_proof is not None or queued_boot:return 1
+    phase=record.get('intent_phase_contract_version')
+    phase_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith('ws73.intent_phase=')]
+    tx_phases=record.get('connected_file_corroboration',{}).get('tx_constraints',{})
+    if phase is not None:
+        if (type(phase)is not int or phase!=2 or phase_boot!=['ws73.intent_phase=2']
+                or record.get('live_channel_deadline_requested')is not True
+                or any(type(tx_phases.get(k))is not int for k in ['intent_phase_contract_version','expired_intent_refusals','retired_binding_refusals'])
+                or tx_phases.get('intent_phase_contract_version')!=2
+                or tx_phases.get('expired_intent_refusals')!=1 or tx_phases.get('retired_binding_refusals')!=2):return 1
+    elif phase_boot or tx_phases.get('intent_phase_contract_version')is not None:return 1
+    benchmark_role=record.get('socket_benchmark_role_contract_version')
+    four_benchmark=record.get('four_device_dynamic_benchmark_requested',False)
+    if type(four_benchmark)is not bool:return 1
+    four_benchmark_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.parallel_benchmark'or v.startswith('ws73.parallel_benchmark=')]
+    if four_benchmark:
+        if four_benchmark_boot!=['ws73.parallel_benchmark=1']or not valid_parallel_benchmark(record):return 1
+        if benchmark_role is not None or record.get('socket_benchmark_requested'):return 1
+    elif four_benchmark_boot or any(k in record for k in ['four_dynamic_benchmark_contract_version','four_dynamic_benchmark_close_contract_version','four_dynamic_benchmark_pressure_contract_version','four_benchmark_case'])or any(v=='ws73.parallel_benchmark_case'or v.startswith('ws73.parallel_benchmark_case=')for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split())or record.get('status')=='FOUR_DEVICE_PARALLEL_DYNAMIC_BENCHMARK_PASS':return 1
+    import ws73_benchmark_ssap as benchmark_ssap
+    try:
+        service=benchmark_ssap.selected(record)
+        if benchmark_ssap.from_boot([v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()])!=service:return 1
+        if service is not None:
+            from ws73_socket_benchmark import record_configuration,row_channel
+            benchmark_ssap.workload(record_configuration(record),row_channel(record))
+            if (record.get('benchmark_ssap_acceptance')is not True
+                or benchmark_ssap.selected(record.get('socket_benchmark_role_supervision',{}))!=service
+                or not benchmark_ssap.valid_summary(record.get('socket_benchmark_corroboration',{}))):return 1
+        elif(record.get('benchmark_ssap_acceptance')or benchmark_ssap.FIELD in record.get('socket_benchmark_role_supervision',{})
+             or 'ssap'in record.get('socket_benchmark_corroboration',{})or any('ssap_concurrent_progress'in p for p in record.get('socket_benchmark_corroboration',{}).get('proofs',[]))):return 1
+    except(ValueError,KeyError,TypeError):return 1
+    trace_contract=record.get('benchmark_trace_contract_version')
+    if trace_contract is not None:
+        from ws73_benchmark_timeline import valid_trace_summary
+        from ws73_socket_benchmark import row_channel,pressures_long
+        try:pressure=pressures_long(row_channel(record))
+        except(ValueError,KeyError,TypeError):return 1
+        if(type(trace_contract)is not int or trace_contract!=1 or type(benchmark_role)is not int or benchmark_role!=1 or not record.get('socket_benchmark_requested')or not valid_trace_summary(record.get('socket_benchmark_xhci_observation',{}),record.get('socket_benchmark_xhci_requested'),pressure=pressure)):return 1
+    elif record.get('socket_benchmark_xhci_observation',{}).get('trace_contract_version')is not None:return 1
+    resource=record.get('benchmark_process_resource_contract_version')
+    if resource is not None and(type(resource)is not int or resource!=1 or not record.get('socket_benchmark_requested')):return 1
+    benchmark_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith('ws73.socket_benchmark_apps=')]
+    if benchmark_role is not None:
+        from ws73_socket_benchmark import valid_role_supervision
+        if(type(benchmark_role)is not int or benchmark_role!=1 or not record.get('socket_benchmark_requested')or benchmark_boot!=['ws73.socket_benchmark_apps=1']or record.get('socket_benchmark_apps_acceptance')is not True or not valid_role_supervision(record.get('socket_benchmark_role_supervision',{}))):return 1
+        names=[Path(v.get('path','')).name for v in record.get('benchmark_verifiers',[])]
+        resource=record.get('benchmark_process_resource_contract_version')
+        expected_names={'ws73_benchmark_resources.py'}if resource is not None else set()
+        if service is not None:expected_names.update(benchmark_ssap.verifiers(service))
+        if 'benchmark_channel_request'in record:
+            expected_names.add('ws73_dynamic_channels.py')
+            from ws73_socket_benchmark import row_channel,is_parallel
+            try:
+                if is_parallel(row_channel(record)):expected_names.add('ws73_channel_fairness.py')
+            except(ValueError,KeyError,TypeError):return 1
+        if len(names)!=5+len(expected_names) or set(names)!=expected_names|{'ws73_socket_benchmark.py','ws73_benchmark.py','ws73_benchmark_timeline.py','ws73_application_role.py','ws73_role_snapshot.py'}:return 1
+    elif (benchmark_boot!=['ws73.socket_benchmark_apps=1']if four_benchmark else bool(benchmark_boot))or record.get('socket_benchmark_apps_acceptance')or record.get('socket_benchmark_role_supervision'):return 1
+    extra_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith(('ws73.benchmark_dynamic=','ws73.benchmark_parallel=','ws73.benchmark_active=','ws73.benchmark_close=','ws73.benchmark_pressure='))]
+    if not record.get('socket_benchmark_requested')and extra_boot:return 1
+    if not record.get('socket_benchmark_requested') and (record.get('socket_benchmark_acceptance') or 'socket_benchmark_corroboration' in record or 'socket_benchmark_config_requested' in record or 'benchmark_channel_request'in record):return 1
     if record.get('socket_benchmark_requested'):
         proof=record.get('socket_benchmark_corroboration',{})
         mode=record['socket_benchmark_requested']
         window=record.get('socket_benchmark_window_requested',4)
-        from ws73_socket_benchmark import record_configuration,configuration,validate_configuration
+        from ws73_socket_benchmark import record_configuration,configuration,validate_configuration,row_channel,is_parallel,channel_boot,valid_parallel_summary,parallel_replies
         try:config=record_configuration(record)
         except (ValueError,KeyError,TypeError):return 1
+        try:channel=row_channel(record);proof_channel=row_channel(proof)
+        except (ValueError,KeyError,TypeError):return 1
+        dynamic_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v.startswith(('ws73.benchmark_dynamic=','ws73.benchmark_parallel=','ws73.benchmark_active=','ws73.benchmark_close=','ws73.benchmark_pressure='))]
+        if channel!=proof_channel:return 1
+        if channel is None:
+            if dynamic_boot or any('dynamic_negotiation'in p or 'channel_requests'in p.get('application',{})for p in proof.get('proofs',[])):return 1
+        elif (not benchmark_role or trace_contract!=1 or resource!=1 or dynamic_boot!=channel_boot(channel)
+              or not is_parallel(channel)and(channel['ports']!=[24576,24577]or channel['aid']!=29441)):return 1
+        if is_parallel(channel):
+            if not valid_parallel_summary(proof,channel,config,record.get('socket_benchmark_role_supervision',{})):return 1
+        elif record.get('socket_benchmark_role_supervision',{}).get('version',1)!=1:return 1
+        resource=record.get('benchmark_process_resource_contract_version')
+        from ws73_benchmark_resources import valid_summary
+        if resource is not None:
+            if type(resource)is not int or resource!=1 or not valid_summary(proof):return 1
+        elif 'benchmark_process_resource_contract_version'in proof or any('resource_observations'in p for p in proof.get('proofs',[])):return 1
         if type(proof.get('window',4)) is not int or proof.get('window',4)!=window:return 1
         try:proof_config=proof['config'] if 'config' in proof else configuration(mode,window)
         except (ValueError,KeyError,TypeError):return 1
@@ -2050,9 +3298,15 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         if 'socket_benchmark_xhci_requested' in record:
             x=record.get('socket_benchmark_xhci_observation',{})
             if x.get('status')!='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED' or x.get('mode')!=record['socket_benchmark_xhci_requested']:return 1
-        if (mode not in ['rate','window','duplex'] or record.get('socket_benchmark_acceptance') is not True or record.get('performance_qualified') is not False or record.get('qemu_exit')!=0 or proof.get('status')!='REAL_WS73_LOAD_USB_AND_APPLICATION_OBSERVED_NOT_PERFORMANCE_QUALIFIED' or proof.get('mode')!=mode or proof.get('performance_qualified') is not False or proof.get('round_trips')!=count*(4 if mode=='duplex' else 2) or len(proof.get('proofs',[]))!=2):return 1
+        if (mode not in ['rate','window','duplex'] or record.get('socket_benchmark_acceptance') is not True or record.get('performance_qualified') is not False or record.get('qemu_exit')!=0 or proof.get('status')!='REAL_WS73_LOAD_USB_AND_APPLICATION_OBSERVED_NOT_PERFORMANCE_QUALIFIED' or proof.get('mode')!=mode or proof.get('performance_qualified') is not False or proof.get('round_trips')!=(parallel_replies(channel)if is_parallel(channel)else count*(4 if mode=='duplex' else 2)) or len(proof.get('proofs',[]))!=2):return 1
         phases=proof['proofs']
-        if not isinstance(phases,list) or any(not isinstance(p,dict) or p.get('phase')!=n or not isinstance(p.get('legs'),list) or len(p['legs'])!=count*(4 if mode=='duplex' else 2) or p.get('application',{}).get('status')!='LOAD_APPLICATION_REPORTS_CONSISTENT_NOT_QUALIFIED' or p['application'].get('performance_qualified') is not False or p['application'].get('fixture') is not False or p['application'].get('messages')!=([count,count] if mode=='duplex' else [count,0]) for n,p in enumerate(phases)):return 1
+        if not is_parallel(channel)and(not isinstance(phases,list) or any(not isinstance(p,dict) or p.get('phase')!=n or not isinstance(p.get('legs'),list) or len(p['legs'])!=count*(4 if mode=='duplex' else 2) or p.get('application',{}).get('status')!='LOAD_APPLICATION_REPORTS_CONSISTENT_NOT_QUALIFIED' or p['application'].get('performance_qualified') is not False or p['application'].get('fixture') is not False or p['application'].get('messages')!=([count,count] if mode=='duplex' else [count,0]) for n,p in enumerate(phases))):return 1
+        if channel is not None and not is_parallel(channel):
+            from ws73_socket_benchmark import application_request
+            for phase in phases:
+                expected=[application_request(dict(config=config,benchmark_channel_request=channel),i)for i in (0,1)]
+                if phase['application'].get('channel_requests')!=expected or set(phase.get('dynamic_negotiation',{}))!={'request','response'}:return 1
+                if any(set(phase['dynamic_negotiation'][key])!={'tx','rx'}for key in ('request','response')):return 1
     burst=record.get('dynamic_channel_burst_requested',False)
     if type(burst) is not bool or (burst and (record.get('dynamic_channel_verification_requested') is not True or record.get('dynamic_channel_long_bytes_requested')!=2042)):return 1
     if 'dynamic_channel_verification_requested' in record and type(record['dynamic_channel_verification_requested']) is not bool:return 1
@@ -2077,31 +3331,112 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                 identity=fields.get(role,[])
                 if not isinstance(identity,(list,tuple)) or len(identity)!=11 or any(endpoint.get(k)!=v for k,v in zip(['controller','generation','lifetime','handle'],identity[:4])):return 1
                 if endpoint.get('capacity')!=5 or endpoint.get('wire_peak')!=5 or endpoint.get('wire_final_debt')!=0 or not 0<endpoint.get('usb_submissions',0)==endpoint.get('nocp_packets') or not endpoint.get('full_nocp_resume_intervals'):return 1
-    if record.get('status') in ['FOUR_DEVICE_PARALLEL_BUSINESS_PASS','FOUR_DEVICE_DISCONNECT_ISOLATION_PASS','FOUR_DEVICE_PARALLEL_BURST_PASS']:
+    if four_benchmark:return 0  # complete dedicated proof checked above,after common gates
+    if record.get('status') in ['FOUR_DEVICE_PARALLEL_BUSINESS_PASS','FOUR_DEVICE_DISCONNECT_ISOLATION_PASS','FOUR_DEVICE_PARALLEL_BURST_PASS','FOUR_DEVICE_PARALLEL_OWNED_SSAP_PASS','FOUR_DEVICE_PARALLEL_UPDATE_DELIVERY_PASS','FOUR_DEVICE_PARALLEL_SHARED_SUBSCRIPTION_PASS']:
         isolation=record['status']=='FOUR_DEVICE_DISCONNECT_ISOLATION_PASS'
         burst=record['status']=='FOUR_DEVICE_PARALLEL_BURST_PASS'
+        owned=record['status']=='FOUR_DEVICE_PARALLEL_OWNED_SSAP_PASS'
+        delivery=record['status']=='FOUR_DEVICE_PARALLEL_UPDATE_DELIVERY_PASS'
+        subscription=record['status']=='FOUR_DEVICE_PARALLEL_SHARED_SUBSCRIPTION_PASS'
         proof=record.get('parallel_corroboration',{})
         overlaps=proof.get('overlaps',[])
-        valid=(record.get('four_device_burst_requested',False) is burst
+        if 'four_disconnect_progress_contract_version'in record:
+            from ws73_parallel_data import verify_records as verify_parallel_records
+            try:
+                control=proof['disconnect_progress_control']
+                if control.get('disconnect_progress_contract_version')!=1:return 1
+                verify_parallel_records(control)
+            except (CaptureError,KeyError,TypeError,ValueError,IndexError):return 1
+        delivery_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.parallel_delivery=1']
+        if delivery_boot!=(['ws73.parallel_delivery=1']if delivery else[]):return 1
+        if delivery:
+            from ws73_parallel_data import verify_records,delivery_parallel_proof
+            try:
+                if type(record.get('four_delivery_contract_version'))is not int or record['four_delivery_contract_version']!=1 or type(record.get('four_delivery_security_requirement'))is not int or record['four_delivery_security_requirement']!=2:return 1
+                if record.get('live_ssap_security_requirement')!=2:return 1
+                control=proof['parallel_delivery_control']
+                if control.get('update_delivery_mode')is not True:return 1
+                verify_records(control)
+                if type(proof.get('parallel_delivery_contract_version'))is not int or proof['parallel_delivery_contract_version']!=1:return 1
+                if delivery_parallel_proof(proof['pairs'])!=proof.get('update_delivery'):return 1
+            except (CaptureError,KeyError,TypeError,ValueError,IndexError):return 1
+        elif 'four_delivery_contract_version'in record or any(k in proof for k in ['parallel_delivery_contract_version','parallel_delivery_control','update_delivery']):return 1
+        subscription_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.parallel_subscription=1']
+        if subscription_boot!=(['ws73.parallel_subscription=1']if subscription else[]):return 1
+        if subscription:
+            from ws73_parallel_data import verify_records,subscription_parallel_proof,subscription_case as parallel_case
+            try:
+                if type(record.get('four_subscription_contract_version'))is not int or record['four_subscription_contract_version']!=1 or type(record.get('four_subscription_security_requirement'))is not int or record['four_subscription_security_requirement']!=2:return 1
+                if record.get('live_ssap_security_requirement')!=2:return 1
+                words=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()]
+                if any(words.count(k)!=1 for k in ['ws73.ssap_subscription=1','ws73.ssap_subscription_shared=1','ws73.subscription_snapshot=1']):return 1
+                if any(v.startswith(('ws73.ssap_subscription_renewal=','ws73.ssap_subscription_pressure=','ws73.ssap_subscription_owner_loss=','ws73.ssap_subscription_inflight_release='))for v in words):return 1
+                control=proof['parallel_subscription_control']
+                if control.get('shared_subscription_mode')is not True:return 1
+                case=parallel_case(control)
+                if case!=shared_case:return 1
+                for field in ('four_subscription_lifetime_contract_version','four_subscription_pressure_contract_version'):
+                    expected=case=='pressure'if field=='four_subscription_pressure_contract_version'else case in ('expiry','owner-exit')
+                    if expected:
+                        if type(record.get(field))is not int or record[field]!=1:return 1
+                    elif field in record:return 1
+                verify_records(control)
+                if type(proof.get('parallel_subscription_contract_version'))is not int or proof['parallel_subscription_contract_version']!=1:return 1
+                if subscription_parallel_proof(proof['pairs'],case=case)!=proof.get('shared_subscription'):return 1
+                if any(p['subscription_supervision']['daemon']!=w['run']['daemon_before'] for p,w in zip(proof['pairs'],control['workers'],strict=True)):return 1
+            except (CaptureError,KeyError,TypeError,ValueError,IndexError):return 1
+        elif any(k in record for k in ['four_subscription_contract_version','four_subscription_lifetime_contract_version','four_subscription_pressure_contract_version'])or any(k in proof for k in ['parallel_subscription_contract_version','parallel_subscription_control','shared_subscription']):return 1
+        owned_boot=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()if v=='ws73.parallel_owned=1']
+        if owned_boot!=(['ws73.parallel_owned=1']if owned else[]):return 1
+        if owned or delivery or subscription:
+            # The declared scope and actual guest selectors must agree. The
+            # shell must not pick Owned by silently overriding another mode.
+            words=[v for arg in record.get('qemu_args',[])if isinstance(arg,str)for v in arg.split()]
+            if words.count('ws73.parallel=1')!=1 or words.count('ws73.parallel_business=1')!=1:return 1
+            if any(v in words for v in ['ws73.parallel_burst=1','ws73.parallel_disconnect=1']):return 1
+        if owned:
+            from ws73_parallel_data import verify_records,owned_parallel_proof
+            try:
+                if type(record.get('four_owned_contract_version'))is not int or record['four_owned_contract_version']!=1:return 1
+                control=proof['parallel_owned_control']
+                if control.get('owned_ssap_mode')is not True:return 1
+                verify_records(control)
+                if type(proof.get('parallel_owned_contract_version'))is not int or proof['parallel_owned_contract_version']!=1:return 1
+                if owned_parallel_proof(proof['pairs'])!=proof.get('owned_ssap'):return 1
+            except (CaptureError,KeyError,TypeError,ValueError,IndexError):return 1
+        elif any(k in record for k in ['four_owned_contract_version'])or any(k in proof for k in ['parallel_owned_contract_version','parallel_owned_control','owned_ssap']):return 1
+        valid=(record.get('four_device_shared_subscription_requested',False)is subscription
+               and proof.get('shared_subscription_acceptance',False)is subscription
+               and record.get('four_device_update_delivery_requested',False)is delivery
+               and proof.get('update_delivery_acceptance',False)is delivery
+               and proof.get('protected_ssap_acceptance')is (delivery or subscription)
+               and record.get('four_device_owned_requested',False)is owned
+               and proof.get('owned_ssap_acceptance',False)is owned
+               and record.get('four_device_burst_requested',False) is burst
                and record.get('four_device_disconnect_requested',False) is isolation
                and record.get('four_device_parallel_business') is True
                and record.get('four_device_parallel_rf') is False
                and record.get('qemu_exit')==0
-               and proof.get('status')==('FOUR_REAL_PARALLEL_BURST_CORROBORATED' if burst else 'FOUR_REAL_DISCONNECT_ISOLATION_CORROBORATED' if isolation else 'FOUR_REAL_PARALLEL_BUSINESS_CORROBORATED')
+               and proof.get('status')==('FOUR_REAL_PARALLEL_SHARED_SUBSCRIPTION_CORROBORATED'if subscription else 'FOUR_REAL_PARALLEL_UPDATE_DELIVERY_CORROBORATED'if delivery else 'FOUR_REAL_PARALLEL_OWNED_SSAP_CORROBORATED'if owned else 'FOUR_REAL_PARALLEL_BURST_CORROBORATED' if burst else 'FOUR_REAL_DISCONNECT_ISOLATION_CORROBORATED' if isolation else 'FOUR_REAL_PARALLEL_BUSINESS_CORROBORATED')
                and proof.get('controller_count')==4 and proof.get('round_trips')==(64 if burst else 48 if isolation else 80)
                and proof.get('ordinary_uid')==1000
                and proof.get('fixed_basic_channel_business_acceptance') is True
                and proof.get('controlled_disconnect_isolation_acceptance',False) is isolation
+               and ('four_disconnect_progress_contract_version'not in record
+                    or (isolation and type(record['four_disconnect_progress_contract_version'])is int
+                        and record['four_disconnect_progress_contract_version']==1
+                        and proof.get('disconnect_progress_contract_version')==1))
                and all(proof.get(k) is False for k in ['fault_isolation_acceptance',
                     'dynamic_channel_acceptance','automatic_fault_recovery_acceptance',
-                    'protected_ssap_acceptance','full_goal_complete'])
+                    'full_goal_complete'])
                and len(proof.get('pairs',[]))==2 and len(overlaps)==2
                and all(p.get('channel',{}).get('status')=='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED'
                     and p['channel'].get('round_trips')==(32 if burst else 24 if isolation else 40)
                     and len(p['channel'].get('proofs',[]))==2
                     and all(len(v.get('legs',[]))==(32 if burst else 8 if isolation and n==pair else 40)
                             for n,v in enumerate(p['channel']['proofs']))
-                    and len(p.get('connections',[]))==2 for pair,p in enumerate(proof['pairs']))
+                    and len(p.get('connections',[]))==2
+                    and all(bool(v.get('ssap_owned',[]))is owned and bool(v.get('ssap_update_delivery',[]))is delivery and bool(v.get('ssap_subscription',[]))is subscription for v in p['channel']['proofs']) for pair,p in enumerate(proof['pairs']))
                and (not burst or valid_parallel_burst(proof))
                and (not isolation or (proof.get('controlled_disconnect_isolation_acceptance') is True
                     and len(proof.get('disconnect_proofs',[]))==2
@@ -2141,7 +3476,7 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
             gate=record.get('security_install_hold',{})
             valid=valid and gate.get('complete') is True and gate.get('qemu_sha256')=='dea80cfc383881b83b16744904be1fff82a8e4d523dfa65f2d96d5268e885e68' and gate.get('corroboration',{}).get('status')=='TWO_ROLE_ACTUAL_INSTALL_WITHDRAWAL_LATE_REPLY_SCOPED_PASS' and len(gate.get('corroboration',{}).get('phases',[]))==2
         return 0 if valid else 1
-    return 0 if record.get('status') in ['REAL_SECURITY_ORIGINAL_DEADLINE_PASS','REAL_PASSIVE_AUTHOR_CANCEL_PASS','REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS','REAL_CANDIDATE_KEY_AGREEMENT_PASS','REAL_LIMITED_SECURITY_CAPABILITIES_PASS','REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS','REAL_CHANNEL_LINK_DOWN_PREFIX_PASS','REAL_EARLY_BOOTSTRAP_FAULT_ISOLATION_PASS','REAL_CHANNEL_GRANT_PASS','SUPPORT_PASS','PASSTHROUGH_SUPPORT_PASS','FAULT_RECOVERY_SUPPORT_PASS','FOUR_DEVICE_PARALLEL_RF_PASS','FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS','ENVIRONMENT_FINISHED'] else 1
+    return 0 if record.get('status') in ['REAL_SECURITY_ORIGINAL_DEADLINE_PASS','REAL_PASSIVE_AUTHOR_CANCEL_PASS','REAL_UNAUTHENTICATED_LINK_ENCRYPTION_PASS','REAL_CANDIDATE_KEY_AGREEMENT_PASS','REAL_LIMITED_SECURITY_CAPABILITIES_PASS','REAL_CHANNEL_ORIGINAL_DEADLINE_PREFIX_PASS','REAL_CHANNEL_LINK_DOWN_PREFIX_PASS','REAL_CHANNEL_GRANT_PASS','SUPPORT_PASS','PASSTHROUGH_SUPPORT_PASS','FAULT_RECOVERY_SUPPORT_PASS','FOUR_DEVICE_PARALLEL_RF_PASS','FOUR_DEVICE_PARALLEL_RF_CONTRAST_PASS','ENVIRONMENT_FINISHED'] else 1
 
 
 def run(args):
@@ -2172,36 +3507,50 @@ def run(args):
 def main():
     parser=argparse.ArgumentParser(description=__doc__);commands=parser.add_subparsers(dest='command',required=True)
     pack=commands.add_parser('prepare')
-    for name in ['kernel-build','qemu','busybox','dbus-daemon','firmware-dir','runtime-config-dir','output']:
-        pack.add_argument('--'+name,type=Path,required=True)
-    pack.add_argument('--board-model',choices=['U','E'],help='explicit SDK110 three-image selection; required for new physical runs; no cold ROM auto selection')
-    pack.add_argument('--tcpdump',type=Path,default=Path('/usr/bin/tcpdump'))
-    pack.add_argument('--python',type=Path,default=Path(sys.executable))
+    for name in ['kernel-build','qemu','busybox','dbus-daemon','firmware-dir','runtime-config-dir']:
+        pack.add_argument('--'+name,type=Path)
+    pack.add_argument('--output',type=Path,required=True)
+    pack.add_argument('--board-model',choices=['U','E'],help='explicit SDK110 single-model build inputs;no cold ROM auto selection')
+    pack.add_argument('--from-prepared',type=Path,help='reuse an explicit retained Native carrier with separate compiled identity;no new compilation')
+    pack.add_argument('--device-inputs',type=Path,help='version1 ordered leaf/model/firmware_dir/board_dir JSON plan;requires --from-prepared')
+    pack.add_argument('--native-verification-openssl',type=Path,help='explicit public-transcript CMAC oracle for retained carriers;validate vector and preserve frozen runtime libraries')
+    pack.add_argument('--tcpdump',type=Path)
+    pack.add_argument('--python',type=Path)
     for name in native_vm.OPTIONS:
         pack.add_argument('--'+name.replace('_','-'),type=Path,
                           help='optional signed module/NVMe scratch-root VM profile; all three options required')
     pack.add_argument('--controller-directory-clients',action='store_true',help='stage actual C/Python SDK directory consumers for the explicit VM observer gate')
+    pack.add_argument('--discovery-lifetime-probe',action='store_true',help='compile/stage optional public Rust SDK TTL consumer only in the isolated native VM;no production install')
     pack.add_argument('--native-return-fixture',action='store_true',help='compile VM-only real SYS_bind return barrier; never default daemon instrumentation')
     pack.add_argument('--native-return-probe',type=Path,help='explicit gdbus executable staged only for direct original-owner retirement observation')
     pack.add_argument('--native-channel-fd-probe',type=Path,help='explicit isolated real D-Bus fd client binary; native VM only')
     pack.add_argument('--acb-probe-module',type=Path,help='explicit signed external selftest; never ordinary socket qualification')
     pack.add_argument('--native-discovery-config', type=Path,
                       help='freeze a private slkd TOML config in the native VM; checked by staged slkd, no RF qualification')
-    pack.add_argument('--native-runtime-only', action='store_true',
-                      help='native adoption only: omit ROM boot images, refuse initial non-runtime devices; prevents wrong-variant download on mixed boards')
     for name in ['run','support']:
         cmd=commands.add_parser(name);cmd.add_argument('--prepared',type=Path,required=True);cmd.add_argument('--output',type=Path,required=True)
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)
         if name=='run':
             cmd.add_argument('--ports',nargs='+',required=True)
+            cmd.add_argument('--link-payload-preference',choices=['reported-acb-maximum'],help='one explicit Managed payload preference per controller/lifetime;acknowledgment is not effective length or performance')
+            cmd.add_argument('--link-measurements',action='store_true',help='finite actual Managed RSSI/PHY observations before the ordinary workload;not RF policy or performance proof')
+            cmd.add_argument('--runtime-addresses',nargs=2,help='explicit temporary volatile E pair addresses;Native setup before daemon,not official identity')
             cmd.add_argument('--firmware-evidence',choices=firmware_evidence.MODES,
                              help='required physical scope: rom-upload demands actual inputs before every observed Runtime; runtime-observation grants no loaded-image qualification')
+            cmd.add_argument('--four-device-shared-subscription',action='store_true',help='two pairs/full shared release,original-expiry or reader-exit matrix with actual UID1004 readers/1005 publishers and closed snapshots;protected2/original80socketreplies')
+            cmd.add_argument('--four-device-update-delivery',action='store_true',help='two real pairs/full update-v2 matrix after actual numeric protected2;original80socketreplies and real receivercheck/reply')
+            cmd.add_argument('--four-device-owned',action='store_true',help='two real pairs/two roles;existing Owned SSAP approval,denial,owner loss and actual wire overlap plus original80shortreplies')
+            cmd.add_argument('--four-device-dynamic-benchmark',action='store_true',help='two pairs of existing Root supervised apps-only short/long dynamic channels;144actual peer replies/16applications;not performance or full fairness qualification')
+            cmd.add_argument('--four-device-benchmark-case',choices=['parallel','close-short','pressure'],default='parallel',help='explicit v3 short close or v4 software EAGAIN recovery;336 replies;default parallel144 unchanged')
             cmd.add_argument('--four-device-burst',action='store_true',help='two real pairs,2roles16replies2042bytes each:64actual app replies,USB fragmentation,finite-queue pressure and observed pool/NOCP resumption;not fairness or credit correctness proof')
             cmd.add_argument('--four-device-disconnect',action='store_true',help='dedicated four-real-device controlled pair Disconnect/Down while other pair continues actual replies; alternates victims, no fault/recovery claim')
             cmd.add_argument('--four-device-business',action='store_true',help='four real controllers, two physical pairs, two connection roles, 80 ordinary app round trips; positive fixed-channel slice only')
             cmd.add_argument('--parallel-pairs',action='store_true',help='four actual radios, two live pairs; per-round match barrier and raw START/OFF overlap proof, no hotplug or injection')
             cmd.add_argument('--parallel-start-offset-ms',type=int,default=0,help='0..125 ms explicit second-pair timing contrast; never replaces the default parallel gate')
             cmd.add_argument('--early-bootstrap-fault',action='store_true',help='separate native three-real-device missing-custom fault, ordinary Core diagnostics and peer business; controlled QMP retry only')
+            from ws73_usb_partial_diagnostic import target_value,phase_value
+            cmd.add_argument('--usb-partial-rx-target',type=target_value,help='0,1,peer-of-unfinished orsource-of-unfinished within explicit pair;single VM USB detach after declared PB prefix and2s quiet;diagnostic only,never business/recovery PASS')
+            cmd.add_argument('--usb-partial-rx-phase',type=phase_value,default=1,help='0,1 oractive within original phases;default1 preserves old diagnostic scope;requires explicit target')
             cmd.add_argument('--daemon-cancel-remove',action='store_true',help='cancel while actual reply held, remove/re-add only that guest owner; requires --qmp-hotplug; excludes physical/automatic recovery')
             cmd.add_argument('--channel-daemon-crash',action='store_true',help='actual slkd SIGKILL with ordinary retained business fd, successor and no USB reset')
             cmd.add_argument('--security-agent',choices=['approve','reject','timeout','cancel','agent-exit','caller-exit','cli-approve','cli-reject','install-cancel','numeric-approve','numeric-reject','numeric-late'],help='actual ordinary Agent policy plus current native relay and peer application evidence; requires separate connection/socket gate')
@@ -2219,12 +3568,15 @@ def main():
             cmd.add_argument('--managed-channel-scm-rights',action='store_true',help='ordinary receiver gets real channel via SCM_RIGHTS after inherited authority closes')
             cmd.add_argument('--managed-channel-directions',action='store_true',help='real TX-only/RX-only one-way delivery and opposite-action/protected-bind denial')
             cmd.add_argument('--managed-channel-security',type=int,choices=[0,1,2],default=0,help='VM-only existing positive mechanism before first protected CUTC bind;then original prefix/File/Down/deadline lifecycle,not Agent/Bond/recovery')
+            cmd.add_argument('--managed-channel-sibling-business',action='store_true',help='dedicated same-kernel four-controller basic File/Down/deadline index0 prefix and real ordinary sibling-link replies;no daemon policy qualification')
             cmd.add_argument('--managed-channel-grant',action='store_true',help='real ordinary blocked socket RX across Managed release/final File/dup and successor; separate established File gate')
             cmd.add_argument('--managed-security-kind',choices=['capabilities','key-agreement','unauthenticated-encryption','cancel-pending','original-deadline','numeric-approve','numeric-reject','numeric-late'],default='capabilities',help='explicit capability, candidate proof or unauthenticated encryption mechanism; not Agent/identity/Bond')
             cmd.add_argument('--managed-security-capabilities',action='store_true',help='explicit Managed security negotiation gate; select bounded kind, never Pair/Encrypted')
             cmd.add_argument('--managed-channel-deadline',action='store_true',help='original5s begun-PDU deadline with separate bounded8s real IN81 hold, not recovery')
             cmd.add_argument('--managed-channel-link-down',action='store_true',help='direct physical Disconnect after actual begun PDU while both Managed leases remain held; separate from revoke/deadline/recovery')
             cmd.add_argument('--session-service-observe',action='store_true',help='dedicated default-off real Session service/queue/atomic USB trace;not performance or peer delivery proof')
+            cmd.add_argument('--session-service-profile',choices=['full-load-v2'],help='explicit bounded8MiB/CPU32MiBtext100k-event collector;requires service observation,not performance qualification')
+            cmd.add_argument('--managed-channel-queued-discard',action='store_true',help='explicit two queued2042B admissions behind held begunPDU;requires Managed prefix and Session trace,not business/recovery proof')
             cmd.add_argument('--managed-channel-idle-observe',action='store_true',help='dedicated VM ftrace of drained Session idle between real business and controlled prefix;not performance qualification')
             cmd.add_argument('--managed-channel-revoke-prefix',action='store_true',help='actual partial2042-byte USB PDU across per-controller Managed withdrawal, never natural recovery')
             cmd.add_argument('--managed-connected-index',type=int,choices=[0,1],default=0,help='actual Create caller in established-link File gate')
@@ -2264,6 +3616,16 @@ def main():
             cmd.add_argument('--channel-benchmark-interval-us',type=int,help='rate-only absolute interval10..1000000us,default100000;totalplan<=600s')
             cmd.add_argument('--channel-benchmark-xhci',choices=['on','off'],default='on',help='VM-only xHCI trace comparison;usbmon remains enabled')
             cmd.add_argument('--channel-benchmark',choices=['rate','window','duplex'],help='separate bounded real application benchmark in both connection roles;not performance qualification')
+            cmd.add_argument('--channel-benchmark-dynamic',action='store_true',help='explicit basic dynamic endpoint target;requires real CMTC and paired business evidence')
+            cmd.add_argument('--channel-benchmark-parallel',action='store_true',help='finite four-app short/long load on two dynamic channels;requires default window workload')
+            cmd.add_argument('--channel-benchmark-close-short',action='store_true')
+            cmd.add_argument('--channel-benchmark-pressure',action='store_true',help='explicit two-device v4 short20x61/window4 andlong64x2042/window16;requires actual EAGAIN then timely peer replies,not credit truth or full fairness')
+            cmd.add_argument('--channel-benchmark-ssap-owned',action='store_true',help='fixed128x2042/window8 dynamic correctness load with actual ordinary Owned SSAP callers;not performance')
+            cmd.add_argument('--channel-benchmark-ssap-duplex',action='store_true',help='pair actual opposite-controller SDK steps with USB pending overlap;requires --channel-benchmark-ssap-owned;not a sequential-gate replacement')
+            cmd.add_argument('--channel-benchmark-credit-observe',action='store_true',help='explicit finite ordinary GetTransportStatus observation during Owned SSAP load;not credit/drain/performance qualification')
+            cmd.add_argument('--channel-benchmark-hcc-memory-observe',action='store_true',help='opt-in root-only bounded fixed HCC memory query during original observed SSAP load;raw/unsupported,not verified credit or recovery')
+            cmd.add_argument('--channel-benchmark-link-probe',action='store_true',help='one existing Managed RSSI attempt per endpoint six seconds after each phase start;requires initial link/credit observations;not RF delivery,drain or performance')
+            cmd.add_argument('--channel-benchmark-active-endpoint',type=int,choices=[0,1],help='dynamic negotiation role independent of business direction;default0 when dynamic')
             cmd.add_argument('--ssap-service-policy',action='store_true',help='actual guest system-bus service-only role matrix;separate from RF and full authorization')
             cmd.add_argument('--native-return-verify',action='store_true',help='VM-only actual Native bind-return/physical Down/parent cleanup,then ordinary data preservation')
             cmd.add_argument('--native-controller-return',choices=['initiator','acceptor'],help='actual User bind return across existing one-leaf QMP removal; original socket gate runs after re-add')
@@ -2271,13 +3633,26 @@ def main():
             cmd.add_argument('--ssap-initialization-verify',action='store_true',help='real negotiation-stage lease revoke/fd convergence then ordinary same-artifact connection/socket preservation')
             cmd.add_argument('--ssap-initialization-stage',choices=['cmtc','exchange'],default='cmtc')
             cmd.add_argument('--ssap-owned-update-verify',action='store_true')
+            cmd.add_argument('--ssap-subscription-verify',action='store_true',help='real protected continuous caller-owned lease,multiple random updates and actual apps-only distinct replies')
+            cmd.add_argument('--ssap-subscription-shared-verify',action='store_true',help='two actual SDK subscribers,partial retained release and last physical cleanup;dedicated gate')
+            cmd.add_argument('--ssap-subscription-shared-case',choices=('release','expiry','owner-exit','pressure'),default='release',help='separate release,original expiry,reader exit or bounded slow-reader isolation;not kernel Grant revocation')
+            cmd.add_argument('--ssap-subscription-renewal-verify',action='store_true',help='actual same-token long renewal and checked replies beyond original short lease expiry;requires subscription gate')
+            cmd.add_argument('--ssap-subscription-pressure-verify',action='store_true',help='actual bounded subscriber queue full/refusal,ordered drain and checked resume;separate from controller credit pressure')
+            cmd.add_argument('--ssap-subscription-owner-loss-verify',action='store_true',help='actual guest reader death,paired cleanup/read barrier and fresh same-Session subscription;not full lifecycle qualification')
+            cmd.add_argument('--ssap-subscription-inflight-release-verify',action='store_true',help='release while real indication ACK RX is withheld;actual disableTX barrier,discard and fresh lease business;not expiry qualification')
+            cmd.add_argument('--ssap-subscription-inflight-case',choices=['release','expiry'],default='release',help='explicit original lease expiry or application release,through same bounded in-flight gate')
+            cmd.add_argument('--ssap-update-delivery-verify',action='store_true',help='real typed/authenticated CPCD,notification/indication and C/Python peer business reply')
+            cmd.add_argument('--ssap-update-lifecycle-verify',action='store_true',help='dedicated same-actor receiver exit,original deadline and confirmed CPCD cleanup;requires update delivery')
+            cmd.add_argument('--ssap-sender-deadline-verify',action='store_true',help='original1s SDK deadline with bounded2s real IN81 hold,late ACK and actual peer reply;requires dedicated update delivery')
+            cmd.add_argument('--ssap-sender-lifecycle-case',choices=['deadline','owner-after-deadline'],default='deadline',help='same controlled barrier;owner-after-deadline requires actual owner death andpaired oldservice refusals')
+            cmd.add_argument('--ssap-value-lengths-verify',action='store_true',help='dedicated real complete-PDU value lengths/MTU refusal gate;not SSAP protocol fragmentation')
             cmd.add_argument('--ssap-owner-lifecycle-verify',action='store_true',help='actual owner exit/stale prompt/original deadline with ordinary CUTC afterwards')
             cmd.add_argument('--ssap-owner-publisher',choices=['cli','sdk'],default='cli',help='explicit owner frontend;SDK selects C/Python per role,no fallback')
             cmd.add_argument('--ssap-requester-lifecycle-verify',action='store_true',help='actual C/Python requester death/old reply drain and ordinary CUTC while real owner prompt held')
             cmd.add_argument('--ssap-owned-verify',action='store_true',help='real owner authorization and exit cleanup;not complete SSAP or service-only policy qualification')
             cmd.add_argument('--channel-socket-verify',action='store_true',help='ordinary dual application real channel round trips and CMTC, without test module')
             cmd.add_argument('--application-discovery-verify',action='store_true',help='actual apps-only shared discovery, two scanner roles; optional ordinary connection/socket preservation')
-            cmd.add_argument('--application-discovery-case',choices=['release','owner-loss'],default='release',help='explicit release or SIGKILL of only owned VM callers;not natural recovery or complete lifecycle qualification')
+            cmd.add_argument('--application-discovery-case',choices=['release','owner-loss','ttl','sdk-release'],default='release',help='bounded release/caller-loss/TTL;TTL requires prepared live-caller SDK probe;not full lifecycle/recovery qualification')
             cmd.add_argument('--application-client-verify',action='store_true',help='dedicated real public C/Python SDK one-shot/dup/final-close gate;not fullSDK orpermission qualification')
             cmd.add_argument('--acb-transport-probe',action='store_true',help='explicit signed external-module real ACB transport probe; excludes ordinary socket acceptance')
             cmd.add_argument('--connection-verify',action='store_true',help='real typed Connect/Disconnect plus raw outcomes; requires separate --qmp-hotplug VM')

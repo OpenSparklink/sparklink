@@ -4,10 +4,29 @@
 //! response, queue admission and remote application processing remain distinct.
 pub mod authorization;
 pub mod local;
+pub mod subscription;
 use crate::{ApplicationConnection, ApplicationError};
 use slk_contract::{self as contract, ssap as wire};
 
 type Result<T> = std::result::Result<T, ApplicationError>;
+
+// One decoder and scope check for both the one-shot and leased receive views.
+// This validates a broker receipt; it does not grant Native security or delivery.
+fn validate_update(handles: &[u16], modes: u8, indication: bool, raw: &[u8]) -> Result<()> {
+    let packet = slk_protocol::ssap::updates::Update::decode(2048, raw)
+        .map_err(|_| ApplicationError::Identity("malformed received SSAP update"))?;
+    if packet.event
+        || packet.indication != indication
+        || modes & (if indication { 2 } else { 1 }) == 0
+        || packet
+            .items
+            .iter()
+            .any(|item| !handles.contains(&item.handle))
+    {
+        return Err(ApplicationError::Identity("received SSAP update scope"));
+    }
+    Ok(())
+}
 
 /// Borrows one pinned physical lifetime and the original daemon owner.
 /// This is not a remote service registration or a security authorization.
@@ -17,6 +36,19 @@ pub struct RemoteSsap<'a> {
 impl<'a> RemoteSsap<'a> {
     pub(crate) fn new(link: &'a ApplicationConnection) -> Self {
         Self { link }
+    }
+    /// Acquire a finite remote update lease on the existing physical actor.
+    /// One lease per actor currently; no shared-CPCD or implicit reconnect.
+    /// Dropping the parent connection view does not release this owned lease.
+    pub async fn subscribe(
+        &self,
+        handles: Vec<u16>,
+        modes: u8,
+        duration_ms: u32,
+        original: crate::Deadline,
+    ) -> Result<subscription::Subscription> {
+        subscription::Subscription::open(self.link.clone(), handles, modes, duration_ms, original)
+            .await
     }
     // All calls use the same production identity checks. No late reply can
     // silently be relabelled as a replacement daemon/connection observation.
@@ -28,6 +60,83 @@ impl<'a> RemoteSsap<'a> {
         let result = operation.await?;
         self.link.live().await?;
         Ok(result)
+    }
+    /// Send a snapshot of a property owned by this same original bus caller.
+    /// A notification reports software admission; an indication reports peer
+    /// receive-queue ACK. Neither is application delivery or a retry promise.
+    pub async fn send_owned_update(
+        &self,
+        handle: u16,
+        indication: bool,
+        original: crate::Deadline,
+    ) -> Result<wire::UpdateReceipt> {
+        let original = original.capped(slk_channel::deadline::PROTOCOL_WAIT)?;
+        let value = crate::client::bounded(
+            &self.link.client,
+            original,
+            self.current(async {
+                let value: wire::UpdateReceipt = self
+                    .link
+                    .client
+                    .proxy(&self.link.path, contract::CONNECTION)
+                    .await?
+                    .call(
+                        wire::OWNED_UPDATE,
+                        &(
+                            handle,
+                            indication,
+                            contract::deadline_wire(original.stamp()),
+                        ),
+                    )
+                    .await?;
+                if value.stage != if indication { 2 } else { 1 }
+                    || value.pdu.len() > 2048
+                    || value.acknowledgement != if indication { vec![17, 3, 1] } else { vec![] }
+                {
+                    return Err(ApplicationError::Identity("malformed owned update receipt"));
+                }
+                let decoded = slk_protocol::ssap::updates::Update::decode(2048, &value.pdu)
+                    .map_err(|_| ApplicationError::Identity("malformed owned update PDU"))?;
+                if decoded.event
+                    || decoded.indication != indication
+                    || decoded.items.len() != 1
+                    || decoded.items[0].handle != handle
+                {
+                    return Err(ApplicationError::Identity("owned update receipt scope"));
+                }
+                Ok(value)
+            }),
+        )
+        .await?;
+        Ok(value)
+    }
+    /// Read-only configuration of a property owned by this caller; no enable,
+    /// radio administration, security installation or readiness side effect.
+    pub async fn owned_configuration(&self, handle: u16, original: crate::Deadline) -> Result<u8> {
+        let original = original.capped(slk_channel::deadline::PROTOCOL_WAIT)?;
+        crate::client::bounded(
+            &self.link.client,
+            original,
+            self.current(async {
+                let modes: u8 = self
+                    .link
+                    .client
+                    .proxy(&self.link.path, contract::CONNECTION)
+                    .await?
+                    .call(
+                        wire::OWNED_CONFIGURATION,
+                        &(handle, contract::deadline_wire(original.stamp())),
+                    )
+                    .await?;
+                if modes & !3 != 0 {
+                    return Err(ApplicationError::Identity(
+                        "reserved client configuration bits",
+                    ));
+                }
+                Ok(modes)
+            }),
+        )
+        .await
     }
     pub async fn discover(&self, uuid: Vec<u8>, kind: u8) -> Result<wire::Discovery> {
         self.current(async {
@@ -54,24 +163,62 @@ impl<'a> RemoteSsap<'a> {
         })
         .await
     }
-    /// Observe incoming notification/indication. This does not subscribe the
-    /// peer or prove another application processed an indication.
-    pub async fn observe(
+    /// Enable authenticated,owner-approved remote CPCD,receive one packet,and
+    /// verify disable before returning. Pre-existing settings are not overwritten.
+    /// Timeout/cancel may quarantine the physical SSAP actor if cleanup is unknown.
+    pub async fn receive_update(
         &self,
         handles: Vec<u16>,
         modes: u8,
         wait_ms: u32,
     ) -> Result<wire::Incoming> {
-        self.current(async {
-            Ok(self
-                .link
-                .client
-                .proxy(&self.link.path, contract::CONNECTION)
-                .await?
-                .call(wire::OBSERVE, &(handles, modes, wait_ms))
-                .await?)
-        })
-        .await
+        if !(10..=10000).contains(&wait_ms) {
+            return Err(ApplicationError::Invalid("receive wait10..10000ms"));
+        }
+        let original =
+            crate::Deadline::after(std::time::Duration::from_millis(u64::from(wait_ms)))?;
+        self.receive_until(handles, modes, original).await
+    }
+    /// Same transaction with an original absolute deadline,including SDK queueing.
+    pub async fn receive_until(
+        &self,
+        handles: Vec<u16>,
+        modes: u8,
+        original: crate::Deadline,
+    ) -> Result<wire::Incoming> {
+        let original = original.capped(std::time::Duration::from_secs(10))?;
+        if handles.is_empty()
+            || handles.len() > 32
+            || handles.contains(&0)
+            || handles
+                .iter()
+                .enumerate()
+                .any(|(i, h)| handles[..i].contains(h))
+            || modes == 0
+            || modes & !3 != 0
+        {
+            return Err(ApplicationError::Invalid("receive handles/modes"));
+        }
+        let expected = handles.clone();
+        let value: wire::Incoming = crate::client::bounded(
+            &self.link.client,
+            original,
+            self.current(async {
+                Ok(self
+                    .link
+                    .client
+                    .proxy(&self.link.path, contract::CONNECTION)
+                    .await?
+                    .call(
+                        wire::RECEIVE,
+                        &(handles, modes, contract::deadline_wire(original.stamp())),
+                    )
+                    .await?)
+            }),
+        )
+        .await?;
+        validate_update(&expected, modes, value.0, &value.1)?;
+        Ok(value)
     }
     pub async fn read_by_uuid(
         &self,
@@ -140,8 +287,9 @@ impl<'a> RemoteSsap<'a> {
         original.remaining()?;
         Ok(result)
     }
-    /// Uses the daemon's existing short-write contract. No truncation, long
-    /// write fallback or local echo is performed by the SDK.
+    /// Uses the daemon's bounded value contract and negotiated wire support.
+    /// The SDK never truncates, fragments independently, retries an uncertain
+    /// write or substitutes a local echo for the peer result.
     pub async fn write(
         &self,
         handle: u16,

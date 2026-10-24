@@ -324,16 +324,11 @@ pub(crate) fn run(fd: OwnedFd, responder: bool, config: Config, path: &Path) -> 
     let fd = crate::channel::prepare_application_fd(fd)?;
     crate::channel::wait(&fd, nix::libc::POLLOUT, Instant::now() + DEADLINE)?;
     let info = slk_channel::query(fd.as_raw_fd())?;
-    if info.mode != 0
-        || info.directions != 3
-        || usize::from(info.mtu) < config.bytes
-        || usize::from(info.mps) < config.bytes + 5
-        || info.local_tcid != 31
-        || info.remote_tcid != 31
-        || info.pi != 241
-    {
-        anyhow::bail!("benchmark requires the current bidirectional basic CUTC contract");
-    }
+    crate::channel::require_data_capabilities(
+        &info,
+        config.bytes,
+        crate::channel::DataChannelKind::BasicCutc,
+    )?;
     println!(
         "SocketBenchmarkReady: responder={responder} count={} bytes={}",
         config.count, config.bytes

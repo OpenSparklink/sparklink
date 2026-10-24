@@ -1,4 +1,5 @@
 """Evidence verdict fixtures; not a peer, kernel or protocol implementation."""
+import ast
 import hashlib
 from pathlib import Path
 import sys
@@ -19,7 +20,7 @@ def fixture():
             allow=policy=='allow';h=17;local=(value if allow else secret).hex()
             item=dict(sender=s,target=1-s,policy=policy,handle=h,start=16,end=h,secret=secret.hex(),value=value.hex(),uuid=uuid.hex(),service=service.hex(),start_wall_ns=1,end_wall_ns=100,owner_exit_wall_ns=60,exit=-9,owner_exit=-9,stderr='',local_value=local,credentials=dict(uids=[1000]*4,capabilities={'CapEff':'0','CapPrm':'0','CapAmb':'0'}),after_owner_exit=dict(exit=0,stdout='SsapLocalServices: []\n'))
             item['args']=['slctl','--adapter',owners[1-s]['owner']['path'],'ssap-serve',service.hex(),uuid.hex(),'5','36',secret.hex(),policy]
-            item['stdout']=f'SsapOwnedValue: handle={h} value={local}\n'+''.join(f'SsapAuthorizationDecision: request={i+1} property={h} write={write} security=0 approved={str(allow).lower()}; local policy only\n' for i,write in enumerate(['false','false','true','false']))
+            item['stdout']=f'SsapOwnedValue: handle={h} value={local}\n'+''.join(f'SsapAuthorizationDecision: request={i+1} property={h} data_type=0 write={write} security=0 approved={str(allow).lower()}; local policy only\n' for i,write in enumerate(['false','false','true','false']))
             ops=value_operations(h,uuid,secret,value,0 if allow else 9)+[('removed_read',b'\x08\x03\x11\0\0',b'\x09\x0b\x04\0')]
             for name,request,response in ops:
                 c=dict(exit=0,stdout='',stderr='',start_wall_ns=70 if name=='removed_read' else 20,end_wall_ns=71 if name=='removed_read' else 21)
@@ -70,7 +71,14 @@ class OwnedEvidence(unittest.TestCase):
     def test_guest_copy_and_hash_inventory_and_opt_in_are_present(self):
         root=Path(__file__).resolve().parents[1]
         source=(root/'ws73_target.py').read_text()
-        self.assertEqual(source.count("'ws73_ssap_owned.py'"),2)
+        # Check the actual staging responsibilities, not every occurrence in
+        # unrelated preparation/verdict guards elsewhere in the module.
+        function=next(n for n in ast.parse(source).body if isinstance(n,ast.FunctionDef)and n.name=='prepare_locked')
+        self.assertEqual(sum(isinstance(n,ast.BinOp)and isinstance(n.op,ast.Div)
+            and isinstance(n.right,ast.Constant)and n.right.value=='ws73_ssap_owned.py'
+            for n in ast.walk(function)),1)
+        self.assertEqual(sum(isinstance(n,ast.List)and any(isinstance(v,ast.Constant)
+            and v.value=='ws73_ssap_owned.py'for v in n.elts)for n in ast.walk(function)),1)
         self.assertIn('ssap_owned_verification_requested',source)
         self.assertIn('owned SSAP request/evidence mismatch',source)
         self.assertIn('--ssap-owned-verify',(root/'ws73_target_init.sh').read_text())

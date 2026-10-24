@@ -130,5 +130,19 @@ class SiblingGate(unittest.TestCase):
         self.assertIs(primary.corroborate_transition,gate.corroborate_transition)
         self.assertNotIn('from ws73_connected_file_gate import',Path(gate.__file__).read_text())
 
+    def test_transport_failures_are_bound_to_selected_pair_and_original_window(self):
+        import ws73_native_pair as common
+        row=dict(usb=[dict(bus=1,device=4),dict(bus=1,device=5)])
+        capture=dict(failures=[dict(bus=1,device=2,wall_ns=110,status=-2),
+                              dict(bus=1,device=4,wall_ns=99,status=-2)])
+        original=copy.deepcopy(capture)
+        common.check_transport(row,capture,100,200)
+        self.assertEqual(capture,original) # retain out-of-scope failures
+        for device in (4,5):
+            for when in (100,150,200):
+                bad=copy.deepcopy(capture);bad['failures'].append(dict(bus=1,device=device,wall_ns=when,status=-2))
+                with self.subTest(device=device,when=when),self.assertRaises(CaptureError):
+                    common.check_transport(row,bad,100,200)
+
 
 if __name__=='__main__':unittest.main()

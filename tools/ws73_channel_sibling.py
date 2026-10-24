@@ -16,7 +16,7 @@ from sparklink.structs import SleManagementQuery, SleLinkSnapshot
 from ws73_capture import CaptureError, discovery, marker_data
 from ws73_channel_grant import Gate, business_evidence, checked_controller_ids, validate, verify_intents, verify_owner
 from ws73_native_pair import (connection, stop, drain_events, discovery_operation,
-    await_events, corroborate_discovery, corroborate_transition)
+    await_events, check_transport, corroborate_discovery, corroborate_transition)
 from ws73_resource_file_gate import announcement
 from ws73_management_partial import standby
 from ws73_diagnostic_hold import write_marker
@@ -207,6 +207,14 @@ def identities(outer):
 
 def corroborate(outer,capture):
     row=verify(outer);g=row['channel_grant'];sdus,legs=business_evidence(g,row,capture)
+    # This pair is attached after the victim fixture has already started.
+    # Its qualification window starts after both actual Setup/HCC observations,
+    # at the first policy operation; bootstrap cancellations are not promoted
+    # to a clean initialization or natural recovery qualification.
+    start=row['discovery'][0]['start_wall_ns']
+    if max(h['observed_wall_ns']for h in row['hcc_observations'])>=start:
+        raise CaptureError('sibling policy window must follow both actual Setup/HCC observations')
+    check_transport(row,capture,start,row['end_wall_ns'])
     snapshots=[setup(raw,index)for raw,index in zip(row['initial_snapshots'],(2,3),strict=True)]
     radio,heard=corroborate_discovery(row,capture,snapshots)
     links=[corroborate_transition(row,capture,snapshots,1,0x1401,row['connect_before_wall_ns'],row['connect_after_wall_ns'],'up'),corroborate_transition(row,capture,snapshots,2,0x1403,row['release_before_wall_ns'],row['end_wall_ns'],'down')]

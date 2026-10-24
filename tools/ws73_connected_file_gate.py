@@ -24,7 +24,7 @@ from sparklink.structs import (SleConnectionSubmit, SleConnectionParameters,
 
 
 from ws73_native_pair import (connection, stop, drain_events, discovery_operation,
-    await_events, corroborate_discovery, corroborate_transition)
+    await_events, check_transport, corroborate_discovery, corroborate_transition)
 
 
 def duplicate_result(fd, generation, identifier):
@@ -278,8 +278,7 @@ def _corroborate(r, capture, hold=None, stderr=None, expected=None, prelude=None
     actual=[c for c in capture['commands'] if any(belongs(c,n,r['start_wall_ns'],r['end_wall_ns']) for n in [0,1])]
     if actual!=sorted(expected_commands,key=lambda c:c['wall_ns']):
         raise CaptureError('unrecorded reset, disconnect or peer command in connected File gate')
-    if any(r['start_wall_ns']<=e['wall_ns']<=r['end_wall_ns'] for e in capture['failures']):
-        raise CaptureError('USB transport failure inside connected File gate')
+    check_transport(r,capture,r['start_wall_ns'],r['end_wall_ns'])
     if r.get('peer_binding_gate'):
         for row in r['binding_rejections']:
             if any(belongs(c,n,row['start_wall_ns'],row['end_wall_ns']) for c in capture['commands'] for n in [0,1]):

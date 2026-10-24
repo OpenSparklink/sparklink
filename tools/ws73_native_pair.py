@@ -50,6 +50,18 @@ def await_events(record,drain,key,codes,index=None):
         if time.monotonic()>deadline:raise TimeoutError('both actual '+key+' events')
         time.sleep(.002)
 
+def check_transport(record,capture,start,end):
+    """The same complete USB failure rule, scoped to this explicit pair/window.
+
+    A four-controller capture also contains another pair's initialization.
+    Its pre-policy receive cancellations remain evidence, not this pair's
+    business transport outcome. Every selected in-window failure still fails.
+    """
+    selected={(v['bus'],v['device'])for v in record['usb']}
+    if any((e['bus'],e['device'])in selected and start<=e['wall_ns']<=end
+           for e in capture['failures']):
+        raise CaptureError('USB transport failure inside selected Native pair gate')
+
 def corroborate_discovery(r,capture,snapshots):
     i=r['index']
     def belongs(row,n,start,end):

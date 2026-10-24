@@ -48,7 +48,11 @@ class PairedBenchmarkNamespace(unittest.TestCase):
             elif case=='boolean-version':r[gate.PAIR_FIELD]=True
             elif case=='boolean-pair':r['parallel_pair']=True
             elif case=='outside-pair':r['parallel_pair']=2
-            elif case=='close-profile':r[gate.CHANNEL_FIELD]=gate.parallel_channel(close_short=True)
+            elif case=='close-profile':
+                # Canonical v3 is now explicit supported scope; malformed v3
+                # must still fail rather than silently use the v2 workload.
+                r[gate.CHANNEL_FIELD]=gate.parallel_channel(close_short=True)
+                r[gate.CHANNEL_FIELD]['channels'][1]['config']['count']=16
             else:r[gate.CHANNEL_FIELD]=r[gate.CHANNEL_FIELD]['channels'][0]['route']
             with self.subTest(case=case),self.assertRaises(CaptureError):gate.validate_role_request(r,0,live=True)
 

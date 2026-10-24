@@ -470,6 +470,12 @@ elif grep -q 'ws73.parallel_business=1' /proc/cmdline; then
     if grep -q 'ws73.parallel_delivery=1' /proc/cmdline; then disconnect_arg='--update-delivery'; fi
     if grep -qw ws73.parallel_subscription=1 /proc/cmdline; then disconnect_arg='--shared-subscription'; fi
     if grep -qw ws73.parallel_benchmark=1 /proc/cmdline; then disconnect_arg='--dynamic-benchmark'; fi
+    benchmark_case=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.parallel_benchmark_case=/){sub(/^ws73.parallel_benchmark_case=/,"",$i);print $i}}' /proc/cmdline)
+    if [ -n "$benchmark_case" ]; then
+        [ "$disconnect_arg" = '--dynamic-benchmark' ] || fail 'benchmark case requires dedicated parallel benchmark'
+        [ "$benchmark_case" = 'close-short' ] || fail 'supported explicit parallel benchmark case'
+        disconnect_arg="$disconnect_arg --dynamic-benchmark-case $benchmark_case"
+    fi
     shared_case=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.subscription_shared_case=/){sub(/^ws73.subscription_shared_case=/,"",$i);print $i}}' /proc/cmdline)
     if [ -n "$shared_case" ]; then
         [ "$disconnect_arg" = '--shared-subscription' ] || fail 'shared case requires shared parallel mode'

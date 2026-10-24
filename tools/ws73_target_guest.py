@@ -348,9 +348,10 @@ def verify_parallel():
     if capture['packet_count']!=count:raise ValueError('parallel sealed capture count mismatch')
     subscription='ws73.parallel_subscription=1'in Path('/proc/cmdline').read_text().split()
     if business and run.get('shared_subscription_mode',False)is not subscription:raise ValueError('explicit shared subscription boot/evidence mismatch')
-    from ws73_parallel_data import benchmark_mode
+    from ws73_parallel_data import benchmark_mode,benchmark_case,benchmark_case_from_boot
     benchmark=benchmark_mode(run)
     if benchmark!=('ws73.parallel_benchmark=1'in Path('/proc/cmdline').read_text().split()):raise ValueError('explicit paired benchmark boot/evidence mismatch')
+    if benchmark_case(run)!=benchmark_case_from_boot(Path('/proc/cmdline').read_text().split()):raise ValueError('explicit paired benchmark case/evidence mismatch')
     proof=corroborate(run,capture,**({'evidence':EVIDENCE}if subscription or benchmark else{}))
     (EVIDENCE/f'{name}-proofs.json').write_text(json.dumps(proof,indent=2)+'\n')
     print('WS73_TARGET_PARALLEL_BUSINESS: PASS' if business else 'WS73_TARGET_PARALLEL_RF: PASS',flush=True)

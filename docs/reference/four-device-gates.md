@@ -44,6 +44,19 @@ pair0／1监督器。协调记录使用`parallel_benchmark_contract_version=1`�
 错误连接归属或重复Root进程均拒绝，不降级到固定通道。VM配置为3GiB／2vCPU，以容纳
 两个有界本地快照目录；它不是性能调优结论。
 
+显式 `--four-device-benchmark-case close-short` 复用原两设备v3用例；默认`parallel`
+仍为v2／144次回复。v3每组、每种物理角色为短通道20×61字节和长通道64×2042字节，
+共336次真实对端回复（短80、长256），仍为16个普通应用进程。新准备记录必须含
+`four_dynamic_benchmark_close_contract_version=1`；run、启动参数
+`ws73.parallel_benchmark_case=close-short`、工作进程参数、Root请求的完整v3配置和
+聚合范围必须一致。不能把v2报告补字段后升级为关闭资格，也不能省略显式用例。
+
+关闭门禁逐组、逐角色复用既有CMTC／载荷校验及`close_continuity`：短通道实际关闭、
+短应用成功退出并被回收之后，同一个长应用还须完成新的请求和对端校验回复；关闭前
+也须有真实往返。只看最终计数、日志或另一物理连接仍存在均不足以通过。各组仍要求
+完整Root封闭快照和两个物理业务区间实际重叠。此处定义工具契约，准确新artifact的
+实机通过另行记录；不证明callback排空、NOCP准确性、handle安全复用、完整公平性或性能。
+
 该模式也须初始化既有benchmark追踪：明确选择mono时钟，保存原起止配置、时钟、页面
 布局及完整无丢失xHCI记录。两个Root的阶段marker包含pair与物理角色，聚合追踪契约为
 版本2；每组保留两段原有序阶段和Root原始见证，不能混用双设备版本1或忽略另一组marker。

@@ -50,7 +50,7 @@ def parallel_pair(row):
     pair=row.get('parallel_pair')
     if (type(row.get(PAIR_FIELD)) is not int or row[PAIR_FIELD]!=1
             or type(pair) is not int or pair not in (0,1)
-            or row_channel(row) is None or row_channel(row).get('version')!=2
+            or row_channel(row) is None or row_channel(row).get('version')not in(2,3)
             or ssap_gate.selected(row) is not None):
         raise CaptureError('explicit canonical benchmark pair0/1 contract required')
     return pair
@@ -68,6 +68,15 @@ def check_pair_boot(pair,words):
     require_pair_boot('benchmark',pair,words)
     if pair is not None and words.count(ROLE_TOKEN)!=1:
         raise CaptureError('one original benchmark role VM token required')
+
+
+def check_pair_channel_boot(row,words):
+    """Bind the actual Root workload to the explicit paired VM case."""
+    pair=parallel_pair(row);check_pair_boot(pair,words)
+    if pair is not None:
+        from ws73_parallel_data import benchmark_case_from_boot
+        expected=parallel_channel(0,close_short=benchmark_case_from_boot(words)=='close-short')
+        if row_channel(row)!=expected:raise CaptureError('paired Root request must match explicit VM benchmark case')
 
 
 def channel_configuration(value):
@@ -483,7 +492,7 @@ def execute_supervised(run,row):
     from ws73_application_client import process_identity,application_environment
     from ws73_north_star import file_record
     require_vm(ROLE_TOKEN)
-    check_pair_boot(parallel_pair(row),Path('/proc/cmdline').read_text().split())
+    check_pair_channel_boot(row,Path('/proc/cmdline').read_text().split())
     if ssap_gate.from_boot(Path('/proc/cmdline').read_text().split())!=ssap_gate.selected(row):raise CaptureError('concurrent SSAP boot/request mismatch')
     if not apps_role(row):raise CaptureError('live benchmark requires explicit apps-only contract')
     validate_role_request({k:row[k]for k in request_fields(row)},row['phase'],live=True)

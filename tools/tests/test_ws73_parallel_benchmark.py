@@ -19,29 +19,38 @@ import ws73_socket_benchmark as benchmark
 from ws73_target import validate_business_mode,require_benchmark_preparation,valid_parallel_benchmark,run_exit_code
 
 
-def fixture(root):
+def fixture(root,*,close_short=False):
     control=business_fixture();control.update(scope=gate.BENCHMARK_SCOPE,dynamic_benchmark_mode=True,parallel_benchmark_contract_version=1)
+    if close_short:control['parallel_benchmark_case']='close-short'
+    channel=benchmark.parallel_channel(close_short=close_short)
     pairs=[]
     for number,w in enumerate(control['workers']):
-        folder=root/str(number);folder.mkdir();r,c=role_fixtures.ClosedBenchmarkRoleFixture().fixture(folder,benchmark.parallel_channel());proof=benchmark._match_payloads(r,c,folder)
+        folder=root/str(number);folder.mkdir();r,c=role_fixtures.ClosedBenchmarkRoleFixture().fixture(folder,channel);proof=benchmark._match_payloads(r,c,folder)
         proof.update(parallel_pair=number,**{benchmark.PAIR_FIELD:1})
         child=w['run'];child.update(scope=gate.BENCHMARK_SCOPE,dynamic_benchmark_mode=True,parallel_benchmark_contract_version=1,socket_benchmark=[],connection_control=dict(phases=[]));child.pop('channel_socket');w['args'].insert(-2,'--dynamic-benchmark')
+        if close_short:
+            child['parallel_benchmark_case']='close-short';w['args'][-2:-2]=['--dynamic-benchmark-case','close-short']
         connections=[]
         for phase in range(2):
             owners=[dict(owner=child['initial'][i],object=dict(generation=child['initial'][i]['generation'],lifetime=11+phase,handle=0))for i in(phase,1-phase)]
-            row=dict(phase=phase,status=benchmark.PENDING,owners=owners,config=benchmark.configuration('window'),parallel_pair=number,applications=[dict(pid=2000+8*number+4*phase+i)for i in range(4)],**{benchmark.PAIR_FIELD:1,benchmark.CHANNEL_FIELD:benchmark.parallel_channel()})
+            row=dict(phase=phase,status=benchmark.PENDING,owners=owners,config=benchmark.configuration('window'),parallel_pair=number,applications=[dict(pid=2000+8*number+4*phase+i)for i in range(4)],**{benchmark.PAIR_FIELD:1,benchmark.CHANNEL_FIELD:channel})
             cookie='01234567-89ab-cdef-0123-456789abcdef'
             row['trace_observation']=dict(version=1,mode='on',clock='mono',cookie=cookie,parallel_pair=number,marker=f'SLK_BENCH_PAIR_{number}_PHASE_BEGIN:{cookie}:{phase}',end_marker=f'SLK_BENCH_PAIR_{number}_PHASE_END:{cookie}:{phase}')
             child['socket_benchmark'].append(row);child['connection_control']['phases'].append(dict(typed_objects=owners));proof['proofs'][phase]['owners']=owners
-            connections.append(dict(steps=[dict(outcomes=[dict(wall_ns=phase*2000+100)]),dict(outcomes=[dict(wall_ns=phase*2000+1500)])]))
-        supervision=dict(status='ACTUAL_ROOT_BENCHMARK_APPS_ONLY_PHASES_CHECKED',version=2,uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=8,report_files=8,phases=2,performance_qualified=False,daemon=child['daemon_before'],supervisor=dict(pid=3000+number,start_ticks=77+number),snapshot_files=30,snapshot_bytes=1,parallel_pair=number,**{benchmark.PAIR_FIELD:1,benchmark.CHANNEL_FIELD:benchmark.parallel_channel()})
+            base=phase*(20000 if close_short else 2000)
+            connections.append(dict(steps=[dict(outcomes=[dict(wall_ns=base+100)]),dict(outcomes=[dict(wall_ns=base+(9000 if close_short else 1500))])]))
+        supervision=dict(status='ACTUAL_ROOT_BENCHMARK_APPS_ONLY_PHASES_CHECKED',version=benchmark.supervision_version(channel),uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=8,report_files=8,phases=2,performance_qualified=False,daemon=child['daemon_before'],supervisor=dict(pid=3000+number,start_ticks=77+number),snapshot_files=30,snapshot_bytes=1,parallel_pair=number,**{benchmark.PAIR_FIELD:1,benchmark.CHANNEL_FIELD:channel})
         pairs.append(dict(channel=proof,benchmark_supervision=supervision,connections=connections))
-    proof=dict(status='FOUR_REAL_PARALLEL_DYNAMIC_BENCHMARK_CORROBORATED',parallel_benchmark_contract_version=1,parallel_benchmark_control=control,pairs=pairs,dynamic_benchmark=gate.benchmark_parallel_proof(pairs,control),overlaps=[],controller_count=4,round_trips=144,ordinary_uid=1004,coordinator_uid=1000,dynamic_channel_acceptance=True,fixed_basic_channel_business_acceptance=False,performance_qualified=False,fairness_acceptance=False,controller_credit_correctness_proof=False,fault_isolation_acceptance=False,automatic_fault_recovery_acceptance=False,protected_ssap_acceptance=False,full_goal_complete=False)
+    proof=dict(status='FOUR_REAL_PARALLEL_DYNAMIC_BENCHMARK_CORROBORATED',parallel_benchmark_contract_version=1,parallel_benchmark_control=control,pairs=pairs,dynamic_benchmark=gate.benchmark_parallel_proof(pairs,control),overlaps=[],controller_count=4,round_trips=336 if close_short else 144,ordinary_uid=1004,coordinator_uid=1000,dynamic_channel_acceptance=True,fixed_basic_channel_business_acceptance=False,performance_qualified=False,fairness_acceptance=False,controller_credit_correctness_proof=False,fault_isolation_acceptance=False,automatic_fault_recovery_acceptance=False,protected_ssap_acceptance=False,full_goal_complete=False)
+    if close_short:proof['channel_close_isolation_acceptance']=True
     proof['paired_trace']=dict(status='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED',mode='on',trace_contract_version=2,clock='mono',cookie=cookie,requested_buffer_kb=8192,trace=dict(bytes=1000),phase_intervals=[dict(pair=i,phases=[dict(phase=0,begin_ns=10+i,end_ns=20+i),dict(phase=1,begin_ns=40+i,end_ns=50+i)])for i in(0,1)])
     for n in range(2):
         windows=[[min(v['tx']['wall_ns']for v in p['channel']['proofs'][n]['legs']),max(v['rx']['wall_ns']for v in p['channel']['proofs'][n]['legs'])]for p in pairs]
         proof['overlaps'].append(dict(role_phase=n,business_windows=windows,overlap_wall_ns=gate.overlap_window(windows)))
-    return dict(status='FOUR_DEVICE_PARALLEL_DYNAMIC_BENCHMARK_PASS',scope=gate.BENCHMARK_SCOPE,four_dynamic_benchmark_contract_version=1,four_device_dynamic_benchmark_requested=True,four_device_parallel_business=True,four_device_parallel_rf=False,qemu_exit=0,supervisor_exit=0,qemu_args=['-append','ws73.parallel=1 ws73.parallel_business=1 ws73.parallel_benchmark=1 ws73.socket_benchmark_apps=1'],parallel_corroboration=proof)
+    result=dict(status='FOUR_DEVICE_PARALLEL_DYNAMIC_BENCHMARK_PASS',scope=gate.BENCHMARK_SCOPE,four_dynamic_benchmark_contract_version=1,four_device_dynamic_benchmark_requested=True,four_device_parallel_business=True,four_device_parallel_rf=False,qemu_exit=0,supervisor_exit=0,qemu_args=['-append','ws73.parallel=1 ws73.parallel_business=1 ws73.parallel_benchmark=1 ws73.socket_benchmark_apps=1'],parallel_corroboration=proof)
+    if close_short:
+        result.update(four_benchmark_case='close-short',four_dynamic_benchmark_close_contract_version=1);result['qemu_args'][-1]+=' ws73.parallel_benchmark_case=close-short'
+    return result
 
 
 class FourDynamicBenchmark(unittest.TestCase):
@@ -62,6 +71,9 @@ class FourDynamicBenchmark(unittest.TestCase):
             for n in names:(dest/n).write_bytes((here/n).read_bytes())
             init=path/'root/init';init.write_bytes((here/'ws73_target_init.sh').read_bytes());init.chmod(0o755)
             require_benchmark_preparation(package,path)
+            with self.assertRaisesRegex(ValueError,'fresh four benchmark close'):require_benchmark_preparation(package,path,case='close-short')
+            current=dict(package,four_dynamic_benchmark_close_contract_version=1)
+            require_benchmark_preparation(current,path,case='close-short')
             (dest/'ws73_parallel_data.py').write_text('# stale source\n')
             with self.assertRaisesRegex(ValueError,'source mismatch'):require_benchmark_preparation(package,path)
             (dest/'ws73_parallel_data.py').write_bytes((here/'ws73_parallel_data.py').read_bytes());init.chmod(0o644)

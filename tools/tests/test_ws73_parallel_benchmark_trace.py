@@ -47,10 +47,10 @@ class PairedTrace(unittest.TestCase):
 
     def test_measured_close_workload_budget_is_exact_bounded_and_still_zero_loss(self):
         from ws73_trace_layout import buffer_kib
-        for kb in (8192,16384):
+        for kb in (8192,9000,16384):
             with tempfile.TemporaryDirectory()as tmp:
                 root=Path(tmp);paired_trace(root,requested_kb=kb)
-                if kb==8192:
+                if kb!=16384:
                     with self.assertRaises(CaptureError):check_xhci(root,'on',parallel=True,close_short=True)
                     continue
                 proof=check_xhci(root,'on',parallel=True,close_short=True)

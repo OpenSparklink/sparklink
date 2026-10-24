@@ -460,5 +460,9 @@ class ServiceTrace(unittest.TestCase):
 
     def test_trace_buffer_rounding_shared_with_benchmark(self):
         self.assertEqual(buffer_kib('field: char data; offset:16; size:4080;',1024,4),(1027,4080))
-        for value in [True,1024.0,-1,9000]:
+        # The generic calculator now covers the measured 16 MiB close profile.
+        # Live collectors still admit only their exact configured profile;
+        # paired trace tests independently reject an arbitrary 9000 KiB value.
+        self.assertEqual(buffer_kib('field: char data; offset:16; size:4080;',16384,4),(16387,4080))
+        for value in [True,1024.0,-1,16385]:
             with self.assertRaises(ValueError):buffer_kib('field: char data; offset:16; size:4080;',value,4)

@@ -17,8 +17,15 @@ benchmark_trace_requested() {
     done
     return 1
 }
+benchmark_trace_buffer_kb() {
+    for benchmark_word do
+        case "$benchmark_word" in ws73.parallel_benchmark=1) printf '8192'; return 0 ;; esac
+    done
+    printf '1024'
+}
 benchmark_trace=0
 if benchmark_trace_requested $(cat /proc/cmdline); then benchmark_trace=1; fi
+benchmark_trace_kb=$(benchmark_trace_buffer_kb $(cat /proc/cmdline))
 sender_case_argument() {
     selected_sender_case=''
     sender_case_enabled=''
@@ -121,7 +128,7 @@ if [ -f /scratch-root-uuid ]; then
     . /native-evidence-modules.sh
     ensure_mount /sys/kernel/tracing tracefs
     [ -f /sys/kernel/tracing/events/xhci-hcd/enable ] || fail 'native xHCI trace events unavailable'
-    echo 1024 > /sys/kernel/tracing/buffer_size_kb || fail 'native xHCI trace buffer'
+    echo "$benchmark_trace_kb" > /sys/kernel/tracing/buffer_size_kb || fail 'native xHCI trace buffer'
     if [ "$benchmark_trace" = 1 ]; then
         echo mono > /sys/kernel/tracing/trace_clock || fail 'benchmark monotonic trace clock'
     fi
@@ -145,7 +152,7 @@ fi
 if [ -f /scratch-root-uuid ] && [ "$benchmark_trace" = 1 ]; then
     cat /sys/kernel/tracing/events/header_page > /evidence/benchmark-xhci-header-start.txt || fail 'trace header start'
     cat /sys/kernel/tracing/trace_clock > /evidence/benchmark-xhci-clock-start.txt || fail 'trace clock start'
-    printf '{"enabled":"%s","tracing_on":"%s","tracer":"%s","buffer_kb":%s,"requested_buffer_kb":1024,"subbuffer_kb":%s,"cookie":"%s"}\n' "$(cat /sys/kernel/tracing/events/xhci-hcd/enable)" "$(cat /sys/kernel/tracing/tracing_on)" "$(cat /sys/kernel/tracing/current_tracer)" "$(cat /sys/kernel/tracing/buffer_size_kb)" "$(cat /sys/kernel/tracing/buffer_subbuf_size_kb)" "$xhci_cookie" > /evidence/benchmark-xhci-start.json || fail 'trace start readback'
+    printf '{"enabled":"%s","tracing_on":"%s","tracer":"%s","buffer_kb":%s,"requested_buffer_kb":%s,"subbuffer_kb":%s,"cookie":"%s"}\n' "$(cat /sys/kernel/tracing/events/xhci-hcd/enable)" "$(cat /sys/kernel/tracing/tracing_on)" "$(cat /sys/kernel/tracing/current_tracer)" "$(cat /sys/kernel/tracing/buffer_size_kb)" "$benchmark_trace_kb" "$(cat /sys/kernel/tracing/buffer_subbuf_size_kb)" "$xhci_cookie" > /evidence/benchmark-xhci-start.json || fail 'trace start readback'
     chmod 0444 /evidence/benchmark-xhci-start.json /evidence/benchmark-xhci-clock-start.txt /evidence/benchmark-xhci-header-start.txt || fail 'trace start evidence permissions'
     if [ "$xhci_enabled" = 1 ]; then echo "SLK_BENCH_BEGIN:$xhci_cookie" > /sys/kernel/tracing/trace_marker || fail 'trace begin marker'; fi
 fi
@@ -683,7 +690,7 @@ if [ -f /scratch-root-uuid ]; then
         if [ "$xhci_enabled" = 1 ]; then echo "SLK_BENCH_END:$xhci_cookie" > /sys/kernel/tracing/trace_marker || fail 'trace end marker'; fi
         cat /sys/kernel/tracing/events/header_page > /evidence/benchmark-xhci-header-end.txt || fail 'trace header end'
         cat /sys/kernel/tracing/trace_clock > /evidence/benchmark-xhci-clock-end.txt || fail 'trace clock end'
-        printf '{"enabled":"%s","tracing_on":"%s","tracer":"%s","buffer_kb":%s,"requested_buffer_kb":1024,"subbuffer_kb":%s,"cookie":"%s"}\n' "$(cat /sys/kernel/tracing/events/xhci-hcd/enable)" "$(cat /sys/kernel/tracing/tracing_on)" "$(cat /sys/kernel/tracing/current_tracer)" "$(cat /sys/kernel/tracing/buffer_size_kb)" "$(cat /sys/kernel/tracing/buffer_subbuf_size_kb)" "$xhci_cookie" > /evidence/benchmark-xhci-end.json || fail 'trace end readback'
+        printf '{"enabled":"%s","tracing_on":"%s","tracer":"%s","buffer_kb":%s,"requested_buffer_kb":%s,"subbuffer_kb":%s,"cookie":"%s"}\n' "$(cat /sys/kernel/tracing/events/xhci-hcd/enable)" "$(cat /sys/kernel/tracing/tracing_on)" "$(cat /sys/kernel/tracing/current_tracer)" "$(cat /sys/kernel/tracing/buffer_size_kb)" "$benchmark_trace_kb" "$(cat /sys/kernel/tracing/buffer_subbuf_size_kb)" "$xhci_cookie" > /evidence/benchmark-xhci-end.json || fail 'trace end readback'
         chmod 0444 /evidence/benchmark-xhci-end.json /evidence/benchmark-xhci-clock-end.txt /evidence/benchmark-xhci-header-end.txt || fail 'trace end evidence permissions'
     fi
     echo 0 > /sys/kernel/tracing/tracing_on

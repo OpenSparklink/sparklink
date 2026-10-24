@@ -94,12 +94,13 @@ def check_xhci(share, mode,*,parallel=False):
     headers=[(share/f'benchmark-xhci-header-{n}.txt').read_text() for n in ['start','end']]
     if headers[0]!=headers[1] or len(headers[0])>4096:raise CaptureError('same original trace page layout before/after')
     subbuffer=rows[0].get('subbuffer_kb')
-    try:actual_kb,payload=buffer_kib(headers[0],1024,subbuffer)
+    requested_kb=8192 if parallel else 1024
+    try:actual_kb,payload=buffer_kib(headers[0],requested_kb,subbuffer)
     except ValueError as error:raise CaptureError(str(error)) from error
-    expected=dict(enabled='1' if mode=='on' else '0',tracing_on='1' if mode=='on' else '0',tracer='nop',buffer_kb=actual_kb,requested_buffer_kb=1024,subbuffer_kb=subbuffer,cookie=cookie)
+    expected=dict(enabled='1' if mode=='on' else '0',tracing_on='1' if mode=='on' else '0',tracer='nop',buffer_kb=actual_kb,requested_buffer_kb=requested_kb,subbuffer_kb=subbuffer,cookie=cookie)
     if any(type(v.get(k)) is not int for v in rows for k in ['buffer_kb','requested_buffer_kb','subbuffer_kb']) or rows!=[expected,expected]:raise CaptureError('actual trace start/end configuration differs')
     path=share/'xhci-trace.log';text=path.read_text();stats=(share/'xhci-trace-stats.txt').read_text()
-    if len(text)>8*1024*1024 or 'LOST' in text.upper() or re.findall(r'^# tracer: (.*)$',text,re.M)!=['nop']:raise CaptureError('bounded loss-free nop event trace required')
+    if len(text)>(32 if parallel else 8)*1024*1024 or 'LOST' in text.upper() or re.findall(r'^# tracer: (.*)$',text,re.M)!=['nop']:raise CaptureError('bounded loss-free nop event trace required')
     header=re.findall(r'#\s*entries-in-buffer/entries-written:\s*(\d+)/(\d+)',text)
     if len(header)!=1 or header[0][0]!=header[0][1]:raise CaptureError('complete trace buffer required')
     for key in ['overrun','commit overrun','dropped events']:
@@ -126,7 +127,7 @@ def check_xhci(share, mode,*,parallel=False):
             return value.startswith('tracing_mark_write: SLK_BENCH_PHASE_')
         if any(not v.startswith('xhci_') and v not in(begin,end)and not phase_event(v)for v in events):raise CaptureError('unexpected event outside requested xHCI observation')
     result=dict(status='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED',mode=mode,entries=len(events),cookie=cookie,
-                trace=material(path),requested_buffer_kb=1024,actual_buffer_kb=actual_kb,subbuffer_payload_bytes=payload,scope='Start/end readback and complete finite VM trace;usbmon remains enabled;not all observer overhead or kernel concurrency proof')
+                trace=material(path),requested_buffer_kb=requested_kb,actual_buffer_kb=actual_kb,subbuffer_payload_bytes=payload,scope='Start/end readback and complete finite VM trace;usbmon remains enabled;not all observer overhead or kernel concurrency proof')
     clocks=[share/f'benchmark-xhci-clock-{name}.txt'for name in('start','end')]
     if parallel and not all(p.is_file()for p in clocks):raise CaptureError('paired trace requires original mono clock readbacks')
     if any(p.exists()for p in clocks):
@@ -203,6 +204,7 @@ def valid_trace_summary(proof,mode,*,parallel=False):
         if(type(parallel)is not bool or parallel and mode!='on'or mode not in('on','off')or proof['mode']!=mode or proof['status']!='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED'or type(proof['trace_contract_version'])is not int or proof['trace_contract_version']!=(2 if parallel else 1)or proof['clock']!='mono'):return False
         phases=proof['phase_intervals']
         if parallel:
+            if proof.get('requested_buffer_kb')!=8192 or type(proof.get('trace',{}).get('bytes'))is not int or not 0<proof['trace']['bytes']<=32*1024*1024:return False
             if type(phases)is not list or len(phases)!=2 or any(type(p)is not dict or set(p)!={'pair','phases'}or type(p['pair'])is not int or p['pair']!=i for i,p in enumerate(phases)):return False
             groups=[p['phases']for p in phases]
             if not all(valid_phase_bounds(group)for group in groups):return False

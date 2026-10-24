@@ -12,6 +12,9 @@ from ws73_capture import CaptureError
 
 def paired_trace(root):
     fixtures.modern_trace(root);lines=[]
+    from ws73_trace_layout import buffer_kib
+    for edge in('start','end'):
+        path=root/f'benchmark-xhci-{edge}.json';cfg=json.loads(path.read_text());cfg['requested_buffer_kb']=8192;cfg['buffer_kb']=buffer_kib((root/f'benchmark-xhci-header-{edge}.txt').read_text(),8192,cfg['subbuffer_kb'])[0];path.write_text(json.dumps(cfg))
     def add(t,s):lines.append(f' fixture-1 [000] ..... 0.{t:06d}: '+s)
     c=fixtures.COOKIE;add(1,'tracing_mark_write: SLK_BENCH_BEGIN:'+c)
     for phase,base in enumerate((10,40)):
@@ -37,6 +40,9 @@ class PairedTrace(unittest.TestCase):
         for words in [[],['ws73.parallel_benchmark=0'],['ws73.parallel_benchmark'],['ws73.parallel_subscription=1'],['ws73.benchmark_mode=invalid']]:self.assertEqual(run(function,words),1)
         self.assertEqual(text.count('[ "$benchmark_trace" = 1 ]'),4)
         self.assertNotIn("grep -q 'ws73.benchmark_mode=' /proc/cmdline",text)
+        buffer_function=re.search(r'^benchmark_trace_buffer_kb\(\) \{.*?^\}',text,re.M|re.S).group()
+        for words,expected in [([], '1024'),(['ws73.benchmark_mode=window'],'1024'),(['ws73.parallel_benchmark=1'],'8192')]:
+            p=subprocess.run(['sh','-c',buffer_function+'\nbenchmark_trace_buffer_kb "$@"','fixture',*words],capture_output=True,text=True);self.assertEqual(p.returncode,0);self.assertEqual(p.stdout,expected)
         subprocess.run(['sh','-n',str(Path(__file__).resolve().parents[1]/'ws73_target_init.sh')],check=True)
 
     def test_fixed_phase_markers_keep_legacy_and_pair_identity_separate(self):
@@ -53,7 +59,7 @@ class PairedTrace(unittest.TestCase):
             root=Path(tmp);paired_trace(root);proof=check_xhci(root,'on',parallel=True);self.assertTrue(valid_trace_summary(proof,'on',parallel=True));self.assertFalse(valid_trace_summary(proof,'on'))
             with self.assertRaises(CaptureError):check_xhci(root,'on')
             with self.assertRaises(CaptureError):check_xhci(root,'off',parallel=True)
-        for mutation in ['missing-clock','duplicate','missing-pair','unknown-pair','wrong-cookie','phase-order','drop','truncated','legacy-marker']:
+        for mutation in ['missing-clock','duplicate','missing-pair','unknown-pair','wrong-cookie','phase-order','drop','truncated','legacy-marker','old-buffer']:
             with tempfile.TemporaryDirectory()as tmp:
                 root=Path(tmp);paired_trace(root);path=root/'xhci-trace.log';lines=[s for s in path.read_text().splitlines()if s and not s.startswith('#')]
                 if mutation=='missing-clock':(root/'benchmark-xhci-clock-start.txt').unlink()
@@ -64,6 +70,8 @@ class PairedTrace(unittest.TestCase):
                 elif mutation=='phase-order':write_rows(root,[s.replace(':0',':1')if'PAIR_1_'in s else s for s in lines])
                 elif mutation=='drop':(root/'xhci-trace-stats.txt').write_text((root/'xhci-trace-stats.txt').read_text().replace('overrun: 0','overrun: 1',1))
                 elif mutation=='truncated':path.write_text('\n'.join(path.read_text().splitlines()[:-1])+'\n')
+                elif mutation=='old-buffer':
+                    cfg=root/'benchmark-xhci-start.json';value=json.loads(cfg.read_text());value['requested_buffer_kb']=1024;cfg.write_text(json.dumps(value))
                 else:write_rows(root,[s.replace('SLK_BENCH_PAIR_1_PHASE','SLK_BENCH_PHASE')for s in lines])
                 with self.subTest(mutation=mutation),self.assertRaises(CaptureError):check_xhci(root,'on',parallel=True)
 

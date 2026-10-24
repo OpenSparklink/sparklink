@@ -2,6 +2,7 @@
 import re,secrets,time
 from contextlib import contextmanager
 from ws73_channel_socket import CaptureError
+from ws73_capture import packet_interval
 
 
 LENGTHS = (32,32,32,32,0,1,248,249,250,251,252,253,254,255,1024,2037)
@@ -13,16 +14,61 @@ def physical_sends(packet):
     return len(packet.get('fragments',[packet]))
 
 
-def fragment_parts(pdu):
-    if not 2042<len(pdu)<=(2048 if pdu[0] in (15,16) else 2047) or pdu[0]not in (9,11,13,14,15,16) or pdu[1]&3!=3:raise CaptureError('bounded fragmented logical value/update required')
-    begin=(pdu[1]&~3)|(8 if pdu[0]==13 else 0);end=(pdu[1]&~3)|2
+def write_command_contract(row):
+    """Explicit evidence contract; old length/update flags never enable commands."""
+    if 'ssap_write_command_contract'not in row:return False
+    value=row['ssap_write_command_contract']
+    if type(value)is not int or value!=1:raise CaptureError('explicit SSAP write command contract1 required')
+    return True
+
+
+def command_pdu(pdu):
+    """Finite independent single-property command and confirmation-read shapes."""
+    if not isinstance(pdu,bytes)or len(pdu)<2 or pdu[1]!=3:raise CaptureError('complete single-value command/read PDU required')
+    if pdu[0]==9:
+        if len(pdu)>2044:raise CaptureError('bounded complete confirmation Read value required')
+    elif pdu[0]in (8,12):
+        if not 5<=len(pdu)<=2047 or pdu[4]!=0 or pdu[2:4]==b'\0\0' or (pdu[0]==8 and len(pdu)!=5):
+            raise CaptureError('bounded single-property handle and type0 required')
+    else:raise CaptureError('only command12 and confirmation Read8/9 are covered')
+
+
+def fragment_parts(pdu,*,ssap_write_command_contract=None):
+    command=write_command_contract(dict(ssap_write_command_contract=ssap_write_command_contract))if ssap_write_command_contract is not None else False
+    if command:command_pdu(pdu)
+    supported=(9,12)if command else(9,11,13,14,15,16)
+    if not 2042<len(pdu)<=(2048 if pdu[0] in (15,16) else 2047) or pdu[0]not in supported or pdu[1]&3!=3:raise CaptureError('bounded fragmented logical value/update required')
+    begin=(pdu[1]&~3)|(8 if pdu[0]in (12,13) else 0);end=(pdu[1]&~3)|2
     return [bytes([pdu[0]|128,begin,2,0])+pdu[2:2040],bytes([pdu[0]|128,end,2,0])+pdu[2040:]]
+
+
+def command_packet(packet,frame,window):
+    """Validate retained reassembler output, including every physical fragment."""
+    start,end=window['start_wall_ns'],window['end_wall_ns']
+    if type(start)is not int or type(end)is not int or not 0<start<=end:raise CaptureError('original command observation window required')
+    pieces=packet['fragments']
+    if not isinstance(pieces,list)or not pieces:raise CaptureError('actual nonempty ACB fragment list required')
+    if packet['data']!=frame.hex()or b''.join(bytes.fromhex(p['data'])for p in pieces)!=frame:
+        raise CaptureError('actual ordered ACB bytes must equal expected command/read frame')
+    boundaries=[p.get('boundary',0)for p in pieces]
+    if boundaries!=([0]if len(pieces)==1 else[1]+[2]*(len(pieces)-2)+[3]):
+        raise CaptureError('original full or first/middle/last ACB boundaries required')
+    order=[(p['record'],p.get('hcc_offset',0))for p in pieces]
+    if any(type(v)is not int or v<0 for pair in order for v in pair)or any(a>=b for a,b in zip(order,order[1:])):
+        raise CaptureError('strict physical ACB record order required')
+    if any(not bytes.fromhex(p['data'])for p in pieces):raise CaptureError('empty physical ACB fragment cannot count as a send')
+    first,last=packet_interval(packet)
+    if not start<=first<=last<=end:raise CaptureError('all original ACB fragments must lie inside the observation window')
 
 
 def valid_wire(leg):
     try:
+        command=write_command_contract(leg)
         pdu=bytes.fromhex(leg['logical_pdu'])if 'logical_pdu'in leg else None
-        parts=fragment_parts(pdu)if pdu is not None else None
+        if command:
+            expected=bytes.fromhex(leg['expected_pdu']);command_pdu(expected)
+            if (len(expected)>2042 and pdu!=expected)or (len(expected)<=2042 and pdu is not None):return False
+        parts=fragment_parts(pdu,ssap_write_command_contract=1 if command else None)if pdu is not None else None
         for side in ['tx','rx']:
             packets=leg[side]['ssap_fragments']if parts is not None else[leg[side]]
             if parts is not None and len(packets)!=2:return False
@@ -31,6 +77,10 @@ def valid_wire(leg):
                 if not frame.startswith(b'\x0a\0')or len(frame)>2046 or int.from_bytes(frame[2:4],'little')!=len(frame)-4:return False
                 if parts is not None and frame[4:]!=parts[n]:return False
                 if b''.join(bytes.fromhex(p['data'])for p in packet.get('fragments',[packet]))!=frame:return False
+                if command:
+                    if parts is None and frame[4:]!=expected:return False
+                    command_packet(packet,frame,leg['capture_window'])
+                elif frame[4:5]in (b'\x0c',b'\x8c'):return False
             if parts is not None:
                 end=packets[0].get('fragments',[packets[0]])[-1];start=packets[1].get('fragments',[packets[1]])[0]
                 if not(end['record'],end.get('hcc_offset',0))<(start['record'],start.get('hcc_offset',0)):return False
@@ -42,15 +92,26 @@ def valid_wire(leg):
 def pair_wire(row,matched,source,destination,pdu,window):
     # Independent fixed two-fragment byte expectations for the2042-wire/2047-
     # logical qualification. This is evidence reconstruction, not a Host/Engine.
+    enabled=write_command_contract(row)
+    if pdu[:1]==b'\x8c':raise CaptureError('expected complete logical command, not a raw extended fragment')
+    if pdu[:1]==b'\x0c'and not enabled:raise CaptureError('Write Command needs its own explicit evidence contract')
+    command=enabled and pdu[:1]in (b'\x08',b'\x09',b'\x0c')
+    extra={}
+    if command:
+        command_pdu(pdu)
+        extra=dict(ssap_write_command_contract=1,expected_pdu=pdu.hex(),
+                   capture_window={k:window[k]for k in ('start_wall_ns','end_wall_ns')})
     if len(pdu)<=2042:
         frame=b'\x0a\0'+len(pdu).to_bytes(2,'little')+pdu
-        return dict(tx=matched(source,'out',frame,window),rx=matched(destination,'in',frame,window))
+        result=dict(tx=matched(source,'out',frame,window),rx=matched(destination,'in',frame,window),**extra)
+        if command and not valid_wire(result):raise CaptureError('complete paired command/read capture evidence required')
+        return result
     versioned_value=row.get('ssap_value_lengths_version',1)==4 and pdu[0] in (9,11,13,14)
     versioned_update=row.get('ssap_update_delivery_version',1)==2 and pdu[0] in (9,11,13,14,15,16)
     limit=2048 if pdu[0] in (15,16) else 2047
-    if not(versioned_value or versioned_update) or not 2042<len(pdu)<=limit or pdu[1]&3!=3:raise CaptureError('bounded actual negotiated sequence fragment contract required')
-    parts=fragment_parts(pdu)
-    result=dict(tx=dict(ssap_fragments=[]),rx=dict(ssap_fragments=[]),logical_pdu=pdu.hex())
+    if not(versioned_value or versioned_update or command) or not 2042<len(pdu)<=limit or pdu[1]&3!=3:raise CaptureError('bounded actual negotiated sequence fragment contract required')
+    parts=fragment_parts(pdu,ssap_write_command_contract=1 if command else None)
+    result=dict(tx=dict(ssap_fragments=[]),rx=dict(ssap_fragments=[]),logical_pdu=pdu.hex(),**extra)
     for part in parts:
         frame=b'\x0a\0'+len(part).to_bytes(2,'little')+part
         for key,owner,direction in [('tx',source,'out'),('rx',destination,'in')]:result[key]['ssap_fragments'].append(matched(owner,direction,frame,window))
@@ -58,6 +119,7 @@ def pair_wire(row,matched,source,destination,pdu,window):
         a,b=result[key]['ssap_fragments']
         end=a.get('fragments',[a])[-1];start=b.get('fragments',[b])[0]
         if not(end['record'],end.get('hcc_offset',0))<(start['record'],start.get('hcc_offset',0)):raise CaptureError('first/last SSAP fragment record order required')
+    if command and not valid_wire(result):raise CaptureError('complete paired fragmented command/read evidence required')
     return result
 
 

@@ -9,6 +9,16 @@ export PYTHONHOME=/usr
 # loader may search /usr/lib64 instead; select the sealed Native image
 # explicitly for pre-daemon gates too, independently of the application SDK.
 export LIBSLK_NATIVE_PATH=/usr/lib/libslk_native.so.0
+benchmark_trace_requested() {
+    for benchmark_word do
+        case "$benchmark_word" in
+            ws73.benchmark_mode=rate|ws73.benchmark_mode=window|ws73.benchmark_mode=duplex|ws73.parallel_benchmark=1) return 0 ;;
+        esac
+    done
+    return 1
+}
+benchmark_trace=0
+if benchmark_trace_requested $(cat /proc/cmdline); then benchmark_trace=1; fi
 sender_case_argument() {
     selected_sender_case=''
     sender_case_enabled=''
@@ -112,13 +122,13 @@ if [ -f /scratch-root-uuid ]; then
     ensure_mount /sys/kernel/tracing tracefs
     [ -f /sys/kernel/tracing/events/xhci-hcd/enable ] || fail 'native xHCI trace events unavailable'
     echo 1024 > /sys/kernel/tracing/buffer_size_kb || fail 'native xHCI trace buffer'
-    if grep -q 'ws73.benchmark_mode=' /proc/cmdline; then
+    if [ "$benchmark_trace" = 1 ]; then
         echo mono > /sys/kernel/tracing/trace_clock || fail 'benchmark monotonic trace clock'
     fi
     xhci_mode=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.benchmark_xhci=/){sub(/^ws73.benchmark_xhci=/,"",$i);print $i}}' /proc/cmdline)
     case "$xhci_mode" in
         ''|on) xhci_enabled=1 ;;
-        off) grep -q 'ws73.benchmark_mode=' /proc/cmdline || fail 'trace comparison needs benchmark'; xhci_enabled=0 ;;
+        off) [ "$benchmark_trace" = 1 ] || fail 'trace comparison needs benchmark'; xhci_enabled=0 ;;
         *) fail 'one explicit xHCI mode' ;;
     esac
     echo "$xhci_enabled" > /sys/kernel/tracing/events/xhci-hcd/enable || fail 'native xHCI tracing'
@@ -132,7 +142,7 @@ mkdir /evidence/application; chown 1000:1002 /evidence/application; chmod 0700 /
 if grep -qw ws73.session_service=1 /proc/cmdline; then
     /bin/python3 /usr/share/sparklink/tools/ws73_session_service.py start > /evidence/session-service-start.log 2>&1 || fail 'Session service trace start'
 fi
-if [ -f /scratch-root-uuid ] && grep -q 'ws73.benchmark_mode=' /proc/cmdline; then
+if [ -f /scratch-root-uuid ] && [ "$benchmark_trace" = 1 ]; then
     cat /sys/kernel/tracing/events/header_page > /evidence/benchmark-xhci-header-start.txt || fail 'trace header start'
     cat /sys/kernel/tracing/trace_clock > /evidence/benchmark-xhci-clock-start.txt || fail 'trace clock start'
     printf '{"enabled":"%s","tracing_on":"%s","tracer":"%s","buffer_kb":%s,"requested_buffer_kb":1024,"subbuffer_kb":%s,"cookie":"%s"}\n' "$(cat /sys/kernel/tracing/events/xhci-hcd/enable)" "$(cat /sys/kernel/tracing/tracing_on)" "$(cat /sys/kernel/tracing/current_tracer)" "$(cat /sys/kernel/tracing/buffer_size_kb)" "$(cat /sys/kernel/tracing/buffer_subbuf_size_kb)" "$xhci_cookie" > /evidence/benchmark-xhci-start.json || fail 'trace start readback'
@@ -669,7 +679,7 @@ wait "$capture" || fail 'capture shutdown'
 chown 0:1000 /evidence/ws73.pcap /evidence/capture-stats.txt; chmod 0640 /evidence/ws73.pcap /evidence/capture-stats.txt
 dmesg > /evidence/kernel.log
 if [ -f /scratch-root-uuid ]; then
-    if grep -q 'ws73.benchmark_mode=' /proc/cmdline; then
+    if [ "$benchmark_trace" = 1 ]; then
         if [ "$xhci_enabled" = 1 ]; then echo "SLK_BENCH_END:$xhci_cookie" > /sys/kernel/tracing/trace_marker || fail 'trace end marker'; fi
         cat /sys/kernel/tracing/events/header_page > /evidence/benchmark-xhci-header-end.txt || fail 'trace header end'
         cat /sys/kernel/tracing/trace_clock > /evidence/benchmark-xhci-clock-end.txt || fail 'trace clock end'

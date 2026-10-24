@@ -30,11 +30,14 @@ def fixture(root):
         for phase in range(2):
             owners=[dict(owner=child['initial'][i],object=dict(generation=child['initial'][i]['generation'],lifetime=11+phase,handle=0))for i in(phase,1-phase)]
             row=dict(phase=phase,status=benchmark.PENDING,owners=owners,config=benchmark.configuration('window'),parallel_pair=number,applications=[dict(pid=2000+8*number+4*phase+i)for i in range(4)],**{benchmark.PAIR_FIELD:1,benchmark.CHANNEL_FIELD:benchmark.parallel_channel()})
+            cookie='01234567-89ab-cdef-0123-456789abcdef'
+            row['trace_observation']=dict(version=1,mode='on',clock='mono',cookie=cookie,parallel_pair=number,marker=f'SLK_BENCH_PAIR_{number}_PHASE_BEGIN:{cookie}:{phase}',end_marker=f'SLK_BENCH_PAIR_{number}_PHASE_END:{cookie}:{phase}')
             child['socket_benchmark'].append(row);child['connection_control']['phases'].append(dict(typed_objects=owners));proof['proofs'][phase]['owners']=owners
             connections.append(dict(steps=[dict(outcomes=[dict(wall_ns=phase*2000+100)]),dict(outcomes=[dict(wall_ns=phase*2000+1500)])]))
         supervision=dict(status='ACTUAL_ROOT_BENCHMARK_APPS_ONLY_PHASES_CHECKED',version=2,uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=8,report_files=8,phases=2,performance_qualified=False,daemon=child['daemon_before'],supervisor=dict(pid=3000+number,start_ticks=77+number),snapshot_files=30,snapshot_bytes=1,parallel_pair=number,**{benchmark.PAIR_FIELD:1,benchmark.CHANNEL_FIELD:benchmark.parallel_channel()})
         pairs.append(dict(channel=proof,benchmark_supervision=supervision,connections=connections))
     proof=dict(status='FOUR_REAL_PARALLEL_DYNAMIC_BENCHMARK_CORROBORATED',parallel_benchmark_contract_version=1,parallel_benchmark_control=control,pairs=pairs,dynamic_benchmark=gate.benchmark_parallel_proof(pairs,control),overlaps=[],controller_count=4,round_trips=144,ordinary_uid=1004,coordinator_uid=1000,dynamic_channel_acceptance=True,fixed_basic_channel_business_acceptance=False,performance_qualified=False,fairness_acceptance=False,controller_credit_correctness_proof=False,fault_isolation_acceptance=False,automatic_fault_recovery_acceptance=False,protected_ssap_acceptance=False,full_goal_complete=False)
+    proof['paired_trace']=dict(status='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED',mode='on',trace_contract_version=2,clock='mono',cookie=cookie,phase_intervals=[dict(pair=i,phases=[dict(phase=0,begin_ns=10+i,end_ns=20+i),dict(phase=1,begin_ns=40+i,end_ns=50+i)])for i in(0,1)])
     for n in range(2):
         windows=[[min(v['tx']['wall_ns']for v in p['channel']['proofs'][n]['legs']),max(v['rx']['wall_ns']for v in p['channel']['proofs'][n]['legs'])]for p in pairs]
         proof['overlaps'].append(dict(role_phase=n,business_windows=windows,overlap_wall_ns=gate.overlap_window(windows)))
@@ -71,7 +74,7 @@ class FourDynamicBenchmark(unittest.TestCase):
         with tempfile.TemporaryDirectory()as tmp:r=fixture(Path(tmp))
         p=r['parallel_corroboration'];gate.verify_records(p['parallel_benchmark_control']);self.assertTrue(valid_parallel_benchmark(r));self.assertEqual(run_exit_code(r),0)
         self.assertEqual(p['dynamic_benchmark']['application_processes'],16)
-        mutations=['halfcount','pair','Rootpair','sameRoot','daemon','pid','missingphase','owner','roles','onechannel','smalllong','missingwireleg','nooverlap','extra-mode','boot-missing','boot-duplicate','boot-conflict','performance','fairness','credittruth','downgradestatus','unrequested']
+        mutations=['halfcount','pair','Rootpair','sameRoot','daemon','pid','missingphase','owner','roles','onechannel','smalllong','missingwireleg','nooverlap','extra-mode','boot-missing','boot-duplicate','boot-conflict','performance','fairness','credittruth','downgradestatus','unrequested','missing-trace','wrong-trace-root','legacy-trace','wrong-trace-pair']
         for kind in mutations:
             bad=copy.deepcopy(r);proof=bad['parallel_corroboration'];pair=proof['pairs'][1];child=proof['parallel_benchmark_control']['workers'][1]['run']
             if kind=='halfcount':proof['round_trips']=72
@@ -95,6 +98,10 @@ class FourDynamicBenchmark(unittest.TestCase):
             elif kind=='fairness':proof['fairness_acceptance']=True
             elif kind=='credittruth':proof['controller_credit_correctness_proof']=True
             elif kind=='downgradestatus':bad['status']='FOUR_DEVICE_PARALLEL_BUSINESS_PASS'
+            elif kind=='missing-trace':proof.pop('paired_trace')
+            elif kind=='wrong-trace-root':child['socket_benchmark'][0]['trace_observation']['parallel_pair']=0
+            elif kind=='legacy-trace':proof['paired_trace']['trace_contract_version']=1
+            elif kind=='wrong-trace-pair':proof['paired_trace']['phase_intervals'][1]['pair']=0
             else:bad['four_device_dynamic_benchmark_requested']=False
             with self.subTest(kind=kind):self.assertFalse(valid_parallel_benchmark(bad));self.assertEqual(run_exit_code(bad),1)
 

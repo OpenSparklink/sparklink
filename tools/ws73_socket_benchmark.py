@@ -573,7 +573,7 @@ def execute_supervised(run,row):
             # The explicit SSAP correctness profile records actual SDK work
             # during load and cannot be called a low-perturbation measurement.
             from ws73_benchmark_timeline import phase_marker
-            row['trace_observation']=phase_marker(row['phase'],'BEGIN')
+            row['trace_observation']=phase_marker(row['phase'],'BEGIN',pair=parallel_pair(row))
             if ssap_gate.observing(ssap_gate.selected(row)):
                 from ws73_transport_watch import Watch
                 transport_watch=Watch(row['owners'],row['phase']).start()
@@ -597,7 +597,7 @@ def execute_supervised(run,row):
                 collect_ends((0,1),time.monotonic()+15)
                 row['closed_short']=[dict(application=i,pid=row['applications'][i]['pid'],exit=row['applications'][i]['exit'],reaped_wall_ns=row['applications'][i]['end_wall_ns'])for i in(0,1)]
             wait_marker('quiescent',620,original_deadline=business_deadline)
-            end=phase_marker(row['phase'],'END')
+            end=phase_marker(row['phase'],'END',pair=parallel_pair(row))
             if {k:v for k,v in end.items()if k!='marker'}!={k:v for k,v in row['trace_observation'].items()if k!='marker'}:raise CaptureError('trace configuration changed during business phase')
             row['trace_observation']['end_marker']=end['marker']
             remaining=(2,3)if closes_short(channel)else indices

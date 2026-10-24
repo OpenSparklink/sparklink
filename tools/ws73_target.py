@@ -2602,6 +2602,8 @@ def valid_parallel_benchmark(record):
         if type(proof.get('parallel_benchmark_contract_version'))is not int or proof['parallel_benchmark_contract_version']!=1:return False
         if len(owners)!=4 or proof.get('status')!='FOUR_REAL_PARALLEL_DYNAMIC_BENCHMARK_CORROBORATED':return False
         if proof['dynamic_benchmark']!=benchmark_parallel_proof(proof['pairs'],control):return False
+        from ws73_benchmark_timeline import verify_paired_trace
+        verify_paired_trace(control,proof['paired_trace'])
         for k,v in dict(controller_count=4,round_trips=144,ordinary_uid=1004,coordinator_uid=1000,dynamic_channel_acceptance=True,fixed_basic_channel_business_acceptance=False,performance_qualified=False,fairness_acceptance=False,controller_credit_correctness_proof=False,fault_isolation_acceptance=False,automatic_fault_recovery_acceptance=False,protected_ssap_acceptance=False,full_goal_complete=False).items():
             if type(proof.get(k))is not type(v)or proof[k]!=v:return False
         overlaps=proof['overlaps']

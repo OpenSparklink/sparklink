@@ -30,11 +30,21 @@ def selected_clock(text):
     return 'mono'
 
 
-def phase_marker(phase,boundary):
+def phase_marker_text(phase,boundary,cookie,*,pair=None):
+    if (type(phase)is not int or phase not in(0,1)or boundary not in('BEGIN','END')
+            or not isinstance(cookie,str)or not re.fullmatch(r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}',cookie)
+            or pair is not None and(type(pair)is not int or pair not in(0,1))):raise CaptureError('fixed benchmark phase/pair/cookie required')
+    prefix='SLK_BENCH'if pair is None else f'SLK_BENCH_PAIR_{pair}'
+    return f'{prefix}_PHASE_{boundary}:{cookie}:{phase}'
+
+
+def phase_marker(phase,boundary,*,pair=None):
     """Fixed root observer, outside the application's measured hot loop."""
     from ws73_application_role import require_vm
     from ws73_role_snapshot import profile
     require_vm(profile('benchmark')['token'])
+    from ws73_socket_benchmark import check_pair_boot
+    check_pair_boot(pair,Path('/proc/cmdline').read_text().split())
     if type(phase)is not int or phase not in(0,1)or boundary not in('BEGIN','END'):raise CaptureError('fixed benchmark phase marker required')
     evidence=Path('/evidence');tracing=Path('/sys/kernel/tracing')
     selected_clock((evidence/'benchmark-xhci-clock-start.txt').read_text());selected_clock((tracing/'trace_clock').read_text())
@@ -42,9 +52,10 @@ def phase_marker(phase,boundary):
     if not re.fullmatch(r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}',cookie)or cfg['enabled']not in('0','1')or cfg['tracing_on']!=cfg['enabled']:raise CaptureError('actual fixed trace phase configuration required')
     enabled=cfg['enabled']=='1'
     if (tracing/'tracing_on').read_text().strip()!=cfg['enabled']or(tracing/'events/xhci-hcd/enable').read_text().strip()!=cfg['enabled']:raise CaptureError('trace phase enable changed')
-    marker=f'SLK_BENCH_PHASE_{boundary}:{cookie}:{phase}'if enabled else None
+    text=phase_marker_text(phase,boundary,cookie,pair=pair)
+    marker=text if enabled else None
     if marker:(tracing/'trace_marker').write_text(marker+'\n')
-    return dict(version=1,mode='on'if enabled else'off',clock='mono',cookie=cookie,marker=marker)
+    return dict(version=1,mode='on'if enabled else'off',clock='mono',cookie=cookie,marker=marker,**({'parallel_pair':pair}if pair is not None else{}))
 
 
 def trace_rows(text):
@@ -57,9 +68,10 @@ def trace_rows(text):
     return rows
 
 
-def phase_intervals(rows,cookie):
-    markers=[(n,v)for n,v in enumerate(rows)if v['event'].startswith('tracing_mark_write: SLK_BENCH_PHASE_')]
-    expected=[f'tracing_mark_write: SLK_BENCH_PHASE_{boundary}:{cookie}:{phase}'for phase in(0,1)for boundary in('BEGIN','END')]
+def phase_intervals(rows,cookie,*,pair=None):
+    prefix=phase_marker_text(0,'BEGIN',cookie,pair=pair).split('_PHASE_')[0]+'_PHASE_'
+    markers=[(n,v)for n,v in enumerate(rows)if v['event'].startswith('tracing_mark_write: '+prefix)]
+    expected=['tracing_mark_write: '+phase_marker_text(phase,boundary,cookie,pair=pair)for phase in(0,1)for boundary in('BEGIN','END')]
     if [v['event']for _,v in markers]!=expected:raise CaptureError('two ordered original business phase marker pairs required')
     result=[]
     for phase in(0,1):
@@ -70,8 +82,9 @@ def phase_intervals(rows,cookie):
     return result
 
 
-def check_xhci(share, mode):
+def check_xhci(share, mode,*,parallel=False):
     share=Path(share)
+    if type(parallel)is not bool or parallel and mode!='on':raise CaptureError('explicit paired gate requires original enabled trace')
     if mode not in ('on','off'):raise CaptureError('explicit xHCI comparison mode')
     rows=[json.loads((share/f'benchmark-xhci-{name}.json').read_text()) for name in ['start','end']]
     cookie=rows[0].get('cookie')
@@ -107,19 +120,25 @@ def check_xhci(share, mode):
         if events.count(begin)!=1 or events.count(end)!=1 or events.index(begin)>=events.index(end):raise CaptureError('original ordered trace interval markers required')
         if not any(v.startswith('xhci_') for v in events[events.index(begin)+1:events.index(end)]):raise CaptureError('actual xHCI positive work required')
         modern=any((share/f'benchmark-xhci-clock-{name}.txt').exists()for name in('start','end'))
-        if any(not v.startswith('xhci_') and v not in(begin,end)and not(modern and v.startswith('tracing_mark_write: SLK_BENCH_PHASE_'))for v in events):raise CaptureError('unexpected event outside requested xHCI observation')
+        def phase_event(value):
+            if not modern:return False
+            if parallel:return bool(re.fullmatch(r'tracing_mark_write: SLK_BENCH_PAIR_[01]_PHASE_(?:BEGIN|END):'+re.escape(cookie)+r':[01]',value))
+            return value.startswith('tracing_mark_write: SLK_BENCH_PHASE_')
+        if any(not v.startswith('xhci_') and v not in(begin,end)and not phase_event(v)for v in events):raise CaptureError('unexpected event outside requested xHCI observation')
     result=dict(status='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED',mode=mode,entries=len(events),cookie=cookie,
                 trace=material(path),requested_buffer_kb=1024,actual_buffer_kb=actual_kb,subbuffer_payload_bytes=payload,scope='Start/end readback and complete finite VM trace;usbmon remains enabled;not all observer overhead or kernel concurrency proof')
     clocks=[share/f'benchmark-xhci-clock-{name}.txt'for name in('start','end')]
+    if parallel and not all(p.is_file()for p in clocks):raise CaptureError('paired trace requires original mono clock readbacks')
     if any(p.exists()for p in clocks):
         if not all(p.is_file()and not p.is_symlink()for p in clocks):raise CaptureError('both actual trace clock readbacks required')
         for p in clocks:selected_clock(p.read_text())
-        parsed=trace_rows(text);phases=phase_intervals(parsed,cookie)if mode=='on'else[]
+        parsed=trace_rows(text);phases=([dict(pair=pair,phases=phase_intervals(parsed,cookie,pair=pair))for pair in(0,1)]if parallel else phase_intervals(parsed,cookie))if mode=='on'else[]
         if mode=='on':
             begin=next(v['ns']for v in parsed if v['event']=='tracing_mark_write: SLK_BENCH_BEGIN:'+cookie)
             end=next(v['ns']for v in parsed if v['event']=='tracing_mark_write: SLK_BENCH_END:'+cookie)
-            if not begin<phases[0]['begin_ns']<phases[-1]['end_ns']<end:raise CaptureError('business phases belong to original boot trace interval')
-        result.update(trace_contract_version=1,clock='mono',phase_intervals=phases,clock_readbacks=[material(p)for p in clocks])
+            groups=[p['phases']for p in phases]if parallel else[phases]
+            if any(not begin<group[0]['begin_ns']<group[-1]['end_ns']<end for group in groups):raise CaptureError('business phases belong to original boot trace interval')
+        result.update(trace_contract_version=2 if parallel else 1,clock='mono',phase_intervals=phases,clock_readbacks=[material(p)for p in clocks])
     return result
 
 
@@ -179,12 +198,34 @@ def rx_resubmits(share,run,trace):
     return dict(status='HCD_RX_GIVEBACK_TO_RESUBMIT_ENTRY_OBSERVED',clock='mono',endpoints=results,scope='Only same-boot established-business phases, single observed RX URB/endpoint; boundary censoring explicit. Includes USB-core dispatch/callback and submit preparation before HCD queue. Not callback-only cost, full no-URB hardware window, generation/ref/drain proof, RF delay or bottleneck/optimization evidence.')
 
 
-def valid_trace_summary(proof,mode):
+def valid_trace_summary(proof,mode,*,parallel=False):
     try:
-        if(mode not in('on','off')or proof['mode']!=mode or proof['status']!='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED'or type(proof['trace_contract_version'])is not int or proof['trace_contract_version']!=1 or proof['clock']!='mono'):return False
+        if(type(parallel)is not bool or parallel and mode!='on'or mode not in('on','off')or proof['mode']!=mode or proof['status']!='XHCI_CONFIGURATION_AND_SEAL_CORROBORATED'or type(proof['trace_contract_version'])is not int or proof['trace_contract_version']!=(2 if parallel else 1)or proof['clock']!='mono'):return False
         phases=proof['phase_intervals']
+        if parallel:
+            if type(phases)is not list or len(phases)!=2 or any(type(p)is not dict or set(p)!={'pair','phases'}or type(p['pair'])is not int or p['pair']!=i for i,p in enumerate(phases)):return False
+            groups=[p['phases']for p in phases]
+            if not all(valid_phase_bounds(group)for group in groups):return False
+            return max(g[0]['end_ns']for g in groups)<min(g[1]['begin_ns']for g in groups)
         return phases==[]if mode=='off'else(len(phases)==2 and all(type(p[k])is int for p in phases for k in('phase','begin_ns','end_ns'))and[ph['phase']for ph in phases]==[0,1]and 0<phases[0]['begin_ns']<phases[0]['end_ns']<phases[1]['begin_ns']<phases[1]['end_ns'])
     except(KeyError,TypeError,IndexError):return False
+
+
+def valid_phase_bounds(phases):
+    return (type(phases)is list and len(phases)==2 and all(type(p[k])is int for p in phases for k in('phase','begin_ns','end_ns'))
+            and[p['phase']for p in phases]==[0,1]and 0<phases[0]['begin_ns']<phases[0]['end_ns']<phases[1]['begin_ns']<phases[1]['end_ns'])
+
+
+def verify_paired_trace(control,trace):
+    """Bind each original Root witness to its own sealed mono trace markers."""
+    if not valid_trace_summary(trace,'on',parallel=True):raise CaptureError('complete paired enabled mono trace required')
+    for number,worker in enumerate(control['workers']):
+        rows=worker['run']['socket_benchmark']
+        if len(rows)!=2:raise CaptureError('two original Root trace witnesses per pair required')
+        for phase,row in enumerate(rows):
+            expected=dict(version=1,mode='on',clock='mono',cookie=trace['cookie'],parallel_pair=number,
+                marker=phase_marker_text(phase,'BEGIN',trace['cookie'],pair=number),end_marker=phase_marker_text(phase,'END',trace['cookie'],pair=number))
+            if row.get('trace_observation')!=expected:raise CaptureError('Root trace witness differs from original paired trace')
 
 
 def packet_times(packet):

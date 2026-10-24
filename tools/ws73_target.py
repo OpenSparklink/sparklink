@@ -1486,6 +1486,9 @@ def _run(args):
             physical_boundary=resources.PhysicalBoundary(args.ports, package, args.prepared.resolve())
             if runtime_addresses and (physical_boundary.models!=['E','E'] or package.get('runtime_address_contract_version')!=1):
                 raise ValueError('fresh explicitly prepared E/E volatile address guest required')
+            if runtime_addresses:
+                validate_runtime_address_guest(args.prepared.resolve()/'root', package,
+                                               m['runtime_address_verifier'])
             m['physical_resource_allocation']={'policy':file_record(resources.POLICY),
                 'guard':file_record(HERE/'ws73_lab_resources.py'),
                 'selected_ports':list(args.ports),
@@ -2519,6 +2522,17 @@ def _run(args):
     return code
 
 
+def validate_runtime_address_guest(root, package, verifier):
+    """Reject a retained pre-journal guest before its first physical mutation."""
+    path = root/'usr/share/sparklink/tools/ws73_runtime_address.py'
+    if path.is_symlink() or not path.is_file():
+        raise ValueError('current frozen address helper required')
+    actual = file_record(path)
+    pins = [row for row in package['guest_files'] if row['path'] == str(path)]
+    if pins != [actual] or actual['sha256'] != verifier['sha256']:
+        raise ValueError('prepared address helper differs from current originals contract')
+
+
 def corroborate_runtime_addresses(share, capture, addresses, verifier):
     """Add address evidence only; never replace the remaining run verdict.
 
@@ -2526,16 +2540,21 @@ def corroborate_runtime_addresses(share, capture, addresses, verifier):
     bytes actually verified and recheck the source pin before publishing any
     metadata. No status, acceptance or supervisor completion is awarded here.
     """
-    from ws73_runtime_address import corroborate
+    from ws73_runtime_address import check_originals, corroborate
     path = share/'runtime-address/run.json'
     raw = path.read_bytes()
-    proof = list(corroborate(json.loads(raw), capture, addresses).values())
+    record = json.loads(raw)
+    originals = check_originals(path.parent, record)
+    proof = list(corroborate(record, capture, addresses).values())
     evidence = file_record(path)
     if path.stat().st_size != len(raw) or evidence['sha256'] != hashlib.sha256(raw).hexdigest():
         raise ValueError('address record changed during corroboration')
     if file_record(HERE/'ws73_runtime_address.py') != verifier:
         raise ValueError('address verifier changed during run')
-    return dict(runtime_address_corroboration=proof, runtime_address_record=evidence)
+    if check_originals(path.parent, record) != originals:
+        raise ValueError('original address evidence changed during corroboration')
+    return dict(runtime_address_corroboration=proof, runtime_address_record=evidence,
+                runtime_address_originals_record=originals)
 
 
 def delivery_probe_identity(root,guest_files):
@@ -2762,6 +2781,10 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
         if (address_tokens!=['ws73.runtime_addresses='+','.join(addresses)] or
                 len(record.get('runtime_address_corroboration',[]))!=2 or
                 not record.get('runtime_address_record') or not record.get('runtime_address_verifier')):return 1
+        originals=record.get('runtime_address_originals_record')
+        if (not isinstance(originals,dict) or set(originals)!={'path','sha256'}
+                or not isinstance(originals['path'],str) or Path(originals['path']).name!='originals.json'
+                or not isinstance(originals['sha256'],str) or not re.fullmatch('[0-9a-f]{64}',originals['sha256'])):return 1
     elif address_tokens or record.get('runtime_address_corroboration'):return 1
     connection=record.get('connection_verify_requested',False)
     channel=record.get('channel_socket_verification_requested',False)

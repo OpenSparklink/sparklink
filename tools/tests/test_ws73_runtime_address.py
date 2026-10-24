@@ -1,7 +1,11 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Verifier fixtures; not controller, permission, RF or persistence tests."""
 import copy
+from contextlib import ExitStack
+import os
 from pathlib import Path
+import stat
+import subprocess
 import sys
 import unittest
 import json
@@ -9,14 +13,16 @@ import tempfile
 from types import SimpleNamespace
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).parents[1]))
-from ws73_runtime_address import parse_addresses, requested, boot_addresses, corroborate
+from ws73_runtime_address import (parse_addresses, requested, boot_addresses, corroborate,
+                                 check_originals, publish_originals, configure)
 
 ADDRESSES=['A6:7B:73:10:E0:01','A6:7B:73:10:E0:02']
 
 
 def fixture():
     owners=[dict(port=f'1-{n+1}',bus=1,device=n+2,index=n,generation=n+10,address='EE:EF:33:9B:8D:5C',hcc_chip=dict(model='E',bus='USB')) for n in range(2)]
-    record=dict(version=1,status='REAL_READBACK_PENDING_CAPTURE_AUDIT',addresses=ADDRESSES,runtime_only=True,official_identity=False,uid=0,owners=owners,originals=[],setters=[],commands=[])
+    record=dict(version=1,status='REAL_READBACK_PENDING_CAPTURE_AUDIT',addresses=ADDRESSES,runtime_only=True,official_identity=False,uid=0,owners=owners,originals=[],setters=[],commands=[],
+                sources=[dict(path='/fixture/helper',sha256='1'*64),dict(path='/fixture/slkconfig',sha256='2'*64)])
     capture=dict(commands=[],complete=[])
     old='eeef339b8d5c'
     def wire(owner,opcode,value,clock,params=''):
@@ -47,6 +53,13 @@ def fixture():
         post=query(peer,peer_value,clock+200)
         record['setters'].append(dict(slot=slot,command=setter,peer_before=pre,peer_after=post,configured=dict(owner,address=ADDRESSES[slot])))
     return record,capture
+
+
+def stage_record(share, record):
+    out=share/'runtime-address';out.mkdir()
+    before=copy.deepcopy(record);before['commands']=before['commands'][:2];before['setters']=[]
+    record['originals_record']=publish_originals(out,before)
+    (out/'run.json').write_text(json.dumps(record))
 
 
 class RuntimeAddressEvidence(unittest.TestCase):
@@ -104,11 +117,10 @@ class RuntimeAddressEvidence(unittest.TestCase):
         from ws73_north_star import file_record
         record,capture=fixture()
         with tempfile.TemporaryDirectory() as tmp:
-            share=Path(tmp);(share/'runtime-address').mkdir()
-            (share/'runtime-address/run.json').write_text(json.dumps(record))
+            share=Path(tmp);stage_record(share,record)
             before=copy.deepcopy((record,capture))
             metadata=corroborate_runtime_addresses(share,capture,ADDRESSES,file_record(HERE/'ws73_runtime_address.py'))
-            self.assertEqual(set(metadata),{'runtime_address_corroboration','runtime_address_record'})
+            self.assertEqual(set(metadata),{'runtime_address_corroboration','runtime_address_record','runtime_address_originals_record'})
             self.assertEqual(len(metadata['runtime_address_corroboration']),2)
             self.assertEqual((record,capture),before)
             # Add to an in-progress manifest exactly as the actual caller does.
@@ -132,7 +144,7 @@ class RuntimeAddressEvidence(unittest.TestCase):
             elif case=='bad-record':record['status']='FAIL'
             else:pin['sha256']='0'*64
             with tempfile.TemporaryDirectory() as tmp:
-                share=Path(tmp);(share/'runtime-address').mkdir();(share/'runtime-address/run.json').write_text(json.dumps(record))
+                share=Path(tmp);stage_record(share,record)
                 with self.subTest(case=case),self.assertRaises(ValueError):corroborate_runtime_addresses(share,capture,ADDRESSES,pin)
 
     def test_host_evidence_binds_the_record_bytes_actually_verified(self):
@@ -141,8 +153,7 @@ class RuntimeAddressEvidence(unittest.TestCase):
         from ws73_runtime_address import corroborate as actual_verifier
         record,capture=fixture()
         with tempfile.TemporaryDirectory() as tmp:
-            share=Path(tmp);(share/'runtime-address').mkdir();path=share/'runtime-address/run.json'
-            path.write_text(json.dumps(record))
+            share=Path(tmp);stage_record(share,record);path=share/'runtime-address/run.json'
             def verify_then_change(*args):
                 proof=actual_verifier(*args)  # Real verifier,not an always-success stub.
                 path.write_text('{}')
@@ -191,5 +202,211 @@ class RuntimeAddressEvidence(unittest.TestCase):
         for n,change in enumerate(mutations):
             r,c=copy.deepcopy((record,capture));change(r,c)
             with self.subTest(n=n),self.assertRaises((ValueError,KeyError,IndexError)):corroborate(r,c,ADDRESSES)
+
+class OriginalAddressJournal(unittest.TestCase):
+    """Real files/fsync and production configure; CLI/HCC/sysfs are fixtures.
+
+    These tests do not establish 9p crash durability, native ioctl, USB,
+    firmware behavior or successful restoration.
+    """
+    def setUp(self):
+        self.fresh_environment()
+
+    def fresh_environment(self):
+        temporary=tempfile.TemporaryDirectory();self.addCleanup(temporary.cleanup)
+        self.root=Path(temporary.name);self.out=self.root/'runtime-address'
+        self.vendor=self.root/'vendor';self.vendor.write_text('QEMU\n')
+        self.cmdline=self.root/'cmdline';self.cmdline.write_text('ws73.expected_models=E,E ws73.runtime_addresses='+','.join(ADDRESSES))
+        self.cli=self.root/'slkconfig';self.cli.write_text('explicit subprocess fixture;never executed\n')
+        self.owners=fixture()[0]['owners'];self.current=[o['address']for o in self.owners]
+        self.calls=[];self.syncs=[];self.query_hook=None;self.setter_error=None;self.sync_error=None
+
+    def path(self,value):
+        return {'/evidence/runtime-address':self.out,'/sys/class/dmi/id/sys_vendor':self.vendor,
+                '/proc/cmdline':self.cmdline,'/bin/slkconfig':self.cli}.get(str(value),Path(value))
+
+    def registration(self,port):
+        slot=int(port.split('-')[1])-1
+        return dict(copy.deepcopy(self.owners[slot]),address=self.current[slot])
+
+    def run_command(self,args,**kwargs):
+        self.assertEqual(kwargs,dict(text=True,capture_output=True,timeout=12))
+        self.calls.append(args);slot=int(args[2]);generation=int(args[4]);operation=args[5]
+        if operation=='query':
+            self.assertEqual(args[6],'mac')
+            if self.query_hook:self.query_hook(len(self.calls))
+            return subprocess.CompletedProcess(args,0,
+                f'NativeDiagnosticQuery: index={slot} generation={generation} opcode=0x0406 admission_seq=1 status=0x00 data={self.current[slot].replace(":", "").lower()}\n','')
+        self.assertEqual(operation,'runtime-address')
+        # This assertion runs at the real production subprocess boundary.
+        self.assertEqual(self.syncs[:2],['file','directory'])
+        document=json.loads((self.out/'originals.json').read_text())
+        self.assertEqual(document['status'],'ORIGINALS_SAVED_NOT_RESTORED')
+        self.assertEqual([v['address']for v in document['originals']],['eeef339b8d5c']*2)
+        self.assertEqual(stat.S_IMODE((self.out/'originals.json').stat().st_mode),0o400)
+        if self.setter_error:raise self.setter_error
+        self.current[slot]=args[6]
+        return subprocess.CompletedProcess(args,0,'fixture setter result;raw verifier tested separately\n','')
+
+    def invoke(self):
+        from ws73_north_star import file_record
+        real_fsync=os.fsync
+        def sync(fd):
+            kind='directory'if stat.S_ISDIR(os.fstat(fd).st_mode)else'file'
+            self.syncs.append(kind)
+            if kind==self.sync_error:raise OSError('fixture '+kind+' fsync failure')
+            real_fsync(fd)
+        with ExitStack()as stack:
+            stack.enter_context(patch('ws73_runtime_address.Path',side_effect=self.path))
+            stack.enter_context(patch('ws73_runtime_address.file_record',side_effect=lambda path:file_record(self.path(path))))
+            stack.enter_context(patch('ws73_runtime_address.os.getuid',return_value=0))
+            stack.enter_context(patch('ws73_runtime_address.registration',side_effect=self.registration))
+            stack.enter_context(patch('ws73_runtime_address.observe_guest_hcc',side_effect=lambda owner,model:owner))
+            stack.enter_context(patch('ws73_runtime_address.subprocess.run',side_effect=self.run_command))
+            stack.enter_context(patch('ws73_runtime_address.os.fsync',side_effect=sync))
+            configure()
+
+    def test_original_queries_are_synced_before_first_setter_and_never_rewritten(self):
+        self.invoke();record=json.loads((self.out/'run.json').read_text())
+        self.assertEqual(record['status'],'REAL_READBACK_PENDING_CAPTURE_AUDIT')
+        self.assertEqual(sum(args[5]=='runtime-address'for args in self.calls),2)
+        saved=(self.out/'originals.json').read_bytes()
+        self.assertEqual(check_originals(self.out,record)['sha256'],record['originals_record']['sha256'])
+        self.assertEqual(len(json.loads(saved)['commands']),2)
+        before=copy.deepcopy(record);before['commands']=before['commands'][:2];before['setters']=[]
+        with self.assertRaises(FileExistsError):publish_originals(self.out,before)
+        self.assertEqual((self.out/'originals.json').read_bytes(),saved)
+
+    def test_missing_changed_or_unpinned_originals_prevent_the_first_setter(self):
+        for kind in ['missing','changed','missing-pin','changed-query']:
+            with self.subTest(kind=kind):
+                self.fresh_environment()
+                def corrupt(count):
+                    if count!=3:return
+                    path=self.out/'originals.json'
+                    if kind=='missing':path.unlink()
+                    elif kind=='changed':path.chmod(0o600);path.write_text('{}');path.chmod(0o400)
+                    # The on-disk progress is not the in-memory authority. These
+                    # separate readback checks exercise absent/tampered pins.
+                if kind in ('missing','changed'):
+                    self.query_hook=corrupt
+                    with self.assertRaises((OSError,ValueError)):self.invoke()
+                    self.assertFalse(any(args[5]=='runtime-address'for args in self.calls))
+                    self.assertEqual(json.loads((self.out/'run.json').read_text())['status'],'FAIL')
+                else:
+                    record,_=fixture();stage_record(self.root,record)
+                    if kind=='missing-pin':del record['originals_record']
+                    else:record['commands'][0]['stdout']='cached address'
+                    with self.assertRaises(ValueError):check_originals(self.out,record)
+
+    def test_failed_sync_stops_before_mutation_and_preserves_partial_publication(self):
+        for kind in ('file','directory'):
+            with self.subTest(kind=kind):
+                self.fresh_environment();self.sync_error=kind
+                with self.assertRaises(OSError):self.invoke()
+                record=json.loads((self.out/'run.json').read_text())
+                self.assertEqual(record['status'],'FAIL')
+                self.assertFalse(any(args[5]=='runtime-address'for args in self.calls))
+                saved=(self.out/'originals.json').read_bytes()
+                with self.assertRaises(FileExistsError):publish_originals(self.out,record)
+                self.assertEqual((self.out/'originals.json').read_bytes(),saved)
+                self.assertNotIn('originals_record',record)
+
+    def test_lost_originals_after_first_setter_stops_second_without_claiming_restore(self):
+        def remove_after_first(count):
+            if count==6:(self.out/'originals.json').unlink()
+        self.query_hook=remove_after_first
+        with self.assertRaises(FileNotFoundError):self.invoke()
+        record=json.loads((self.out/'run.json').read_text())
+        self.assertEqual(record['status'],'FAIL')
+        self.assertEqual(len(record['setters']),1)
+        self.assertEqual(sum(args[5]=='runtime-address'for args in self.calls),1)
+        self.assertEqual(self.current,[ADDRESSES[0],self.owners[1]['address']])
+        self.assertEqual(len(record['originals']),2)
+        self.assertNotIn('restored',record)
+
+    def test_nonregular_or_symlink_originals_are_rejected_without_blocking(self):
+        for kind in ('directory','symlink','fifo'):
+            with self.subTest(kind=kind),tempfile.TemporaryDirectory()as tmp:
+                share=Path(tmp);record,_=fixture();stage_record(share,record)
+                path=share/'runtime-address/originals.json';saved=path.with_suffix('.saved');path.rename(saved)
+                if kind=='directory':path.mkdir()
+                elif kind=='symlink':path.symlink_to(saved)
+                else:os.mkfifo(path)
+                with self.assertRaises((OSError,ValueError)):check_originals(path.parent,record)
+
+    def test_timeout_retains_partial_bytes_and_unknown_physical_outcome(self):
+        partial=b'NativeRuntimeAddressOriginal: partial\n\xff'
+        self.setter_error=subprocess.TimeoutExpired(['fixture'],12,output=partial,stderr=b'partial error\xfe')
+        with self.assertRaises(subprocess.TimeoutExpired):self.invoke()
+        record=json.loads((self.out/'run.json').read_text());row=record['commands'][-1]
+        self.assertEqual(record['status'],'FAIL');self.assertIsNone(row['exit'])
+        self.assertTrue(row['timed_out']);self.assertFalse(row['output_complete'])
+        self.assertEqual(row['physical_outcome'],'unknown')
+        self.assertEqual(bytes.fromhex(row['partial_stdout_hex']),partial)
+        self.assertEqual(bytes.fromhex(row['partial_stderr_hex']),b'partial error\xfe')
+        self.assertEqual(sum(args[5]=='runtime-address'for args in self.calls),1)
+        self.assertEqual(record['setters'],[])
+        check_originals(self.out,record)
+
+    def test_host_requires_originals_and_checks_them_after_wire_verification(self):
+        from ws73_target import corroborate_runtime_addresses,HERE
+        from ws73_north_star import file_record
+        for kind in ['missing','changed','missing-pin','changed-during-proof']:
+            with self.subTest(kind=kind),tempfile.TemporaryDirectory()as tmp:
+                record,capture=fixture();share=Path(tmp);stage_record(share,record)
+                path=share/'runtime-address/originals.json'
+                def change():path.chmod(0o600);path.write_text('{}');path.chmod(0o400)
+                if kind=='missing':path.unlink()
+                elif kind=='changed':change()
+                elif kind=='missing-pin':
+                    del record['originals_record'];(path.parent/'run.json').write_text(json.dumps(record))
+                def verify_then_change(*args):
+                    result=corroborate(*args);change();return result
+                with ExitStack()as stack:
+                    if kind=='changed-during-proof':stack.enter_context(patch('ws73_runtime_address.corroborate',side_effect=verify_then_change))
+                    with self.assertRaises((OSError,ValueError)):
+                        corroborate_runtime_addresses(share,capture,ADDRESSES,file_record(HERE/'ws73_runtime_address.py'))
+
+    def test_prepared_old_or_changed_helper_is_rejected_before_vm(self):
+        from ws73_target import validate_runtime_address_guest
+        from ws73_north_star import file_record
+        path=self.root/'usr/share/sparklink/tools/ws73_runtime_address.py';path.parent.mkdir(parents=True)
+        path.write_text('fixture current helper')
+        pin=file_record(path);package=dict(guest_files=[pin]);verifier=dict(path='/host/helper',sha256=pin['sha256'])
+        validate_runtime_address_guest(self.root,package,verifier)
+        for kind in ['missing-pin','duplicate-pin','old-pin','old-helper','symlink']:
+            with self.subTest(kind=kind):
+                bad=copy.deepcopy(package);selected=copy.deepcopy(verifier)
+                if kind=='missing-pin':bad['guest_files']=[]
+                elif kind=='duplicate-pin':bad['guest_files']*=2
+                elif kind=='old-pin':bad['guest_files'][0]['sha256']='0'*64
+                elif kind=='old-helper':selected['sha256']='0'*64
+                else:
+                    other=path.with_suffix('.saved');path.rename(other);path.symlink_to(other)
+                with self.assertRaises(ValueError):validate_runtime_address_guest(self.root,bad,selected)
+
+    def test_terminal_record_cannot_drop_or_weaken_the_originals_requirement(self):
+        from ws73_target import run_exit_code
+        # Actual finalizer, synthetic terminal shape; not raw-wire evidence.
+        record=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,supervisor_exit=0,
+            runtime_addresses_requested=ADDRESSES,
+            qemu_args=['ws73.runtime_addresses='+','.join(ADDRESSES)],
+            runtime_address_corroboration=[dict(fixture=True)]*2,
+            runtime_address_record=dict(fixture=True),runtime_address_verifier=dict(fixture=True),
+            runtime_address_originals_record=dict(path='/fixture/originals.json',sha256='1'*64))
+        self.assertEqual(run_exit_code(record),0)
+        for value in [None,{},True,dict(path='/fixture/originals.json'),
+                      dict(path='/fixture/other.json',sha256='1'*64),
+                      dict(path='/fixture/originals.json',sha256='bad')]:
+            with self.subTest(value=value):
+                self.assertNotEqual(run_exit_code(record|dict(runtime_address_originals_record=value)),0)
+        for fields in [('runtime_address_originals_record',),
+                       ('runtime_address_originals_record','runtime_addresses_requested'),
+                       ('runtime_address_originals_record','runtime_addresses_requested','runtime_address_corroboration')]:
+            bad=copy.deepcopy(record)
+            for field in fields:del bad[field]
+            self.assertNotEqual(run_exit_code(bad),0)
+
 
 if __name__=='__main__':unittest.main()

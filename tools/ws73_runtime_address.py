@@ -4,10 +4,13 @@
 
 No libusb, firmware writes, address allocation or alternate protocol engine.
 """
+import copy
+import hashlib
 import json
 import os
 from pathlib import Path
 import re
+import stat
 import subprocess
 import sys
 import time
@@ -15,6 +18,9 @@ import time
 from ws73_capture import CaptureError, command_reply, json_identity
 from ws73_lab_resources import observe_guest_hcc
 from ws73_north_star import file_record, registration
+
+
+ORIGINALS_PATH = Path('/evidence/runtime-address/originals.json')
 
 
 def parse_addresses(values):
@@ -77,6 +83,77 @@ def decode_query(row, owner):
     return match[2]
 
 
+def originals_document(record):
+    """Reuse the two pre-mutation query receipts, not cached address metadata.
+
+    This document is an input for later inspection, never a restoration verdict.
+    The host manifest still supplies the physical-port/artifact mapping.
+    """
+    addresses = parse_addresses(record['addresses'])
+    owners, originals = record['owners'], record['originals']
+    if (len(owners) != 2 or len(originals) != 2
+            or [v['query'] for v in originals] != [0, 1]
+            or record['runtime_only'] is not True or record['official_identity'] is not False
+            or type(record['uid']) is not int or record['uid'] != 0):
+        raise ValueError('two original typed queries before mutation required')
+    queries = record['commands'][:2]
+    if len(queries) != 2:
+        raise ValueError('both original query receipts required')
+    for slot, (owner, original, query) in enumerate(zip(owners, originals, queries)):
+        if (owner['port'] != f'1-{slot+1}' or owner['hcc_chip']['model'] != 'E'
+                or owner['hcc_chip']['bus'] != 'USB'
+                or decode_query(query, owner) != original['address']):
+            raise ValueError('original query/controller observation mismatch')
+    return copy.deepcopy(dict(version=1, status='ORIGINALS_SAVED_NOT_RESTORED',
+        addresses=addresses, owners=owners, originals=originals, commands=queries,
+        sources=record['sources'], uid=0, runtime_only=True, official_identity=False))
+
+
+def publish_originals(out, record):
+    """Create once and sync before permitting a setter; never replace old data.
+
+    A failed/partial publication is retained and blocks mutation. This does not
+    claim that an untested guest/host filesystem survives a power loss.
+    """
+    if any('runtime-address' in row['args'] for row in record['commands']):
+        raise ValueError('originals must be published before any setter attempt')
+    data = (json.dumps(originals_document(record), indent=2)+'\n').encode()
+    path = out/ORIGINALS_PATH.name
+    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(descriptor, 'wb') as stream:
+        stream.write(data)
+        stream.flush()
+        os.fchmod(stream.fileno(), 0o400)
+        os.fsync(stream.fileno())
+    directory = os.open(out, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        os.fsync(directory)
+    finally:
+        os.close(directory)
+    pin = dict(path=str(ORIGINALS_PATH), sha256=hashlib.sha256(data).hexdigest())
+    check_originals(out, dict(record, originals_record=pin))
+    return pin
+
+
+def check_originals(out, record):
+    """Check the fixed evidence file, not a path selected by its own contents."""
+    pin = record.get('originals_record')
+    if (not isinstance(pin, dict) or set(pin) != {'path', 'sha256'}
+            or pin['path'] != str(ORIGINALS_PATH)
+            or not isinstance(pin['sha256'], str) or not re.fullmatch('[0-9a-f]{64}', pin['sha256'])):
+        raise ValueError('pinned original address evidence required')
+    expected = (json.dumps(originals_document(record), indent=2)+'\n').encode()
+    path = out/ORIGINALS_PATH.name
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    with os.fdopen(descriptor, 'rb') as stream:
+        if not stat.S_ISREG(os.fstat(stream.fileno()).st_mode):
+            raise ValueError('regular original address evidence required')
+        data = stream.read(len(expected)+1)
+    if data != expected or hashlib.sha256(data).hexdigest() != pin['sha256']:
+        raise ValueError('original address evidence changed')
+    return dict(path=str(path.resolve()), sha256=hashlib.sha256(data).hexdigest())
+
+
 def configure():
     if os.getuid() != 0 or Path('/sys/class/dmi/id/sys_vendor').read_text().strip() != 'QEMU':
         raise ValueError('explicit root-only isolated QEMU gate required')
@@ -90,12 +167,23 @@ def configure():
                   sources=[file_record(Path(__file__)), file_record('/bin/slkconfig')], uid=os.getuid())
     def save(): path.write_text(json.dumps(result, indent=2)+'\n')
     def call(owner, *operation):
+        if operation[0] == 'runtime-address':
+            check_originals(out, result)
         command = ['/bin/slkconfig', '--adapter', str(owner['index']), '--generation', str(owner['generation']), *operation]
         row = dict(args=command, start_wall_ns=time.time_ns(), start_monotonic_ns=time.monotonic_ns())
         result['commands'].append(row);save()
         try:
             p = subprocess.run(command, text=True, capture_output=True, timeout=12)
             row.update(exit=p.returncode, stdout=p.stdout, stderr=p.stderr)
+        except subprocess.TimeoutExpired as error:
+            row.update(exit=None, timed_out=True, timeout_seconds=error.timeout,
+                       output_complete=False, physical_outcome='unknown')
+            for name in ('stdout', 'stderr'):
+                value = getattr(error, name)
+                raw = value.encode() if isinstance(value, str) else (value or b'')
+                row[name] = raw.decode(errors='replace')
+                row['partial_'+name+'_hex'] = raw.hex()
+            raise
         finally:
             row.update(end_wall_ns=time.time_ns(), end_monotonic_ns=time.monotonic_ns());save()
         if p.returncode: raise ValueError('Native command rejected; original error retained')
@@ -120,6 +208,8 @@ def configure():
             result['originals'].append(dict(query=idx, address=decode_query(row, owner)));save()
         if any(v.replace(':', '').lower() in [x['address'] for x in result['originals']] for v in addresses):
             raise ValueError('requested address conflicts with observed original pair')
+        result['originals_record'] = publish_originals(out, result)
+        save()
         for slot, owner in enumerate(result['owners']):
             peer = result['owners'][1-slot]
             before_idx, before_row = call(peer, 'query', 'mac')

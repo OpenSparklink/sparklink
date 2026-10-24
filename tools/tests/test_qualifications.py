@@ -210,6 +210,78 @@ class QualificationTests(unittest.TestCase):
         self.assertFalse(self.run_check()['errors'])  # retained v1 stays v1
         self.assertTrue(self.run_check(require_current=True)['errors'])
 
+    def tracked_source_symlink(self):
+        """Real Git symlink plus separately scoped referent; no protocol fixture."""
+        link = self.repo / 'production-link.rs'
+        link.symlink_to('production.rs')
+        subprocess.run(['git', '-C', str(self.repo), 'add', 'production-link.rs'], check=True)
+        subprocess.run(['git', '-C', str(self.repo), '-c', 'user.name=Fixture', '-c',
+                        'user.email=fixture@example.invalid', '-c', 'commit.gpgsign=false',
+                        'commit', '-qm', 'tracked source link'], check=True)
+        commit = q.git(self.repo, 'rev-parse', 'HEAD').decode().strip()
+        scopes = ['production.rs', 'production-link.rs']
+        self.data['records'][0]['sources']['production'].update(
+            commit=commit, scopes=scopes, files=q.scoped_files(self.repo, commit, scopes))
+        self.report['source'] = commit
+        self.update_report()
+        return link
+
+    def test_clean_tracked_symlink_uses_git_link_identity(self):
+        link = self.tracked_source_symlink()
+        source = self.data['records'][0]['sources']['production']
+        self.assertNotEqual(source['files']['production-link.rs'], q.sha(link))
+        result = self.run_check(require_current=True)
+        self.assertEqual(result['errors'], [])
+        self.assertEqual(result['current'], 'SCOPED_SOURCE_AND_BYTES_MATCH_NOT_REPLAYED')
+
+    def test_tracked_symlink_target_text_replacement_rejected_even_with_same_content(self):
+        link = self.tracked_source_symlink()
+        (self.repo / 'alternative.rs').write_bytes((self.repo / 'production.rs').read_bytes())
+        link.unlink()
+        link.symlink_to('alternative.rs')
+        self.assertTrue(self.run_check(require_current=True)['errors'])
+        self.assertEqual(self.run_check()['errors'], [])  # Original Git identity remains retained.
+
+    def test_symlink_referent_production_scope_detects_changed_header_bytes(self):
+        self.tracked_source_symlink()
+        (self.repo / 'production.rs').write_text('changed referenced implementation\n')
+        result = self.run_check(require_current=True)
+        self.assertTrue(result['errors'])
+        self.assertIn('one/production', result['errors'][-1])
+
+    def test_dangling_source_symlink_rejected_even_without_referent_scope(self):
+        self.tracked_source_symlink()
+        source = self.data['records'][0]['sources']['production']
+        source.update(scopes=['production-link.rs'],
+                      files=q.scoped_files(self.repo, source['commit'], ['production-link.rs']))
+        (self.repo / 'production.rs').unlink()
+        result = self.run_check(require_current=True)
+        self.assertIn('one/production: source symlink target is missing or not a regular file: production-link.rs',
+                      result['errors'])
+
+    def test_symlink_replaced_by_regular_file_with_same_git_blob_rejected(self):
+        link = self.tracked_source_symlink()
+        link.unlink()
+        link.write_text('production.rs')  # Identical bytes to the committed link blob.
+        result = self.run_check(require_current=True)
+        self.assertIn('one/production: source file/link type changed: production-link.rs', result['errors'])
+
+    def test_regular_source_replaced_by_symlink_with_same_blob_bytes_rejected(self):
+        target_name = (self.repo / 'production.rs').read_text()
+        (self.repo / target_name).write_text('referent bytes are not the Git source object')
+        (self.repo / 'production.rs').unlink()
+        (self.repo / 'production.rs').symlink_to(target_name)
+        result = self.run_check(require_current=True)
+        self.assertIn('one/production: source file/link type changed: production.rs', result['errors'])
+
+    def test_source_symlink_to_directory_is_not_current(self):
+        self.tracked_source_symlink()
+        (self.repo / 'production.rs').unlink()
+        (self.repo / 'production.rs').mkdir()
+        result = self.run_check(require_current=True)
+        self.assertIn('one/production: source symlink target is missing or not a regular file: production-link.rs',
+                      result['errors'])
+
     def test_untracked_production_file_not_current(self):
         self.data['records'][0]['sources']['production']['scopes'] = ['production*']
         self.data['records'][0]['sources']['production']['files'] = q.scoped_files(

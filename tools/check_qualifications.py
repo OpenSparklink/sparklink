@@ -3,6 +3,10 @@
 
 Metadata mode cannot verify private materials or certify current code. Local mode
 checks retained bytes; --require-current additionally checks scoped source bytes.
+Source maps retain Git blob hashes: a symlink hashes its target text, not the
+referent. Currentness also checks file/link type and rejects dangling/non-file
+links. Referent content must be covered by its own declared production scope;
+checking a symlink alone does not qualify the referenced implementation.
 Neither mode independently re-decodes RF captures or proves build reproducibility.
 """
 import argparse
@@ -48,6 +52,44 @@ def _scoped_files(repo, commit, paths):
     names = git(repo, 'ls-tree', '-r', '--name-only', commit, '--', *paths).decode().splitlines()
     return {name: hashlib.sha256(git(repo, 'show', f'{commit}:{name}')).hexdigest()
             for name in names}
+
+
+@lru_cache(maxsize=32)
+def _scoped_modes(repo, commit, paths):
+    entries = git(repo, 'ls-tree', '-r', '-z', commit, '--', *paths).split(b'\0')
+    result = {}
+    for entry in entries:
+        if entry:
+            metadata, name = entry.split(b'\t', 1)
+            result[os.fsdecode(name)] = metadata.split()[0].decode()
+    return result
+
+
+def current_source_files(repo, commit, paths):
+    """Compare Git objects without following links to hash unrelated bytes.
+
+    Keep the published files->hash contract unchanged. Git modes supply the
+    separate file/link identity check, including same-content replacements.
+    """
+    modes = _scoped_modes(repo, commit, tuple(paths))
+    names = git(repo, 'ls-files', '-z', '--cached', '--others', '--exclude-standard',
+                '--', *paths).split(b'\0')
+    actual, errors = {}, []
+    for name in sorted({os.fsdecode(name) for name in names if name}):
+        path = repo / name
+        try:
+            link = path.is_symlink()
+            if name in modes and link != (modes[name] == '120000'):
+                errors.append(f'source file/link type changed: {name}')
+            if link:
+                actual[name] = hashlib.sha256(os.fsencode(os.readlink(path))).hexdigest()
+                if not path.is_file():
+                    errors.append(f'source symlink target is missing or not a regular file: {name}')
+            elif path.is_file():
+                actual[name] = sha(path)
+        except OSError:
+            errors.append(f'source identity or content unreadable: {name}')
+    return actual, errors
 
 
 def material_binding_errors(record, report, materials):
@@ -242,8 +284,8 @@ def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=F
                 if scoped_files(location, source['commit'], source['scopes']) != source['files']:
                     errors.append(f'{ident}/{role}: stale/incomplete source mapping')
                 if require_current:
-                    names = git(location, 'ls-files', '--cached', '--others', '--exclude-standard', '--', *source['scopes']).decode().splitlines()
-                    actual = {name: sha(location / name) for name in set(names) if (location / name).is_file()}
+                    actual, identity_errors = current_source_files(location, source['commit'], source['scopes'])
+                    errors.extend(f'{ident}/{role}: {error}' for error in identity_errors)
                     if actual != source['files']:
                         changed.append(f'{ident}/{role}')
             except subprocess.CalledProcessError:

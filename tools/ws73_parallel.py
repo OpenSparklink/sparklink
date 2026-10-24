@@ -44,6 +44,38 @@ def start_offset(value):
     return value
 
 
+def distinct_owners(owners):
+    """The existing final identity contract, also enforced before RF starts.
+
+    These are controller observations, not authenticated device identities.
+    Keep controller/generation as a pair; generations need not be globally unique.
+    """
+    if len(owners) != 4 or any(len({o[key] for o in owners}) != 4
+            for key in ('port', 'path', 'address', 'index')):
+        raise CaptureError('four distinct original owner identities required')
+    if (len({(o['bus'], o['device']) for o in owners}) != 4
+            or len({(o['index'], o['generation']) for o in owners}) != 4):
+        raise CaptureError('four independent USB/controller registrations required')
+    physical_device_descriptors(owners)
+
+
+def ready_owners(waits, ports):
+    """Bind both live Ready pipes to explicit slots before either is released."""
+    if len(waits) != 2 or len(ports) != 4 or len(set(ports)) != 4:
+        raise CaptureError('two complete Ready pipes and four explicit slots required')
+    owners = []
+    for pair, row in enumerate(waits):
+        event = row['event']
+        entries = event.get('owners', [])
+        if (event['pair'] != pair or event['phase'] != 'ready' or event['round'] != 0
+                or len(entries) != 2
+                or [o['port'] for o in entries] != list(ports[pair*2:pair*2+2])):
+            raise CaptureError('Ready observations must match the explicit pair and slots')
+        owners.extend(entries)
+    distinct_owners(owners)
+    return owners
+
+
 class PairRun(Run):
     SCOPE = SCOPE
     SUCCESS = SUCCESS
@@ -254,6 +286,8 @@ def run_parallel(args):
         reader = EventReader(processes, record['workers'])
         for phase, number in SEQUENCE:
             waits = reader.waits(processes, phase, number)
+            if phase == 'ready':
+                ready_owners(waits, args.ports)
             stage = dict(phase=phase, round=number, waits=waits, release_wall_ns=time.time_ns())
             record['stages'].append(stage)
             save()
@@ -349,9 +383,9 @@ def verify_records(record):
             if row['marker'] in markers:
                 raise CaptureError('random markers reused across pairs')
             markers.add(row['marker'])
-    if any(len({r[k] for r in owners}) != 4 for k in ['port', 'path', 'generation', 'address', 'index']) or len({(r['bus'], r['device']) for r in owners}) != 4:
+    distinct_owners(owners)
+    if len({o['generation'] for o in owners}) != 4:
         raise CaptureError('four distinct actual device registrations required')
-    physical_device_descriptors(owners)
     if [(s['phase'], s['round']) for s in record['stages']] != SEQUENCE:
         raise CaptureError('all ordered round barriers required')
     for pair, worker in enumerate(record['workers']):

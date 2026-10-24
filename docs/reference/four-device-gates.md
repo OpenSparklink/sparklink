@@ -18,6 +18,15 @@
 实际校验并回复；USB成功、NOCP、协议ACK和日志不能替代它。普通应用仍经slkd取得
 授权fd。实验协调者与只具应用组权限的部署资格分别验收，非root并不自动证明权限分离。
 
+## 开始无线业务前的身份检查
+
+四设备 RF 与业务协调器在首个 Ready 屏障释放前，复用收尾时的唯一身份检查：
+两条实际 worker pipe 必须分别报告其明确分配的两个 guest 端口；四个 controller 的
+端口、对象路径、地址、index、USB bus/device 及 index/generation 组合必须相互区分，
+设备描述材料也必须完整。重复地址、缺失记录或错配 slot 时，两组都不会收到开始确认。
+这只核对观察及准入，不证明地址的正式分配、芯片身份认证或跨设备全局 generation。
+历史材料不因新检查加入而升级；新资格仍须绑定实际执行工具与 artifact。
+
 ## 受控断链的因果编排
 
 新 prepared／run 的 `four_disconnect_progress_contract_version=1` 要求匹配的暂存

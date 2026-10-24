@@ -17,9 +17,9 @@ import subprocess
 import sys
 import time
 
-from ws73_capture import CaptureError, command_reply, physical_device_descriptors
+from ws73_capture import CaptureError, command_reply
 from ws73_north_star import Run, daemon_identity, file_record, ordinary_identity, stable
-from ws73_parallel import PairRun, EventReader, abort_workers, policy_expectation
+from ws73_parallel import PairRun, EventReader, abort_workers, policy_expectation, distinct_owners, ready_owners
 
 SCOPE = 'four real WS73 two-pair connected business'
 ISOLATION_SCOPE = 'four real WS73 controlled pair disconnect with surviving business'
@@ -232,6 +232,8 @@ def run_parallel(args):
         for kind,number,participants in stage_specs(isolation,progress=isolation):
             waits=[held_down.pop((number,pair)) if (kind=='down' and (number,pair) in held_down)
                    else reader.wait_one(processes,pair,kind,number) for pair in participants]
+            if kind == 'ready':
+                ready_owners(waits, args.ports)
             stage=dict(phase=kind,round=number,waits=waits,release_wall_ns=time.time_ns());record['stages'].append(stage);save()
             for pair in participants:
                 p=processes[pair];p.stdin.write(f'parallel-{kind}-{number}\n'.encode());p.stdin.flush()
@@ -388,11 +390,7 @@ def verify_records(record):
                 raise CaptureError('live pipe/parent release/worker acknowledgement cause mismatch')
         if progress:verify_progress_contract(r,observations,pair)
         owners.extend(r['initial'])
-    for key in ['port','path','address','index']:
-        if len({o[key] for o in owners})!=4:raise CaptureError('four distinct original owner identities required')
-    if len({(o['bus'],o['device']) for o in owners})!=4 or len({(o['index'],o['generation']) for o in owners})!=4:
-        raise CaptureError('four independent USB/controller registrations required')
-    physical_device_descriptors(owners)
+    distinct_owners(owners)
     return owners
 
 

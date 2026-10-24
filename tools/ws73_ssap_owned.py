@@ -105,7 +105,9 @@ def wait_text(process, path, pattern, deadline, min_count=1, *, max_count=16, co
 
 
 @contextmanager
-def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api=None,read_only=False,updates=False,application_uid=1000):
+def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api=None,read_only=False,updates=False,application_uid=1000,operations=5):
+    if type(operations)is not int or operations not in (3,5) or (operations!=5 and sdk_api is not None):
+        raise CaptureError('explicit CLI READ/WRITE_COMMAND or original publisher operations required')
     if application_uid not in (1000,1005):raise CaptureError('fixed publisher test role required')
     if application_uid==1005:
         from ws73_application_role import require_vm
@@ -115,7 +117,7 @@ def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api
     secret=secrets.token_hex(32);value=secrets.token_hex(32);uuid=secrets.token_hex(16);service=secrets.token_hex(16)
     prefix=run.output/f'ssap-owned-{row["phase"]}-{sender}-{label or policy}'
     out=Path(str(prefix)+'.stdout');err=Path(str(prefix)+'.stderr')
-    args=[str(run.args.slctl),'--adapter',target['owner']['path'],'ssap-serve',service,uuid,'5','36',secret,policy]
+    args=[str(run.args.slctl),'--adapter',target['owner']['path'],'ssap-serve',service,uuid,str(operations),'36',secret,policy]
     environment=None
     if sdk_api is not None:
         from ws73_application_client import application_environment,owned_arguments
@@ -123,6 +125,7 @@ def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api
             update_connection=target['object']['path'] if updates else None)
         environment=application_environment()
     item=dict(sender=sender,target=1-sender,policy=policy,secret=secret,value=value,uuid=uuid,service=service,args=args,start_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
+    if operations!=5:item['operations']=operations
     if sdk_api is not None:item.update(publisher_api=sdk_api,environment=environment)
     row.setdefault(collection,[]).append(item);run.save();process=None
     try:

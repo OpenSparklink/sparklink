@@ -301,6 +301,9 @@ def execute(run, phase, after_application=None):
         if getattr(run.args,'ssap_update_lifecycle_verify',False):
             from ws73_ssap_receive_lifecycle import execute as receive_execute
             receive_execute(run,row,lambda deadline:run_applications(run,row,processes,files,deadline))
+        if getattr(run.args,'ssap_write_command_verify',False):
+            from ws73_ssap_command import execute as command_execute
+            command_execute(run,row)
         if after_application is not None:
             passive_controller_checks(run,row,1,'before-applications')
         if hasattr(run, 'channel_barrier'):
@@ -654,6 +657,11 @@ def reject_unattributed_ssap(row, sdus):
     current = (row.get('ssap_value_lengths_version') == 4
                or row.get('ssap_update_delivery_version') == 2
                or row.get('ssap_subscription_required',False))
+    if 'ssap_write_command_contract' in row:
+        if type(row['ssap_write_command_contract']) is not int or row['ssap_write_command_contract'] != 1:
+            raise CaptureError('explicit supported Write Command capture contract required')
+        tracked += (1,12)
+        current = True
     if current:
         tracked += (15,16,17)
     for packet in sdus:
@@ -723,6 +731,11 @@ def corroborate(run,capture):
                 from ws73_ssap_owned import corroborate as owned_corroborate
                 ssap_owned,owned_credit=owned_corroborate(row,value_matched)
                 for key in ssap_credit:ssap_credit[key]+=owned_credit[key]
+            ssap_write_commands=[]
+            if row.get('ssap_write_command_required',False):
+                from ws73_ssap_command import corroborate as command_corroborate
+                ssap_write_commands,command_credit=command_corroborate(row,value_matched)
+                for key in ssap_credit:ssap_credit[key]+=command_credit[key]
             ssap_sender_deadline=[]
             if row.get('ssap_sender_deadline_required',False):
                 from ws73_ssap_sender_deadline import corroborate as sender_corroborate
@@ -835,6 +848,7 @@ def corroborate(run,capture):
         if row.get("ssap_update_local_rejection_required",False): entry["ssap_local_update_rejection"] = row["unsupported_incoming"]
         if row.get("ssap_discovery_required",False): entry["ssap_discovery"] = ssap_discovery
         if row.get('ssap_owned_required',False):entry['ssap_owned']=ssap_owned
+        if row.get('ssap_write_command_required',False):entry['ssap_write_commands']=ssap_write_commands
         if row.get('ssap_owned_update_required',False):entry['ssap_owned_updates']=ssap_owned_updates
         if row.get('ssap_subscription_required',False):entry['ssap_subscription']=ssap_subscription
         if row.get('ssap_update_delivery_required',False):entry['ssap_update_delivery']=ssap_update_delivery

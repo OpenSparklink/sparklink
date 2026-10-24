@@ -1149,6 +1149,34 @@ adds no business round trips: existing peer-checked business remains separate.
 This source contract alone does not qualify an artifact; consult the canonical
 capability record for exact executed gates and remaining conditions.
 
+## 无响应写命令的独立交付证据
+
+`--ssap-write-command-verify` 是现有双设备普通 socket VM 门禁的显式选项。
+它要求 `--qmp-hotplug --connection-verify --channel-socket-verify`，保持原
+4 轮、61 字节普通业务回归；不得与其他独立 SSAP、性能或故障选择器组合。
+guest 使用同一版本的 `ws73.ssap_write_command=1`，缺失、重复、未知版本或
+请求与报告不一致都拒绝验收。QMP 对照不代表物理拔插或自然恢复。
+
+契约 1 包含两种连接角色、两端分别发起、实际 C／Python 应用入口，以及
+0、32、2042 字节属性值，共 24 次 Write Command。对端原 Owned 注册仅声明
+READ 和 WRITE_NO_RSP。非空值使用预先生成的序号和随机载荷；空值绑定本次
+注册及非空初值，不宣称空载荷本身具有随机标识。所有应用保持原普通用户
+和无 capabilities 条件；这不增加 apps-only 部署或安全等级资格。
+
+每次 SDK 调用保留原五秒期限和启动屏障。其成功仅表示软件准入；必须另外
+完成真实远端 Read，以及仍存活的原服务所有者本地读回。交付观察窗口包含
+这些操作，不能以发送进程退出时刻截掉迟到 RX，也不能延长原 SDK 期限。
+随后的 Read 是另一项协议操作，不是 Write Command 的确认。
+
+双端 USB 证据独立匹配命令、Read 请求及响应，保留 ACB/PB 分片和实际物理
+发送计数。2042 字节值还要求已协商的 SSAP 序号分片、顺序与完整性；残余
+命令、意外 ErrorRsp／WriteRsp、缺腿、重复或窗口外证据均拒绝。NOCP 只用于
+已有 credit 记账核对，不能替代应用读回。正常退出与注销也不代表故障恢复。
+
+源码门禁和离线负对照不授予实机资格。历史报告保留原工具和编译身份；新
+artifact 的执行结果须单独记录。范围不含完整权限矩阵、多通道、四设备、
+性能、安全或自然恢复；这些原有验收条件继续保留。
+
 ## 显式 HCC 原始观测
 
 未发布的 `--channel-benchmark-hcc-memory-observe` 是专用 VM 的诊断选项。它要求

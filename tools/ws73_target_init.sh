@@ -564,6 +564,7 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
             if [ -n "$sender_case" ]; then connection_arg="$connection_arg --ssap-sender-lifecycle-case $sender_case"; fi
             if grep -qw ws73.ssap_value_lengths=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-value-lengths-verify"; fi
             if grep -qw ws73.ssap_owned=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-owned-verify"; fi
+            if grep -qw ws73.ssap_write_command=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-write-command-verify"; fi
             if grep -qw ws73.channel_fairness=1 /proc/cmdline; then connection_arg="$connection_arg --channel-fairness-verify"; fi
             if grep -qw ws73.dynamic_channels=1 /proc/cmdline; then connection_arg="$connection_arg --dynamic-channel-verify"; fi
             dynamic_long=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.dynamic_long=/){sub(/^ws73.dynamic_long=/,"",$i);print $i}}' /proc/cmdline)

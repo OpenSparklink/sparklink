@@ -212,7 +212,7 @@ def prepare_from_carrier(args):
         manifest['four_dynamic_benchmark_contract_version']=1
         manifest['four_dynamic_benchmark_close_contract_version']=1
         manifest['four_dynamic_benchmark_pressure_contract_version']=1
-        manifest['channel_sibling_business_contract_version']=2
+        manifest['channel_sibling_business_contract_version']=3
         manifest['four_owned_contract_version']=1
         manifest['four_delivery_contract_version']=1
         manifest['four_subscription_contract_version']=1

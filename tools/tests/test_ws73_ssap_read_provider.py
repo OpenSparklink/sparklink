@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Independent evidence fixtures; these tests do not qualify a VM or device."""
 import copy
+import errno
 import hashlib
 import json
 from pathlib import Path
@@ -112,12 +113,90 @@ def fixture(phase=0):
     return row, matched, packets
 
 
-def summary():
+def fixture_v2(phase=0):
+    # Independent literal protocol fixture, not a successful device claim.
+    row, _, _ = fixture(phase)
+    row['ssap_read_provider_version'] = 2
+    capture = dict(acb_packets=[], native_events=[])
+    for sender, item in enumerate(row['ssap_read_provider_cases']):
+        source, target = row['owners'][sender], row['owners'][1-sender]
+        base = 100_000_000_000+phase*100_000_000_000+sender*10_000_000_000
+        stamp = lambda n: base+n*1_000_000
+        template = copy.deepcopy(item['read'])
+        original_prompt = item['callback']['prompt']
+        for name in ('read', 'callback', 'reply_command'):
+            del item[name]
+        item.update(start_wall_ns=stamp(1), prepared_wall_ns=stamp(2), bound_wall_ns=stamp(3), steps=[])
+        lines = item['stdout'].splitlines()[:2]
+        exchanges = []
+        for ordinal, mode in enumerate(('application-error-ff', 'empty', 'value32')):
+            start = stamp(10+ordinal*100)
+            token, request = ordinal+1, ordinal+9
+            data = dict(original_prompt, token=token, request=request, deadline_ns=start+4_900_000_000)
+            value = item['dynamic_value'] if ordinal == 2 else ''
+            app = copy.deepcopy(template)
+            app.update(start_wall_ns=start, end_wall_ns=start+10_000_000,
+                       ssap_release_monotonic_ns=start+1_000_000, ssap_released_wall_ns=start+1_000_000,
+                       ssap_expected=value)
+            app['args'][-1] = value
+            if ordinal == 0:
+                del app['ssap_expected']; del app['ssap_release_monotonic_ns']; del app['ssap_released_wall_ns']
+                app['args'][-7] = 'ssap-error'
+                app['args'][-1] = str(errno.EIO)
+                app.update(ssap_expected_errno=errno.EIO, start_monotonic_ns=start,
+                           end_monotonic_ns=start+10_000_000, ssap_error_deadline_ns=start+5_000_000_000,
+                           ssap_supervisor_deadline_ns=start+7_000_000_000)
+                call = dict(stage='ssap_call', api=app['api'], deadline_ns=app['ssap_error_deadline_ns'],
+                            call_ns=start+1_000_000, client_closed=True)
+                result = dict(stage='ssap_error', api=app['api'], errno=errno.EIO, operation_success=False,
+                              deadline_ns=call['deadline_ns'], returned_ns=start+9_000_000)
+                app['stdout'] = json.dumps(call)+'\n'+json.dumps(result)+'\n'
+            else:
+                app['stdout'] = json.dumps(dict(stage='ssap_start_barrier', api=app['api'], client_closed=True))+'\n'+f'SsapPeerValue: operation=ssap-read path={source["object"]["path"]} handle=17 value={value}\n'
+            callback = dict(prompt=data, publisher_pid=item['pid'], observed_wall_ns=start+2_000_000,
+                            observed_monotonic_ns=start+2_000_000, reply_before_wall_ns=start+3_000_000,
+                            reply_before_monotonic_ns=start+3_000_000, replied_wall_ns=start+4_000_000,
+                            replied_monotonic_ns=start+4_000_000,
+                            supervisor_deadline_ns=start+(0 if ordinal == 0 else 1_000_000)+7_000_000_000)
+            command = f'provider-error p{token} FF' if ordinal == 0 else f'provide p{token} '+('-' if ordinal == 1 else value)
+            item['steps'].append(dict(mode=mode, read=app, callback=callback, reply_command=command))
+            lines.extend([
+                f'SsapAuthorizationDecision: request={request} property=17 data_type=0 write=false security=0 approved=true; local policy only',
+                f'SsapReadProviderPrompt: token=p{token} request={request} index={1-sender} generation=4 lifetime={data["lifetime"]} handle={data["handle"]} epoch=41 security=0 local_tcid=10 remote_tcid=10 pi=0 property=17 deadline_ns={data["deadline_ns"]} maximum_bytes=2042; answer \'provide p{token} HEX\' (\'-\' for empty) or \'provider-error p{token} AF..FF\'',
+                f'SsapReadProviderResult: request={request} property=17 status={255 if ordinal == 0 else 0} bytes={32 if ordinal == 2 else 0}; application response only',
+            ])
+            response = b'\x09\x0b\xff\0' if ordinal == 0 else b'\x09\x03'+bytes.fromhex(value)
+            exchanges.append((app, response))
+        item['stdout'] = '\n'.join(lines)+'\n'
+        item['captured_bytes']['stdout'] = len(item['stdout'].encode())
+        item.update(quit_wall_ns=stamp(230), owner_exit_wall_ns=stamp(231), end_wall_ns=stamp(250))
+        item['cleanup'].update(start_wall_ns=stamp(232), end_wall_ns=stamp(233))
+        item['retired_read'].update(start_wall_ns=stamp(240), end_wall_ns=stamp(249))
+        exchanges.append((item['retired_read'], b'\x09\x0b\x04\0'))
+        for window, response in exchanges:
+            for a, b, pdu in [(sender, 1-sender, b'\x08\x03\x11\0\0'), (1-sender, sender, response)]:
+                frame = b'\x0a\0'+len(pdu).to_bytes(2, 'little')+pdu
+                for endpoint, direction in [(a, 'out'), (b, 'in')]:
+                    offset = (1_100_000 if a == sender else 5_000_000)+(100_000 if direction == 'in' else 0)
+                    capture['acb_packets'].append(dict(bus=1, device=10+endpoint, handle=3+endpoint,
+                        direction=direction, data=frame.hex(), boundary=0, record=len(capture['acb_packets'])+1,
+                        wall_ns=window['start_wall_ns']+offset))
+    packets = reassemble_acb(capture)
+    def matched(owner, direction, frame, window):
+        key = (owner['owner']['bus'], owner['owner']['device'], owner['object']['handle'], direction, frame.hex())
+        found = [p for p in packets if tuple(p[k] for k in ('bus', 'device', 'handle', 'direction', 'data')) == key
+                 and window['start_wall_ns'] <= p['wall_ns'] <= window['end_wall_ns']]
+        if len(found) != 1: raise CaptureError('one exact independent v2 fixture leg required')
+        packets.remove(found[0]); return found[0]
+    return row, matched, packets
+
+
+def summary(version=1):
     rows = []
     for phase in (0, 1):
-        row, match, packets = fixture(phase)
+        row, match, packets = (fixture if version == 1 else fixture_v2)(phase)
         providers, credit = gate.corroborate(row, match)
-        assert not packets and credit == {0:4, 1:4}
+        assert not packets and credit == ({0:4, 1:4} if version == 1 else {0:8, 1:8})
         rows.append(dict(phase=phase, owners=row['owners'], ssap_read_providers=providers))
     return dict(proofs=rows)
 
@@ -215,6 +294,79 @@ class ReadProviderEvidence(unittest.TestCase):
     def test_after_start_hook_rejects_unbounded_or_paired_use_before_launch(self):
         for calls, callback in [([None], 1), ([None, None], lambda app, deadline: None)]:
             with self.assertRaises(CaptureError): ssap_commands(None, None, calls, after_start=callback)
+
+
+class ReadProviderSequenceEvidence(unittest.TestCase):
+    def test_actual_reassembler_error_empty_recovery_and_cleanup_both_languages(self):
+        proof = summary(2)
+        self.assertTrue(gate.valid_summary(proof, version=2))
+        self.assertFalse(gate.valid_summary(proof, version=1))
+        self.assertTrue(gate.valid_summary(summary(), version=1))
+        self.assertFalse(gate.valid_summary(summary(), version=2))
+        for row in proof['proofs']:
+            for item in row['ssap_read_providers']:
+                self.assertEqual(item['version'], 2)
+                self.assertEqual(len(item['wire']), 8)
+                self.assertEqual(item['outcomes'], [dict(mode='application-error-ff', application_status=255, sdk_errno=errno.EIO),
+                    dict(mode='empty', application_status=0, bytes=0), dict(mode='value32', application_status=0, bytes=32)])
+
+    def test_no_version_upgrade_downgrade_or_mixed_phase_acceptance(self):
+        for version in (1, 2):
+            record = dict(ssap_read_provider_requested=True, ssap_read_provider_version=version,
+                ssap_read_provider_acceptance=True, ssap_owned_acceptance=True,
+                ordinary_channel_socket_acceptance=True, status='PASSTHROUGH_SUPPORT_PASS', qemu_exit=0,
+                qemu_args=[gate.TOKEN+' ws73.ssap_owned=1'], channel_socket_corroboration=summary(version))
+            self.assertTrue(gate.valid_manifest(record))
+            self.assertFalse(gate.valid_manifest(dict(record, ssap_read_provider_version=3-version)))
+        rows = [fixture_v2(0)[0], fixture(1)[0]]
+        with self.assertRaises(CaptureError): gate.validate_rows(rows, True)
+        mixed = summary(2); mixed['proofs'][1] = summary()['proofs'][1]
+        self.assertFalse(gate.valid_summary(mixed))
+
+    def test_sequence_missing_error_empty_identity_deadline_and_causality_are_rejected(self):
+        cases = ('missing-step', 'reorder', 'reused-token', 'changed-epoch', 'wrong-error-command',
+                 'wrong-error-errno', 'error-success', 'empty-stored', 'random-stored', 'missing-result',
+                 'wrong-result', 'missing-approval', 'mixed-pid', 'early-cleanup', 'late-reply',
+                 'renewed-supervisor', 'missing-opposite', 'extra-response', 'error-wire', 'empty-wire',
+                 'response-before-answer', 'request-after-callback', 'response-before-request', 'opposite-before-tx', 'role-language')
+        for kind in cases:
+            row, match, packets = fixture_v2(); item = row['ssap_read_provider_cases'][0]
+            error, empty, value = item['steps']
+            if kind == 'missing-step': item['steps'].pop(0)
+            elif kind == 'reorder': item['steps'][0:2] = [empty, error]
+            elif kind == 'reused-token': empty['callback']['prompt']['token'] = 1
+            elif kind == 'changed-epoch': empty['callback']['prompt']['epoch'] += 1
+            elif kind == 'wrong-error-command': error['reply_command'] = 'provider-error p1 AF'
+            elif kind == 'wrong-error-errno': error['read']['ssap_expected_errno'] = errno.ETIMEDOUT
+            elif kind == 'error-success': error['read']['stdout'] = error['read']['stdout'].replace('"operation_success": false', '"operation_success": true')
+            elif kind == 'empty-stored': empty['read']['ssap_expected'] = item['secret']
+            elif kind == 'random-stored': item['dynamic_value'] = item['secret']
+            elif kind == 'missing-result': item['stdout'] = '\n'.join(l for l in item['stdout'].splitlines() if not l.startswith('SsapReadProviderResult: request=9 '))+'\n'
+            elif kind == 'wrong-result': item['stdout'] = item['stdout'].replace('status=255 bytes=0', 'status=0 bytes=0')
+            elif kind == 'missing-approval': item['stdout'] = item['stdout'].replace('request=10 property=17 data_type=0 write=false security=0 approved=true', 'request=10 property=17 data_type=0 write=false security=0 approved=false')
+            elif kind == 'mixed-pid': empty['callback']['publisher_pid'] += 1
+            elif kind == 'early-cleanup': item['quit_wall_ns'] = empty['read']['end_wall_ns']
+            elif kind == 'late-reply': empty['callback']['replied_monotonic_ns'] = empty['callback']['prompt']['deadline_ns']
+            elif kind == 'renewed-supervisor': empty['callback']['supervisor_deadline_ns'] += 1
+            elif kind == 'missing-opposite': packets.pop(3)
+            elif kind == 'extra-response': packets.insert(3, copy.deepcopy(packets[3]))
+            elif kind in ('error-wire', 'empty-wire'):
+                packet = packets[3 if kind == 'error-wire' else 7]
+                packet['data'] = packet['data'][:-2]+'01'
+            elif kind == 'role-language': empty['read']['api'] = 'python'
+            elif kind == 'opposite-before-tx':
+                packet = packets[3]; packet['wall_ns'] = packets[2]['wall_ns']-1
+                for fragment in packet['fragments']: fragment['wall_ns'] = packet['wall_ns']
+            else:
+                packet = packets[2 if kind == 'response-before-answer' else 1 if kind == 'request-after-callback' else 10]
+                wall = (error['callback']['reply_before_wall_ns']-1 if kind == 'response-before-answer'
+                    else error['callback']['observed_wall_ns']+1 if kind == 'request-after-callback'
+                    else value['read']['start_wall_ns']+1)
+                packet['wall_ns'] = wall
+                for fragment in packet['fragments']: fragment['wall_ns'] = wall
+            item['captured_bytes']['stdout'] = len(item['stdout'].encode())
+            with self.subTest(kind=kind), self.assertRaises((CaptureError, ValueError)):
+                gate.corroborate(row, match)
 
 
 if __name__ == '__main__':

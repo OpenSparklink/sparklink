@@ -1200,7 +1200,8 @@ def _run(args):
     m['ssap_read_provider_requested']=read_provider
     m['ssap_read_provider_acceptance']=False
     if read_provider:
-        m['ssap_read_provider_version']=1
+        from ws73_ssap_read_provider import VERSION as provider_version
+        m['ssap_read_provider_version']=provider_version
         m['ssap_read_provider_verifier']=file_record(HERE/'ws73_ssap_read_provider.py')
     m['ssap_description_requested']=description
     m['ssap_description_acceptance']=False
@@ -2229,7 +2230,7 @@ def _run(args):
                             from ws73_ssap_update_delivery import validate_tools as provider_tools
                             for row in control['channel_socket']:
                                 provider_tools(row['ssap_read_provider_tools'],args.prepared/'root',package['guest_files'])
-                            if file_record(HERE/'ws73_ssap_read_provider.py')!=m['ssap_read_provider_verifier'] or not provider_summary(m['channel_socket_corroboration']):
+                            if file_record(HERE/'ws73_ssap_read_provider.py')!=m['ssap_read_provider_verifier'] or not provider_summary(m['channel_socket_corroboration'],version=m['ssap_read_provider_version']):
                                 raise ValueError('exact original read provider verifier and paired SDK/USB evidence required')
                         m['ssap_read_provider_acceptance']=read_provider
                         if description:

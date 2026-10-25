@@ -402,7 +402,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 ```json
 {
   "id": "WP08-WP16-WP17-R5f158-provider-owner-exit",
-  "state": "PLANNED_BOUNDED_PROVIDER_OWNER_EXIT_NO_NEW_QUALIFICATION_FULL_SCOPE_OPEN",
+  "state": "PUBLIC_SOURCE_AND_OFFLINE_SCOPE_ONLY_FULL_GOAL_OPEN",
   "production_behavior": "Exercise the existing sole SSAP Engine and Owned read Provider: observe two actual Provider prompts, then SIGKILL the corresponding Owner while each request is outstanding; one receiver per connection phase, with C/Python requesters alternating. No new Host, Engine, fallback or protocol path is planned.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
@@ -419,7 +419,23 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
   "public_scope": "Only source/offline summaries are public. Exact compiled/executor/report identities and actual device results remain local; non-disclosure is not a statement that execution has or has not occurred.",
   "implementation_sources": {
     "plan_source_baseline": "31e4025ed4a2ff8ec30f2470f155ac7488be3759",
-    "scope": "Plan-source identity only; no new compiled artifact, execution tool or signed qualification report identity is inferred."
+    "scope": "Public source/offline view only; private compiled, executor, report and actual results are not disclosed or inferred.",
+    "public_source": "c0f547bd65303eeca4eb0f4149936f3e829121ae",
+    "public_commits": [
+      {
+        "stage": "plan",
+        "commit": "3e81c45c25f45f81fb9f121e7f5c9c60a8870066"
+      },
+      {
+        "stage": "gate",
+        "commit": "30a08b910026c59284189812f91323a7760e935c"
+      },
+      {
+        "stage": "selected-adapter-contract-fix",
+        "commit": "c0f547bd65303eeca4eb0f4149936f3e829121ae"
+      }
+    ],
+    "source_offline_scope": "Existing Owner-exit test callers and explicit selected-adapter contract; exact public tested snapshot. No Rust/Host/Engine change or transfer of hardware qualification."
   },
   "invariants": [
     "Use the same physical Session, original Owned binding, Grant, command/data credit, Ticket and nonrenewed request deadline; callback identity and actual prompt are the controlled barrier.",
@@ -433,13 +449,13 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Verify an independent Owner actual response and ordinary application payload validation after the controlled exit; retain the selected existing Owned/ordinary baseline gates.",
     "Use accurate new artifact/executor identities, independent finite evidence audit and fail-closed material controls before any scoped registration; preserve all historical results."
   ],
-  "offline_status": "NO_R158_OFFLINE_RESULT_RECORDED_BY_THIS_PLAN; prior R157 checks retain their original source scope.",
+  "offline_status": "EXACT_PUBLIC_SOURCE_TOOLS_AND_STRICT_DOCS_PASS_NOT_FORMAL_OR_HARDWARE",
   "formal_status": "UNPROVED_FOR_THIS_CHANGE",
-  "hardware_status": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED; no hardware execution inference from this public plan.",
+  "hardware_status": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED; public source/offline completion does not establish whether a private run occurred or passed.",
   "checks": {
-    "source": "PLAN_ONLY",
-    "tooling": "NOT_RECORDED_FOR_R158",
-    "documentation": "NOT_RECORDED_FOR_R158",
+    "source": "SIGNED_SOURCE_MIRRORED",
+    "tooling": "OFFLINE_PASS",
+    "documentation": "PUBLIC_STRICT_HTML_PASS",
     "new_application_helpers": "LOCAL_AUTHORITY_NOT_DISCLOSED",
     "new_vm_gate": "LOCAL_AUTHORITY_NOT_DISCLOSED",
     "independent_actual_audit": "LOCAL_AUTHORITY_NOT_DISCLOSED",
@@ -451,10 +467,8 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Natural fault RCA, nonmanual recovery, E/mixed/cold-ROM and production identity remain open; manual, hub or QMP operations do not establish natural recovery."
   ],
   "next": [
-    "Finish the bounded Owner-exit gate and affected source/offline/documentation checks; preserve the actual prompt barrier, original deadlines, original failure evidence and finite scope.",
-    "Prepare and run accurate VM-only artifacts under existing per-leaf ownership and shared build budget; independently verify two prompt/kill outcomes, retired refusals and independent Owner/ordinary continuity.",
-    "Seal and register only complete finite evidence with separate compiled, executor and report identities; publish generic source/offline summaries only.",
-    "Then address original-deadline expiry/late reply separately while continuing the existing data/security/SSAP mainline; do not require every control race first."
+    "Continue the original bounded implementation and evidence process under the existing private qualification authority; no actual-test outcome is inferred from this public summary.",
+    "Keep original-deadline expiry/late reply separate and continue the complete data/security/SSAP plan without requiring every control-plane race first."
   ],
   "issues": [
     "OpenSparklink/sparklink#3",
@@ -463,15 +477,88 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "OpenSparklink/linux#19"
   ],
   "issue_sync": {
-    "status": "R158_SOURCE_OFFLINE_SUMMARY_NOT_YET_RECORDED",
+    "status": "PUBLIC_SOURCE_OFFLINE_SUMMARIES_POSTED_AND_READ_BACK",
     "source_only": true,
     "private_hardware_published": false,
     "original_issues_open": true,
-    "receipt": null
+    "comments": [
+      {
+        "repo": "sparklink",
+        "issue": 3,
+        "id": 6397019931,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6397019931",
+        "body_verified": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "id": 6397020709,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6397020709",
+        "body_verified": true
+      },
+      {
+        "repo": "linux",
+        "issue": 17,
+        "id": 6397021567,
+        "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6397021567",
+        "body_verified": true
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "id": 6397084190,
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6397084190",
+        "body_verified": true
+      }
+    ],
+    "scope": "Existing four issue source/offline summaries only; no private actual-test metadata published."
   },
   "offline_checks": {
-    "scope": "R158 results are not imported by this plan; R157 receipts remain in the exact archived batch."
-  }
+    "scope": "Tool fixtures and strict public documentation at the exact source snapshot. These are not new formal or actual-device qualifications.",
+    "tooling": {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/tests",
+        "-v"
+      ],
+      "signed_public_source": "c0f547bd65303eeca4eb0f4149936f3e829121ae",
+      "status": "OFFLINE_PASS",
+      "scope": "Original tested public source snapshot only; no hardware inference.",
+      "tests": 1588
+    },
+    "documentation": {
+      "command": [
+        "make",
+        "docs"
+      ],
+      "signed_public_source": "c0f547bd65303eeca4eb0f4149936f3e829121ae",
+      "status": "OFFLINE_PASS",
+      "scope": "Original tested public source snapshot only; no hardware inference."
+    }
+  },
+  "source_sync_history": [
+    {
+      "implementation_sources": {
+        "plan_source_baseline": "31e4025ed4a2ff8ec30f2470f155ac7488be3759",
+        "scope": "Plan-source identity only; no new compiled artifact, execution tool or signed qualification report identity is inferred."
+      },
+      "offline_checks": {
+        "scope": "R158 results are not imported by this plan; R157 receipts remain in the exact archived batch."
+      },
+      "issue_sync": {
+        "status": "R158_SOURCE_OFFLINE_SUMMARY_NOT_YET_RECORDED",
+        "source_only": true,
+        "private_hardware_published": false,
+        "original_issues_open": true,
+        "receipt": null
+      }
+    }
+  ]
 }
 ```
 

@@ -93,7 +93,7 @@ CLI 可用 `ssap-read-description CONNECTION HANDLE [MINIMUM]`；`ssap-serve` �
 
 ## 需要按请求生成只读值时
 
-上面的 C/Python 示例使用数据库存储值。R156 正在为原 Owned 属性增加动态只读
+上面的 C/Python 示例使用数据库存储值。原 Owned 属性也可显式绑定动态只读
 Provider，完整 C/Python Provider 收件箱尚未接通；不要将 `next_authorization()`
 的布尔批准当作提供值。现有 C/Python 远端属性读取可以接收 provider 返回的值，
 仍需核对实际对端结果与准确产物资格。
@@ -105,7 +105,7 @@ READ，绑定消耗原初值且在该登记内不可更换或解除，之后本�
 NotSupported。公开 type1 说明仍按上节独立处理。准备接入前先按
 [动态只读值契约](../reference/ssap-permissions.md#owned-read-only-provider)
 实现有界结果、应用错误和原期限。
-源码开发、离线及实机验收分开记录，当前新增路径的验证仍待完成。
+源码、离线及实机验收分开记录；本节用法不向最新分支转授历史资格。
 
 使用现有前台 `ssap-serve` 时，将 OPS 设为1，ACCESS 按应用需要设置；原初值只用于
 登记，绑定后即释放。进入前台后输入 `provider`，等待 `SsapReadProviderBound` 本地

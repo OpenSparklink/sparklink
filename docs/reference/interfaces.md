@@ -314,12 +314,12 @@ system bus角色分离也已在该VM实际核对，但无controller的允许调�
 |---|---|---|
 | Native 管理／诊断 | 版本化请求，controller generation／所有权检查；已实现标准 Diagnostic，限查询；准确新实机范围见资格页 | `slk-native/src/ioctl.rs`、内核 `sparklink_core.rs` |
 | Native WS73 发现／连接／通道 | 已接通路径；实机资格仅限能力页所列准确提交及场景 | `slkd/src/connection.rs`／`controller.rs`、`slk-native` API、内核 socket |
-| D-Bus ServiceManager／RemoteService | RegisterLocalService/ListLocalServices/RemoveLocalService/ReadLocalValue 是本地数据库操作；Owned 登记、读取、替换、说明设置及撤回按原 caller 约束；新增只读 Provider 绑定只适用于原 Owned type0，离线/实机待验；旧 facade 方法与 RemoteService 已删除；真实远端操作走 Connection 唯一 SSAP actor | `slkd/src/service.rs` |
+| D-Bus ServiceManager／RemoteService | RegisterLocalService/ListLocalServices/RemoveLocalService/ReadLocalValue 是本地数据库操作；Owned 登记、读取、替换、说明设置及撤回按原 caller 约束；只读 Provider 绑定只适用于原 Owned type0，准确资格由能力入口维护；旧 facade 方法与 RemoteService 已删除；真实远端操作走 Connection 唯一 SSAP actor | `slkd/src/service.rs` |
 | 旧 SSAP ioctl | 业务命令已删除，旧编号 ENOTTY，不提供兼容 fallback；权限类型继续复用 | `slk-native/src/ioctl.rs`、内核 UAPI |
 | 旧 property／write facade | 未发布入口与调用者已删除，历史 248/252 限制仅保留在原资格/纯测试；当前协商与长写限制单独表达 | 原 git／codec 回归 |
 | Profile／transport 实验 | 独立 `slk-experimental`；不构成默认生产能力 | 实验 crate README、构建 feature |
 | UserHost／厂商 Host 适配 | P4 规划，接口／实现／证明／实机均未完成 | ADR 0003 |
-| 新用户态 SSAP Engine | 唯一用户态 actor 的 ExchangeInfo、单值读写/分片、UUID/结构发现、CPCD、Owned 通知/指示及订阅已有对应路径；只读 type1 说明复用发现/读取。R156 仅扩展 Owned type0 动态只读 Provider，源码开发中、离线/实机待验；动态写入、完整 C/Python Provider、其他描述符与完整服务/长写契约仍缺；准确资格仅能力入口 | 唯一实施计划 WP08、准确能力入口 |
+| 新用户态 SSAP Engine | 唯一用户态 actor 的 ExchangeInfo、单值读写/分片、UUID/结构发现、CPCD、Owned 通知/指示及订阅已有对应路径；只读 type1 说明复用发现/读取。Owned type0 动态只读 Provider 复用同一 actor 和原授权，不能据此宣称完整服务资格；动态写入、完整 C/Python Provider、其他描述符与完整服务/长写契约仍缺；准确资格仅能力入口 | 唯一实施计划 WP08、准确能力入口 |
 
 C 头、Rust FFI 和 Python 绑定应匹配准确源码，不能根据函数声明推导硬件支持。本表是状态查找参考，完整资格仍仅维护于能力入口；逐字段自动生成 API 及全错误矩阵尚待下一批。
 
@@ -1009,7 +1009,7 @@ ws73/wifi_cali/btc_cali原SHA头与组合hash。HCC尚未运行的ROM两端点�
 旧 `RegisterLocalService` 继续拒绝授权位；新登记与等待审批复用唯一 Engine 和
 实际约束发送，不代表 CPCD、长写、可信身份、Bond 或全部多应用部署已验收。
 
-新增的只读 Provider 使用下列未发布契约；源码开发中，离线与实机验证待完成：
+只读 Provider 使用下列未发布契约；源码、离线与实机范围按准确产物分别记录：
 
 | 接口 | 签名 | 约束 |
 |---|---|---|

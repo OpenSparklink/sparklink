@@ -702,6 +702,25 @@ bus 上使用管理组；不能据此宣称 service-only组权限或完整取消
 所有实验驱动和真实硬件仍只在VM运行，不执行宿主安装或自动电源操作。
 
 
+### 动态只读 Provider 的结果门禁
+
+在上述普通61字节、每角色4轮的 Owned 门禁上，增加
+`--ssap-read-provider-verify`。保持同一前台 Owner、原 caller/generation/lifetime、
+真实 callback prompt 与原绝对期限；监督器只在实际提示之后提供显式应用结果。
+C/Python 使用现有授权客户端读取，结果由对端 SDK 与双端 USB 同时核对。
+
+新运行记录使用 Provider version2：每个 Owner 依次返回应用错误 `FF`、成功空值、
+随机32字节；随后正常退出，旧 handle 的新读请求必须返回错误4。错误、空值与后续
+成功分别记录，不能用错误后的成功覆盖错误步骤，也不能回退到绑定前的存储值。
+成功空值仍有合法 SSAP 响应和完整双端捕获，不是缺包或日志空行。
+现有 version1 历史报告保留原单次32字节读回语义；不能把它改标为 version2，
+manifest 与每阶段结果必须匹配同一版本。
+
+此入口不承诺 Owner 在途退出、迟到答复、全部长度、C/Python Provider 收件箱或
+完整 SSAP 资格。原期限到期后不要求另发错误包；后续专用期限门禁须验证旧响应
+不得新提交。上述命令只描述测试输入与判定，实际产物与结果由授权本地记录维护。
+
+
 ### Service-only 的实际 system bus 权限门禁
 
 `--ssap-service-policy` 与原普通双设备连接/socket门禁组合，先在VM的`type=system`

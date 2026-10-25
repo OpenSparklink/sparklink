@@ -1219,7 +1219,7 @@ Owned type1 说明以原属性 handle 定位，由原 caller 显式设置为公�
 [说明契约](../docs/reference/ssap-permissions.md#显式公开的只读属性说明)。
 源码实现、离线结果和实际对端校验按各自准确产物登记；公开只读不代表可信身份。
 
-R156 在同一 Owned 登记中增加只读 type0 Provider，源码实现中，离线与实机待验。
+同一 Owned 登记内的只读 type0 Provider 已有源码实现；具体资格由准确产物记录维护。
 原 unique caller 只可为恰好 READ 的属性绑定一次同总线对象；绑定消耗原存储值，
 不提供更换、解除或缓存回退，本地读取与替换 NotSupported。应用按请求提供值，
 唯一 Engine 仍先检查原操作/安全/授权，再等待 provider；type1 说明不进入该回调。

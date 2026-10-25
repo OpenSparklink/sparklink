@@ -62,7 +62,7 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
 ```json
 {
   "id": "WP08-WP16-WP17-R5f157-provider-error-empty-continued-read",
-  "state": "SOURCE_AND_SCOPED_TOOLS_CHECKED_NEW_ARTIFACT_AND_VM_PENDING_FULL_SCOPE_OPEN",
+  "state": "PUBLIC_SOURCE_AND_OFFLINE_SCOPE_ONLY_FULL_GOAL_OPEN",
   "production_behavior": "Exercise the existing sole user-space SSAP Engine and Owned read Provider with one unchanged Owner: application error 0xff, successful empty Read, then a different random 32-byte value. Extend only existing SDK test callers and the existing Provider gate; no second Engine or new production protocol path.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
@@ -115,16 +115,16 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
     "Original callback identities/deadlines and unique prompts, actual peer comparison/error and paired USB for every outcome; exact source/artifact/tool/firmware bounds.",
     "Finite actual evidence independently audited; missing/mutated evidence rejected. No implicit full lifetime, formal, E/mixed, recovery or complete SSAP qualification."
   ],
-  "offline_status": "SCOPED_TOOLING_UNIT_FIXTURES_DIFF_AND_STRICT_DOCS_PASS; new compiled C/Python helpers and device gates remain pending. Offline checks do not qualify Native, USB, RF, hardware concurrency or firmware behavior.",
+  "offline_status": "SCOPED_TOOLING_UNIT_FIXTURES_DIFF_AND_STRICT_DOCS_PASS; artifact-specific execution results are separate. Offline checks do not qualify Native, USB, RF, hardware concurrency or firmware behavior.",
   "formal_status": "UNPROVED_FOR_THIS_CHANGE",
-  "hardware_status": "NEW_R157_ARTIFACT_AND_REAL_GATE_PENDING; prior R156 results retain their original identities and scope in history.",
+  "hardware_status": "NO_PUBLIC_HARDWARE_QUALIFICATION_ASSERTED; actual artifact identities and scoped results are maintained in authorized local records. Non-disclosure is not an execution-status claim.",
   "checks": {
     "tooling": "SCOPED_OFFLINE_PASS",
     "documentation": "STRICT_HTML_AND_METADATA_PASS",
-    "new_application_helpers": "PENDING",
-    "new_vm_gate": "PENDING",
-    "independent_actual_audit": "PENDING",
-    "qualification_registration": "NOT_REGISTERED"
+    "new_application_helpers": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED",
+    "new_vm_gate": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED",
+    "independent_actual_audit": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED",
+    "qualification_registration": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED"
   },
   "remaining_conditions": [
     "Owner exit after actual prompt and original-deadline late reply remain separate next slice; do not demand a post-deadline error packet.",
@@ -132,8 +132,8 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
     "Natural RCA, nonmanual recovery and production identity/cold-ROM remain open; manual/QMP never counts as natural recovery."
   ],
   "next": [
-    "Build and prepare a fresh artifact with the shared build lock and accurate compiled/source/executor identities; retain the completed source and documentation checks.",
-    "Run the existing VM-only Provider gate extended to four same-Owner error-ff, empty and random-32-byte sequences, preserving the original Owned, ordinary business and retirement assertions; audit both endpoints independently before any finite registration.",
+    "Follow the authorized local artifact and qualification record for execution status; this public source summary does not duplicate or infer that status.",
+    "Preserve the bounded four-Owner error/empty/random-read gate, original Owned and ordinary business assertions and paired evidence requirements; publish source/offline scope only.",
     "After this bounded slice, exercise Owner exit after an actual prompt and original-deadline late reply separately; a post-deadline error packet is not a required success condition.",
     "Continue data lengths, real credit/backpressure, multiple channels, four-device traffic, security, user-space SSAP/Profile, lifecycle cleanup, deployment and recovery under the full original plan; do not gate progress on all control-plane races.",
     "The four existing issue source/offline summaries are posted; retain the user-selected local-only boundary for actual device details and keep incomplete original issue scopes open."
@@ -214,7 +214,7 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
     "OpenSparklink/linux#19"
   ],
   "offline_checks": {
-    "scope": "Changed tool source passed the existing Python tooling suite, diff and strict documentation checks. New compiled helpers and device gates remain separate; private reports are not copied into this checkout."
+    "scope": "Changed tool source passed the existing Python tooling suite, diff and strict documentation checks. Artifact identities and actual device results are maintained separately in authorized local records, not copied into this checkout."
   }
 }
 ```

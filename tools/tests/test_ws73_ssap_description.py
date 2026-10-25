@@ -5,16 +5,20 @@ The ordinary owner oracle is reused unchanged. Independent fixed description
 vectors and child receipts exercise missing/foreign/mutated evidence refusal.
 """
 import ast
+from contextlib import redirect_stdout
 import copy
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
@@ -113,6 +117,55 @@ def summary():
 
 
 class DescriptionEvidence(unittest.TestCase):
+    def test_actual_host_loads_then_validates_before_any_process_launch(self):
+        # Exercise the real CLI parser and _run. Only the prepared-artifact and
+        # read-only host observations are fixtures; no successful device path
+        # is supplied. The actual input validators must produce durable FAIL.
+        import ws73_target as host
+        file_record = host.file_record
+        names = ('ws73_ssap_description.py', 'ws73_ssap_owned.py',
+                 'ws73_application_client.py', 'ws73_channel_socket.py',
+                 'ws73_target_control.py', 'ws73_target_guest.py', 'ws73_target_init.sh')
+        good = dict(inputs=[file_record(TOOLS / n) for n in names],
+                    application_client_tools=dict(sources=[file_record(TOOLS / n) for n in
+                        ('testing/application_client/client.c', 'testing/application_client/client.py')]),
+                    ssap_exchange_contract_version=False)
+        for kind, expected in (
+                ('consumer', 'fresh exact application consumer source required'),
+                ('helper', 'fresh exact description input required'),
+                ('validated', 'explicit known SSAP exchange artifact contract required')):
+            package = copy.deepcopy(good)
+            if kind == 'consumer': package['application_client_tools']['sources'] = []
+            if kind == 'helper': package['inputs'][0]['sha256'] = '0' * 64
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory); prepared = root / 'prepared'; prepared.mkdir()
+                (prepared / 'manifest.json').write_text(json.dumps(package))
+                output = root / 'output'
+                argv = ['ws73_target.py', 'run', '--prepared', str(prepared), '--output', str(output),
+                        '--ports', '1-1.1.1', '1-1.1.2', '--qmp-hotplug',
+                        '--firmware-evidence', 'runtime-observation', '--connection-verify',
+                        '--connection-advertising', 'negotiable-t', '--channel-socket-verify',
+                        '--ssap-owned-verify', '--ssap-description-verify']
+                with patch.object(sys, 'argv', argv), patch.object(host, 'run', side_effect=lambda args: args):
+                    args = host.main()
+                stdout = io.StringIO()
+                with redirect_stdout(stdout), patch.object(host, 'ordinary_identity'), \
+                     patch.object(host, 'prepared', return_value=package) as loaded, \
+                     patch.object(host, 'lab_module', return_value=SimpleNamespace(inventory=lambda: [])), \
+                     patch.object(gate, 'validate_inputs', wraps=gate.validate_inputs) as checked, \
+                     patch.object(host.subprocess, 'Popen', side_effect=AssertionError('must not launch')) as launch:
+                    self.assertEqual(host._run(args), 1)
+                loaded.assert_called_once_with(prepared.resolve())
+                checked.assert_called_once_with(package)
+                launch.assert_not_called()
+                self.assertEqual(stdout.getvalue().strip(), f'FAIL {output / "manifest.json"}')
+                record = json.loads((output / 'manifest.json').read_text())
+                self.assertEqual(record['status'], 'FAIL')
+                self.assertIn(expected, record['error'])
+                self.assertIs(record['ssap_description_acceptance'], False)
+                self.assertIs(record['physical_acceptance'], False)
+                self.assertNotIn('qemu_args', record)
+
     def test_original_owned_assertions_and_every_description_leg_remain_required(self):
         proofs=[]
         for phase in (0,1):

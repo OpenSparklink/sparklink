@@ -1198,8 +1198,6 @@ def _run(args):
     m['ssap_description_requested']=description
     m['ssap_description_acceptance']=False
     if description:
-        from ws73_ssap_description import validate_inputs as description_inputs
-        description_inputs(package)
         m['ssap_description_version']=1
         m['ssap_description_verifier']=file_record(HERE/'ws73_ssap_description.py')
     m['ssap_write_command_requested']=write_command
@@ -1336,6 +1334,9 @@ def _run(args):
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        if description:
+            from ws73_ssap_description import validate_inputs as description_inputs
+            description_inputs(package)
         if sibling_business:
             from ws73_channel_sibling import require_preparation
             require_preparation(package,args.prepared.resolve())

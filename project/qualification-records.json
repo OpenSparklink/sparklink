@@ -14,7 +14,7 @@
   },
   "batch": {
     "id": "WP08-WP16-WP17-R5f159-provider-original-deadline-late-reply",
-    "state": "PLANNED_BOUNDED_PROVIDER_ORIGINAL_DEADLINE_LATE_REPLY_NO_NEW_QUALIFICATION_FULL_SCOPE_OPEN",
+    "state": "PUBLIC_SOURCE_AND_OFFLINE_SCOPE_ONLY_FULL_GOAL_OPEN",
     "production_behavior": "Exercise the existing sole SSAP Engine and Owned read Provider through two live authorized Provider prompts. Keep each Owner alive without answering, observe the immutable SDK timeout and Provider deadline terminal, then reject one late original-token reply. Preserve independent ordinary CUTC delivery and the outer new-lifetime path. No new Host, Engine, fallback, same-actor recovery or renewed timeout is planned.",
     "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
     "work_packages": [
@@ -31,7 +31,19 @@
     "public_scope": "Only source/plan and subsequent source/offline summaries are public. Exact compiled/executor/report identities and actual device results remain local; non-disclosure is not a statement that execution has or has not occurred.",
     "implementation_sources": {
       "plan_source_baseline": "fa51d4ea9d85df1a46abfc06ea15ea6025dfa942",
-      "scope": "Plan-source identity only; no new compiled artifact, execution tool, test result or signed qualification report identity is inferred."
+      "scope": "Public source/offline view only; private compiled, executor, report and actual results are not disclosed or inferred.",
+      "public_source": "ee0c642cf8f222f83b2b1bf5539bd7c9583ffdeb",
+      "public_commits": [
+        {
+          "stage": "plan",
+          "commit": "c81a483f6e358b093256279a1a1583fd6ff0463d"
+        },
+        {
+          "stage": "implementation",
+          "commit": "ee0c642cf8f222f83b2b1bf5539bd7c9583ffdeb"
+        }
+      ],
+      "source_offline_scope": "Opt-in original Provider deadline and stale-token callers, using the existing Engine. Source and offline fixture/docs scope only; no Rust production change or transfer of hardware qualification."
     },
     "deadline_contract": {
       "sdk": "The requester captures its original absolute deadline before broker identity/RPC work. Observe the actual SDK ETIMEDOUT and returned timestamp; neither a supervisor timeout nor a new timeout is equivalent.",
@@ -49,12 +61,37 @@
       "Preserve already-started physical obligations, finite budgets and explicit Down/cleanup. A later outer connection lifetime is a new actor witness, not restoration of the old actor or natural device recovery."
     ],
     "offline_checks": {
-      "scope": "No R159 result is imported by this plan; R158 source/offline and finite actual receipts retain their exact archived scope.",
+      "scope": "Tool fixtures and strict public documentation at the exact source snapshot; neither private HTML nor formal/actual-device qualification.",
       "required": [
         "Strict source/build and current affected tool/SDK/daemon checks only where this batch changes them; retain the existing original deadline/error semantics and validators.",
         "Finite positive fixtures and rejection controls for missing/wrong prompt/token/identity, altered or conflated deadlines, arbitrary terminal errors, unexpected Owner exit, late wire/value, capture loss and missing ordinary peer reply.",
         "Source mapping to production and fixed NearLink Host comparison, with reference timeout/fallback differences explicit; fixture or source-audit results are not formal or hardware qualification."
-      ]
+      ],
+      "tooling": {
+        "command": [
+          "python3",
+          "-B",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools/tests",
+          "-v"
+        ],
+        "signed_public_source": "ee0c642cf8f222f83b2b1bf5539bd7c9583ffdeb",
+        "status": "OFFLINE_PASS",
+        "scope": "Original tested public source snapshot only; no hardware inference.",
+        "tests": 1614
+      },
+      "documentation": {
+        "command": [
+          "make",
+          "docs"
+        ],
+        "signed_public_source": "ee0c642cf8f222f83b2b1bf5539bd7c9583ffdeb",
+        "status": "OFFLINE_PASS",
+        "scope": "Original tested public source snapshot only; no hardware inference."
+      }
     },
     "exit_conditions": [
       "One actual expiry case per connection phase: C requester then Python, current sender0/target1, with reversed physical roles and two distinct receiving controller identities; do not claim an API-by-direction cross-product.",
@@ -65,13 +102,13 @@
       "Use explicit Owner cleanup and outer typed Down. Positive traffic on the following reversed-role lifetime may witness phase0-to-phase1 use only; no post-phase1 or same-actor recovery claim without an actual later witness.",
       "Keep compiled artifact, execution tools and signed report identities separate. Only complete independently audited finite evidence and fail-closed material controls may later add a scoped record; no current result is imported by this plan."
     ],
-    "offline_status": "NO_R159_OFFLINE_RESULT_IMPORTED_BY_THIS_PLAN; prior R158 checks retain their original source scope.",
+    "offline_status": "EXACT_PUBLIC_SOURCE_TOOLS_AND_STRICT_DOCS_PASS_NOT_FORMAL_OR_HARDWARE",
     "formal_status": "UNPROVED_FOR_THIS_CHANGE",
-    "hardware_status": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED; no execution outcome or non-execution inference from this public plan.",
+    "hardware_status": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED; public source/offline completion establishes neither actual execution nor non-execution or its outcome.",
     "checks": {
-      "source": "PLAN_ONLY",
-      "tooling": "NOT_RECORDED_FOR_R159",
-      "documentation": "NOT_RECORDED_FOR_R159",
+      "source": "SIGNED_RUNTIME_TOOLS_AND_DOCUMENT_PATCHES_MAPPED",
+      "tooling": "OFFLINE_PASS",
+      "documentation": "PUBLIC_STRICT_HTML_PASS",
       "new_application_helpers": "LOCAL_AUTHORITY_NOT_DISCLOSED",
       "new_vm_gate": "LOCAL_AUTHORITY_NOT_DISCLOSED",
       "independent_actual_audit": "LOCAL_AUTHORITY_NOT_DISCLOSED",
@@ -84,10 +121,8 @@
       "Retain all original failures, counterexamples and qualification identities; only changed-path invariants gate this batch. UserHost remains low-priority planning."
     ],
     "next": [
-      "Complete the opt-in Provider original-deadline and late-token gate at the last SSAP position, reusing existing SDK/prompt/terminal/ordinary helpers and preserving the current baseline validators.",
-      "Finish scoped source/offline/documentation checks, then prepare accurate VM-only artifacts with existing per-leaf ownership and shared build budget; record the three deadline origins separately.",
-      "Independently audit both finite expiry cases, late-input refusal, complete capture, ordinary CUTC continuity and the available next-lifetime witness; preserve every failed attempt.",
-      "Seal/register only complete finite evidence with separate compiled/executor/report identities and source-only public summaries; continue data/security/SSAP without requiring the whole control-plane race set."
+      "Continue the bounded Provider deadline/late-token evidence process under the existing local qualification authority; no actual outcome is inferred from this public source/offline summary.",
+      "Continue the original data/security/SSAP plan without requiring the whole control-plane race set; no same-actor recovery or post-deadline reply is promised."
     ],
     "issues": [
       "OpenSparklink/sparklink#3",
@@ -96,12 +131,65 @@
       "OpenSparklink/linux#19"
     ],
     "issue_sync": {
-      "status": "R159_SOURCE_OFFLINE_SUMMARY_NOT_YET_RECORDED",
+      "status": "PUBLIC_SOURCE_OFFLINE_SUMMARIES_POSTED_AND_READ_BACK",
       "source_only": true,
       "private_hardware_published": false,
       "original_issues_open": true,
-      "receipt": null
-    }
+      "comments": [
+        {
+          "repo": "sparklink",
+          "issue": 3,
+          "id": 6397850132,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6397850132",
+          "body_verified": true
+        },
+        {
+          "repo": "sparklink",
+          "issue": 8,
+          "id": 6397884112,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6397884112",
+          "body_verified": true
+        },
+        {
+          "repo": "linux",
+          "issue": 17,
+          "id": 6397885039,
+          "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6397885039",
+          "body_verified": true
+        },
+        {
+          "repo": "linux",
+          "issue": 19,
+          "id": 6397885858,
+          "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6397885858",
+          "body_verified": true
+        }
+      ],
+      "scope": "Existing four issue source/offline summaries only; no private actual-test metadata published."
+    },
+    "source_sync_history": [
+      {
+        "implementation_sources": {
+          "plan_source_baseline": "fa51d4ea9d85df1a46abfc06ea15ea6025dfa942",
+          "scope": "Plan-source identity only; no new compiled artifact, execution tool, test result or signed qualification report identity is inferred."
+        },
+        "offline_checks": {
+          "scope": "No R159 result is imported by this plan; R158 source/offline and finite actual receipts retain their exact archived scope.",
+          "required": [
+            "Strict source/build and current affected tool/SDK/daemon checks only where this batch changes them; retain the existing original deadline/error semantics and validators.",
+            "Finite positive fixtures and rejection controls for missing/wrong prompt/token/identity, altered or conflated deadlines, arbitrary terminal errors, unexpected Owner exit, late wire/value, capture loss and missing ordinary peer reply.",
+            "Source mapping to production and fixed NearLink Host comparison, with reference timeout/fallback differences explicit; fixture or source-audit results are not formal or hardware qualification."
+          ]
+        },
+        "issue_sync": {
+          "status": "R159_SOURCE_OFFLINE_SUMMARY_NOT_YET_RECORDED",
+          "source_only": true,
+          "private_hardware_published": false,
+          "original_issues_open": true,
+          "receipt": null
+        }
+      }
+    ]
   },
   "overall_required_records": [
     "deadline-real21",

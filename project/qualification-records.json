@@ -14,7 +14,7 @@
   },
   "batch": {
     "id": "WP08-WP16-WP17-R5f156-owned-read-provider",
-    "state": "SOURCE_AND_SCOPED_OFFLINE_CHECKS_PASS_NEW_ARTIFACT_PENDING_FULL_SCOPE_OPEN",
+    "state": "PUBLIC_SOURCE_AND_SCOPED_OFFLINE_CHECKS_ONLY_FULL_SCOPE_OPEN",
     "production_behavior": "Caller-owned dynamic read-only type0 value via the sole userspace SSAP Engine. An immutable Owned binding consumes the stored source; the original owner, lifetime, security policy, deadline and final Native constraint remain mandatory. No stored-value fallback or second Engine.",
     "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
     "work_packages": [
@@ -44,7 +44,7 @@
     "formal_status": "UNPROVED_FOR_THIS_CHANGE",
     "hardware_status": "NO_NEW_ARTIFACT_QUALIFICATION_IN_THIS_PUBLIC_RECORD",
     "next": [
-      "Complete the bounded Provider validation and exact-artifact VM gate, then continue dynamic service/Profile work on the sole Engine.",
+      "Continue bounded Provider and service/Profile validation on the sole Engine; exact-artifact VM results are maintained only in authorized local structured records.",
       "Continue data lengths/credit/backpressure, multi-channel/four-device workloads and applicable lifecycle/deadline/Grant regressions in parallel, without requiring all control races.",
       "Natural fault RCA/nonmanual recovery, production device identity/cold-ROM selection, security/Bond, PM, deployment/release and other incomplete scopes remain open."
     ],

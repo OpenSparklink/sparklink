@@ -7,8 +7,11 @@ Owned type1 说明的[新增源码契约](../docs/reference/ssap-permissions.md#
 不能继承旧属性值或 CPCD 的实机资格。登记/构建/离线检查不等于真实发现和读回；
 具体结果仍须绑定结构化记录中的准确产物，公共源码摘要不披露本地实机执行详情。
 
-R156 Owned type0 动态只读 Provider 的[新增源码契约](../docs/reference/ssap-permissions.md#owned-read-only-provider)
-源码已接通，严格 Rust 构建、私有 D-Bus 与现有跨语言调用回归通过；新实机资格待验。
+### R156：Owned type0 动态只读 Provider（公开源码与离线范围）
+
+[新增源码契约](../docs/reference/ssap-permissions.md#owned-read-only-provider)已接通，
+严格 Rust 构建、私有 D-Bus 与现有跨语言调用回归通过。
+实际产物身份与门禁结果只由授权的本地结构化记录维护。
 范围仅为原 caller、恰好 READ 的属性和唯一 Engine；
 Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完整 C/Python Provider
 收件箱与动态写入仍缺。旧存储值、审批
@@ -57,7 +60,7 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
 ```json
 {
   "id": "WP08-WP16-WP17-R5f156-owned-read-provider",
-  "state": "SOURCE_AND_SCOPED_OFFLINE_CHECKS_PASS_NEW_ARTIFACT_PENDING_FULL_SCOPE_OPEN",
+  "state": "PUBLIC_SOURCE_AND_SCOPED_OFFLINE_CHECKS_ONLY_FULL_SCOPE_OPEN",
   "production_behavior": "Caller-owned dynamic read-only type0 value via the sole userspace SSAP Engine. An immutable Owned binding consumes the stored source; the original owner, lifetime, security policy, deadline and final Native constraint remain mandatory. No stored-value fallback or second Engine.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
@@ -87,7 +90,7 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
   "formal_status": "UNPROVED_FOR_THIS_CHANGE",
   "hardware_status": "NO_NEW_ARTIFACT_QUALIFICATION_IN_THIS_PUBLIC_RECORD",
   "next": [
-    "Complete the bounded Provider validation and exact-artifact VM gate, then continue dynamic service/Profile work on the sole Engine.",
+    "Continue bounded Provider and service/Profile validation on the sole Engine; exact-artifact VM results are maintained only in authorized local structured records.",
     "Continue data lengths/credit/backpressure, multi-channel/four-device workloads and applicable lifecycle/deadline/Grant regressions in parallel, without requiring all control races.",
     "Natural fault RCA/nonmanual recovery, production device identity/cold-ROM selection, security/Bond, PM, deployment/release and other incomplete scopes remain open."
   ],

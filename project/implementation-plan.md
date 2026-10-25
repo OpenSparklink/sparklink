@@ -1,6 +1,6 @@
 # SparkLink / Linux 联合实施方案
 
-### R156：Owned type0 动态只读 Provider（源码接通，限定离线通过，实机待验）
+### R156：Owned type0 动态只读 Provider（公开源码与离线范围）
 
 沿 WP08/WP16/WP17 的现有 Owned 登记、唯一 Engine 和 SDK 增加只读 Provider，
 不另设计划或协议状态来源。原 caller 通过 `BindOwnedReadProvider` 为操作位恰好
@@ -10,12 +10,13 @@ READ 的属性绑定同总线 callback；绑定消耗原存储值，登记内不
 动态写入仍缺；它们现有远端读取可消费动态响应。精确字段及错误只维护在
 [接口参考](../docs/reference/ssap-permissions.md#owned-read-only-provider)。
 
-本批退出要求：审批先于 provider，原身份/安全观察/绝对期限贯穿等待与响应；复用
+本批源码契约与验收范围：审批先于 provider，原身份/安全观察/绝对期限贯穿等待与响应；复用
 原 owner watch、8条义务预算，等待不持数据库锁，结果消费复核同一登记绑定。
 动态值单项及每义务累计2042字节，UUID 多项共享；错误、空值、剩余预算、畸形/
-超长结果、回调缺失、owner/登记退出和原期限失败均须覆盖。相关生产函数、实际
-D-Bus/SDK 签名及文档离线检查之后，按准确新产物另取真实对端读回、应用错误、
-审批、期限和生命周期切片，保留既有属性/说明及普通业务回归；当前均不记 PASS。
+超长结果、回调缺失、owner/登记退出和原期限失败均须覆盖。公开验证范围包括相关
+生产函数、实际 D-Bus/SDK 签名及文档离线检查。真实对端读回、应用错误、审批、
+期限、生命周期及既有属性/说明和普通业务回归的准确产物身份与门禁结果，
+只由授权的本地结构化记录维护。
 CLI 的实际准入、值/错误答复、不同/重复/晚到 token、owner 关闭、两槽位隔离及
 最大行输入分别验证；响应编码进入 Pending 后保留不可变字节，不把注销视为撤回。
 
@@ -399,7 +400,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 ```json
 {
   "id": "WP08-WP16-WP17-R5f156-owned-read-provider",
-  "state": "SOURCE_AND_SCOPED_OFFLINE_CHECKS_PASS_NEW_ARTIFACT_PENDING_FULL_SCOPE_OPEN",
+  "state": "PUBLIC_SOURCE_AND_SCOPED_OFFLINE_CHECKS_ONLY_FULL_SCOPE_OPEN",
   "production_behavior": "Caller-owned dynamic read-only type0 value via the sole userspace SSAP Engine. An immutable Owned binding consumes the stored source; the original owner, lifetime, security policy, deadline and final Native constraint remain mandatory. No stored-value fallback or second Engine.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
@@ -429,7 +430,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
   "formal_status": "UNPROVED_FOR_THIS_CHANGE",
   "hardware_status": "NO_NEW_ARTIFACT_QUALIFICATION_IN_THIS_PUBLIC_RECORD",
   "next": [
-    "Complete the bounded Provider validation and exact-artifact VM gate, then continue dynamic service/Profile work on the sole Engine.",
+    "Continue bounded Provider and service/Profile validation on the sole Engine; exact-artifact VM results are maintained only in authorized local structured records.",
     "Continue data lengths/credit/backpressure, multi-channel/four-device workloads and applicable lifecycle/deadline/Grant regressions in parallel, without requiring all control races.",
     "Natural fault RCA/nonmanual recovery, production device identity/cold-ROM selection, security/Bond, PM, deployment/release and other incomplete scopes remain open."
   ],

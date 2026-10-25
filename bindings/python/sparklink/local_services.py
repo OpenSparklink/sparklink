@@ -92,8 +92,9 @@ class LocalService:
     mechanism requirements remain enforced by the existing daemon/Engine.
     Receipt is local metadata only. unregister acknowledges original-owner local
     removal; timeout does not prove rollback/removal or remote peer completion.
-    close/context exit free only the local reference. Other derived objects can
-    keep that caller and service alive. No automatic retries, implicit global
+    close/context exit free the local reference and stop its Provider inboxes.
+    Other caller-owning views can keep that caller alive; Provider inboxes,
+    requests and notification fds do not. No automatic retries, implicit global
     removal or controller disconnect. Do not use an inherited object after fork.
     """
     def __init__(self):
@@ -236,6 +237,27 @@ class LocalService:
             self._live()
             _result(self._lib.slk_local_service_replace(self._handle, handle, value,
                 len(value), deadline_ns))
+
+    def bind_read_provider(self, handle, *, deadline_ns):
+        """Bind an exact READ property once and return its bounded value inbox.
+
+        The original stored value is discarded. This cannot be undone or
+        rebound within the registration; an uncertain bind must not be retried.
+        Keep this service alive: the inbox and requests retain no owner/service.
+        Authorization remains separate and uses the original callback deadline.
+        """
+        from .service_provider import ReadProvider, _configure as configure_provider
+        if type(handle) is not int or not 1 <= handle <= 65535:
+            raise ValueError('nonzero property handle required')
+        deadline_ns = _deadline(deadline_ns)
+        self._live()
+        with self._lock:
+            self._live()
+            configure_provider(self._lib)
+            output = ctypes.c_void_p()
+            _result(self._lib.slk_local_service_bind_read_provider(
+                self._handle, handle, deadline_ns, ctypes.byref(output)))
+            return ReadProvider._from_view(self._lib, output, self.receipt.controller, handle)
 
     def set_description(self, handle, description, *, deadline_ns):
         """Set a public read-only description,1..244 UTF-8 bytes,as this owner.

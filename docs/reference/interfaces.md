@@ -223,15 +223,6 @@ C/Python 的基础 Owned 视图复用同一个 Rust `ServiceRegistration`：
 回执不是远端发布；跨语言生命周期、错误和布局见[SSAP 权限](ssap-permissions.md)。
 实机范围始终绑定准确编译 artifact，不从新增 API 名字推导资格。
 
-R156 的 `ServiceRegistration.bind_read_provider(handle, path, Deadline)` 仅绑定原
-caller 同一总线连接上导出的只读 type0 callback；操作位必须恰为 READ。绑定消耗
-原存储值，在该登记内不能更换或解除，后续本地读取/替换返回 NotSupported，没有
-缓存回退。C/Python 的服务端 Provider 收件箱尚缺；现有远端读取可消费动态结果。
-精确签名、错误及预算见[动态只读值](ssap-permissions.md#owned-read-only-provider)。
-SDK 的 `ssap::provider::admit/await_reply` 共用既有身份/期限等待，CLI `ssap-serve`
-通过 `provider` 显式绑定、`provide pTOKEN HEX|-` 或 `provider-error pTOKEN AF..FF`
-完成实际请求；审批与提供值仍独立。源码仍在开发，离线和实机验证待完成。
-
 `Controller.register_agent(path,method)`返回带daemon实际epoch的`AgentRegistration`。
 旧epoch不能撤销同caller/path的新登记。`ApplicationConnection.allocate_reference_security()`
 返回原作者的`SecurityRequest`；begin/observation/cancel仅封装现有broker流程，不另建安全
@@ -246,6 +237,48 @@ unregister/cancel仍只定向原unique owner和原generation/请求身份，不�
 撤销；未知回执需结束原caller bus owner，由broker原有owner退出清理收敛。Drop一个
 view不等于退出该bus连接。CLI继续在前台处理原期限、人工输入与有限callback队列，
 不隐式断开物理连接或退还credit。源码迁移、私有bus测试和真实artifact资格分别记录。
+
+### SDK 只读 Provider 收件箱
+
+`ServiceRegistration.bind_read_provider(handle, path, Deadline)` 绑定原 caller 同一
+总线连接上的 type0 callback；操作位必须恰为 READ。绑定消耗原存储值，在该登记内
+不能更换或解除，后续本地读取/替换返回 NotSupported，没有缓存回退。
+SDK 的 `ssap::provider::frontend` 提供具体 dispatcher、inbox 和一次性 request；
+`ssap::provider::admit/await_reply` 继续复用既有身份、权限和原期限检查。
+C/Python 和 CLI 共用这一应用 frontend，不新增总线连接、协议 Engine 或权限语义。
+
+| C 入口 | Python 入口 | 用途 |
+|---|---|---|
+| `slk_local_service_bind_read_provider(service, property, deadline_ns, output)` | `LocalService.bind_read_provider(handle, deadline_ns=...)` | 原 Owned 属性的一次性绑定，返回 inbox |
+| `slk_read_provider_fd(provider, output)` | `ReadProvider.notification_fd()` | 调用者持有的 CLOEXEC 通知 fd，只用于 poll |
+| `slk_read_provider_next(provider, output)` | `ReadProvider.next_request(deadline_ns=None)` | 取出实际请求；无请求返回 EAGAIN，Python 可选有界本地等待 |
+| `slk_read_provider_request_info(request, output)` | `ReadProviderRequest.info` | 原身份、期限、预算和不复用的本地 token 快照 |
+| `slk_read_provider_request_reply(request, status, value, length)` | `ReadProviderRequest.reply(value, status=0)` | 一次本地值或应用错误答复 |
+| `slk_read_provider_request_free(request)` | `ReadProviderRequest.close()` | 释放请求视图；未答复时放弃，不承诺 wire 结果 |
+| `slk_read_provider_free(provider)` | `ReadProvider.close()` | 停止本地值准入，不撤回绑定或服务 |
+
+`SlkReadProviderRequestInfo`／不可变 `ReadProviderInfo` 包含 controller、token、
+request_id、connection_lifetime、security_epoch、deadline_ns、security_level、
+connection_handle、property、maximum_bytes、local_tcid、remote_tcid、pi。
+C 布局为80字节，尾部 `reserved[11]` 必须为零；应使用匹配源码生成的头与库。
+本地 token、快照和 fd 都不是新的授权或 wire transaction 身份。
+
+状态0允许成功空值至原 `maximum_bytes`；`AF..FF` 只允许空值错误。
+非法/超长输入不消费原答复，C 返回 EINVAL／EMSGSIZE；Python 在调用前拒绝非法
+类型/状态并以 EMSGSIZE 拒绝超长值。原期限耗尽为 ETIMEDOUT，已答复或原 daemon
+失效为 ESTALE，本地停止为 ESHUTDOWN。C 返回0／负 errno；Python 抛出 OSError，
+已关闭 Python 对象或 fork 继承对象在进入 C 前拒绝。成功只表示本地接收该答复。
+
+应用必须保持原 `LocalService` 存活；inbox/request 不持有 Client 或服务引用。
+service free/unregister 停止它们的本地准入，原 daemon 丢失使旧请求失效；
+request 的不可变快照仍可读取。Python 可选等待最多30秒，只限制本地 poll，
+不更新 callback 的原期限；取出、答复和释放不排入 SyncClient 的 RPC 队列。
+每个 inbox 仅有一个待决请求，容量保持至请求释放且 callback 结束。
+完整预算与 Pending 响应边界见[动态只读值](ssap-permissions.md#owned-read-only-provider)。
+
+CLI `ssap-serve` 通过 `provider` 显式绑定、`provide pTOKEN HEX|-` 或
+`provider-error pTOKEN AF..FF` 处理实际请求；审批与提供值独立。已实现入口、离线
+检查和准确 artifact 的实机资格分别记录，本节不继承历史资格或声明完整服务验收。
 
 ### Rust远端SSAP客户端与slctl
 
@@ -319,7 +352,7 @@ system bus角色分离也已在该VM实际核对，但无controller的允许调�
 | 旧 property／write facade | 未发布入口与调用者已删除，历史 248/252 限制仅保留在原资格/纯测试；当前协商与长写限制单独表达 | 原 git／codec 回归 |
 | Profile／transport 实验 | 独立 `slk-experimental`；不构成默认生产能力 | 实验 crate README、构建 feature |
 | UserHost／厂商 Host 适配 | P4 规划，接口／实现／证明／实机均未完成 | ADR 0003 |
-| 新用户态 SSAP Engine | 唯一用户态 actor 的 ExchangeInfo、单值读写/分片、UUID/结构发现、CPCD、Owned 通知/指示及订阅已有对应路径；只读 type1 说明复用发现/读取。Owned type0 动态只读 Provider 复用同一 actor 和原授权，不能据此宣称完整服务资格；动态写入、完整 C/Python Provider、其他描述符与完整服务/长写契约仍缺；准确资格仅能力入口 | 唯一实施计划 WP08、准确能力入口 |
+| 新用户态 SSAP Engine | 唯一用户态 actor 的 ExchangeInfo、单值读写/分片、UUID/结构发现、CPCD、Owned 通知/指示及订阅已有对应路径；只读 type1 说明复用发现/读取。Owned type0 动态只读 Provider 复用同一 actor 和原授权，不能据此宣称完整服务资格；动态写入、其他描述符与完整服务/长写契约仍缺；准确资格仅能力入口 | 唯一实施计划 WP08、准确能力入口 |
 
 C 头、Rust FFI 和 Python 绑定应匹配准确源码，不能根据函数声明推导硬件支持。本表是状态查找参考，完整资格仍仅维护于能力入口；逐字段自动生成 API 及全错误矩阵尚待下一批。
 

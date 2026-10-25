@@ -379,13 +379,51 @@ RX/client/ACK。消费结果时重新核对原 Native 上下文、登记、owner
 清理与撤销在同一锁内完成，此场景不沿用尚在等待审批时的错误9。原期限到达或
 Native 上下文失效则按原义务失败处理，不保证还能发送错误响应。
 
-Rust `ServiceRegistration.bind_read_provider` 只封装绑定方法；`ssap::provider::admit`
-复用现有 AuthorizationContext 检查原 sender、type0 读取、恰好 READ 和最大预算，
-`await_reply` 复用同一原期限/owner 丢失等待机制。它们不授予审批，不拥有登记或
-协议 Engine；frontend 在回复前仍须取得新快照并重新准入。应用在创建 Client 的
-同一总线连接上提供 callback。完整 C/Python Provider 收件箱尚未接通；
-它们现有的远端属性读取可消费 provider 产生的协议值，不代表具备服务端 provider
-注册或答复 API。动态写入、描述符 provider 和主动更新仍不在本契约范围。
+Rust `ServiceRegistration.bind_read_provider` 封装原绑定方法；共享的
+`ssap::provider::frontend` 实现具体 dispatcher、inbox 与一次性 request，SDK、C/Python
+和 CLI 使用同一条值回调生命周期。`ssap::provider::admit` 复用 AuthorizationContext
+检查原 sender、type0 读取、恰好 READ 和预算，`await_reply` 保留原期限/owner 丢失
+等待；frontend 在答复前重新准入。它不授予审批，也不拥有协议 Engine。
+SDK 在原 Client 总线导出 callback，不另建 Python 总线或 codec。
+动态写入、描述符 provider 和主动更新仍不在本契约范围。
+
+C `slk_local_service_bind_read_provider`／Python `LocalService.bind_read_provider`
+返回原属性的 `SlkReadProvider`／`ReadProvider`。绑定仍要求原服务与明确的绝对
+单调期限；该期限不是服务 TTL，也不替换各次回调的期限。SDK 保留已尝试的绑定，
+同一登记内不自动重试，包括结果不确定的超时。SDK 重复尝试返回 EALREADY，
+预留容量用尽为 EAGAIN，非 READ-only 模式为 EOPNOTSUPP；不属于原登记的属性在
+SDK 入口以 EINVAL 拒绝。绑定成功只表示本地 broker 接受。
+
+`slk_read_provider_next`／`next_request()` 非阻塞地取得一次性请求；未就绪为 EAGAIN。
+通知 fd 是 caller-owned CLOEXEC duplicate，只用于 poll，禁止读写内部计数器；先
+尝试取请求，再等待可读后重试。Python 可传不超过30秒的绝对本地等待期限，但它
+不延长或重写请求 `info.deadline_ns`。poll 不持有对象锁，reply/free 不排入执行
+原绑定 RPC 的队列；每个 inbox 只有一个待决请求，每个 dispatcher 最多16个 inbox
+预留。请求视图释放和 callback 完成前均保留该槽位，不以 `reply()` 返回代替 drain。
+
+`ReadProviderRequest.info`／`SlkReadProviderRequestInfo` 是原身份和预算快照；
+80字节 C 布局含 `reserved[11]`，与实际头和 ctypes 逐字段核对。快照中的 token 是
+本地不复用标识，不能仅凭数字、fd 或旧快照重新取得答复能力。C/Python 入口见
+[接口表](interfaces.md#sdk-只读-provider-收件箱)。
+
+`request.reply(bytes, status=0)`／`slk_read_provider_request_reply` 只接受显式值：
+状态0允许0至 `maximum_bytes` 字节，`AF..FF` 必须为空。非法状态/非空错误为
+EINVAL，超过原预算为 EMSGSIZE，均不消耗原请求；Python 预先以 TypeError／ValueError
+拒绝非法类型或状态，超长值仍为 OSError(EMSGSIZE)。不得截短、隐式成功或回退存储值。
+重复答复或原 daemon 丢失为 ESTALE，原期限耗尽为 ETIMEDOUT，本地停止为 ESHUTDOWN；
+同时发生多个失效条件时不承诺错误优先次序。返回0或 Python 正常返回只表示本地
+一次性答复被接受，仍须经过回调最终检查、daemon Native/数据库检查与真实发送。
+
+应用须保持原服务视图存活。inbox、request 及通知 fd 不持有 Client 或服务引用；
+service unregister/free 会先停止本地 Provider 准入，待决请求不继续获得答复权，
+但这不是远端撤回完成。inbox close/free 只停本地准入，不撤回服务、不解除绑定或
+恢复存储值。未答复 request 的释放表示不可用，不保证仍能发出 AF；原期限、数据库
+和 Native 规则继续适用。请求的不可变 info 在原 scope 关闭后仍可读取。
+Python 沿用原 PID 检查与 RLock，fork 继承对象在进入锁/C 前拒绝；C 对象不得与
+free 并发或跨 fork 使用，非空 value 指针须覆盖实际 length 字节有效内存。
+
+这些应用入口已在源码接通；离线封装/ABI/生命周期检查与实际产物资格独立维护，
+不从基础远端读取或历史 CLI Provider 记录推导 C/Python 服务端 Provider 实机资格。
 
 现有 `ssap-serve` 进程输入 `provider`，将原 READ-only 属性绑定到本进程 callback。
 实际回调输出 `SsapReadProviderPrompt`，包含原身份、期限、maximum_bytes 和带 `p`

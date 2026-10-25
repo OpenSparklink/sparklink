@@ -1,5 +1,29 @@
 # SparkLink / Linux 联合实施方案
 
+### R156：Owned type0 动态只读 Provider（源码接通，限定离线通过，实机待验）
+
+沿 WP08/WP16/WP17 的现有 Owned 登记、唯一 Engine 和 SDK 增加只读 Provider，
+不另设计划或协议状态来源。原 caller 通过 `BindOwnedReadProvider` 为操作位恰好
+READ 的属性绑定同总线 callback；绑定消耗原存储值，登记内不能更换或解除，后续
+本地读取/替换 NotSupported。Rust 共享准入/等待与现有 CLI 的交互式 provider
+复用同一 caller；授权和提供值各有一个有界槽位。type1 公开说明独立，完整 C/Python Provider 收件箱与
+动态写入仍缺；它们现有远端读取可消费动态响应。精确字段及错误只维护在
+[接口参考](../docs/reference/ssap-permissions.md#owned-read-only-provider)。
+
+本批退出要求：审批先于 provider，原身份/安全观察/绝对期限贯穿等待与响应；复用
+原 owner watch、8条义务预算，等待不持数据库锁，结果消费复核同一登记绑定。
+动态值单项及每义务累计2042字节，UUID 多项共享；错误、空值、剩余预算、畸形/
+超长结果、回调缺失、owner/登记退出和原期限失败均须覆盖。相关生产函数、实际
+D-Bus/SDK 签名及文档离线检查之后，按准确新产物另取真实对端读回、应用错误、
+审批、期限和生命周期切片，保留既有属性/说明及普通业务回归；当前均不记 PASS。
+CLI 的实际准入、值/错误答复、不同/重复/晚到 token、owner 关闭、两槽位隔离及
+最大行输入分别验证；响应编码进入 Pending 后保留不可变字节，不把注销视为撤回。
+
+公共文档只记录源码契约与通用状态，不发布本地实机执行身份或材料。既有准确资格
+不转授新增入口；完整 S0–S6、19WP、10FV、12DG、VM-only、UserHost P4，以及数据/
+安全/多通道/四设备、部署、自然故障根因和非人工恢复范围保持开放，不新增控制面
+组合全集作为本批前置。CLI 操作及限制随实际 frontend 同步到接口、how-to 与手册。
+
 ### R5f9h：实际 User Native 返回跨 controller 退休（两角色限定通过，原两FAIL保留）
 
 准确服务77f7953／工具1433132／内核2fc及SDK110US的两独立角色VM已完成本批
@@ -374,18 +398,47 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP03-WP18-R5f12-application-discovery",
-  "production_behavior": "Per-controller caller-owned bounded scanner leases through existing Native management guard/recipes/results. Rust Client and slctl own filtering/read/release,not management credentials. Last lease requests actual STOP; manager handoff/retirement fences late work; unknown cleanup staysFault,notOff/Free.",
-  "state": "NEGOTIABLE_BASELINE_AND_EXPLICIT_DISCOVERY_SCOPED_PASS_FIXED_T_FAIL_RETAINED_FULL_LIFECYCLE_OPEN",
-  "records": [
-    "application-discovery-offline-r5f12",
-    "application-discovery-fence-r5f12",
-    "application-discovery-real-r5f12",
-    "application-discovery-negotiable-r5f12"
+  "id": "WP08-WP16-WP17-R5f156-owned-read-provider",
+  "state": "SOURCE_AND_SCOPED_OFFLINE_CHECKS_PASS_NEW_ARTIFACT_PENDING_FULL_SCOPE_OPEN",
+  "production_behavior": "Caller-owned dynamic read-only type0 value via the sole userspace SSAP Engine. An immutable Owned binding consumes the stored source; the original owner, lifetime, security policy, deadline and final Native constraint remain mandatory. No stored-value fallback or second Engine.",
+  "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
+  "work_packages": [
+    "WP08",
+    "WP16",
+    "WP17"
   ],
-  "exit_ref": "application-discovery-real-r5f12.required_gates; see canonical implementation-plan R5f12 for steps",
-  "next": "Continue bounded real caller-loss/TTL/manager-stop/original-deadline/partial-init andpeerbusiness isolation/permissions,newC-Python discoveryAPI. Preserve source-bound successfulNegT baseline;FixedT failures remain valid separateunqualified contrast,not same-condition regression or provenfirmwareRCA. Data/security/SSAP/multichannel/fourdevice andcleanup/recovery continue inparallel;no controlcensus prerequisite.",
-  "scope": "Complete originalS0-S6/19WP/10FV/12DG/VM-only/strictallocation/SDK110/shared12or8 unchanged. Data/security/SSAP/multichannel/fourdevice/lifecycle/cleanup/recovery/deployment remainOPEN in parallel;not all control permutations as prerequisites. UserHostP4;E/mixed/coldROM/naturalRCA/nonmanualrecovery not qualified."
+  "public_scope": "Source and offline validation summaries only. Actual execution identities, artifact hashes, captures and hardware details remain local; historical results do not qualify this source tree.",
+  "previous_public_batch": {
+    "id": "WP03-WP18-R5f12-application-discovery",
+    "preserved_in_commit": "c76d72774495acae5fc8f1c38abc96b8006510e3",
+    "path": "project/qualification-records.json"
+  },
+  "implementation": "Broker method, sole Engine/database, shared Rust contract/helper and foreground CLI provider; actual C/Python remote consumers reuse the existing channel path. C/Python Provider inbox and dynamic write remain missing.",
+  "invariants": [
+    "Policy and mechanism checks precede Provider dispatch; callback never grants security or Native permission.",
+    "Each original server obligation shares one deadline and2042-byte dynamic result budget, with existing bounded owner/property/server queues.",
+    "Missing, malformed, oversized, late, withdrawn or wrong-binding results cannot expose the consumed stored value.",
+    "Unregister rejects unencoded candidates; already encoded immutable reply follows the original Native send constraint and is not retracted."
+  ],
+  "exit_conditions": [
+    "Strict frozen-source Rust/private-bus/actual language-consumer checks and CLI input/lifecycle negative controls.",
+    "Dedicated VM gate must use the actual owner callback and opposite application value comparison plus both USB directions, retaining ordinary and Owned checks.",
+    "New artifact identities and bounded results recorded privately; no hardware or formal qualification inferred from source/fixture success."
+  ],
+  "offline_status": "STRICT_RUST_PRIVATE_BUS_LANGUAGE_CALLERS_CLIPPY_TOOLING_AND_DOCS_PASS; fixtures do not qualify Native/USB/RF/concurrency",
+  "formal_status": "UNPROVED_FOR_THIS_CHANGE",
+  "hardware_status": "NO_NEW_ARTIFACT_QUALIFICATION_IN_THIS_PUBLIC_RECORD",
+  "next": [
+    "Complete the bounded Provider validation and exact-artifact VM gate, then continue dynamic service/Profile work on the sole Engine.",
+    "Continue data lengths/credit/backpressure, multi-channel/four-device workloads and applicable lifecycle/deadline/Grant regressions in parallel, without requiring all control races.",
+    "Natural fault RCA/nonmanual recovery, production device identity/cold-ROM selection, security/Bond, PM, deployment/release and other incomplete scopes remain open."
+  ],
+  "issues": [
+    "OpenSparklink/sparklink#3",
+    "OpenSparklink/sparklink#8",
+    "OpenSparklink/linux#17",
+    "OpenSparklink/linux#19"
+  ]
 }
 ```
 

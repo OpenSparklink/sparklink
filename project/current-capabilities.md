@@ -7,6 +7,13 @@ Owned type1 说明的[新增源码契约](../docs/reference/ssap-permissions.md#
 不能继承旧属性值或 CPCD 的实机资格。登记/构建/离线检查不等于真实发现和读回；
 具体结果仍须绑定结构化记录中的准确产物，公共源码摘要不披露本地实机执行详情。
 
+R156 Owned type0 动态只读 Provider 的[新增源码契约](../docs/reference/ssap-permissions.md#owned-read-only-provider)
+源码已接通，严格 Rust 构建、私有 D-Bus 与现有跨语言调用回归通过；新实机资格待验。
+范围仅为原 caller、恰好 READ 的属性和唯一 Engine；
+Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完整 C/Python Provider
+收件箱与动态写入仍缺。旧存储值、审批
+或说明的 PASS 不升级为此路径资格；完整服务、生命周期、自然根因与恢复保持开放。
+
 | 任务 | 对应准确记录 | 必须保留的边界 |
 | --- | --- | --- |
 | 应用发现租约／共享 scanner | [d9明确Negotiable-T的限定实机与原路径保持](../docs/evidence/application-discovery-negotiable-20261019.json)、[原Fixed-T失败](../docs/evidence/application-discovery-real-attempts-20261019.json)、[接口边界](../docs/reference/application-discovery.md) | 两U的apps-only显式release正向及七尺寸/Owned/C-Python保持取得准确新artifact证据。旧保持测试误选Fixed-T，原失败仍有效；不称已证明其物理根因。caller-loss/TTL/管理STOP/期限/部分初始化、同行业务及完整部署权限仍缺，完整资格不升级 |
@@ -22,10 +29,10 @@ Owned type1 说明的[新增源码契约](../docs/reference/ssap-permissions.md#
 | Runtime／Session／Grant／credit／Ticket | [唯一架构](architecture.md)与对应限定报告 | 旧代际、在途义务和未知完成不因关闭或缓存而消失；NOCP真实性、复用屏障及完整竞争组合仍需各自门禁 |
 | 部署、恢复与发布 | [唯一计划](implementation-plan.md)、原部署与分包记录 | 基础部署不等于跨版本升级回滚、发布或新硬件资格；自然故障根因和非人工恢复继续开放 |
 
-本线程硬件范围仅由[资源配置](lab-resource-policy.json)授权：U两口已在上述准确
-VM中由HCC核对；E两口仍仅用户布置及ROM描述、未作新HCC验收。两组其他口属于
-另一线程；同VID/PID或旧端口不证明型号。混合下载、无逐设备固件来源的runtime-only
-接管及冷ROM自动选择仍拒绝或未验收。QMP、拔插和切电不能替代自然恢复。
+本线程硬件范围仅由[资源配置](lab-resource-policy.json)授权；当前逐设备型号、占用和
+实机资格在本地准确记录中核对，公开历史映射不作为当前启动依据。两组其他口属于
+另一线程；同 VID/PID 或旧端口不证明型号。混合下载必须验证每设备固件来源；
+运行期 HCC 不证明冷 ROM 自动选择。QMP、拔插和切电不能替代自然恢复。
 启动前的 live libvirt 占用守卫及限定离线结果见
 [资源边界记录](../docs/evidence/shared-allocation-launch-guard-20261019.json)；
 它不更新上述服务/内核/实机资格，特权 fd 可见性和之后的非协作操作仍有限制。
@@ -49,18 +56,47 @@ VM中由HCC核对；E两口仍仅用户布置及ROM描述、未作新HCC验收�
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP03-WP18-R5f12-application-discovery",
-  "production_behavior": "Per-controller caller-owned bounded scanner leases through existing Native management guard/recipes/results. Rust Client and slctl own filtering/read/release,not management credentials. Last lease requests actual STOP; manager handoff/retirement fences late work; unknown cleanup staysFault,notOff/Free.",
-  "state": "NEGOTIABLE_BASELINE_AND_EXPLICIT_DISCOVERY_SCOPED_PASS_FIXED_T_FAIL_RETAINED_FULL_LIFECYCLE_OPEN",
-  "records": [
-    "application-discovery-offline-r5f12",
-    "application-discovery-fence-r5f12",
-    "application-discovery-real-r5f12",
-    "application-discovery-negotiable-r5f12"
+  "id": "WP08-WP16-WP17-R5f156-owned-read-provider",
+  "state": "SOURCE_AND_SCOPED_OFFLINE_CHECKS_PASS_NEW_ARTIFACT_PENDING_FULL_SCOPE_OPEN",
+  "production_behavior": "Caller-owned dynamic read-only type0 value via the sole userspace SSAP Engine. An immutable Owned binding consumes the stored source; the original owner, lifetime, security policy, deadline and final Native constraint remain mandatory. No stored-value fallback or second Engine.",
+  "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
+  "work_packages": [
+    "WP08",
+    "WP16",
+    "WP17"
   ],
-  "exit_ref": "application-discovery-real-r5f12.required_gates; see canonical implementation-plan R5f12 for steps",
-  "next": "Continue bounded real caller-loss/TTL/manager-stop/original-deadline/partial-init andpeerbusiness isolation/permissions,newC-Python discoveryAPI. Preserve source-bound successfulNegT baseline;FixedT failures remain valid separateunqualified contrast,not same-condition regression or provenfirmwareRCA. Data/security/SSAP/multichannel/fourdevice andcleanup/recovery continue inparallel;no controlcensus prerequisite.",
-  "scope": "Complete originalS0-S6/19WP/10FV/12DG/VM-only/strictallocation/SDK110/shared12or8 unchanged. Data/security/SSAP/multichannel/fourdevice/lifecycle/cleanup/recovery/deployment remainOPEN in parallel;not all control permutations as prerequisites. UserHostP4;E/mixed/coldROM/naturalRCA/nonmanualrecovery not qualified."
+  "public_scope": "Source and offline validation summaries only. Actual execution identities, artifact hashes, captures and hardware details remain local; historical results do not qualify this source tree.",
+  "previous_public_batch": {
+    "id": "WP03-WP18-R5f12-application-discovery",
+    "preserved_in_commit": "c76d72774495acae5fc8f1c38abc96b8006510e3",
+    "path": "project/qualification-records.json"
+  },
+  "implementation": "Broker method, sole Engine/database, shared Rust contract/helper and foreground CLI provider; actual C/Python remote consumers reuse the existing channel path. C/Python Provider inbox and dynamic write remain missing.",
+  "invariants": [
+    "Policy and mechanism checks precede Provider dispatch; callback never grants security or Native permission.",
+    "Each original server obligation shares one deadline and2042-byte dynamic result budget, with existing bounded owner/property/server queues.",
+    "Missing, malformed, oversized, late, withdrawn or wrong-binding results cannot expose the consumed stored value.",
+    "Unregister rejects unencoded candidates; already encoded immutable reply follows the original Native send constraint and is not retracted."
+  ],
+  "exit_conditions": [
+    "Strict frozen-source Rust/private-bus/actual language-consumer checks and CLI input/lifecycle negative controls.",
+    "Dedicated VM gate must use the actual owner callback and opposite application value comparison plus both USB directions, retaining ordinary and Owned checks.",
+    "New artifact identities and bounded results recorded privately; no hardware or formal qualification inferred from source/fixture success."
+  ],
+  "offline_status": "STRICT_RUST_PRIVATE_BUS_LANGUAGE_CALLERS_CLIPPY_TOOLING_AND_DOCS_PASS; fixtures do not qualify Native/USB/RF/concurrency",
+  "formal_status": "UNPROVED_FOR_THIS_CHANGE",
+  "hardware_status": "NO_NEW_ARTIFACT_QUALIFICATION_IN_THIS_PUBLIC_RECORD",
+  "next": [
+    "Complete the bounded Provider validation and exact-artifact VM gate, then continue dynamic service/Profile work on the sole Engine.",
+    "Continue data lengths/credit/backpressure, multi-channel/four-device workloads and applicable lifecycle/deadline/Grant regressions in parallel, without requiring all control races.",
+    "Natural fault RCA/nonmanual recovery, production device identity/cold-ROM selection, security/Bond, PM, deployment/release and other incomplete scopes remain open."
+  ],
+  "issues": [
+    "OpenSparklink/sparklink#3",
+    "OpenSparklink/sparklink#8",
+    "OpenSparklink/linux#17",
+    "OpenSparklink/linux#19"
+  ]
 }
 ```
 

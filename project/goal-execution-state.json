@@ -2014,18 +2014,47 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP03-WP18-R5f12-application-discovery",
-      "production_behavior": "Per-controller caller-owned bounded scanner leases through existing Native management guard/recipes/results. Rust Client and slctl own filtering/read/release,not management credentials. Last lease requests actual STOP; manager handoff/retirement fences late work; unknown cleanup staysFault,notOff/Free.",
-      "state": "NEGOTIABLE_BASELINE_AND_EXPLICIT_DISCOVERY_SCOPED_PASS_FIXED_T_FAIL_RETAINED_FULL_LIFECYCLE_OPEN",
-      "records": [
-        "application-discovery-offline-r5f12",
-        "application-discovery-fence-r5f12",
-        "application-discovery-real-r5f12",
-        "application-discovery-negotiable-r5f12"
+      "id": "WP08-WP16-WP17-R5f156-owned-read-provider",
+      "state": "SOURCE_AND_SCOPED_OFFLINE_CHECKS_PASS_NEW_ARTIFACT_PENDING_FULL_SCOPE_OPEN",
+      "production_behavior": "Caller-owned dynamic read-only type0 value via the sole userspace SSAP Engine. An immutable Owned binding consumes the stored source; the original owner, lifetime, security policy, deadline and final Native constraint remain mandatory. No stored-value fallback or second Engine.",
+      "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
+      "work_packages": [
+        "WP08",
+        "WP16",
+        "WP17"
       ],
-      "exit_ref": "application-discovery-real-r5f12.required_gates; see canonical implementation-plan R5f12 for steps",
-      "next": "Continue bounded real caller-loss/TTL/manager-stop/original-deadline/partial-init andpeerbusiness isolation/permissions,newC-Python discoveryAPI. Preserve source-bound successfulNegT baseline;FixedT failures remain valid separateunqualified contrast,not same-condition regression or provenfirmwareRCA. Data/security/SSAP/multichannel/fourdevice andcleanup/recovery continue inparallel;no controlcensus prerequisite.",
-      "scope": "Complete originalS0-S6/19WP/10FV/12DG/VM-only/strictallocation/SDK110/shared12or8 unchanged. Data/security/SSAP/multichannel/fourdevice/lifecycle/cleanup/recovery/deployment remainOPEN in parallel;not all control permutations as prerequisites. UserHostP4;E/mixed/coldROM/naturalRCA/nonmanualrecovery not qualified."
+      "public_scope": "Source and offline validation summaries only. Actual execution identities, artifact hashes, captures and hardware details remain local; historical results do not qualify this source tree.",
+      "previous_public_batch": {
+        "id": "WP03-WP18-R5f12-application-discovery",
+        "preserved_in_commit": "c76d72774495acae5fc8f1c38abc96b8006510e3",
+        "path": "project/qualification-records.json"
+      },
+      "implementation": "Broker method, sole Engine/database, shared Rust contract/helper and foreground CLI provider; actual C/Python remote consumers reuse the existing channel path. C/Python Provider inbox and dynamic write remain missing.",
+      "invariants": [
+        "Policy and mechanism checks precede Provider dispatch; callback never grants security or Native permission.",
+        "Each original server obligation shares one deadline and2042-byte dynamic result budget, with existing bounded owner/property/server queues.",
+        "Missing, malformed, oversized, late, withdrawn or wrong-binding results cannot expose the consumed stored value.",
+        "Unregister rejects unencoded candidates; already encoded immutable reply follows the original Native send constraint and is not retracted."
+      ],
+      "exit_conditions": [
+        "Strict frozen-source Rust/private-bus/actual language-consumer checks and CLI input/lifecycle negative controls.",
+        "Dedicated VM gate must use the actual owner callback and opposite application value comparison plus both USB directions, retaining ordinary and Owned checks.",
+        "New artifact identities and bounded results recorded privately; no hardware or formal qualification inferred from source/fixture success."
+      ],
+      "offline_status": "STRICT_RUST_PRIVATE_BUS_LANGUAGE_CALLERS_CLIPPY_TOOLING_AND_DOCS_PASS; fixtures do not qualify Native/USB/RF/concurrency",
+      "formal_status": "UNPROVED_FOR_THIS_CHANGE",
+      "hardware_status": "NO_NEW_ARTIFACT_QUALIFICATION_IN_THIS_PUBLIC_RECORD",
+      "next": [
+        "Complete the bounded Provider validation and exact-artifact VM gate, then continue dynamic service/Profile work on the sole Engine.",
+        "Continue data lengths/credit/backpressure, multi-channel/four-device workloads and applicable lifecycle/deadline/Grant regressions in parallel, without requiring all control races.",
+        "Natural fault RCA/nonmanual recovery, production device identity/cold-ROM selection, security/Bond, PM, deployment/release and other incomplete scopes remain open."
+      ],
+      "issues": [
+        "OpenSparklink/sparklink#3",
+        "OpenSparklink/sparklink#8",
+        "OpenSparklink/linux#17",
+        "OpenSparklink/linux#19"
+      ]
     },
     "selected_qualification": {
       "version": 1,

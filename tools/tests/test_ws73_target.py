@@ -1,7 +1,14 @@
 # SPDX-License-Identifier: GPL-2.0-only
+import ast
+import copy
+from contextlib import redirect_stdout
+import io
 import json
 import errno
+import os
 from pathlib import Path
+import re
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -288,6 +295,153 @@ class TargetEnvironment(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             p=Path(d);(p/'manifest.json').write_text(json.dumps({'status':'PREPARED','physical_acceptance':True}))
             with self.assertRaises(ValueError):prepared(p)
+
+
+class ProviderDeadlineRunnerWiring(unittest.TestCase):
+    """CLI/source/boot integration only; no daemon, VM or controller starts.
+
+    Artifact observations are fixtures in the pre-launch refusal test. They do
+    not manufacture a successful VM, wire reply, timeout or qualification.
+    """
+    tools = Path(__file__).resolve().parents[1]
+    dependencies = ('--ssap-owned-verify', '--ssap-read-provider-verify',
+                    '--ssap-provider-owner-exit-verify')
+
+    def test_actual_host_and_control_help_expose_explicit_deadline(self):
+        for command in ([sys.executable, str(self.tools/'ws73_target.py'), 'run', '--help'],
+                        [sys.executable, str(self.tools/'ws73_target_control.py'), '--help']):
+            result = subprocess.run(command, capture_output=True, text=True, timeout=10)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            for flag in (*self.dependencies, '--ssap-provider-deadline-verify'):
+                self.assertIn(flag, result.stdout)
+
+    def test_actual_control_refuses_missing_baseline_before_execution(self):
+        import ws73_target_control as control
+        argv = ['ws73_target_control.py', '--slctl', '/bin/slctl', '--slkd-pid', '1',
+                '--output', '/unused', '--passthrough', '--connection-verify',
+                '--channel-socket-verify', '--ssap-provider-deadline-verify',
+                *self.dependencies]
+        for missing in self.dependencies:
+            with self.subTest(missing=missing), patch.object(sys, 'argv', [v for v in argv if v != missing]), \
+                 patch.object(control, 'ConnectionControlRun', side_effect=AssertionError('must not execute')) as launch, \
+                 patch('sys.stderr', new_callable=io.StringIO), self.assertRaises(SystemExit) as failure:
+                control.main()
+            self.assertEqual(failure.exception.code, 2)
+            launch.assert_not_called()
+
+    def test_actual_host_refuses_missing_owner_exit_before_output(self):
+        import ws73_target as host
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)/'must-not-exist'
+            args = SimpleNamespace(command='run', output=output, qmp_hotplug=True,
+                connection_verify=True, channel_socket_verify=True, channel_socket_rounds=4,
+                channel_socket_bytes=61, ssap_owned_verify=True, ssap_read_provider_verify=True,
+                ssap_provider_owner_exit_verify=False, ssap_provider_deadline_verify=True)
+            with patch.object(host, 'ordinary_identity'), \
+                 patch.object(host.subprocess, 'Popen', side_effect=AssertionError('must not launch')) as launch, \
+                 self.assertRaisesRegex(ValueError, '(?i)(provider|owner|deadline)'):
+                host._run(args)
+            launch.assert_not_called()
+            self.assertFalse(output.exists())
+
+    def test_init_runs_real_boot_parser_for_exact_dependency_tokens(self):
+        source = (self.tools/'ws73_target_init.sh').read_text()
+        line = next(line for line in source.splitlines() if 'provider_deadline_arg=$(' in line)
+        code = re.search(r"-c '([^']+)'", line).group(1)
+        self.assertIn('from ws73_ssap_provider_deadline import boot_requested', code)
+        self.assertIn('|| fail provider-deadline-selector', line)
+        baseline = ['ws73.ssap_owned=1', 'ws73.ssap_read_provider=1', 'ws73.ssap_provider_owner_exit=1']
+        token = 'ws73.ssap_provider_deadline=1'
+        environment = dict(os.environ, PYTHONPATH=str(self.tools))
+        for tokens, expected in (([], ''), (baseline, ''),
+                                 (baseline+[token], '--ssap-provider-deadline-verify')):
+            result = subprocess.run([sys.executable, '-c', code, *tokens], env=environment,
+                                    capture_output=True, text=True, timeout=5)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout.strip(), expected)
+        bad = [[token], baseline[:-1]+[token], baseline+[token, token],
+               baseline+['ws73.ssap_provider_deadline'], baseline+['ws73.ssap_provider_deadline='],
+               baseline+['ws73.ssap_provider_deadline=0'], baseline+['ws73.ssap_provider_deadline=2']]
+        for tokens in bad:
+            with self.subTest(tokens=tokens):
+                result = subprocess.run([sys.executable, '-c', code, *tokens], env=environment,
+                                        capture_output=True, text=True, timeout=5)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(result.stdout, '')
+
+    def test_current_source_staging_and_verdict_have_every_deadline_call(self):
+        # Static integration coverage complements the actual parser/refusal
+        # cases; it is not runtime or hardware evidence.
+        from test_ws73_ssap_command_policy_wiring import function, calls
+        filename = 'ws73_ssap_provider_deadline.py'
+        for function_name, count in (('prepare_from_carrier', 1), ('prepare_locked', 2)):
+            node = function(function_name, 'ws73_target.py')
+            literals = [n for n in ast.walk(node) if isinstance(n, ast.Constant) and n.value == filename]
+            self.assertEqual(len(literals), count)
+        host = function('_run', 'ws73_target.py')
+        for name in ('provider_deadline_requested', 'provider_deadline_inputs',
+                     'provider_deadline_rows', 'provider_deadline_summary'):
+            self.assertEqual(len(calls(host, name)), 1, name)
+        self.assertEqual(len(calls(function('run_exit_code', 'ws73_target.py'),
+                                   'valid_provider_deadline_manifest')), 1)
+        guest = function('verify_passthrough', 'ws73_target_guest.py')
+        for name in ('provider_deadline_boot', 'provider_deadline_rows'):
+            self.assertEqual(len(calls(guest, name)), 1, name)
+        body = ast.unparse(host)
+        for field in ('ssap_provider_deadline_requested', 'ssap_provider_deadline_acceptance',
+                      'ssap_provider_deadline_version', 'ssap_provider_deadline_verifier',
+                      'ssap_provider_deadline_tools'):
+            self.assertIn(field, body)
+        self.assertIn('ws73.ssap_provider_deadline=1', body)
+
+    def test_actual_host_checks_deadline_source_before_any_vm_launch(self):
+        import ws73_target as host
+        import ws73_ssap_provider_deadline as gate
+        names = list(self.tools.glob('*.py'))+[self.tools/'ws73_target_init.sh']
+        original = dict(inputs=[file_record(p) for p in names],
+            application_client_tools=dict(sources=[file_record(self.tools/name) for name in
+                ('testing/application_client/client.c', 'testing/application_client/client.py')]),
+            ssap_exchange_contract_version=False)
+        sources = ('ws73_ssap_provider_deadline.py', 'ws73_ssap_command_deadline.py',
+                   'ws73_ssap_command_policy.py')
+        cases = [(name, fault) for name in sources for fault in ('missing', 'stale')]
+        for name, fault in [*cases, (None, 'unchanged')]:
+            package = copy.deepcopy(original)
+            if fault == 'missing':
+                package['inputs'] = [item for item in package['inputs']
+                                     if Path(item['path']).name != name]
+            elif fault == 'stale':
+                next(item for item in package['inputs'] if Path(item['path']).name ==
+                     name)['sha256'] = '0'*64
+            with self.subTest(source=name, fault=fault), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory); prepared = root/'prepared'; prepared.mkdir()
+                (prepared/'manifest.json').write_text(json.dumps(package)); output = root/'output'
+                argv = ['ws73_target.py', 'run', '--prepared', str(prepared), '--output', str(output),
+                        '--ports', '1-1.1.1', '1-1.1.2', '--qmp-hotplug',
+                        '--firmware-evidence', 'runtime-observation', '--connection-verify',
+                        '--connection-advertising', 'negotiable-t', '--channel-socket-verify',
+                        *self.dependencies, '--ssap-provider-deadline-verify']
+                with patch.object(sys, 'argv', argv), patch.object(host, 'run', side_effect=lambda args: args):
+                    args = host.main()
+                with redirect_stdout(io.StringIO()), patch.object(host, 'ordinary_identity'), \
+                     patch.object(host, 'prepared', return_value=package), \
+                     patch.object(host, 'lab_module', return_value=SimpleNamespace(inventory=lambda: [])), \
+                     patch.object(gate, 'validate_inputs', wraps=gate.validate_inputs) as checked, \
+                     patch.object(host.subprocess, 'Popen', side_effect=AssertionError('must not launch')) as launch:
+                    self.assertEqual(host._run(args), 1)
+                checked.assert_called_once_with(package); launch.assert_not_called()
+                record = json.loads((output/'manifest.json').read_text())
+                if fault == 'unchanged':
+                    self.assertIn('explicit known SSAP exchange artifact contract required', record['error'])
+                else:
+                    self.assertRegex(record['error'], '(?i)provider.*deadline|deadline.*provider')
+                    self.assertIn(name, record['error'])
+                self.assertIs(record['ssap_provider_deadline_requested'], True)
+                self.assertEqual(record['ssap_provider_deadline_version'], 1)
+                self.assertEqual(record['ssap_provider_deadline_verifier'], file_record(self.tools/'ws73_ssap_provider_deadline.py'))
+                self.assertIs(record['ssap_provider_deadline_acceptance'], False)
+                self.assertIs(record['physical_acceptance'], False)
+                self.assertNotIn('qemu_args', record)
 
 
 if __name__=='__main__':unittest.main()

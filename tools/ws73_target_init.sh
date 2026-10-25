@@ -570,6 +570,8 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
             connection_arg="$connection_arg $provider_arg"
             provider_exit_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys;from ws73_ssap_provider_owner_exit import boot_requested;print("--ssap-provider-owner-exit-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail provider-exit-selector
             connection_arg="$connection_arg $provider_exit_arg"
+            provider_deadline_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys;from ws73_ssap_provider_deadline import boot_requested;print("--ssap-provider-deadline-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail provider-deadline-selector
+            connection_arg="$connection_arg $provider_deadline_arg"
             if grep -qw ws73.ssap_write_command=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-write-command-verify"; fi
             command_policy_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys; from ws73_ssap_command_policy import boot_requested; print("--ssap-write-command-policy-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail command-policy-selector
             if [ -n "$command_policy_arg" ]; then connection_arg="$connection_arg $command_policy_arg"; fi

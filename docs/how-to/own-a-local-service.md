@@ -136,3 +136,14 @@ EACCES 时核对服务组及实际 system-bus 策略；EOPNOTSUPP 时核对操�
 远端结果。待决读取可能收到应用错误或属性不存在，也可能因原期限耗尽而失败；
 已经编码的响应仍可能交付。不要把进程退出、一个 `EIO` 或登记消失当作原请求已
 撤回的证明，也不要重新使用旧 token。其他 Owner 的服务应使用各自的登记和请求检查。
+
+如果 Provider 一直没有答复，分别检查调用者的 SDK 期限和提示里的服务端期限；
+SDK 返回 `ETIMEDOUT` 不表示服务端期限已经到达。超过原提示期限后提交
+`provide pTOKEN HEX`，前台应输出 `SsapReadProviderInput: rejected stale token,
+expired request or invalid value/status`，不会重新开放该请求。保留原提示和错误，
+不要用新 token 或新的超时预算重试旧请求。
+
+服务端原义务到期后，当前 SSAP actor 会进入失败终态；调用者的在途义务也可能使
+其 actor 终止。此时应显式清理登记，并按连接管理流程取得新的连接 lifetime 后再
+使用 SSAP；不承诺同一 actor 会自行恢复。独立的普通通道是否继续可用，应由对端
+实际校验和回复确认，不能根据 SSAP 的超时日志推断。

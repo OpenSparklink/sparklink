@@ -227,7 +227,7 @@ def prepare_from_carrier(args):
         # preparation must stage the new dependency closure, not just refresh
         # filenames already present in the retained root.
         paths = set(tool_root.glob('*.py')) | {tool_root / name for name in
-            ('ws73_native_pair.py', 'ws73_channel_sibling.py', 'ws73_ssap_command_policy.py', 'ws73_ssap_command_deadline.py', 'ws73_ssap_read_provider.py', 'ws73_ssap_provider_owner_exit.py')}
+            ('ws73_native_pair.py', 'ws73_channel_sibling.py', 'ws73_ssap_command_policy.py', 'ws73_ssap_command_deadline.py', 'ws73_ssap_read_provider.py', 'ws73_ssap_provider_owner_exit.py', 'ws73_ssap_provider_deadline.py')}
         for path in sorted(paths):
             client = native_vm.STAGED_PYTHON_CLIENTS.get(path.name)
             current = HERE / (client if client is not None else path.name)
@@ -351,7 +351,7 @@ def prepare_locked(args, build_fd):
                   HERE/'ws73_discovery_policy_capture.py', HERE/'ws73_runtime_address.py', HERE/'ws73_firmware_profile.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
                   HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',HERE/'ws73_credit_observation.py',
-                  HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_measurement.py',HERE/'ws73_link_payload.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_ssap.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_benchmark_resources.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_transport_watch.py',HERE/'ws73_hcc_memory.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_command.py',HERE/'ws73_ssap_command_policy.py',HERE/'ws73_ssap_command_deadline.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_description.py',HERE/'ws73_ssap_read_provider.py',HERE/'ws73_ssap_provider_owner_exit.py',HERE/'ws73_ssap_owned_update.py',HERE/'ws73_ssap_update_delivery.py',HERE/'ws73_ssap_subscription.py',HERE/'ws73_ssap_shared.py',HERE/'ws73_ssap_receive_lifecycle.py',HERE/'ws73_ssap_sender_deadline.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_initialization.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
+                  HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_measurement.py',HERE/'ws73_link_payload.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_ssap.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_benchmark_resources.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_transport_watch.py',HERE/'ws73_hcc_memory.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_command.py',HERE/'ws73_ssap_command_policy.py',HERE/'ws73_ssap_command_deadline.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_description.py',HERE/'ws73_ssap_read_provider.py',HERE/'ws73_ssap_provider_owner_exit.py',HERE/'ws73_ssap_provider_deadline.py',HERE/'ws73_ssap_owned_update.py',HERE/'ws73_ssap_update_delivery.py',HERE/'ws73_ssap_subscription.py',HERE/'ws73_ssap_shared.py',HERE/'ws73_ssap_receive_lifecycle.py',HERE/'ws73_ssap_sender_deadline.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_initialization.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
                   HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
                   HERE/'ws73_diagnostic_probe.py',
@@ -546,7 +546,7 @@ def prepare_locked(args, build_fd):
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
         for name in ['ws73_lab_resources.py', 'build_resources.py', 'ws73_native_return.py', 'ws73_native_controller_return.py', 'ws73_controller_directory.py', 'ws73_firmware_profile.py', 'ws73_firmware.py']:
             shutil.copy2(HERE/name, share/name)
-        for name in ['ws73_runtime_address.py','ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_measurement.py','ws73_link_payload.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_ssap.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_transport_watch.py','ws73_hcc_memory.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_command.py','ws73_ssap_command_policy.py','ws73_ssap_command_deadline.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_description.py','ws73_ssap_read_provider.py','ws73_ssap_provider_owner_exit.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_sender_deadline.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_channel_sibling.py','ws73_native_pair.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
+        for name in ['ws73_runtime_address.py','ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_measurement.py','ws73_link_payload.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_ssap.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_transport_watch.py','ws73_hcc_memory.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_command.py','ws73_ssap_command_policy.py','ws73_ssap_command_deadline.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_description.py','ws73_ssap_read_provider.py','ws73_ssap_provider_owner_exit.py','ws73_ssap_provider_deadline.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_sender_deadline.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_channel_sibling.py','ws73_native_pair.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -868,6 +868,8 @@ def _run(args):
     read_provider=provider_requested(args,passthrough=passthrough)
     from ws73_ssap_provider_owner_exit import requested as provider_exit_requested
     provider_exit=provider_exit_requested(args,passthrough=passthrough)
+    from ws73_ssap_provider_deadline import requested as provider_deadline_requested
+    provider_deadline=provider_deadline_requested(args,passthrough=passthrough)
     from ws73_ssap_command import requested as command_requested
     write_command=command_requested(args,passthrough=passthrough)
     from ws73_ssap_command_policy import requested as command_policy_requested
@@ -1211,6 +1213,12 @@ def _run(args):
         from ws73_ssap_provider_owner_exit import VERSION as provider_exit_version
         m['ssap_provider_owner_exit_version']=provider_exit_version
         m['ssap_provider_owner_exit_verifier']=file_record(HERE/'ws73_ssap_provider_owner_exit.py')
+    m['ssap_provider_deadline_requested']=provider_deadline
+    m['ssap_provider_deadline_acceptance']=False
+    if provider_deadline:
+        from ws73_ssap_provider_deadline import VERSION as provider_deadline_version
+        m['ssap_provider_deadline_version']=provider_deadline_version
+        m['ssap_provider_deadline_verifier']=file_record(HERE/'ws73_ssap_provider_deadline.py')
     m['ssap_description_requested']=description
     m['ssap_description_acceptance']=False
     if description:
@@ -1359,6 +1367,9 @@ def _run(args):
         if provider_exit:
             from ws73_ssap_provider_owner_exit import validate_inputs as provider_exit_inputs
             provider_exit_inputs(package)
+        if provider_deadline:
+            from ws73_ssap_provider_deadline import validate_inputs as provider_deadline_inputs
+            provider_deadline_inputs(package)
         if sibling_business:
             from ws73_channel_sibling import require_preparation
             require_preparation(package,args.prepared.resolve())
@@ -1618,6 +1629,7 @@ def _run(args):
                      (' ws73.ssap_description=1' if description else '')+
                      (' ws73.ssap_read_provider=1' if read_provider else '')+
                      (' ws73.ssap_provider_owner_exit=1' if provider_exit else '')+
+                     (' ws73.ssap_provider_deadline=1' if provider_deadline else '')+
                      (' ws73.ssap_owned_update=1' if owned_update else '')+
                      (' ws73.ssap_update_delivery=1' if update_delivery else '')+
                      (' ws73.ssap_subscription=1' if subscription else '')+
@@ -2238,6 +2250,8 @@ def _run(args):
                         provider_rows(control['channel_socket'],read_provider)
                         from ws73_ssap_provider_owner_exit import validate_rows as provider_exit_rows
                         provider_exit_rows(control['channel_socket'],provider_exit)
+                        from ws73_ssap_provider_deadline import validate_rows as provider_deadline_rows
+                        provider_deadline_rows(control['channel_socket'],provider_deadline)
                         m['channel_socket_corroboration']=channel_corroborate(control,capture)
                         if read_provider:
                             from ws73_ssap_read_provider import valid_summary as provider_summary
@@ -2254,6 +2268,13 @@ def _run(args):
                             if file_record(HERE/'ws73_ssap_provider_owner_exit.py')!=m['ssap_provider_owner_exit_verifier'] or not provider_exit_summary(m['channel_socket_corroboration']):
                                 raise ValueError('exact original Provider owner-exit verifier and paired application/USB evidence required')
                         m['ssap_provider_owner_exit_acceptance']=provider_exit
+                        if provider_deadline:
+                            from ws73_ssap_provider_deadline import valid_summary as provider_deadline_summary
+                            for row in control['channel_socket']:
+                                provider_tools(row['ssap_provider_deadline_tools'],args.prepared/'root',package['guest_files'])
+                            if file_record(HERE/'ws73_ssap_provider_deadline.py')!=m['ssap_provider_deadline_verifier'] or not provider_deadline_summary(m['channel_socket_corroboration']):
+                                raise ValueError('exact original Provider deadline verifier and paired SDK/terminal/USB evidence required')
+                        m['ssap_provider_deadline_acceptance']=provider_deadline
                         if description:
                             from ws73_ssap_description import valid_summary as description_summary
                             from ws73_ssap_update_delivery import validate_tools as description_tools
@@ -3186,6 +3207,8 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
     if not valid_provider_manifest(record):return 1
     from ws73_ssap_provider_owner_exit import valid_manifest as valid_provider_exit_manifest
     if not valid_provider_exit_manifest(record):return 1
+    from ws73_ssap_provider_deadline import valid_manifest as valid_provider_deadline_manifest
+    if not valid_provider_deadline_manifest(record):return 1
     from ws73_ssap_description import valid_manifest as valid_description_manifest
     if not valid_description_manifest(record):return 1
     from ws73_ssap_command import valid_manifest as valid_command_manifest
@@ -3817,6 +3840,7 @@ def main():
             cmd.add_argument('--ssap-description-verify',action='store_true',help='with --ssap-owned-verify: actual public read-only UTF-8 description discovery and C/Python read')
             cmd.add_argument('--ssap-read-provider-verify',action='store_true',help='with --ssap-owned-verify: actual Owned dynamic READ callbacks and C/Python peer value comparison')
             cmd.add_argument('--ssap-provider-owner-exit-verify',action='store_true',help='with --ssap-read-provider-verify: kill a real pending Provider Owner per role, peer refusal and independent guard delivery')
+            cmd.add_argument('--ssap-provider-deadline-verify',action='store_true',help='with --ssap-provider-owner-exit-verify: original Provider deadline, rejected late reply and independent ordinary CUTC delivery; no same-actor recovery')
             cmd.add_argument('--ssap-write-command-verify',action='store_true',help='actual C/Python WRITE_NO_RSP with remote Read,owner readback and paired capture;not admission-only delivery')
             cmd.add_argument('--ssap-write-command-policy-verify',action='store_true',help='add actual command refusal and same-owner deny/allow after each phase positives;retain all24 cases;requires --ssap-write-command-verify')
             cmd.add_argument('--ssap-write-command-deadline-verify',action='store_true',help='original command authorization timeout and ordinary business;requires policy gate;not automatic recovery')

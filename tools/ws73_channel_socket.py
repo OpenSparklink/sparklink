@@ -316,11 +316,16 @@ def execute(run, phase, after_application=None):
         if getattr(run.args,'ssap_write_command_deadline_verify',False):
             from ws73_ssap_command_deadline import execute as command_deadline_execute
             command_deadline_execute(run,row,lambda deadline:run_applications(run,row,processes,files,deadline))
+        # A deadline retires this lifetime's SSAP actor. Keep this LAST among
+        # SSAP scenarios; later work is ordinary CUTC and the outer Disconnect.
+        if getattr(run.args,'ssap_provider_deadline_verify',False):
+            from ws73_ssap_provider_deadline import execute as provider_deadline_execute
+            provider_deadline_execute(run,row,lambda deadline:run_applications(run,row,processes,files,deadline))
         if after_application is not None:
             passive_controller_checks(run,row,1,'before-applications')
         if hasattr(run, 'channel_barrier'):
             run.channel_barrier(row)
-        if not (getattr(run.args,'ssap_requester_lifecycle_verify',False) or getattr(run.args,'ssap_update_lifecycle_verify',False) or getattr(run.args,'ssap_write_command_deadline_verify',False)):
+        if not (getattr(run.args,'ssap_requester_lifecycle_verify',False) or getattr(run.args,'ssap_update_lifecycle_verify',False) or getattr(run.args,'ssap_write_command_deadline_verify',False) or getattr(run.args,'ssap_provider_deadline_verify',False)):
             run_applications(run,row,processes,files)
         if after_application is not None:
             after_application()
@@ -797,6 +802,9 @@ def corroborate(run,capture):
                 from ws73_ssap_requester_lifecycle import corroborate as requester_corroborate
                 ssap_requester_lifecycle,requester_credit=requester_corroborate(row,value_matched,sdus)
                 for key in ssap_credit:ssap_credit[key]+=requester_credit[key]
+            from ws73_ssap_provider_deadline import corroborate as provider_deadline_corroborate
+            ssap_provider_deadline,provider_deadline_credit=provider_deadline_corroborate(row,value_matched,sdus)
+            for key in ssap_credit:ssap_credit[key]+=provider_deadline_credit[key]
             reject_unattributed_ssap(row,sdus)
         legs=[]
         for sequence,(data,reply) in enumerate(zip(sent,replies)):
@@ -811,6 +819,9 @@ def corroborate(run,capture):
         if row.get('ssap_command_deadline_required',False):
             from ws73_ssap_command_deadline import verify_business as command_deadline_business
             command_deadline_business(row,row['ssap_command_deadline_case'],legs)
+        if row.get('ssap_provider_deadline_required',False):
+            from ws73_ssap_provider_deadline import verify_business_evidence as provider_deadline_business
+            provider_deadline_business(row,ssap_provider_deadline,legs)
         # Each endpoint sends one capability request, one response, the recorded number of business PDUs.
         if prefix:
             pieces=legs[0]['tx']['fragments']
@@ -879,6 +890,7 @@ def corroborate(run,capture):
         if row.get('ssap_owned_required',False):entry['ssap_owned']=ssap_owned
         if row.get('ssap_read_provider_required',False):entry['ssap_read_providers']=ssap_read_providers
         if row.get('ssap_provider_owner_exit_required',False):entry['ssap_provider_owner_exit']=ssap_provider_owner_exit
+        if row.get('ssap_provider_deadline_required',False):entry['ssap_provider_deadline']=ssap_provider_deadline
         if row.get('ssap_write_command_required',False):entry['ssap_write_commands']=ssap_write_commands
         if row.get('ssap_command_policy_required',False):entry['ssap_command_policy']=ssap_command_policy
         if row.get('ssap_command_deadline_required',False):entry['ssap_command_deadline']=ssap_command_deadline

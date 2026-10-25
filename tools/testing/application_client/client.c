@@ -94,7 +94,8 @@ static int ssap_mode(int argc,char **argv) {
     uint64_t expected_errno=error_mode?number(argv[7]):0;
     if (error_mode && (!expected_errno || expected_errno>4095)) return 2;
     uint8_t expected[2042],value[2042],received[2042];
-    size_t expected_n=error_mode?0:bytes(argv[7],expected),value_n=writing?bytes(argv[8],value):0;
+    size_t expected_n=(error_mode || (!writing && !description && !*argv[7]))?0:bytes(argv[7],expected);
+    size_t value_n=writing?bytes(argv[8],value):0;
     const uint64_t deadline=now_ns()+5000000000ULL;
     struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};
     struct SlkClient *client=NULL;struct SlkConnection *link=NULL;int status=1;

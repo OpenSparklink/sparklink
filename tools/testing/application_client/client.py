@@ -76,11 +76,12 @@ def ssap_mode():
     writing=operation=='ssap-write'
     if operation not in ('ssap-read','ssap-read-description','ssap-write') or len(sys.argv)!=(9 if writing else 8):raise ValueError('one exact read/short write required')
     error_mode=sys.argv[1]=='ssap-error'
-    if not 1<=len(sys.argv[7])<=4084 or writing and not 1<=len(sys.argv[8])<=4084:raise ValueError('bounded test value required')
+    empty_read=not error_mode and operation=='ssap-read' and sys.argv[7]==''
+    if not (empty_read or 1<=len(sys.argv[7])<=4084) or writing and not 1<=len(sys.argv[8])<=4084:raise ValueError('bounded test value required')
     expected_errno=int(sys.argv[7]) if error_mode else None
     if error_mode and not 1<=expected_errno<=4095:raise ValueError('nonzero expected errno required')
     expected=None if error_mode else bytes.fromhex(sys.argv[7]);value=bytes.fromhex(sys.argv[8]) if writing else None
-    if not error_mode and not 1<=len(expected)<=2042 or writing and not 1<=len(value)<=2042:raise ValueError('bounded nonempty test value required')
+    if not error_mode and not (empty_read or 1<=len(expected)<=2042) or writing and not 1<=len(value)<=2042:raise ValueError('bounded nonempty test value required')
     deadline=time.monotonic_ns()+5_000_000_000
     with Client(deadline_ns=deadline) as client:
         link=client.connection(ControllerId(index,generation),path,deadline_ns=deadline)

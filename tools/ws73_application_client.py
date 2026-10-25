@@ -4,6 +4,7 @@
 No synthetic controller, protocol Engine, load generator or performance claim.
 """
 from contextlib import ExitStack, contextmanager
+import errno
 import json
 import os
 from pathlib import Path
@@ -44,7 +45,7 @@ def process_identity(pid, uid=1000):
     return identity,status
 
 
-def ssap_receipt(app,entry,*,expected_size=32,expected_uid=1000):
+def _ssap_process_receipt(app,expected_uid):
     if app['environment']!=application_environment():
         raise CaptureError('original staged SSAP SDK environment required')
     if type(app['exit'])is not int or app['exit']!=0:
@@ -56,11 +57,19 @@ def ssap_receipt(app,entry,*,expected_size=32,expected_uid=1000):
         raise CaptureError('ordinary cap-zero SSAP application required')
     if expected_uid==1004 and (identity.get('gids')!=[1004]*4 or identity.get('groups')!=[]):
         raise CaptureError('SSAP application-only child inherited authority groups')
+
+
+def _ssap_size(operation,size):
+    return type(size)is int and (0 if operation=='ssap-read' else 1)<=size<=2042
+
+
+def ssap_receipt(app,entry,*,expected_size=32,expected_uid=1000):
+    _ssap_process_receipt(app,expected_uid)
     lines=app['stdout'].splitlines()
     if len(lines)!=2 or json.loads(lines[0])!=dict(stage='ssap_start_barrier',api=app['api'],client_closed=True):
         raise CaptureError('original retained-caller start barrier required')
     operation,path,handle,expected=app['ssap_operation'],app['ssap_path'],app['ssap_handle'],app['ssap_expected']
-    if operation not in ('ssap-read','ssap-read-description','ssap-write') or path!=entry['object']['path'] or not 1<=handle<=65535 or type(expected_size)is not int or not 1<=expected_size<=2042 or len(bytes.fromhex(expected))!=expected_size:
+    if operation not in ('ssap-read','ssap-read-description','ssap-write') or path!=entry['object']['path'] or type(handle)is not int or not 1<=handle<=65535 or not _ssap_size(operation,expected_size) or len(bytes.fromhex(expected))!=expected_size:
         raise CaptureError('original exact SSAP caller identity and bounded value required')
     if lines[1]!=f'SsapPeerValue: operation={operation} path={path} handle={handle} value={expected}':
         raise CaptureError('actual SDK must validate the complete peer result')
@@ -76,6 +85,88 @@ def ssap_command(run,row,entry,args,expected,*,api=None,expected_size=32,applica
 
 
 def ssap_commands(run,row,calls,*,api=None,expected_size=32,application_uid=1000,batch=None,after_start=None):
+    return _ssap_commands(run,row,calls,api=api,expected_size=expected_size,
+                          application_uid=application_uid,batch=batch,after_start=after_start)
+
+
+def ssap_error_command(run,row,entry,args,expected_errno,*,api,after_start=None,application_uid=1000):
+    """Existing ssap-error child and original five-second call, one shared supervisor.
+
+    Unlike successful calls, this existing fixture starts immediately after its
+    ssap_call receipt. The actual owner callback is the arrival barrier; no new
+    stdin release or renewed SDK deadline is inserted for negative scenarios.
+    """
+    return _ssap_commands(run,row,[(entry,args,None)],api=api,expected_size=None,
+        application_uid=application_uid,after_start=after_start,expected_errno=expected_errno)[0]
+
+
+def ssap_error_arguments(api,entry,args,expected_errno):
+    if api not in ('c','python') or type(expected_errno)is not int or not 1<=expected_errno<=4095:
+        raise CaptureError('explicit SDK language and nonzero expected errno required')
+    if (type(args)is not list or not args or args[0]not in ('ssap-read','ssap-read-description','ssap-write')
+            or len(args)!=(4 if args[0]=='ssap-write'else 3) or args[1]!=entry['object']['path']
+            or type(args[2])is not str or not args[2].isascii() or not args[2].isdecimal()
+            or not 1<=int(args[2])<=65535 or args[2]!=str(int(args[2]))):
+        raise CaptureError('exact same-lifetime SDK error call required')
+    if args[0]=='ssap-write':
+        try:value=bytes.fromhex(args[3])
+        except (ValueError,TypeError) as error:raise CaptureError('bounded original write bytes required') from error
+        if not 1<=len(value)<=2042 or args[3]!=value.hex():
+            raise CaptureError('bounded original write bytes required')
+    prefix=['/bin/ws73-application-client-c'] if api=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
+    return prefix+['ssap-error',str(entry['owner']['index']),str(entry['owner']['generation']),
+                   args[1],args[0],args[2],str(expected_errno)]+args[3:]
+
+
+def _ssap_error_call_receipt(line,api):
+    try:call=json.loads(line)
+    except (ValueError,TypeError) as error:raise CaptureError('original SDK error call JSON required') from error
+    if (type(call)is not dict or set(call)!={'stage','api','deadline_ns','call_ns','client_closed'}
+            or call['stage']!='ssap_call' or call['api']!=api or call['client_closed']is not True
+            or any(type(call[k])is not int or not 0<call[k]<2**64 for k in ('deadline_ns','call_ns'))
+            or not 0<call['deadline_ns']-call['call_ns']<=5_000_000_000):
+        raise CaptureError('original retained-caller five-second SDK error call required')
+    return call
+
+
+def ssap_error_receipt(app,entry,*,expected_errno,expected_uid=1000):
+    """Validate actual SDK errno, original deadline and complete retained output."""
+    _ssap_process_receipt(app,expected_uid)
+    operation,path,handle=app['ssap_operation'],app['ssap_path'],app['ssap_handle']
+    if type(handle)is not int or not 1<=handle<=65535:
+        raise CaptureError('original error handle required')
+    args=[operation,path,str(handle)]+([app['ssap_proposed']]if operation=='ssap-write'else[])
+    if (app['args']!=ssap_error_arguments(app['api'],entry,args,expected_errno)
+            or type(app['ssap_expected_errno'])is not int or app['ssap_expected_errno']!=expected_errno):
+        raise CaptureError('exact original negative-scenario SDK executable and arguments required')
+    lines=app['stdout'].splitlines()
+    if len(lines)!=2:raise CaptureError('two original SDK call/error receipts required')
+    call=_ssap_error_call_receipt(lines[0],app['api'])
+    try:result=json.loads(lines[1])
+    except (ValueError,TypeError) as error:raise CaptureError('original SDK error result JSON required') from error
+    if (type(result)is not dict or set(result)!={'stage','api','errno','operation_success','deadline_ns','returned_ns'}
+            or result['stage']!='ssap_error' or result['api']!=app['api']
+            or result['operation_success']is not False or type(result['errno'])is not int or result['errno']!=expected_errno
+            or any(type(result[k])is not int or not 0<result[k]<2**64 for k in ('deadline_ns','returned_ns'))
+            or result['deadline_ns']!=call['deadline_ns']):
+        raise CaptureError('actual requested errno without fabricated operation success required')
+    stamps=[app[k]for k in ('start_monotonic_ns','end_monotonic_ns','ssap_error_deadline_ns','ssap_supervisor_deadline_ns')]
+    if (any(type(value)is not int or not 0<value<2**64 for value in stamps)
+            or stamps[2]!=call['deadline_ns'] or stamps[3]!=stamps[0]+7_000_000_000
+            or not stamps[0]<=call['call_ns']<=result['returned_ns']<=stamps[1]<=stamps[3]
+            or call['deadline_ns']>stamps[3]):
+        raise CaptureError('original child and fixed supervisor deadlines required')
+    if expected_errno==errno.ETIMEDOUT:
+        if not (4_500_000_000<=stamps[1]-stamps[0]<=5_500_000_000 and
+                call['deadline_ns']-500_000_000<=result['returned_ns']<=call['deadline_ns']+500_000_000):
+            raise CaptureError('unchanged original five-second timeout guard required')
+    elif result['returned_ns']>call['deadline_ns']:
+        raise CaptureError('peer error must return within the original SDK deadline')
+    return dict(api=app['api'],errno=result['errno'],deadline_ns=call['deadline_ns'],
+                call_ns=call['call_ns'],returned_ns=result['returned_ns'],operation_success=False)
+
+
+def _ssap_commands(run,row,calls,*,api=None,expected_size=32,application_uid=1000,batch=None,after_start=None,expected_errno=None):
     """One finite supervisor for the existing actual SDK children,not a wire loop.
 
     All children reach their real retained-caller barrier before any release.
@@ -83,6 +174,8 @@ def ssap_commands(run,row,calls,*,api=None,expected_size=32,application_uid=1000
     """
     if type(calls)is not list or len(calls)not in (1,2):raise CaptureError('one or two bounded SDK calls required')
     paired=len(calls)==2
+    error_mode=expected_errno is not None
+    if error_mode and (paired or batch is not None):raise CaptureError('one original negative-scenario SDK call required')
     if after_start is not None and (not callable(after_start) or paired):
         raise CaptureError('single-child bounded after-start callback required')
     if paired:
@@ -95,7 +188,13 @@ def ssap_commands(run,row,calls,*,api=None,expected_size=32,application_uid=1000
             or any(c[1][0]!=('ssap-write'if batch[1]=='write'else'ssap-read')for c in calls)):
             raise CaptureError('explicit ordinary opposite-controller SSAP step required')
     elif batch is not None:raise CaptureError('single SDK call cannot claim duplex')
-    plans=[ssap_call(run,row,entry,args,expected,api=api,expected_size=expected_size,application_uid=application_uid)for entry,args,expected in calls]
+    if error_mode:
+        if application_uid not in (1000,1004) or application_uid==1004 and os.geteuid()!=0:
+            raise CaptureError('explicit ordinary SDK error caller required')
+        plans=[(entry,ssap_error_arguments(api,entry,args,expected_errno),api,application_environment(),args,None)
+               for entry,args,_ in calls]
+    else:
+        plans=[ssap_call(run,row,entry,args,expected,api=api,expected_size=expected_size,application_uid=application_uid)for entry,args,expected in calls]
     items=row.setdefault('ssap_language_clients',[]);number=len(items)
     group=None
     if paired:
@@ -108,7 +207,12 @@ def ssap_commands(run,row,calls,*,api=None,expected_size=32,application_uid=1000
             ready_deadline=None
             for entry,command,language,environment,args,expected in plans:
                 ordinal=len(items);stdout=run.output/f'app-ssap-{row["phase"]}-{ordinal}-{language}.stdout';stderr=run.output/f'app-ssap-{row["phase"]}-{ordinal}-{language}.stderr'
-                app=dict(api=language,args=command,position=row['owners'].index(entry),environment=environment,ssap_operation=args[0],ssap_path=args[1],ssap_handle=int(args[2]),ssap_expected=expected.hex(),start_wall_ns=time.time_ns(),output_files=[str(stdout),str(stderr)])
+                app=dict(api=language,args=command,position=row['owners'].index(entry),environment=environment,ssap_operation=args[0],ssap_path=args[1],ssap_handle=int(args[2]),start_wall_ns=time.time_ns(),output_files=[str(stdout),str(stderr)])
+                if error_mode:
+                    start=time.monotonic_ns()
+                    app.update(ssap_expected_errno=expected_errno,ssap_proposed=args[3]if args[0]=='ssap-write'else'',
+                               start_monotonic_ns=start,ssap_supervisor_deadline_ns=start+7_000_000_000)
+                else:app['ssap_expected']=expected.hex()
                 if group is not None:app['ssap_batch_index']=group['index']
                 items.append(app);result.append(app);run.data.setdefault('ssap_values',[]).append(app);run.save()
                 proc=subprocess.Popen(command,env=dict(os.environ,**environment),stdin=subprocess.PIPE,
@@ -119,12 +223,17 @@ def ssap_commands(run,row,calls,*,api=None,expected_size=32,application_uid=1000
             for proc,app,stdout,stderr,entry in processes:
                 while True:
                     lines=stdout.read_text().splitlines()
+                    if error_mode and lines:
+                        call=_ssap_error_call_receipt(lines[0],app['api'])
+                        app['ssap_error_deadline_ns']=call['deadline_ns'];run.save();break
                     if len(lines)==1 and json.loads(lines[0])==dict(stage='ssap_start_barrier',api=app['api'],client_closed=True):break
                     if proc.poll()is not None or time.monotonic()>=ready_deadline:raise CaptureError('actual SDK SSAP original start barrier failed')
                     time.sleep(.01)
                 app['start_barrier_wall_ns']=time.time_ns();run.save()
             deadline=None
             for proc,app,stdout,stderr,entry in processes:
+                if error_mode:
+                    deadline=app['ssap_supervisor_deadline_ns'];continue
                 before=time.monotonic_ns()
                 if deadline is None:deadline=before+7_000_000_000
                 app['ssap_release_before_wall_ns']=time.time_ns();app['ssap_release_monotonic_ns']=before
@@ -137,14 +246,18 @@ def ssap_commands(run,row,calls,*,api=None,expected_size=32,application_uid=1000
                 if time.monotonic_ns()>=deadline:raise CaptureError('SSAP after-start original deadline')
             for proc,app,stdout,stderr,entry in processes:
                 proc.wait(timeout=max(.001,(deadline-time.monotonic_ns())/1e9))
-                app.update(exit=proc.returncode,end_wall_ns=time.time_ns(),stdout=stdout.read_text(),stderr=stderr.read_text());run.save()
-                ssap_receipt(app,entry,expected_size=expected_size,expected_uid=application_uid)
+                app.update(exit=proc.returncode,end_wall_ns=time.time_ns(),stdout=stdout.read_text(),stderr=stderr.read_text())
+                if error_mode:app['end_monotonic_ns']=time.monotonic_ns()
+                run.save()
+                if error_mode:ssap_error_receipt(app,entry,expected_errno=expected_errno,expected_uid=application_uid)
+                else:ssap_receipt(app,entry,expected_size=expected_size,expected_uid=application_uid)
             if group is not None:group['status']='SDK_CALLS_COMPLETE'
         finally:
             for proc,app,stdout,stderr,entry in processes:
                 if proc.poll()is None:proc.kill()
                 proc.wait();proc.stdin.close()
                 app.setdefault('exit',proc.returncode);app.setdefault('end_wall_ns',time.time_ns());app['stdout']=stdout.read_text();app['stderr']=stderr.read_text()
+                if error_mode:app.setdefault('end_monotonic_ns',time.monotonic_ns())
             if group is not None:
                 if group['status']!='SDK_CALLS_COMPLETE':group['status']='FAIL'
                 group.update(end_wall_ns=time.time_ns(),completed_monotonic_ns=time.monotonic_ns())
@@ -154,13 +267,14 @@ def ssap_commands(run,row,calls,*,api=None,expected_size=32,application_uid=1000
 
 def ssap_call(run,row,entry,args,expected,*,api,expected_size,application_uid):
     """Same fixed executable and full-value contract for single and paired calls."""
-    if type(expected_size)is not int or not 1<=expected_size<=2042 or not isinstance(expected,bytes) or len(expected)!=expected_size:raise CaptureError('original bounded expected SSAP value required')
+    if not isinstance(expected,bytes) or len(expected)!=expected_size:raise CaptureError('original bounded expected SSAP value required')
     if application_uid not in (1000,1004):raise CaptureError('explicit SSAP test role required')
     if application_uid==1004 and os.geteuid()!=0:raise CaptureError('apps-only SSAP requires existing VM root role supervisor')
     if (type(args)is not list or not args or args[0]not in ('ssap-read','ssap-read-description','ssap-write')
         or len(args)!=(4 if args[0]=='ssap-write'else 3)or args[1]!=entry['object']['path']
         or not 1<=int(args[2])<=65535 or args[0]=='ssap-write'and args[3]!=expected.hex()):
         raise CaptureError('exact same-lifetime SDK value call required')
+    if not _ssap_size(args[0],expected_size):raise CaptureError('original bounded expected SSAP value required')
     position=row['owners'].index(entry)
     if api is None:api='c' if position==row['phase'] else 'python'
     if api not in ('c','python'):raise CaptureError('explicit SDK consumer required')

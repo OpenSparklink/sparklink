@@ -805,46 +805,14 @@
     "Follow qualification_view.current_batch.next; retain the full S0-S6/19WP/10FV/12DG and original acceptance scope.",
     "Recheck source, dirty changes, actual artifacts, tool identities, per-leaf device ownership and shared build budget before VM-only work."
   ],
-  "issue_sync_status": "R159_SOURCE_OFFLINE_SUMMARIES_SYNCED_PRIVATE_RESULTS_LOCAL",
-  "issue_sync_receipt": {
-    "source_only": true,
-    "comments": [
-      {
-        "repo": "sparklink",
-        "issue": 3,
-        "id": 6397850132,
-        "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6397850132",
-        "body_verified": true
-      },
-      {
-        "repo": "sparklink",
-        "issue": 8,
-        "id": 6397884112,
-        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6397884112",
-        "body_verified": true
-      },
-      {
-        "repo": "linux",
-        "issue": 17,
-        "id": 6397885039,
-        "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6397885039",
-        "body_verified": true
-      },
-      {
-        "repo": "linux",
-        "issue": 19,
-        "id": 6397885858,
-        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6397885858",
-        "body_verified": true
-      }
-    ]
-  },
+  "issue_sync_status": "R160_PUBLIC_SOURCE_OFFLINE_SUMMARY_NOT_YET_RECORDED_PRIVATE_DETAILS_STAY_LOCAL",
+  "issue_sync_receipt": null,
   "previous_goal_turn_classification": "PROGRESS_ARCHITECTURE_CANONICAL_DEPLOYMENT_AND_ACTUAL_PACKAGE_BASE_SCOPED_VM_EVIDENCE_FULL_ARCHITECTURE_OPEN",
   "current_goal_turn_classification": {
     "classification": "PROGRESS",
     "goal_complete": false,
     "authority": "qualification_view.current_batch",
-    "reason": "Next bounded Provider original-deadline/late-reply slice planned on the existing path; this transition creates no source/offline, actual-device or formal qualification."
+    "reason": "Next bounded shared SDK Provider frontend and language-provider slice planned on the existing path; this transition creates no source/offline, actual-device or formal qualification."
   },
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
@@ -2040,9 +2008,9 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP08-WP16-WP17-R5f159-provider-original-deadline-late-reply",
-      "state": "PUBLIC_SOURCE_AND_OFFLINE_SCOPE_ONLY_FULL_GOAL_OPEN",
-      "production_behavior": "Exercise the existing sole SSAP Engine and Owned read Provider through two live authorized Provider prompts. Keep each Owner alive without answering, observe the immutable SDK timeout and Provider deadline terminal, then reject one late original-token reply. Preserve independent ordinary CUTC delivery and the outer new-lifetime path. No new Host, Engine, fallback, same-actor recovery or renewed timeout is planned.",
+      "id": "WP08-WP16-WP17-R5f160-provider-sdk-shared-frontend",
+      "state": "PLANNED_BOUNDED_SDK_PROVIDER_SHARED_FRONTEND_NO_NEW_QUALIFICATION_FULL_SCOPE_OPEN",
+      "production_behavior": "Expose dynamic read Providers through the ordinary Rust/C/Python SDK over the existing original Client and sole daemon SSAP Engine. Move the concrete bounded value frontend into the SDK and migrate slctl to the same dispatch/admission/reply/lifetime implementation; keep authorization decisions separate from supplied bytes. No additional Host, Engine, codec, stored-value fallback or controller privilege.",
       "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
       "work_packages": [
         "WP08",
@@ -2052,104 +2020,66 @@
       "records": [],
       "predecessor_archive": {
         "history": "batch_history",
-        "id": "WP08-WP16-WP17-R5f158-provider-owner-exit",
-        "canonical_sha256": "c1271ac595fd62f7901ef503f9ac385e837744e3b199c8d920ec1063383891ee"
+        "id": "WP08-WP16-WP17-R5f159-provider-original-deadline-late-reply",
+        "canonical_sha256": "5bd1989230d4f206ae0f6d5e46d276e62c89beeb6c5701a424c16cd2a2f6a936"
       },
       "public_scope": "Only source/plan and subsequent source/offline summaries are public. Exact compiled/executor/report identities and actual device results remain local; non-disclosure is not a statement that execution has or has not occurred.",
       "implementation_sources": {
-        "plan_source_baseline": "fa51d4ea9d85df1a46abfc06ea15ea6025dfa942",
-        "scope": "Public source/offline view only; private compiled, executor, report and actual results are not disclosed or inferred.",
-        "public_source": "ee0c642cf8f222f83b2b1bf5539bd7c9583ffdeb",
-        "public_commits": [
-          {
-            "stage": "plan",
-            "commit": "c81a483f6e358b093256279a1a1583fd6ff0463d"
-          },
-          {
-            "stage": "implementation",
-            "commit": "ee0c642cf8f222f83b2b1bf5539bd7c9583ffdeb"
-          }
-        ],
-        "source_offline_scope": "Opt-in original Provider deadline and stale-token callers, using the existing Engine. Source and offline fixture/docs scope only; no Rust production change or transfer of hardware qualification."
-      },
-      "deadline_contract": {
-        "sdk": "The requester captures its original absolute deadline before broker identity/RPC work. Observe the actual SDK ETIMEDOUT and returned timestamp; neither a supervisor timeout nor a new timeout is equivalent.",
-        "provider": "The receiving Engine establishes its own original response deadline on the real request, subject to the existing reassembly bound; Provider authorization and callback reuse it without renewal.",
-        "physical_drain": "The requester physical response obligation starts at first software admission. Its drain deadline is independent of SDK cancellation and Provider RX time; caller retirement does not cancel the physical debt.",
-        "observation": "Bounded terminal/capture supervision is a separate observation budget, never an extension of any protocol deadline. The three production deadlines share a guest monotonic clock but have distinct origins and need not be equal."
+        "plan_source_baseline": "c8770b55de770115e5152ff73994d0da77cc2383",
+        "scope": "Plan-source identity only; no new compiled artifact, execution tool, test result or signed qualification report identity is inferred."
       },
       "invariants": [
-        "Reuse the unique physical Session, immutable Owned binding, generation/lifetime, Grant, separate command/data credit and actual submission Ticket. Record the authorized live prompt and original token as the controlled barrier.",
-        "Preserve the original SDK, receiving Provider and admitted physical-drain deadlines separately. Return promptly from the prompt barrier so waiting for Provider expiry cannot contaminate the existing SDK return observation.",
-        "Keep the original Owner alive through expiry and the late input; require actual ETIMEDOUT rather than success/EIO/arbitrary RPC failure. Observe the receiver original-deadline Failed diagnostic and record requester drain/state independently; neither actor is promised healthy or rearmed on the same lifetime.",
-        "After both SDK and Provider deadlines and the observed receiver terminal, reject the exact old token with its prepared random value. An internal AF candidate is not a submitted packet; do not require an error response after expiry or fall back to stored values.",
-        "For a bounded complete capture interval match the request at both endpoints and reject extra response, duplicate, fallback or late-value delivery attributable to it. Missing capture or uncertain required timing is not evidence of absence; keep conditional same-guest clock/quantization assumptions explicit.",
-        "Place the destructive deadline slice after all selected timely SSAP baselines. Run the existing ordinary CUTC random request/reply path once after terminal and late-input rejection; do not schedule a new positive SSAP operation on a terminal actor.",
-        "Preserve already-started physical obligations, finite budgets and explicit Down/cleanup. A later outer connection lifetime is a new actor witness, not restoration of the old actor or natural device recovery."
+        "Reuse the original Client/Arc<SyncClient>, current Owned registration, unique daemon and full generation/lifetime/epoch/channel identity; the daemon remains the unique SSAP Engine over the existing Session/Grant/credit/Ticket path.",
+        "One concrete value-provider dispatcher owns bounded inbox/admission/await/fresh-check/cancellation. SDK and slctl are thin adapters. Do not retain separate complete callback lifecycles or merge bool authorization with value/error responses.",
+        "READ type0 only with the original property permissions and maximum-byte budget. Explicit status0/empty is empty success; allowed application errors carry no value; oversize, unknown status or nonempty error are rejected without truncation or consuming the reply.",
+        "A callback keeps its original immutable deadline and can accept at most one local reply. No renewed deadline on dequeue/reply, stale/duplicate/wrong-owner reuse, automatic bind retry or assumed reversal of an uncertain bind commit.",
+        "Local callback reply cannot wait behind the same SyncClient executor RPC. No locks span await/poll/UI code. Provider reservations, callback drain and request release keep capacity charged until the corresponding references finish.",
+        "Service unregister/free and owner loss stop local admission and invalidate old requests. Notification fd duplicates convey readiness only and cannot recreate ownership or imply remote withdrawal. Explicit unregister and uncertain cleanup retain existing semantics.",
+        "Preserve slctl token namespace, pTOKEN input parsing and final fresh-admission Result-before-callback-return ordering; local reply acceptance or Result is not wire delivery or peer processing.",
+        "C/Python use the same public provider implementation and actual original bus; an external slctl process or local stored-value replacement cannot count as a language Provider. C pointer validity remains the caller contract."
       ],
       "offline_checks": {
-        "scope": "Tool fixtures and strict public documentation at the exact source snapshot; neither private HTML nor formal/actual-device qualification.",
+        "scope": "No R160 result is imported by this plan; all prior source/offline and finite actual receipts retain their exact archived scope.",
         "required": [
-          "Strict source/build and current affected tool/SDK/daemon checks only where this batch changes them; retain the existing original deadline/error semantics and validators.",
-          "Finite positive fixtures and rejection controls for missing/wrong prompt/token/identity, altered or conflated deadlines, arbitrary terminal errors, unexpected Owner exit, late wire/value, capture loss and missing ordinary peer reply.",
-          "Source mapping to production and fixed NearLink Host comparison, with reference timeout/fallback differences explicit; fixture or source-audit results are not formal or hardware qualification."
-        ],
-        "tooling": {
-          "command": [
-            "python3",
-            "-B",
-            "-m",
-            "unittest",
-            "discover",
-            "-s",
-            "tools/tests",
-            "-v"
-          ],
-          "signed_public_source": "ee0c642cf8f222f83b2b1bf5539bd7c9583ffdeb",
-          "status": "OFFLINE_PASS",
-          "scope": "Original tested public source snapshot only; no hardware inference.",
-          "tests": 1614
-        },
-        "documentation": {
-          "command": [
-            "make",
-            "docs"
-          ],
-          "signed_public_source": "ee0c642cf8f222f83b2b1bf5539bd7c9583ffdeb",
-          "status": "OFFLINE_PASS",
-          "scope": "Original tested public source snapshot only; no hardware inference."
-        }
+          "Strict locked affected SDK/CLI builds and checks; independent generated header/export/ABI/Python checks and real private-bus C/Python entry point calls.",
+          "Bounded inbox poll/EAGAIN, one-shot/expiry/closed-source errors, oversize/nonempty error failure atomicity, capacity retained through callback drain and request release, and reply while the same executor is blocked.",
+          "Existing authorization, slctl token/Result ordering and sole daemon Engine regressions; fixtures explicitly retain their private-bus/allocator/scheduler limits and are not kernel or real-device proof.",
+          "Opt-in runner and independent evidence negative controls for missing callback/raw leg/peer receipt, changed value, identity, original deadline or claimed SDK Provider role.",
+          "Maintain Diataxis task/reference documentation and exact API support/errors/cleanup; compare the pinned NearLink Host source without treating it as a standards oracle."
+        ]
       },
       "exit_conditions": [
-        "One actual expiry case per connection phase: C requester then Python, current sender0/target1, with reversed physical roles and two distinct receiving controller identities; do not claim an API-by-direction cross-product.",
-        "Retain the selected timely Owned, Provider FF/empty/random and pending Owner-exit gates on the exact new artifact before expiry; explicitly add the new SDK call without dropping any old calls or assertions.",
-        "Bind actual prompt, Owner PID/binding, request/token, generation/lifetime, SDK and Provider deadlines, actual SDK ETIMEDOUT and receiver original-deadline Failed receipt. Record the requester actor/drain outcome separately, not as an assumed healthy-source invariant.",
-        "Send one prepared late random value to the still-live original Owner only after both original deadlines and receiver terminal; require the stale/expired-token rejection and no accepted late Provider result or fallback in the complete finite evidence window.",
-        "Prove ordinary CUTC peer-validated random request/reply after the terminal/late-input barrier, with identity, finite queues, actual paired capture and applicable credit checks; confirm terminal state remains terminal.",
-        "Use explicit Owner cleanup and outer typed Down. Positive traffic on the following reversed-role lifetime may witness phase0-to-phase1 use only; no post-phase1 or same-actor recovery claim without an actual later witness.",
-        "Keep compiled artifact, execution tools and signed report identities separate. Only complete independently audited finite evidence and fail-closed material controls may later add a scoped record; no current result is imported by this plan."
+        "The SDK and slctl share one concrete application value frontend; original Client/Owned scope, permissions, finite capacity and immutable request identity/deadline remain enforced. No duplicate Engine or protocol queue.",
+        "Actual C and Python public provider bind/fd/next/info/value-or-error reply/free APIs and wrappers work through the original Client; correct local-admission versus remote-completion semantics and generated exports remain consistent.",
+        "On the exact new VM-only artifact, C Provider/Python requester then Python Provider/C requester use reversed physical connection roles. The real requester validates explicit FF error, empty success and fresh random32 distinct from staging, with both-end literal READ/response evidence.",
+        "Preserve applicable prior slctl/Owned/Provider and ordinary CUTC gates. Explicit original-owner withdrawal and retired-handle rejection, independent guard service and ordinary peer-validated business remain available within their recorded scope.",
+        "Affected controlled close/expiry/late-reply failures are covered by finite production-function/private-bus regressions without treating all lifecycle races as a prerequisite for the first positive language-Provider slice.",
+        "Bind exact production source, compiled artifacts, execution tools, SDK110 staged inputs/runtime observations and independent raw/application evidence. A separate signed report and scoped registration are required for any new finite qualification."
       ],
-      "offline_status": "EXACT_PUBLIC_SOURCE_TOOLS_AND_STRICT_DOCS_PASS_NOT_FORMAL_OR_HARDWARE",
+      "offline_status": "NO_R160_OFFLINE_RESULT_IMPORTED_BY_THIS_PLAN; prior checks retain their original source scope.",
       "formal_status": "UNPROVED_FOR_THIS_CHANGE",
-      "hardware_status": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED; public source/offline completion establishes neither actual execution nor non-execution or its outcome.",
+      "hardware_status": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED; no execution outcome or non-execution inference from this public plan.",
       "checks": {
-        "source": "SIGNED_RUNTIME_TOOLS_AND_DOCUMENT_PATCHES_MAPPED",
-        "tooling": "OFFLINE_PASS",
-        "documentation": "PUBLIC_STRICT_HTML_PASS",
+        "source": "PLAN_ONLY",
+        "tooling": "NOT_RECORDED_FOR_R160",
+        "documentation": "NOT_RECORDED_FOR_R160",
         "new_application_helpers": "LOCAL_AUTHORITY_NOT_DISCLOSED",
         "new_vm_gate": "LOCAL_AUTHORITY_NOT_DISCLOSED",
         "independent_actual_audit": "LOCAL_AUTHORITY_NOT_DISCLOSED",
         "qualification_registration": "LOCAL_AUTHORITY_NOT_DISCLOSED"
       },
       "remaining_conditions": [
-        "No same-lifetime actor restart or post-deadline response promise. C/Python Provider inbox, every cancellation/Agent race and all API/direction combinations remain separate work, not prerequisites for this finite slice.",
-        "Continue sole Engine services/Profile, dynamic writes, long values, original length/credit/backpressure, multichannel/four-device business, security/Bond, PM, deployment and release under the unchanged complete plan.",
-        "Natural fault RCA, nonmanual recovery, E/mixed/cold-ROM and production identity remain open; manual, hub and QMP actions or deliberate outer reconnect do not establish natural recovery.",
-        "Retain all original failures, counterexamples and qualification identities; only changed-path invariants gate this batch. UserHost remains low-priority planning."
+        "Dynamic WRITE, methods or descriptor Provider, all property/channel concurrency, all API/direction combinations, long-value expansion and four-device/mixed-model qualification remain separately scoped.",
+        "No same-lifetime failed-actor restart, post-deadline response or physical-drain-completion promise. Existing original-deadline/owner-exit records retain their exact artifact and scope; no new SDK qualification is inherited.",
+        "Continue original data/credit/backpressure, security/Bond, sole Engine services/Profile, PM, deployment and release work without waiting for the whole control-plane race set.",
+        "Natural fault RCA, nonmanual recovery, E/mixed/cold-ROM and production identity remain open; manual/hub/QMP actions or deliberate reconnect do not establish natural recovery.",
+        "Retain all original failures, counterexamples, scope and qualification identities. UserHost remains low-priority planning; no original issue is closed by this batch transition."
       ],
       "next": [
-        "Continue the bounded Provider deadline/late-token evidence process under the existing local qualification authority; no actual outcome is inferred from this public source/offline summary.",
-        "Continue the original data/security/SSAP plan without requiring the whole control-plane race set; no same-actor recovery or post-deadline reply is promised."
+        "Extract the shared concrete Provider frontend and migrate slctl while preserving its observable token and final-result semantics; expose the same bounded inbox through C/Python on the original Client.",
+        "Complete only changed-path source/ABI/private-bus/negative/documentation checks; prepare fresh accurate artifacts with the existing shared build lock and resource budget.",
+        "Run the existing VM-only runner with actual C/Python Providers and opposite SDK requesters, exact explicit error/empty/random values, paired raw evidence, original withdrawal/guard and ordinary business gates.",
+        "Independently audit and register only the exact finite result, preserve all failed attempts, and publish source/offline summaries only; continue the unchanged complete mainline."
       ],
       "issues": [
         "OpenSparklink/sparklink#3",
@@ -2158,65 +2088,12 @@
         "OpenSparklink/linux#19"
       ],
       "issue_sync": {
-        "status": "PUBLIC_SOURCE_OFFLINE_SUMMARIES_POSTED_AND_READ_BACK",
+        "status": "R160_SOURCE_OFFLINE_SUMMARY_NOT_YET_RECORDED",
         "source_only": true,
         "private_hardware_published": false,
         "original_issues_open": true,
-        "comments": [
-          {
-            "repo": "sparklink",
-            "issue": 3,
-            "id": 6397850132,
-            "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6397850132",
-            "body_verified": true
-          },
-          {
-            "repo": "sparklink",
-            "issue": 8,
-            "id": 6397884112,
-            "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6397884112",
-            "body_verified": true
-          },
-          {
-            "repo": "linux",
-            "issue": 17,
-            "id": 6397885039,
-            "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6397885039",
-            "body_verified": true
-          },
-          {
-            "repo": "linux",
-            "issue": 19,
-            "id": 6397885858,
-            "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6397885858",
-            "body_verified": true
-          }
-        ],
-        "scope": "Existing four issue source/offline summaries only; no private actual-test metadata published."
-      },
-      "source_sync_history": [
-        {
-          "implementation_sources": {
-            "plan_source_baseline": "fa51d4ea9d85df1a46abfc06ea15ea6025dfa942",
-            "scope": "Plan-source identity only; no new compiled artifact, execution tool, test result or signed qualification report identity is inferred."
-          },
-          "offline_checks": {
-            "scope": "No R159 result is imported by this plan; R158 source/offline and finite actual receipts retain their exact archived scope.",
-            "required": [
-              "Strict source/build and current affected tool/SDK/daemon checks only where this batch changes them; retain the existing original deadline/error semantics and validators.",
-              "Finite positive fixtures and rejection controls for missing/wrong prompt/token/identity, altered or conflated deadlines, arbitrary terminal errors, unexpected Owner exit, late wire/value, capture loss and missing ordinary peer reply.",
-              "Source mapping to production and fixed NearLink Host comparison, with reference timeout/fallback differences explicit; fixture or source-audit results are not formal or hardware qualification."
-            ]
-          },
-          "issue_sync": {
-            "status": "R159_SOURCE_OFFLINE_SUMMARY_NOT_YET_RECORDED",
-            "source_only": true,
-            "private_hardware_published": false,
-            "original_issues_open": true,
-            "receipt": null
-          }
-        }
-      ]
+        "receipt": null
+      }
     },
     "selected_qualification": {
       "version": 1,
@@ -2384,7 +2261,7 @@
   },
   "next_real_vertical_slice": {
     "authority": "project/qualification-records.json:batch.next",
-    "scope": "R159 bounded Provider original-deadline expiry, late original-token refusal and ordinary CUTC continuity, with separate SDK/Provider/drain deadlines and only an observed outer new-lifetime witness; no same-actor recovery or late-response promise."
+    "scope": "R160 bounded shared Provider frontend, slctl migration and real C/Python Provider public entry points over the sole existing Engine; exact error/empty/random remote results with unchanged ownership/deadline and ordinary business scope."
   },
   "issue_sync_receipts_history": [
     "docs/evidence/qualification-quality-issues-20261015.json",
@@ -5092,41 +4969,99 @@
         }
       },
       "scope": "Archive the exact prior current aliases; the generated qualification_view owns the new batch."
+    },
+    {
+      "from_batch": "WP08-WP16-WP17-R5f159-provider-original-deadline-late-reply",
+      "to_batch": "WP08-WP16-WP17-R5f160-provider-sdk-shared-frontend",
+      "prior_aliases": {
+        "current_goal_turn_classification": {
+          "classification": "PROGRESS",
+          "goal_complete": false,
+          "authority": "qualification_view.current_batch",
+          "reason": "Next bounded Provider original-deadline/late-reply slice planned on the existing path; this transition creates no source/offline, actual-device or formal qualification."
+        },
+        "execution_phase": "FOLLOW_qualification_view.current_batch_FULL_ORIGINAL_SCOPE_OPEN",
+        "execution_status": "ACTIVE_FOLLOW_qualification_view.current_batch_FULL_SCOPE_OPEN",
+        "issue_sync_receipt": {
+          "source_only": true,
+          "comments": [
+            {
+              "repo": "sparklink",
+              "issue": 3,
+              "id": 6397850132,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6397850132",
+              "body_verified": true
+            },
+            {
+              "repo": "sparklink",
+              "issue": 8,
+              "id": 6397884112,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6397884112",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 17,
+              "id": 6397885039,
+              "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6397885039",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 19,
+              "id": 6397885858,
+              "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6397885858",
+              "body_verified": true
+            }
+          ]
+        },
+        "issue_sync_status": "R159_SOURCE_OFFLINE_SUMMARIES_SYNCED_PRIVATE_RESULTS_LOCAL",
+        "next_real_vertical_slice": {
+          "authority": "project/qualification-records.json:batch.next",
+          "scope": "R159 bounded Provider original-deadline expiry, late original-token refusal and ordinary CUTC continuity, with separate SDK/Provider/drain deadlines and only an observed outer new-lifetime witness; no same-actor recovery or late-response promise."
+        },
+        "next_resume_tasks": [
+          "Follow qualification_view.current_batch.next; retain the full S0-S6/19WP/10FV/12DG and original acceptance scope.",
+          "Recheck source, dirty changes, actual artifacts, tool identities, per-leaf device ownership and shared build budget before VM-only work."
+        ],
+        "source_issue_sync_receipt": {
+          "source_only": true,
+          "comments": [
+            {
+              "repo": "sparklink",
+              "issue": 3,
+              "id": 6397850132,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6397850132",
+              "body_verified": true
+            },
+            {
+              "repo": "sparklink",
+              "issue": 8,
+              "id": 6397884112,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6397884112",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 17,
+              "id": 6397885039,
+              "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6397885039",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 19,
+              "id": 6397885858,
+              "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6397885858",
+              "body_verified": true
+            }
+          ]
+        }
+      },
+      "scope": "Archive the exact prior current aliases; the generated qualification_view owns the new batch."
     }
   ],
-  "source_issue_sync_receipt": {
-    "source_only": true,
-    "comments": [
-      {
-        "repo": "sparklink",
-        "issue": 3,
-        "id": 6397850132,
-        "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6397850132",
-        "body_verified": true
-      },
-      {
-        "repo": "sparklink",
-        "issue": 8,
-        "id": 6397884112,
-        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6397884112",
-        "body_verified": true
-      },
-      {
-        "repo": "linux",
-        "issue": 17,
-        "id": 6397885039,
-        "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6397885039",
-        "body_verified": true
-      },
-      {
-        "repo": "linux",
-        "issue": 19,
-        "id": 6397885858,
-        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6397885858",
-        "body_verified": true
-      }
-    ]
-  },
+  "source_issue_sync_receipt": null,
   "source_offline_sync_history": [
     {
       "batch": "WP08-WP16-WP17-R5f158-provider-owner-exit",

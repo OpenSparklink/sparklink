@@ -7,7 +7,9 @@ Owned type1 说明的[新增源码契约](../docs/reference/ssap-permissions.md#
 不能继承旧属性值或 CPCD 的实机资格。登记/构建/离线检查不等于真实发现和读回；
 具体结果仍须绑定结构化记录中的准确产物，公共源码摘要不披露本地实机执行详情。
 
-### R156：Owned type0 动态只读 Provider（公开源码与离线范围）
+### 历史批次 R156：Owned type0 动态只读 Provider
+
+当前批次以本页生成摘要为准；下文保留 R156 的源码职责与限定范围，不表示后续产物已验收。
 
 [新增源码契约](../docs/reference/ssap-permissions.md#owned-read-only-provider)已接通，
 严格 Rust 构建、私有 D-Bus 与现有跨语言调用回归通过。
@@ -59,47 +61,161 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-WP16-WP17-R5f156-owned-read-provider",
-  "state": "PUBLIC_SOURCE_AND_SCOPED_OFFLINE_CHECKS_ONLY_FULL_SCOPE_OPEN",
-  "production_behavior": "Caller-owned dynamic read-only type0 value via the sole userspace SSAP Engine. An immutable Owned binding consumes the stored source; the original owner, lifetime, security policy, deadline and final Native constraint remain mandatory. No stored-value fallback or second Engine.",
+  "id": "WP08-WP16-WP17-R5f157-provider-error-empty-continued-read",
+  "state": "SOURCE_AND_SCOPED_TOOLS_CHECKED_NEW_ARTIFACT_AND_VM_PENDING_FULL_SCOPE_OPEN",
+  "production_behavior": "Exercise the existing sole user-space SSAP Engine and Owned read Provider with one unchanged Owner: application error 0xff, successful empty Read, then a different random 32-byte value. Extend only existing SDK test callers and the existing Provider gate; no second Engine or new production protocol path.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
     "WP08",
     "WP16",
     "WP17"
   ],
-  "public_scope": "Source and offline validation summaries only. Actual execution identities, artifact hashes, captures and hardware details remain local; historical results do not qualify this source tree.",
-  "previous_public_batch": {
-    "id": "WP03-WP18-R5f12-application-discovery",
-    "preserved_in_commit": "c76d72774495acae5fc8f1c38abc96b8006510e3",
-    "path": "project/qualification-records.json"
+  "records": [],
+  "predecessor_archive": {
+    "history": "batch_history",
+    "id": "WP08-WP16-WP17-R5f156-owned-read-provider",
+    "canonical_sha256": "433d62486d192f10ec91f8fbf71e4c8b3f0cbae06c80dee4b3ad56922c769642"
   },
-  "implementation": "Broker method, sole Engine/database, shared Rust contract/helper and foreground CLI provider; actual C/Python remote consumers reuse the existing channel path. C/Python Provider inbox and dynamic write remain missing.",
+  "public_scope": "Public source and scoped offline summaries only; compiled identities, execution evidence and actual device details remain local. Historical qualification is not transferred to a new artifact.",
+  "implementation_sources": {
+    "public_source": "5933d1169f49b211129ce81818238a2d14de3bda",
+    "scope": "The changed tools match the source-file hashes from the completed offline tooling check. This identifies source, not a new compiled artifact or execution.",
+    "stages": [
+      {
+        "stage": "consumer",
+        "public": "1d82b4f0e25e648edf99a54ac5ad41c10b02d029",
+        "files": [
+          "tools/ws73_application_client.py",
+          "tools/testing/application_client/client.c",
+          "tools/testing/application_client/client.py",
+          "tools/tests/test_ws73_application_client.py",
+          "tools/tests/test_application_command_reject_helper.py"
+        ]
+      },
+      {
+        "stage": "gate",
+        "public": "5933d1169f49b211129ce81818238a2d14de3bda",
+        "files": [
+          "tools/ws73_ssap_read_provider.py",
+          "tools/tests/test_ws73_ssap_read_provider.py",
+          "tools/ws73_target.py"
+        ]
+      }
+    ]
+  },
   "invariants": [
-    "Policy and mechanism checks precede Provider dispatch; callback never grants security or Native permission.",
-    "Each original server obligation shares one deadline and2042-byte dynamic result budget, with existing bounded owner/property/server queues.",
-    "Missing, malformed, oversized, late, withdrawn or wrong-binding results cannot expose the consumed stored value.",
-    "Unregister rejects unencoded candidates; already encoded immutable reply follows the original Native send constraint and is not retracted."
+    "Reuse the same Owned registration, sole physical Session, existing Provider binding, Grant, credit, Ticket and original request deadline; never return the consumed stored value as fallback.",
+    "Each of four Owners across two connection roles and two directions must produce application error 0xff, empty success and a new random 32-byte success in order; subsequent existing retirement Read remains protocol error 4.",
+    "SDK error/success, application bytes, callback identity and deadline, paired endpoint packets and complete bounded capture must agree; software admission or USB success alone cannot qualify delivery.",
+    "Keep the original eight Owned outcomes and eight ordinary 61-byte exchanges mandatory; do not weaken assertions or replace real application validation with a fixture."
   ],
   "exit_conditions": [
-    "Strict frozen-source Rust/private-bus/actual language-consumer checks and CLI input/lifecycle negative controls.",
-    "Dedicated VM gate must use the actual owner callback and opposite application value comparison plus both USB directions, retaining ordinary and Owned checks.",
-    "New artifact identities and bounded results recorded privately; no hardware or formal qualification inferred from source/fixture success."
+    "Actual existing Provider FF error, successful empty READ and subsequent random32 value per Owner; reject stored fallback; both connection roles/business directions and ordinary cap-zero actual C/Python readers.",
+    "Original Owned8 and ordinary61-byte8 gates remain mandatory; post-Owner retire read error4 retained.",
+    "Original callback identities/deadlines and unique prompts, actual peer comparison/error and paired USB for every outcome; exact source/artifact/tool/firmware bounds.",
+    "Finite actual evidence independently audited; missing/mutated evidence rejected. No implicit full lifetime, formal, E/mixed, recovery or complete SSAP qualification."
   ],
-  "offline_status": "STRICT_RUST_PRIVATE_BUS_LANGUAGE_CALLERS_CLIPPY_TOOLING_AND_DOCS_PASS; fixtures do not qualify Native/USB/RF/concurrency",
+  "offline_status": "SCOPED_TOOLING_UNIT_FIXTURES_DIFF_AND_STRICT_DOCS_PASS; new compiled C/Python helpers and device gates remain pending. Offline checks do not qualify Native, USB, RF, hardware concurrency or firmware behavior.",
   "formal_status": "UNPROVED_FOR_THIS_CHANGE",
-  "hardware_status": "NO_NEW_ARTIFACT_QUALIFICATION_IN_THIS_PUBLIC_RECORD",
-  "next": [
-    "Continue bounded Provider and service/Profile validation on the sole Engine; exact-artifact VM results are maintained only in authorized local structured records.",
-    "Continue data lengths/credit/backpressure, multi-channel/four-device workloads and applicable lifecycle/deadline/Grant regressions in parallel, without requiring all control races.",
-    "Natural fault RCA/nonmanual recovery, production device identity/cold-ROM selection, security/Bond, PM, deployment/release and other incomplete scopes remain open."
+  "hardware_status": "NEW_R157_ARTIFACT_AND_REAL_GATE_PENDING; prior R156 results retain their original identities and scope in history.",
+  "checks": {
+    "tooling": "SCOPED_OFFLINE_PASS",
+    "documentation": "STRICT_HTML_AND_METADATA_PASS",
+    "new_application_helpers": "PENDING",
+    "new_vm_gate": "PENDING",
+    "independent_actual_audit": "PENDING",
+    "qualification_registration": "NOT_REGISTERED"
+  },
+  "remaining_conditions": [
+    "Owner exit after actual prompt and original-deadline late reply remain separate next slice; do not demand a post-deadline error packet.",
+    "C/Python Provider inbox, dynamic writes, full SSAP/Profile, data length/credit/backpressure/multichannel/four-device/security/PM/deployment remain under full plan.",
+    "Natural RCA, nonmanual recovery and production identity/cold-ROM remain open; manual/QMP never counts as natural recovery."
   ],
+  "next": [
+    "Build and prepare a fresh artifact with the shared build lock and accurate compiled/source/executor identities; retain the completed source and documentation checks.",
+    "Run the existing VM-only Provider gate extended to four same-Owner error-ff, empty and random-32-byte sequences, preserving the original Owned, ordinary business and retirement assertions; audit both endpoints independently before any finite registration.",
+    "After this bounded slice, exercise Owner exit after an actual prompt and original-deadline late reply separately; a post-deadline error packet is not a required success condition.",
+    "Continue data lengths, real credit/backpressure, multiple channels, four-device traffic, security, user-space SSAP/Profile, lifecycle cleanup, deployment and recovery under the full original plan; do not gate progress on all control-plane races.",
+    "The four existing issue source/offline summaries are posted; retain the user-selected local-only boundary for actual device details and keep incomplete original issue scopes open."
+  ],
+  "issue_sync": {
+    "status": "PUBLIC_SOURCE_OFFLINE_SUMMARIES_POSTED",
+    "source_only": true,
+    "private_hardware_published": false,
+    "original_issues_open": true,
+    "comments": [
+      {
+        "repo": "sparklink",
+        "issue": 3,
+        "id": 6396248344,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6396248344",
+        "body_verified": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "id": 6396248739,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6396248739",
+        "body_verified": true
+      },
+      {
+        "repo": "linux",
+        "issue": 17,
+        "id": 6396249071,
+        "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6396249071",
+        "body_verified": true
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "id": 6396249350,
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6396249350",
+        "body_verified": true
+      }
+    ],
+    "receipt": {
+      "public_comments": [
+        {
+          "repo": "sparklink",
+          "issue": 3,
+          "id": 6396248344,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6396248344",
+          "body_verified": true
+        },
+        {
+          "repo": "sparklink",
+          "issue": 8,
+          "id": 6396248739,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6396248739",
+          "body_verified": true
+        },
+        {
+          "repo": "linux",
+          "issue": 17,
+          "id": 6396249071,
+          "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6396249071",
+          "body_verified": true
+        },
+        {
+          "repo": "linux",
+          "issue": 19,
+          "id": 6396249350,
+          "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6396249350",
+          "body_verified": true
+        }
+      ],
+      "scope": "Source/offline summaries only; actual device details stay local."
+    }
+  },
   "issues": [
     "OpenSparklink/sparklink#3",
     "OpenSparklink/sparklink#8",
     "OpenSparklink/linux#17",
     "OpenSparklink/linux#19"
-  ]
+  ],
+  "offline_checks": {
+    "scope": "Changed tool source passed the existing Python tooling suite, diff and strict documentation checks. New compiled helpers and device gates remain separate; private reports are not copied into this checkout."
+  }
 }
 ```
 

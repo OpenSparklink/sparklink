@@ -193,6 +193,42 @@ def owned_lifecycle(stage,receipt,created,end,error=0,token=0,request_id=0,call_
         call_started_ns=call_started,call_returned_ns=call_returned)),flush=True)
 
 
+def owned_provider_info(info):
+    return dict(api='python',index=info.controller.index,generation=info.controller.generation,
+        token=info.token,request_id=info.request_id,lifetime=info.connection_lifetime,
+        handle=info.connection_handle,epoch=info.security_epoch,level=info.security_level,
+        deadline_ns=info.deadline_ns,property=info.property,maximum_bytes=info.maximum_bytes,
+        local_tcid=info.local_tcid,remote_tcid=info.remote_tcid,pi=info.pi,
+        observed_ns=time.monotonic_ns(),observed_wall_ns=time.time_ns())
+
+
+def owned_provider_command(line):
+    # Application input only; the public request still checks its original scope.
+    text=line.decode('ascii')
+    if not text.endswith('\n') or text.count('\n')!=1:
+        raise ValueError('one provider command line required')
+    parts=text[:-1].split(' ')
+    if len(parts)!=3 or not all(parts) or parts[0] not in ('provide','provider-error'):
+        raise ValueError('exact provider command required')
+    word=parts[1]
+    if not word.startswith('p') or not word[1:].isdecimal() or not 1<=int(word[1:])<2**64:
+        raise ValueError('nonzero unsigned provider token required')
+    if parts[0]=='provider-error':
+        if len(parts[2])!=2 or any(c not in '0123456789abcdefABCDEF' for c in parts[2]):
+            raise ValueError('two-digit application error required')
+        status=int(parts[2],16)
+        if not 0xAF<=status<=0xFF:raise ValueError('application error must be AF..FF')
+        value=b''
+    else:
+        status=0
+        if parts[2]=='-':value=b''
+        else:
+            if len(parts[2])%2 or any(c not in '0123456789abcdefABCDEF' for c in parts[2]):
+                raise ValueError('exact hexadecimal provider value required')
+            value=bytes.fromhex(parts[2])
+    return int(word[1:]),status,value
+
+
 def owned_mode():
     from sparklink import LocalProperty, SsapOperations, SsapAccess
     updates=sys.argv[1]=='owned-updates'
@@ -222,6 +258,16 @@ def owned_mode():
             line=bytearray();poller=select.poll();poller.register(0,select.POLLIN)
             if fd is not None:poller.register(fd,select.POLLIN)
             pending=None;closed=False
+            provider=None;provider_fd=None;provider_pending=None
+            provider_attempted=False;provider_polling=False
+            def stop_provider():
+                nonlocal provider,provider_fd,provider_pending,provider_polling
+                # Stop admission before releasing the request or notification fd.
+                if provider is not None:provider.close();provider=None
+                if provider_pending is not None:provider_pending.close();provider_pending=None
+                if provider_fd is not None:
+                    if provider_polling:poller.unregister(provider_fd);provider_polling=False
+                    os.close(provider_fd);provider_fd=None
             try:
                 while True:
                     if policy and not closed and pending is None:
@@ -246,11 +292,23 @@ def owned_mode():
                                             info.token,info.request_id,decision,returned)
                                     pending.close();pending=None
                                 print('SdkAuthorizationDecision: '+json.dumps(dict(owned_info(info),allow=policy=='allow',decision_ns=decision,decision_wall_ns=wall)),flush=True)
+                    if provider is not None and not closed and provider_pending is None:
+                        if time.monotonic_ns()>=end:raise TimeoutError(errno.ETIMEDOUT,'original publisher deadline')
+                        try:provider_pending=provider.next_request()
+                        except OSError as error:
+                            if error.errno!=errno.EAGAIN:raise
+                        else:
+                            # A stopped notification stays readable; while this view
+                            # is held, only stdin can decide/release it. Avoid spin.
+                            if provider_polling:poller.unregister(provider_fd);provider_polling=False
+                            print('SdkReadProviderRequest: '+json.dumps(owned_provider_info(provider_pending.info)),flush=True)
                     left=end-time.monotonic_ns()
                     if left<=0:raise TimeoutError(errno.ETIMEDOUT,'original publisher deadline')
                     ready=dict(poller.poll((left+999999)//1000000))
                     if fd is not None and not closed and ready.get(fd,0)&(select.POLLERR|select.POLLHUP|select.POLLNVAL):
                         raise OSError(errno.EIO,'approval notification failed')
+                    if provider_polling and ready.get(provider_fd,0)&(select.POLLERR|select.POLLHUP|select.POLLNVAL):
+                        raise OSError(errno.EIO,'provider notification failed')
                     if not ready.get(0,0)&select.POLLIN:
                         if ready.get(0,0)&(select.POLLERR|select.POLLHUP|select.POLLNVAL):raise BrokenPipeError('publisher input closed')
                         continue
@@ -264,6 +322,53 @@ def owned_mode():
                         if updates or policy!='allow' or closed or observing:raise ValueError('one live plain allow publisher observation required')
                         if time.monotonic_ns()>=end:raise TimeoutError(errno.ETIMEDOUT,'original publisher deadline')
                         observing=True;owned_lifecycle('observed',receipt,created,end)
+                    elif sys.argv[1]=='owned-readonly' and line==b'provider\n':
+                        if closed or provider_attempted:raise ValueError('one live original provider bind attempt required')
+                        provider_attempted=True
+                        started=time.monotonic_ns();deadline=min(started+5_000_000_000,end)
+                        if started>=end:raise TimeoutError(errno.ETIMEDOUT,'original publisher deadline')
+                        result=0;notification_result=None;notification_ready=False;failure=None
+                        try:provider=view.bind_read_provider(handle,deadline_ns=deadline)
+                        except BaseException as error:
+                            result=owned_exit_error();failure=error
+                        finally:returned=time.monotonic_ns()
+                        if failure is None:
+                            try:
+                                provider_fd=provider.notification_fd();notification_result=0
+                                poller.register(provider_fd,select.POLLIN);provider_polling=True
+                                notification_ready=True
+                            except BaseException as error:
+                                if notification_result is None:notification_result=owned_exit_error()
+                                failure=error
+                        print('SdkReadProviderBound: '+json.dumps(dict(api='python',index=index,generation=generation,
+                            property=handle,started_ns=started,deadline_ns=deadline,returned_ns=returned,result=result,
+                            notification_result=notification_result,notification_ready=notification_ready,
+                            local_binding_only=True)),flush=True)
+                        if failure is not None:raise failure
+                    elif sys.argv[1]=='owned-readonly' and (line.startswith(b'provide ') or line.startswith(b'provider-error ')):
+                        if closed or provider is None or not provider_attempted:
+                            raise OSError(errno.ESHUTDOWN,'live original provider required')
+                        token,status,provided=owned_provider_command(line)
+                        info=provider_pending.info if provider_pending is not None else None
+                        current=info.token if info is not None else 0
+                        called=provider_pending is not None and token==current
+                        started=time.monotonic_ns();result=-errno.ESTALE;failure=None
+                        if started>=end:raise TimeoutError(errno.ETIMEDOUT,'original publisher deadline')
+                        if called:
+                            try:provider_pending.reply(provided,status=status);result=0
+                            except BaseException as error:
+                                result=owned_exit_error();failure=error
+                        returned=time.monotonic_ns()
+                        print('SdkReadProviderReply: '+json.dumps(dict(api='python',token=token,current_token=current,
+                            api_called=called,status=status,value=provided.hex(),deadline_ns=info.deadline_ns if info else 0,
+                            started_ns=started,returned_ns=returned,result=result,local_acceptance_only=True)),flush=True)
+                        if failure is not None and (not isinstance(failure,OSError) or failure.errno not in
+                                (errno.EINVAL,errno.EMSGSIZE,errno.ESTALE,errno.ETIMEDOUT,errno.ESHUTDOWN)):
+                            raise failure
+                        if called and result in (0,-errno.ESTALE,-errno.ETIMEDOUT,-errno.ESHUTDOWN):
+                            provider_pending.close();provider_pending=None
+                            if not closed:
+                                poller.register(provider_fd,select.POLLIN);provider_polling=True
                     elif line==b'value\n':
                         actual=view.read_local(handle,deadline_ns=time.monotonic_ns()+5_000_000_000)
                         print(f'SsapOwnedValue: handle={handle} value={actual.hex()}',flush=True)
@@ -312,6 +417,7 @@ def owned_mode():
                     elif policy=='ask' and line==b'close\n':
                         if closed or pending is None:raise ValueError('live service with actual pending request required')
                         snapshot=pending.info;view.close();closed=True;poller.unregister(fd)
+                        if provider_polling:poller.unregister(provider_fd);provider_polling=False
                         try:pending.reply(True)
                         except OSError as error:
                             if error.errno!=errno.ESTALE:raise
@@ -322,16 +428,20 @@ def owned_mode():
                             reply_result=result,closed_ns=time.monotonic_ns())),flush=True)
                         pending.close();pending=None
                     elif line==b'quit\n':
+                        stop_provider()
                         if closed:
                             print(f'SdkOwnedClosedExit: api=python start={receipt.start}',flush=True)
                         else:
-                            view.unregister(deadline_ns=time.monotonic_ns()+5_000_000_000)
+                            cleanup_deadline=time.monotonic_ns()+5_000_000_000
+                            if provider_attempted:cleanup_deadline=min(cleanup_deadline,end)
+                            view.unregister(deadline_ns=cleanup_deadline)
                             print(f'SdkOwnedRemoved: api=python start={receipt.start}',flush=True)
                         return
                     else:raise ValueError('bounded owned command required')
                     line.clear()
             finally:
                 if observing:owned_lifecycle('cleanup_begin',receipt,created,end,owned_exit_error())
+                stop_provider()
                 if pending:pending.close()
                 if fd is not None:os.close(fd)
                 if link is not None:link.close()

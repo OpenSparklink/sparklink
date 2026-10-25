@@ -340,8 +340,14 @@ def channel_pair(run, row):
             row.setdefault('end_wall_ns',time.time_ns());run.save()
 
 
-def owned_arguments(api,owner,service,uuid,initial,policy,*,read_only=False,update_connection=None):
-    if api not in ('c','python') or policy not in ('none','allow','deny','ask') or type(read_only)is not bool or (read_only and policy!='none'):
+def owned_arguments(api,owner,service,uuid,initial,policy,*,read_only=False,update_connection=None,read_provider=False):
+    # Provider tests opt into the existing READ-only owner. This selects the
+    # consumer entry only: the later actual bind/reply and peer evidence remain
+    # separate gates, and historical callers retain their original restrictions.
+    if (api not in ('c','python') or policy not in ('none','allow','deny','ask')
+            or type(read_only)is not bool or type(read_provider)is not bool
+            or (read_provider and (not read_only or update_connection is not None))
+            or (read_only and policy!='none' and not read_provider)):
         raise CaptureError('explicit SDK language and application policy required')
     prefix=['/bin/ws73-application-client-c'] if api=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
     if update_connection is not None:

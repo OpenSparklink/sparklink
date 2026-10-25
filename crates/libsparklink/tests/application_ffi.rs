@@ -1,7 +1,10 @@
 //! Actual cdylib/header and Python public entry against a real private bus.
-//! Fixture replies are explicit denials/AF_UNIX fds, never a successful channel.
+//! Finite metadata, explicit denials/AF_UNIX fds and actual SDK callbacks; no
+//! successful Native channel, daemon SSAP Engine, wire or hardware qualification.
 #[path = "application_ffi/authorization.rs"]
 mod authorization;
+#[path = "application_ffi/read_provider.rs"]
+mod read_provider;
 #[path = "application_ffi/subscription.rs"]
 mod subscription;
 mod support;
@@ -301,6 +304,9 @@ impl Link {
 struct OwnedMetadata {
     owner: Mutex<String>,
     authorizer: Mutex<String>,
+    provider: Mutex<String>,
+    provider_binds: AtomicUsize,
+    operations: AtomicUsize,
     registered: AtomicUsize,
     read: AtomicUsize,
     removed: AtomicUsize,
@@ -338,9 +344,31 @@ impl OwnedServices {
             }
         );
         *self.0.authorizer.lock().unwrap() = authorizer.to_string();
+        self.0.provider.lock().unwrap().clear();
+        self.0
+            .operations
+            .store(properties[0].1 as usize, Ordering::SeqCst);
         *self.0.owner.lock().unwrap() = h.sender().unwrap().to_string();
         self.0.registered.fetch_add(1, Ordering::SeqCst);
         (16, 17, vec![17])
+    }
+    fn bind_owned_read_provider(
+        &self,
+        handle: u16,
+        provider: zbus::zvariant::OwnedObjectPath,
+        original: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        assert_eq!(self.0.operations.load(Ordering::SeqCst), 1);
+        assert_eq!(handle, 17);
+        assert_eq!(provider.as_str(), "/org/sparklink/sdk/ssap_read_provider");
+        let mut current = self.0.provider.lock().unwrap();
+        assert!(current.is_empty(), "one bind per original registration");
+        *current = provider.to_string();
+        self.0.provider_binds.fetch_add(1, Ordering::SeqCst);
     }
     fn read_owned_local_value(
         &self,
@@ -502,7 +530,12 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         .arg(root.join("tools/testing/application_client/client.py"))
         .arg(root.join("bindings/python/sparklink/local_services.py"))
         .arg(root.join("bindings/python/sparklink/service_authorization.py"))
+        .arg(root.join("bindings/python/sparklink/service_provider.py"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/authorization.rs"))
+        .arg(root.join("crates/libsparklink/tests/application_ffi/read_provider.rs"))
+        .arg(root.join("crates/libsparklink/src/ffi_service_provider.rs"))
+        .arg(root.join("crates/libsparklink/src/ssap/provider.rs"))
+        .arg(root.join("crates/libsparklink/src/ssap/provider/frontend.rs"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/value_update.rs"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/subscription.rs"))
         .arg(root.join("bindings/python/sparklink/ssap_subscription.py"))
@@ -1346,6 +1379,16 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         "six actual new command RPCs; all other negative modes stop before the method"
     );
     authorization::lifecycle(
+        &root,
+        &sdk_probe,
+        &runtime_library,
+        &directory,
+        &bus.address,
+        &server,
+        &owned,
+    )
+    .await?;
+    read_provider::exercise(
         &root,
         &sdk_probe,
         &runtime_library,

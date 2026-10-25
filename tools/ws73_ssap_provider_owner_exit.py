@@ -254,8 +254,11 @@ def _registration(row, item):
         raise CaptureError('one original READ-only allow publisher with full identity required')
     registration = f'SsapOwnedService: start={item["start"]} end={item["end"]} property={item["handle"]}; local registration only'
     lines = item['stdout'].splitlines()
-    if lines.count(registration) != 1 or sum(l.startswith('SsapOwnedService:') for l in lines) != 1:
-        raise CaptureError('one original registration required')
+    selected = f'Selected {target["owner"]["path"]}'
+    if (lines[:2] != [selected, registration]
+            or sum(l.startswith('Selected ') for l in lines) != 1
+            or sum(l.startswith('SsapOwnedService:') for l in lines) != 1):
+        raise CaptureError('one selected target followed by its original registration required')
     return registration
 
 
@@ -333,7 +336,7 @@ def _case(row, item, matched, packets):
     offset_lower, _ = _clock_bounds(item)
     _cleanup(row, item)
     if (type(guard['exit']) is not int or guard['exit'] != 0 or 'SsapReadProvider' in guard['stdout']
-            or guard['stdout'].splitlines()[0] != guard_registration):
+            or guard['stdout'].splitlines()[1] != guard_registration):
         raise CaptureError('independent original ordinary guard must stay live until explicit cleanup')
     guard_decisions = re.findall(r'^SsapAuthorizationDecision: request=(\d+) property=(\d+) data_type=0 write=false security=0 approved=true; local policy only$', guard['stdout'], re.M)
     if (len(guard_decisions) != 1 or int(guard_decisions[0][1]) != guard['handle']

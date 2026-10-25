@@ -78,6 +78,7 @@ def fixture(phase=0, peer_error=175):
                 clock_after=dict(monotonic_before_ns=stamp(20)+1000, realtime_ns=stamp(20)+1100, monotonic_after_ns=stamp(20)+1200))
     d = callback['prompt']
     item['stdout'] = '\n'.join([
+        f'Selected {dest["owner"]["path"]}',
         'SsapOwnedService: start=16 end=17 property=17; local registration only',
         'SsapReadProviderBound: handle=17; stored value discarded, no rebind or fallback',
         'SsapAuthorizationDecision: request=9 property=17 data_type=0 write=false security=0 approved=true; local policy only',
@@ -91,7 +92,8 @@ def fixture(phase=0, peer_error=175):
                  secret='d3'*32, exit=0, stderr='', start_wall_ns=stamp(1), registered_wall_ns=stamp(1)+1, alive_after_read_wall_ns=stamp(51),
                  quit_wall_ns=stamp(70), owner_exit_wall_ns=stamp(71), end_wall_ns=stamp(80))
     guard['args'] = ['slctl', '--adapter', dest['owner']['path'], 'ssap-serve', guard['service'], guard['uuid'], '1', '36', guard['secret'], 'allow']
-    guard['stdout'] = ('SsapOwnedService: start=32 end=33 property=33; local registration only\n'
+    guard['stdout'] = (f'Selected {dest["owner"]["path"]}\n'
+                       'SsapOwnedService: start=32 end=33 property=33; local registration only\n'
                        'SsapAuthorizationDecision: request=10 property=33 data_type=0 write=false security=0 approved=true; local policy only\n')
     guard['captured_bytes'] = dict(stdout=len(guard['stdout'].encode()), stderr=0)
     guard['cleanup'] = dict(item['cleanup'], start_wall_ns=stamp(72), end_wall_ns=stamp(73))
@@ -137,6 +139,27 @@ def summary():
 
 
 class OwnerExitEvidence(unittest.TestCase):
+    def test_real_cli_selection_precedes_registration_on_exact_target(self):
+        # slctl select_adapter prints this line before ssap-serve registers.
+        # Keep the original failed-run contract correction explicit; do not
+        # discard arbitrary prefixes or accept another selected controller.
+        for phase in (0, 1):
+            for who in ('owner', 'guard'):
+                for mutation in ('missing', 'wrong', 'duplicate', 'reordered'):
+                    row, matched, packets = fixture(phase)
+                    item = row[gate.PREFIX+'_cases'][0]
+                    record = item if who == 'owner' else item['guard']
+                    lines = record['stdout'].splitlines()
+                    if mutation == 'missing': lines.pop(0)
+                    elif mutation == 'wrong': lines[0] = 'Selected /wrong-controller'
+                    elif mutation == 'duplicate': lines.insert(1, lines[0])
+                    else: lines[0], lines[1] = lines[1], lines[0]
+                    record['stdout'] = '\n'.join(lines)+'\n'
+                    record['captured_bytes']['stdout'] = len(record['stdout'].encode())
+                    with self.subTest(phase=phase, who=who, mutation=mutation):
+                        with self.assertRaisesRegex(CaptureError, 'selected target'):
+                            gate.corroborate(row, matched, packets)
+
     def test_explicit_opt_in_and_dependency(self):
         good = dict(ssap_provider_owner_exit_verify=True, ssap_read_provider_verify=True, ssap_owned_verify=True,
                     channel_socket_verify=True, channel_socket_rounds=4, channel_socket_bytes=61, passthrough=True)

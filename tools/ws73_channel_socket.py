@@ -283,6 +283,9 @@ def execute(run, phase, after_application=None):
         if getattr(run.args,'ssap_read_provider_verify',False):
             from ws73_ssap_read_provider import execute as provider_execute
             provider_execute(run,row)
+        if getattr(run.args,'ssap_provider_owner_exit_verify',False):
+            from ws73_ssap_provider_owner_exit import execute as provider_exit_execute
+            provider_exit_execute(run,row)
         if getattr(run.args,'ssap_owned_update_verify',False):
             from ws73_ssap_owned_update import execute as update_execute
             update_execute(run,row)
@@ -745,6 +748,9 @@ def corroborate(run,capture):
                 from ws73_ssap_read_provider import corroborate as provider_corroborate
                 ssap_read_providers,provider_credit=provider_corroborate(row,value_matched)
                 for key in ssap_credit:ssap_credit[key]+=provider_credit[key]
+            from ws73_ssap_provider_owner_exit import corroborate as provider_exit_corroborate
+            ssap_provider_owner_exit,provider_exit_credit=provider_exit_corroborate(row,value_matched,sdus)
+            for key in ssap_credit:ssap_credit[key]+=provider_exit_credit[key]
             ssap_write_commands=[]
             if row.get('ssap_write_command_required',False):
                 from ws73_ssap_command import corroborate as command_corroborate
@@ -872,6 +878,7 @@ def corroborate(run,capture):
         if row.get("ssap_discovery_required",False): entry["ssap_discovery"] = ssap_discovery
         if row.get('ssap_owned_required',False):entry['ssap_owned']=ssap_owned
         if row.get('ssap_read_provider_required',False):entry['ssap_read_providers']=ssap_read_providers
+        if row.get('ssap_provider_owner_exit_required',False):entry['ssap_provider_owner_exit']=ssap_provider_owner_exit
         if row.get('ssap_write_command_required',False):entry['ssap_write_commands']=ssap_write_commands
         if row.get('ssap_command_policy_required',False):entry['ssap_command_policy']=ssap_command_policy
         if row.get('ssap_command_deadline_required',False):entry['ssap_command_deadline']=ssap_command_deadline

@@ -161,9 +161,12 @@ def value_snapshot(process,item,expected,*,limit=16):
     item.setdefault('value_snapshots',[]).append(observation);return observation
 
 
-def await_removed(run,target,start):
-    deadline=time.monotonic()+2
+def await_removed(run,target,start,*,deadline_ns=None):
+    if deadline_ns is not None and (type(deadline_ns)is not int or deadline_ns<=0):
+        raise CaptureError('original absolute cleanup deadline required')
+    deadline=min(time.monotonic()+2,deadline_ns/1e9)if deadline_ns is not None else time.monotonic()+2
     while True:
+        if time.monotonic()>=deadline:raise CaptureError('original owner cleanup observation deadline')
         c=run.command([str(run.args.slctl),'--adapter',target['owner']['path'],'ssap-list'],max(.001,deadline-time.monotonic()),collection='ssap_owned_cleanup')
         if time.monotonic()>deadline:raise CaptureError('original owner cleanup observation deadline')
         if c['exit']:raise CaptureError('local metadata cleanup query failed')

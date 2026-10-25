@@ -221,6 +221,7 @@ def main():
     parser.add_argument('--ssap-owned-verify',action='store_true',help='real owner authorization and exit cleanup;not complete SSAP or service-only policy qualification')
     parser.add_argument('--ssap-description-verify',action='store_true',help='with --ssap-owned-verify: actual public read-only description discovery and SDK read')
     parser.add_argument('--ssap-read-provider-verify',action='store_true',help='with --ssap-owned-verify: actual Owned dynamic read callback and peer SDK value comparison')
+    parser.add_argument('--ssap-provider-owner-exit-verify',action='store_true',help='with --ssap-read-provider-verify: actual pending Provider owner loss and independent guard delivery')
     parser.add_argument('--ssap-write-command-verify',action='store_true',help='actual C/Python no-response write,remote Read and original owner checks;dedicated ordinary socket gate')
     parser.add_argument('--ssap-write-command-policy-verify',action='store_true',help='actual command refusal and same-owner deny/allow after original positive cases;requires --ssap-write-command-verify')
     parser.add_argument('--ssap-write-command-deadline-verify',action='store_true')
@@ -286,6 +287,9 @@ def main():
     except ValueError as error:parser.error(str(error))
     from ws73_ssap_read_provider import requested as provider_requested
     try:provider_requested(args)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_provider_owner_exit import requested as provider_exit_requested
+    try:provider_exit_requested(args)
     except ValueError as error:parser.error(str(error))
     if args.ssap_owned_verify and (not args.channel_socket_verify or args.channel_socket_close_prefix or args.channel_socket_burst or args.channel_socket_boundaries or args.dynamic_channel_verify or args.channel_fairness_verify):parser.error('owned SSAP requires separate ordinary socket baseline')
     from ws73_socket_benchmark import requested_configuration,requested_channel

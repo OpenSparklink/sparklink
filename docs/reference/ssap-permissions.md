@@ -360,6 +360,13 @@ RX/client/ACK。消费结果时重新核对原 Native 上下文、登记、owner
 撤回这份响应。它与既有存储值读取具有相同边界，仍由原 Native 上下文和期限限制
 实际发送；注销不保证已经接受的响应不会交付，也不产生对端已收到的证明。
 
+正常退出会尝试撤回登记；SIGKILL 等非协作退出依靠原 unique owner 消失通知清理。
+如果 READ 已通过本地审批并进入 Provider 等待，应用尚未答复就退出，在原 Native
+上下文与期限仍有效时，回调调用先失败可产生应用错误 `AF`；数据库先删除该属性
+则产生错误4。两者都不表示动态值成功交付，也不回退到绑定前的存储值。数据库
+清理与撤销在同一锁内完成，此场景不沿用尚在等待审批时的错误9。原期限到达或
+Native 上下文失效则按原义务失败处理，不保证还能发送错误响应。
+
 Rust `ServiceRegistration.bind_read_provider` 只封装绑定方法；`ssap::provider::admit`
 复用现有 AuthorizationContext 检查原 sender、type0 读取、恰好 READ 和最大预算，
 `await_reply` 复用同一原期限/owner 丢失等待机制。它们不授予审批，不拥有登记或

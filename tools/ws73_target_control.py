@@ -219,6 +219,7 @@ def main():
     parser.add_argument('--ssap-owner-publisher',choices=['cli','sdk'],default='cli',help='explicit owner frontend;SDK selects C/Python per role,no fallback')
     parser.add_argument('--ssap-requester-lifecycle-verify',action='store_true',help='actual C/Python requester exit/physical reply drain and CUTC while owner prompt held')
     parser.add_argument('--ssap-owned-verify',action='store_true',help='real owner authorization and exit cleanup;not complete SSAP or service-only policy qualification')
+    parser.add_argument('--ssap-description-verify',action='store_true',help='with --ssap-owned-verify: actual public read-only description discovery and SDK read')
     parser.add_argument('--ssap-write-command-verify',action='store_true',help='actual C/Python no-response write,remote Read and original owner checks;dedicated ordinary socket gate')
     parser.add_argument('--ssap-write-command-policy-verify',action='store_true',help='actual command refusal and same-owner deny/allow after original positive cases;requires --ssap-write-command-verify')
     parser.add_argument('--ssap-write-command-deadline-verify',action='store_true')
@@ -279,6 +280,9 @@ def main():
     if args.ssap_owned_update_verify and (not args.channel_socket_verify or args.ssap_owner_lifecycle_verify or args.ssap_owned_verify or args.ssap_requester_lifecycle_verify or args.security_agent or args.channel_socket_close_prefix or args.channel_socket_burst or args.channel_socket_boundaries or args.dynamic_channel_verify or args.channel_fairness_verify):parser.error('owned update requires dedicated ordinary socket gate')
     if args.ssap_owner_publisher!='cli' and not args.ssap_owner_lifecycle_verify:parser.error('SDK publisher requires owner lifecycle')
     if args.ssap_owner_lifecycle_verify and (not args.channel_socket_verify or args.security_agent or args.channel_socket_close_prefix or args.channel_socket_burst or args.channel_socket_boundaries or args.dynamic_channel_verify or args.channel_fairness_verify):parser.error('owner lifecycle requires separate ordinary basic socket baseline')
+    from ws73_ssap_description import requested as description_requested
+    try:description_requested(args)
+    except ValueError as error:parser.error(str(error))
     if args.ssap_owned_verify and (not args.channel_socket_verify or args.channel_socket_close_prefix or args.channel_socket_burst or args.channel_socket_boundaries or args.dynamic_channel_verify or args.channel_fairness_verify):parser.error('owned SSAP requires separate ordinary socket baseline')
     from ws73_socket_benchmark import requested_configuration,requested_channel
     from ws73_benchmark_ssap import requested as requested_benchmark_ssap

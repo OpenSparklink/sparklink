@@ -176,12 +176,20 @@ def await_removed(run,target,start):
 
 def execute(run,row):
     row['ssap_owned_required']=True;row['ssap_owned']=[];run.save()
+    description=getattr(run.args,'ssap_description_verify',False)
+    if description:
+        row.update(ssap_description_required=True,ssap_description_version=1)
+        from ws73_ssap_update_delivery import tool_records
+        row['ssap_description_tools']=tool_records();run.save()
     for sender in (0,1):
         source,target=row['owners'][sender],row['owners'][1-sender]
         for policy in ('allow','deny'):
             with publisher(run,row,sender,policy) as (process,item):
                 h=item['handle'];level=row.get('security_requirement',0)
                 def command(words):return run.command([str(run.args.slctl),'--adapter',source['owner']['path'],*words],10,collection='ssap_owned')
+                if description:
+                    from ws73_ssap_description import execute as description_execute
+                    description_execute(run,row,process,item)
                 item['read']=command(['ssap-read',source['object']['path'],str(h),str(level)])
                 item['uuid_read']=command(['ssap-read-uuid',source['object']['path'],'16','65535',item['uuid'],str(level)])
                 item['write']=command(['ssap-write',source['object']['path'],str(h),item['value'],str(level)])
@@ -197,6 +205,9 @@ def execute(run,row):
                 item['after_owner_exit']=await_removed(run,target,item['start'])
                 item['removed_read']=command(['ssap-read',source['object']['path'],str(h),str(level)])
                 if not item['removed_read']['exit'] or 'peer read error 4' not in item['removed_read']['stderr']:raise CaptureError('retired owner handle must fail over real SMTC')
+                if description:
+                    from ws73_ssap_description import retired as description_retired
+                    description_retired(run,row,item)
 
 
 def corroborate(row,matched):
@@ -238,4 +249,9 @@ def corroborate(row,matched):
         if metadata['exit'] or len(lists)!=1 or any(v[0]==item['start'] for v in json.loads(lists[0])):raise CaptureError('actual removed registration metadata required')
         if not item['write']['end_wall_ns']<item['owner_exit_wall_ns']<item['removed_read']['start_wall_ns']:raise CaptureError('owner loss must precede actual remote refusal')
         proof.append(dict(sender=s,policy=item['policy'],wire=wire,owner_lost=True,scope='uid1000 guest system bus;not service-only deployment,crypto identity,Bond or full cancellation matrix'))
+        if row.get('ssap_description_required',False):
+            from ws73_ssap_description import corroborate as description_corroborate
+            result,extra=description_corroborate(row,item,matched)
+            proof[-1]['description']=result
+            for key in credit:credit[key]+=extra[key]
     return proof,credit

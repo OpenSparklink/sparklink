@@ -60,7 +60,7 @@ def ssap_receipt(app,entry,*,expected_size=32,expected_uid=1000):
     if len(lines)!=2 or json.loads(lines[0])!=dict(stage='ssap_start_barrier',api=app['api'],client_closed=True):
         raise CaptureError('original retained-caller start barrier required')
     operation,path,handle,expected=app['ssap_operation'],app['ssap_path'],app['ssap_handle'],app['ssap_expected']
-    if operation not in ('ssap-read','ssap-write') or path!=entry['object']['path'] or not 1<=handle<=65535 or type(expected_size)is not int or not 1<=expected_size<=2042 or len(bytes.fromhex(expected))!=expected_size:
+    if operation not in ('ssap-read','ssap-read-description','ssap-write') or path!=entry['object']['path'] or not 1<=handle<=65535 or type(expected_size)is not int or not 1<=expected_size<=2042 or len(bytes.fromhex(expected))!=expected_size:
         raise CaptureError('original exact SSAP caller identity and bounded value required')
     if lines[1]!=f'SsapPeerValue: operation={operation} path={path} handle={handle} value={expected}':
         raise CaptureError('actual SDK must validate the complete peer result')
@@ -151,7 +151,7 @@ def ssap_call(run,row,entry,args,expected,*,api,expected_size,application_uid):
     if type(expected_size)is not int or not 1<=expected_size<=2042 or not isinstance(expected,bytes) or len(expected)!=expected_size:raise CaptureError('original bounded expected SSAP value required')
     if application_uid not in (1000,1004):raise CaptureError('explicit SSAP test role required')
     if application_uid==1004 and os.geteuid()!=0:raise CaptureError('apps-only SSAP requires existing VM root role supervisor')
-    if (type(args)is not list or not args or args[0]not in ('ssap-read','ssap-write')
+    if (type(args)is not list or not args or args[0]not in ('ssap-read','ssap-read-description','ssap-write')
         or len(args)!=(4 if args[0]=='ssap-write'else 3)or args[1]!=entry['object']['path']
         or not 1<=int(args[2])<=65535 or args[0]=='ssap-write'and args[3]!=expected.hex()):
         raise CaptureError('exact same-lifetime SDK value call required')

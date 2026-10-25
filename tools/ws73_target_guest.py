@@ -455,6 +455,8 @@ def verify_passthrough():
     lifecycle_requested='ws73.ssap_owner_lifecycle=1' in Path('/proc/cmdline').read_text().split()
     if any(bool(row.get('ssap_owner_lifecycle_required',False))!=lifecycle_requested for row in run.get('channel_socket',[])) or (lifecycle_requested and not run.get('channel_socket')):raise ValueError('owner lifecycle request/evidence mismatch')
     owned_requested='ws73.ssap_owned=1' in Path('/proc/cmdline').read_text().split()
+    from ws73_ssap_description import boot_requested as description_boot,validate_rows as description_rows
+    description_rows(run.get('channel_socket',[]),description_boot(Path('/proc/cmdline').read_text().split()))
     from ws73_ssap_command import boot_requested as command_boot,validate_rows as command_rows
     command_rows(run.get('channel_socket',[]),command_boot(Path('/proc/cmdline').read_text().split()))
     from ws73_ssap_command_policy import boot_requested as policy_boot,validate_rows as policy_rows

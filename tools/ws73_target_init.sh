@@ -564,6 +564,8 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
             if [ -n "$sender_case" ]; then connection_arg="$connection_arg --ssap-sender-lifecycle-case $sender_case"; fi
             if grep -qw ws73.ssap_value_lengths=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-value-lengths-verify"; fi
             if grep -qw ws73.ssap_owned=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-owned-verify"; fi
+            description_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys;from ws73_ssap_description import boot_requested;print("--ssap-description-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail description-selector
+            connection_arg="$connection_arg $description_arg"
             if grep -qw ws73.ssap_write_command=1 /proc/cmdline; then connection_arg="$connection_arg --ssap-write-command-verify"; fi
             command_policy_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys; from ws73_ssap_command_policy import boot_requested; print("--ssap-write-command-policy-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail command-policy-selector
             if [ -n "$command_policy_arg" ]; then connection_arg="$connection_arg $command_policy_arg"; fi

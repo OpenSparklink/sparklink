@@ -77,8 +77,12 @@ pub(crate) struct SyncClient {
     sender: Option<tokio::sync::mpsc::Sender<Job>>,
     worker: Option<thread::JoinHandle<()>>,
     authorizers: Option<std::sync::Arc<crate::ssap::authorization::inbox::Dispatcher>>,
+    providers: Option<std::sync::Arc<crate::ssap::provider::frontend::Dispatcher>>,
 }
 impl SyncClient {
+    pub(crate) fn providers(&self) -> &std::sync::Arc<crate::ssap::provider::frontend::Dispatcher> {
+        self.providers.as_ref().expect("initialized caller")
+    }
     pub(crate) fn authorizers(
         &self,
     ) -> &std::sync::Arc<crate::ssap::authorization::inbox::Dispatcher> {
@@ -141,7 +145,24 @@ impl SyncClient {
                         }
                     };
                     let _watch = authorizers.watch();
-                    if ready.try_send(Ok(authorizers)).is_err() {
+                    let providers = match tokio::time::timeout_at(
+                        deadline.0.into(),
+                        crate::ssap::provider::frontend::Dispatcher::install(&client),
+                    )
+                    .await
+                    {
+                        Ok(Ok(value)) if deadline.remaining().is_ok() => value,
+                        Ok(Err(error)) => {
+                            let _ = ready.try_send(Err(errno(error)));
+                            return;
+                        }
+                        _ => {
+                            let _ = ready.try_send(Err(nix::libc::ETIMEDOUT));
+                            return;
+                        }
+                    };
+                    let _provider_watch = providers.watch();
+                    if ready.try_send(Ok((authorizers, providers))).is_err() {
                         return;
                     }
                     while let Some(job) = receiver.recv().await {
@@ -155,6 +176,7 @@ impl SyncClient {
             sender: Some(sender),
             worker: Some(worker),
             authorizers: None,
+            providers: None,
         };
         let status = result
             .recv_timeout(deadline.remaining()?)
@@ -162,7 +184,9 @@ impl SyncClient {
                 mpsc::RecvTimeoutError::Timeout => nix::libc::ETIMEDOUT,
                 mpsc::RecvTimeoutError::Disconnected => nix::libc::EPIPE,
             })?;
-        handle.authorizers = Some(status?);
+        let (authorizers, providers) = status?;
+        handle.authorizers = Some(authorizers);
+        handle.providers = Some(providers);
         deadline.remaining()?;
         Ok(handle)
     }

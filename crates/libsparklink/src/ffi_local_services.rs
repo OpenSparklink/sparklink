@@ -36,13 +36,15 @@ pub struct SlkServiceReceipt {
 /// Retains the original caller executor. Explicit unregister and local free
 /// are separate; free does not silently withdraw or disconnect anything.
 pub struct SlkLocalService {
-    registration: Arc<tokio::sync::Mutex<ServiceRegistration>>,
+    pub(crate) registration: Arc<tokio::sync::Mutex<ServiceRegistration>>,
     receipt: SlkServiceReceipt,
-    executor: Arc<SyncClient>,
+    pub(crate) executor: Arc<SyncClient>,
+    pub(crate) providers: Arc<crate::ssap::provider::frontend::RegistrationScope>,
     pub(crate) approvals: Option<Arc<crate::ssap::authorization::inbox::Queue>>,
 }
 impl Drop for SlkLocalService {
     fn drop(&mut self) {
+        self.providers.stop();
         if let Some(queue) = &self.approvals {
             queue.stop();
         }
@@ -189,6 +191,7 @@ pub unsafe extern "C" fn slk_client_register_local_service(
         };
         receipt.handles[..value.2.len()].copy_from_slice(&value.2);
         Ok(SlkLocalService {
+            providers: registration.provider_scope(),
             registration: Arc::new(tokio::sync::Mutex::new(registration)),
             receipt,
             executor,
@@ -368,6 +371,7 @@ pub unsafe extern "C" fn slk_local_service_unregister(
         if let Some(queue) = &view.approvals {
             queue.stop();
         }
+        view.providers.stop();
         let registration = view.registration.clone();
         view.executor.call(deadline, move |_| async move {
             registration.lock().await.unregister(original).await

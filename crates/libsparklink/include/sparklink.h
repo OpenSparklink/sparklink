@@ -76,6 +76,18 @@ typedef struct SlkDiscovery SlkDiscovery;
 typedef struct SlkLocalService SlkLocalService;
 
 /**
+ * Local inbox only. Does not retain a caller/registration. Free stops its
+ * callback admission, not remote binding, service, connection or controller.
+ */
+typedef struct SlkReadProvider SlkReadProvider;
+
+/**
+ * One original callback. No caller/registration reference. Release and actual
+ * callback drain are separate; an unanswered release becomes unavailable.
+ */
+typedef struct SlkReadProviderRequest SlkReadProviderRequest;
+
+/**
  * Retains the originating caller and shared executor,not the parent C view.
  * This is an opaque lease,not a socket fd with dup/SCM_RIGHTS semantics.
  */
@@ -306,6 +318,27 @@ typedef struct SlkAuthorizationRequestInfo {
     uint8_t value[2042];
     uint8_t tail[6];
 } SlkAuthorizationRequestInfo;
+
+/**
+ * Immutable original context, not current authorization or peer identity.
+ * All reserved bytes zero; no implicit value database or proposed write.
+ */
+typedef struct SlkReadProviderRequestInfo {
+    struct SlkControllerId controller;
+    uint64_t token;
+    uint64_t request_id;
+    uint64_t connection_lifetime;
+    uint64_t security_epoch;
+    uint64_t deadline_ns;
+    uint32_t security_level;
+    uint16_t connection_handle;
+    uint16_t property;
+    uint16_t maximum_bytes;
+    uint8_t local_tcid;
+    uint8_t remote_tcid;
+    uint8_t pi;
+    uint8_t reserved[11];
+} SlkReadProviderRequestInfo;
 
 /**
  * Last validated lease observation; not Ready or future Native authorization.
@@ -918,6 +951,78 @@ int slk_authorization_request_reply(const struct SlkAuthorizationRequest *reques
  * One live owned pointer,freed once;no concurrent calls/later use/fork copies.
  */
 void slk_authorization_request_free(struct SlkAuthorizationRequest *request);
+
+/**
+ * Bind the original service's exactly READ type0 property once. Stored bytes
+ * are discarded by the original broker: no rebind/unbind/fallback. A timeout
+ * can follow commit and is not retried. The original absolute CLOCK_MONOTONIC
+ * deadline includes executor admission. Success is local binding only, not RF.
+ * 0/-errno; output unchanged on error. Free this inbox even after service close.
+ * # Safety
+ * Live original service; output aligned/exclusive/nonaliasing; no concurrent
+ * service free or use of inherited objects after fork.
+ */
+int slk_local_service_bind_read_provider(struct SlkLocalService *service,
+                                         uint16_t property,
+                                         uint64_t deadline_ns,
+                                         struct SlkReadProvider **output);
+
+/**
+ * Duplicate CLOEXEC notification fd, caller closes it. Poll only: never read
+ * or write its counter. Try next before waiting and again after readiness.
+ * It carries no reply authority and does not retain the caller.0/-errno.
+ * # Safety
+ * Provider live immutable, output aligned exclusive; no concurrent free.
+ */
+int slk_read_provider_fd(const struct SlkReadProvider *provider, int *output);
+
+/**
+ * Nonblocking next. EAGAIN empty, ESHUTDOWN local stopped, ESTALE original
+ * daemon lost, ETIMEDOUT expired undelivered entry. Output unchanged on error.
+ * One consuming application; this never queues an RPC or executes user code.
+ * # Safety
+ * Provider live, output exclusive/aligned/nonaliasing, no concurrent free.
+ */
+int slk_read_provider_next(const struct SlkReadProvider *provider,
+                           struct SlkReadProviderRequest **output);
+
+/**
+ * Free local inbox,NULL allowed. Does not withdraw/rebind/restore stored bytes.
+ * # Safety
+ * One owned live pointer freed once; no concurrent call, fork copy or later use.
+ */
+void slk_read_provider_free(struct SlkReadProvider *provider);
+
+/**
+ * Copy original immutable snapshot even after expiry/close. No current grant.
+ * # Safety
+ * Request live; output aligned/exclusive/writable/nonaliasing; no concurrent free.
+ */
+int slk_read_provider_request_info(const struct SlkReadProviderRequest *request,
+                                   struct SlkReadProviderRequestInfo *output);
+
+/**
+ * Answer once locally: status0 with 0..maximum bytes (empty is success), or
+ * AF..FF with zero bytes. Invalid/oversized input leaves the request unanswered.
+ * No truncation or new deadline. 0 is local acceptance, never peer delivery.
+ * Duplicate ESTALE, expired ETIMEDOUT, stopped ESHUTDOWN. Reply never queues RPC.
+ * # Safety
+ * Request live, no concurrent free/fork use. NULL value allowed only length0;
+ * otherwise value denotes a live immutable length-byte region. Invalid non-NULL
+ * pointers are caller UB, not supported kernel-style EFAULT inputs.
+ */
+int slk_read_provider_request_reply(const struct SlkReadProviderRequest *request,
+                                    uint16_t status,
+                                    const uint8_t *value,
+                                    uintptr_t length);
+
+/**
+ * Release request,NULL allowed. Unanswered release is unavailable; this does
+ * not prove callback drain, remote cleanup or any physical completion.
+ * # Safety
+ * One live owned pointer freed once, no concurrent calls/fork copies/later use.
+ */
+void slk_read_provider_request_free(struct SlkReadProviderRequest *request);
 
 /**
  * Acquire the existing remote SSAP receive lease. Count1..32 unique discovered

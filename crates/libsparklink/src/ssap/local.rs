@@ -3,7 +3,10 @@
 use crate::{ApplicationError, client::bounded, controller::Controller};
 use slk_channel::deadline::Deadline;
 use slk_contract::ssap::local as wire;
+use slk_protocol::{SsapOperations, ssap::access::SsapAccess};
+use std::sync::Arc;
 type Result<T> = std::result::Result<T, ApplicationError>;
+const MAX_OWNED_PROPERTIES: usize = 64;
 #[derive(Clone)]
 pub struct StagingServices {
     controller: Controller,
@@ -59,9 +62,27 @@ impl LocalServices {
         authorizer: zbus::zvariant::OwnedObjectPath,
         original: Deadline,
     ) -> Result<ServiceRegistration> {
+        let expected = properties.len();
+        if !(1..=MAX_OWNED_PROPERTIES).contains(&expected) {
+            return Err(ApplicationError::Invalid("owned-service property count"));
+        }
+        // Reject before allocating the additional immutable admission metadata.
+        // This remains the caller's original deadline, not a renewed budget.
+        original.remaining()?;
         let id = self.controller.id();
         let path = format!("{}/services", self.controller.path());
-        let expected = properties.len();
+        // Immutable admission requirements only, never a second value database.
+        let requirements = properties
+            .iter()
+            .map(|p| {
+                Ok((
+                    SsapOperations::from_bits(p.1)
+                        .map_err(|_| ApplicationError::Invalid("invalid service operations"))?,
+                    SsapAccess::from_bits(p.2)
+                        .map_err(|_| ApplicationError::Invalid("invalid service access"))?,
+                ))
+            })
+            .collect::<Result<Vec<_>>>()?;
         let mut received = None;
         let result = bounded(&self.controller.client, original, async {
             self.controller.client.check_generation(id).await?;
@@ -102,6 +123,8 @@ impl LocalServices {
             controller: self.controller.clone(),
             receipt,
             state: RegistrationState::Active,
+            requirements,
+            provider_scope: Arc::default(),
         };
         if let Err(error) = result {
             if let Ok(cleanup) = Deadline::after(std::time::Duration::from_secs(1)) {
@@ -113,7 +136,7 @@ impl LocalServices {
     }
 }
 fn valid_receipt(value: &wire::Registration, expected: usize) -> bool {
-    (1..=64).contains(&expected)
+    (1..=MAX_OWNED_PROPERTIES).contains(&expected)
         && value.0 != 0
         && value.1 > value.0
         && value.2.len() == expected
@@ -135,8 +158,32 @@ pub struct ServiceRegistration {
     controller: Controller,
     receipt: wire::Registration,
     state: RegistrationState,
+    requirements: Vec<(SsapOperations, SsapAccess)>,
+    provider_scope: Arc<super::provider::frontend::RegistrationScope>,
 }
 impl ServiceRegistration {
+    pub(crate) fn provider_client(&self) -> &crate::Client {
+        &self.controller.client
+    }
+    pub(crate) fn provider_scope(&self) -> Arc<super::provider::frontend::RegistrationScope> {
+        self.provider_scope.clone()
+    }
+    pub(crate) fn provider_context(
+        &self,
+        property: u16,
+    ) -> Result<(slk_contract::ControllerId, SsapOperations, SsapAccess)> {
+        if self.state != RegistrationState::Active {
+            return Err(ApplicationError::Invalid("inactive service registration"));
+        }
+        let index = self
+            .receipt
+            .2
+            .iter()
+            .position(|h| *h == property)
+            .ok_or(ApplicationError::Invalid("foreign service property"))?;
+        let (operations, access) = self.requirements[index];
+        Ok((self.controller.id(), operations, access))
+    }
     pub fn receipt(&self) -> &wire::Registration {
         &self.receipt
     }
@@ -261,6 +308,7 @@ impl ServiceRegistration {
     /// original unique daemon + immutable generation path + owner-bound start
     /// handle (not reused within that database). It cannot admit new work.
     pub async fn unregister(&mut self, original: Deadline) -> Result<()> {
+        self.provider_scope.stop();
         if self.state == RegistrationState::Removed {
             return Err(ApplicationError::Invalid("service already unregistered"));
         }
@@ -290,5 +338,10 @@ impl ServiceRegistration {
         original.remaining()?;
         self.state = RegistrationState::Removed;
         Ok(())
+    }
+}
+impl Drop for ServiceRegistration {
+    fn drop(&mut self) {
+        self.provider_scope.stop();
     }
 }

@@ -1,5 +1,6 @@
 //! Application-side admission and bounded replies for dynamic type0 reads.
 //! These helpers own no registration, protocol Engine or security authority.
+pub mod frontend;
 use super::authorization::{self, AuthorizationContext};
 use slk_contract::ssap::{
     MAX_PROVIDER_VALUE_BYTES, PROVIDER_UNAVAILABLE, ReadProviderReply, ReadProviderRequest,

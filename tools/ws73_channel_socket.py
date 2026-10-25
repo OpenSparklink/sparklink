@@ -67,7 +67,7 @@ def validate_application_tools(run, root=None, guest_files=None):
 def credentials(pid):
     fields = dict(line.split(':', 1) for line in Path(f'/proc/{pid}/status').read_text().splitlines() if ':' in line)
     value = dict(uids=list(map(int, fields['Uid'].split())),
-                 capabilities={k: fields[k].strip() for k in ['CapEff', 'CapPrm', 'CapAmb']})
+                 capabilities={k: fields[k].strip() for k in ['CapEff', 'CapPrm', 'CapAmb', 'CapInh']})
     if value['uids'] != [1000]*4 or any(int(v,16) for v in value['capabilities'].values()):
         raise CaptureError('each socket application must be uid1000 without capabilities')
     return value

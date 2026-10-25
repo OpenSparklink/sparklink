@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
@@ -14,6 +15,22 @@ from ws73_application_client import application_environment, ssap_commands
 from ws73_capture import CaptureError, reassemble_acb
 from ws73_ssap_owned import OUTPUT_MAXIMUM
 import ws73_ssap_read_provider as gate
+
+
+class PublisherCredentials(unittest.TestCase):
+    def test_actual_collector_records_and_rejects_inheritable_capabilities(self):
+        # Exercise the real shared collector. A missing field is not evidence
+        # of zero, even when all three historically recorded sets are empty.
+        from ws73_channel_socket import credentials
+        base = 'Uid:\t1000\t1000\t1000\t1000\nCapEff:\t0\nCapPrm:\t0\nCapAmb:\t0\n'
+        with patch.object(Path, 'read_text', return_value=base+'CapInh:\t0\n'):
+            value = credentials(17)
+        self.assertEqual(value['capabilities'],
+                         dict(CapEff='0', CapPrm='0', CapAmb='0', CapInh='0'))
+        with patch.object(Path, 'read_text', return_value=base+'CapInh:\t1\n'):
+            with self.assertRaises(CaptureError): credentials(17)
+        with patch.object(Path, 'read_text', return_value=base):
+            with self.assertRaises(KeyError): credentials(17)
 
 
 def fixture(phase=0):

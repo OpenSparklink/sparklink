@@ -402,7 +402,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 ```json
 {
   "id": "WP08-WP16-WP17-R5f160-provider-sdk-shared-frontend",
-  "state": "PLANNED_BOUNDED_SDK_PROVIDER_SHARED_FRONTEND_NO_NEW_QUALIFICATION_FULL_SCOPE_OPEN",
+  "state": "PUBLIC_SOURCE_AND_OFFLINE_SCOPE_ONLY_FULL_GOAL_OPEN",
   "production_behavior": "Expose dynamic read Providers through the ordinary Rust/C/Python SDK over the existing original Client and sole daemon SSAP Engine. Move the concrete bounded value frontend into the SDK and migrate slctl to the same dispatch/admission/reply/lifetime implementation; keep authorization decisions separate from supplied bytes. No additional Host, Engine, codec, stored-value fallback or controller privilege.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
@@ -419,7 +419,19 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
   "public_scope": "Only source/plan and subsequent source/offline summaries are public. Exact compiled/executor/report identities and actual device results remain local; non-disclosure is not a statement that execution has or has not occurred.",
   "implementation_sources": {
     "plan_source_baseline": "c8770b55de770115e5152ff73994d0da77cc2383",
-    "scope": "Plan-source identity only; no new compiled artifact, execution tool, test result or signed qualification report identity is inferred."
+    "scope": "Public source/offline view only; private compiled, executor, report and actual results are not disclosed or inferred.",
+    "public_source": "116bbe9a6ac2ded16e5115f8acfd916a3f338310",
+    "public_commits": [
+      {
+        "stage": "plan",
+        "commit": "e8721935e55ccd77422fe03fa3470253e35e0914"
+      },
+      {
+        "stage": "implementation",
+        "commit": "116bbe9a6ac2ded16e5115f8acfd916a3f338310"
+      }
+    ],
+    "source_offline_scope": "Shared bounded SDK Provider frontend, migrated slctl, and C/Python Provider public interfaces over the original caller and sole daemon Engine. Named offline checks only; no transfer of hardware qualification."
   },
   "invariants": [
     "Reuse the original Client/Arc<SyncClient>, current Owned registration, unique daemon and full generation/lifetime/epoch/channel identity; the daemon remains the unique SSAP Engine over the existing Session/Grant/credit/Ticket path.",
@@ -432,14 +444,92 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "C/Python use the same public provider implementation and actual original bus; an external slctl process or local stored-value replacement cannot count as a language Provider. C pointer validity remains the caller contract."
   ],
   "offline_checks": {
-    "scope": "No R160 result is imported by this plan; all prior source/offline and finite actual receipts retain their exact archived scope.",
+    "scope": "Only explicitly named checks at the exact public source snapshot. Other checks remain unrecorded; neither private HTML nor formal/actual-device qualification.",
     "required": [
       "Strict locked affected SDK/CLI builds and checks; independent generated header/export/ABI/Python checks and real private-bus C/Python entry point calls.",
       "Bounded inbox poll/EAGAIN, one-shot/expiry/closed-source errors, oversize/nonempty error failure atomicity, capacity retained through callback drain and request release, and reply while the same executor is blocked.",
       "Existing authorization, slctl token/Result ordering and sole daemon Engine regressions; fixtures explicitly retain their private-bus/allocator/scheduler limits and are not kernel or real-device proof.",
       "Opt-in runner and independent evidence negative controls for missing callback/raw leg/peer receipt, changed value, identity, original deadline or claimed SDK Provider role.",
       "Maintain Diataxis task/reference documentation and exact API support/errors/cleanup; compare the pinned NearLink Host source without treating it as a standards oracle."
-    ]
+    ],
+    "sdk_tests": {
+      "command": [
+        "cargo",
+        "+1.96.1",
+        "test",
+        "--offline",
+        "--locked",
+        "-p",
+        "libsparklink",
+        "-p",
+        "slctl",
+        "--all-targets",
+        "--",
+        "--test-threads=1"
+      ],
+      "signed_public_source": "116bbe9a6ac2ded16e5115f8acfd916a3f338310",
+      "status": "SCOPED_OFFLINE_PASS",
+      "scope": "Only this named check on the exact public source; omitted, ignored and filtered cases are not qualified. No hardware inference."
+    },
+    "clippy": {
+      "command": [
+        "cargo",
+        "+1.96.1",
+        "clippy",
+        "--offline",
+        "--locked",
+        "-p",
+        "libsparklink",
+        "-p",
+        "slctl",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "signed_public_source": "116bbe9a6ac2ded16e5115f8acfd916a3f338310",
+      "status": "SCOPED_OFFLINE_PASS",
+      "scope": "Only this named check on the exact public source; omitted, ignored and filtered cases are not qualified. No hardware inference."
+    },
+    "tooling": {
+      "command": {
+        "named_commands": [
+          "PYTHONPATH=tools python3 -m unittest discover -s tools/tests -p 'test_ws73_ssap_*provider*.py' -v",
+          "PYTHONPATH=tools python3 -m unittest discover -s tools/tests -p 'test_ws73_ssap_owned.py' -v",
+          "PYTHONPATH=bindings/python python3 -m unittest discover -s bindings/python/tests -p 'test_service_provider.py' -v",
+          "PYTHONPATH=bindings/python python3 -m unittest discover -s bindings/python/tests -p 'test_local_services.py' -v",
+          "PYTHONPATH=bindings/python python3 -m unittest discover -s bindings/python/tests -p 'test_service_authorization.py' -v"
+        ],
+        "driver_scope": "Five sequential commands from a local Make recipe; not all tools or all Python tests."
+      },
+      "signed_public_source": "116bbe9a6ac2ded16e5115f8acfd916a3f338310",
+      "status": "SCOPED_OFFLINE_PASS",
+      "scope": "Only this named check on the exact public source; omitted, ignored and filtered cases are not qualified. No hardware inference."
+    },
+    "documentation": {
+      "command": [
+        "make",
+        "docs"
+      ],
+      "signed_public_source": "116bbe9a6ac2ded16e5115f8acfd916a3f338310",
+      "status": "SCOPED_OFFLINE_PASS",
+      "scope": "Only this named check on the exact public source; omitted, ignored and filtered cases are not qualified. No hardware inference."
+    },
+    "python": {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "test_service_provider",
+        "test_local_services",
+        "test_service_authorization",
+        "-v"
+      ],
+      "signed_public_source": "116bbe9a6ac2ded16e5115f8acfd916a3f338310",
+      "status": "SCOPED_OFFLINE_PASS",
+      "scope": "Only this named check on the exact public source; omitted, ignored and filtered cases are not qualified. No hardware inference."
+    }
   },
   "exit_conditions": [
     "The SDK and slctl share one concrete application value frontend; original Client/Owned scope, permissions, finite capacity and immutable request identity/deadline remain enforced. No duplicate Engine or protocol queue.",
@@ -449,17 +539,20 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Affected controlled close/expiry/late-reply failures are covered by finite production-function/private-bus regressions without treating all lifecycle races as a prerequisite for the first positive language-Provider slice.",
     "Bind exact production source, compiled artifacts, execution tools, SDK110 staged inputs/runtime observations and independent raw/application evidence. A separate signed report and scoped registration are required for any new finite qualification."
   ],
-  "offline_status": "NO_R160_OFFLINE_RESULT_IMPORTED_BY_THIS_PLAN; prior checks retain their original source scope.",
+  "offline_status": "NAMED_EXACT_PUBLIC_SOURCE_OFFLINE_CHECKS_ONLY_NOT_FORMAL_OR_HARDWARE",
   "formal_status": "UNPROVED_FOR_THIS_CHANGE",
-  "hardware_status": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED; no execution outcome or non-execution inference from this public plan.",
+  "hardware_status": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED; public source/offline completion establishes neither actual execution nor non-execution or its outcome.",
   "checks": {
-    "source": "PLAN_ONLY",
-    "tooling": "NOT_RECORDED_FOR_R160",
-    "documentation": "NOT_RECORDED_FOR_R160",
+    "source": "SIGNED_SHARED_SDK_PROVIDER_SOURCE_AND_DOCUMENT_PATCHES_MAPPED",
+    "tooling": "SCOPED_OFFLINE_PASS",
+    "documentation": "SCOPED_OFFLINE_PASS",
     "new_application_helpers": "LOCAL_AUTHORITY_NOT_DISCLOSED",
     "new_vm_gate": "LOCAL_AUTHORITY_NOT_DISCLOSED",
     "independent_actual_audit": "LOCAL_AUTHORITY_NOT_DISCLOSED",
-    "qualification_registration": "LOCAL_AUTHORITY_NOT_DISCLOSED"
+    "qualification_registration": "LOCAL_AUTHORITY_NOT_DISCLOSED",
+    "sdk_tests": "SCOPED_OFFLINE_PASS",
+    "python": "SCOPED_OFFLINE_PASS",
+    "clippy": "SCOPED_OFFLINE_PASS"
   },
   "remaining_conditions": [
     "Dynamic WRITE, methods or descriptor Provider, all property/channel concurrency, all API/direction combinations, long-value expansion and four-device/mixed-model qualification remain separately scoped.",
@@ -469,10 +562,8 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Retain all original failures, counterexamples, scope and qualification identities. UserHost remains low-priority planning; no original issue is closed by this batch transition."
   ],
   "next": [
-    "Extract the shared concrete Provider frontend and migrate slctl while preserving its observable token and final-result semantics; expose the same bounded inbox through C/Python on the original Client.",
-    "Complete only changed-path source/ABI/private-bus/negative/documentation checks; prepare fresh accurate artifacts with the existing shared build lock and resource budget.",
-    "Run the existing VM-only runner with actual C/Python Providers and opposite SDK requesters, exact explicit error/empty/random values, paired raw evidence, original withdrawal/guard and ordinary business gates.",
-    "Independently audit and register only the exact finite result, preserve all failed attempts, and publish source/offline summaries only; continue the unchanged complete mainline."
+    "Continue exact-artifact validation of the new public C/Python Provider path under local qualification authority; no actual outcome is inferred from this source/offline summary.",
+    "Continue original data/security/SSAP and missing named checks without the whole control-plane race set as a prerequisite; no same-actor or natural recovery qualification is added."
   ],
   "issues": [
     "OpenSparklink/sparklink#3",
@@ -481,12 +572,67 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "OpenSparklink/linux#19"
   ],
   "issue_sync": {
-    "status": "R160_SOURCE_OFFLINE_SUMMARY_NOT_YET_RECORDED",
+    "status": "PUBLIC_SOURCE_OFFLINE_SUMMARIES_POSTED_AND_READ_BACK",
     "source_only": true,
     "private_hardware_published": false,
     "original_issues_open": true,
-    "receipt": null
-  }
+    "comments": [
+      {
+        "repo": "sparklink",
+        "issue": 3,
+        "id": 6398991554,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6398991554",
+        "body_verified": true
+      },
+      {
+        "repo": "sparklink",
+        "issue": 8,
+        "id": 6398995318,
+        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6398995318",
+        "body_verified": true
+      },
+      {
+        "repo": "linux",
+        "issue": 17,
+        "id": 6398997462,
+        "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6398997462",
+        "body_verified": true
+      },
+      {
+        "repo": "linux",
+        "issue": 19,
+        "id": 6399034236,
+        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6399034236",
+        "body_verified": true
+      }
+    ],
+    "scope": "Existing four issue source/offline summaries only; no private actual-test metadata published."
+  },
+  "source_sync_history": [
+    {
+      "implementation_sources": {
+        "plan_source_baseline": "c8770b55de770115e5152ff73994d0da77cc2383",
+        "scope": "Plan-source identity only; no new compiled artifact, execution tool, test result or signed qualification report identity is inferred."
+      },
+      "offline_checks": {
+        "scope": "No R160 result is imported by this plan; all prior source/offline and finite actual receipts retain their exact archived scope.",
+        "required": [
+          "Strict locked affected SDK/CLI builds and checks; independent generated header/export/ABI/Python checks and real private-bus C/Python entry point calls.",
+          "Bounded inbox poll/EAGAIN, one-shot/expiry/closed-source errors, oversize/nonempty error failure atomicity, capacity retained through callback drain and request release, and reply while the same executor is blocked.",
+          "Existing authorization, slctl token/Result ordering and sole daemon Engine regressions; fixtures explicitly retain their private-bus/allocator/scheduler limits and are not kernel or real-device proof.",
+          "Opt-in runner and independent evidence negative controls for missing callback/raw leg/peer receipt, changed value, identity, original deadline or claimed SDK Provider role.",
+          "Maintain Diataxis task/reference documentation and exact API support/errors/cleanup; compare the pinned NearLink Host source without treating it as a standards oracle."
+        ]
+      },
+      "issue_sync": {
+        "status": "R160_SOURCE_OFFLINE_SUMMARY_NOT_YET_RECORDED",
+        "source_only": true,
+        "private_hardware_published": false,
+        "original_issues_open": true,
+        "receipt": null
+      }
+    }
+  ]
 }
 ```
 

@@ -61,9 +61,9 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-WP16-WP17-R5f157-provider-error-empty-continued-read",
-  "state": "PUBLIC_SOURCE_AND_OFFLINE_SCOPE_ONLY_FULL_GOAL_OPEN",
-  "production_behavior": "Exercise the existing sole user-space SSAP Engine and Owned read Provider with one unchanged Owner: application error 0xff, successful empty Read, then a different random 32-byte value. Extend only existing SDK test callers and the existing Provider gate; no second Engine or new production protocol path.",
+  "id": "WP08-WP16-WP17-R5f158-provider-owner-exit",
+  "state": "PLANNED_BOUNDED_PROVIDER_OWNER_EXIT_NO_NEW_QUALIFICATION_FULL_SCOPE_OPEN",
+  "production_behavior": "Exercise the existing sole SSAP Engine and Owned read Provider: observe two actual Provider prompts, then SIGKILL the corresponding Owner while each request is outstanding; one receiver per connection phase, with C/Python requesters alternating. No new Host, Engine, fallback or protocol path is planned.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
     "WP08",
@@ -73,148 +73,64 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
   "records": [],
   "predecessor_archive": {
     "history": "batch_history",
-    "id": "WP08-WP16-WP17-R5f156-owned-read-provider",
-    "canonical_sha256": "433d62486d192f10ec91f8fbf71e4c8b3f0cbae06c80dee4b3ad56922c769642"
+    "id": "WP08-WP16-WP17-R5f157-provider-error-empty-continued-read",
+    "canonical_sha256": "568e8e6b3514cdcfa28e89a4e18ac1dbe9c816bfce8616c22b7af284c0795412"
   },
-  "public_scope": "Public source and scoped offline summaries only; compiled identities, execution evidence and actual device details remain local. Historical qualification is not transferred to a new artifact.",
+  "public_scope": "Only source/offline summaries are public. Exact compiled/executor/report identities and actual device results remain local; non-disclosure is not a statement that execution has or has not occurred.",
   "implementation_sources": {
-    "public_source": "5933d1169f49b211129ce81818238a2d14de3bda",
-    "scope": "The changed tools match the source-file hashes from the completed offline tooling check. This identifies source, not a new compiled artifact or execution.",
-    "stages": [
-      {
-        "stage": "consumer",
-        "public": "1d82b4f0e25e648edf99a54ac5ad41c10b02d029",
-        "files": [
-          "tools/ws73_application_client.py",
-          "tools/testing/application_client/client.c",
-          "tools/testing/application_client/client.py",
-          "tools/tests/test_ws73_application_client.py",
-          "tools/tests/test_application_command_reject_helper.py"
-        ]
-      },
-      {
-        "stage": "gate",
-        "public": "5933d1169f49b211129ce81818238a2d14de3bda",
-        "files": [
-          "tools/ws73_ssap_read_provider.py",
-          "tools/tests/test_ws73_ssap_read_provider.py",
-          "tools/ws73_target.py"
-        ]
-      }
-    ]
+    "plan_source_baseline": "31e4025ed4a2ff8ec30f2470f155ac7488be3759",
+    "scope": "Plan-source identity only; no new compiled artifact, execution tool or signed qualification report identity is inferred."
   },
   "invariants": [
-    "Reuse the same Owned registration, sole physical Session, existing Provider binding, Grant, credit, Ticket and original request deadline; never return the consumed stored value as fallback.",
-    "Each of four Owners across two connection roles and two directions must produce application error 0xff, empty success and a new random 32-byte success in order; subsequent existing retirement Read remains protocol error 4.",
-    "SDK error/success, application bytes, callback identity and deadline, paired endpoint packets and complete bounded capture must agree; software admission or USB success alone cannot qualify delivery.",
-    "Keep the original eight Owned outcomes and eight ordinary 61-byte exchanges mandatory; do not weaken assertions or replace real application validation with a fixture."
+    "Use the same physical Session, original Owned binding, Grant, command/data credit, Ticket and nonrenewed request deadline; callback identity and actual prompt are the controlled barrier.",
+    "Record actual SIGKILL and process termination, not normal quit or an inferred destructor. Within the original request deadline accept only the actual correlated AF or error4 peer response; SDK EIO alone does not identify the wire status.",
+    "A subsequent Read on the retired handle must return actual error4. An independent Owner and ordinary business must remain usable; preserve existing baseline assertions and budgets.",
+    "Do not fall back to consumed stored values or erase already-started physical obligations. Software admission, USB completion and protocol response do not alone prove unrelated application continuity."
   ],
   "exit_conditions": [
-    "Actual existing Provider FF error, successful empty READ and subsequent random32 value per Owner; reject stored fallback; both connection roles/business directions and ordinary cap-zero actual C/Python readers.",
-    "Original Owned8 and ordinary61-byte8 gates remain mandatory; post-Owner retire read error4 retained.",
-    "Original callback identities/deadlines and unique prompts, actual peer comparison/error and paired USB for every outcome; exact source/artifact/tool/firmware bounds.",
-    "Finite actual evidence independently audited; missing/mutated evidence rejected. No implicit full lifetime, formal, E/mixed, recovery or complete SSAP qualification."
+    "Two actual prompt-before-SIGKILL cases, one per connection phase and distinct receiver; alternate actual C/Python requesters without claiming a full API/role/direction cross-product.",
+    "Bind prompt, original owner/generation/lifetime, request deadline, kill/exit receipt, actual peer AF-or4 response, retired-read4 and complete paired endpoint capture.",
+    "Verify an independent Owner actual response and ordinary application payload validation after the controlled exit; retain the selected existing Owned/ordinary baseline gates.",
+    "Use accurate new artifact/executor identities, independent finite evidence audit and fail-closed material controls before any scoped registration; preserve all historical results."
   ],
-  "offline_status": "SCOPED_TOOLING_UNIT_FIXTURES_DIFF_AND_STRICT_DOCS_PASS; artifact-specific execution results are separate. Offline checks do not qualify Native, USB, RF, hardware concurrency or firmware behavior.",
+  "offline_status": "NO_R158_OFFLINE_RESULT_RECORDED_BY_THIS_PLAN; prior R157 checks retain their original source scope.",
   "formal_status": "UNPROVED_FOR_THIS_CHANGE",
-  "hardware_status": "NO_PUBLIC_HARDWARE_QUALIFICATION_ASSERTED; actual artifact identities and scoped results are maintained in authorized local records. Non-disclosure is not an execution-status claim.",
+  "hardware_status": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED; no hardware execution inference from this public plan.",
   "checks": {
-    "tooling": "SCOPED_OFFLINE_PASS",
-    "documentation": "STRICT_HTML_AND_METADATA_PASS",
-    "new_application_helpers": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED",
-    "new_vm_gate": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED",
-    "independent_actual_audit": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED",
-    "qualification_registration": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED"
+    "source": "PLAN_ONLY",
+    "tooling": "NOT_RECORDED_FOR_R158",
+    "documentation": "NOT_RECORDED_FOR_R158",
+    "new_application_helpers": "LOCAL_AUTHORITY_NOT_DISCLOSED",
+    "new_vm_gate": "LOCAL_AUTHORITY_NOT_DISCLOSED",
+    "independent_actual_audit": "LOCAL_AUTHORITY_NOT_DISCLOSED",
+    "qualification_registration": "LOCAL_AUTHORITY_NOT_DISCLOSED"
   },
   "remaining_conditions": [
-    "Owner exit after actual prompt and original-deadline late reply remain separate next slice; do not demand a post-deadline error packet.",
-    "C/Python Provider inbox, dynamic writes, full SSAP/Profile, data length/credit/backpressure/multichannel/four-device/security/PM/deployment remain under full plan.",
-    "Natural RCA, nonmanual recovery and production identity/cold-ROM remain open; manual/QMP never counts as natural recovery."
+    "Original-deadline expiry and late Provider reply are a separate later slice. Do not require a post-deadline error packet or the full control-plane race matrix for this slice.",
+    "C/Python Provider inbox, dynamic writes, long values, full SSAP/Profile, data length/credit/backpressure, multiple channels/four-device business, security/Bond, PM, deployment and release remain in the original plan.",
+    "Natural fault RCA, nonmanual recovery, E/mixed/cold-ROM and production identity remain open; manual, hub or QMP operations do not establish natural recovery."
   ],
   "next": [
-    "Follow the authorized local artifact and qualification record for execution status; this public source summary does not duplicate or infer that status.",
-    "Preserve the bounded four-Owner error/empty/random-read gate, original Owned and ordinary business assertions and paired evidence requirements; publish source/offline scope only.",
-    "After this bounded slice, exercise Owner exit after an actual prompt and original-deadline late reply separately; a post-deadline error packet is not a required success condition.",
-    "Continue data lengths, real credit/backpressure, multiple channels, four-device traffic, security, user-space SSAP/Profile, lifecycle cleanup, deployment and recovery under the full original plan; do not gate progress on all control-plane races.",
-    "The four existing issue source/offline summaries are posted; retain the user-selected local-only boundary for actual device details and keep incomplete original issue scopes open."
+    "Finish the bounded Owner-exit gate and affected source/offline/documentation checks; preserve the actual prompt barrier, original deadlines, original failure evidence and finite scope.",
+    "Prepare and run accurate VM-only artifacts under existing per-leaf ownership and shared build budget; independently verify two prompt/kill outcomes, retired refusals and independent Owner/ordinary continuity.",
+    "Seal and register only complete finite evidence with separate compiled, executor and report identities; publish generic source/offline summaries only.",
+    "Then address original-deadline expiry/late reply separately while continuing the existing data/security/SSAP mainline; do not require every control race first."
   ],
-  "issue_sync": {
-    "status": "PUBLIC_SOURCE_OFFLINE_SUMMARIES_POSTED",
-    "source_only": true,
-    "private_hardware_published": false,
-    "original_issues_open": true,
-    "comments": [
-      {
-        "repo": "sparklink",
-        "issue": 3,
-        "id": 6396248344,
-        "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6396248344",
-        "body_verified": true
-      },
-      {
-        "repo": "sparklink",
-        "issue": 8,
-        "id": 6396248739,
-        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6396248739",
-        "body_verified": true
-      },
-      {
-        "repo": "linux",
-        "issue": 17,
-        "id": 6396249071,
-        "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6396249071",
-        "body_verified": true
-      },
-      {
-        "repo": "linux",
-        "issue": 19,
-        "id": 6396249350,
-        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6396249350",
-        "body_verified": true
-      }
-    ],
-    "receipt": {
-      "public_comments": [
-        {
-          "repo": "sparklink",
-          "issue": 3,
-          "id": 6396248344,
-          "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6396248344",
-          "body_verified": true
-        },
-        {
-          "repo": "sparklink",
-          "issue": 8,
-          "id": 6396248739,
-          "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6396248739",
-          "body_verified": true
-        },
-        {
-          "repo": "linux",
-          "issue": 17,
-          "id": 6396249071,
-          "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6396249071",
-          "body_verified": true
-        },
-        {
-          "repo": "linux",
-          "issue": 19,
-          "id": 6396249350,
-          "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6396249350",
-          "body_verified": true
-        }
-      ],
-      "scope": "Source/offline summaries only; actual device details stay local."
-    }
-  },
   "issues": [
     "OpenSparklink/sparklink#3",
     "OpenSparklink/sparklink#8",
     "OpenSparklink/linux#17",
     "OpenSparklink/linux#19"
   ],
+  "issue_sync": {
+    "status": "R158_SOURCE_OFFLINE_SUMMARY_NOT_YET_RECORDED",
+    "source_only": true,
+    "private_hardware_published": false,
+    "original_issues_open": true,
+    "receipt": null
+  },
   "offline_checks": {
-    "scope": "Changed tool source passed the existing Python tooling suite, diff and strict documentation checks. Artifact identities and actual device results are maintained separately in authorized local records, not copied into this checkout."
+    "scope": "R158 results are not imported by this plan; R157 receipts remain in the exact archived batch."
   }
 }
 ```

@@ -15,14 +15,30 @@ pub(crate) enum LocalValueError {
     Owner,
     Length,
     Budget,
+    Unsupported,
 }
 
 pub(crate) use slk_contract::ssap::local::{PropertyDefinition, ServiceRecord as LocalService};
+enum ValueSource {
+    Stored(Vec<u8>),
+    Provider(Arc<crate::ssap_read_provider::Binding>),
+}
+impl ValueSource {
+    fn stored(&self) -> Option<&[u8]> {
+        match self {
+            Self::Stored(value) => Some(value),
+            Self::Provider(_) => None,
+        }
+    }
+    fn bytes(&self) -> usize {
+        self.stored().map_or(0, <[u8]>::len)
+    }
+}
 struct Property {
     uuid: Vec<u8>,
     operations: SsapOperations,
     access: SsapAccess,
-    value: Vec<u8>,
+    value: ValueSource,
     // Type1 is explicitly public and read-only; property access/operations do
     // not authorize or restrict it. No separate handle or callback is created.
     description: Option<Vec<u8>>,
@@ -141,7 +157,7 @@ impl Database {
                         uuid,
                         operations: SsapOperations::from_bits(ops).expect("validated"),
                         access: SsapAccess::from_bits(access).expect("validated"),
-                        value,
+                        value: ValueSource::Stored(value),
                         description: None,
                     },
                 )
@@ -190,7 +206,7 @@ impl Database {
         self.bytes -= s
             .properties
             .values()
-            .map(|p| p.value.len() + p.description.as_ref().map_or(0, Vec::len))
+            .map(|p| p.value.bytes() + p.description.as_ref().map_or(0, Vec::len))
             .sum::<usize>();
         if let Some(owner) = s.owner {
             owner.revoke();
@@ -218,14 +234,18 @@ impl Database {
         }
         self.remove(start)
     }
-    pub(crate) fn local_read_owned(&self, handle: u16, owner: &str) -> Result<Vec<u8>, String> {
+    pub(crate) fn local_read_owned(
+        &self,
+        handle: u16,
+        owner: &str,
+    ) -> Result<Vec<u8>, LocalValueError> {
         if !self.services.values().any(|s| {
             s.properties.contains_key(&handle)
                 && s.owner
                     .as_ref()
                     .is_some_and(|o| o.current() && o.name == owner)
         }) {
-            return Err("property is not owned by caller".into());
+            return Err(LocalValueError::Owner);
         }
         self.local_read(handle)
     }
@@ -251,10 +271,51 @@ impl Database {
             return Err(LocalValueError::Length);
         }
         let property = service.properties.get_mut(&handle).expect("owned property");
-        let next = budget::replacement_bytes(self.bytes, property.value.len(), value.len())
+        let current = property
+            .value
+            .stored()
+            .ok_or(LocalValueError::Unsupported)?;
+        let next = budget::replacement_bytes(self.bytes, current.len(), value.len())
             .ok_or(LocalValueError::Budget)?;
-        property.value = value;
+        property.value = ValueSource::Stored(value);
         self.bytes = next;
+        Ok(())
+    }
+    /// One-way explicit source change. The stored value is consumed; a failed
+    /// callback can never expose it. Rebinding requires a new Owned registration.
+    pub(crate) fn bind_owned_read_provider(
+        &mut self,
+        handle: u16,
+        caller: &str,
+        path: zbus::zvariant::OwnedObjectPath,
+    ) -> Result<(), LocalValueError> {
+        let service = self
+            .services
+            .values_mut()
+            .find(|s| {
+                s.properties.contains_key(&handle)
+                    && s.owner
+                        .as_ref()
+                        .is_some_and(|o| o.current() && o.name == caller)
+            })
+            .ok_or(LocalValueError::Owner)?;
+        if path.as_str() == "/" || path.as_str().len() > 255 {
+            return Err(LocalValueError::Length);
+        }
+        let property = service.properties.get_mut(&handle).expect("owned property");
+        if property.operations != SsapOperations::READ {
+            return Err(LocalValueError::Unsupported);
+        }
+        let size = property
+            .value
+            .stored()
+            .ok_or(LocalValueError::Unsupported)?
+            .len();
+        property.value = ValueSource::Provider(Arc::new(crate::ssap_read_provider::Binding {
+            owner: service.owner.as_ref().expect("owned service").clone(),
+            path,
+        }));
+        self.bytes -= size;
         Ok(())
     }
     /// Local metadata admission shares the database budget and retirement lock.
@@ -500,6 +561,16 @@ impl Database {
         level: u32,
         approvals: &[Approval],
     ) -> Result<Vec<u8>, String> {
+        self.read_uuid_resolved(request, mtu, level, approvals, &[])
+    }
+    pub(crate) fn read_uuid_resolved(
+        &self,
+        request: slk_protocol::ssap::read_uuid::Request<'_>,
+        mtu: u16,
+        level: u32,
+        approvals: &[Approval],
+        values: &[crate::ssap_read_provider::ReadValue],
+    ) -> Result<Vec<u8>, String> {
         use slk_protocol::ssap::read_uuid::{Item, encode};
         let mut items = Vec::new();
         if request.start == 0 || request.start > request.end {
@@ -522,7 +593,7 @@ impl Database {
                         ) {
                             Err(u16::from(error))
                         } else {
-                            Ok(p.value.as_slice())
+                            self.read_value(*handle, values)
                         };
                         items.push(Item {
                             handle: *handle,
@@ -594,7 +665,9 @@ impl Database {
             .property(handle)
             .ok_or("property retired")?
             .value
-            .clone();
+            .stored()
+            .ok_or("dynamic read provider does not supply updates")?
+            .to_vec();
         Ok((owner, value))
     }
     /// Called under the DB admission mutex, with configuration owned by this
@@ -685,10 +758,81 @@ impl Database {
         output.truncate(size);
         Ok(output)
     }
-    pub(crate) fn local_read(&self, handle: u16) -> Result<Vec<u8>, String> {
+    pub(crate) fn local_read(&self, handle: u16) -> Result<Vec<u8>, LocalValueError> {
         self.property(handle)
-            .map(|p| p.value.clone())
-            .ok_or_else(|| "unknown local property".into())
+            .ok_or(LocalValueError::Owner)?
+            .value
+            .stored()
+            .map(<[u8]>::to_vec)
+            .ok_or(LocalValueError::Unsupported)
+    }
+    /// Called after policy approval, still under the existing database lock.
+    /// Public properties also need a provider; policy-target filtering cannot
+    /// be reused here because it deliberately selects only authorization gaps.
+    pub(crate) fn read_provider_target(
+        &self,
+        handle: u16,
+        level: u32,
+        approvals: &[Approval],
+    ) -> Option<crate::ssap_read_provider::Target> {
+        let property = self.property(handle)?;
+        if !property.operations.contains(SsapOperations::READ)
+            || property
+                .access
+                .check_authorization_result(
+                    level,
+                    false,
+                    self.locally_authorized(handle, 0, false, approvals),
+                )
+                .is_err()
+        {
+            return None;
+        }
+        let ValueSource::Provider(binding) = &property.value else {
+            return None;
+        };
+        binding
+            .owner
+            .current()
+            .then(|| crate::ssap_read_provider::Target {
+                handle,
+                binding: binding.clone(),
+            })
+    }
+    pub(crate) fn uuid_read_provider_targets(
+        &self,
+        request: slk_protocol::ssap::read_uuid::Request<'_>,
+        level: u32,
+        approvals: &[Approval],
+    ) -> Vec<crate::ssap_read_provider::Target> {
+        if request.start == 0 || request.start > request.end || request.data_type != 0 {
+            return vec![];
+        }
+        self.services
+            .values()
+            .flat_map(|s| s.properties.range(request.start..=request.end))
+            .filter(|(_, p)| p.uuid == request.uuid)
+            .filter_map(|(h, _)| self.read_provider_target(*h, level, approvals))
+            .collect()
+    }
+    fn read_value<'a>(
+        &'a self,
+        handle: u16,
+        values: &'a [crate::ssap_read_provider::ReadValue],
+    ) -> Result<&'a [u8], u16> {
+        match &self.property(handle).ok_or(4u16)?.value {
+            ValueSource::Stored(value) => Ok(value),
+            ValueSource::Provider(binding) => {
+                if !binding.owner.current() {
+                    return Err(4);
+                }
+                let resolved = values
+                    .iter()
+                    .find(|v| v.target.handle == handle && Arc::ptr_eq(&v.target.binding, binding))
+                    .ok_or(slk_contract::ssap::PROVIDER_UNAVAILABLE)?;
+                resolved.result.as_deref().map_err(|error| *error)
+            }
+        }
     }
     /// Apply one complete command without constructing a normal or error PDU.
     /// Error codes are local refusal reasons only; commands never owe a reply.
@@ -747,8 +891,12 @@ impl Database {
             true,
             self.locally_authorized(handle, data_type, true, approvals),
         )?;
-        let next =
-            budget::replacement_bytes(self.bytes, property.value.len(), value.len()).ok_or(5u8)?;
+        let next = budget::replacement_bytes(
+            self.bytes,
+            property.value.stored().ok_or(7u8)?.len(),
+            value.len(),
+        )
+        .ok_or(5u8)?;
         if value
             .len()
             .checked_add(5)
@@ -761,7 +909,7 @@ impl Database {
             .values_mut()
             .find_map(|s| s.properties.get_mut(&handle))
             .expect("checked property under DB mutex");
-        property.value = value.to_vec();
+        property.value = ValueSource::Stored(value.to_vec());
         self.bytes = next;
         Ok(())
     }
@@ -781,6 +929,16 @@ impl Database {
         mtu: u16,
         level: u32,
         approvals: &[Approval],
+    ) -> Result<Vec<u8>, String> {
+        self.answer_resolved(request, mtu, level, approvals, &[])
+    }
+    pub(crate) fn answer_resolved(
+        &mut self,
+        request: ValuePdu<'_>,
+        mtu: u16,
+        level: u32,
+        approvals: &[Approval],
+        values: &[crate::ssap_read_provider::ReadValue],
     ) -> Result<Vec<u8>, String> {
         let mut out = vec![0; usize::from(mtu)];
         let response = match request {
@@ -831,8 +989,11 @@ impl Database {
                 }
                 // T/XS 20001-2025 §7.4.4.5 requires READ_RSP for this
                 // unsupported-fragmentation result, as with read-by-UUID.
-                Some(p) if p.value.len() + 2 > usize::from(mtu) => ValuePdu::ReadError(16),
-                Some(p) => ValuePdu::ReadValue(&p.value),
+                Some(_) => match self.read_value(handle, values) {
+                    Ok(value) if value.len() + 2 > usize::from(mtu) => ValuePdu::ReadError(16),
+                    Ok(value) => ValuePdu::ReadValue(value),
+                    Err(error) => ValuePdu::ReadError(error),
+                },
             },
             ValuePdu::Write {
                 handle,

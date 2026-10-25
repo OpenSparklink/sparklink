@@ -4,6 +4,7 @@
 //! response, queue admission and remote application processing remain distinct.
 pub mod authorization;
 pub mod local;
+pub mod provider;
 pub mod subscription;
 use crate::{ApplicationConnection, ApplicationError};
 use slk_contract::{self as contract, ssap as wire};

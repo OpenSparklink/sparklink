@@ -34,6 +34,30 @@ read-only type1 metadata on that owner's property. It accepts 1..244 UTF-8 bytes
 without NUL and shares the existing database byte budget. Property authorization
 or encryption requirements do not protect this public description. A local
 commit receipt is not remote discovery or delivery.
+.PP
+For a property whose OPS is exactly READ (1), provider binds the same caller's
+ReadValue endpoint once. It discards the stored value; rebind, unbind and cached
+fallback are unavailable, and local value/replace operations return NotSupported.
+Type1 descriptions remain independent. Each actual remote read prints
+SsapReadProviderPrompt with its original identity, deadline, maximum byte count
+and a p-prefixed, never-reused local token. Enter provide pTOKEN HEX, use a single
+dash for an empty successful value, or enter provider-error pTOKEN AF..FF for an
+application error written as two hexadecimal digits. No value is supplied
+automatically. Existing ask/allow/deny authorization remains a separate decision.
+.PP
+Provider values are limited to the displayed budget, at most2042 bytes; a pending
+reply holds one bounded slot independent of authorization. Stale, repeated,
+expired or malformed input cannot complete another request. Quit, EOF or Ctrl-C
+stops local admission before withdrawal and removes both callback endpoints.
+The same request deadline includes authorization and provider waiting. A local
+reply is not peer delivery, and a timeout does not prove remote rollback.
+.PP
+SSAP stdin is limited to4160 bytes per line including newline on a pipe. Terminal
+input must stay below4096 bytes including newline to reject Linux canonical-line
+truncation; use a pipe for a full2042-byte hex value when the command and token
+would reach that boundary. Send replies after reading the actual prompt; input
+queued before a new prompt is discarded. Complete C/Python Provider inboxes and
+real-device qualification remain separate.
 .TP
 .B ssap-read-description CONNECTION HANDLE [MINIMUM]
 Read a type1 description over the original Connection and sole SSAP Engine.

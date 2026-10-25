@@ -590,6 +590,7 @@ async fn original_deadline_and_native_recheck_precede_value_mutation() {
     );
     assert_eq!(db.lock().unwrap().local_read(h).unwrap(), [7]);
     let decision = ServerDecision {
+        values: vec![],
         packet: packet(
             ValuePdu::Write {
                 handle: h,
@@ -1813,3 +1814,6 @@ async fn actual_update_wait_cancellation_keeps_admitted_identity_and_original_dr
         }
     }
 }
+
+#[path = "ssap_read_provider_tests.rs"]
+mod read_provider_tests;

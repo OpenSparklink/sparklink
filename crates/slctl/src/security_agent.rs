@@ -5,7 +5,12 @@ use slk_contract::{
     ConnectionInfo as Info,
     security::{Observation, Prompt},
 };
-use std::{io::Read, os::unix::fs::OpenOptionsExt, sync::Arc, time::Duration};
+use std::{
+    io::{IsTerminal, Read},
+    os::unix::fs::OpenOptionsExt,
+    sync::Arc,
+    time::Duration,
+};
 use tokio::{
     io::unix::AsyncFd,
     sync::{Semaphore, mpsc, oneshot, watch},
@@ -185,16 +190,33 @@ impl Agent {
 pub(crate) struct Input {
     fd: AsyncFd<std::fs::File>,
     bytes: Vec<u8>,
+    line_limit: usize,
 }
 impl Input {
     pub(crate) fn stdin() -> anyhow::Result<Self> {
+        Self::stdin_with_limit(512)
+    }
+    pub(crate) fn stdin_with_limit(line_limit: usize) -> anyhow::Result<Self> {
+        ensure!(
+            (512..=4160).contains(&line_limit),
+            "unsupported input line limit"
+        );
         let fd = std::fs::OpenOptions::new()
             .read(true)
             .custom_flags(nix::libc::O_NONBLOCK | nix::libc::O_CLOEXEC)
             .open("/proc/self/fd/0")?;
+        // Linux canonical TTY input truncates at 4095 data bytes. Reject that
+        // boundary including the newline, so a truncated hex value can never
+        // become a shorter successful reply. Pipes retain the full limit.
+        let line_limit = if fd.is_terminal() {
+            line_limit.min(4095)
+        } else {
+            line_limit
+        };
         Ok(Self {
             fd: AsyncFd::new(fd).context("Agent requires a pollable terminal or pipe")?,
             bytes: Vec::new(),
+            line_limit,
         })
     }
     pub(crate) fn discard_before_prompt(&mut self) -> anyhow::Result<()> {
@@ -206,7 +228,10 @@ impl Input {
                 Ok(0) => bail!("Agent input closed"),
                 Ok(n) => {
                     consumed += n;
-                    ensure!(consumed <= 4096, "excessive pre-prompt input");
+                    ensure!(
+                        consumed <= self.line_limit.max(4096),
+                        "excessive pre-prompt input"
+                    );
                 }
                 Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => return Ok(()),
                 Err(e) if e.kind() == std::io::ErrorKind::Interrupted => (),
@@ -229,16 +254,21 @@ impl Input {
                 Ok(Ok(bytes)) if bytes.is_empty() => return Ok(None),
                 Ok(Ok(bytes)) => {
                     self.bytes.extend(bytes);
-                    ensure!(
-                        self.bytes.len() <= 512,
-                        "Agent input line exceeds 512 bytes"
-                    );
+                    validate_input_line(&self.bytes, self.line_limit)?;
                 }
                 Ok(Err(e)) => return Err(e.into()),
                 Err(_) => (),
             }
         }
     }
+}
+fn validate_input_line(bytes: &[u8], limit: usize) -> anyhow::Result<()> {
+    let first_line = bytes
+        .iter()
+        .position(|&byte| byte == b'\n')
+        .map_or(bytes.len(), |end| end + 1);
+    ensure!(first_line <= limit, "input line exceeds {limit} bytes");
+    Ok(())
 }
 fn answer(line: &str, id: u64) -> Option<bool> {
     let words = line.split_whitespace().collect::<Vec<_>>();
@@ -473,6 +503,20 @@ pub(crate) async fn request(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn input_limit_applies_to_one_line_and_rejects_the_tty_truncation_boundary() {
+        let mut pipe = vec![b'a'; 4114];
+        pipe.push(b'\n');
+        pipe.extend([b'b'; 100]);
+        assert!(validate_input_line(&pipe, 4160).is_ok());
+        assert!(validate_input_line(&pipe, 512).is_err());
+        let mut terminal = vec![b'a'; 4094];
+        terminal.push(b'\n');
+        assert!(validate_input_line(&terminal, 4095).is_ok());
+        terminal.insert(0, b'a');
+        assert!(validate_input_line(&terminal, 4095).is_err());
+        assert!(validate_input_line(&vec![b'a'; 4161], 4160).is_err());
+    }
     const CONTROLLER: &str = "/org/sparklink/slk0_g7";
     const LINK: &str = "/org/sparklink/slk0_g7/peer_t00_010203040506/link_000000000000000d";
     fn info() -> Info {

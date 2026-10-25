@@ -16,6 +16,24 @@ async fn owned_request<T>(
     result
 }
 
+fn owned_value_error(error: crate::ssap_database::LocalValueError) -> zbus::fdo::Error {
+    use crate::ssap_database::LocalValueError;
+    match error {
+        LocalValueError::Owner => {
+            zbus::fdo::Error::AccessDenied("property is not owned by caller".into())
+        }
+        LocalValueError::Length => {
+            zbus::fdo::Error::InvalidArgs("local value or description length".into())
+        }
+        LocalValueError::Budget => {
+            zbus::fdo::Error::LimitsExceeded("local database byte budget".into())
+        }
+        LocalValueError::Unsupported => {
+            zbus::fdo::Error::NotSupported("local value operation unsupported".into())
+        }
+    }
+}
+
 /// Local database and caller-owned registration APIs for the sole userspace Engine.
 pub struct SsapManagerIface {
     state: SharedState,
@@ -57,20 +75,7 @@ impl SsapManagerIface {
                 .lock()
                 .map_err(|_| zbus::fdo::Error::Failed("database poisoned".into()))?;
             original.remaining().map_err(deadline_error)?;
-            commit(&mut database, &caller).map_err(|error| {
-                use crate::ssap_database::LocalValueError;
-                match error {
-                    LocalValueError::Owner => {
-                        zbus::fdo::Error::AccessDenied("property is not owned by caller".into())
-                    }
-                    LocalValueError::Length => {
-                        zbus::fdo::Error::InvalidArgs("local value or description length".into())
-                    }
-                    LocalValueError::Budget => {
-                        zbus::fdo::Error::LimitsExceeded("local database byte budget".into())
-                    }
-                }
-            })
+            commit(&mut database, &caller).map_err(owned_value_error)
         })
         .await
     }
@@ -230,7 +235,7 @@ impl SsapManagerIface {
             original.remaining().map_err(deadline_error)?;
             database
                 .local_read_owned(handle, &caller)
-                .map_err(zbus::fdo::Error::AccessDenied)
+                .map_err(owned_value_error)
         })
         .await
     }
@@ -251,6 +256,28 @@ impl SsapManagerIface {
         }
         self.commit_owned_local(original, header, move |database, caller| {
             database.replace_owned_value(handle, caller, value)
+        })
+        .await
+    }
+    /// Permanently replace this read-only property's stored value source with
+    /// its owner's callback. No unbind, rebind or stored-value fallback.
+    async fn bind_owned_read_provider(
+        &self,
+        handle: u16,
+        provider: zbus::zvariant::OwnedObjectPath,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<()> {
+        let original =
+            Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).map_err(deadline_error)?;
+        if handle == 0 || provider.as_str() == "/" || provider.as_str().len() > 255 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "provider requires a property handle and a non-root path of at most 255 bytes"
+                    .into(),
+            ));
+        }
+        self.commit_owned_local(original, header, move |database, caller| {
+            database.bind_owned_read_provider(handle, caller, provider)
         })
         .await
     }
@@ -354,7 +381,12 @@ impl SsapManagerIface {
             .lock()
             .map_err(|_| zbus::fdo::Error::Failed("database poisoned".into()))?
             .local_read(handle)
-            .map_err(zbus::fdo::Error::InvalidArgs)
+            .map_err(|error| match error {
+                crate::ssap_database::LocalValueError::Owner => {
+                    zbus::fdo::Error::InvalidArgs("unknown local property".into())
+                }
+                error => owned_value_error(error),
+            })
     }
 }
 
@@ -426,6 +458,7 @@ mod validation_tests {
             ),
             ("ReadOwnedLocalValue", vec!["q", "(ttttt)"]),
             ("ReplaceOwnedLocalValue", vec!["q", "ay", "(ttttt)"]),
+            ("BindOwnedReadProvider", vec!["q", "o", "(ttttt)"]),
             ("SetOwnedLocalDescription", vec!["q", "s", "(ttttt)"]),
             ("UnregisterOwnedLocalService", vec!["q", "(ttttt)"]),
         ] {
@@ -449,11 +482,31 @@ mod validation_tests {
             assert_eq!(actual, expected, "{name}: {method}");
         }
 
+        // Invalid provider bindings fail before adapter/Native admission.
+        for (handle, path) in [
+            (0u16, "/provider".to_string()),
+            (17, "/".to_string()),
+            (17, format!("/{}", "p".repeat(255))),
+        ] {
+            let original = Deadline::after(std::time::Duration::from_secs(2)).unwrap();
+            let request = (
+                handle,
+                zbus::zvariant::OwnedObjectPath::try_from(path).unwrap(),
+                slk_contract::deadline_wire(original.stamp()),
+            );
+            let result = local
+                .call::<_, _, ()>("BindOwnedReadProvider", &request)
+                .await;
+            assert!(matches!(result, Err(zbus::Error::MethodError(name, _, _))
+                if name.as_str() == "org.freedesktop.DBus.Error.InvalidArgs"));
+        }
+
         for live in [
             "RegisterOwnedLocalService",
             "UnregisterOwnedLocalService",
             "ReadOwnedLocalValue",
             "ReplaceOwnedLocalValue",
+            "BindOwnedReadProvider",
             "SetOwnedLocalDescription",
             "RegisterLocalService",
             "ListLocalServices",

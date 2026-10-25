@@ -300,13 +300,93 @@ Rust `ServiceRegistration.replace_local`、C `slk_local_service_replace` 与 Pyt
 `LocalService.replace_local` 使用这一入口，调用成功只表示本地提交，不发通知或指示。
 超时/答复丢失可能发生在提交之后，效果不确定；不自动重试。对端须另行实际读取，仍
 遵守协商能力、物理MTU和逻辑值预算；仅已协商的单值分片走上述路径，不能推断
-通知/指示或provider也支持分片。动态provider仍未接通；新CPCD及
+通知/指示或provider也支持分片。动态只读值按下文独立的 Provider 契约处理；新CPCD及
 Owned通知/指示源码契约见[接口参考](interfaces.md#客户端配置与-ssap-更新的当前限制)，
 主动发送资格按当前能力入口的准确artifact及限定范围读取，旧本地替换PASS不升级
 为主动发送、持续订阅或完整生命周期资格。
 
 开始有效撤回后，SDK登记进入Withdrawing：后续本地替换被拒绝，即使撤回答复不确定；
 仍可观察本地值或显式重试原对象清理。Removed后不再读取/替换，不因新caller复活。
+
+### Owned read-only Provider
+
+本节描述唯一 Engine 的新增源码契约，离线与实机验证仍待完成，不继承旧存储值或
+授权回调的资格。仅支持 Owned 属性的 type0 动态读取；操作位必须恰为 READ（`0x01`）。
+属性的加密、认证和本地授权要求仍分别适用，type1 公开说明保持独立。
+
+`ServiceManager.BindOwnedReadProvider(handle:q, provider:o, deadline:(ttttt))->()`
+由原登记的同一 unique caller 调用。`provider` 是该 caller 同一总线连接上导出的对象
+路径，必须非根路径且不超过255字节；不能指定另一 owner。原 controller、登记、管理
+租约及准入期限必须仍有效。绑定在同一数据库锁下提交，释放该属性原存储值占用，
+在本次登记内不可重复绑定、更换或解除。绑定后本地读取与替换返回 NotSupported，
+没有缓存值或原初值回退；type1 说明仍可按原接口设置和读取。
+
+零 handle、根路径或超长路径返回 InvalidArgs；未知非零 handle 或非原 owner 返回 AccessDenied；
+非恰好 READ 的属性、已绑定或不支持的模式返回 NotSupported。这些拒绝不提交绑定；
+原期限与现有 Owned 准入规则一致，超时或回复丢失不能证明绑定未发生。
+Rust SDK 另以本地回执预检 inactive/foreign handle，返回 Invalid；该本地拒绝不等于
+请求已到达 broker 或完成权限检查。
+
+Engine 调用原 unique owner 的 `org.sparklink.SsapReadProvider.ReadValue`。请求是
+单个结构体 `(t(qttqtuyyy)qtq)`，响应结构体为 `(qay)`：
+
+| 请求字段 | 类型 | 含义 |
+|---|---|---|
+| request_id | `t` | 本 Engine 的原服务端请求编号，不是 wire 消息事务号 |
+| identity | `(qttqtuyyy)` | controller、generation、connection lifetime、连接 handle、原 RX security epoch/level、local TCID、remote TCID、PI |
+| handle | `q` | 当前请求的 type0 属性 handle |
+| deadline_ns | `t` | 原服务端响应义务的绝对 CLOCK_MONOTONIC 纳秒期限 |
+| maximum_bytes | `q` | 本次 callback 可返回的动态值字节预算 |
+
+响应 `(status:q, value:ay)` 的 status 为0时接受0..maximum_bytes字节，空值是有效结果。
+status 在 `0xAF..0xFF` 时表示应用错误，value 必须为空。其他状态、错误的响应形状、
+超长值、非空错误值、方法失败或缺少可调用的 provider 均映射为应用错误 `0xAF`。
+读取失败使用相应的 ReadRsp 或 ReadByUuidRsp，不返回旧值。原期限耗尽仍按既有
+规则使 Engine 失败，不能改成应用错误后继续接受晚到结果或重置期限。
+
+单个动态值最多2042字节；一个服务端义务内所有 provider 返回值共用2042字节累计
+预算，包含按 UUID 读取多个匹配属性的情况，maximum_bytes 是尚余预算。混合结果中的
+原存储值不计入该动态分配预算，仍受数据库8192字节共享预算约束；完整编码响应、
+协商分片和物理 MTU 继续独立限制最终响应，不能截断或由逻辑预算推导一定可发送。
+
+需要本地授权时先完成原审批，再调用 provider；提供一个值不产生访问批准。等待
+复用原 owner watch、原请求身份和绝对期限，计入原 actor 的8条服务器义务总预算，
+不增加独立请求队列或 Engine。等待应用期间不持数据库锁；actor 可继续处理既有
+RX/client/ACK。消费结果时重新核对原 Native 上下文、登记、owner 及同一个 provider
+绑定对象，再按原顺序形成响应。该复核不是内核与数据库的原子事务，实际发送仍
+由原 Grant/Ticket/epoch/期限约束；callback 返回不等于对端收到。
+
+响应编码并进入原待发 Pending 后，已接受的字节成为不可变响应；随后注销服务不能
+撤回这份响应。它与既有存储值读取具有相同边界，仍由原 Native 上下文和期限限制
+实际发送；注销不保证已经接受的响应不会交付，也不产生对端已收到的证明。
+
+Rust `ServiceRegistration.bind_read_provider` 只封装绑定方法；`ssap::provider::admit`
+复用现有 AuthorizationContext 检查原 sender、type0 读取、恰好 READ 和最大预算，
+`await_reply` 复用同一原期限/owner 丢失等待机制。它们不授予审批，不拥有登记或
+协议 Engine；frontend 在回复前仍须取得新快照并重新准入。应用在创建 Client 的
+同一总线连接上提供 callback。完整 C/Python Provider 收件箱尚未接通；
+它们现有的远端属性读取可消费 provider 产生的协议值，不代表具备服务端 provider
+注册或答复 API。动态写入、描述符 provider 和主动更新仍不在本契约范围。
+
+现有 `ssap-serve` 进程输入 `provider`，将原 READ-only 属性绑定到本进程 callback。
+实际回调输出 `SsapReadProviderPrompt`，包含原身份、期限、maximum_bytes 和带 `p`
+前缀的本地 token。`provide pTOKEN HEX` 返回显式值，`-` 表示成功空值；
+`provider-error pTOKEN STATUS` 返回两位十六进制 `AF..FF` 应用错误。token 与审批
+提示共用进程内不复用的计数，回复命令各自独立；过期、重复、错误 token 或超长输入
+不能结清另一个请求。provider 与 authorizer 各有一个待决槽位，等待 stdin 不占用
+回调执行线程；前台退出先停共享 handle、关闭本地待决答复，再尝试撤回并移除两端点。
+审批 allow 不自动提供值；所有等待仍包含在原请求期限内。
+
+SSAP stdin 管道单行上限4160字节，含换行。终端输入须少于4096字节，含换行；
+达到 Linux canonical 行截断边界会拒绝，避免截短 hex 被当成成功短值。完整2042字节
+值若加命令/token 达到该边界，应通过管道在实际提示后答复；预先排入的新提示前输入
+会被丢弃。该输入限制不改变协议值预算。
+
+标准 T/XS 20001-2025 §7.3 将应用层接口留给实现决定，§7.4.4.5/表51允许读取返回
+上层应用错误。固定 NearLink Host `f0872dfaac33ffa99b80b352f6c05fba2df6414e` 的
+`nlstk_ssap_app_server.c` 公开授权入口仅返回布尔决定；`ssaps_server.c` 的普通读取
+先读取数据库并提交响应，再通知应用。内部可选值字段不是公开动态 provider 契约。
+本实现据此区分授权与提供值，未将参考 Host 当作标准裁判，也不宣称完整符合性。
 
 ### 显式公开的只读属性说明
 

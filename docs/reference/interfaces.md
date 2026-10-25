@@ -223,6 +223,15 @@ C/Python 的基础 Owned 视图复用同一个 Rust `ServiceRegistration`：
 回执不是远端发布；跨语言生命周期、错误和布局见[SSAP 权限](ssap-permissions.md)。
 实机范围始终绑定准确编译 artifact，不从新增 API 名字推导资格。
 
+R156 的 `ServiceRegistration.bind_read_provider(handle, path, Deadline)` 仅绑定原
+caller 同一总线连接上导出的只读 type0 callback；操作位必须恰为 READ。绑定消耗
+原存储值，在该登记内不能更换或解除，后续本地读取/替换返回 NotSupported，没有
+缓存回退。C/Python 的服务端 Provider 收件箱尚缺；现有远端读取可消费动态结果。
+精确签名、错误及预算见[动态只读值](ssap-permissions.md#owned-read-only-provider)。
+SDK 的 `ssap::provider::admit/await_reply` 共用既有身份/期限等待，CLI `ssap-serve`
+通过 `provider` 显式绑定、`provide pTOKEN HEX|-` 或 `provider-error pTOKEN AF..FF`
+完成实际请求；审批与提供值仍独立。源码仍在开发，离线和实机验证待完成。
+
 `Controller.register_agent(path,method)`返回带daemon实际epoch的`AgentRegistration`。
 旧epoch不能撤销同caller/path的新登记。`ApplicationConnection.allocate_reference_security()`
 返回原作者的`SecurityRequest`；begin/observation/cancel仅封装现有broker流程，不另建安全
@@ -305,12 +314,12 @@ system bus角色分离也已在该VM实际核对，但无controller的允许调�
 |---|---|---|
 | Native 管理／诊断 | 版本化请求，controller generation／所有权检查；已实现标准 Diagnostic，限查询；准确新实机范围见资格页 | `slk-native/src/ioctl.rs`、内核 `sparklink_core.rs` |
 | Native WS73 发现／连接／通道 | 已接通路径；实机资格仅限能力页所列准确提交及场景 | `slkd/src/connection.rs`／`controller.rs`、`slk-native` API、内核 socket |
-| D-Bus ServiceManager／RemoteService | RegisterLocalService/ListLocalServices/RemoveLocalService/ReadLocalValue 是本地数据库操作；Owned 登记、读取、替换、说明设置及撤回按原 caller 约束；旧 facade 方法与 RemoteService 已删除；真实远端操作走 Connection 唯一 SSAP actor | `slkd/src/service.rs` |
+| D-Bus ServiceManager／RemoteService | RegisterLocalService/ListLocalServices/RemoveLocalService/ReadLocalValue 是本地数据库操作；Owned 登记、读取、替换、说明设置及撤回按原 caller 约束；新增只读 Provider 绑定只适用于原 Owned type0，离线/实机待验；旧 facade 方法与 RemoteService 已删除；真实远端操作走 Connection 唯一 SSAP actor | `slkd/src/service.rs` |
 | 旧 SSAP ioctl | 业务命令已删除，旧编号 ENOTTY，不提供兼容 fallback；权限类型继续复用 | `slk-native/src/ioctl.rs`、内核 UAPI |
 | 旧 property／write facade | 未发布入口与调用者已删除，历史 248/252 限制仅保留在原资格/纯测试；当前协商与长写限制单独表达 | 原 git／codec 回归 |
 | Profile／transport 实验 | 独立 `slk-experimental`；不构成默认生产能力 | 实验 crate README、构建 feature |
 | UserHost／厂商 Host 适配 | P4 规划，接口／实现／证明／实机均未完成 | ADR 0003 |
-| 新用户态 SSAP Engine | 唯一用户态 actor 的 ExchangeInfo、单值读写/分片、UUID/结构发现、CPCD、Owned 通知/指示及订阅已有对应路径；只读 type1 说明复用发现/读取。动态 Provider、其他描述符与完整服务/长写契约仍未齐备；准确资格仅能力入口 | 唯一实施计划 WP08、准确能力入口 |
+| 新用户态 SSAP Engine | 唯一用户态 actor 的 ExchangeInfo、单值读写/分片、UUID/结构发现、CPCD、Owned 通知/指示及订阅已有对应路径；只读 type1 说明复用发现/读取。R156 仅扩展 Owned type0 动态只读 Provider，源码开发中、离线/实机待验；动态写入、完整 C/Python Provider、其他描述符与完整服务/长写契约仍缺；准确资格仅能力入口 | 唯一实施计划 WP08、准确能力入口 |
 
 C 头、Rust FFI 和 Python 绑定应匹配准确源码，不能根据函数声明推导硬件支持。本表是状态查找参考，完整资格仍仅维护于能力入口；逐字段自动生成 API 及全错误矩阵尚待下一批。
 
@@ -995,10 +1004,26 @@ ws73/wifi_cali/btc_cali原SHA头与组合hash。HCC尚未运行的ROM两端点�
 
 ### 应用拥有的 SSAP 服务
 
-`ServiceManager` 的 Owned 三方法和 `SsapAuthorizer.AuthorizeValue` 的精确字段、
+`ServiceManager` 的 Owned 方法和 `SsapAuthorizer.AuthorizeValue` 的精确字段、
 权限、原期限、所有者退出及写入不确定性见[SSAP 服务所有权](ssap-permissions.md#应用拥有的本地服务与逐请求审批)。
 旧 `RegisterLocalService` 继续拒绝授权位；新登记与等待审批复用唯一 Engine 和
 实际约束发送，不代表 CPCD、长写、可信身份、Bond 或全部多应用部署已验收。
+
+新增的只读 Provider 使用下列未发布契约；源码开发中，离线与实机验证待完成：
+
+| 接口 | 签名 | 约束 |
+|---|---|---|
+| `ServiceManager.BindOwnedReadProvider` | `(handle:q, provider:o, deadline:(ttttt))->()` | 原 owner、恰好 READ 的 type0；非根对象路径最多255字节；同登记内只绑定一次 |
+| `org.sparklink.SsapReadProvider.ReadValue` | `(request:(t(qttqtuyyy)qtq))->(qay)` | 原 unique owner；request 依次为请求编号、原 RX identity、属性 handle、原绝对期限、剩余动态字节预算 |
+
+响应 status 为0时允许空值至 maximum_bytes；`0xAF..0xFF` 是携空值的应用错误。
+畸形、超限或缺少 provider 映射为应用错误 `0xAF`，原期限耗尽仍使 Engine 失败。
+每义务动态返回值累计最多2042字节，UUID 多项共享；静态数据库预算及最终 PDU/MTU
+检查独立。绑定后本地读取/替换 NotSupported，type1 说明不受影响。审批先于 provider，
+响应前重核原 Native 上下文及同一登记绑定；详情见
+[动态只读值契约](ssap-permissions.md#owned-read-only-provider)。
+已经编码为 Pending 的不可变响应不会因随后 unregister 被撤回，实际发送仍受原
+Native 上下文及期限限制；注销不承诺原已接受响应未交付。
 
 
 ## 安装布局与卸载边界

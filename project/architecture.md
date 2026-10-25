@@ -1219,6 +1219,21 @@ Owned type1 说明以原属性 handle 定位，由原 caller 显式设置为公�
 [说明契约](../docs/reference/ssap-permissions.md#显式公开的只读属性说明)。
 源码实现、离线结果和实际对端校验按各自准确产物登记；公开只读不代表可信身份。
 
+R156 在同一 Owned 登记中增加只读 type0 Provider，源码实现中，离线与实机待验。
+原 unique caller 只可为恰好 READ 的属性绑定一次同总线对象；绑定消耗原存储值，
+不提供更换、解除或缓存回退，本地读取与替换 NotSupported。应用按请求提供值，
+唯一 Engine 仍先检查原操作/安全/授权，再等待 provider；type1 说明不进入该回调。
+
+等待复用原 owner watch、8条服务器义务预算和原绝对期限，不持数据库锁。结果消费
+重核原 Native 上下文及同一登记绑定，再经原 Grant/Ticket 发送。单值及每义务动态
+结果累计最多2042字节，UUID 多项共享，静态数据库及完整响应/MTU预算独立；
+应用错误与期限失败保持不同终态。响应编码为 Pending 后，后续注销不撤回已经接受
+的不可变字节，发送仍受原 Native 上下文及期限约束。Rust SDK 提供薄绑定及共享
+准入/等待，CLI frontend 以独立槽位等候显式值，完整 C/Python Provider
+收件箱、动态写入及相关完整生命周期仍缺。精确契约见
+[动态只读值](../docs/reference/ssap-permissions.md#owned-read-only-provider)，
+架构决策见 ADR0004；此扩展不建立新的协议 Engine 或安全状态来源。
+
 
 ## 历史实现退休约束
 

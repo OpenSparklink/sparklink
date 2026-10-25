@@ -188,6 +188,40 @@ impl ServiceRegistration {
         original.remaining()?;
         Ok(())
     }
+    /// Bind this owner's read-only property to a callback on the same caller
+    /// connection. The daemon permanently discards its stored value; there is
+    /// no rebind, unbind or fallback. Timeout or a lost reply can follow commit,
+    /// so an uncertain result must not be retried automatically.
+    pub async fn bind_read_provider(
+        &self,
+        handle: u16,
+        provider: zbus::zvariant::OwnedObjectPath,
+        original: Deadline,
+    ) -> Result<()> {
+        if self.state != RegistrationState::Active
+            || !self.receipt.2.contains(&handle)
+            || provider.as_str() == "/"
+            || provider.as_str().len() > 255
+        {
+            return Err(ApplicationError::Invalid(
+                "inactive/foreign property or invalid provider path",
+            ));
+        }
+        let request: wire::OwnedReadProviderRequest = (
+            handle,
+            provider,
+            slk_contract::deadline_wire(original.stamp()),
+        );
+        let _: () = bounded(
+            &self.controller.client,
+            original,
+            self.controller
+                .call(wire::MANAGER, wire::BIND_READ_PROVIDER_OWNED, &request),
+        )
+        .await?;
+        original.remaining()?;
+        Ok(())
+    }
     /// Set a public, read-only UTF-8 property description (1..244 bytes,no NUL).
     /// This is an original-owner local commit, not remote publication or delivery.
     /// It changes neither property permissions nor the property's value. A lost

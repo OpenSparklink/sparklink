@@ -91,6 +91,37 @@ CLI 可用 `ssap-read-description CONNECTION HANDLE [MINIMUM]`；`ssap-serve` �
 边界与错误见[只读说明契约](../reference/ssap-permissions.md#显式公开的只读属性说明)。
 本段是接口用法，不宣称该示例或最新分支已通过实机验收。
 
+## 需要按请求生成只读值时
+
+上面的 C/Python 示例使用数据库存储值。R156 正在为原 Owned 属性增加动态只读
+Provider，完整 C/Python Provider 收件箱尚未接通；不要将 `next_authorization()`
+的布尔批准当作提供值。现有 C/Python 远端属性读取可以接收 provider 返回的值，
+仍需核对实际对端结果与准确产物资格。
+
+Rust `ServiceRegistration.bind_read_provider` 负责绑定，`ssap::provider` 提供共享准入
+和有界等待；应用须在创建 Client 的同一总线连接上导出 `org.sparklink.SsapReadProvider`。
+属性操作位必须恰为
+READ，绑定消耗原初值且在该登记内不可更换或解除，之后本地读取与替换返回
+NotSupported。公开 type1 说明仍按上节独立处理。准备接入前先按
+[动态只读值契约](../reference/ssap-permissions.md#owned-read-only-provider)
+实现有界结果、应用错误和原期限。
+源码开发、离线及实机验收分开记录，当前新增路径的验证仍待完成。
+
+使用现有前台 `ssap-serve` 时，将 OPS 设为1，ACCESS 按应用需要设置；原初值只用于
+登记，绑定后即释放。进入前台后输入 `provider`，等待 `SsapReadProviderBound` 本地
+绑定回执，再让对端发起真实属性读取。实际请求显示 `SsapReadProviderPrompt`，
+按提示的 `pTOKEN` 回复 `provide pTOKEN HEX`，空值用 `provide pTOKEN -`；应用失败
+用 `provider-error pTOKEN AF`，状态允许两位十六进制 `AF..FF`。
+
+若属性还要求本地审批，先回答原 `yes TOKEN`/`no TOKEN` 提示，再提供值；批准本身
+不生成成功值。两次等待共用原期限。错误或过期 token、重复答复、超出提示预算的值
+均拒绝；不要预先发送答复。输入 `quit` 会先停止本地答复，再撤回登记和移除回调。
+对端仍须检查实际字节或应用错误，前台打印不表示远端已经收到。
+
+完整2042字节值的 hex 加命令/token 可能触及终端的行截断边界。终端单行须少于
+4096字节（含换行）；超出时使用管道，在读到实际提示后发送答复，单行不超过4160
+字节。工具拒绝触及截断边界的终端行，不会以截短值冒充成功。
+
 ## 处理失败和退出
 
 EACCES 时核对服务组及实际 system-bus 策略；EOPNOTSUPP 时核对操作位、审批模式和

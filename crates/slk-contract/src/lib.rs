@@ -82,6 +82,25 @@ pub mod ssap {
     pub type SsapAuthorizationPrompt =
         (u64, SsapAuthorizationIdentity, u16, bool, u64, Vec<u8>, u8);
 
+    /// Application value request, independently of authorization. Type0 READ
+    /// only; the original receipt/deadline and cumulative value budget are not
+    /// renewed for this callback. Empty success differs from application error.
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type)]
+    pub struct ReadProviderRequest {
+        pub request_id: u64,
+        pub identity: SsapAuthorizationIdentity,
+        pub property: u16,
+        pub deadline_ns: u64,
+        pub maximum_bytes: u16,
+    }
+    /// Status0 has 0..maximum_bytes value bytes. Status0xAF..0xFF is an
+    /// application error and requires an empty value. No other status is valid.
+    pub type ReadProviderReply = (u16, Vec<u8>);
+    pub const READ_PROVIDER_INTERFACE: &str = "org.sparklink.SsapReadProvider";
+    pub const READ_PROVIDER_METHOD: &str = "ReadValue";
+    pub const MAX_PROVIDER_VALUE_BYTES: usize = 2042;
+    pub const PROVIDER_UNAVAILABLE: u16 = 0xaf;
+
     /// Local manager staging and caller-owned registration are distinct roles.
     pub mod local {
         pub const MANAGER: &str = "org.sparklink.ServiceManager";
@@ -94,6 +113,7 @@ pub mod ssap {
         pub const READ_OWNED: &str = "ReadOwnedLocalValue";
         pub const REPLACE_OWNED: &str = "ReplaceOwnedLocalValue";
         pub const SET_DESCRIPTION_OWNED: &str = "SetOwnedLocalDescription";
+        pub const BIND_READ_PROVIDER_OWNED: &str = "BindOwnedReadProvider";
         /// Implementation bound in UTF-8 bytes, not a standard maximum.
         pub const MAX_DESCRIPTION_BYTES: usize = 244;
         pub type PropertyDefinition = (Vec<u8>, u32, u32, Vec<u8>);
@@ -109,6 +129,7 @@ pub mod ssap {
         pub type OwnedHandleRequest = (u16, crate::Deadline);
         pub type OwnedValueRequest = (u16, Vec<u8>, crate::Deadline);
         pub type OwnedDescriptionRequest = (u16, String, crate::Deadline);
+        pub type OwnedReadProviderRequest = (u16, zvariant::OwnedObjectPath, crate::Deadline);
     }
     pub const DISCOVER: &str = "DiscoverSsap";
     pub const CACHED: &str = "GetCachedSsap";
@@ -331,6 +352,32 @@ pub fn matches_connection(controller: ControllerId, path: &str, info: &Connectio
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn read_provider_contract_preserves_independent_value_and_deadline_fields() {
+        use zvariant::Type;
+        let request = ssap::ReadProviderRequest {
+            request_id: 23,
+            identity: (2, 7, 11, 3, 19, 1, 10, 10, 0),
+            property: 29,
+            deadline_ns: 31,
+            maximum_bytes: 37,
+        };
+        assert_eq!(request.request_id, 23);
+        assert_eq!(request.identity, (2, 7, 11, 3, 19, 1, 10, 10, 0));
+        assert_eq!(
+            (request.property, request.deadline_ns, request.maximum_bytes),
+            (29, 31, 37)
+        );
+        assert_eq!(
+            ssap::ReadProviderRequest::SIGNATURE.to_string(),
+            "(t(qttqtuyyy)qtq)"
+        );
+        assert_eq!(ssap::ReadProviderReply::SIGNATURE.to_string(), "(qay)");
+        assert_eq!(
+            ssap::local::OwnedReadProviderRequest::SIGNATURE.to_string(),
+            "(qo(ttttt))"
+        );
+    }
     #[test]
     fn authorizer_contract_preserves_literal_field_order_and_signatures() {
         use zvariant::Type;

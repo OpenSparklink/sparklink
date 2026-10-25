@@ -1121,6 +1121,7 @@ struct ServerPacket {
 struct ServerDecision {
     packet: ServerPacket,
     approvals: Vec<crate::ssap_authorization::Approval>,
+    values: Vec<crate::ssap_read_provider::ReadValue>,
 }
 type ServerTask = std::pin::Pin<Box<dyn std::future::Future<Output = ServerDecision> + Send>>;
 
@@ -1190,13 +1191,82 @@ async fn authorize_server(packet: ServerPacket, database: Store) -> ServerDecisi
             }
         }
     }
-    ServerDecision { packet, approvals }
+    let mut values = Vec::new();
+    if let Some(c) = packet.constraint {
+        let targets = database
+            .lock()
+            .map(|db| {
+                if packet.bytes[0] == 10 {
+                    slk_protocol::ssap::read_uuid::Request::decode(packet.mtu, &packet.bytes)
+                        .ok()
+                        .map(|r| db.uuid_read_provider_targets(r, packet.level, &approvals))
+                        .unwrap_or_default()
+                } else {
+                    match ValuePdu::decode(packet.mtu, &packet.bytes) {
+                        Ok(ValuePdu::Read {
+                            handle,
+                            data_type: 0,
+                        }) => db
+                            .read_provider_target(handle, packet.level, &approvals)
+                            .into_iter()
+                            .collect(),
+                        _ => vec![],
+                    }
+                }
+            })
+            .unwrap_or_default();
+        // Maximum 64 targets (the existing DB property budget). All callbacks
+        // share one response obligation, deadline and 2042-byte value budget.
+        let mut remaining = slk_contract::ssap::MAX_PROVIDER_VALUE_BYTES;
+        for target in targets {
+            if Instant::now() >= packet.deadline {
+                break;
+            }
+            let request = slk_contract::ssap::ReadProviderRequest {
+                request_id: packet.request_id,
+                identity: (
+                    c.controller,
+                    c.generation,
+                    c.lifetime,
+                    c.handle,
+                    c.security_epoch,
+                    packet.level,
+                    c.local_tcid,
+                    c.remote_tcid,
+                    c.pi,
+                ),
+                property: target.handle,
+                deadline_ns: c.deadline_monotonic_ns,
+                maximum_bytes: remaining as u16,
+            };
+            let result = target.binding.read(request, packet.deadline).await;
+            if let Ok(value) = &result {
+                remaining -= value.len();
+            }
+            values.push(crate::ssap_read_provider::ReadValue { target, result });
+        }
+    }
+    ServerDecision {
+        packet,
+        approvals,
+        values,
+    }
 }
 
+#[cfg(test)]
 fn server_response(
     packet: &ServerPacket,
     database: &Store,
     approvals: &[crate::ssap_authorization::Approval],
+    configurations: &mut crate::ssap_engine_config::ClientConfigurations,
+) -> io::Result<Vec<u8>> {
+    server_response_resolved(packet, database, approvals, &[], configurations)
+}
+fn server_response_resolved(
+    packet: &ServerPacket,
+    database: &Store,
+    approvals: &[crate::ssap_authorization::Approval],
+    values: &[crate::ssap_read_provider::ReadValue],
     configurations: &mut crate::ssap_engine_config::ClientConfigurations,
 ) -> io::Result<Vec<u8>> {
     let raw = &packet.bytes;
@@ -1207,7 +1277,15 @@ fn server_response(
                 let database = database
                     .lock()
                     .map_err(|_| io::Error::other("database poisoned"))?;
-                if approvals.is_empty() {
+                if !values.is_empty() {
+                    database.read_uuid_resolved(
+                        request,
+                        negotiated,
+                        packet.level,
+                        approvals,
+                        values,
+                    )
+                } else if approvals.is_empty() {
                     database.read_uuid(request, negotiated, packet.level)
                 } else {
                     database.read_uuid_authorized(request, negotiated, packet.level, approvals)
@@ -1278,7 +1356,9 @@ fn server_response(
                     )
                     .map_err(io::Error::other);
             }
-            if approvals.is_empty() {
+            if !values.is_empty() {
+                database.answer_resolved(request, negotiated, packet.level, approvals, values)
+            } else if approvals.is_empty() {
                 database.answer(request, negotiated, packet.level)
             } else {
                 database.answer_authorized(request, negotiated, packet.level, approvals)
@@ -1365,10 +1445,11 @@ fn complete_server(
         }
         return Ok(None);
     }
-    let response = server_response(
+    let response = server_response_resolved(
         &decision.packet,
         database,
         &decision.approvals,
+        &decision.values,
         configurations,
     )?;
     Ok(Some(Pending {
@@ -2521,6 +2602,7 @@ mod tests {
         let store = std::sync::Arc::new(std::sync::Mutex::new(db));
         let mut configuration = crate::ssap_engine_config::ClientConfigurations::default();
         let decision = |bytes: Vec<u8>, deadline| ServerDecision {
+            values: vec![],
             packet: ServerPacket {
                 bytes,
                 deadline,

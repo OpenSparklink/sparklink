@@ -104,17 +104,30 @@ pub fn admit(
 /// its own D-Bus progress by invoking foreign callbacks on that executor thread.
 pub async fn await_decision(
     result: oneshot::Receiver<bool>,
-    mut lost: watch::Receiver<bool>,
+    lost: watch::Receiver<bool>,
     original: Instant,
 ) -> bool {
+    await_reply(result, lost, original).await.unwrap_or(false)
+}
+
+/// Keep one actual reply within the original owner scope and deadline.
+pub(crate) async fn await_reply<T>(
+    result: oneshot::Receiver<T>,
+    mut lost: watch::Receiver<bool>,
+    original: Instant,
+) -> Option<T> {
     if *lost.borrow() || lost.has_changed().is_err() || original <= Instant::now() {
-        return false;
+        return None;
     }
     tokio::select! {biased;
-        _=lost.changed()=>false,
-        result=tokio::time::timeout_at(original.into(),result)=>
-            matches!(result,Ok(Ok(true))) && !*lost.borrow()
-                && lost.has_changed().is_ok() && original > Instant::now(),
+        _=lost.changed()=>None,
+        result=tokio::time::timeout_at(original.into(),result)=> {
+            if !*lost.borrow() && lost.has_changed().is_ok() && original > Instant::now() {
+                result.ok().and_then(|reply| reply.ok())
+            } else {
+                None
+            }
+        },
     }
 }
 

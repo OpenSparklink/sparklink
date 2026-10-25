@@ -84,7 +84,7 @@ class PrepareInputs(unittest.TestCase):
                 self.assertEqual((source / name).read_bytes(), (args.output / name).read_bytes())
             self.assertEqual((args.output / 'root/usr/share/sparklink/tools/ws73_firmware_profile.py').read_bytes(),
                              (target.HERE / 'ws73_firmware_profile.py').read_bytes())
-            for name in ('ws73_native_pair.py', 'ws73_channel_sibling.py'):
+            for name in ('ws73_native_pair.py', 'ws73_channel_sibling.py', 'ws73_ssap_read_provider.py'):
                 self.assertFalse((source / 'root/usr/share/sparklink/tools' / name).exists())
                 self.assertEqual((args.output / 'root/usr/share/sparklink/tools' / name).read_bytes(),
                                  (target.HERE / name).read_bytes())

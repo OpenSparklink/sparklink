@@ -106,8 +106,8 @@ def wait_text(process, path, pattern, deadline, min_count=1, *, max_count=16, co
 
 @contextmanager
 def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api=None,read_only=False,updates=False,application_uid=1000,operations=5):
-    if type(operations)is not int or operations not in (3,5) or (operations!=5 and sdk_api is not None):
-        raise CaptureError('explicit CLI READ/WRITE_COMMAND or original publisher operations required')
+    if type(operations)is not int or operations not in (1,3,5) or (operations!=5 and sdk_api is not None):
+        raise CaptureError('explicit CLI READ, READ/WRITE_COMMAND or original publisher operations required')
     if application_uid not in (1000,1005):raise CaptureError('fixed publisher test role required')
     if application_uid==1005:
         from ws73_application_role import require_vm

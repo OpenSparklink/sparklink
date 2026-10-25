@@ -75,7 +75,7 @@ def ssap_command(run,row,entry,args,expected,*,api=None,expected_size=32,applica
     return ssap_commands(run,row,[(entry,args,expected)],api=api,expected_size=expected_size,application_uid=application_uid)[0]
 
 
-def ssap_commands(run,row,calls,*,api=None,expected_size=32,application_uid=1000,batch=None):
+def ssap_commands(run,row,calls,*,api=None,expected_size=32,application_uid=1000,batch=None,after_start=None):
     """One finite supervisor for the existing actual SDK children,not a wire loop.
 
     All children reach their real retained-caller barrier before any release.
@@ -83,6 +83,8 @@ def ssap_commands(run,row,calls,*,api=None,expected_size=32,application_uid=1000
     """
     if type(calls)is not list or len(calls)not in (1,2):raise CaptureError('one or two bounded SDK calls required')
     paired=len(calls)==2
+    if after_start is not None and (not callable(after_start) or paired):
+        raise CaptureError('single-child bounded after-start callback required')
     if paired:
         from ws73_application_role import require_vm
         require_vm('ws73.socket_benchmark_apps=1')
@@ -129,6 +131,10 @@ def ssap_commands(run,row,calls,*,api=None,expected_size=32,application_uid=1000
                 proc.stdin.write(b'start\n');proc.stdin.flush();app['ssap_released_wall_ns']=time.time_ns()
             if group is not None:group.update(released_wall_ns=time.time_ns(),wait_deadline_monotonic_ns=deadline)
             run.save()
+            if after_start is not None:
+                if time.monotonic_ns()>=deadline:raise CaptureError('SSAP after-start original deadline')
+                after_start(result[0],deadline)
+                if time.monotonic_ns()>=deadline:raise CaptureError('SSAP after-start original deadline')
             for proc,app,stdout,stderr,entry in processes:
                 proc.wait(timeout=max(.001,(deadline-time.monotonic_ns())/1e9))
                 app.update(exit=proc.returncode,end_wall_ns=time.time_ns(),stdout=stdout.read_text(),stderr=stderr.read_text());run.save()

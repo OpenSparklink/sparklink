@@ -805,46 +805,14 @@
     "Follow qualification_view.current_batch.next; retain the full S0-S6/19WP/10FV/12DG and original acceptance scope.",
     "Recheck source, dirty changes, actual artifacts, tool identities, per-leaf device ownership and shared build budget before VM-only work."
   ],
-  "issue_sync_status": "R158_SOURCE_OFFLINE_SUMMARIES_SYNCED_PRIVATE_RESULTS_LOCAL",
-  "issue_sync_receipt": {
-    "source_only": true,
-    "comments": [
-      {
-        "repo": "sparklink",
-        "issue": 3,
-        "id": 6397019931,
-        "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6397019931",
-        "body_verified": true
-      },
-      {
-        "repo": "sparklink",
-        "issue": 8,
-        "id": 6397020709,
-        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6397020709",
-        "body_verified": true
-      },
-      {
-        "repo": "linux",
-        "issue": 17,
-        "id": 6397021567,
-        "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6397021567",
-        "body_verified": true
-      },
-      {
-        "repo": "linux",
-        "issue": 19,
-        "id": 6397084190,
-        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6397084190",
-        "body_verified": true
-      }
-    ]
-  },
+  "issue_sync_status": "R159_PUBLIC_SOURCE_OFFLINE_SUMMARY_NOT_YET_RECORDED_PRIVATE_DETAILS_STAY_LOCAL",
+  "issue_sync_receipt": null,
   "previous_goal_turn_classification": "PROGRESS_ARCHITECTURE_CANONICAL_DEPLOYMENT_AND_ACTUAL_PACKAGE_BASE_SCOPED_VM_EVIDENCE_FULL_ARCHITECTURE_OPEN",
   "current_goal_turn_classification": {
     "classification": "PROGRESS",
     "goal_complete": false,
     "authority": "qualification_view.current_batch",
-    "reason": "Next bounded Owner-exit slice planned on the existing Provider path; this transition creates no source/offline, actual-device or formal qualification."
+    "reason": "Next bounded Provider original-deadline/late-reply slice planned on the existing path; this transition creates no source/offline, actual-device or formal qualification."
   },
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
@@ -2040,9 +2008,9 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP08-WP16-WP17-R5f158-provider-owner-exit",
-      "state": "PUBLIC_SOURCE_AND_OFFLINE_SCOPE_ONLY_FULL_GOAL_OPEN",
-      "production_behavior": "Exercise the existing sole SSAP Engine and Owned read Provider: observe two actual Provider prompts, then SIGKILL the corresponding Owner while each request is outstanding; one receiver per connection phase, with C/Python requesters alternating. No new Host, Engine, fallback or protocol path is planned.",
+      "id": "WP08-WP16-WP17-R5f159-provider-original-deadline-late-reply",
+      "state": "PLANNED_BOUNDED_PROVIDER_ORIGINAL_DEADLINE_LATE_REPLY_NO_NEW_QUALIFICATION_FULL_SCOPE_OPEN",
+      "production_behavior": "Exercise the existing sole SSAP Engine and Owned read Provider through two live authorized Provider prompts. Keep each Owner alive without answering, observe the immutable SDK timeout and Provider deadline terminal, then reject one late original-token reply. Preserve independent ordinary CUTC delivery and the outer new-lifetime path. No new Host, Engine, fallback, same-actor recovery or renewed timeout is planned.",
       "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
       "work_packages": [
         "WP08",
@@ -2052,62 +2020,69 @@
       "records": [],
       "predecessor_archive": {
         "history": "batch_history",
-        "id": "WP08-WP16-WP17-R5f157-provider-error-empty-continued-read",
-        "canonical_sha256": "568e8e6b3514cdcfa28e89a4e18ac1dbe9c816bfce8616c22b7af284c0795412"
+        "id": "WP08-WP16-WP17-R5f158-provider-owner-exit",
+        "canonical_sha256": "c1271ac595fd62f7901ef503f9ac385e837744e3b199c8d920ec1063383891ee"
       },
-      "public_scope": "Only source/offline summaries are public. Exact compiled/executor/report identities and actual device results remain local; non-disclosure is not a statement that execution has or has not occurred.",
+      "public_scope": "Only source/plan and subsequent source/offline summaries are public. Exact compiled/executor/report identities and actual device results remain local; non-disclosure is not a statement that execution has or has not occurred.",
       "implementation_sources": {
-        "plan_source_baseline": "31e4025ed4a2ff8ec30f2470f155ac7488be3759",
-        "scope": "Public source/offline view only; private compiled, executor, report and actual results are not disclosed or inferred.",
-        "public_source": "c0f547bd65303eeca4eb0f4149936f3e829121ae",
-        "public_commits": [
-          {
-            "stage": "plan",
-            "commit": "3e81c45c25f45f81fb9f121e7f5c9c60a8870066"
-          },
-          {
-            "stage": "gate",
-            "commit": "30a08b910026c59284189812f91323a7760e935c"
-          },
-          {
-            "stage": "selected-adapter-contract-fix",
-            "commit": "c0f547bd65303eeca4eb0f4149936f3e829121ae"
-          }
-        ],
-        "source_offline_scope": "Existing Owner-exit test callers and explicit selected-adapter contract; exact public tested snapshot. No Rust/Host/Engine change or transfer of hardware qualification."
+        "plan_source_baseline": "fa51d4ea9d85df1a46abfc06ea15ea6025dfa942",
+        "scope": "Plan-source identity only; no new compiled artifact, execution tool, test result or signed qualification report identity is inferred."
+      },
+      "deadline_contract": {
+        "sdk": "The requester captures its original absolute deadline before broker identity/RPC work. Observe the actual SDK ETIMEDOUT and returned timestamp; neither a supervisor timeout nor a new timeout is equivalent.",
+        "provider": "The receiving Engine establishes its own original response deadline on the real request, subject to the existing reassembly bound; Provider authorization and callback reuse it without renewal.",
+        "physical_drain": "The requester physical response obligation starts at first software admission. Its drain deadline is independent of SDK cancellation and Provider RX time; caller retirement does not cancel the physical debt.",
+        "observation": "Bounded terminal/capture supervision is a separate observation budget, never an extension of any protocol deadline. The three production deadlines share a guest monotonic clock but have distinct origins and need not be equal."
       },
       "invariants": [
-        "Use the same physical Session, original Owned binding, Grant, command/data credit, Ticket and nonrenewed request deadline; callback identity and actual prompt are the controlled barrier.",
-        "Record actual SIGKILL and process termination, not normal quit or an inferred destructor. Within the original request deadline accept only the actual correlated AF or error4 peer response; SDK EIO alone does not identify the wire status.",
-        "A subsequent Read on the retired handle must return actual error4. An independent Owner and ordinary business must remain usable; preserve existing baseline assertions and budgets.",
-        "Do not fall back to consumed stored values or erase already-started physical obligations. Software admission, USB completion and protocol response do not alone prove unrelated application continuity."
+        "Reuse the unique physical Session, immutable Owned binding, generation/lifetime, Grant, separate command/data credit and actual submission Ticket. Record the authorized live prompt and original token as the controlled barrier.",
+        "Preserve the original SDK, receiving Provider and admitted physical-drain deadlines separately. Return promptly from the prompt barrier so waiting for Provider expiry cannot contaminate the existing SDK return observation.",
+        "Keep the original Owner alive through expiry and the late input; require actual ETIMEDOUT rather than success/EIO/arbitrary RPC failure. Observe the receiver original-deadline Failed diagnostic and record requester drain/state independently; neither actor is promised healthy or rearmed on the same lifetime.",
+        "After both SDK and Provider deadlines and the observed receiver terminal, reject the exact old token with its prepared random value. An internal AF candidate is not a submitted packet; do not require an error response after expiry or fall back to stored values.",
+        "For a bounded complete capture interval match the request at both endpoints and reject extra response, duplicate, fallback or late-value delivery attributable to it. Missing capture or uncertain required timing is not evidence of absence; keep conditional same-guest clock/quantization assumptions explicit.",
+        "Place the destructive deadline slice after all selected timely SSAP baselines. Run the existing ordinary CUTC random request/reply path once after terminal and late-input rejection; do not schedule a new positive SSAP operation on a terminal actor.",
+        "Preserve already-started physical obligations, finite budgets and explicit Down/cleanup. A later outer connection lifetime is a new actor witness, not restoration of the old actor or natural device recovery."
       ],
+      "offline_checks": {
+        "scope": "No R159 result is imported by this plan; R158 source/offline and finite actual receipts retain their exact archived scope.",
+        "required": [
+          "Strict source/build and current affected tool/SDK/daemon checks only where this batch changes them; retain the existing original deadline/error semantics and validators.",
+          "Finite positive fixtures and rejection controls for missing/wrong prompt/token/identity, altered or conflated deadlines, arbitrary terminal errors, unexpected Owner exit, late wire/value, capture loss and missing ordinary peer reply.",
+          "Source mapping to production and fixed NearLink Host comparison, with reference timeout/fallback differences explicit; fixture or source-audit results are not formal or hardware qualification."
+        ]
+      },
       "exit_conditions": [
-        "Two actual prompt-before-SIGKILL cases, one per connection phase and distinct receiver; alternate actual C/Python requesters without claiming a full API/role/direction cross-product.",
-        "Bind prompt, original owner/generation/lifetime, request deadline, kill/exit receipt, actual peer AF-or4 response, retired-read4 and complete paired endpoint capture.",
-        "Verify an independent Owner actual response and ordinary application payload validation after the controlled exit; retain the selected existing Owned/ordinary baseline gates.",
-        "Use accurate new artifact/executor identities, independent finite evidence audit and fail-closed material controls before any scoped registration; preserve all historical results."
+        "One actual expiry case per connection phase: C requester then Python, current sender0/target1, with reversed physical roles and two distinct receiving controller identities; do not claim an API-by-direction cross-product.",
+        "Retain the selected timely Owned, Provider FF/empty/random and pending Owner-exit gates on the exact new artifact before expiry; explicitly add the new SDK call without dropping any old calls or assertions.",
+        "Bind actual prompt, Owner PID/binding, request/token, generation/lifetime, SDK and Provider deadlines, actual SDK ETIMEDOUT and receiver original-deadline Failed receipt. Record the requester actor/drain outcome separately, not as an assumed healthy-source invariant.",
+        "Send one prepared late random value to the still-live original Owner only after both original deadlines and receiver terminal; require the stale/expired-token rejection and no accepted late Provider result or fallback in the complete finite evidence window.",
+        "Prove ordinary CUTC peer-validated random request/reply after the terminal/late-input barrier, with identity, finite queues, actual paired capture and applicable credit checks; confirm terminal state remains terminal.",
+        "Use explicit Owner cleanup and outer typed Down. Positive traffic on the following reversed-role lifetime may witness phase0-to-phase1 use only; no post-phase1 or same-actor recovery claim without an actual later witness.",
+        "Keep compiled artifact, execution tools and signed report identities separate. Only complete independently audited finite evidence and fail-closed material controls may later add a scoped record; no current result is imported by this plan."
       ],
-      "offline_status": "EXACT_PUBLIC_SOURCE_TOOLS_AND_STRICT_DOCS_PASS_NOT_FORMAL_OR_HARDWARE",
+      "offline_status": "NO_R159_OFFLINE_RESULT_IMPORTED_BY_THIS_PLAN; prior R158 checks retain their original source scope.",
       "formal_status": "UNPROVED_FOR_THIS_CHANGE",
-      "hardware_status": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED; public source/offline completion does not establish whether a private run occurred or passed.",
+      "hardware_status": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED; no execution outcome or non-execution inference from this public plan.",
       "checks": {
-        "source": "SIGNED_SOURCE_MIRRORED",
-        "tooling": "OFFLINE_PASS",
-        "documentation": "PUBLIC_STRICT_HTML_PASS",
+        "source": "PLAN_ONLY",
+        "tooling": "NOT_RECORDED_FOR_R159",
+        "documentation": "NOT_RECORDED_FOR_R159",
         "new_application_helpers": "LOCAL_AUTHORITY_NOT_DISCLOSED",
         "new_vm_gate": "LOCAL_AUTHORITY_NOT_DISCLOSED",
         "independent_actual_audit": "LOCAL_AUTHORITY_NOT_DISCLOSED",
         "qualification_registration": "LOCAL_AUTHORITY_NOT_DISCLOSED"
       },
       "remaining_conditions": [
-        "Original-deadline expiry and late Provider reply are a separate later slice. Do not require a post-deadline error packet or the full control-plane race matrix for this slice.",
-        "C/Python Provider inbox, dynamic writes, long values, full SSAP/Profile, data length/credit/backpressure, multiple channels/four-device business, security/Bond, PM, deployment and release remain in the original plan.",
-        "Natural fault RCA, nonmanual recovery, E/mixed/cold-ROM and production identity remain open; manual, hub or QMP operations do not establish natural recovery."
+        "No same-lifetime actor restart or post-deadline response promise. C/Python Provider inbox, every cancellation/Agent race and all API/direction combinations remain separate work, not prerequisites for this finite slice.",
+        "Continue sole Engine services/Profile, dynamic writes, long values, original length/credit/backpressure, multichannel/four-device business, security/Bond, PM, deployment and release under the unchanged complete plan.",
+        "Natural fault RCA, nonmanual recovery, E/mixed/cold-ROM and production identity remain open; manual, hub and QMP actions or deliberate outer reconnect do not establish natural recovery.",
+        "Retain all original failures, counterexamples and qualification identities; only changed-path invariants gate this batch. UserHost remains low-priority planning."
       ],
       "next": [
-        "Continue the original bounded implementation and evidence process under the existing private qualification authority; no actual-test outcome is inferred from this public summary.",
-        "Keep original-deadline expiry/late reply separate and continue the complete data/security/SSAP plan without requiring every control-plane race first."
+        "Complete the opt-in Provider original-deadline and late-token gate at the last SSAP position, reusing existing SDK/prompt/terminal/ordinary helpers and preserving the current baseline validators.",
+        "Finish scoped source/offline/documentation checks, then prepare accurate VM-only artifacts with existing per-leaf ownership and shared build budget; record the three deadline origins separately.",
+        "Independently audit both finite expiry cases, late-input refusal, complete capture, ordinary CUTC continuity and the available next-lifetime witness; preserve every failed attempt.",
+        "Seal/register only complete finite evidence with separate compiled/executor/report identities and source-only public summaries; continue data/security/SSAP without requiring the whole control-plane race set."
       ],
       "issues": [
         "OpenSparklink/sparklink#3",
@@ -2116,88 +2091,12 @@
         "OpenSparklink/linux#19"
       ],
       "issue_sync": {
-        "status": "PUBLIC_SOURCE_OFFLINE_SUMMARIES_POSTED_AND_READ_BACK",
+        "status": "R159_SOURCE_OFFLINE_SUMMARY_NOT_YET_RECORDED",
         "source_only": true,
         "private_hardware_published": false,
         "original_issues_open": true,
-        "comments": [
-          {
-            "repo": "sparklink",
-            "issue": 3,
-            "id": 6397019931,
-            "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6397019931",
-            "body_verified": true
-          },
-          {
-            "repo": "sparklink",
-            "issue": 8,
-            "id": 6397020709,
-            "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6397020709",
-            "body_verified": true
-          },
-          {
-            "repo": "linux",
-            "issue": 17,
-            "id": 6397021567,
-            "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6397021567",
-            "body_verified": true
-          },
-          {
-            "repo": "linux",
-            "issue": 19,
-            "id": 6397084190,
-            "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6397084190",
-            "body_verified": true
-          }
-        ],
-        "scope": "Existing four issue source/offline summaries only; no private actual-test metadata published."
-      },
-      "offline_checks": {
-        "scope": "Tool fixtures and strict public documentation at the exact source snapshot. These are not new formal or actual-device qualifications.",
-        "tooling": {
-          "command": [
-            "python3",
-            "-B",
-            "-m",
-            "unittest",
-            "discover",
-            "-s",
-            "tools/tests",
-            "-v"
-          ],
-          "signed_public_source": "c0f547bd65303eeca4eb0f4149936f3e829121ae",
-          "status": "OFFLINE_PASS",
-          "scope": "Original tested public source snapshot only; no hardware inference.",
-          "tests": 1588
-        },
-        "documentation": {
-          "command": [
-            "make",
-            "docs"
-          ],
-          "signed_public_source": "c0f547bd65303eeca4eb0f4149936f3e829121ae",
-          "status": "OFFLINE_PASS",
-          "scope": "Original tested public source snapshot only; no hardware inference."
-        }
-      },
-      "source_sync_history": [
-        {
-          "implementation_sources": {
-            "plan_source_baseline": "31e4025ed4a2ff8ec30f2470f155ac7488be3759",
-            "scope": "Plan-source identity only; no new compiled artifact, execution tool or signed qualification report identity is inferred."
-          },
-          "offline_checks": {
-            "scope": "R158 results are not imported by this plan; R157 receipts remain in the exact archived batch."
-          },
-          "issue_sync": {
-            "status": "R158_SOURCE_OFFLINE_SUMMARY_NOT_YET_RECORDED",
-            "source_only": true,
-            "private_hardware_published": false,
-            "original_issues_open": true,
-            "receipt": null
-          }
-        }
-      ]
+        "receipt": null
+      }
     },
     "selected_qualification": {
       "version": 1,
@@ -2365,7 +2264,7 @@
   },
   "next_real_vertical_slice": {
     "authority": "project/qualification-records.json:batch.next",
-    "scope": "R158 two actual Provider prompts followed by Owner SIGKILL, timely actual AF-or4, retired4 and independent Owner/ordinary continuity; deadline expiry/late reply is separate."
+    "scope": "R159 bounded Provider original-deadline expiry, late original-token refusal and ordinary CUTC continuity, with separate SDK/Provider/drain deadlines and only an observed outer new-lifetime witness; no same-actor recovery or late-response promise."
   },
   "issue_sync_receipts_history": [
     "docs/evidence/qualification-quality-issues-20261015.json",
@@ -4983,41 +4882,99 @@
         }
       },
       "scope": "Archive the exact prior current aliases; the generated qualification_view owns the new batch."
+    },
+    {
+      "from_batch": "WP08-WP16-WP17-R5f158-provider-owner-exit",
+      "to_batch": "WP08-WP16-WP17-R5f159-provider-original-deadline-late-reply",
+      "prior_aliases": {
+        "current_goal_turn_classification": {
+          "classification": "PROGRESS",
+          "goal_complete": false,
+          "authority": "qualification_view.current_batch",
+          "reason": "Next bounded Owner-exit slice planned on the existing Provider path; this transition creates no source/offline, actual-device or formal qualification."
+        },
+        "execution_phase": "FOLLOW_qualification_view.current_batch_FULL_ORIGINAL_SCOPE_OPEN",
+        "execution_status": "ACTIVE_FOLLOW_qualification_view.current_batch_FULL_SCOPE_OPEN",
+        "issue_sync_receipt": {
+          "source_only": true,
+          "comments": [
+            {
+              "repo": "sparklink",
+              "issue": 3,
+              "id": 6397019931,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6397019931",
+              "body_verified": true
+            },
+            {
+              "repo": "sparklink",
+              "issue": 8,
+              "id": 6397020709,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6397020709",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 17,
+              "id": 6397021567,
+              "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6397021567",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 19,
+              "id": 6397084190,
+              "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6397084190",
+              "body_verified": true
+            }
+          ]
+        },
+        "issue_sync_status": "R158_SOURCE_OFFLINE_SUMMARIES_SYNCED_PRIVATE_RESULTS_LOCAL",
+        "next_real_vertical_slice": {
+          "authority": "project/qualification-records.json:batch.next",
+          "scope": "R158 two actual Provider prompts followed by Owner SIGKILL, timely actual AF-or4, retired4 and independent Owner/ordinary continuity; deadline expiry/late reply is separate."
+        },
+        "next_resume_tasks": [
+          "Follow qualification_view.current_batch.next; retain the full S0-S6/19WP/10FV/12DG and original acceptance scope.",
+          "Recheck source, dirty changes, actual artifacts, tool identities, per-leaf device ownership and shared build budget before VM-only work."
+        ],
+        "source_issue_sync_receipt": {
+          "source_only": true,
+          "comments": [
+            {
+              "repo": "sparklink",
+              "issue": 3,
+              "id": 6397019931,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6397019931",
+              "body_verified": true
+            },
+            {
+              "repo": "sparklink",
+              "issue": 8,
+              "id": 6397020709,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6397020709",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 17,
+              "id": 6397021567,
+              "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6397021567",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 19,
+              "id": 6397084190,
+              "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6397084190",
+              "body_verified": true
+            }
+          ]
+        }
+      },
+      "scope": "Archive the exact prior current aliases; the generated qualification_view owns the new batch."
     }
   ],
-  "source_issue_sync_receipt": {
-    "source_only": true,
-    "comments": [
-      {
-        "repo": "sparklink",
-        "issue": 3,
-        "id": 6397019931,
-        "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6397019931",
-        "body_verified": true
-      },
-      {
-        "repo": "sparklink",
-        "issue": 8,
-        "id": 6397020709,
-        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6397020709",
-        "body_verified": true
-      },
-      {
-        "repo": "linux",
-        "issue": 17,
-        "id": 6397021567,
-        "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6397021567",
-        "body_verified": true
-      },
-      {
-        "repo": "linux",
-        "issue": 19,
-        "id": 6397084190,
-        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6397084190",
-        "body_verified": true
-      }
-    ]
-  },
+  "source_issue_sync_receipt": null,
   "source_offline_sync_history": [
     {
       "batch": "WP08-WP16-WP17-R5f158-provider-owner-exit",

@@ -568,6 +568,8 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
             connection_arg="$connection_arg $description_arg"
             provider_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys;from ws73_ssap_read_provider import boot_requested;print("--ssap-read-provider-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail provider-selector
             connection_arg="$connection_arg $provider_arg"
+            sdk_provider_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys;from ws73_ssap_sdk_read_provider import boot_requested;print("--ssap-sdk-read-provider-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail sdk-provider-selector
+            connection_arg="$connection_arg $sdk_provider_arg"
             provider_exit_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys;from ws73_ssap_provider_owner_exit import boot_requested;print("--ssap-provider-owner-exit-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail provider-exit-selector
             connection_arg="$connection_arg $provider_exit_arg"
             provider_deadline_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys;from ws73_ssap_provider_deadline import boot_requested;print("--ssap-provider-deadline-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail provider-deadline-selector

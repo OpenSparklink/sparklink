@@ -283,6 +283,9 @@ def execute(run, phase, after_application=None):
         if getattr(run.args,'ssap_read_provider_verify',False):
             from ws73_ssap_read_provider import execute as provider_execute
             provider_execute(run,row)
+        if getattr(run.args,'ssap_sdk_read_provider_verify',False):
+            from ws73_ssap_sdk_read_provider import execute as sdk_provider_execute
+            sdk_provider_execute(run,row)
         if getattr(run.args,'ssap_provider_owner_exit_verify',False):
             from ws73_ssap_provider_owner_exit import execute as provider_exit_execute
             provider_exit_execute(run,row)
@@ -753,6 +756,9 @@ def corroborate(run,capture):
                 from ws73_ssap_read_provider import corroborate as provider_corroborate
                 ssap_read_providers,provider_credit=provider_corroborate(row,value_matched)
                 for key in ssap_credit:ssap_credit[key]+=provider_credit[key]
+            from ws73_ssap_sdk_read_provider import corroborate as sdk_provider_corroborate
+            ssap_sdk_read_providers,sdk_provider_credit=sdk_provider_corroborate(row,value_matched)
+            for key in ssap_credit:ssap_credit[key]+=sdk_provider_credit[key]
             from ws73_ssap_provider_owner_exit import corroborate as provider_exit_corroborate
             ssap_provider_owner_exit,provider_exit_credit=provider_exit_corroborate(row,value_matched,sdus)
             for key in ssap_credit:ssap_credit[key]+=provider_exit_credit[key]
@@ -889,6 +895,7 @@ def corroborate(run,capture):
         if row.get("ssap_discovery_required",False): entry["ssap_discovery"] = ssap_discovery
         if row.get('ssap_owned_required',False):entry['ssap_owned']=ssap_owned
         if row.get('ssap_read_provider_required',False):entry['ssap_read_providers']=ssap_read_providers
+        if row.get('ssap_sdk_read_provider_required',False):entry['ssap_sdk_read_providers']=ssap_sdk_read_providers
         if row.get('ssap_provider_owner_exit_required',False):entry['ssap_provider_owner_exit']=ssap_provider_owner_exit
         if row.get('ssap_provider_deadline_required',False):entry['ssap_provider_deadline']=ssap_provider_deadline
         if row.get('ssap_write_command_required',False):entry['ssap_write_commands']=ssap_write_commands

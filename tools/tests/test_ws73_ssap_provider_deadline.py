@@ -94,7 +94,52 @@ def fixture(phase=0):
     return row,item,matched,packets
 
 
-def combined_summary():
+def sdk_fixture(phase=0):
+    """Same literal timeout/USB scenario with original SDK-shaped receipts.
+
+    No production decoder is replaced. These bytes remain synthetic fixtures,
+    not evidence of the SDK executing, daemon expiry or device delivery.
+    """
+    from test_ws73_ssap_provider_owner_exit import sdk_fixture as owner_fixture
+    row, item, matched, packets = fixture(phase)
+    prior, _, _ = owner_fixture(phase)
+    previous = prior['ssap_provider_owner_exit_cases'][0]
+    for suffix in ('version','cases','guards','tools'):
+        row['ssap_provider_owner_exit_'+suffix] = prior['ssap_provider_owner_exit_'+suffix]
+    row[gate.PREFIX+'_version'] = 2
+    row[gate.PREFIX+'_tools'] = copy.deepcopy(prior['ssap_provider_owner_exit_tools'])
+    shift = 100_000_000
+    request = copy.deepcopy(previous['callback']['prompt'])
+    request.update(deadline_ns=item['callback']['prompt']['deadline_ns'],
+        observed_ns=request['observed_ns']+shift, observed_wall_ns=request['observed_wall_ns']+shift)
+    bound = copy.deepcopy(previous['bound'])
+    for k in ('started_ns','returned_ns','deadline_ns'):bound[k] += shift
+    approval = json.loads(previous['stdout'].splitlines()[3].split(': ',1)[1])
+    approval.update(deadline_ns=request['deadline_ns'],decision_ns=approval['decision_ns']+shift,
+                    decision_wall_ns=approval['decision_wall_ns']+shift)
+    for key in ('publisher_api','sdk_read_provider_contract_version','environment','args'):
+        item[key] = copy.deepcopy(previous[key])
+    item.update(bound=bound,bind_before_monotonic_ns=previous['bind_before_monotonic_ns']+shift)
+    item['callback']['prompt'] = request
+    item['pending_stdout'] = '\n'.join(previous['stdout'].splitlines()[:2]+[
+        'SdkReadProviderBound: '+json.dumps(bound), 'SdkAuthorizationDecision: '+json.dumps(approval),
+        'SdkReadProviderRequest: '+json.dumps(request)])+'\n'
+    reply = dict(api=request['api'],token=request['token'],current_token=request['token'],api_called=True,
+        status=0,value=item['late_value'],deadline_ns=request['deadline_ns'],
+        started_ns=item['late_input']['monotonic_ns']+1000,
+        returned_ns=item['late_input']['completed_monotonic_ns']-1000,
+        result=-errno.ETIMEDOUT,local_acceptance_only=True)
+    item['late_reply'] = reply
+    item['late_stdout'] = item['pending_stdout']+'SdkReadProviderReply: '+json.dumps(reply)+'\n'
+    item['stdout'] = item['late_stdout']+f"SdkOwnedRemoved: api={request['api']} start={item['start']}\n"
+    item['captured_bytes']['stdout'] = len(item['stdout'].encode())
+    row['ssap_language_clients'] = ([step['read'] for owner in row['ssap_read_provider_cases'] for step in owner['steps']]
+        +[previous['read'],previous['guard']['read'],item['read']])
+    for n,call in enumerate(row['ssap_language_clients']):call['pid'] = 10000+n
+    return row,item,matched,packets
+
+
+def combined_summary(version=1):
     """Original retained proofs plus existing complete CUTC transcript/USB fixtures.
 
     No verifier is mocked. The original ordinary_business helper authors its
@@ -105,7 +150,7 @@ def combined_summary():
     """
     summary = retained_summary()
     for phase, entry in enumerate(summary['proofs']):
-        row, item, matched, packets = fixture(phase)
+        row, item, matched, packets = (sdk_fixture if version == 2 else fixture)(phase)
         # This existing fixture spans roughly 100 ms. Preserve its original
         # timestamps and put later observations after it; SDK/Provider deadlines
         # and the late-input rejection are unchanged.
@@ -126,7 +171,16 @@ def combined_summary():
         # assigned by fixture(), throughout the composite summary.
         for proof, original in zip(entry['ssap_read_providers'],row['ssap_read_provider_cases'],strict=True):
             proof['case'] = copy.deepcopy(original)
-        entry['ssap_provider_owner_exit'][0]['case'] = copy.deepcopy(row['ssap_provider_owner_exit_cases'][0])
+        if version == 2:
+            from test_ws73_ssap_provider_owner_exit import sdk_fixture as prior_fixture
+            from ws73_ssap_provider_owner_exit import corroborate as prior_corroborate
+            prior, prior_match, prior_packets = prior_fixture(phase)
+            prior['ssap_provider_owner_exit_cases'] = copy.deepcopy(row['ssap_provider_owner_exit_cases'])
+            prior['ssap_provider_owner_exit_guards'] = [prior['ssap_provider_owner_exit_cases'][0]['guard']]
+            entry['ssap_provider_owner_exit'], _ = prior_corroborate(prior, prior_match, prior_packets)
+            assert not prior_packets
+        else:
+            entry['ssap_provider_owner_exit'][0]['case'] = copy.deepcopy(row['ssap_provider_owner_exit_cases'][0])
         evidence, credit = gate.corroborate(row,matched,packets)
         assert not packets and credit == {0:1,1:0}
         gate.verify_business_evidence(row,evidence,legs)
@@ -146,13 +200,13 @@ def combined_summary():
     return summary
 
 
-def combined_manifest(summary):
+def combined_manifest(summary, version=1):
     """Literal manifest exercising the real inherited verdict chain, not a VM."""
-    return dict(ssap_provider_deadline_requested=True,ssap_provider_deadline_version=1,
+    return dict(ssap_provider_deadline_requested=True,ssap_provider_deadline_version=version,
         ssap_provider_deadline_acceptance=True,
         ssap_provider_deadline_verifier=dict(path=str(Path(gate.__file__).resolve()),
             sha256=hashlib.sha256(Path(gate.__file__).read_bytes()).hexdigest()),
-        ssap_provider_owner_exit_requested=True,ssap_provider_owner_exit_version=1,
+        ssap_provider_owner_exit_requested=True,ssap_provider_owner_exit_version=version,
         ssap_provider_owner_exit_acceptance=True,ssap_read_provider_requested=True,
         ssap_read_provider_version=2,ssap_read_provider_acceptance=True,
         ssap_owned_acceptance=True,ordinary_channel_socket_acceptance=True,
@@ -458,3 +512,105 @@ class ProviderDeadlineDraft(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class SdkDeadlineEvidence(unittest.TestCase):
+    def test_actual_sdk_shapes_and_full_retained_business_checks(self):
+        summary = combined_summary(version=2)
+        self.assertTrue(gate.valid_summary(summary, version=2))
+        self.assertTrue(gate.valid_manifest(combined_manifest(summary, version=2)))
+        self.assertFalse(gate.valid_summary(summary, version=1))
+        self.assertFalse(gate.valid_summary(combined_summary(), version=2))
+        for phase, entry in enumerate(summary['proofs']):
+            case = entry[gate.PREFIX][0]['case']
+            self.assertEqual(case['publisher_api'], ('python','c')[phase])
+            self.assertEqual(case['late_reply']['result'], -errno.ETIMEDOUT)
+            self.assertTrue(case['late_reply']['api_called'])
+            self.assertEqual(len(entry['legs']), 8)
+
+    def test_sdk_reply_no_parser_or_shutdown_substitution(self):
+        for mutation in ('success','not_called','shutdown','stale','wrong_token','bool_token','wrong_api',
+                         'renewed_deadline','early_call','wrong_value','error_status','not_local','late_receipt',
+                         'duplicate','missing','cli','changed_pending','early_sdk_observation','wrong_tools','killed'):
+            row,item,matched,packets = sdk_fixture();r=item['late_reply']
+            if mutation=='success':r['result']=0
+            elif mutation=='not_called':r['api_called']=False
+            elif mutation=='shutdown':r['result']=-errno.ESHUTDOWN
+            elif mutation=='stale':r['result']=-errno.ESTALE
+            elif mutation=='wrong_token':r['current_token']+=1
+            elif mutation=='bool_token':r['token']=True
+            elif mutation=='wrong_api':r['api']='c'
+            elif mutation=='renewed_deadline':r['deadline_ns']+=1
+            elif mutation=='early_call':r['started_ns']=r['deadline_ns']-1
+            elif mutation=='wrong_value':r['value']=item['secret']
+            elif mutation=='error_status':r['status']=255
+            elif mutation=='not_local':r['local_acceptance_only']=False
+            elif mutation=='late_receipt':r['returned_ns']=item['late_input']['completed_monotonic_ns']+1
+            elif mutation=='early_sdk_observation':item['callback']['observed_monotonic_ns']=item['callback']['prompt']['observed_ns']-1
+            elif mutation=='wrong_tools':row[gate.PREFIX+'_tools'].pop(next(iter(row[gate.PREFIX+'_tools'])))
+            elif mutation=='killed':item['exit']=-9
+            item['late_stdout']=item['pending_stdout']+'SdkReadProviderReply: '+json.dumps(r)+'\n'
+            if mutation=='duplicate':item['late_stdout']+=item['late_stdout'].splitlines()[-1]+'\n'
+            elif mutation=='missing':item['late_stdout']=item['pending_stdout']
+            elif mutation=='cli':item['late_stdout']=item['pending_stdout']+gate.REJECTED+'\n'
+            elif mutation=='changed_pending':item['pending_stdout']=item['pending_stdout'].replace('approved','forged')+'extra\n'
+            item['stdout']=item['late_stdout']+f"SdkOwnedRemoved: api={item['publisher_api']} start={item['start']}\n"
+            item['captured_bytes']['stdout']=len(item['stdout'].encode())
+            with self.subTest(mutation=mutation),self.assertRaises((CaptureError,KeyError,ValueError)):
+                gate.corroborate(row,matched,packets)
+
+    def test_current_versions_and_retained_history_cannot_mix(self):
+        old=[fixture(n)[0] for n in (0,1)];new=[sdk_fixture(n)[0] for n in (0,1)]
+        gate.validate_rows(old,True,version=1);gate.validate_rows(new,True,version=gate.VERSION)
+        for rows,version in [(old,2),(new,1),([old[0],new[1]],None),(new,True)]:
+            with self.subTest(version=version),self.assertRaises(CaptureError):gate.validate_rows(rows,True,version=version)
+        summary=combined_summary(2)
+        summary['proofs'][0][gate.PREFIX]=combined_summary()['proofs'][0][gate.PREFIX]
+        self.assertFalse(gate.valid_summary(summary))
+        self.assertFalse(gate.valid_manifest(combined_manifest(combined_summary(2),version=1)))
+
+    def test_sdk_barrier_rejects_before_any_answer(self):
+        from unittest.mock import Mock,patch
+        row,item,_,_=sdk_fixture();item['output_files']=['/fixture/stdout'];p=Mock();p.poll.return_value=None;p.pid=item['pid']
+        app=item['read'];deadline=app['ssap_supervisor_deadline_ns'];observed=item['callback']['observed_monotonic_ns']
+        run=Mock()
+        with patch('ws73_ssap_owned.wait_text',return_value=([],item['pending_stdout'])), \
+             patch.object(gate.time,'monotonic_ns',return_value=observed), \
+             patch.object(gate.time,'time_ns',return_value=observed):
+            gate.observe_sdk_prompt(run,row,p,item,app,deadline)
+            p.stdin.write.assert_not_called()
+        for change in ('expired','dead','wrong_identity','missing_approval'):
+            row,item,_,_=sdk_fixture();item['output_files']=['/fixture/stdout'];app=item['read'];text=item['pending_stdout'];when=item['callback']['observed_monotonic_ns']
+            p.poll.return_value=None
+            if change=='expired':when=item['callback']['prompt']['deadline_ns']
+            elif change=='dead':p.poll.return_value=0
+            elif change=='wrong_identity':row['owners'][1]['object']['lifetime']+=1
+            else:text='\n'.join(text.splitlines()[:3]+text.splitlines()[4:])+'\n'
+            with self.subTest(change=change),patch('ws73_ssap_owned.wait_text',return_value=([],text)), \
+                 patch.object(gate.time,'monotonic_ns',return_value=when), \
+                 patch.object(gate.time,'time_ns',return_value=when),self.assertRaises(CaptureError):
+                gate.observe_sdk_prompt(run,row,p,item,app,deadline)
+            p.stdin.write.assert_not_called()
+
+    def test_sdk_version_requires_both_captures_and_unmodified_business(self):
+        original=combined_summary(2)
+        for change in ('missing_peer','late_response','old_lifetime','early_peer_timeout',
+                       'missing_business','changed_business_payload','missing_sdk_tool','missing_sdk_receipt'):
+            value=copy.deepcopy(original);proof=value['proofs'][0][gate.PREFIX][0]
+            case,context=proof['case'],proof['context']
+            if change=='missing_peer':proof['window_packets'].pop()
+            elif change=='late_response':
+                packet=copy.deepcopy(proof['window_packets'][0]);packet['data']='0a000400090baf00'
+                proof['window_packets'].append(packet)
+            elif change=='old_lifetime':case['callback']['prompt']['lifetime']+=1
+            elif change=='early_peer_timeout':
+                call,result=map(json.loads,case['read']['stdout'].splitlines())
+                result['returned_ns']=call['deadline_ns']-1
+                case['read']['stdout']=json.dumps(call)+'\n'+json.dumps(result)+'\n'
+            elif change=='missing_business':value['proofs'][0]['legs'].pop()
+            elif change=='changed_business_payload':context['applications'][1]['stdout']=context['applications'][1]['stdout'].replace('bytes=534c4b','bytes=004c4b',1)
+            elif change=='missing_sdk_tool':context[gate.PREFIX+'_tools'].pop('/usr/share/sparklink/python/sparklink/service_provider.py')
+            else:case.pop('late_reply')
+            with self.subTest(change=change):
+                self.assertFalse(gate.valid_summary(value,version=2))
+                self.assertFalse(gate.valid_manifest(combined_manifest(value,version=2)))

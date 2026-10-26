@@ -499,6 +499,24 @@ Python `LocalService.set_description` 复用这一入口；成功只表示本地
 调用者退出后，未完成准入的更新继续监听原 owner 撤销；全部准入且作者已退出时
 停用该监听分支，保留 ACK 排空，避免重复通知导致空转。
 
+## SDK READ Provider 原期限门禁
+
+`--ssap-provider-deadline-verify` 复用原 VM runner，并要求
+`--ssap-provider-owner-exit-verify`、READ Provider 与 Owned 基线。当前执行输出
+version 2：两连接角色分别使用 Python Provider/C requester 和 C Provider/Python
+requester。实际取得 SDK 请求和独立授权后不回复，分别保留 requester 调用期限、
+服务端原响应期限和有界终态观察预算，不通过重新调用来延长期限。
+
+晚答必须调用原 SDK request，返回 `ETIMEDOUT`；解析器拒绝、错 token、
+`ESTALE`、`ESHUTDOWN` 或仅打印错误不能替代这个场景。Provider 保持存活至
+普通 CUTC 业务完成，再显式注销。检查要求完整请求至清理窗口的双端原始捕获，
+不能出现返回缓存值、迟到响应或重复请求；后续普通业务仍使用原应用校验和回复。
+这不证明同一已终止 SSAP actor 恢复，也不证明物理在途义务已排空或自然恢复。
+
+version 1 的 CLI Provider 历史报告继续按原契约读取；当前 host/guest 拒绝把它作为
+SDK version 2 的执行结果。源码接线、离线 fixture、形式化和实际 VM/设备结果分开
+记录，新工具名称或版本本身不授予 SDK 生命周期资格。
+
 ## 接收命令授权的原期限与终态
 
 接收端首片建立的原期限覆盖重组、队列等待和所有者授权。当前 Engine 在服务器

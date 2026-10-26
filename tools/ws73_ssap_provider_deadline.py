@@ -15,14 +15,14 @@ import secrets
 import time
 
 from ws73_capture import CaptureError, packet_interval
-from ws73_ssap_read_provider import PROMPT, prompt
+from ws73_ssap_read_provider import prompt
 from ws73_ssap_provider_owner_exit import CLOCK_CONTRACT, _clock_sample, _registration
 from ws73_ssap_command_deadline import info_arguments, terminal_receipt, verify_business
 from ws73_ssap_command_policy import need, packet_key, window_packets
 
 PREFIX = 'ssap_provider_deadline'
 TOKEN = 'ws73.ssap_provider_deadline=1'
-VERSION = 1
+VERSION = 2
 COLLECTION = PREFIX + '_cases'
 PENDING = 'PROVIDER_ORIGINAL_DEADLINE_PENDING_PAIRED_USB'
 REJECTED = 'SsapReadProviderInput: rejected stale token, expired request or invalid value/status'
@@ -65,7 +65,13 @@ def validate_inputs(package):
              'fresh exact Provider deadline input required: ' + name)
 
 
-def validate_rows(rows, selected):
+def _version(value):
+    need(type(value) is int and value in (1, 2), 'explicit CLI-v1 or SDK-v2 deadline version required')
+    return value
+
+
+def validate_rows(rows, selected, *, version=None):
+    if version is not None: _version(version)
     from ws73_ssap_provider_owner_exit import validate_rows as owner_exit_rows
     need(type(selected) is bool and type(rows) is list, 'typed selection and rows required')
     if selected:
@@ -78,37 +84,58 @@ def validate_rows(rows, selected):
             need(not any(k.startswith(PREFIX+'_') and k != PREFIX+'_required' for k in row),
                  'unrequested Provider deadline evidence')
             continue
-        need(type(row.get(PREFIX+'_version')) is int and row[PREFIX+'_version'] == VERSION
+        need(type(row.get(PREFIX+'_version')) is int and row[PREFIX+'_version'] in (1, 2)
+             and (version is None or row[PREFIX+'_version'] == version)
+             and row['ssap_provider_owner_exit_version'] == row[PREFIX+'_version']
              and row['ssap_read_provider_version'] == 2
              and len(row.get(COLLECTION, [])) == 1 and row['phase'] == phase,
              'one deadline after the exact retained Provider-v2 baseline required')
     if selected:
+        need(len({r[PREFIX+'_version'] for r in rows}) == 1, 'one deadline version across both roles required')
         need(len({(r['owners'][1]['owner']['index'], r['owners'][1]['owner']['generation'])
                   for r in rows}) == 2, 'both physical Provider receivers required')
 
 
-def observe_prompt(run, row, process, item, app, supervisor_deadline_ns):
-    """Only the actual value callback is a barrier; return without answering."""
+def observe_sdk_prompt(run, row, process, item, app, supervisor_deadline_ns):
     from ws73_ssap_owned import wait_text
+    from ws73_ssap_provider_owner_exit import _sdk_pending
     item['read'] = app; run.save()
-    _, text = wait_text(process, Path(item['output_files'][0]), PROMPT,
-                        min(app['ssap_error_deadline_ns'], supervisor_deadline_ns)/1e9, max_count=1)
-    observed = time.monotonic_ns(); data = prompt(text)
-    target = row['owners'][1]; controller, link = target['owner'], target['object']
-    need((data['index'], data['generation'], data['lifetime'], data['handle'], data['property'])
-         == (controller['index'], controller['generation'], link['lifetime'], link['handle'], item['handle'])
-         and observed < data['deadline_ns'] <= observed+5_000_000_000
+    _, text = wait_text(process, Path(item['output_files'][0]), r'^SdkReadProviderRequest: (.+)$',
+        min(app['ssap_error_deadline_ns'], supervisor_deadline_ns)/1e9, max_count=1)
+    data = _sdk_pending(row, item, text); observed = time.monotonic_ns()
+    need(data['observed_ns'] <= observed < data['deadline_ns'] <= observed+5_000_000_000
+         and data['observed_wall_ns'] <= time.time_ns()
          and observed < app['ssap_error_deadline_ns'] < supervisor_deadline_ns
          and data['deadline_ns'] <= supervisor_deadline_ns and process.poll() is None,
-         'one live original Provider prompt before SDK deadline required')
-    decision = (f'SsapAuthorizationDecision: request={data["request"]} property={item["handle"]} '
-                'data_type=0 write=false security=0 approved=true; local policy only')
-    need(text.splitlines().count(decision) == 1, 'Provider prompt must follow actual authorization')
+         'actual live SDK callback before both original deadlines required')
+    item['pending_stdout'] = text
     item['callback'] = dict(prompt=data, observed_monotonic_ns=observed,
         observed_wall_ns=time.time_ns(), publisher_pid=process.pid,
         supervisor_deadline_ns=supervisor_deadline_ns)
     run.save()
-    # No wait through expiry: ssap_error_command records its end after this hook.
+
+
+def sdk_late_reply(row, item, text):
+    """Exact SDK call failure, not parser rejection or a synthesized CLI result."""
+    from ws73_ssap_provider_owner_exit import _sdk_pending
+    from ws73_ssap_sdk_read_provider import json_rows, REPLY, integer
+    lines = text.splitlines()
+    need(len(lines) == 6 and lines[5].startswith('SdkReadProviderReply: '),
+         'one pending SDK request then one actual late reply receipt required')
+    pending = '\n'.join(lines[:5])+'\n'
+    need(pending == item['pending_stdout'], 'unchanged original pending SDK transcript required')
+    data = _sdk_pending(row, item, pending)
+    r = json_rows(text, 'SdkReadProviderReply', REPLY, 1)[0]
+    need(r['api'] == data['api'] and r['token'] == r['current_token'] == data['token']
+         and r['api_called'] is True and type(r['status']) is int and r['status'] == 0
+         and r['value'] == item['late_value'] and type(r['result']) is int
+         and r['result'] == -errno.ETIMEDOUT and r['local_acceptance_only'] is True
+         and r['deadline_ns'] == data['deadline_ns']
+         and all(integer(r[k]) for k in ('token','current_token','deadline_ns','started_ns','returned_ns'))
+         and data['deadline_ns'] <= item['late_input']['monotonic_ns'] <= r['started_ns'] <= r['returned_ns']
+         <= item['late_input']['monotonic_ns']+2_000_000_000,
+         'actual original SDK reply must return ETIMEDOUT after its unchanged deadline')
+    return data, r
 
 
 def observe_terminal(run, entry, deadline_ns):
@@ -146,12 +173,12 @@ def requester_outcome(receipt, original, program, source):
 
 def execute(run, row, business):
     from ws73_application_client import ssap_error_command, ssap_error_receipt
-    from ws73_ssap_owned import publisher, wait_text, output_text, wait_output, await_removed
-    from ws73_ssap_update_delivery import tool_records
+    from ws73_ssap_owned import publisher, output_text, wait_output, await_removed
+    from ws73_ssap_sdk_read_provider import tool_records, _wait_json, BOUND, REPLY
     need(callable(business) and row.get('ssap_read_provider_required') is True
          and row.get('ssap_read_provider_version') == 2 and len(row.get('ssap_read_provider_cases', [])) == 2
          and row.get('ssap_provider_owner_exit_required') is True
-         and row.get('ssap_provider_owner_exit_version') == 1
+         and row.get('ssap_provider_owner_exit_version') == 2
          and row.get('ssap_provider_owner_exit_status') == 'PROVIDER_OWNER_EXIT_PENDING_PAIRED_USB'
          and len(row.get('ssap_provider_owner_exit_cases', [])) == len(row.get('ssap_provider_owner_exit_guards', [])) == 1
          and type(row['phase']) is int and row['phase'] in (0, 1), 'completed Provider-v2 baseline required')
@@ -159,20 +186,20 @@ def execute(run, row, business):
                 PREFIX+'_tools': tool_records(), COLLECTION: []})
     source, target = row['owners']; api = ('c', 'python')[row['phase']]
     with publisher(run, row, 0, 'allow', operations=1, collection=COLLECTION,
-                   label='provider-original-deadline') as (process, item):
+                   label='sdk-provider-original-deadline', sdk_api=('python','c')[row['phase']],
+                   read_only=True, read_provider=True) as (process, item):
         item.update(api=api, late_value=secrets.token_hex(32), status='RUNNING')
         need(item['late_value'] != item['secret'], 'late value must differ from discarded stored bytes')
+        item['bind_before_monotonic_ns'] = time.monotonic_ns()
         process.stdin.write('provider\n'); process.stdin.flush()
-        bound, _ = wait_text(process, Path(item['output_files'][0]),
-            r'^SsapReadProviderBound: handle=(\d+); stored value discarded, no rebind or fallback$',
-            time.monotonic()+5, max_count=1)
-        need(bound == [str(item['handle'])], 'actual same-handle Provider binding required')
+        item['bound'] = _wait_json(process, item, 'SdkReadProviderBound', BOUND, 1,
+                                  item['bind_before_monotonic_ns']+5_000_000_000)
         item['bound_wall_ns'] = time.time_ns()
         item['clock_contract'] = copy.deepcopy(CLOCK_CONTRACT)
         item['clock_before'] = _clock_sample(); run.save()
         item['read'] = ssap_error_command(run, row, source,
             ['ssap-read', source['object']['path'], str(item['handle'])], errno.ETIMEDOUT, api=api,
-            after_start=lambda app, deadline: observe_prompt(run, row, process, item, app, deadline))
+            after_start=lambda app, deadline: observe_sdk_prompt(run, row, process, item, app, deadline))
         receipt = ssap_error_receipt(item['read'], source, expected_errno=errno.ETIMEDOUT)
         need(receipt['returned_ns'] >= receipt['deadline_ns'], 'SDK must actually reach its original deadline')
         original = item['callback']['prompt']['deadline_ns']
@@ -189,9 +216,12 @@ def execute(run, row, business):
         item['late_input'] = dict(text=f'provide p{item["callback"]["prompt"]["token"]} {item["late_value"]}',
             wall_ns=time.time_ns(), monotonic_ns=time.monotonic_ns())
         process.stdin.write(item['late_input']['text']+'\n'); process.stdin.flush()
-        matches, _ = wait_text(process, Path(item['output_files'][0]), '^'+re.escape(REJECTED)+'$',
-                              time.monotonic()+2, max_count=1)
-        need(matches == [REJECTED], 'one actual expired-token rejection required')
+        item['late_reply'] = _wait_json(process, item, 'SdkReadProviderReply', REPLY, 1,
+            item['late_input']['monotonic_ns']+2_000_000_000)
+        item['late_stdout'] = Path(item['output_files'][0]).read_text()
+        _, checked = sdk_late_reply(row, item, item['late_stdout'])
+        need(checked == item['late_reply'] and process.poll() is None,
+             'actual expired-token SDK rejection with live Provider required')
         item['late_input'].update(completed_wall_ns=time.time_ns(), completed_monotonic_ns=time.monotonic_ns())
         item['business_window'] = dict(start_wall_ns=time.time_ns(), start_monotonic_ns=time.monotonic_ns())
         run.save()
@@ -283,7 +313,7 @@ def sdk_inventory(row, item):
     prior = [step['read'] for owner in owners for step in owner['steps']]
     end = max(owner['end_wall_ns'] for owner in owners)
     need(row.get('ssap_provider_owner_exit_required') is True
-         and type(row.get('ssap_provider_owner_exit_version')) is int and row['ssap_provider_owner_exit_version'] == 1
+         and type(row.get('ssap_provider_owner_exit_version')) is int and row['ssap_provider_owner_exit_version'] == _version(row[PREFIX+'_version'])
          and len(row['ssap_provider_owner_exit_cases']) == len(row['ssap_provider_owner_exit_guards']) == 1,
          'required exact original owner-exit baseline required')
     owner, guard = row['ssap_provider_owner_exit_cases'][0], row['ssap_provider_owner_exit_guards'][0]
@@ -298,27 +328,46 @@ def sdk_inventory(row, item):
 
 def case_contract(row, item):
     from ws73_application_client import ssap_error_receipt
-    registration = _registration(row, item)
+    version = _version(row[PREFIX+'_version'])
+    registration = _registration(row, item, sdk=version == 2)
     source, target = row['owners']; program = row['ssap_receipts'][0]['args'][0]
-    app, callback = item['read'], item['callback']; data = prompt(item['stdout'])
+    app, callback = item['read'], item['callback']
+    if version == 2:
+        from ws73_ssap_update_delivery import TOOLS
+        from ws73_ssap_sdk_read_provider import EXTRA_TOOLS, integer
+        records = row[PREFIX+'_tools']
+        need(type(records) is dict and set(records) == set(TOOLS)|set(EXTRA_TOOLS)
+             and all(type(v) is dict and set(v) == {'sha256','bytes'} and integer(v['bytes'])
+                     and type(v['sha256']) is str and re.fullmatch('[0-9a-f]{64}',v['sha256']) for v in records.values()),
+             'exact SDK deadline tools required')
+        data, reply = sdk_late_reply(row, item, item['late_stdout'])
+        need(reply == item['late_reply']
+             and item['stdout'] == item['late_stdout']+f"SdkOwnedRemoved: api={data['api']} start={item['start']}\n"
+             and reply['returned_ns'] <= item['late_input']['completed_monotonic_ns']
+             and data['observed_ns'] <= callback['observed_monotonic_ns']
+             and data['observed_wall_ns'] <= callback['observed_wall_ns'],
+             'exact SDK pending/rejection/removal transcript and observed chronology required')
+    else:
+        data = prompt(item['stdout'])
     need(type(row['phase']) is int and row['phase'] in (0, 1)
          and item['status'] == PENDING and type(item['exit']) is int and item['exit'] == 0
          and item['api'] == app['api'] == ('c','python')[row['phase']]
          and app['ssap_operation'] == 'ssap-read' and app['ssap_handle'] == item['handle']
          and callback['publisher_pid'] == item['pid'] and callback['prompt'] == data
-         and all(type(v) is int for v in callback['prompt'].values())
+         and all(type(v) is int for k,v in callback['prompt'].items() if k != 'api')
          and not any(k in item for k in ('kill_before_wall_ns','owner_exit','reply_command','retired_read','steps')),
          'actual same-owner SDK timeout and explicit successful withdrawal required')
     identity, link = target['owner'], target['object']
     need((data['index'],data['generation'],data['lifetime'],data['handle'],data['property'])
          == (identity['index'],identity['generation'],link['lifetime'],link['handle'],item['handle']),
          'original full Provider callback identity required')
-    bound = f'SsapReadProviderBound: handle={item["handle"]}; stored value discarded, no rebind or fallback'
-    decision = (f'SsapAuthorizationDecision: request={data["request"]} property={item["handle"]} '
-                'data_type=0 write=false security=0 approved=true; local policy only')
-    lines = item['stdout'].splitlines(); prompt_line = next(l for l in lines if l.startswith('SsapReadProviderPrompt:'))
-    need(lines == [f'Selected {target["owner"]["path"]}', registration, bound, decision, prompt_line, REJECTED],
-         'exact approved pending Provider transcript followed by one rejected late input required')
+    if version == 1:
+        bound = f'SsapReadProviderBound: handle={item["handle"]}; stored value discarded, no rebind or fallback'
+        decision = (f'SsapAuthorizationDecision: request={data["request"]} property={item["handle"]} '
+                    'data_type=0 write=false security=0 approved=true; local policy only')
+        lines = item['stdout'].splitlines(); prompt_line = next(l for l in lines if l.startswith('SsapReadProviderPrompt:'))
+        need(lines == [f'Selected {target["owner"]["path"]}', registration, bound, decision, prompt_line, REJECTED],
+             'exact approved pending Provider transcript followed by one rejected late input required')
     need(re.fullmatch('[0-9a-f]{64}', item['late_value']) and item['late_value'] != item['secret']
          and item['late_input']['text'] == f'provide p{data["token"]} {item["late_value"]}',
          'one distinct late value against the expired original token required')
@@ -358,7 +407,8 @@ def corroborate(row, matched, sdus):
     if not row.get(PREFIX+'_required', False):
         need(not any(k.startswith(PREFIX+'_') and k != PREFIX+'_required' for k in row), 'unrequested deadline evidence')
         return [], {0:0, 1:0}
-    need(type(row[PREFIX+'_version']) is int and row[PREFIX+'_version'] == VERSION
+    version = _version(row[PREFIX+'_version'])
+    need(type(row[PREFIX+'_version']) is int
          and row['ssap_read_provider_version'] == 2 and len(row[COLLECTION]) == 1,
          'one new deadline case preserving original Provider-v2 required')
     item = row[COLLECTION][0]; sdk = case_contract(row, item)
@@ -390,7 +440,8 @@ def corroborate(row, matched, sdus):
     for key in ('ssap_provider_owner_exit_required','ssap_provider_owner_exit_version',
                 'ssap_provider_owner_exit_cases','ssap_provider_owner_exit_guards'):
         if key in row:context[key] = copy.deepcopy(row[key])
-    return [dict(version=VERSION, case=copy.deepcopy(item), sdk=sdk, wire=wire,
+    if version == 2: context[PREFIX+'_tools'] = copy.deepcopy(row[PREFIX+'_tools'])
+    return [dict(version=version, case=copy.deepcopy(item), sdk=sdk, wire=wire,
         window_packets=copy.deepcopy(inventory), context=context, bounded_absence_only=True,
         same_actor_recovery=False, automatic_recovery_qualification=False)], {0:physical_sends(wire['tx']),1:0}
 
@@ -400,18 +451,22 @@ def verify_business_evidence(row, proof, legs):
     verify_business(row, proof[0]['case'], legs)
 
 
-def valid_summary(summary):
+def valid_summary(summary, *, version=None):
     """Bounded local recheck; outer retained gates and raw auditor remain mandatory."""
     try:
+        if version is not None: _version(version)
+        versions = {_version(r[PREFIX][0]['version']) for r in summary['proofs']}
+        need(len(versions) == 1 and (version is None or versions == {version}), 'one expected deadline version required')
+        actual_version = next(iter(versions))
         from ws73_ssap_provider_owner_exit import valid_summary as owner_exit_summary
         from ws73_ssap_read_provider import valid_summary as provider_summary
-        need(owner_exit_summary(summary), 'original retained Owner-exit paired summary required')
+        need(owner_exit_summary(summary, version=actual_version), 'original retained Owner-exit paired summary required')
         need(provider_summary(summary, version=2), 'original retained Provider-v2 paired summary required')
         rows = summary['proofs']; need(len(rows) == 2, 'two physical roles required')
         receivers = set()
         for phase, row in enumerate(rows):
             item, = row[PREFIX]; context = item['context']; case = item['case']
-            need(type(item['version']) is int and item['version'] == VERSION
+            need(type(item['version']) is int and item['version'] == actual_version
                  and item['bounded_absence_only'] is True and item['same_actor_recovery'] is False
                  and item['automatic_recovery_qualification'] is False
                  and type(row['phase']) is int and type(context['phase']) is int
@@ -434,7 +489,7 @@ def valid_summary(summary):
                          and window['start_wall_ns'] <= p['wall_ns'] <= window['end_wall_ns']]
                 need(len(found) == 1, 'one exact retained request packet required')
                 packets.remove(found[0]); return found[0]
-            context = dict(context, **{PREFIX+'_required':True, PREFIX+'_version':VERSION,
+            context = dict(context, **{PREFIX+'_required':True, PREFIX+'_version':actual_version,
                 'ssap_read_provider_version':2, COLLECTION:[case]})
             rebuilt, _ = corroborate(context, matched, packets)
             need(not packets and rebuilt == [item], 'exact retained deadline proof reconstruction required')
@@ -455,10 +510,10 @@ def valid_manifest(record):
                     and not any(PREFIX in row for row in proof.get('proofs', [])))
         from ws73_ssap_provider_owner_exit import valid_manifest as owner_exit_manifest
         verifier = record[PREFIX+'_verifier']
-        return (type(record.get(PREFIX+'_version')) is int and record[PREFIX+'_version'] == VERSION
+        return (type(record.get(PREFIX+'_version')) is int and record[PREFIX+'_version'] in (1, 2)
                 and record.get(PREFIX+'_acceptance') is True and owner_exit_manifest(record)
                 and type(verifier) is dict and Path(verifier['path']).name == Path(__file__).name
                 and re.fullmatch('[0-9a-f]{64}',verifier['sha256']) is not None
-                and valid_summary(proof))
+                and valid_summary(proof, version=record[PREFIX+'_version']))
     except (AttributeError, KeyError, IndexError, TypeError, ValueError, StopIteration):
         return False

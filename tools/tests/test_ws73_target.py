@@ -437,7 +437,8 @@ class ProviderDeadlineRunnerWiring(unittest.TestCase):
                     self.assertRegex(record['error'], '(?i)provider.*deadline|deadline.*provider')
                     self.assertIn(name, record['error'])
                 self.assertIs(record['ssap_provider_deadline_requested'], True)
-                self.assertEqual(record['ssap_provider_deadline_version'], 1)
+                # The live runner now requires SDK v2; historical CLI v1 remains reader-only.
+                self.assertEqual(record['ssap_provider_deadline_version'], 2)
                 self.assertEqual(record['ssap_provider_deadline_verifier'], file_record(self.tools/'ws73_ssap_provider_deadline.py'))
                 self.assertIs(record['ssap_provider_deadline_acceptance'], False)
                 self.assertIs(record['physical_acceptance'], False)

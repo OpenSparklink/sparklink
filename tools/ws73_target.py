@@ -2280,7 +2280,7 @@ def _run(args):
                         from ws73_ssap_provider_unregister import validate_rows as provider_unregister_rows
                         provider_unregister_rows(control['channel_socket'],provider_unregister)
                         from ws73_ssap_provider_deadline import validate_rows as provider_deadline_rows
-                        provider_deadline_rows(control['channel_socket'],provider_deadline)
+                        provider_deadline_rows(control['channel_socket'],provider_deadline,version=provider_deadline_version if provider_deadline else None)
                         m['channel_socket_corroboration']=channel_corroborate(control,capture)
                         if read_provider:
                             from ws73_ssap_read_provider import valid_summary as provider_summary
@@ -2316,9 +2316,10 @@ def _run(args):
                         m['ssap_provider_unregister_acceptance']=provider_unregister
                         if provider_deadline:
                             from ws73_ssap_provider_deadline import valid_summary as provider_deadline_summary
+                            from ws73_ssap_sdk_read_provider import validate_tools as deadline_tools
                             for row in control['channel_socket']:
-                                provider_tools(row['ssap_provider_deadline_tools'],args.prepared/'root',package['guest_files'])
-                            if file_record(HERE/'ws73_ssap_provider_deadline.py')!=m['ssap_provider_deadline_verifier'] or not provider_deadline_summary(m['channel_socket_corroboration']):
+                                deadline_tools(row['ssap_provider_deadline_tools'],args.prepared/'root',package['guest_files'])
+                            if file_record(HERE/'ws73_ssap_provider_deadline.py')!=m['ssap_provider_deadline_verifier'] or not provider_deadline_summary(m['channel_socket_corroboration'],version=provider_deadline_version):
                                 raise ValueError('exact original Provider deadline verifier and paired SDK/terminal/USB evidence required')
                         m['ssap_provider_deadline_acceptance']=provider_deadline
                         if description:
@@ -3894,7 +3895,7 @@ def main():
             cmd.add_argument('--ssap-sdk-read-provider-verify',action='store_true',help='with --ssap-read-provider-verify: actual C/Python Provider values and opposite-language peer verification')
             cmd.add_argument('--ssap-provider-owner-exit-verify',action='store_true',help='with --ssap-read-provider-verify: version2 C/Python pending SDK Provider owner loss, peer refusal and independent guard delivery')
             cmd.add_argument('--ssap-provider-unregister-verify',action='store_true',help='with --ssap-read-provider-verify: C/Python pending explicit unregister, retained request/fd, peer refusal and live independent guard')
-            cmd.add_argument('--ssap-provider-deadline-verify',action='store_true',help='with --ssap-provider-owner-exit-verify: original Provider deadline, rejected late reply and independent ordinary CUTC delivery; no same-actor recovery')
+            cmd.add_argument('--ssap-provider-deadline-verify',action='store_true',help='with --ssap-provider-owner-exit-verify: SDK Provider original deadline, actual late ETIMEDOUT and independent ordinary CUTC delivery; no same-actor recovery')
             cmd.add_argument('--ssap-write-command-verify',action='store_true',help='actual C/Python WRITE_NO_RSP with remote Read,owner readback and paired capture;not admission-only delivery')
             cmd.add_argument('--ssap-write-command-policy-verify',action='store_true',help='add actual command refusal and same-owner deny/allow after each phase positives;retain all24 cases;requires --ssap-write-command-verify')
             cmd.add_argument('--ssap-write-command-deadline-verify',action='store_true',help='original command authorization timeout and ordinary business;requires policy gate;not automatic recovery')

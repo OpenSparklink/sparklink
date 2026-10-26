@@ -83,7 +83,15 @@ pub(super) async fn exercise(
     server: &zbus::Connection,
     metadata: &OwnedMetadata,
 ) -> anyhow::Result<()> {
-    for language in ["c", "python"] {
+    for (language, withdrawal) in [
+        ("c", false),
+        ("c", true),
+        ("python", false),
+        ("python", true),
+    ] {
+        // Keep the original normal quit coverage and its artifact names. The
+        // pending withdrawal owns a fresh registration and separate receipts.
+        let suffix = if withdrawal { "-withdrawal" } else { "" };
         let registrations = metadata.registered.load(Ordering::SeqCst);
         let removals = metadata.removed.load(Ordering::SeqCst);
         let binds = metadata.provider_binds.load(Ordering::SeqCst);
@@ -163,15 +171,17 @@ pub(super) async fn exercise(
         std::fs::File::open("/dev/urandom")?.read_exact(&mut random)?;
         let hex: String = random.iter().map(|b| format!("{b:02x}")).collect();
         std::fs::write(
-            directory.join(format!("{language}-provider-random32.bin")),
+            directory.join(format!("{language}-provider{suffix}-random32.bin")),
             random,
         )?;
         let mut prior_token = 0;
         let mut callback_results = Vec::new();
-        for (ordinal, case) in ["empty", "value", "error", "expire", "unregister"]
-            .into_iter()
-            .enumerate()
-        {
+        let cases: &[&str] = if withdrawal {
+            &["unregister"]
+        } else {
+            &["empty", "value", "error", "expire"]
+        };
+        for (ordinal, &case) in cases.iter().enumerate() {
             let original = Deadline::after(Duration::from_secs(2))?
                 .stamp()
                 .monotonic_ns;
@@ -484,22 +494,26 @@ pub(super) async fn exercise(
         send(&mut child, "quit\n")?;
         assert_eq!(
             line(&mut reader, &mut transcript)?,
-            format!("SdkOwnedClosedExit: api={language} start=16\n")
+            if withdrawal {
+                format!("SdkOwnedClosedExit: api={language} start=16\n")
+            } else {
+                format!("SdkOwnedRemoved: api={language} start=16\n")
+            }
         );
         let mut remainder = String::new();
         reader.read_to_string(&mut remainder)?;
         assert!(remainder.is_empty());
         let output = child.wait_with_output()?;
         std::fs::write(
-            directory.join(format!("{language}-provider.stdout")),
+            directory.join(format!("{language}-provider{suffix}.stdout")),
             transcript,
         )?;
         std::fs::write(
-            directory.join(format!("{language}-provider.stderr")),
+            directory.join(format!("{language}-provider{suffix}.stderr")),
             &output.stderr,
         )?;
         std::fs::write(
-            directory.join(format!("{language}-provider-callback-results.json")),
+            directory.join(format!("{language}-provider{suffix}-callback-results.json")),
             serde_json::to_vec_pretty(&callback_results)?,
         )?;
         assert!(

@@ -286,7 +286,7 @@
       "action": "body_replaced_and_scope_split",
       "state": "open",
       "closure_basis": "U#21 SDK READ Provider 生命周期、U#22 剩余 SSAP 操作/长值/更新事务、U#23 真实 Profile；父项原完整验收保留。",
-      "body_sha256": "348fbee616cb21d0ea432c867354aafd5f74b40ad093e96561fb5d31424116e6",
+      "body_sha256": "0c8d23e5549d6bacffa903eb02fa2823ddda5ba33802f88e6058e892bd562c66",
       "children": [
         21,
         22,
@@ -385,7 +385,7 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "a746afd0c098846f6d8fba5622453585622320797f9c483c335fdf9abb74b397"
+      "body_sha256": "45a8b30515ce7a828e78d2d20f68225a0f8c209638fea95a716ce82268c79d3e"
     },
     {
       "repository": "sparklink",
@@ -458,16 +458,10 @@
   "non_manual_recovery_qualified": false,
   "whole_goal_complete": false,
   "followup_readback": {
-    "observed_at": "2026-10-26T19:28:16.458963+00:00",
-    "originals_verified": 28,
-    "children_verified": 7,
-    "closed": [
-      {
-        "repository": "sparklink",
-        "number": 21,
-        "scope": "original six READ Provider criteria only"
-      }
-    ],
+    "observed_at": "2026-10-26T19:50:20.998080+00:00",
+    "originals_verified": 1,
+    "children_verified": 1,
+    "closed": [],
     "original_classifications_changed": false,
     "parent_relations": {
       "sparklink#3": [
@@ -488,23 +482,24 @@
       {
         "repository": "sparklink",
         "number": 3,
-        "prior_body_sha256": "b71a61b3194dee47e2936f912427d8769c82795279b5696c6053e078d640b8ba",
-        "body_sha256": "348fbee616cb21d0ea432c867354aafd5f74b40ad093e96561fb5d31424116e6",
-        "action": "source_offline_scope_refreshed_original_acceptance_retained"
+        "prior_body_sha256": "348fbee616cb21d0ea432c867354aafd5f74b40ad093e96561fb5d31424116e6",
+        "body_sha256": "0c8d23e5549d6bacffa903eb02fa2823ddda5ba33802f88e6058e892bd562c66",
+        "action": "parameterized_caller_source_offline_scope_refreshed"
       },
       {
         "repository": "sparklink",
         "number": 22,
-        "prior_body_sha256": "f51a8457399d7dc80c0cf9fbe4c245f2a158c674d89a266a69123eb8611a8220",
-        "body_sha256": "a746afd0c098846f6d8fba5622453585622320797f9c483c335fdf9abb74b397",
-        "action": "source_offline_scope_refreshed_original_acceptance_retained"
+        "prior_body_sha256": "a746afd0c098846f6d8fba5622453585622320797f9c483c335fdf9abb74b397",
+        "body_sha256": "45a8b30515ce7a828e78d2d20f68225a0f8c209638fea95a716ce82268c79d3e",
+        "action": "parameterized_caller_source_offline_scope_refreshed"
       }
     ],
     "u1": "Native retry SharedState wait still needs cancellation/release regression; open.",
     "u10": "Natural root causes and non-manual recovery remain own acceptance; unrelated security/release not prerequisites.",
     "u21": "Closed against original criteria; historical failure and exact qualifications retained.",
-    "u22": "Shared Rust/C/Python dynamic WRITE implemented and named offline checks passed; actual VM callers, new-artifact real-device and remaining original operations open.",
-    "qualification_effect": "No new hardware/formal qualification. All original acceptance and exact historical identities retained."
+    "u22": "Actual parameterized C/Python WRITE callers and named offline gates pass; complete VM selector/capture/new-artifact device qualification and remaining original scope open.",
+    "qualification_effect": "No new hardware/formal qualification. All original acceptance and exact historical identities retained.",
+    "readback_scope": "U3/U22 source/offline follow-up only; prior full 35-issue maintenance audit retained in history."
   },
   "followup_readback_history": [
     {
@@ -1152,6 +1147,55 @@
       "u21": "Closed against original criteria; historical failure and exact qualifications retained.",
       "u22": "New daemon/Rust dynamic WRITE source and named offline checks; full SDK/new-artifact VM and remaining original operations open.",
       "qualification_effect": "No new hardware or formal qualification; historical source/evidence identities unchanged."
+    },
+    {
+      "observed_at": "2026-10-26T19:28:16.458963+00:00",
+      "originals_verified": 28,
+      "children_verified": 7,
+      "closed": [
+        {
+          "repository": "sparklink",
+          "number": 21,
+          "scope": "original six READ Provider criteria only"
+        }
+      ],
+      "original_classifications_changed": false,
+      "parent_relations": {
+        "sparklink#3": [
+          21,
+          22,
+          23
+        ],
+        "linux#17": [
+          21,
+          22
+        ],
+        "linux#19": [
+          23,
+          24
+        ]
+      },
+      "updates": [
+        {
+          "repository": "sparklink",
+          "number": 3,
+          "prior_body_sha256": "b71a61b3194dee47e2936f912427d8769c82795279b5696c6053e078d640b8ba",
+          "body_sha256": "348fbee616cb21d0ea432c867354aafd5f74b40ad093e96561fb5d31424116e6",
+          "action": "source_offline_scope_refreshed_original_acceptance_retained"
+        },
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "prior_body_sha256": "f51a8457399d7dc80c0cf9fbe4c245f2a158c674d89a266a69123eb8611a8220",
+          "body_sha256": "a746afd0c098846f6d8fba5622453585622320797f9c483c335fdf9abb74b397",
+          "action": "source_offline_scope_refreshed_original_acceptance_retained"
+        }
+      ],
+      "u1": "Native retry SharedState wait still needs cancellation/release regression; open.",
+      "u10": "Natural root causes and non-manual recovery remain own acceptance; unrelated security/release not prerequisites.",
+      "u21": "Closed against original criteria; historical failure and exact qualifications retained.",
+      "u22": "Shared Rust/C/Python dynamic WRITE implemented and named offline checks passed; actual VM callers, new-artifact real-device and remaining original operations open.",
+      "qualification_effect": "No new hardware/formal qualification. All original acceptance and exact historical identities retained."
     }
   ],
   "later_dispositions": [

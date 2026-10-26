@@ -686,7 +686,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-26T19:28:16.458963+00:00",
+  "updated_at_utc": "2026-10-26T19:50:20.998080+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -2020,9 +2020,9 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP08-WP16-WP17-U22-shared-write-sdk",
-      "state": "SHARED_WRITE_SDK_SOURCE_OFFLINE_COMPLETE_VM_CALLERS_AND_REAL_DEVICE_GATES_OPEN",
-      "production_behavior": "Typed dynamic WRITE now uses the existing bounded Dispatcher, original Client and Owned registration through Rust/C/Python. READ/WRITE share capacity, request/callback final-reference cleanup and original deadlines. Sole daemon Engine and Native identity/effect checks remain. No stored-value fallback or new Host/Engine.",
+      "id": "WP08-WP16-WP17-U22-shared-write-callers",
+      "state": "PARAMETERIZED_WRITE_CALLERS_OFFLINE_READY_VM_GATE_INCOMPLETE",
+      "production_behavior": "Existing parameterized C/Python Owned publishers now bind the shared WRITE SDK, compare complete proposed values before replying, and expose their finite application memory separately from daemon staging. Same authorization/poll/deadline/cleanup loop. Fixed-identity standalone WRITE consumers retired; actual external tests use the common entry. No Engine or protocol change.",
       "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
       "work_packages": [
         "WP08",
@@ -2032,13 +2032,12 @@
       "records": [],
       "predecessor_archive": {
         "history": "batch_history",
-        "id": "WP08-WP16-WP17-U22-owned-type0-write-provider",
-        "canonical_sha256": "8a877721774fb51baa21a53d0e7e7907ec889aadce8f87571bc2515a4eaaf2cc"
+        "id": "WP08-WP16-WP17-U22-shared-write-sdk",
+        "canonical_sha256": "c24cb7c3b23c0c9b2e9318a76762a35fda9cb64971cefd6fe60e30f2dd5efeaa"
       },
       "implementation_sources": {
-        "public_source": "e9ea17ed57b9b7b340d5bee7f9bae13b5de165be",
-        "public_frontend_source": "075baf19468839eecf4a604ac5647759140d7f37",
-        "scope": "Committed production source and named offline actual C/Python/private-bus checks. No new VM/device artifact qualification."
+        "public_source": "df7d7f74d3b2097e4f8c00493119b2ba3d9b8dd7",
+        "scope": "Actual caller/tool/test/doc source; not new compiled VM or hardware qualification."
       },
       "invariants": [
         "Original controller/generation/lifetime/security epoch/TCID/PI and original absolute deadline; Native admission before requesting application effects and before response. Snapshot checks cannot roll back an already started application effect.",
@@ -2048,52 +2047,48 @@
         "Original production paths and all original U22 conditions remain. Offline fixture transport is explicit cfg(test); it is not Native/RF proof.",
         "READ/WRITE use one bounded Dispatcher with 16 shared slots. Only final request and callback release returns a slot; readiness fd duplicates do not retain reply authority.",
         "Typed WRITE snapshot preserves original metadata and complete value, no truncation. Invalid reply does not consume reply authority; successful verify requires the exact proposed value.",
-        "Local reply acceptance is separate from callback drain and peer application handling. Partial endpoint-install failure removes only this attempt's newly installed endpoint; owner-close and original deadline remain authoritative."
+        "Local reply acceptance is separate from callback drain and peer application handling. Partial endpoint-install failure removes only this attempt's newly installed endpoint; owner-close and original deadline remain authoritative.",
+        "Explicit write-only 0x06 publisher and original parameterized controller/generation. Wrong value/token does not consume the pending request; no implicit acceptance or staging readback.",
+        "Input budget includes full 2042-byte value plus finite command overhead. Local accepted memory, SDK reply acceptance and actual remote callback receipt remain separate."
       ],
       "offline_checks": {
-        "sdk_library": {
+        "actual_external_c_python": {
           "result": "PASS",
-          "tests": 69
+          "scope": "Actual compiled common consumers and SDK/private bus, broker/transport fixtures. Five WRITE cases per language: short verify, empty command, application error, original expiry and 2042-byte verify; bad token/value rejection, callback drain and application memory checks. Original READ/authorization/cleanup cases also ran."
         },
-        "python": {
+        "runner": {
           "result": "PASS",
-          "tests": 106
+          "tests": 78,
+          "scope": "Existing application/provider selectors, admission and fail-closed fixture checks; not real kernel/device."
         },
-        "external_c_python": {
-          "result": "PASS",
-          "scope": "Actual compiled C and Python through current SDK/private bus; fixed broker metadata and local transport fixture. Final frozen run completed supervisor/material checks. Not real Native or RF."
-        },
-        "slctl": "PASS: original all-targets tests; no new WRITE interactive CLI claim",
-        "strict_clippy": "PASS: Rust 1.96.1 locked offline workspace all-targets all-features -D warnings",
-        "c_header": "PASS: cbindgen 0.29.4 byte-identical generated header, independent 80-byte layout checks",
-        "docs": "PASS: locked strict HTML and inventory for source changes",
+        "strict_clippy": "PASS: locked offline Rust1.96.1 libsparklink all-targets all-features -D warnings",
+        "docs": "PASS: locked strict HTML/inventory for caller reference; project record changes independently checked through generated views.",
         "failures_preserved": [
-          "external-v1 material mutation rejected",
-          "external-v2 owner closed before callback drained: NoReply",
-          "external-v4 supervisor exited 143; child PASS is not whole-run PASS",
-          "Python initial environment failures retained"
+          "Initial formatter edit lost Python authorization return; corrected, original test retained.",
+          "Reply observation variable shadowed original service receipt and broke cleanup; corrected, no assertion weakening.",
+          "New WRITE reply test counted 14 rather than actual 13 fields; now checks all 13 explicit field names and their semantics.",
+          "Initial Python runner invocation lacked tools/tests import path; failed attempt retained."
         ],
-        "prior_daemon_and_contract_checks": "Retained at predecessor source; not silently rerun or transferred as current whole-workspace qualification."
+        "prior_checks": "Predecessor SDK69/Python106/full-workspace and earlier failures retain exact original sources; not claimed rerun."
       },
       "offline_status": "ONLY_NAMED_CHECKS_PASS",
       "formal_status": "NO_NEW_PROOF",
       "hardware_status": "NEW_SOURCE_NOT_REVALIDATED_ON_DEVICE",
       "exit_conditions": [
-        "Finite shared SDK source slice complete: one frontend, typed Rust/C/Python entry points, independent layout, actual external consumers, original owner/deadline/capacity/cleanup and rejection checks.",
-        "Next: connect existing CLI/probe/VM runner to the actual shared WRITE SDK. Current added consumers are finite offline fixtures, not a general real-device runner.",
-        "Exact new artifacts must pass VM-only dual-device actual application write and reply, exchanged roles, refusal/deadline/withdrawal/owner exit/disconnect and peer isolation; preserve discovery/connection/data/qualified length paths.",
-        "All six original U22 criteria, remaining method/descriptor/long values/update transaction matrix and parent U3 scope remain open."
+        "Finite caller slice complete: both actual parameterized consumers reuse existing loop, precise fields/value/deadline and original READ/authorization/cleanup regressions; standalone fixed-identity consumers retired.",
+        "Next implement explicit existing host/guest WRITE selector, real execution steps and independent dual-ended USB/SSAP corroboration, with negative controls. Shared publisher opt-in alone is not a complete VM gate.",
+        "Exact-artifact VM-only two-device actual application WRITE validation/reply, role exchange, errors/deadline/unregister/owner exit/disconnect and peer isolation, with original qualified paths maintained.",
+        "All six original U22 conditions and parent scope remain; method/descriptor/long values/update transactions not completed by this source slice."
       ],
       "remaining_conditions": [
-        "Existing real VM runner/application entry integration for shared WRITE SDK.",
-        "Exact new-artifact device evidence including actual remote effect and reply, original READ/data paths and lifecycle checks.",
-        "Method/descriptor provider, long-write/whole-value/aggregate-budget and complete update transactions.",
-        "Original data/security/Profile/deployment, natural root causes and non-manual recovery remain open."
+        "Full real WRITE VM selector/execution/dual-ended corroboration and gate integrity checks.",
+        "Exact new-artifact dual-device proof and original discovery/connection/data/length/lifecycle regressions.",
+        "Remaining method/descriptor/long-write/update matrix, original full plan, natural faults and non-manual recovery."
       ],
       "next": [
-        "Connect existing real application/VM callers to the shared WRITE SDK, without new Engine or duplicate receive/reply loops.",
-        "Obtain exact-artifact VM-only dual-device WRITE and original path/lifecycle regressions; old READ qualification does not qualify changed shared frontend.",
-        "Continue remaining SSAP/data/security slices without whole control-plane prerequisites."
+        "Wire the common SDK WRITE publisher into the existing VM gate and capture verifier; no separate Host/Engine or second caller loop.",
+        "Run exact new artifacts in dedicated VM with approved ports and per-device SDK110, both roles, actual app validation and peer reply; preserve original failures.",
+        "Continue original SSAP/data/security work without complete control-plane prerequisite."
       ],
       "issues": [
         "OpenSparklink/sparklink#22",
@@ -5128,6 +5123,11 @@
       "from_batch": "WP08-WP16-WP17-U22-owned-type0-write-provider",
       "to_batch": "WP08-WP16-WP17-U22-shared-write-sdk",
       "scope": "Bounded issue maintenance and source/offline status reconciliation; original goal, budget and qualification unchanged."
+    },
+    {
+      "from_batch": "WP08-WP16-WP17-U22-shared-write-sdk",
+      "to_batch": "WP08-WP16-WP17-U22-shared-write-callers",
+      "scope": "Source/offline caller progression only; full goal/budget and original qualification unchanged."
     }
   ],
   "source_issue_sync_receipt": {
@@ -5200,7 +5200,7 @@
   "issue_maintenance": {
     "record": "project/issue-maintenance-20261026.json",
     "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
-    "execution_dependency": "Bounded maintenance complete: 28 originals reviewed, seven children mapped, U21 independently closed. Resume actual U22 WRITE callers/device gates; unrelated control-plane work is not a prerequisite.",
+    "execution_dependency": "Maintenance complete; continue U22 actual callers/VM gate without unrelated prerequisites. U21 original closure unchanged.",
     "followup_readback": "project/issue-maintenance-20261026.json#/followup_readback"
   },
   "historical_goal_turn_audits": [
@@ -5236,5 +5236,23 @@
   },
   "next_batch_contract": {
     "authority": "project/qualification-records.json:batch.next"
+  },
+  "validation_reference_history": [
+    {
+      "replaced_by_batch": "WP08-WP16-WP17-U22-shared-write-callers",
+      "previous": {
+        "current_batch_validation_receipt": null,
+        "current_validation_ref": null
+      },
+      "scope": "Historical validation identity retained; no new artifact qualification"
+    }
+  ],
+  "current_batch_validation_receipt": {
+    "authority": "project/qualification-records.json:batch.offline_checks",
+    "scope": "Only named current offline checks; exact retained artifact qualification remains qualification_view.selected_qualification."
+  },
+  "current_validation_ref": {
+    "authority": "project/qualification-records.json:batch.offline_checks",
+    "scope": "Only named current offline checks; exact retained artifact qualification remains qualification_view.selected_qualification."
   }
 }

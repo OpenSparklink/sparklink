@@ -205,6 +205,17 @@ async fn silent_30s_dbus_requests_and_event_dispatch_do_not_share_wait_lock() {
     let (source, events, entered, dropped) = source();
     let task = EventTask::start(source, state.clone(), server.clone());
     entered.await.unwrap();
+    // The retired entry remains a negative contract check, not evidence that
+    // the current connection handler acquired SharedState during silence.
+    let retired = timeout(
+        Duration::from_secs(2),
+        proxy.call::<_, _, ()>("ConnectDevice", &("01:02:03:04:05:06",)),
+    )
+    .await
+    .unwrap()
+    .unwrap_err();
+    assert!(matches!(retired, zbus::Error::MethodError(name, _, _)
+        if name.as_str() == "org.freedesktop.DBus.Error.UnknownMethod"));
     let quiet = Instant::now();
     while quiet.elapsed() < Duration::from_secs(30) {
         let name = timeout(Duration::from_secs(2), proxy.get_property::<String>("Name"))
@@ -223,22 +234,33 @@ async fn silent_30s_dbus_requests_and_event_dispatch_do_not_share_wait_lock() {
             ),
             timeout(
                 Duration::from_secs(2),
-                proxy.call::<_, _, ()>("ConnectDevice", &("01:02:03:04:05:06",))
+                proxy.call::<_, _, ()>(
+                    "ConnectDeviceTyped",
+                    &("01:02:03:04:05:06", 0_u8),
+                )
             ),
         );
         // /dev/null is intentionally not a fake successful controller. A real
         // method error proves the handler ran; a timeout or transport error does not.
-        for (result, expected) in [
+        for (result, expected, expected_detail) in [
             (
                 info.map(|r| r.map(|_| ())),
                 "org.freedesktop.DBus.Error.NotSupported",
+                None,
             ),
-            (scan, "org.freedesktop.DBus.Error.NotSupported"),
-            (connect, "org.freedesktop.DBus.Error.UnknownMethod"),
+            (scan, "org.freedesktop.DBus.Error.NotSupported", None),
+            (
+                connect,
+                "org.freedesktop.DBus.Error.Failed",
+                Some("management unavailable"),
+            ),
         ] {
             match result.unwrap().unwrap_err() {
-                zbus::Error::MethodError(name, _, _) => {
-                    assert_eq!(name.as_str(), expected)
+                zbus::Error::MethodError(name, detail, _) => {
+                    assert_eq!(name.as_str(), expected);
+                    if let Some(expected_detail) = expected_detail {
+                        assert_eq!(detail.as_deref(), Some(expected_detail));
+                    }
                 }
                 error => panic!("unexpected D-Bus error: {error}"),
             }

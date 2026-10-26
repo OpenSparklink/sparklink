@@ -5447,7 +5447,7 @@
   "issue_maintenance": {
     "record": "project/issue-maintenance-20261026.json",
     "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
-    "execution_dependency": "Bounded issue maintenance complete and current online states reconciled; resume existing SDK Provider lifecycle batch. Parent-issue completion is not a feature prerequisite.",
+    "execution_dependency": "Bounded maintenance complete: 28 original bodies and 7 children rechecked. Resume existing U#21 original-item-4 capacity reclamation regression and exact-record audit, then feature mainline; unrelated parent closure is not a prerequisite.",
     "followup_readback": "project/issue-maintenance-20261026.json#/followup_readback"
   },
   "historical_goal_turn_audits": [

@@ -307,6 +307,36 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
     "record": "project/issue-maintenance-20261026.json",
     "next": "Bounded maintenance complete; resume this original feature batch without waiting for unrelated parent issues.",
     "scope": "Public source/offline issue status only; no qualification promotion."
+  },
+  "followups": {
+    "sdk_provider_pending_unregister": {
+      "state": "EXTERNAL_SDK_PENDING_UNREGISTER_OFFLINE_PASS_REAL_DEVICE_PENDING",
+      "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
+      "source_commit": "670e4aafa24a9a4b1ca160344e379ecb16f1e1fe",
+      "source_files": {
+        "tools/testing/application_client/client.c": "886fcf7d77cd5b69431f8ca12e9b0d25917c202bc4e4742e878f03b9e1ba3531",
+        "tools/testing/application_client/client.py": "4c3a009c293e3c58371720fcf8a60bef2a144eba8ed9beb66ebcb3bb1fa85167",
+        "crates/libsparklink/tests/application_ffi/read_provider.rs": "56a1b73a34b500efa251b48ce3cb6dc2fd3b3eb385ec0fa4b85c5df5e29e8db9",
+        "docs/reference/ssap-permissions.md": "efa9c7cbfd371a8fadbde6cfe967f582909d4c75fe4bb5336e388a9dbfc21bc4"
+      },
+      "behavior": "External C/Python consumers retain a delivered Provider request and readiness fd across actual SDK unregister; observe original deadline, unchanged info and ESHUTDOWN; independent real private D-Bus callback stops.",
+      "checks": [
+        "Existing application_ffi integration passed: each C/Python caller retains normal empty/value/error/expiry/quit, plus a fresh registration for pending unregister; distinct receipts for both scenarios",
+        "External C compiled with -std=c11 -Wall -Wextra -Werror",
+        "Pinned Rust 1.96.1 locked libsparklink all-targets/all-features clippy -D warnings",
+        "Workspace rustfmt check"
+      ],
+      "evidence_scope": "Same tested source files in the retained development checkout and public source commit; service metadata is fixture. Not a qualification of the whole public HEAD or daemon database/wire/VM/device behavior.",
+      "failed_attempt": "First local attempt could not locate dbus-daemon on default PATH; did not enter callback cases. Original log/artifacts retained; rerun explicitly selected existing private-bus daemon without changing assertions.",
+      "remaining": [
+        "Real pending caller loss and explicit service withdrawal in both SDK languages",
+        "Original deadline and late reply with actual paired evidence",
+        "Independent Owned guard and ordinary business isolation"
+      ],
+      "changes_runtime": false,
+      "hardware_replayed": false,
+      "whole_issue_complete": false
+    }
   }
 }
 ```

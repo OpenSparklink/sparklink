@@ -2168,10 +2168,7 @@
         "Natural fault RCA, nonmanual recovery, E/mixed/cold-ROM and production identity remain open; manual/hub/QMP actions or deliberate reconnect do not establish natural recovery.",
         "Retain all original failures, counterexamples, scope and qualification identities. UserHost remains low-priority planning; no original issue is closed by this batch transition."
       ],
-      "next": [
-        "Continue the SDK original-expiry/late-answer gate through the existing shared dispatcher and sole Engine. Preserve distinct Owner-exit and explicit-unregister contracts; exact artifact qualification stays under authorized local evidence authority.",
-        "Continue original data/security/SSAP and missing named checks without the whole control-plane race set as a prerequisite; no same-actor or natural recovery qualification is added."
-      ],
+      "next": "Prepare and execute SDK Provider deadline v2 on the assigned U pair in a dedicated VM, audit and register only its exact finite result. Resume original data/security/SSAP mainline; Owner-exit and explicit unregister retain separate records. No whole-control-plane prerequisite.",
       "issues": [
         "OpenSparklink/sparklink#3",
         "OpenSparklink/sparklink#8",
@@ -2327,6 +2324,31 @@
             "Exact-artifact VM results and finite scope are maintained in authorized local qualification records, not inferred from the public source/offline summary.",
             "SDK original expiry/late answer and full original U21 lifecycle requirements."
           ],
+          "whole_issue_complete": false
+        },
+        "sdk_provider_deadline_v2": {
+          "state": "SOURCE_OFFLINE_AVAILABLE_EXACT_ARTIFACT_GATE_REQUIRED",
+          "public_source": "47829c7ccbce9cee5484f79b824c41075a56d390",
+          "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
+          "behavior": "Current existing deadline runner uses C/Python SDK Providers, actual pending callback/approval, unchanged original deadlines, actual late request.reply ETIMEDOUT, persistent actor terminal, full paired capture bounded absence and independent ordinary CUTC business. Live host/guest pin v2; historical CLI v1 remains reader-only, with no qualification transfer.",
+          "offline_checks": [
+            "25 deadline oracle/barrier tests (including original CLI evidence, SDK shapes, full retained and business proof reconstruction and negative controls)",
+            "18 Owner-exit,10 unregister,7 SDK Provider,31 target and33 channel tests pass",
+            "Strict HTML and121-document inventory pass"
+          ],
+          "test_boundaries": "Literal SDK/packet fixtures and mocked process/clock for arrival-barrier tests; actual CLI prelaunch refusal is tested without launching a VM. Does not prove SDK execution, real daemon expiry, USB, kernel concurrency or hardware recovery.",
+          "retained_failures": "First SDK fixtures omitted original guard/pipe metadata; corrected fixture setup without weakening validators. Original live-runner test expected version1; now explicitly pins migrated SDK version2 and retains prelaunch rejection assertions. All original failure logs remain local.",
+          "exit_conditions": [
+            "Exact new compiled/executor artifact and SDK110 explicit US pair in dedicated VM",
+            "Both connection roles, actual late SDK API call returns ETIMEDOUT after original request deadline; wrong token/parser/ESHUTDOWN/ESTALE cannot substitute",
+            "Complete two-end USB READ evidence and no response/fallback/late value through cleanup, actual independent CUTC peer validation/reply, normal Provider cleanup",
+            "Independent raw audit and negative controls, then finite registration only; preserve Owner-exit/unregister records and original failures"
+          ],
+          "remaining": [
+            "New-artifact VM gate, independent audit and exact finite qualification",
+            "Original full U21 lifecycle and S0-S6 scope; natural faults/non-manual recovery remain open"
+          ],
+          "formal_status": "NOT_RUN for this tool change; no new proof",
           "whole_issue_complete": false
         }
       },

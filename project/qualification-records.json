@@ -13,9 +13,9 @@
     "replay": "每份记录按自身源码映射、编译artifact、冻结执行/校验工具和原manifest命令重放；只在授权VM中执行驱动/实机。历史575等工具仅适用于各自原记录，不是全registry的统一重放入口。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "WP08-WP16-WP17-U22-shared-write-callers",
-    "state": "PARAMETERIZED_WRITE_CALLERS_OFFLINE_READY_VM_GATE_INCOMPLETE",
-    "production_behavior": "Existing parameterized C/Python Owned publishers now bind the shared WRITE SDK, compare complete proposed values before replying, and expose their finite application memory separately from daemon staging. Same authorization/poll/deadline/cleanup loop. Fixed-identity standalone WRITE consumers retired; actual external tests use the common entry. No Engine or protocol change.",
+    "id": "WP08-WP16-WP17-U22-sdk-write-vm-gate",
+    "state": "SDK_WRITE_VM_GATE_SOURCE_OFFLINE_AVAILABLE",
+    "production_behavior": "Existing VM runner now selects and executes the common C/Python WRITE Provider gate; same Owned/ordinary baseline, original callback/deadline, complete value and application-memory checks, opposite peer verification, literal SSAP and paired USB evidence. No new Host/Engine or production protocol change.",
     "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
     "work_packages": [
       "WP08",
@@ -25,12 +25,12 @@
     "records": [],
     "predecessor_archive": {
       "history": "batch_history",
-      "id": "WP08-WP16-WP17-U22-shared-write-sdk",
-      "canonical_sha256": "c24cb7c3b23c0c9b2e9318a76762a35fda9cb64971cefd6fe60e30f2dd5efeaa"
+      "id": "WP08-WP16-WP17-U22-shared-write-callers",
+      "canonical_sha256": "b76d67679bd056ae0cdd8c9a0c95fe214faad0b5bd4eb6fe19c0c4eb2bde353e"
     },
     "implementation_sources": {
-      "public_source": "df7d7f74d3b2097e4f8c00493119b2ba3d9b8dd7",
-      "scope": "Actual caller/tool/test/doc source; not new compiled VM or hardware qualification."
+      "public_source": "56d7fdb2273d8b44578ca6420dace97c634ef84b",
+      "scope": "Source/offline gate wiring. Compiled/execution/report identities for real qualification are separate and private."
     },
     "invariants": [
       "Original controller/generation/lifetime/security epoch/TCID/PI and original absolute deadline; Native admission before requesting application effects and before response. Snapshot checks cannot roll back an already started application effect.",
@@ -45,43 +45,36 @@
       "Input budget includes full 2042-byte value plus finite command overhead. Local accepted memory, SDK reply acceptance and actual remote callback receipt remain separate."
     ],
     "offline_checks": {
-      "actual_external_c_python": {
-        "result": "PASS",
-        "scope": "Actual compiled common consumers and SDK/private bus, broker/transport fixtures. Five WRITE cases per language: short verify, empty command, application error, original expiry and 2042-byte verify; bad token/value rejection, callback drain and application memory checks. Original READ/authorization/cleanup cases also ran."
-      },
       "runner": {
         "result": "PASS",
-        "tests": 78,
-        "scope": "Existing application/provider selectors, admission and fail-closed fixture checks; not real kernel/device."
+        "tests": 160,
+        "scope": "WRITE gate plus original READ/Owner-exit/unregister/deadline/channel/SDK caller/target fixtures. Actual CLI help/parser, input/tool hash closure and paired-capture negative controls. Not hardware or kernel concurrency proof."
       },
-      "strict_clippy": "PASS: locked offline Rust1.96.1 libsparklink all-targets all-features -D warnings",
-      "docs": "PASS: locked strict HTML/inventory for caller reference; project record changes independently checked through generated views.",
+      "docs": "PASS: strict locked HTML and inventory (private127/public121); no device operation by documentation build.",
       "failures_preserved": [
-        "Initial formatter edit lost Python authorization return; corrected, original test retained.",
-        "Reply observation variable shadowed original service receipt and broke cleanup; corrected, no assertion weakening.",
-        "New WRITE reply test counted 14 rather than actual 13 fields; now checks all 13 explicit field names and their semantics.",
-        "Initial Python runner invocation lacked tools/tests import path; failed attempt retained."
+        "Pre-existing uncommitted gate draft conditional syntax corrected before execution.",
+        "runner-v2: two tests lacked explicit kernel helper path in independent worktree; original output retained, invocation fixed without relaxing assertions."
       ],
-      "prior_checks": "Predecessor SDK69/Python106/full-workspace and earlier failures retain exact original sources; not claimed rerun."
+      "prior_external_sdk_checks": "Earlier compiled external C/Python callback tests retain their source identities; not represented as rerun by this source slice."
     },
     "offline_status": "ONLY_NAMED_CHECKS_PASS",
     "formal_status": "NO_NEW_PROOF",
     "hardware_status": "NEW_SOURCE_NOT_REVALIDATED_ON_DEVICE",
     "exit_conditions": [
-      "Finite caller slice complete: both actual parameterized consumers reuse existing loop, precise fields/value/deadline and original READ/authorization/cleanup regressions; standalone fixed-identity consumers retired.",
-      "Next implement explicit existing host/guest WRITE selector, real execution steps and independent dual-ended USB/SSAP corroboration, with negative controls. Shared publisher opt-in alone is not a complete VM gate.",
-      "Exact-artifact VM-only two-device actual application WRITE validation/reply, role exchange, errors/deadline/unregister/owner exit/disconnect and peer isolation, with original qualified paths maintained.",
-      "All six original U22 conditions and parent scope remain; method/descriptor/long values/update transactions not completed by this source slice."
+      "Existing host/guest selector, package identity, real executor, paired capture verdict and negative controls wired; original READ/Owned/ordinary tests maintained.",
+      "Private exact-artifact real outcomes require independently audited application output, paired capture, complete terminal, input/source mapping and retained-material registration; no public inference from offline results.",
+      "Continue pending WRITE cancellation/expiry/unregister/down and peer isolation using existing lifecycle facilities, then command/long-value and remaining original operations.",
+      "All original U22/parent criteria remain; no whole-goal, full lifecycle, natural recovery or current-tree promotion."
     ],
     "remaining_conditions": [
-      "Full real WRITE VM selector/execution/dual-ended corroboration and gate integrity checks.",
-      "Exact new-artifact dual-device proof and original discovery/connection/data/length/lifecycle regressions.",
-      "Remaining method/descriptor/long-write/update matrix, original full plan, natural faults and non-manual recovery."
+      "Full WRITE pending owner-exit/explicit unregister/original expiry/down and peer-isolation matrix.",
+      "WRITE command/empty/long values, method/descriptor Provider and update-transaction remainder.",
+      "Full S0-S6/19WP/10FV/12DG, existing data/security/Profile/deployment/recovery conditions."
     ],
     "next": [
-      "Wire the common SDK WRITE publisher into the existing VM gate and capture verifier; no separate Host/Engine or second caller loop.",
-      "Run exact new artifacts in dedicated VM with approved ports and per-device SDK110, both roles, actual app validation and peer reply; preserve original failures.",
-      "Continue original SSAP/data/security work without complete control-plane prerequisite."
+      "Reuse existing Provider lifecycle gates for pending WRITE and original-deadline/withdrawal outcomes; do not create a second Engine or parallel caller implementation.",
+      "Extend command/length/long-value application gates through the same Session/credit/Ticket/Grant path; retain current qualified paths.",
+      "Continue original data/security/SSAP work; no full control-plane prerequisite."
     ],
     "issues": [
       "OpenSparklink/sparklink#22",
@@ -99,8 +92,9 @@
       "record": "project/issue-maintenance-20261026.json",
       "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
       "last_readback": "project/issue-maintenance-20261026.json#/followup_readback",
-      "scope": "Bounded maintenance complete: 35 existing issues rechecked, six bodies consolidated, existing seven children reused, U21 earlier closure retained; original criteria and qualification unchanged."
-    }
+      "scope": "Bounded maintenance remains complete; U3/U22 current source/offline scope updated without changing original acceptance or closing issues."
+    },
+    "qualification_boundary": "Public source/offline status only. Private device execution neither published nor inferred absent; consult authorized local records for exact artifact qualification."
   },
   "overall_required_records": [
     "deadline-real21",
@@ -525799,6 +525793,101 @@
         "issue_maintenance": {
           "record": "project/issue-maintenance-20261026.json",
           "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN"
+        }
+      }
+    },
+    {
+      "id": "WP08-WP16-WP17-U22-shared-write-callers",
+      "state": "PARAMETERIZED_WRITE_CALLERS_OFFLINE_READY_VM_GATE_INCOMPLETE",
+      "canonical_sha256": "b76d67679bd056ae0cdd8c9a0c95fe214faad0b5bd4eb6fe19c0c4eb2bde353e",
+      "snapshot": {
+        "id": "WP08-WP16-WP17-U22-shared-write-callers",
+        "state": "PARAMETERIZED_WRITE_CALLERS_OFFLINE_READY_VM_GATE_INCOMPLETE",
+        "production_behavior": "Existing parameterized C/Python Owned publishers now bind the shared WRITE SDK, compare complete proposed values before replying, and expose their finite application memory separately from daemon staging. Same authorization/poll/deadline/cleanup loop. Fixed-identity standalone WRITE consumers retired; actual external tests use the common entry. No Engine or protocol change.",
+        "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
+        "work_packages": [
+          "WP08",
+          "WP16",
+          "WP17"
+        ],
+        "records": [],
+        "predecessor_archive": {
+          "history": "batch_history",
+          "id": "WP08-WP16-WP17-U22-shared-write-sdk",
+          "canonical_sha256": "c24cb7c3b23c0c9b2e9318a76762a35fda9cb64971cefd6fe60e30f2dd5efeaa"
+        },
+        "implementation_sources": {
+          "public_source": "df7d7f74d3b2097e4f8c00493119b2ba3d9b8dd7",
+          "scope": "Actual caller/tool/test/doc source; not new compiled VM or hardware qualification."
+        },
+        "invariants": [
+          "Original controller/generation/lifetime/security epoch/TCID/PI and original absolute deadline; Native admission before requesting application effects and before response. Snapshot checks cannot roll back an already started application effect.",
+          "Write-only type0 property, original unique owner, one-time binding, no stored value fallback. Permission approval and application success remain separate.",
+          "Bounded original server queue and callback; WriteCommand never owes a response. Verified WriteReq requires actual accepted bytes; malformed, late, mismatched replies cannot produce success.",
+          "One front-of-queue future retains only its original Wire reference. Cancellation releases that reference; no detached task, extra Session or new data path.",
+          "Original production paths and all original U22 conditions remain. Offline fixture transport is explicit cfg(test); it is not Native/RF proof.",
+          "READ/WRITE use one bounded Dispatcher with 16 shared slots. Only final request and callback release returns a slot; readiness fd duplicates do not retain reply authority.",
+          "Typed WRITE snapshot preserves original metadata and complete value, no truncation. Invalid reply does not consume reply authority; successful verify requires the exact proposed value.",
+          "Local reply acceptance is separate from callback drain and peer application handling. Partial endpoint-install failure removes only this attempt's newly installed endpoint; owner-close and original deadline remain authoritative.",
+          "Explicit write-only 0x06 publisher and original parameterized controller/generation. Wrong value/token does not consume the pending request; no implicit acceptance or staging readback.",
+          "Input budget includes full 2042-byte value plus finite command overhead. Local accepted memory, SDK reply acceptance and actual remote callback receipt remain separate."
+        ],
+        "offline_checks": {
+          "actual_external_c_python": {
+            "result": "PASS",
+            "scope": "Actual compiled common consumers and SDK/private bus, broker/transport fixtures. Five WRITE cases per language: short verify, empty command, application error, original expiry and 2042-byte verify; bad token/value rejection, callback drain and application memory checks. Original READ/authorization/cleanup cases also ran."
+          },
+          "runner": {
+            "result": "PASS",
+            "tests": 78,
+            "scope": "Existing application/provider selectors, admission and fail-closed fixture checks; not real kernel/device."
+          },
+          "strict_clippy": "PASS: locked offline Rust1.96.1 libsparklink all-targets all-features -D warnings",
+          "docs": "PASS: locked strict HTML/inventory for caller reference; project record changes independently checked through generated views.",
+          "failures_preserved": [
+            "Initial formatter edit lost Python authorization return; corrected, original test retained.",
+            "Reply observation variable shadowed original service receipt and broke cleanup; corrected, no assertion weakening.",
+            "New WRITE reply test counted 14 rather than actual 13 fields; now checks all 13 explicit field names and their semantics.",
+            "Initial Python runner invocation lacked tools/tests import path; failed attempt retained."
+          ],
+          "prior_checks": "Predecessor SDK69/Python106/full-workspace and earlier failures retain exact original sources; not claimed rerun."
+        },
+        "offline_status": "ONLY_NAMED_CHECKS_PASS",
+        "formal_status": "NO_NEW_PROOF",
+        "hardware_status": "NEW_SOURCE_NOT_REVALIDATED_ON_DEVICE",
+        "exit_conditions": [
+          "Finite caller slice complete: both actual parameterized consumers reuse existing loop, precise fields/value/deadline and original READ/authorization/cleanup regressions; standalone fixed-identity consumers retired.",
+          "Next implement explicit existing host/guest WRITE selector, real execution steps and independent dual-ended USB/SSAP corroboration, with negative controls. Shared publisher opt-in alone is not a complete VM gate.",
+          "Exact-artifact VM-only two-device actual application WRITE validation/reply, role exchange, errors/deadline/unregister/owner exit/disconnect and peer isolation, with original qualified paths maintained.",
+          "All six original U22 conditions and parent scope remain; method/descriptor/long values/update transactions not completed by this source slice."
+        ],
+        "remaining_conditions": [
+          "Full real WRITE VM selector/execution/dual-ended corroboration and gate integrity checks.",
+          "Exact new-artifact dual-device proof and original discovery/connection/data/length/lifecycle regressions.",
+          "Remaining method/descriptor/long-write/update matrix, original full plan, natural faults and non-manual recovery."
+        ],
+        "next": [
+          "Wire the common SDK WRITE publisher into the existing VM gate and capture verifier; no separate Host/Engine or second caller loop.",
+          "Run exact new artifacts in dedicated VM with approved ports and per-device SDK110, both roles, actual app validation and peer reply; preserve original failures.",
+          "Continue original SSAP/data/security work without complete control-plane prerequisite."
+        ],
+        "issues": [
+          "OpenSparklink/sparklink#22",
+          "OpenSparklink/sparklink#3",
+          "OpenSparklink/linux#6",
+          "OpenSparklink/linux#17"
+        ],
+        "issue_sync": {
+          "U22": "OPEN; source/offline matrix and original six criteria retained",
+          "U3": "OPEN; parent scope and checkboxes unchanged",
+          "U21": "CLOSED by its original six criteria; no reopening for unrelated WRITE work"
+        },
+        "public_scope": "Only source/offline/disposition. Private device details and execution identities remain local.",
+        "issue_maintenance": {
+          "record": "project/issue-maintenance-20261026.json",
+          "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
+          "last_readback": "project/issue-maintenance-20261026.json#/followup_readback",
+          "scope": "Bounded maintenance complete: 35 existing issues rechecked, six bodies consolidated, existing seven children reused, U21 earlier closure retained; original criteria and qualification unchanged."
         }
       }
     }

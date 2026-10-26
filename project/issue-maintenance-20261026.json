@@ -286,7 +286,7 @@
       "action": "body_replaced_and_scope_split",
       "state": "open",
       "closure_basis": "U#21 SDK READ Provider 生命周期、U#22 剩余 SSAP 操作/长值/更新事务、U#23 真实 Profile；父项原完整验收保留。",
-      "body_sha256": "484b49bb8fc3e97110f1a86287d0deace395e6308097b8ec22fa5668cf1017ac",
+      "body_sha256": "db0b94ad834a8bd1d91b066fa12927eca45a4b32f2926d80594acb12bf3734c5",
       "children": [
         21,
         22,
@@ -387,9 +387,9 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "45a8b30515ce7a828e78d2d20f68225a0f8c209638fea95a716ce82268c79d3e",
+      "body_sha256": "5265bba36529c1226ad78fea8d425b8350c0fa8aee2a57c2a594c4123c6eaeb6",
       "classification": "有限收尾",
-      "closure_basis": "唯一 Engine 剩余操作、长值及更新；参数化 WRITE caller 已接通，完整 VM 门禁/新产物验收及原剩余操作开放。"
+      "closure_basis": "唯一 Engine 剩余操作、长值及更新；WRITE runner/双端判定源码和离线门禁接通，准确产物资格按授权本地记录核对；完整生命周期及其余原操作继续开放。"
     },
     {
       "repository": "sparklink",
@@ -472,73 +472,33 @@
   "non_manual_recovery_qualified": false,
   "whole_goal_complete": false,
   "followup_readback": {
-    "observed_at": "2026-10-26T20:05:20.238187+00:00",
-    "originals_verified": 28,
-    "children_verified": 7,
-    "readback_scope": "Full existing issue set and native child relations; six body consolidations, no new children or closures. Earlier U21 closure retained.",
+    "observed_at": "2026-10-26T20:28:51.880702+00:00",
+    "originals_verified": 1,
+    "children_verified": 1,
+    "readback_scope": "U3/U22 source/offline gate follow-up only; previous full 35-issue maintenance snapshot retained in history.",
     "source_review": {
-      "sparklink_public": "d130fcbc4c4246c0aedad82897de01460b66bd4a",
+      "sparklink_public": "56d7fdb2273d8b44578ca6420dace97c634ef84b",
       "linux": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
     },
     "updates": [
       {
         "repository": "sparklink",
-        "number": 1,
-        "state": "open",
-        "before_sha256": "94bbe617548ad0a55927e455d6defcf0a47e1551a435e7c438f06f9b382f335d",
-        "body_sha256": "45443f9e6e52d72c6cca9256d8f209cdf247c262eb67521d2082a0065f142dbc",
-        "action": "scope_and_history_consolidated_original_acceptance_unchanged"
-      },
-      {
-        "repository": "sparklink",
         "number": 3,
-        "state": "open",
-        "before_sha256": "0c8d23e5549d6bacffa903eb02fa2823ddda5ba33802f88e6058e892bd562c66",
-        "body_sha256": "484b49bb8fc3e97110f1a86287d0deace395e6308097b8ec22fa5668cf1017ac",
-        "action": "scope_and_history_consolidated_original_acceptance_unchanged"
+        "prior_body_sha256": "484b49bb8fc3e97110f1a86287d0deace395e6308097b8ec22fa5668cf1017ac",
+        "body_sha256": "db0b94ad834a8bd1d91b066fa12927eca45a4b32f2926d80594acb12bf3734c5",
+        "action": "source_offline_gate_scope_refreshed_original_acceptance_preserved"
       },
       {
         "repository": "sparklink",
-        "number": 10,
-        "state": "open",
-        "before_sha256": "3060900931147c953d048f2f618e87ed643b2df8759ffc8f0b402c7c732b5e50",
-        "body_sha256": "c72f2e10a96d820a25b83a8a32df2c41ce787ed9a7989f305242f1f2d81ef368",
-        "action": "scope_and_history_consolidated_original_acceptance_unchanged"
-      },
-      {
-        "repository": "sparklink",
-        "number": 21,
-        "state": "closed",
-        "before_sha256": "a801d33aa788a8b5d410a1a8cdbade503a99ed4e88502d3b15f109cd8986dac6",
-        "body_sha256": "80d79c7ce0575d36c8d367f36e7b37c5626da64cba7f48131fd037de579a11dc",
-        "action": "scope_and_history_consolidated_original_acceptance_unchanged"
-      },
-      {
-        "repository": "linux",
-        "number": 17,
-        "state": "open",
-        "before_sha256": "2b464843c7494b886c669b09c77efc6a1379c90e94e3d248f28aabf3ce4f6ca4",
-        "body_sha256": "a1466508d5756e6c0b07e97837e12132eb17c9d3ae8c369cb87777a48439f902",
-        "action": "scope_and_history_consolidated_original_acceptance_unchanged"
-      },
-      {
-        "repository": "linux",
-        "number": 19,
-        "state": "open",
-        "before_sha256": "9b70afad443301bce4b3d8ebb7b37f08e5b88b2e230ce6cd98a9cd5aff1aedc0",
-        "body_sha256": "fa8a6b003af73b70728d640db783defbf8131cc35718d53312a4fd0858b457cf",
-        "action": "scope_and_history_consolidated_original_acceptance_unchanged"
+        "number": 22,
+        "prior_body_sha256": "45a8b30515ce7a828e78d2d20f68225a0f8c209638fea95a716ce82268c79d3e",
+        "body_sha256": "5265bba36529c1226ad78fea8d425b8350c0fa8aee2a57c2a594c4123c6eaeb6",
+        "action": "source_offline_gate_scope_refreshed_original_acceptance_preserved"
       }
     ],
     "newly_closed": [],
     "new_children": [],
-    "closed": [
-      {
-        "repository": "sparklink",
-        "number": 21,
-        "scope": "Original six READ Provider criteria only; previously closed, disposition rechecked."
-      }
-    ],
+    "closed": [],
     "original_classifications_changed": false,
     "parent_relations": {
       "sparklink#3": [
@@ -558,257 +518,8 @@
     "u1": "Current Native retry lock wait still not cancellation-aware; existing fixture shutdown does not cover it. Finite fix and direct join/receiver-release regression remain.",
     "u10": "Original discovery/hotplug acceptance and added natural recovery remain; security/Bond/release are not dependencies.",
     "u21": "Prior original-criteria closure retained; chronological body recap replaced by scope/source/history links. Original six checked criteria unchanged.",
-    "u22": "Parameterised WRITE callers are committed/offline checked; uncommitted VM verifier work is not implemented/qualified by this maintenance.",
-    "qualification_effect": "No new source behaviour, formal proof or VM/hardware qualification. Compiled/executed/report identities and original failures unchanged.",
-    "ci_source_only": [
-      {
-        "head_sha": "d130fcbc4c4246c0aedad82897de01460b66bd4a",
-        "name": "Production codec bounded fuzz",
-        "status": "completed",
-        "conclusion": "success",
-        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/40390695101"
-      },
-      {
-        "head_sha": "d130fcbc4c4246c0aedad82897de01460b66bd4a",
-        "name": "Documentation",
-        "status": "completed",
-        "conclusion": "success",
-        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/40390694958"
-      },
-      {
-        "head_sha": "d130fcbc4c4246c0aedad82897de01460b66bd4a",
-        "name": "Qualification integrity",
-        "status": "completed",
-        "conclusion": "success",
-        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/40390695057"
-      },
-      {
-        "head_sha": "d130fcbc4c4246c0aedad82897de01460b66bd4a",
-        "name": "Offline tools and application SDK",
-        "status": "completed",
-        "conclusion": "success",
-        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/40390694956"
-      },
-      {
-        "head_sha": "d130fcbc4c4246c0aedad82897de01460b66bd4a",
-        "name": "Documentation",
-        "status": "completed",
-        "conclusion": "success",
-        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/40390684648"
-      }
-    ],
-    "issues": [
-      {
-        "repository": "linux",
-        "number": 1,
-        "state": "open",
-        "body_sha256": "ee86e30665eb1dbf095ef7d5e7e8486d7e163c12b4ad359ce9b19ddda049a800"
-      },
-      {
-        "repository": "linux",
-        "number": 2,
-        "state": "open",
-        "body_sha256": "02938a5c7ed417ca39b8bca5426e18a0750ebeafded33ee3e550b989f890c99b"
-      },
-      {
-        "repository": "linux",
-        "number": 3,
-        "state": "open",
-        "body_sha256": "b941964c5df91cea7529651beb8bced2df011bea36063cc835fa48a5188bfc85"
-      },
-      {
-        "repository": "linux",
-        "number": 4,
-        "state": "open",
-        "body_sha256": "b95c0a753107e46701ed1f49e204984b799593090ab53936bc784452afa8def5"
-      },
-      {
-        "repository": "linux",
-        "number": 5,
-        "state": "open",
-        "body_sha256": "81f409d72ad53033c84fc82a6f68e88631ee40e1e3b2c857b09b940dac132201"
-      },
-      {
-        "repository": "linux",
-        "number": 6,
-        "state": "open",
-        "body_sha256": "ca947ed83f2970b1d7e7058f6fd6f7e4dea9054a075551d8ea6e91c3fb985bd1"
-      },
-      {
-        "repository": "linux",
-        "number": 7,
-        "state": "open",
-        "body_sha256": "b467969389b663e3649fb5ab151f88650ce9781f5eb886511fc6369979f2fe73"
-      },
-      {
-        "repository": "linux",
-        "number": 8,
-        "state": "open",
-        "body_sha256": "97bf4feb219d1b9042e773c0c870203975abcb2244813b67f789b109d9d4fb7f"
-      },
-      {
-        "repository": "linux",
-        "number": 9,
-        "state": "open",
-        "body_sha256": "4410729ebb2ba22d7af99455887e2b102cbaa84755028679837bd41653bb113e"
-      },
-      {
-        "repository": "linux",
-        "number": 10,
-        "state": "open",
-        "body_sha256": "2d396cc97fe3ff64d0648ea272d72325b8ad82e423cb2caff7d289df832f159e"
-      },
-      {
-        "repository": "linux",
-        "number": 11,
-        "state": "open",
-        "body_sha256": "d47b1ed0d8b2fcbedc7787acc0ca9bc86607aa29746c2dce7d350f25ecdbe11e"
-      },
-      {
-        "repository": "linux",
-        "number": 12,
-        "state": "open",
-        "body_sha256": "1d60a331ef921bfbff7143444b49afd7eb1f2d0abc243d993423557e4cdb3984"
-      },
-      {
-        "repository": "linux",
-        "number": 13,
-        "state": "open",
-        "body_sha256": "7f00addcd7f5385e07775605e02cbe5c557097856486e9c483d6d7f976125c52"
-      },
-      {
-        "repository": "linux",
-        "number": 14,
-        "state": "open",
-        "body_sha256": "c527599b4c71919ae79b2e78df7e66738944683539c806e3f73dac975e81b879"
-      },
-      {
-        "repository": "linux",
-        "number": 15,
-        "state": "open",
-        "body_sha256": "49442990a56023e90c4ca64a95a8111f3c75d8d3a066a49015409dad99c18d37"
-      },
-      {
-        "repository": "linux",
-        "number": 16,
-        "state": "open",
-        "body_sha256": "d1868f17946d9665c41362dcce3e45efb1fb037865e07609ccd5454b3a228909"
-      },
-      {
-        "repository": "linux",
-        "number": 17,
-        "state": "open",
-        "body_sha256": "a1466508d5756e6c0b07e97837e12132eb17c9d3ae8c369cb87777a48439f902"
-      },
-      {
-        "repository": "linux",
-        "number": 18,
-        "state": "open",
-        "body_sha256": "59b855d800418eb5a9c492172f1900240e34c244a10a1abaeb3bd1ad49a22092"
-      },
-      {
-        "repository": "linux",
-        "number": 19,
-        "state": "open",
-        "body_sha256": "fa8a6b003af73b70728d640db783defbf8131cc35718d53312a4fd0858b457cf"
-      },
-      {
-        "repository": "sparklink",
-        "number": 1,
-        "state": "open",
-        "body_sha256": "45443f9e6e52d72c6cca9256d8f209cdf247c262eb67521d2082a0065f142dbc"
-      },
-      {
-        "repository": "sparklink",
-        "number": 2,
-        "state": "open",
-        "body_sha256": "4cb3c15b76f90dd969af3073c2c779a7b174cb11553b71ea16bcb99112948042"
-      },
-      {
-        "repository": "sparklink",
-        "number": 3,
-        "state": "open",
-        "body_sha256": "484b49bb8fc3e97110f1a86287d0deace395e6308097b8ec22fa5668cf1017ac"
-      },
-      {
-        "repository": "sparklink",
-        "number": 4,
-        "state": "open",
-        "body_sha256": "84d34c0bf0f70db4185562530c172ffb9f3a01b60240906d0944a30637b3bf73"
-      },
-      {
-        "repository": "sparklink",
-        "number": 5,
-        "state": "open",
-        "body_sha256": "36e9301e5f700ab0440f235ce2da1b21a6cd10ef1314eb27fc08b9f7e8eb0bd8"
-      },
-      {
-        "repository": "sparklink",
-        "number": 6,
-        "state": "open",
-        "body_sha256": "24bdd8ce25d51cb38068be6507d6f97f2383cd6584583949413bd5cb5412fddf"
-      },
-      {
-        "repository": "sparklink",
-        "number": 7,
-        "state": "open",
-        "body_sha256": "f877a0848d6c325672c128308612e7b78e1787ad73b67ebaf7a74cd6cdbc864f"
-      },
-      {
-        "repository": "sparklink",
-        "number": 8,
-        "state": "open",
-        "body_sha256": "bfbd4df72deb2b8b9bc59c57fb1da7eb1ab6c66ea6c625abec1ce41ecd39bf60"
-      },
-      {
-        "repository": "sparklink",
-        "number": 10,
-        "state": "open",
-        "body_sha256": "c72f2e10a96d820a25b83a8a32df2c41ce787ed9a7989f305242f1f2d81ef368"
-      },
-      {
-        "repository": "sparklink",
-        "number": 21,
-        "state": "closed",
-        "body_sha256": "80d79c7ce0575d36c8d367f36e7b37c5626da64cba7f48131fd037de579a11dc"
-      },
-      {
-        "repository": "sparklink",
-        "number": 22,
-        "state": "open",
-        "body_sha256": "45a8b30515ce7a828e78d2d20f68225a0f8c209638fea95a716ce82268c79d3e"
-      },
-      {
-        "repository": "sparklink",
-        "number": 23,
-        "state": "open",
-        "body_sha256": "5de03a8d7aff72e8eb2f7ed7bcfa61d41a266ee0e9c2e4f96560cc47b98c8b6d"
-      },
-      {
-        "repository": "linux",
-        "number": 21,
-        "state": "open",
-        "body_sha256": "e10558efccf5277f6a861a5943236cd0215067a0f3e28eb78429b0dd8e04460a"
-      },
-      {
-        "repository": "linux",
-        "number": 22,
-        "state": "open",
-        "body_sha256": "978697253ce70f36db07fbf1980dfbcc874db3d56b9f277fc85410e86f20717d"
-      },
-      {
-        "repository": "linux",
-        "number": 23,
-        "state": "open",
-        "body_sha256": "eb0ca80df84dacafd5dc2bab0ab99987c07ceb87021487e0001f99ccb3a855a4"
-      },
-      {
-        "repository": "linux",
-        "number": 24,
-        "state": "open",
-        "body_sha256": "5682cc14c11702e4f79887075650ca19a3d46583559f2e01791c569d6425932c"
-      }
-    ]
+    "u22": "Actual parameterized WRITE runner, dual-ended verifier and160related offline checks are available. Original remaining lifecycle/operation scope stays open.",
+    "qualification_effect": "No public device details or whole-goal qualification. Private exact qualification is held separately, neither published nor inferred absent."
   },
   "followup_readback_history": [
     {
@@ -1549,6 +1260,345 @@
       "u22": "Actual parameterized C/Python WRITE callers and named offline gates pass; complete VM selector/capture/new-artifact device qualification and remaining original scope open.",
       "qualification_effect": "No new hardware/formal qualification. All original acceptance and exact historical identities retained.",
       "readback_scope": "U3/U22 source/offline follow-up only; prior full 35-issue maintenance audit retained in history."
+    },
+    {
+      "observed_at": "2026-10-26T20:05:20.238187+00:00",
+      "originals_verified": 28,
+      "children_verified": 7,
+      "readback_scope": "Full existing issue set and native child relations; six body consolidations, no new children or closures. Earlier U21 closure retained.",
+      "source_review": {
+        "sparklink_public": "d130fcbc4c4246c0aedad82897de01460b66bd4a",
+        "linux": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
+      },
+      "updates": [
+        {
+          "repository": "sparklink",
+          "number": 1,
+          "state": "open",
+          "before_sha256": "94bbe617548ad0a55927e455d6defcf0a47e1551a435e7c438f06f9b382f335d",
+          "body_sha256": "45443f9e6e52d72c6cca9256d8f209cdf247c262eb67521d2082a0065f142dbc",
+          "action": "scope_and_history_consolidated_original_acceptance_unchanged"
+        },
+        {
+          "repository": "sparklink",
+          "number": 3,
+          "state": "open",
+          "before_sha256": "0c8d23e5549d6bacffa903eb02fa2823ddda5ba33802f88e6058e892bd562c66",
+          "body_sha256": "484b49bb8fc3e97110f1a86287d0deace395e6308097b8ec22fa5668cf1017ac",
+          "action": "scope_and_history_consolidated_original_acceptance_unchanged"
+        },
+        {
+          "repository": "sparklink",
+          "number": 10,
+          "state": "open",
+          "before_sha256": "3060900931147c953d048f2f618e87ed643b2df8759ffc8f0b402c7c732b5e50",
+          "body_sha256": "c72f2e10a96d820a25b83a8a32df2c41ce787ed9a7989f305242f1f2d81ef368",
+          "action": "scope_and_history_consolidated_original_acceptance_unchanged"
+        },
+        {
+          "repository": "sparklink",
+          "number": 21,
+          "state": "closed",
+          "before_sha256": "a801d33aa788a8b5d410a1a8cdbade503a99ed4e88502d3b15f109cd8986dac6",
+          "body_sha256": "80d79c7ce0575d36c8d367f36e7b37c5626da64cba7f48131fd037de579a11dc",
+          "action": "scope_and_history_consolidated_original_acceptance_unchanged"
+        },
+        {
+          "repository": "linux",
+          "number": 17,
+          "state": "open",
+          "before_sha256": "2b464843c7494b886c669b09c77efc6a1379c90e94e3d248f28aabf3ce4f6ca4",
+          "body_sha256": "a1466508d5756e6c0b07e97837e12132eb17c9d3ae8c369cb87777a48439f902",
+          "action": "scope_and_history_consolidated_original_acceptance_unchanged"
+        },
+        {
+          "repository": "linux",
+          "number": 19,
+          "state": "open",
+          "before_sha256": "9b70afad443301bce4b3d8ebb7b37f08e5b88b2e230ce6cd98a9cd5aff1aedc0",
+          "body_sha256": "fa8a6b003af73b70728d640db783defbf8131cc35718d53312a4fd0858b457cf",
+          "action": "scope_and_history_consolidated_original_acceptance_unchanged"
+        }
+      ],
+      "newly_closed": [],
+      "new_children": [],
+      "closed": [
+        {
+          "repository": "sparklink",
+          "number": 21,
+          "scope": "Original six READ Provider criteria only; previously closed, disposition rechecked."
+        }
+      ],
+      "original_classifications_changed": false,
+      "parent_relations": {
+        "sparklink#3": [
+          21,
+          22,
+          23
+        ],
+        "linux#17": [
+          21,
+          22
+        ],
+        "linux#19": [
+          23,
+          24
+        ]
+      },
+      "u1": "Current Native retry lock wait still not cancellation-aware; existing fixture shutdown does not cover it. Finite fix and direct join/receiver-release regression remain.",
+      "u10": "Original discovery/hotplug acceptance and added natural recovery remain; security/Bond/release are not dependencies.",
+      "u21": "Prior original-criteria closure retained; chronological body recap replaced by scope/source/history links. Original six checked criteria unchanged.",
+      "u22": "Parameterised WRITE callers are committed/offline checked; uncommitted VM verifier work is not implemented/qualified by this maintenance.",
+      "qualification_effect": "No new source behaviour, formal proof or VM/hardware qualification. Compiled/executed/report identities and original failures unchanged.",
+      "ci_source_only": [
+        {
+          "head_sha": "d130fcbc4c4246c0aedad82897de01460b66bd4a",
+          "name": "Production codec bounded fuzz",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/40390695101"
+        },
+        {
+          "head_sha": "d130fcbc4c4246c0aedad82897de01460b66bd4a",
+          "name": "Documentation",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/40390694958"
+        },
+        {
+          "head_sha": "d130fcbc4c4246c0aedad82897de01460b66bd4a",
+          "name": "Qualification integrity",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/40390695057"
+        },
+        {
+          "head_sha": "d130fcbc4c4246c0aedad82897de01460b66bd4a",
+          "name": "Offline tools and application SDK",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/40390694956"
+        },
+        {
+          "head_sha": "d130fcbc4c4246c0aedad82897de01460b66bd4a",
+          "name": "Documentation",
+          "status": "completed",
+          "conclusion": "success",
+          "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/40390684648"
+        }
+      ],
+      "issues": [
+        {
+          "repository": "linux",
+          "number": 1,
+          "state": "open",
+          "body_sha256": "ee86e30665eb1dbf095ef7d5e7e8486d7e163c12b4ad359ce9b19ddda049a800"
+        },
+        {
+          "repository": "linux",
+          "number": 2,
+          "state": "open",
+          "body_sha256": "02938a5c7ed417ca39b8bca5426e18a0750ebeafded33ee3e550b989f890c99b"
+        },
+        {
+          "repository": "linux",
+          "number": 3,
+          "state": "open",
+          "body_sha256": "b941964c5df91cea7529651beb8bced2df011bea36063cc835fa48a5188bfc85"
+        },
+        {
+          "repository": "linux",
+          "number": 4,
+          "state": "open",
+          "body_sha256": "b95c0a753107e46701ed1f49e204984b799593090ab53936bc784452afa8def5"
+        },
+        {
+          "repository": "linux",
+          "number": 5,
+          "state": "open",
+          "body_sha256": "81f409d72ad53033c84fc82a6f68e88631ee40e1e3b2c857b09b940dac132201"
+        },
+        {
+          "repository": "linux",
+          "number": 6,
+          "state": "open",
+          "body_sha256": "ca947ed83f2970b1d7e7058f6fd6f7e4dea9054a075551d8ea6e91c3fb985bd1"
+        },
+        {
+          "repository": "linux",
+          "number": 7,
+          "state": "open",
+          "body_sha256": "b467969389b663e3649fb5ab151f88650ce9781f5eb886511fc6369979f2fe73"
+        },
+        {
+          "repository": "linux",
+          "number": 8,
+          "state": "open",
+          "body_sha256": "97bf4feb219d1b9042e773c0c870203975abcb2244813b67f789b109d9d4fb7f"
+        },
+        {
+          "repository": "linux",
+          "number": 9,
+          "state": "open",
+          "body_sha256": "4410729ebb2ba22d7af99455887e2b102cbaa84755028679837bd41653bb113e"
+        },
+        {
+          "repository": "linux",
+          "number": 10,
+          "state": "open",
+          "body_sha256": "2d396cc97fe3ff64d0648ea272d72325b8ad82e423cb2caff7d289df832f159e"
+        },
+        {
+          "repository": "linux",
+          "number": 11,
+          "state": "open",
+          "body_sha256": "d47b1ed0d8b2fcbedc7787acc0ca9bc86607aa29746c2dce7d350f25ecdbe11e"
+        },
+        {
+          "repository": "linux",
+          "number": 12,
+          "state": "open",
+          "body_sha256": "1d60a331ef921bfbff7143444b49afd7eb1f2d0abc243d993423557e4cdb3984"
+        },
+        {
+          "repository": "linux",
+          "number": 13,
+          "state": "open",
+          "body_sha256": "7f00addcd7f5385e07775605e02cbe5c557097856486e9c483d6d7f976125c52"
+        },
+        {
+          "repository": "linux",
+          "number": 14,
+          "state": "open",
+          "body_sha256": "c527599b4c71919ae79b2e78df7e66738944683539c806e3f73dac975e81b879"
+        },
+        {
+          "repository": "linux",
+          "number": 15,
+          "state": "open",
+          "body_sha256": "49442990a56023e90c4ca64a95a8111f3c75d8d3a066a49015409dad99c18d37"
+        },
+        {
+          "repository": "linux",
+          "number": 16,
+          "state": "open",
+          "body_sha256": "d1868f17946d9665c41362dcce3e45efb1fb037865e07609ccd5454b3a228909"
+        },
+        {
+          "repository": "linux",
+          "number": 17,
+          "state": "open",
+          "body_sha256": "a1466508d5756e6c0b07e97837e12132eb17c9d3ae8c369cb87777a48439f902"
+        },
+        {
+          "repository": "linux",
+          "number": 18,
+          "state": "open",
+          "body_sha256": "59b855d800418eb5a9c492172f1900240e34c244a10a1abaeb3bd1ad49a22092"
+        },
+        {
+          "repository": "linux",
+          "number": 19,
+          "state": "open",
+          "body_sha256": "fa8a6b003af73b70728d640db783defbf8131cc35718d53312a4fd0858b457cf"
+        },
+        {
+          "repository": "sparklink",
+          "number": 1,
+          "state": "open",
+          "body_sha256": "45443f9e6e52d72c6cca9256d8f209cdf247c262eb67521d2082a0065f142dbc"
+        },
+        {
+          "repository": "sparklink",
+          "number": 2,
+          "state": "open",
+          "body_sha256": "4cb3c15b76f90dd969af3073c2c779a7b174cb11553b71ea16bcb99112948042"
+        },
+        {
+          "repository": "sparklink",
+          "number": 3,
+          "state": "open",
+          "body_sha256": "484b49bb8fc3e97110f1a86287d0deace395e6308097b8ec22fa5668cf1017ac"
+        },
+        {
+          "repository": "sparklink",
+          "number": 4,
+          "state": "open",
+          "body_sha256": "84d34c0bf0f70db4185562530c172ffb9f3a01b60240906d0944a30637b3bf73"
+        },
+        {
+          "repository": "sparklink",
+          "number": 5,
+          "state": "open",
+          "body_sha256": "36e9301e5f700ab0440f235ce2da1b21a6cd10ef1314eb27fc08b9f7e8eb0bd8"
+        },
+        {
+          "repository": "sparklink",
+          "number": 6,
+          "state": "open",
+          "body_sha256": "24bdd8ce25d51cb38068be6507d6f97f2383cd6584583949413bd5cb5412fddf"
+        },
+        {
+          "repository": "sparklink",
+          "number": 7,
+          "state": "open",
+          "body_sha256": "f877a0848d6c325672c128308612e7b78e1787ad73b67ebaf7a74cd6cdbc864f"
+        },
+        {
+          "repository": "sparklink",
+          "number": 8,
+          "state": "open",
+          "body_sha256": "bfbd4df72deb2b8b9bc59c57fb1da7eb1ab6c66ea6c625abec1ce41ecd39bf60"
+        },
+        {
+          "repository": "sparklink",
+          "number": 10,
+          "state": "open",
+          "body_sha256": "c72f2e10a96d820a25b83a8a32df2c41ce787ed9a7989f305242f1f2d81ef368"
+        },
+        {
+          "repository": "sparklink",
+          "number": 21,
+          "state": "closed",
+          "body_sha256": "80d79c7ce0575d36c8d367f36e7b37c5626da64cba7f48131fd037de579a11dc"
+        },
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "state": "open",
+          "body_sha256": "45a8b30515ce7a828e78d2d20f68225a0f8c209638fea95a716ce82268c79d3e"
+        },
+        {
+          "repository": "sparklink",
+          "number": 23,
+          "state": "open",
+          "body_sha256": "5de03a8d7aff72e8eb2f7ed7bcfa61d41a266ee0e9c2e4f96560cc47b98c8b6d"
+        },
+        {
+          "repository": "linux",
+          "number": 21,
+          "state": "open",
+          "body_sha256": "e10558efccf5277f6a861a5943236cd0215067a0f3e28eb78429b0dd8e04460a"
+        },
+        {
+          "repository": "linux",
+          "number": 22,
+          "state": "open",
+          "body_sha256": "978697253ce70f36db07fbf1980dfbcc874db3d56b9f277fc85410e86f20717d"
+        },
+        {
+          "repository": "linux",
+          "number": 23,
+          "state": "open",
+          "body_sha256": "eb0ca80df84dacafd5dc2bab0ab99987c07ceb87021487e0001f99ccb3a855a4"
+        },
+        {
+          "repository": "linux",
+          "number": 24,
+          "state": "open",
+          "body_sha256": "5682cc14c11702e4f79887075650ca19a3d46583559f2e01791c569d6425932c"
+        }
+      ]
     }
   ],
   "later_dispositions": [

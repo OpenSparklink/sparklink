@@ -168,7 +168,7 @@ pub(super) async fn exercise(
         )?;
         let mut prior_token = 0;
         let mut callback_results = Vec::new();
-        for (ordinal, case) in ["empty", "value", "error", "expire"]
+        for (ordinal, case) in ["empty", "value", "error", "expire", "unregister"]
             .into_iter()
             .enumerate()
         {
@@ -319,7 +319,68 @@ pub(super) async fn exercise(
                     "oversize consumed the original callback"
                 );
             }
-            if case == "expire" {
+            if case == "unregister" {
+                assert!(
+                    !pending.is_finished(),
+                    "actual callback must still be pending"
+                );
+                send(&mut child, "provider-unregister\n")?;
+                let removed = receipt(
+                    &mut reader,
+                    &mut transcript,
+                    "SdkReadProviderUnregistered: ",
+                    &[
+                        "api",
+                        "token",
+                        "property",
+                        "original_deadline_ns",
+                        "deadline_ns",
+                        "started_ns",
+                        "returned_ns",
+                        "result",
+                        "info_preserved",
+                        "notification_fd_alive",
+                        "reply_started_ns",
+                        "reply_returned_ns",
+                        "reply_result",
+                        "local_observation_only",
+                    ],
+                )?;
+                assert_eq!(removed["api"], language);
+                assert_eq!(removed["token"], token);
+                assert_eq!(removed["property"], 17);
+                assert_eq!(removed["original_deadline_ns"], original);
+                assert_eq!(removed["deadline_ns"], original);
+                assert_eq!(removed["result"], 0);
+                assert_eq!(removed["info_preserved"], true);
+                assert_eq!(removed["notification_fd_alive"], true);
+                assert_eq!(removed["reply_result"], -nix::libc::ESHUTDOWN);
+                assert_eq!(removed["local_observation_only"], true);
+                let started = removed["started_ns"].as_u64().unwrap();
+                let returned = removed["returned_ns"].as_u64().unwrap();
+                let reply_started = removed["reply_started_ns"].as_u64().unwrap();
+                let reply_returned = removed["reply_returned_ns"].as_u64().unwrap();
+                assert!(context["observed_ns"].as_u64().unwrap() <= started);
+                assert!(started <= returned && returned <= reply_started);
+                assert!(reply_started <= reply_returned && reply_returned < original);
+                let body = tokio::time::timeout(Duration::from_secs(3), pending)
+                    .await???
+                    .body()
+                    .deserialize::<slk_contract::ssap::ReadProviderReply>()?;
+                assert_eq!(
+                    body,
+                    (0xaf, vec![]),
+                    "actual SDK callback stop, not a wire outcome"
+                );
+                callback_results.push(serde_json::json!({"case":case,"request_id":request_id,
+                    "original_deadline_ns":original,"actual_status":body.0,"actual_value":"",
+                    "withdrawal":removed,"scope":"real-private-D-Bus-SDK-callback-not-wire"}));
+                assert_eq!(metadata.removed.load(Ordering::SeqCst), removals + 1);
+                assert!(
+                    child.try_wait()?.is_none(),
+                    "retired views must not kill the caller"
+                );
+            } else if case == "expire" {
                 let expired = tokio::time::timeout(Duration::from_secs(3), pending)
                     .await???
                     .body()
@@ -423,7 +484,7 @@ pub(super) async fn exercise(
         send(&mut child, "quit\n")?;
         assert_eq!(
             line(&mut reader, &mut transcript)?,
-            format!("SdkOwnedRemoved: api={language} start=16\n")
+            format!("SdkOwnedClosedExit: api={language} start=16\n")
         );
         let mut remainder = String::new();
         reader.read_to_string(&mut remainder)?;

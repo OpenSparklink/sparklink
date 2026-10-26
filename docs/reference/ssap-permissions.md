@@ -422,6 +422,12 @@ service unregister/free 会先停止本地 Provider 准入，待决请求不继�
 Python 沿用原 PID 检查与 RLock，fork 继承对象在进入锁/C 前拒绝；C 对象不得与
 free 并发或跨 fork 使用，非空 value 指针须覆盖实际 length 字节有效内存。
 
+待决注销的受控检查须先实际取得原 Provider 请求，再在其原期限内调用服务注销。
+分别检查注销结果、仍持有的不可变 info、通知 fd，以及旧 request 的答复拒绝；
+单纯退出进程或先关闭 inbox 不能替代这一交错。现有外部 C/Python 回归通过真实
+私有 D-Bus 检查 SDK callback 的停止，服务登记元数据仍是 fixture，不能据此声明
+daemon 数据库删除、真实对端响应、独立服务隔离或空口生命周期验收通过。
+
 这些应用入口已在源码接通；离线封装/ABI/生命周期检查与实际产物资格独立维护，
 不从基础远端读取或历史 CLI Provider 记录推导 C/Python 服务端 Provider 实机资格。
 

@@ -369,6 +369,37 @@ def owned_mode():
                             provider_pending.close();provider_pending=None
                             if not closed:
                                 poller.register(provider_fd,select.POLLIN);provider_polling=True
+                    elif sys.argv[1]=='owned-readonly' and line==b'provider-unregister\n':
+                        if closed or provider is None or provider_pending is None:
+                            raise ValueError('live service and delivered Provider request required')
+                        snapshot=provider_pending.info
+                        started=time.monotonic_ns();deadline=min(snapshot.deadline_ns,end)
+                        if started>=deadline:raise TimeoutError(errno.ETIMEDOUT,'original Provider deadline')
+                        removed=0;failure=None
+                        try:view.unregister(deadline_ns=deadline)
+                        except BaseException as error:
+                            removed=owned_exit_error();failure=error
+                        returned=time.monotonic_ns()
+                        same=provider_pending.info==snapshot
+                        notification_alive=os.fstat(provider_fd) is not None
+                        reply_started=time.monotonic_ns();rejected=0;reply_failure=None
+                        try:provider_pending.reply(b'')
+                        except BaseException as error:
+                            rejected=owned_exit_error();reply_failure=error
+                        reply_returned=time.monotonic_ns()
+                        print('SdkReadProviderUnregistered: '+json.dumps(dict(api='python',token=snapshot.token,
+                            property=snapshot.property,original_deadline_ns=snapshot.deadline_ns,deadline_ns=deadline,
+                            started_ns=started,returned_ns=returned,result=removed,info_preserved=same,
+                            notification_fd_alive=notification_alive,reply_started_ns=reply_started,
+                            reply_returned_ns=reply_returned,reply_result=rejected,local_observation_only=True)),flush=True)
+                        if failure is not None:raise failure
+                        if not isinstance(reply_failure,OSError) or reply_failure.errno!=errno.ESHUTDOWN:
+                            raise AssertionError('withdrawn original Provider request did not reject reply')
+                        if not same or not notification_alive or reply_returned>=deadline:
+                            raise AssertionError('withdrawal must preserve views and finish before original deadline')
+                        view.close();closed=True
+                        if fd is not None:poller.unregister(fd)
+                        stop_provider()
                     elif line==b'value\n':
                         actual=view.read_local(handle,deadline_ns=time.monotonic_ns()+5_000_000_000)
                         print(f'SsapOwnedValue: handle={handle} value={actual.hex()}',flush=True)

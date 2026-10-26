@@ -464,6 +464,32 @@ static int owned_mode(int argc,char **argv) {
             if (error) {errno=-error;goto done;}
             error=owned_provider_answer(&provider_pending,token,reply_status,value,length,end);
             if (error) {errno=-error;goto done;}
+        } else if (!strcmp(line,"provider-unregister\n")) {
+            if (strcmp(argv[1],"owned-readonly") || !view || !provider || !provider_pending.request) {errno=EINVAL;goto done;}
+            /* Keep the original opaque request and notification fd alive while
+             * the SDK closes admission and performs the actual withdrawal. */
+            const struct SlkReadProviderRequestInfo snapshot=provider_pending.info;
+            const uint64_t started=now_ns();
+            uint64_t deadline=snapshot.deadline_ns;if (deadline>end) deadline=end;
+            if (started>=deadline) {errno=ETIMEDOUT;goto done;}
+            const int removed=slk_local_service_unregister(view,deadline);
+            const uint64_t returned=now_ns();
+            struct SlkReadProviderRequestInfo after={0};
+            const int info_result=slk_read_provider_request_info(provider_pending.request,&after);
+            const int same=!info_result && !memcmp(&after,&snapshot,sizeof after);
+            const int notification_alive=fcntl(provider_fd,F_GETFD)>=0;
+            const uint64_t reply_started=now_ns();
+            const int rejected=slk_read_provider_request_reply(provider_pending.request,0,NULL,0);
+            const uint64_t reply_returned=now_ns();
+            printf("SdkReadProviderUnregistered: {\"api\":\"c\",\"token\":%"PRIu64",\"property\":%u,\"original_deadline_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"started_ns\":%"PRIu64",\"returned_ns\":%"PRIu64",\"result\":%d,\"info_preserved\":%s,\"notification_fd_alive\":%s,\"reply_started_ns\":%"PRIu64",\"reply_returned_ns\":%"PRIu64",\"reply_result\":%d,\"local_observation_only\":true}\n",
+                snapshot.token,snapshot.property,snapshot.deadline_ns,deadline,started,returned,removed,
+                same?"true":"false",notification_alive?"true":"false",reply_started,reply_returned,rejected);fflush(stdout);
+            /* Preserve uncertain failures; never print a successful removal for
+             * a failed RPC. The supervisor checks the separate peer outcome. */
+            if (removed) {errno=-removed;goto done;}
+            if (!same || !notification_alive || rejected!=-ESHUTDOWN || reply_returned>=deadline) {errno=EPROTO;goto done;}
+            slk_local_service_free(view);view=NULL;
+            error=owned_provider_close(&provider_pending,&provider,&provider_fd);if (error) {errno=-error;goto done;}
         } else if (!strcmp(line,"lifecycle\n")) {
             if (updates || !allow || !view || observing) {errno=EINVAL;goto done;}
             if (now_ns()>=end) {errno=ETIMEDOUT;goto done;}

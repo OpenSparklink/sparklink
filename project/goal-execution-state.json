@@ -686,7 +686,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-26T12:15:36.027323+00:00",
+  "updated_at_utc": "2026-10-26T18:37:48.787997+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -2020,9 +2020,9 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP08-WP16-WP17-R5f160-provider-sdk-shared-frontend",
-      "state": "SDK_PROVIDER_U21_FINITE_SCOPE_CLOSED_PARENT_AND_FULL_GOAL_OPEN",
-      "production_behavior": "Expose dynamic read Providers through the ordinary Rust/C/Python SDK over the existing original Client and sole daemon SSAP Engine. Move the concrete bounded value frontend into the SDK and migrate slctl to the same dispatch/admission/reply/lifetime implementation; keep authorization decisions separate from supplied bytes. No additional Host, Engine, codec, stored-value fallback or controller privilege.",
+      "id": "WP08-WP16-WP17-U22-owned-type0-write-provider",
+      "state": "DAEMON_RUST_WRITE_SOURCE_OFFLINE_COMPLETE_FULL_SDK_AND_REAL_DEVICE_GATES_OPEN",
+      "production_behavior": "Remote type0 WriteReq/WriteCmd reaches original application through the sole Engine, Owner callback and original deadline. Independent policy approval does not complete a write; no staging fallback, automatic retry, new Host or Engine. Rust exposes an actual low-level original-client bind; C/Python WRITE inboxes are not yet implemented.",
       "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
       "work_packages": [
         "WP08",
@@ -2032,369 +2032,84 @@
       "records": [],
       "predecessor_archive": {
         "history": "batch_history",
-        "id": "WP08-WP16-WP17-R5f159-provider-original-deadline-late-reply",
-        "canonical_sha256": "5bd1989230d4f206ae0f6d5e46d276e62c89beeb6c5701a424c16cd2a2f6a936"
+        "id": "WP08-WP16-WP17-R5f160-provider-sdk-shared-frontend",
+        "canonical_sha256": "67edc5ea618b2753fbac9695ab1e8990e9062b45595e4e9e35d122993bf52a21"
       },
-      "public_scope": "Only source/plan and subsequent source/offline summaries are public. Exact compiled/executor/report identities and actual device results remain local; non-disclosure is not a statement that execution has or has not occurred.",
       "implementation_sources": {
-        "public_source": "8b55945aafbc82b097737fb8a8232f1085b18d2b",
-        "scope": "Current explicit SDK unregister runner source/offline contract. Private exact-artifact qualification remains separate; no whole HEAD inference."
+        "public_source": "e6521c06d2120017f86736e70c02e1acd9576c77",
+        "scope": "Committed production source plus actual private-bus/offline tests; not a VM or device artifact qualification."
       },
       "invariants": [
-        "Reuse the original Client/Arc<SyncClient>, current Owned registration, unique daemon and full generation/lifetime/epoch/channel identity; the daemon remains the unique SSAP Engine over the existing Session/Grant/credit/Ticket path.",
-        "One concrete value-provider dispatcher owns bounded inbox/admission/await/fresh-check/cancellation. SDK and slctl are thin adapters. Do not retain separate complete callback lifecycles or merge bool authorization with value/error responses.",
-        "READ type0 only with the original property permissions and maximum-byte budget. Explicit status0/empty is empty success; allowed application errors carry no value; oversize, unknown status or nonempty error are rejected without truncation or consuming the reply.",
-        "A callback keeps its original immutable deadline and can accept at most one local reply. No renewed deadline on dequeue/reply, stale/duplicate/wrong-owner reuse, automatic bind retry or assumed reversal of an uncertain bind commit.",
-        "Local callback reply cannot wait behind the same SyncClient executor RPC. No locks span await/poll/UI code. Provider reservations, callback drain and request release keep capacity charged until the corresponding references finish.",
-        "Service unregister/free and owner loss stop local admission and invalidate old requests. Notification fd duplicates convey readiness only and cannot recreate ownership or imply remote withdrawal. Explicit unregister and uncertain cleanup retain existing semantics.",
-        "Preserve slctl token namespace, pTOKEN input parsing and final fresh-admission Result-before-callback-return ordering; local reply acceptance or Result is not wire delivery or peer processing.",
-        "C/Python use the same public provider implementation and actual original bus; an external slctl process or local stored-value replacement cannot count as a language Provider. C pointer validity remains the caller contract."
+        "Original controller/generation/lifetime/security epoch/TCID/PI and original absolute deadline; Native admission before requesting application effects and before response. Snapshot checks cannot roll back an already started application effect.",
+        "Write-only type0 property, original unique owner, one-time binding, no stored value fallback. Permission approval and application success remain separate.",
+        "Bounded original server queue and callback; WriteCommand never owes a response. Verified WriteReq requires actual accepted bytes; malformed, late, mismatched replies cannot produce success.",
+        "One front-of-queue future retains only its original Wire reference. Cancellation releases that reference; no detached task, extra Session or new data path.",
+        "Original production paths and all original U22 conditions remain. Offline fixture transport is explicit cfg(test); it is not Native/RF proof."
       ],
       "offline_checks": {
-        "scope": "Only explicitly named checks at the exact public source snapshot. Other checks remain unrecorded; neither private HTML nor formal/actual-device qualification.",
-        "required": [
-          "Strict locked affected SDK/CLI builds and checks; independent generated header/export/ABI/Python checks and real private-bus C/Python entry point calls.",
-          "Bounded inbox poll/EAGAIN, one-shot/expiry/closed-source errors, oversize/nonempty error failure atomicity, capacity retained through callback drain and request release, and reply while the same executor is blocked.",
-          "Existing authorization, slctl token/Result ordering and sole daemon Engine regressions; fixtures explicitly retain their private-bus/allocator/scheduler limits and are not kernel or real-device proof.",
-          "Opt-in runner and independent evidence negative controls for missing callback/raw leg/peer receipt, changed value, identity, original deadline or claimed SDK Provider role.",
-          "Maintain Diataxis task/reference documentation and exact API support/errors/cleanup; compare the pinned NearLink Host source without treating it as a standards oracle."
-        ],
-        "sdk_tests": {
-          "command": [
-            "cargo",
-            "+1.96.1",
-            "test",
-            "--offline",
-            "--locked",
-            "-p",
-            "libsparklink",
-            "-p",
-            "slctl",
-            "--all-targets",
-            "--",
-            "--test-threads=1"
-          ],
-          "signed_public_source": "116bbe9a6ac2ded16e5115f8acfd916a3f338310",
-          "status": "SCOPED_OFFLINE_PASS",
-          "scope": "Only this named check on the exact public source; omitted, ignored and filtered cases are not qualified. No hardware inference."
+        "sdk_library": {
+          "result": "PASS",
+          "tests": 63
         },
-        "clippy": {
-          "command": [
-            "cargo",
-            "+1.96.1",
-            "clippy",
-            "--offline",
-            "--locked",
-            "-p",
-            "libsparklink",
-            "-p",
-            "slctl",
-            "--all-targets",
-            "--",
-            "-D",
-            "warnings"
-          ],
-          "signed_public_source": "116bbe9a6ac2ded16e5115f8acfd916a3f338310",
-          "status": "SCOPED_OFFLINE_PASS",
-          "scope": "Only this named check on the exact public source; omitted, ignored and filtered cases are not qualified. No hardware inference."
+        "shared_contract": {
+          "result": "PASS",
+          "tests": 12,
+          "scope": "Literal signatures independent of shared caller/producer types"
         },
-        "tooling": {
-          "command": {
-            "named_commands": [
-              "PYTHONPATH=tools python3 -m unittest discover -s tools/tests -p 'test_ws73_ssap_*provider*.py' -v",
-              "PYTHONPATH=tools python3 -m unittest discover -s tools/tests -p 'test_ws73_ssap_owned.py' -v",
-              "PYTHONPATH=bindings/python python3 -m unittest discover -s bindings/python/tests -p 'test_service_provider.py' -v",
-              "PYTHONPATH=bindings/python python3 -m unittest discover -s bindings/python/tests -p 'test_local_services.py' -v",
-              "PYTHONPATH=bindings/python python3 -m unittest discover -s bindings/python/tests -p 'test_service_authorization.py' -v"
-            ],
-            "driver_scope": "Five sequential commands from a local Make recipe; not all tools or all Python tests."
-          },
-          "signed_public_source": "116bbe9a6ac2ded16e5115f8acfd916a3f338310",
-          "status": "SCOPED_OFFLINE_PASS",
-          "scope": "Only this named check on the exact public source; omitted, ignored and filtered cases are not qualified. No hardware inference."
+        "daemon": {
+          "result": "PASS",
+          "tests": 211,
+          "scope": "Includes actual private D-Bus and production Engine functions; explicit local socket fixture, not kernel/RF"
         },
-        "documentation": {
-          "command": [
-            "make",
-            "docs"
-          ],
-          "signed_public_source": "116bbe9a6ac2ded16e5115f8acfd916a3f338310",
-          "status": "SCOPED_OFFLINE_PASS",
-          "scope": "Only this named check on the exact public source; omitted, ignored and filtered cases are not qualified. No hardware inference."
+        "policy": {
+          "result": "PASS",
+          "tests": 8,
+          "scope": "XML/policy regression, not deployed system-bus qualification"
         },
-        "python": {
-          "command": [
-            "python3",
-            "-B",
-            "-m",
-            "unittest",
-            "test_service_provider",
-            "test_local_services",
-            "test_service_authorization",
-            "-v"
-          ],
-          "signed_public_source": "116bbe9a6ac2ded16e5115f8acfd916a3f338310",
-          "status": "SCOPED_OFFLINE_PASS",
-          "scope": "Only this named check on the exact public source; omitted, ignored and filtered cases are not qualified. No hardware inference."
-        }
+        "strict_clippy": "PASS: locked offline workspace all-targets all-features -D warnings",
+        "docs": "PASS: locked strict HTML and inventory",
+        "failures_preserved": [
+          "Initial daemon compile failed; no test qualification.",
+          "New SDK test first used the wrong Deadline type; compile failure retained.",
+          "New rejection fixture initially omitted existing CPCD registration prerequisite; rejection assertions retained after correcting the fixture."
+        ]
       },
+      "offline_status": "ONLY_NAMED_CHECKS_PASS",
+      "formal_status": "NO_NEW_PROOF",
+      "hardware_status": "NEW_SOURCE_NOT_REVALIDATED_ON_DEVICE",
       "exit_conditions": [
-        "The SDK and slctl share one concrete application value frontend; original Client/Owned scope, permissions, finite capacity and immutable request identity/deadline remain enforced. No duplicate Engine or protocol queue.",
-        "Actual C and Python public provider bind/fd/next/info/value-or-error reply/free APIs and wrappers work through the original Client; correct local-admission versus remote-completion semantics and generated exports remain consistent.",
-        "On the exact new VM-only artifact, C Provider/Python requester then Python Provider/C requester use reversed physical connection roles. The real requester validates explicit FF error, empty success and fresh random32 distinct from staging, with both-end literal READ/response evidence.",
-        "Preserve applicable prior slctl/Owned/Provider and ordinary CUTC gates. Explicit original-owner withdrawal and retired-handle rejection, independent guard service and ordinary peer-validated business remain available within their recorded scope.",
-        "Affected controlled close/expiry/late-reply failures are covered by finite production-function/private-bus regressions without treating all lifecycle races as a prerequisite for the first positive language-Provider slice.",
-        "Bind exact production source, compiled artifacts, execution tools, SDK110 staged inputs/runtime observations and independent raw/application evidence. A separate signed report and scoped registration are required for any new finite qualification."
+        "Current finite daemon/Rust source slice: independent type contract, original-owner bind, request/command/verify behavior and deadline/removal/cancellation/refusal regressions plus strict build. Met for the stated offline scope.",
+        "Next slice: share bounded WRITE frontend with Rust/C/Python/slctl; actual original client and endpoint admission, one-shot reply, no callback/executor deadlock and fixed capacity reclaim.",
+        "Exact new compiled/execution artifacts must pass VM-only dual-device remote application write, role swap, refusal/timeout/withdrawal, peer isolation and retained original data paths.",
+        "Remaining method/long values/update transactions and all original six U22 criteria must complete before U22 closes."
       ],
-      "offline_status": "NAMED_EXACT_PUBLIC_SOURCE_OFFLINE_CHECKS_ONLY_NOT_FORMAL_OR_HARDWARE",
-      "formal_status": "UNPROVED_FOR_THIS_CHANGE",
-      "hardware_status": "LOCAL_QUALIFICATION_AUTHORITY_NOT_DISCLOSED; public source/offline completion establishes neither actual execution nor non-execution or its outcome.",
-      "checks": {
-        "source": "SIGNED_SHARED_SDK_PROVIDER_SOURCE_AND_DOCUMENT_PATCHES_MAPPED",
-        "tooling": "SCOPED_OFFLINE_PASS",
-        "documentation": "SCOPED_OFFLINE_PASS",
-        "new_application_helpers": "LOCAL_AUTHORITY_NOT_DISCLOSED",
-        "new_vm_gate": "LOCAL_AUTHORITY_NOT_DISCLOSED",
-        "independent_actual_audit": "LOCAL_AUTHORITY_NOT_DISCLOSED",
-        "qualification_registration": "LOCAL_AUTHORITY_NOT_DISCLOSED",
-        "sdk_tests": "SCOPED_OFFLINE_PASS",
-        "python": "SCOPED_OFFLINE_PASS",
-        "clippy": "SCOPED_OFFLINE_PASS"
-      },
       "remaining_conditions": [
-        "Dynamic WRITE, methods or descriptor Provider, all property/channel concurrency, all API/direction combinations, long-value expansion and four-device/mixed-model qualification remain separately scoped.",
-        "No same-lifetime failed-actor restart, post-deadline response or physical-drain-completion promise. Existing original-deadline/owner-exit records retain their exact artifact and scope; no new SDK qualification is inherited.",
-        "Continue original data/credit/backpressure, security/Bond, sole Engine services/Profile, PM, deployment and release work without waiting for the whole control-plane race set.",
-        "Natural fault RCA, nonmanual recovery, E/mixed/cold-ROM and production identity remain open; manual/hub/QMP actions or deliberate reconnect do not establish natural recovery.",
-        "Retain all original failures, counterexamples, scope and qualification identities. UserHost remains low-priority planning; no original issue is closed by this batch transition."
+        "C/Python WRITE inbox and shared frontend admission/lifetime integration.",
+        "Method/descriptor provider and long-write/whole-value/aggregate-budget matrix.",
+        "Actual new-artifact remote application effect and response evidence; software callback completion is not peer processing.",
+        "Original data/security/Profile/deployment scope, natural fault root causes and non-manual recovery stay open."
       ],
-      "next": "Resume U22: audit current implemented SSAP operations and exact evidence, choose the next missing real service behavior without a second Engine. Data/security work continues in parallel; parent/global race completion is not a prerequisite.",
+      "next": [
+        "Complete shared bounded application WRITE frontend and actual SDK calls without duplicating the existing authorization/Provider lifecycle.",
+        "Use exact new artifacts for controlled VM dual-device write and original discovery/connection/data/length/lifecycle regression; no old PASS transfer.",
+        "Continue remaining SSAP, data and security work without whole control-plane prerequisite."
+      ],
       "issues": [
+        "OpenSparklink/sparklink#22",
         "OpenSparklink/sparklink#3",
-        "OpenSparklink/sparklink#8",
-        "OpenSparklink/linux#17",
-        "OpenSparklink/linux#19"
+        "OpenSparklink/linux#6",
+        "OpenSparklink/linux#17"
       ],
       "issue_sync": {
-        "status": "PUBLIC_SOURCE_OFFLINE_SUMMARIES_POSTED_AND_READ_BACK",
-        "source_only": true,
-        "private_hardware_published": false,
-        "original_issues_open": true,
-        "comments": [
-          {
-            "repo": "sparklink",
-            "issue": 3,
-            "id": 6398991554,
-            "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6398991554",
-            "body_verified": true
-          },
-          {
-            "repo": "sparklink",
-            "issue": 8,
-            "id": 6398995318,
-            "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6398995318",
-            "body_verified": true
-          },
-          {
-            "repo": "linux",
-            "issue": 17,
-            "id": 6398997462,
-            "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6398997462",
-            "body_verified": true
-          },
-          {
-            "repo": "linux",
-            "issue": 19,
-            "id": 6399034236,
-            "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6399034236",
-            "body_verified": true
-          }
-        ],
-        "scope": "Existing four issue source/offline summaries only; no private actual-test metadata published."
+        "U22": "OPEN; source/offline matrix and original six criteria retained",
+        "U3": "OPEN; parent scope and checkboxes unchanged",
+        "U21": "CLOSED by its original six criteria; no reopening for unrelated WRITE work"
       },
-      "source_sync_history": [
-        {
-          "implementation_sources": {
-            "plan_source_baseline": "c8770b55de770115e5152ff73994d0da77cc2383",
-            "scope": "Plan-source identity only; no new compiled artifact, execution tool, test result or signed qualification report identity is inferred."
-          },
-          "offline_checks": {
-            "scope": "No R160 result is imported by this plan; all prior source/offline and finite actual receipts retain their exact archived scope.",
-            "required": [
-              "Strict locked affected SDK/CLI builds and checks; independent generated header/export/ABI/Python checks and real private-bus C/Python entry point calls.",
-              "Bounded inbox poll/EAGAIN, one-shot/expiry/closed-source errors, oversize/nonempty error failure atomicity, capacity retained through callback drain and request release, and reply while the same executor is blocked.",
-              "Existing authorization, slctl token/Result ordering and sole daemon Engine regressions; fixtures explicitly retain their private-bus/allocator/scheduler limits and are not kernel or real-device proof.",
-              "Opt-in runner and independent evidence negative controls for missing callback/raw leg/peer receipt, changed value, identity, original deadline or claimed SDK Provider role.",
-              "Maintain Diataxis task/reference documentation and exact API support/errors/cleanup; compare the pinned NearLink Host source without treating it as a standards oracle."
-            ]
-          },
-          "issue_sync": {
-            "status": "R160_SOURCE_OFFLINE_SUMMARY_NOT_YET_RECORDED",
-            "source_only": true,
-            "private_hardware_published": false,
-            "original_issues_open": true,
-            "receipt": null
-          }
-        }
-      ],
+      "public_scope": "Only source/offline/disposition. Private device details and execution identities remain local.",
       "issue_maintenance": {
-        "id": "issue-maintenance-20261026",
-        "status": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
         "record": "project/issue-maintenance-20261026.json",
-        "next": "Bounded maintenance complete; resume this original feature batch without waiting for unrelated parent issues.",
-        "scope": "Public source/offline issue status only; no qualification promotion."
-      },
-      "followups": {
-        "sdk_provider_lifecycle_u21": {
-          "state": "CLOSED_ORIGINAL_SIX_ITEMS_REVIEWED",
-          "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
-          "parent_state": "OPEN",
-          "source_commit": "792c56e99bdc6eaf16070c188c6031d459458e53",
-          "production_changed": false,
-          "offline_checks": {
-            "sdk_provider_tests": 10,
-            "daemon_provider_tests": 10,
-            "actual_external_C_Python_integration": 1,
-            "strict_clippy": "PASS"
-          },
-          "failed_attempt": "daemon-provider-v1 selected zero tests: NOT_PASS; actual module-name v2 independently ran ten cases.",
-          "scope": "Only original U21 READ Provider lifecycle. Public source/offline and disposition; exact private qualification remains separately indexed, no current HEAD artifact transfer.",
-          "remaining": "U22 remaining SSAP operations/long values, U23 Profile and original data/security/recovery/deployment scope remain open.",
-          "private_hardware_published": false
-        }
-      },
-      "implementation_sources_history": [
-        {
-          "plan_source_baseline": "c8770b55de770115e5152ff73994d0da77cc2383",
-          "scope": "Public source/offline view only; private compiled, executor, report and actual results are not disclosed or inferred.",
-          "public_source": "116bbe9a6ac2ded16e5115f8acfd916a3f338310",
-          "public_commits": [
-            {
-              "stage": "plan",
-              "commit": "e8721935e55ccd77422fe03fa3470253e35e0914"
-            },
-            {
-              "stage": "implementation",
-              "commit": "116bbe9a6ac2ded16e5115f8acfd916a3f338310"
-            }
-          ],
-          "source_offline_scope": "Shared bounded SDK Provider frontend, migrated slctl, and C/Python Provider public interfaces over the original caller and sole daemon Engine. Named offline checks only; no transfer of hardware qualification."
-        },
-        {
-          "public_source": "f1943b16f6c2ed684c6033ab867575b5da97ad3b",
-          "scope": "Current gate source/offline contract; historical SDK frontend source mappings retained separately. Public view does not infer private artifact results or whole HEAD qualification."
-        }
-      ],
-      "followup_history": [
-        {
-          "sdk_provider_pending_unregister": {
-            "state": "EXTERNAL_SDK_PENDING_UNREGISTER_OFFLINE_PASS_REAL_DEVICE_PENDING",
-            "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
-            "source_commit": "670e4aafa24a9a4b1ca160344e379ecb16f1e1fe",
-            "source_files": {
-              "tools/testing/application_client/client.c": "886fcf7d77cd5b69431f8ca12e9b0d25917c202bc4e4742e878f03b9e1ba3531",
-              "tools/testing/application_client/client.py": "4c3a009c293e3c58371720fcf8a60bef2a144eba8ed9beb66ebcb3bb1fa85167",
-              "crates/libsparklink/tests/application_ffi/read_provider.rs": "56a1b73a34b500efa251b48ce3cb6dc2fd3b3eb385ec0fa4b85c5df5e29e8db9",
-              "docs/reference/ssap-permissions.md": "efa9c7cbfd371a8fadbde6cfe967f582909d4c75fe4bb5336e388a9dbfc21bc4"
-            },
-            "behavior": "External C/Python consumers retain a delivered Provider request and readiness fd across actual SDK unregister; observe original deadline, unchanged info and ESHUTDOWN; independent real private D-Bus callback stops.",
-            "checks": [
-              "Existing application_ffi integration passed: each C/Python caller retains normal empty/value/error/expiry/quit, plus a fresh registration for pending unregister; distinct receipts for both scenarios",
-              "External C compiled with -std=c11 -Wall -Wextra -Werror",
-              "Pinned Rust 1.96.1 locked libsparklink all-targets/all-features clippy -D warnings",
-              "Workspace rustfmt check"
-            ],
-            "evidence_scope": "Same tested source files in the retained development checkout and public source commit; service metadata is fixture. Not a qualification of the whole public HEAD or daemon database/wire/VM/device behavior.",
-            "failed_attempt": "First local attempt could not locate dbus-daemon on default PATH; did not enter callback cases. Original log/artifacts retained; rerun explicitly selected existing private-bus daemon without changing assertions.",
-            "remaining": [
-              "Real pending caller loss and explicit service withdrawal in both SDK languages",
-              "Original deadline and late reply with actual paired evidence",
-              "Independent Owned guard and ordinary business isolation"
-            ],
-            "changes_runtime": false,
-            "hardware_replayed": false,
-            "whole_issue_complete": false
-          },
-          "sdk_provider_owner_exit_v2": {
-            "state": "SDK_PROVIDER_LIFECYCLE_GATES_IN_PROGRESS_PRIVATE_QUALIFICATION_SEPARATE",
-            "source": "c7feed7b4118efe747ca8b8366530b953f8960da",
-            "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
-            "behavior": "Existing owner-exit runner now uses actual Python/C SDK Providers across roles; validates SDK bind/approval/request before SIGKILL, retains original deadline, paired AF/4 and retired-handle checks, independent guard and baseline. Current host/guest require v2; old CLI v1 retains historical scope.",
-            "offline_checks": {
-              "provider_family": 55,
-              "target_runner": 31,
-              "channel_verdict": 33,
-              "strict_html": "passed;121 documents"
-            },
-            "scope": "Tooling/fixture checks only; not actual USB/callback/VM qualification. Source is public; exact hardware attempts remain private.",
-            "remaining": [
-              "Actual pending SDK unregister with retained request/fd and independent guard",
-              "SDK original expiry/late reply",
-              "Exact-artifact qualification remains controlled by authorized local evidence; no whole issue or current HEAD result is inferred from this public source/offline summary."
-            ],
-            "whole_issue_complete": false,
-            "capability_refusal_v2": {
-              "source": "f1943b16f6c2ed684c6033ab867575b5da97ad3b",
-              "status": "IMPLEMENTED_SCOPED_OFFLINE_PASS",
-              "contract": "Actual unsupported notify uses existing CLI 5000ms original deadline; exact NotSupported remains mandatory. Original 10ms v1 and failures retain their scope; expired results cannot override the deadline. No protocol timer change or blind retry.",
-              "checks": {
-                "value_verifier": 22,
-                "runner": 31,
-                "provider_fixture": 38,
-                "actual_sdk_bounded": 4,
-                "actual_daemon_terminal": 1,
-                "strict_clippy": "PASS",
-                "strict_docs": "PASS_121_DOCUMENTS"
-              },
-              "scope": "Explicit fixtures/private bus for SDK clock and daemon production terminal functions; not firmware timing diagnosis or whole lifecycle proof.",
-              "remaining": "Accurate-artifact finite evidence closure, SDK pending unregister, expiry/late reply and original remaining gates."
-            }
-          },
-          "sdk_provider_unregister_v1": {
-            "state": "SOURCE_OFFLINE_AVAILABLE_PRIVATE_QUALIFICATION_SEPARATE",
-            "public_source": "8b55945aafbc82b097737fb8a8232f1085b18d2b",
-            "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
-            "behavior": "Existing SDK provider-unregister after actual pending READ, immutable info/readiness fd, ESHUTDOWN and original deadlines; live process through peer/retired-handle/independent-guard checks, ordinary business after cleanup. Shared owner-exit execution/wire helpers; distinct selectors and proof.",
-            "offline_checks": [
-              "10 unregister gate tests: actual CLI/boot selector, stale-input prelaunch refusal, original receipt/identity/deadline, missing capture, no SIGKILL substitution, business ordering",
-              "Owner-exit, Provider deadline, SDK Provider, target and channel fixture suites pass; exact counts in named logs",
-              "Strict HTML and 121-document inventory pass"
-            ],
-            "test_boundaries": "Literal packet/SDK transcript and controlled dependencies; no new actual device, callback, kernel concurrency or formal qualification. Metadata-only proof reconstruction is not replay.",
-            "retained_failures": "Initial test syntax error and target test missing explicit kernel-source directory retained; assertions unchanged, only syntax/environment corrected.",
-            "remaining": [
-              "Exact-artifact VM results and finite scope are maintained in authorized local qualification records, not inferred from the public source/offline summary.",
-              "SDK original expiry/late answer and full original U21 lifecycle requirements."
-            ],
-            "whole_issue_complete": false
-          },
-          "sdk_provider_deadline_v2": {
-            "state": "SOURCE_OFFLINE_AVAILABLE_PRIVATE_QUALIFICATION_SEPARATE",
-            "public_source": "47829c7ccbce9cee5484f79b824c41075a56d390",
-            "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
-            "behavior": "Current existing deadline runner uses C/Python SDK Providers, actual pending callback/approval, unchanged original deadlines, actual late request.reply ETIMEDOUT, persistent actor terminal, full paired capture bounded absence and independent ordinary CUTC business. Live host/guest pin v2; historical CLI v1 remains reader-only, with no qualification transfer.",
-            "offline_checks": [
-              "25 deadline oracle/barrier tests (including original CLI evidence, SDK shapes, full retained and business proof reconstruction and negative controls)",
-              "18 Owner-exit,10 unregister,7 SDK Provider,31 target and33 channel tests pass",
-              "Strict HTML and121-document inventory pass"
-            ],
-            "test_boundaries": "Literal SDK/packet fixtures and mocked process/clock for arrival-barrier tests; actual CLI prelaunch refusal is tested without launching a VM. Does not prove SDK execution, real daemon expiry, USB, kernel concurrency or hardware recovery.",
-            "retained_failures": "First SDK fixtures omitted original guard/pipe metadata; corrected fixture setup without weakening validators. Original live-runner test expected version1; now explicitly pins migrated SDK version2 and retains prelaunch rejection assertions. All original failure logs remain local.",
-            "exit_conditions": [
-              "Exact new compiled/executor artifact and SDK110 explicit US pair in dedicated VM",
-              "Both connection roles, actual late SDK API call returns ETIMEDOUT after original request deadline; wrong token/parser/ESHUTDOWN/ESTALE cannot substitute",
-              "Complete two-end USB READ evidence and no response/fallback/late value through cleanup, actual independent CUTC peer validation/reply, normal Provider cleanup",
-              "Independent raw audit and negative controls, then finite registration only; preserve Owner-exit/unregister records and original failures"
-            ],
-            "remaining": [
-              "Exact compiled/executor VM evidence and finite qualification must be checked in the authorized local index; public source/offline results do not imply performed, pending, passed or failed hardware execution.",
-              "U21 original acceptance audit and any missing original gates; no closure from a tool version or partial result."
-            ],
-            "formal_status": "NOT_RUN for this tool change; no new proof",
-            "whole_issue_complete": false
-          }
-        }
-      ]
+        "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN"
+      }
     },
     "selected_qualification": {
       "version": 1,
@@ -2561,8 +2276,7 @@
     "issues_receipt": "docs/evidence/codec-fuzz-and-retained-issues-20261016.json"
   },
   "next_real_vertical_slice": {
-    "authority": "project/qualification-records.json:batch.next",
-    "scope": "R160 bounded shared Provider frontend, slctl migration and real C/Python Provider public entry points over the sole existing Engine; exact error/empty/random remote results with unchanged ownership/deadline and ordinary business scope."
+    "authority": "project/qualification-records.json:batch.next"
   },
   "issue_sync_receipts_history": [
     "docs/evidence/qualification-quality-issues-20261015.json",
@@ -5396,6 +5110,18 @@
         }
       },
       "scope": "Archive the exact prior current aliases; the generated qualification_view owns the new batch."
+    },
+    {
+      "from_batch": "WP08-WP16-WP17-R5f160-provider-sdk-shared-frontend",
+      "to_batch": "WP08-WP16-WP17-U22-owned-type0-write-provider",
+      "prior_aliases": {
+        "next_real_vertical_slice": {
+          "authority": "project/qualification-records.json:batch.next",
+          "scope": "R160 bounded shared Provider frontend, slctl migration and real C/Python Provider public entry points over the sole existing Engine; exact error/empty/random remote results with unchanged ownership/deadline and ordinary business scope."
+        },
+        "next_batch_contract": null
+      },
+      "scope": "Finite maintenance completed and U21 closed; continue original U22 vertical work without new goal/scope reduction."
     }
   ],
   "source_issue_sync_receipt": {
@@ -5468,7 +5194,7 @@
   "issue_maintenance": {
     "record": "project/issue-maintenance-20261026.json",
     "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
-    "execution_dependency": "Bounded maintenance complete. U21 closed by its six original criteria; resume U22/SSAP, data and security work without unrelated parent prerequisites.",
+    "execution_dependency": "Bounded maintenance complete; original 28 remain open for own remaining conditions; U21 closed by original acceptance. U22 source slice proceeds without unrelated prerequisites.",
     "followup_readback": "project/issue-maintenance-20261026.json#/followup_readback"
   },
   "historical_goal_turn_audits": [
@@ -5501,5 +5227,8 @@
     "scope": "Only original U21 READ Provider lifecycle. Public source/offline and disposition; exact private qualification remains separately indexed, no current HEAD artifact transfer.",
     "remaining": "U22 remaining SSAP operations/long values, U23 Profile and original data/security/recovery/deployment scope remain open.",
     "private_hardware_published": false
+  },
+  "next_batch_contract": {
+    "authority": "project/qualification-records.json:batch.next"
   }
 }

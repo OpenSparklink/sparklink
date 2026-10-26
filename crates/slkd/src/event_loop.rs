@@ -91,9 +91,8 @@ impl EventTask {
                     biased;
                     _ = &mut cancelled => break,
                     _ = retry.tick() => {
-                        let retry_needed = {
-                            let st = state.lock().await;
-                            !st.native_links_known() || st.connection_publication_pending()
+                        let Some(retry_needed) = native_retry_needed(&state, &mut cancelled).await else {
+                            break;
                         };
                         if retry_needed {
                             tokio::select! {
@@ -132,6 +131,21 @@ impl EventTask {
             .take()
             .expect("task is owned until shutdown")
             .await
+    }
+}
+
+/// Cancellation must also cover the lock wait after the retry tick was selected.
+/// Returning None stops the owning Native task; no refresh or maintenance follows.
+async fn native_retry_needed(
+    state: &SharedState,
+    cancelled: &mut oneshot::Receiver<()>,
+) -> Option<bool> {
+    tokio::select! {
+        biased;
+        _ = cancelled => None,
+        st = state.lock() => {
+            Some(!st.native_links_known() || st.connection_publication_pending())
+        },
     }
 }
 

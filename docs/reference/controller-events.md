@@ -107,3 +107,17 @@ Python `Client.controller_events(deadline_ns=...)`返回`ControllerEvents`，
 Python不自行调用D-Bus或解释另一套wire事件。畸形ABI输出明确报EPROTO并释放该
 观察，不自动重试。新增语言入口的有限实机门禁见[准确记录](../evidence/controller-language-observer-20261019.json)；
 它不补齐完整SDK或状态流，旧离线与新实机身份分开，离线不授RF资格。
+
+## daemon 退出与重试锁等待
+
+Native 事件任务的取消覆盖等待事件、状态刷新、对象维护，以及定时重试后的
+SharedState 锁等待。取消通知与可取得的锁同时就绪时优先取消；取消后不启动该次
+刷新或维护。`shutdown()` 等待任务结束，receiver 随拥有它的任务释放。停止等待
+不证明控制器在途物理义务已排空，也不替代 Runtime 的 stop/drain。
+
+`native_retry_needed` 是生产 retry 分支使用的同一等待函数。离线回归先确认该
+future 在业务锁仍被持有时返回 Pending，再经实际 `EventTask::shutdown()` 取消、
+join，并检查任务持有的 Unix socket fd 已关闭；另覆盖取消先到、发送端消失、
+正常取得状态和锁释放。这个 fd 是资源所有权 fixture，不是内核订阅，也不授予
+真实设备或完整 Native 事件循环的资格。故意保留旧不可取消等待时，取消优先检查
+失败且持锁关停超时；原失败单独保留。准确产物的 VM 回归另行登记。

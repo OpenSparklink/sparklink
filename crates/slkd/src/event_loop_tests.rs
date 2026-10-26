@@ -333,6 +333,84 @@ async fn shutdown_with_business_state_locked() {
     assert!(lock.peers.is_empty());
 }
 
+/// Executes the same lock wait as Native retry, with a real owned socket as the
+/// receiver-resource fixture. This is not a kernel event subscription or RF test.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn native_retry_pending_lock_cancel_joins_and_releases_owned_fd() {
+    use tokio::io::AsyncReadExt;
+
+    let state = state();
+    let lock = state.lock().await;
+    let (receiver_fd, mut peer) = tokio::net::UnixStream::pair().unwrap();
+    let (cancel, mut cancelled) = oneshot::channel();
+    let (entered, pending) = oneshot::channel();
+    let task = tokio::spawn({
+        let state = state.clone();
+        async move {
+            let _receiver_fd = receiver_fd;
+            let mut wait = std::pin::pin!(native_retry_needed(&state, &mut cancelled));
+            let mut entered = Some(entered);
+            // Signal only after the actual production future returned Pending,
+            // while the caller still owns the lock. No timing guess/barrier sleep.
+            let result = std::future::poll_fn(|cx| {
+                let result = wait.as_mut().poll(cx);
+                if result.is_pending()
+                    && let Some(entered) = entered.take()
+                {
+                    entered.send(()).unwrap();
+                }
+                result
+            })
+            .await;
+            assert_eq!(result, None);
+        }
+    });
+    let task = EventTask {
+        cancel: Some(cancel),
+        task: Some(task),
+    };
+    timeout(Duration::from_secs(2), pending)
+        .await
+        .unwrap()
+        .unwrap();
+    timeout(Duration::from_secs(2), task.shutdown())
+        .await
+        .expect("Native retry must cancel without releasing SharedState")
+        .unwrap();
+    assert_eq!(
+        timeout(Duration::from_secs(1), peer.read(&mut [0; 1]))
+            .await
+            .unwrap()
+            .unwrap(),
+        0
+    );
+    assert!(lock.peers.is_empty());
+    assert!(
+        state.try_lock().is_err(),
+        "business lock remains held through join and fd closure"
+    );
+}
+
+#[tokio::test]
+async fn native_retry_cancel_precedes_ready_lock_and_sender_loss_stops() {
+    let state = state();
+    let (cancel, mut cancelled) = oneshot::channel();
+    cancel.send(()).unwrap();
+    assert_eq!(native_retry_needed(&state, &mut cancelled).await, None);
+    let (cancel, mut cancelled) = oneshot::channel();
+    drop(cancel);
+    assert_eq!(native_retry_needed(&state, &mut cancelled).await, None);
+    let (_cancel, mut cancelled) = oneshot::channel();
+    assert_eq!(
+        native_retry_needed(&state, &mut cancelled).await,
+        Some(true)
+    );
+    assert!(
+        state.try_lock().is_ok(),
+        "snapshot releases the lock before refresh"
+    );
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn blocked_bond_storage_does_not_block_dbus_adapter_or_event_shutdown() {
     let bus = PrivateBus::start();

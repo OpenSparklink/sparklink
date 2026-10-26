@@ -1,12 +1,15 @@
 //! One application-side value inbox, shared by Rust, CLI and language bindings.
-//! No protocol engine: the original daemon owns the READ obligation. Registry
+//! No protocol engine: the original daemon owns each READ/WRITE obligation. Registry
 //! locks never span queue locks or await. A delivered slot remains charged until
 //! both the callback guard and the application request have been released.
-use super::{admit, await_reply};
+use super::{ProviderKind, RequestData};
 use crate::{ApplicationError, Client, Deadline, ssap::authorization::AuthorizationContext};
 use slk_contract::{
     ControllerId,
-    ssap::{PROVIDER_UNAVAILABLE, ReadProviderReply, ReadProviderRequest},
+    ssap::{
+        PROVIDER_UNAVAILABLE, ReadProviderReply, ReadProviderRequest, WriteProviderReply,
+        WriteProviderRequest,
+    },
 };
 use slk_protocol::{SsapOperations, ssap::access::SsapAccess};
 use std::{
@@ -99,6 +102,25 @@ impl Endpoint {
             .into_reply())
     }
 }
+struct WriteEndpoint(Arc<Dispatcher>);
+#[zbus::interface(name = "org.sparklink.SsapWriteProvider")]
+impl WriteEndpoint {
+    async fn write_value(
+        &self,
+        request: WriteProviderRequest,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<WriteProviderReply> {
+        let (status, value) = self
+            .0
+            .dispatch_write(request, header.sender().map(|s| s.as_str()))
+            .await?
+            .into_reply();
+        Ok((
+            u8::try_from(status).unwrap_or(PROVIDER_UNAVAILABLE as u8),
+            value,
+        ))
+    }
+}
 impl Dispatcher {
     /// Prepare a concrete dispatcher for an endpoint exported by the caller.
     /// The CLI uses this adapter surface to log the final local result before
@@ -133,6 +155,9 @@ impl Dispatcher {
             client,
             OwnedObjectPath::try_from(PATH).expect("constant path"),
         )?;
+        // Cancelled partial installation leaves only closed bounded endpoints
+        // until that original connection is dropped; it cannot admit callbacks.
+        let mut install_stop = StopOnExit(Arc::downgrade(&d));
         if !client
             .bus()
             .object_server()
@@ -143,6 +168,29 @@ impl Dispatcher {
                 "caller SDK provider path already occupied",
             ));
         }
+        match client
+            .bus()
+            .object_server()
+            .at(PATH, WriteEndpoint(d.clone()))
+            .await
+        {
+            Ok(true) => (),
+            result => {
+                // Remove only our newly installed READ interface, never the
+                // pre-existing foreign WRITE endpoint. Client-open bounds this
+                // cleanup; a failed open drops its original bus connection.
+                client
+                    .bus()
+                    .object_server()
+                    .remove::<Endpoint, _>(PATH)
+                    .await?;
+                result?;
+                return Err(ApplicationError::Invalid(
+                    "caller SDK write provider path already occupied",
+                ));
+            }
+        }
+        install_stop.0 = Weak::new();
         Ok(d)
     }
     pub fn watch(self: &Arc<Self>) -> Watch {
@@ -182,6 +230,33 @@ impl Dispatcher {
         property: u16,
         original: Deadline,
     ) -> Result<Inbox, ApplicationError> {
+        Ok(Inbox {
+            core: self
+                .bind_inner(registration, property, original, ProviderKind::Read)
+                .await?,
+        })
+    }
+    /// Original write-only binding over the same finite dispatcher and stop domain.
+    /// No new queue budget, owner, deadline or callback execution thread.
+    pub async fn bind_write(
+        self: &Arc<Self>,
+        registration: &mut crate::ssap::local::ServiceRegistration,
+        property: u16,
+        original: Deadline,
+    ) -> Result<WriteInbox, ApplicationError> {
+        Ok(WriteInbox {
+            core: self
+                .bind_inner(registration, property, original, ProviderKind::Write)
+                .await?,
+        })
+    }
+    async fn bind_inner(
+        self: &Arc<Self>,
+        registration: &mut crate::ssap::local::ServiceRegistration,
+        property: u16,
+        original: Deadline,
+        kind: ProviderKind,
+    ) -> Result<InboxCore, ApplicationError> {
         original.remaining()?;
         let client = registration.provider_client();
         if client.daemon_owner() != self.daemon
@@ -193,20 +268,29 @@ impl Dispatcher {
             ));
         }
         let (controller, operations, access) = registration.provider_context(property)?;
-        if operations != SsapOperations::READ {
+        if !kind.supports(operations) {
             return Err(io_error(nix::libc::EOPNOTSUPP).into());
         }
         let scope = registration.provider_scope();
         let queue = self.reserve(controller, property, operations, access, &scope)?;
-        let inbox = Inbox { queue };
+        let inbox = InboxCore { queue };
         scope.attach(property, &inbox.queue)?;
         // Publish only after the original property has been claimed. A refused
         // duplicate bind must not momentarily shadow the already live inbox.
         self.publish(&inbox.queue)?;
         // Inbox Drop is the cancellation guard, including a lost bind reply.
-        registration
-            .bind_read_provider(property, self.path.clone(), original)
-            .await?;
+        match kind {
+            ProviderKind::Read => {
+                registration
+                    .bind_read_provider(property, self.path.clone(), original)
+                    .await?
+            }
+            ProviderKind::Write => {
+                registration
+                    .bind_write_provider(property, self.path.clone(), original)
+                    .await?
+            }
+        }
         original.remaining()?;
         if !inbox.queue.open() {
             return Err(io_error(nix::libc::ESHUTDOWN).into());
@@ -266,6 +350,23 @@ impl Dispatcher {
     pub async fn dispatch(
         self: &Arc<Self>,
         request: ReadProviderRequest,
+        sender: Option<&str>,
+    ) -> zbus::fdo::Result<CallbackOutcome> {
+        self.dispatch_inner(RequestData::Read(request), sender)
+            .await
+    }
+    /// Typed WRITE adapter; shares original queue, capacity and drain lifecycle.
+    pub async fn dispatch_write(
+        self: &Arc<Self>,
+        request: WriteProviderRequest,
+        sender: Option<&str>,
+    ) -> zbus::fdo::Result<CallbackOutcome> {
+        self.dispatch_inner(RequestData::Write(request), sender)
+            .await
+    }
+    async fn dispatch_inner(
+        self: &Arc<Self>,
+        request: RequestData,
         sender: Option<&str>,
     ) -> zbus::fdo::Result<CallbackOutcome> {
         super::super::authorization::check_sender(&self.daemon, sender)?;
@@ -343,7 +444,7 @@ impl CallbackOutcome {
 }
 struct Data {
     token: u64,
-    request: ReadProviderRequest,
+    request: RequestData,
     original: Instant,
 }
 struct Pending {
@@ -379,13 +480,14 @@ impl Queue {
             && self.lost.has_changed().is_ok()
             && self.state.lock().is_ok_and(|s| !s.closed)
     }
-    fn matches(&self, r: &ReadProviderRequest) -> bool {
-        (r.identity.0, r.identity.1, r.property)
+    fn matches(&self, r: &RequestData) -> bool {
+        (r.identity().0, r.identity().1, r.property())
             == (
                 self.controller.index,
                 self.controller.generation,
                 self.property,
             )
+            && r.kind().supports(self.operations)
             && self.open()
     }
     fn context(&self, s: &State) -> AuthorizationContext<'_> {
@@ -434,7 +536,7 @@ impl Queue {
     }
     async fn dispatch(
         self: &Arc<Self>,
-        request: ReadProviderRequest,
+        request: RequestData,
         sender: Option<&str>,
     ) -> zbus::fdo::Result<CallbackOutcome> {
         let (data, result) = {
@@ -442,7 +544,7 @@ impl Queue {
                 .state
                 .lock()
                 .map_err(|_| zbus::fdo::Error::Failed("provider inbox poisoned".into()))?;
-            let Some(original) = admit(&self.context(&s), sender, &request)? else {
+            let Some(original) = request.admit(&self.context(&s), sender)? else {
                 return Ok(CallbackOutcome::unavailable());
             };
             if s.pending.is_some() {
@@ -478,18 +580,15 @@ impl Queue {
             queue: self.clone(),
             token: data.token,
         };
-        let reply = await_reply(
-            result,
-            self.lost.clone(),
-            data.original,
-            data.request.maximum_bytes,
-        )
-        .await;
+        let reply = data
+            .request
+            .await_reply(result, self.lost.clone(), data.original)
+            .await;
         let s = self
             .state
             .lock()
             .map_err(|_| zbus::fdo::Error::Failed("provider inbox poisoned".into()))?;
-        let reportable = admit(&self.context(&s), sender, &data.request)?.is_some();
+        let reportable = data.request.admit(&self.context(&s), sender)?.is_some();
         Ok(CallbackOutcome {
             reply: if reportable {
                 reply
@@ -500,7 +599,7 @@ impl Queue {
             _drain: Some(guard),
         })
     }
-    fn next(self: &Arc<Self>) -> io::Result<Request> {
+    fn next(self: &Arc<Self>) -> io::Result<RequestCore> {
         let mut s = self.state.lock().map_err(|_| io_error(nix::libc::EIO))?;
         if *self.lost.borrow() || self.lost.has_changed().is_err() {
             drop(s);
@@ -534,7 +633,7 @@ impl Queue {
             s.closed = true;
             return Err(e);
         }
-        Ok(Request {
+        Ok(RequestCore {
             queue: self.clone(),
             data,
         })
@@ -570,10 +669,10 @@ impl Drop for Callback {
 
 /// One consuming application per inbox. Drop closes local admission; it does
 /// not withdraw the registration or restore its discarded stored value.
-pub struct Inbox {
+struct InboxCore {
     queue: Arc<Queue>,
 }
-impl Inbox {
+impl InboxCore {
     pub fn close(&self) {
         self.queue.stop();
     }
@@ -582,12 +681,12 @@ impl Inbox {
     pub fn fd(&self) -> io::Result<OwnedFd> {
         self.queue.event.try_clone()
     }
-    pub fn try_next(&self) -> io::Result<Request> {
+    pub fn try_next(&self) -> io::Result<RequestCore> {
         self.queue.next()
     }
     /// Wait for a valid original request, skipping expired undelivered entries.
     /// Waiting creates no protocol deadline; each returned request keeps its own.
-    pub async fn next(&self) -> io::Result<Request> {
+    pub async fn next(&self) -> io::Result<RequestCore> {
         loop {
             let wake = self.queue.wake.notified();
             tokio::pin!(wake);
@@ -600,21 +699,18 @@ impl Inbox {
         }
     }
 }
-impl Drop for Inbox {
+impl Drop for InboxCore {
     fn drop(&mut self) {
         self.close();
     }
 }
 /// Immutable original request plus a one-shot local reply capability. No
 /// Client/registration reference is retained. Free unanswered means unavailable.
-pub struct Request {
+struct RequestCore {
     queue: Arc<Queue>,
     data: Arc<Data>,
 }
-impl Request {
-    pub fn request(&self) -> &ReadProviderRequest {
-        &self.data.request
-    }
+impl RequestCore {
     pub fn token(&self) -> u64 {
         self.data.token
     }
@@ -634,14 +730,13 @@ impl Request {
         if self.data.original <= Instant::now() {
             return Err(io_error(nix::libc::ETIMEDOUT));
         }
-        if admit(
-            &self.queue.context(s),
-            Some(&self.queue.daemon),
-            &self.data.request,
-        )
-        .ok()
-        .flatten()
-        .is_none()
+        if self
+            .data
+            .request
+            .admit(&self.queue.context(s), Some(&self.queue.daemon))
+            .ok()
+            .flatten()
+            .is_none()
         {
             return Err(io_error(nix::libc::ESTALE));
         }
@@ -658,12 +753,7 @@ impl Request {
     /// Accept one local answer. It is not daemon commit, wire or peer delivery.
     /// Invalid/oversized replies leave the request unanswered; no truncation.
     pub fn reply(&self, status: u16, value: &[u8]) -> io::Result<()> {
-        if status != 0 && (!(PROVIDER_UNAVAILABLE..=0xff).contains(&status) || !value.is_empty()) {
-            return Err(io_error(nix::libc::EINVAL));
-        }
-        if value.len() > usize::from(self.data.request.maximum_bytes) {
-            return Err(io_error(nix::libc::EMSGSIZE));
-        }
+        self.data.request.validate_reply(status, value)?;
         let mut s = self
             .queue
             .state
@@ -680,7 +770,7 @@ impl Request {
             .map_err(|_| io_error(nix::libc::ESTALE))
     }
 }
-impl Drop for Request {
+impl Drop for RequestCore {
     fn drop(&mut self) {
         let mut s = self.queue.state.lock().unwrap_or_else(|e| e.into_inner());
         if let Some(p) = s.pending.as_mut()
@@ -692,5 +782,88 @@ impl Drop for Request {
                 s.pending = None;
             }
         }
+    }
+}
+
+/// Typed READ inbox over the shared capacity/stop/drain implementation.
+pub struct Inbox {
+    core: InboxCore,
+}
+impl Inbox {
+    pub fn close(&self) {
+        self.core.close()
+    }
+    pub fn fd(&self) -> io::Result<OwnedFd> {
+        self.core.fd()
+    }
+    pub fn try_next(&self) -> io::Result<Request> {
+        self.core.try_next().map(|core| Request { core })
+    }
+    pub async fn next(&self) -> io::Result<Request> {
+        self.core.next().await.map(|core| Request { core })
+    }
+}
+/// Typed WRITE inbox. Closing never rolls back an application effect or
+/// withdraws its remote service. Notification fd duplicates convey readiness only.
+pub struct WriteInbox {
+    core: InboxCore,
+}
+impl WriteInbox {
+    pub fn close(&self) {
+        self.core.close()
+    }
+    pub fn fd(&self) -> io::Result<OwnedFd> {
+        self.core.fd()
+    }
+    pub fn try_next(&self) -> io::Result<WriteRequest> {
+        self.core.try_next().map(|core| WriteRequest { core })
+    }
+    pub async fn next(&self) -> io::Result<WriteRequest> {
+        self.core.next().await.map(|core| WriteRequest { core })
+    }
+}
+/// Original READ observation and one-shot local response capability.
+pub struct Request {
+    core: RequestCore,
+}
+impl Request {
+    pub fn request(&self) -> &ReadProviderRequest {
+        match &self.core.data.request {
+            RequestData::Read(r) => r,
+            _ => unreachable!("typed read inbox"),
+        }
+    }
+    pub fn token(&self) -> u64 {
+        self.core.token()
+    }
+    pub fn is_active(&self) -> bool {
+        self.core.is_active()
+    }
+    pub fn reply(&self, status: u16, value: &[u8]) -> io::Result<()> {
+        self.core.reply(status, value)
+    }
+}
+/// Original WRITE observation and one-shot local response capability. Calling
+/// reply accepts a local application result; it is not wire delivery or rollback.
+pub struct WriteRequest {
+    core: RequestCore,
+}
+impl WriteRequest {
+    pub fn request(&self) -> &WriteProviderRequest {
+        match &self.core.data.request {
+            RequestData::Write(r) => r,
+            _ => unreachable!("typed write inbox"),
+        }
+    }
+    pub fn token(&self) -> u64 {
+        self.core.token()
+    }
+    pub fn is_active(&self) -> bool {
+        self.core.is_active()
+    }
+    /// Invalid status/oversize/mismatched accepted bytes leave reply authority
+    /// unconsumed. Original expiry/revocation can still refuse a later answer.
+    pub fn reply(&self, status: u16, accepted: &[u8]) -> io::Result<()> {
+        self.core.reply(status, accepted)
     }
 }

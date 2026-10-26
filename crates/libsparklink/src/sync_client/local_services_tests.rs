@@ -59,7 +59,7 @@ impl Services {
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> zbus::fdo::Result<()> {
         assert_eq!(handle, 17);
-        assert_eq!(self.0.expected_operations, 1);
+        assert!(matches!(self.0.expected_operations, 0 | 1));
         assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
         self.0.stamps.lock().unwrap().push(deadline);
         self.0.provider_binds.fetch_add(1, Ordering::SeqCst);
@@ -82,7 +82,7 @@ impl Services {
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> zbus::fdo::Result<()> {
         assert_eq!(handle, 17);
-        assert_eq!(self.0.expected_operations, 6);
+        assert!(matches!(self.0.expected_operations, 0 | 6));
         assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
         self.0.stamps.lock().unwrap().push(deadline);
         self.0.provider_binds.fetch_add(1, Ordering::SeqCst);
@@ -110,14 +110,17 @@ impl Services {
         assert_eq!(uuid, [1, 0]);
         let access = properties[0].2;
         assert!(matches!(access, 0 | 36));
+        // Mode0 is only the mixed READ/WRITE capacity fixture; ordinary tests
+        // keep their exact expected operation. It supplies metadata, not a DB.
+        let expected_operations = if self.0.expected_operations == 0 {
+            assert!(matches!(properties[0].1, 1 | 6));
+            properties[0].1
+        } else {
+            self.0.expected_operations
+        };
         assert_eq!(
             properties,
-            [(
-                vec![2, 0],
-                self.0.expected_operations,
-                access,
-                vec![7, 8, 9]
-            )]
+            [(vec![2, 0], expected_operations, access, vec![7, 8, 9])]
         );
         assert_eq!(
             authorizer.as_str(),
@@ -278,6 +281,8 @@ impl Services {
 
 #[path = "service_provider_tests.rs"]
 mod service_provider_tests;
+#[path = "service_write_provider_tests.rs"]
+mod service_write_provider_tests;
 fn ns() -> u64 {
     slk_channel::deadline::Deadline::after(Duration::from_secs(2))
         .unwrap()

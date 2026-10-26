@@ -93,6 +93,18 @@ typedef struct SlkReadProviderRequest SlkReadProviderRequest;
  */
 typedef struct SlkSsapSubscription SlkSsapSubscription;
 
+/**
+ * Local inbox only. Does not retain a caller/registration. Free stops its
+ * callback admission, not remote binding, service, connection or controller.
+ */
+typedef struct SlkWriteProvider SlkWriteProvider;
+
+/**
+ * One original callback. No caller/registration reference. Release and actual
+ * callback drain are separate; an unanswered release becomes unavailable.
+ */
+typedef struct SlkWriteProviderRequest SlkWriteProviderRequest;
+
 typedef struct SPARKLINK_ALIGN(8) SleChannelInfo {
     uint16_t version;
     uint16_t size;
@@ -339,6 +351,31 @@ typedef struct SlkReadProviderRequestInfo {
     uint8_t pi;
     uint8_t reserved[11];
 } SlkReadProviderRequestInfo;
+
+/**
+ * Immutable original context, not current authorization or peer identity.
+ * All reserved bytes zero. Proposed bytes are available through the bounded value copy.
+ */
+typedef struct SlkWriteProviderRequestInfo {
+    struct SlkControllerId controller;
+    uint64_t token;
+    uint64_t request_id;
+    uint64_t connection_lifetime;
+    uint64_t security_epoch;
+    uint64_t deadline_ns;
+    uint32_t security_level;
+    uint16_t connection_handle;
+    uint16_t property;
+    uint16_t offset;
+    uint16_t value_length;
+    uint8_t local_tcid;
+    uint8_t remote_tcid;
+    uint8_t pi;
+    uint8_t operation;
+    uint8_t data_type;
+    uint8_t verify;
+    uint8_t reserved[6];
+} SlkWriteProviderRequestInfo;
 
 /**
  * Last validated lease observation; not Ready or future Native authorization.
@@ -1023,6 +1060,92 @@ int slk_read_provider_request_reply(const struct SlkReadProviderRequest *request
  * One live owned pointer freed once, no concurrent calls/fork copies/later use.
  */
 void slk_read_provider_request_free(struct SlkReadProviderRequest *request);
+
+/**
+ * Bind the original service's write-only type0 property once. Stored bytes
+ * are discarded by the original broker: no rebind/unbind/fallback. A timeout
+ * can follow commit and is not retried. The original absolute CLOCK_MONOTONIC
+ * deadline includes executor admission. Success is local binding only, not RF.
+ * 0/-errno; output unchanged on error. Free this inbox even after service close.
+ * # Safety
+ * Live original service; output aligned/exclusive/nonaliasing; no concurrent
+ * service free or use of inherited objects after fork.
+ */
+int slk_local_service_bind_write_provider(struct SlkLocalService *service,
+                                          uint16_t property,
+                                          uint64_t deadline_ns,
+                                          struct SlkWriteProvider **output);
+
+/**
+ * Duplicate CLOEXEC notification fd, caller closes it. Poll only: never read
+ * or write its counter. Try next before waiting and again after readiness.
+ * It carries no reply authority and does not retain the caller.0/-errno.
+ * # Safety
+ * Provider live immutable, output aligned exclusive; no concurrent free.
+ */
+int slk_write_provider_fd(const struct SlkWriteProvider *provider, int *output);
+
+/**
+ * Nonblocking next. EAGAIN empty, ESHUTDOWN local stopped, ESTALE original
+ * daemon lost, ETIMEDOUT expired undelivered entry. Output unchanged on error.
+ * One consuming application; this never queues an RPC or executes user code.
+ * # Safety
+ * Provider live, output exclusive/aligned/nonaliasing, no concurrent free.
+ */
+int slk_write_provider_next(const struct SlkWriteProvider *provider,
+                            struct SlkWriteProviderRequest **output);
+
+/**
+ * Free local inbox,NULL allowed. Does not withdraw/rebind/restore stored bytes.
+ * # Safety
+ * One owned live pointer freed once; no concurrent call, fork copy or later use.
+ */
+void slk_write_provider_free(struct SlkWriteProvider *provider);
+
+/**
+ * Copy original immutable snapshot even after expiry/close. No current grant.
+ * # Safety
+ * Request live; output aligned/exclusive/writable/nonaliasing; no concurrent free.
+ */
+int slk_write_provider_request_info(const struct SlkWriteProviderRequest *request,
+                                    struct SlkWriteProviderRequestInfo *output);
+
+/**
+ * Answer once locally: status0 with the actual accepted bytes for verify,
+ * otherwise empty; AF..FF with zero bytes. This does not apply/roll back an
+ * application effect. Invalid/mismatched input leaves the request unanswered.
+ * No truncation or new deadline. 0 is local acceptance, never peer delivery.
+ * Duplicate ESTALE, expired ETIMEDOUT, stopped ESHUTDOWN. Reply never queues RPC.
+ * # Safety
+ * Request live, no concurrent free/fork use. NULL value allowed only length0;
+ * otherwise value denotes a live immutable length-byte region. Invalid non-NULL
+ * pointers are caller UB, not supported kernel-style EFAULT inputs.
+ */
+int slk_write_provider_request_reply(const struct SlkWriteProviderRequest *request,
+                                     uint16_t status,
+                                     const uint8_t *value,
+                                     uintptr_t length);
+
+/**
+ * Release request,NULL allowed. Unanswered release is unavailable; this does
+ * not prove callback drain, remote cleanup or any physical completion.
+ * # Safety
+ * One live owned pointer freed once, no concurrent calls/fork copies/later use.
+ */
+void slk_write_provider_request_free(struct SlkWriteProviderRequest *request);
+
+/**
+ * Copy the original proposed bytes, including after expiry/close, without
+ * consuming reply authority. Output length is always the full required size;
+ * ENOSPC leaves buffer unchanged. NULL buffer is permitted for capacity0.
+ * # Safety
+ * Live request, exclusive aligned length output, buffer writable for capacity
+ * bytes without aliasing outputs/request; no concurrent free or fork copy use.
+ */
+int slk_write_provider_request_value(const struct SlkWriteProviderRequest *request,
+                                     uint8_t *buffer,
+                                     uintptr_t capacity,
+                                     uintptr_t *length);
 
 /**
  * Acquire the existing remote SSAP receive lease. Count1..32 unique discovered

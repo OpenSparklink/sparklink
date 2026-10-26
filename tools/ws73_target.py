@@ -2264,7 +2264,7 @@ def _run(args):
                         from ws73_ssap_sdk_read_provider import validate_rows as sdk_provider_rows
                         sdk_provider_rows(control['channel_socket'],sdk_read_provider)
                         from ws73_ssap_provider_owner_exit import validate_rows as provider_exit_rows
-                        provider_exit_rows(control['channel_socket'],provider_exit)
+                        provider_exit_rows(control['channel_socket'],provider_exit,version=m.get('ssap_provider_owner_exit_version'))
                         from ws73_ssap_provider_deadline import validate_rows as provider_deadline_rows
                         provider_deadline_rows(control['channel_socket'],provider_deadline)
                         m['channel_socket_corroboration']=channel_corroborate(control,capture)
@@ -2286,9 +2286,10 @@ def _run(args):
                         m['ssap_sdk_read_provider_acceptance']=sdk_read_provider
                         if provider_exit:
                             from ws73_ssap_provider_owner_exit import valid_summary as provider_exit_summary
+                            from ws73_ssap_sdk_read_provider import validate_tools as sdk_exit_tools
                             for row in control['channel_socket']:
-                                provider_tools(row['ssap_provider_owner_exit_tools'],args.prepared/'root',package['guest_files'])
-                            if file_record(HERE/'ws73_ssap_provider_owner_exit.py')!=m['ssap_provider_owner_exit_verifier'] or not provider_exit_summary(m['channel_socket_corroboration']):
+                                sdk_exit_tools(row['ssap_provider_owner_exit_tools'],args.prepared/'root',package['guest_files'])
+                            if file_record(HERE/'ws73_ssap_provider_owner_exit.py')!=m['ssap_provider_owner_exit_verifier'] or not provider_exit_summary(m['channel_socket_corroboration'],version=m['ssap_provider_owner_exit_version']):
                                 raise ValueError('exact original Provider owner-exit verifier and paired application/USB evidence required')
                         m['ssap_provider_owner_exit_acceptance']=provider_exit
                         if provider_deadline:
@@ -3865,7 +3866,7 @@ def main():
             cmd.add_argument('--ssap-description-verify',action='store_true',help='with --ssap-owned-verify: actual public read-only UTF-8 description discovery and C/Python read')
             cmd.add_argument('--ssap-read-provider-verify',action='store_true',help='with --ssap-owned-verify: actual Owned dynamic READ callbacks and C/Python peer value comparison')
             cmd.add_argument('--ssap-sdk-read-provider-verify',action='store_true',help='with --ssap-read-provider-verify: actual C/Python Provider values and opposite-language peer verification')
-            cmd.add_argument('--ssap-provider-owner-exit-verify',action='store_true',help='with --ssap-read-provider-verify: kill a real pending Provider Owner per role, peer refusal and independent guard delivery')
+            cmd.add_argument('--ssap-provider-owner-exit-verify',action='store_true',help='with --ssap-read-provider-verify: version2 C/Python pending SDK Provider owner loss, peer refusal and independent guard delivery')
             cmd.add_argument('--ssap-provider-deadline-verify',action='store_true',help='with --ssap-provider-owner-exit-verify: original Provider deadline, rejected late reply and independent ordinary CUTC delivery; no same-actor recovery')
             cmd.add_argument('--ssap-write-command-verify',action='store_true',help='actual C/Python WRITE_NO_RSP with remote Read,owner readback and paired capture;not admission-only delivery')
             cmd.add_argument('--ssap-write-command-policy-verify',action='store_true',help='add actual command refusal and same-owner deny/allow after each phase positives;retain all24 cases;requires --ssap-write-command-verify')

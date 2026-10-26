@@ -723,12 +723,16 @@ manifest 与每阶段结果必须匹配同一版本。
 ### Provider 等待应用时的 Owner 退出门禁
 
 `--ssap-provider-owner-exit-verify` 是独立选择项，依赖上述
-`--ssap-read-provider-verify` 和原 Owned、普通通道基线。原 Provider version1/2
-报告的含义不变；新选择项不能由旧报告或未执行的场景补成通过。
+`--ssap-read-provider-verify` 和原 Owned、普通通道基线。当前 owner-exit version2
+通过共享 SDK 启动真实 C/Python Provider，历史 owner-exit version1 的 CLI Owner
+记录按原版本解释；主机和 guest 必须拒绝将旧行作为新版门禁。原正向 Provider
+version1/2 报告的含义不变；旧报告或未执行场景不能补成新门禁通过。
 
 两种连接角色各运行一例，分别由真实 C、Python 客户端发起 READ，覆盖不同的物理
 Provider 接收设备；角色交换后按完整 controller 身份校验，不能只比较数组下标。监督器等待
-原 Owner 的实际 Provider 提示，核对完整连接身份与原期限，再 SIGKILL 该进程；
+原 Owner 的实际 Provider 提示；第一角色由 C 读取 Python Provider，交换角色后
+由 Python 读取 C Provider。监督器核对原 SDK 绑定、成功审批、请求身份、基本 CUTC
+预算和原期限，再 SIGKILL 该进程；
 不发送值、应用错误或正常退出命令。退出必须为 `-9`，等待退出和观察清理均受原
 SDK／Provider 期限约束。已预先登记的独立 Owner 保持存活，故障后再实际读取其值。
 
@@ -743,6 +747,11 @@ usbmon 使用 guest 实时时钟，SDK 期限和返回时刻使用同一 guest �
 只有整个响应时间区间早于实际 SDK 返回和原期限才通过。映射依赖期间没有实时时钟
 调整的显式环境假设；两次采样不一致、缺少映射或误差区间跨过界限时均拒绝通过。
 监督器完成收尸的时间不能代替 SDK 返回时刻，也不据此报告精确单向无线时延。
+
+新版工具接线及 fixture 反例检查不代表实机通过。新编译调用者、Python Provider
+模块和门禁工具须全部进入原 bundle manifest 并重新校验；未取得准确新 artifact
+的双端证据前，SDK Owner 退出资格仍缺失。显式服务注销和 SDK 原期限/晚到答复
+仍是不同场景，不由本 SIGKILL 门禁推导完成。
 
 这只覆盖原上下文仍有效、原期限尚未到达时的非协作退出；不证明 Owner 撤回能取消
 已编码响应，也不证明 Native 物理义务被取消、并发公平性、完整多应用隔离或自然恢复。

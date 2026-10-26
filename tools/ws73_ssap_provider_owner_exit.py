@@ -17,7 +17,7 @@ from ws73_capture import CaptureError, packet_interval
 from ws73_ssap_read_provider import PROMPT, prompt, _cleanup, _wire
 
 TOKEN = 'ws73.ssap_provider_owner_exit=1'
-VERSION = 1
+VERSION = 2  # SDK owners; retained CLI evidence keeps version 1.
 STATUS = 'PROVIDER_OWNER_EXIT_APPLICATION_PAIRED_USB'
 PENDING = 'PROVIDER_OWNER_EXIT_PENDING_PAIRED_USB'
 PREFIX = 'ssap_provider_owner_exit'
@@ -55,9 +55,13 @@ def validate_inputs(package):
     matches = [r for r in package.get('inputs', []) if Path(r['path']).resolve() == path]
     if len(matches) != 1 or matches[0]['sha256'] != hashlib.sha256(path.read_bytes()).hexdigest():
         raise CaptureError('fresh exact Provider owner-exit verifier required')
+    from ws73_ssap_sdk_read_provider import validate_inputs as sdk_inputs
+    sdk_inputs(package)
 
 
-def validate_rows(rows, selected):
+def validate_rows(rows, selected, *, version=None):
+    if version is not None and (type(version) is not int or version not in (1, 2)):
+        raise CaptureError('explicit supported expected owner-exit version required')
     if type(selected) is not bool or type(rows) is not list or selected and len(rows) != 2:
         raise CaptureError('explicit owner-exit selector and two original phases required')
     for phase, row in enumerate(rows):
@@ -69,7 +73,8 @@ def validate_rows(rows, selected):
                 raise CaptureError('unrequested Provider owner-exit evidence')
             continue
         if (type(row.get('phase')) is not int or row['phase'] != phase
-                or type(row.get(PREFIX+'_version')) is not int or row[PREFIX+'_version'] != VERSION
+                or type(row.get(PREFIX+'_version')) is not int or row[PREFIX+'_version'] not in (1, 2)
+                or version is not None and row[PREFIX+'_version'] != version
                 or row.get('ssap_read_provider_required') is not True or row.get('ssap_read_provider_version') != 2
                 or type(row.get(PREFIX+'_tools')) is not dict
                 or len(row.get(PREFIX+'_cases', [])) != 1 or len(row.get(PREFIX+'_guards', [])) != 1
@@ -77,6 +82,58 @@ def validate_rows(rows, selected):
             raise CaptureError('one exit per role and original provider v2 baseline required')
     if selected and len({(row['owners'][1]['owner']['index'], row['owners'][1]['owner']['generation']) for row in rows}) != 2:
         raise CaptureError('both physical Provider receivers must undergo owner exit')
+    if selected and len({row[PREFIX+'_version'] for row in rows}) != 1:
+        raise CaptureError('one explicit Provider owner-exit evidence version required')
+
+
+def _sdk_pending(row, item, text):
+    """Validate the original SDK transcript before destructive owner exit.
+
+    This consumes actual SDK observations, never translates them into invented
+    CLI prompts/results. The independently validated wire proof remains required.
+    """
+    from ws73_ssap_sdk_read_provider import json_rows, BOUND, REQUEST, integer
+    from ws73_application_client import AUTHORIZATION_CONTEXT_FIELDS, authorization_context
+    if type(row['phase']) is not int or row['phase'] not in (0, 1):
+        raise CaptureError('one of the two original SDK roles required')
+    api = ('python', 'c')[row['phase']]
+    bound = json_rows(text, 'SdkReadProviderBound', BOUND, 1)[0]
+    request = json_rows(text, 'SdkReadProviderRequest', REQUEST, 1)[0]
+    approval = json_rows(text, 'SdkAuthorizationDecision',
+        AUTHORIZATION_CONTEXT_FIELDS|{'allow','decision_ns','decision_wall_ns'}, 1)[0]
+    target = row['owners'][1]
+    owner, link = target['owner'], target['object']
+    lines = text.splitlines()
+    registration = f'SsapOwnedService: start={item["start"]} end={item["end"]} property={item["handle"]}; local registration only'
+    if (len(lines) != 5 or lines[:2] != [f'SdkOwnedAPI: api={api} client_closed=true', registration]
+            or [v.split(': ', 1)[0] for v in lines[2:]] !=
+               ['SdkReadProviderBound','SdkAuthorizationDecision','SdkReadProviderRequest']
+            or item.get('publisher_api') != api or type(item.get('sdk_read_provider_contract_version')) is not int
+            or item['sdk_read_provider_contract_version'] != 1):
+        raise CaptureError('only original SDK registration/bind/approval/pending request allowed')
+    if (bound != item['bound'] or bound['api'] != api
+            or any(not integer(bound[k], zero=True) for k in ('index','generation','property'))
+            or (bound['index'],bound['generation'],bound['property']) != (owner['index'],owner['generation'],item['handle'])
+            or any(type(bound[k]) is not int or bound[k] != 0 for k in ('result','notification_result'))
+            or bound['notification_ready'] is not True or bound['local_binding_only'] is not True
+            or any(not integer(bound[k]) for k in ('started_ns','deadline_ns','returned_ns'))
+            or not item['bind_before_monotonic_ns'] <= bound['started_ns'] <= bound['returned_ns'] < bound['deadline_ns']
+            or not 0 < bound['deadline_ns']-bound['started_ns'] <= 5_000_000_000):
+        raise CaptureError('actual original SDK bind and notification receipt required')
+    if (request['api'] != api or any(not integer(request[k], zero=True) for k in REQUEST-{'api'})
+            or not all(request[k] for k in ('token','request_id','lifetime','epoch','deadline_ns','property','observed_ns','observed_wall_ns'))
+            or tuple(request[k] for k in ('index','generation','lifetime','handle','property')) !=
+               (owner['index'],owner['generation'],link['lifetime'],link['handle'],item['handle'])
+            or (request['level'],request['local_tcid'],request['remote_tcid'],request['pi'],request['maximum_bytes']) != (0,10,10,0,2042)):
+        raise CaptureError('original basic-CUTC SDK request identity and budget required')
+    authorization_context({k:approval[k] for k in AUTHORIZATION_CONTEXT_FIELDS}, api)
+    if (approval['allow'] is not True or approval['write'] is not False or approval['value'] != ''
+            or any(not integer(approval[k]) for k in ('decision_ns','decision_wall_ns'))
+            or any(approval[k] != request[k] for k in ('index','generation','request_id','lifetime','handle','epoch','level','deadline_ns','property','local_tcid','remote_tcid','pi'))
+            or not bound['returned_ns'] <= approval['decision_ns'] <= request['observed_ns'] < request['deadline_ns']
+            or approval['decision_wall_ns'] > request['observed_wall_ns']):
+        raise CaptureError('actual independent approval must precede the same SDK request')
+    return request
 
 
 def _remaining(deadline):
@@ -135,21 +192,26 @@ def _owner_exit(run, row, process, item, app, supervisor_deadline_ns):
     item['read'] = app
     run.save()
     sdk_deadline = app['ssap_error_deadline_ns']
-    _, text = wait_text(process, Path(item['output_files'][0]), PROMPT,
+    sdk = row.get(PREFIX+'_version', 1) == 2
+    pattern = r'^SdkReadProviderRequest: (.+)$' if sdk else PROMPT
+    _, text = wait_text(process, Path(item['output_files'][0]), pattern,
                         min(sdk_deadline, supervisor_deadline_ns)/1e9, max_count=1)
     observed = time.monotonic_ns()
-    data = prompt(text)
+    data = _sdk_pending(row, item, text) if sdk else prompt(text)
     target = row['owners'][item['target']]
     identity, link = target['owner'], target['object']
     if ((data['index'], data['generation'], data['lifetime'], data['handle'], data['property'])
             != (identity['index'], identity['generation'], link['lifetime'], link['handle'], item['handle'])
             or not observed < data['deadline_ns'] <= observed+5_000_000_000
+            or sdk and not data['observed_ns'] <= observed
             or process.poll() is not None):
         raise CaptureError('one live original Provider callback identity and deadline required')
     deadline = min(data['deadline_ns'], sdk_deadline, supervisor_deadline_ns)
     item['callback'] = dict(prompt=data, observed_monotonic_ns=observed, observed_wall_ns=time.time_ns(),
                             publisher_pid=process.pid, supervisor_deadline_ns=supervisor_deadline_ns,
                             exit_deadline_ns=deadline)
+    if sdk and data['observed_wall_ns'] > item['callback']['observed_wall_ns']:
+        raise CaptureError('SDK arrival wall observation must precede supervisor owner exit')
     run.save()
     _remaining(deadline)
     item['clock_contract'] = copy.deepcopy(CLOCK_CONTRACT)
@@ -175,7 +237,7 @@ def _owner_exit(run, row, process, item, app, supervisor_deadline_ns):
 def execute(run, row):
     from ws73_application_client import ssap_command, ssap_error_command
     from ws73_ssap_owned import publisher, wait_text, wait_output, await_removed
-    from ws73_ssap_update_delivery import tool_records
+    from ws73_ssap_sdk_read_provider import tool_records, _wait_json, BOUND
     if (row.get('ssap_read_provider_required') is not True or row.get('ssap_read_provider_version') != 2
             or len(row.get('ssap_read_provider_cases', [])) != 2):
         raise CaptureError('original provider sequence must finish before owner-exit extension')
@@ -195,14 +257,13 @@ def execute(run, row):
         guard['registered_wall_ns'] = time.time_ns()
         run.save()
         with publisher(run, row, sender, 'allow', operations=1,
+                       sdk_api=('python', 'c')[phase], read_only=True, read_provider=True,
                        collection=PREFIX+'_cases', label='provider-owner-exit') as (process, item):
             item['guard'] = guard
+            item['bind_before_monotonic_ns'] = time.monotonic_ns()
             process.stdin.write('provider\n'); process.stdin.flush()
-            found, _ = wait_text(process, Path(item['output_files'][0]),
-                r'^SsapReadProviderBound: handle=(\d+); stored value discarded, no rebind or fallback$',
-                time.monotonic()+5, max_count=1)
-            if found != [str(item['handle'])]:
-                raise CaptureError('same original publisher must bind one provider')
+            item['bound'] = _wait_json(process, item, 'SdkReadProviderBound', BOUND, 1,
+                                       item['bind_before_monotonic_ns']+5_000_000_000)
             item['bound_wall_ns'] = time.time_ns(); run.save()
             item['read'] = ssap_error_command(run, row, source,
                 ['ssap-read', source['object']['path'], str(item['handle'])], errno.EIO,
@@ -240,23 +301,33 @@ def _ordinary(item):
         raise CaptureError('original cap-zero owner and complete output required')
 
 
-def _registration(row, item):
+def _registration(row, item, *, sdk=False):
     _ordinary(item)
     target = row['owners'][item['target']]
+    if sdk:
+        from ws73_application_client import owned_arguments, application_environment
+        api = ('python', 'c')[row['phase']]
+        args = owned_arguments(api, target, item['service'], item['uuid'], item['secret'], 'allow',
+                               read_only=True, read_provider=True)
+        selected = f'SdkOwnedAPI: api={api} client_closed=true'
+        if item.get('environment') != application_environment() or item.get('publisher_api') != api:
+            raise CaptureError('exact SDK caller argv/environment required')
+    else:
+        args = [row['ssap_receipts'][0]['args'][0], '--adapter', target['owner']['path'],
+                'ssap-serve', item['service'], item['uuid'], '1', '36', item['secret'], 'allow']
+        selected = f'Selected {target["owner"]["path"]}'
     if (type(item['sender']) is not int or item['sender'] != 0 or type(item['target']) is not int or item['target'] != 1
             or any(type(item[k]) is not int for k in ('start', 'end', 'handle', 'pid', 'operations'))
             or not 0 < item['start'] < item['handle'] == item['end'] < 65535 or item['pid'] <= 0
             or item['operations'] != 1 or item['policy'] != 'allow'
-            or item['args'] != [row['ssap_receipts'][0]['args'][0], '--adapter', target['owner']['path'],
-                'ssap-serve', item['service'], item['uuid'], '1', '36', item['secret'], 'allow']
+            or item['args'] != args
             or any(not re.fullmatch('[0-9a-f]{32}', item[k]) for k in ('service', 'uuid'))
             or not re.fullmatch('[0-9a-f]{64}', item['secret'])):
         raise CaptureError('one original READ-only allow publisher with full identity required')
     registration = f'SsapOwnedService: start={item["start"]} end={item["end"]} property={item["handle"]}; local registration only'
     lines = item['stdout'].splitlines()
-    selected = f'Selected {target["owner"]["path"]}'
     if (lines[:2] != [selected, registration]
-            or sum(l.startswith('Selected ') for l in lines) != 1
+            or sum(l.startswith(('Selected ', 'SdkOwnedAPI:')) for l in lines) != 1
             or sum(l.startswith('SsapOwnedService:') for l in lines) != 1):
         raise CaptureError('one selected target followed by its original registration required')
     return registration
@@ -284,7 +355,20 @@ def _response(row, item, packets):
 def _case(row, item, matched, packets):
     from ws73_application_client import ssap_receipt, ssap_error_receipt
     from ws73_ssap_command import _identity
-    registration = _registration(row, item)
+    version = row.get(PREFIX+'_version', 1)
+    if type(version) is not int or version not in (1, 2):
+        raise CaptureError('explicit supported owner-exit version required')
+    sdk = version == 2
+    if sdk:
+        from ws73_ssap_update_delivery import TOOLS
+        from ws73_ssap_sdk_read_provider import EXTRA_TOOLS, integer
+        records = row[PREFIX+'_tools']
+        if (type(records) is not dict or set(records) != set(TOOLS)|set(EXTRA_TOOLS)
+                or any(type(v) is not dict or set(v) != {'sha256','bytes'} or not integer(v['bytes'])
+                       or type(v['sha256']) is not str or not re.fullmatch('[0-9a-f]{64}',v['sha256'])
+                       for v in records.values())):
+            raise CaptureError('exact SDK owner tools must be retained with version 2')
+    registration = _registration(row, item, sdk=sdk)
     guard = item['guard']; guard_registration = _registration(row, guard)
     identities = [_identity(owner) for owner in row['owners']]
     if (len({(i['index'], i['generation']) for i in identities}) != 2
@@ -292,7 +376,8 @@ def _case(row, item, matched, packets):
         raise CaptureError('two original physical controller identities required')
     s, t, h = item['sender'], item['target'], item['handle']
     source, target = row['owners'][s], row['owners'][t]
-    app, callback, data = item['read'], item['callback'], prompt(item['stdout'])
+    app, callback = item['read'], item['callback']
+    data = _sdk_pending(row, item, item['stdout']) if sdk else prompt(item['stdout'])
     if (any(k in item for k in ('reply_command', 'quit_wall_ns', 'steps'))
             or type(item['exit']) is not int or item['exit'] != -9 or type(item['owner_exit']) is not int or item['owner_exit'] != -9
             or callback['prompt'] != data or callback['publisher_pid'] != item['pid']
@@ -301,13 +386,16 @@ def _case(row, item, matched, packets):
             or guard['pid'] == item['pid'] or guard['handle'] == h
             or guard['service'] == item['service'] or guard['uuid'] == item['uuid'] or guard['secret'] == item['secret']):
         raise CaptureError('actual distinct guard and killed pending provider identity required')
+    if sdk and (not data['observed_ns'] <= callback['observed_monotonic_ns']
+                or data['observed_wall_ns'] > callback['observed_wall_ns']):
+        raise CaptureError('SDK arrival observation must precede supervisor owner exit')
     lines = item['stdout'].splitlines()
-    bound = f'SsapReadProviderBound: handle={h}; stored value discarded, no rebind or fallback'
-    decision = f'SsapAuthorizationDecision: request={data["request"]} property={h} data_type=0 write=false security=0 approved=true; local policy only'
-    prompt_line = next(l for l in lines if l.startswith('SsapReadProviderPrompt:'))
+    bound = next(l for l in lines if l.startswith('SdkReadProviderBound:')) if sdk else f'SsapReadProviderBound: handle={h}; stored value discarded, no rebind or fallback'
+    decision = next(l for l in lines if l.startswith('SdkAuthorizationDecision:')) if sdk else f'SsapAuthorizationDecision: request={data["request"]} property={h} data_type=0 write=false security=0 approved=true; local policy only'
+    prompt_line = next(l for l in lines if l.startswith('SdkReadProviderRequest:' if sdk else 'SsapReadProviderPrompt:'))
     if (lines.count(bound) != 1 or lines.count(decision) != 1
-            or sum(l.startswith('SsapReadProviderBound:') for l in lines) != 1
-            or sum(l.startswith('SsapAuthorizationDecision:') for l in lines) != 1
+            or sum(l.startswith('SdkReadProviderBound:' if sdk else 'SsapReadProviderBound:') for l in lines) != 1
+            or sum(l.startswith('SdkAuthorizationDecision:' if sdk else 'SsapAuthorizationDecision:') for l in lines) != 1
             or any(l.startswith(('SsapReadProviderResult:', 'SsapReadProviderInput:')) for l in lines)
             or [lines.index(v) for v in (registration, bound, decision, prompt_line)] != sorted(lines.index(v) for v in (registration, bound, decision, prompt_line))):
         raise CaptureError('approved actual pending provider prompt without an application answer required')
@@ -377,9 +465,13 @@ def _case(row, item, matched, packets):
         if (any(packet_interval(p['tx'])[1] > packet_interval(p['rx'])[0] for p in (request, reply))
                 or packet_interval(request['rx'])[1] > packet_interval(reply['tx'])[0]):
             raise CaptureError('paired real request and refusal/value must preserve physical causal order')
-    return dict(status=STATUS, version=VERSION, sender=s, target=t, api=app['api'],
+    context = dict(phase=row['phase'], owners=row['owners'], ssap_receipts=row['ssap_receipts'])
+    if sdk:
+        context[PREFIX+'_version'] = version
+        context[PREFIX+'_tools'] = row[PREFIX+'_tools']
+    return dict(status=STATUS, version=version, sender=s, target=t, api=app['api'],
                 sdk_errno=receipt['errno'], peer_error=response[2], wire=wire,
-                context=copy.deepcopy(dict(phase=row['phase'], owners=row['owners'], ssap_receipts=row['ssap_receipts'])),
+                context=copy.deepcopy(context),
                 case=copy.deepcopy(item)), credit
 
 
@@ -388,7 +480,7 @@ def corroborate(row, matched, packets):
         if any(k.startswith(PREFIX+'_') for k in row if k != PREFIX+'_required'):
             raise CaptureError('unrequested owner-exit evidence')
         return [], {0: 0, 1: 0}
-    if (type(row.get(PREFIX+'_version')) is not int or row[PREFIX+'_version'] != VERSION
+    if (type(row.get(PREFIX+'_version')) is not int or row[PREFIX+'_version'] not in (1, 2)
             or row.get('ssap_read_provider_required') is not True or row.get('ssap_read_provider_version') != 2
             or len(row.get(PREFIX+'_cases', [])) != 1 or len(row.get(PREFIX+'_guards', [])) != 1
             or row[PREFIX+'_cases'][0]['guard'] != row[PREFIX+'_guards'][0]):
@@ -397,17 +489,22 @@ def corroborate(row, matched, packets):
     return [result], credit
 
 
-def valid_summary(proof):
+def valid_summary(proof, *, version=None):
     try:
+        if version is not None and (type(version) is not int or version not in (1, 2)):
+            return False
         rows = proof['proofs']
         if type(rows) is not list or len(rows) != 2:
             return False
-        receivers = set()
+        receivers, versions = set(), set()
         for phase, row in enumerate(rows):
             items = row[PREFIX]
             if type(row['phase']) is not int or row['phase'] != phase or len(items) != 1:
                 return False
             item = items[0]; context, case = item['context'], item['case']
+            if type(item.get('version')) is not int or item['version'] not in (1, 2) or version is not None and item['version'] != version:
+                return False
+            versions.add(item['version'])
             if context['phase'] != phase or context['owners'] != row['owners'] or len(item['wire']) != 6:
                 return False
             receiver = context['owners'][1]['owner']
@@ -423,7 +520,7 @@ def valid_summary(proof):
             rebuilt, _ = _case(context, case, matched, packets)
             if packets or json.dumps(rebuilt, sort_keys=True) != json.dumps(item, sort_keys=True):
                 return False
-        return len(receivers) == 2
+        return len(receivers) == 2 and len(versions) == 1
     except (KeyError, AttributeError, IndexError, TypeError, ValueError, StopIteration):
         return False
 
@@ -438,8 +535,8 @@ def valid_manifest(record):
             return (record.get(PREFIX+'_acceptance', False) is False and PREFIX+'_version' not in record
                     and not any(PREFIX in row for row in proof.get('proofs', [])))
         from ws73_ssap_read_provider import valid_manifest as provider_manifest
-        return (type(record.get(PREFIX+'_version')) is int and record[PREFIX+'_version'] == VERSION
+        return (type(record.get(PREFIX+'_version')) is int and record[PREFIX+'_version'] in (1, 2)
                 and record.get(PREFIX+'_acceptance') is True and record.get('ssap_read_provider_version') == 2
-                and provider_manifest(record) and valid_summary(proof))
+                and provider_manifest(record) and valid_summary(proof, version=record[PREFIX+'_version']))
     except (KeyError, AttributeError, TypeError, ValueError):
         return False

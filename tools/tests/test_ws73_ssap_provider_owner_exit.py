@@ -138,6 +138,129 @@ def summary():
     return result
 
 
+def sdk_fixture(phase=0, peer_error=175):
+    """Independent SDK transcript fixture; not a runtime or device receipt."""
+    row, matched, packets = fixture(phase, peer_error)
+    row[gate.PREFIX+'_version'] = 2
+    from ws73_ssap_update_delivery import TOOLS
+    from ws73_ssap_sdk_read_provider import EXTRA_TOOLS
+    row[gate.PREFIX+'_tools'] = {name:dict(sha256='1'*64,bytes=10) for name in (*TOOLS,*EXTRA_TOOLS)}
+    item = row[gate.PREFIX+'_cases'][0]
+    api = ('python', 'c')[phase]
+    target = row['owners'][1]
+    old = item['callback']['prompt']
+    base = item['start_wall_ns']-2_000_000
+    request = dict(api=api, index=target['owner']['index'], generation=4, token=1,
+                   request_id=9, lifetime=target['object']['lifetime'], handle=target['object']['handle'],
+                   epoch=41, level=0, deadline_ns=old['deadline_ns'], property=17,
+                   maximum_bytes=2042, local_tcid=10, remote_tcid=10, pi=0,
+                   observed_ns=base+11_900_000, observed_wall_ns=base+11_900_000)
+    approval = {k:v for k,v in request.items() if k not in ('maximum_bytes','observed_ns','observed_wall_ns')}
+    approval.update(data_type=0, write=False, value='', allow=True,
+                    decision_ns=base+11_500_000, decision_wall_ns=base+11_500_000)
+    bound = dict(api=api,index=target['owner']['index'],generation=4,property=17,
+                 started_ns=base+2_100_000,deadline_ns=base+5_002_100_000,
+                 returned_ns=base+2_500_000,result=0,notification_result=0,
+                 notification_ready=True,local_binding_only=True)
+    item.update(publisher_api=api, sdk_read_provider_contract_version=1,
+                environment=copy.deepcopy(item['read']['environment']), bound=bound,
+                bind_before_monotonic_ns=base+2_000_000)
+    prefix = ['/bin/ws73-application-client-c'] if api == 'c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
+    item['args'] = prefix+['owned-readonly',str(target['owner']['index']),'4',item['service'],item['uuid'],item['secret'],'allow']
+    item['callback']['prompt'] = request
+    item['stdout'] = '\n'.join([f'SdkOwnedAPI: api={api} client_closed=true',
+        'SsapOwnedService: start=16 end=17 property=17; local registration only',
+        'SdkReadProviderBound: '+json.dumps(bound),
+        'SdkAuthorizationDecision: '+json.dumps(approval),
+        'SdkReadProviderRequest: '+json.dumps(request)])+'\n'
+    item['captured_bytes']['stdout'] = len(item['stdout'].encode())
+    return row, matched, packets
+
+
+class SdkOwnerExitEvidence(unittest.TestCase):
+    def test_new_sdk_roles_reuse_original_wire_guard_and_deadline_checks(self):
+        proof = summary()
+        for phase in (0, 1):
+            row, matched, packets = sdk_fixture(phase, (175,4)[phase])
+            result, credit = gate.corroborate(row, matched, packets)
+            self.assertFalse(packets)
+            self.assertEqual(credit, {0:3,1:3})
+            self.assertEqual(result[0]['version'], 2)
+            self.assertEqual(result[0]['case']['publisher_api'], ('python','c')[phase])
+            proof['proofs'][phase][gate.PREFIX] = result
+        self.assertTrue(gate.valid_summary(proof, version=2))
+        self.assertFalse(gate.valid_summary(proof, version=1))
+        self.assertFalse(gate.valid_summary(summary(), version=2))
+        proof['proofs'][0][gate.PREFIX] = summary()['proofs'][0][gate.PREFIX]
+        self.assertFalse(gate.valid_summary(proof))
+
+    def test_current_runner_requires_sdk_rows_and_preserves_explicit_history(self):
+        old = [fixture(n)[0] for n in (0,1)]
+        new = [sdk_fixture(n)[0] for n in (0,1)]
+        gate.validate_rows(new, True, version=gate.VERSION)
+        gate.validate_rows(old, True, version=1)
+        with self.assertRaises(CaptureError): gate.validate_rows(old, True, version=gate.VERSION)
+        with self.assertRaises(CaptureError): gate.validate_rows([old[0],new[1]], True)
+        with self.assertRaises(CaptureError): gate.validate_rows(old, True, version=True)
+        self.assertFalse(gate.valid_summary(summary(),version=True))
+
+    def test_sdk_tool_identity_cannot_be_omitted(self):
+        for change in ('missing_module','missing_python_binding','malformed_size'):
+            row,matched,packets=sdk_fixture()
+            records=row[gate.PREFIX+'_tools']
+            if change=='missing_module': del records['/usr/share/sparklink/tools/ws73_ssap_sdk_read_provider.py']
+            elif change=='missing_python_binding': del records['/usr/share/sparklink/python/sparklink/service_provider.py']
+            else: next(iter(records.values()))['bytes']=True
+            with self.subTest(change=change),self.assertRaises(CaptureError): gate.corroborate(row,matched,packets)
+
+    def test_sdk_arrival_barrier_rejects_before_kill(self):
+        mutations = ['index','generation','lifetime','handle','epoch','deadline_ns','maximum_bytes',
+                     'local_tcid','remote_tcid','pi','boolean_token','approval','wrong_api','bound_failure',
+                     'duplicate','answer','expiry','future_observation']
+        for mutation in mutations:
+            row, _, _ = sdk_fixture(); item=row[gate.PREFIX+'_cases'][0]
+            lines=item['stdout'].splitlines(); request=json.loads(lines[4].split(': ',1)[1])
+            observed=item['callback']['observed_monotonic_ns']
+            if mutation in request: request[mutation] += 1
+            elif mutation=='boolean_token': request['token']=True
+            elif mutation=='approval':
+                a=json.loads(lines[3].split(': ',1)[1]);a['allow']=False
+                lines[3]='SdkAuthorizationDecision: '+json.dumps(a)
+            elif mutation=='wrong_api': request['api']='c'
+            elif mutation=='bound_failure':
+                b=dict(item['bound'],result=-5);item['bound']=b;lines[2]='SdkReadProviderBound: '+json.dumps(b)
+            elif mutation=='duplicate': lines.append(lines[4])
+            elif mutation=='answer': lines.append('SdkReadProviderReply: {}')
+            elif mutation=='expiry': observed=request['deadline_ns']
+            elif mutation=='future_observation': request['observed_ns']=observed+1
+            lines[4]='SdkReadProviderRequest: '+json.dumps(request)
+            item['output_files']=['/unused/sdk.stdout','/unused/sdk.stderr']
+            process=Mock(pid=item['pid']);process.poll.return_value=None
+            with patch.object(owned,'wait_text',return_value=([],'\n'.join(lines)+'\n')), \
+                 patch.object(gate.time,'monotonic_ns',return_value=observed):
+                with self.subTest(mutation=mutation),self.assertRaises(CaptureError):
+                    gate._owner_exit(SimpleNamespace(save=Mock()),row,process,item,item['read'],item['read']['ssap_supervisor_deadline_ns'])
+            process.kill.assert_not_called()
+
+    def test_sdk_after_start_uses_actual_request_and_unchanged_budget(self):
+        for phase in (0,1):
+            row,_,_=sdk_fixture(phase);item=row[gate.PREFIX+'_cases'][0]
+            item['output_files']=['/unused/sdk.stdout','/unused/sdk.stderr']
+            process=Mock(pid=item['pid'],returncode=-9);process.poll.return_value=None
+            observed=item['callback']['observed_monotonic_ns']
+            with patch.object(owned,'wait_text',return_value=([],item['stdout'])) as arrival, \
+                 patch.object(owned,'wait_output') as wait, \
+                 patch.object(owned,'await_removed',return_value=item['cleanup']) as removed, \
+                 patch.object(gate.time,'monotonic_ns',return_value=observed), \
+                 patch.object(gate.time,'time_ns',return_value=observed):
+                gate._owner_exit(SimpleNamespace(save=Mock()),row,process,item,item['read'],item['read']['ssap_supervisor_deadline_ns'])
+            self.assertEqual(arrival.call_args.args[2],r'^SdkReadProviderRequest: (.+)$')
+            process.kill.assert_called_once_with();process.stdin.write.assert_not_called()
+            deadline=item['callback']['exit_deadline_ns']
+            wait.assert_called_once_with(process,(deadline-observed)/1e9)
+            self.assertEqual(removed.call_args.kwargs,dict(deadline_ns=deadline))
+
+
 class OwnerExitEvidence(unittest.TestCase):
     def test_real_cli_selection_precedes_registration_on_exact_target(self):
         # slctl select_adapter prints this line before ssap-serve registers.

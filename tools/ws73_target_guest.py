@@ -461,8 +461,8 @@ def verify_passthrough():
     provider_rows(run.get('channel_socket',[]),provider_boot(Path('/proc/cmdline').read_text().split()))
     from ws73_ssap_sdk_read_provider import boot_requested as sdk_provider_boot,validate_rows as sdk_provider_rows
     sdk_provider_rows(run.get('channel_socket',[]),sdk_provider_boot(Path('/proc/cmdline').read_text().split()))
-    from ws73_ssap_provider_owner_exit import boot_requested as provider_exit_boot,validate_rows as provider_exit_rows
-    provider_exit_rows(run.get('channel_socket',[]),provider_exit_boot(Path('/proc/cmdline').read_text().split()))
+    from ws73_ssap_provider_owner_exit import boot_requested as provider_exit_boot,validate_rows as provider_exit_rows,VERSION as provider_exit_version
+    provider_exit_rows(run.get('channel_socket',[]),provider_exit_boot(Path('/proc/cmdline').read_text().split()),version=provider_exit_version)
     from ws73_ssap_provider_deadline import boot_requested as provider_deadline_boot,validate_rows as provider_deadline_rows
     provider_deadline_rows(run.get('channel_socket',[]),provider_deadline_boot(Path('/proc/cmdline').read_text().split()))
     from ws73_ssap_command import boot_requested as command_boot,validate_rows as command_rows

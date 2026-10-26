@@ -70,7 +70,7 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
 ```json
 {
   "id": "WP08-WP16-WP17-R5f160-provider-sdk-shared-frontend",
-  "state": "PUBLIC_SOURCE_AND_OFFLINE_SCOPE_ONLY_FULL_GOAL_OPEN",
+  "state": "SDK_PROVIDER_LIFECYCLE_FOLLOWUP_IN_PROGRESS_ORIGINAL_SCOPE_OPEN",
   "production_behavior": "Expose dynamic read Providers through the ordinary Rust/C/Python SDK over the existing original Client and sole daemon SSAP Engine. Move the concrete bounded value frontend into the SDK and migrate slctl to the same dispatch/admission/reply/lifetime implementation; keep authorization decisions separate from supplied bytes. No additional Host, Engine, codec, stored-value fallback or controller privilege.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
@@ -335,6 +335,26 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
       ],
       "changes_runtime": false,
       "hardware_replayed": false,
+      "whole_issue_complete": false
+    },
+    "sdk_provider_owner_exit_v2": {
+      "state": "SDK_OWNER_EXIT_V2_WIRED_OFFLINE_REAL_DEVICE_PENDING",
+      "source": "c7feed7b4118efe747ca8b8366530b953f8960da",
+      "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
+      "behavior": "Existing owner-exit runner now uses actual Python/C SDK Providers across roles; validates SDK bind/approval/request before SIGKILL, retains original deadline, paired AF/4 and retired-handle checks, independent guard and baseline. Current host/guest require v2; old CLI v1 retains historical scope.",
+      "offline_checks": {
+        "provider_family": 55,
+        "target_runner": 31,
+        "channel_verdict": 33,
+        "strict_html": "passed;121 documents"
+      },
+      "scope": "Tooling/fixture checks only; not actual USB/callback/VM qualification. Source is public; exact hardware attempts remain private.",
+      "remaining": [
+        "Accurate-artifact SDK owner loss paired evidence",
+        "Explicit pending SDK unregister",
+        "SDK original expiry/late reply",
+        "Independent guard and ordinary business isolation"
+      ],
       "whole_issue_complete": false
     }
   }

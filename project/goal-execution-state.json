@@ -2178,7 +2178,7 @@
         "Retain all original failures, counterexamples, scope and qualification identities. UserHost remains low-priority planning; no original issue is closed by this batch transition."
       ],
       "next": [
-        "Continue exact-artifact validation of the new public C/Python Provider path under local qualification authority; no actual outcome is inferred from this source/offline summary.",
+        "Complete finite SDK Owner-exit evidence closure using the existing registry, then actual pending SDK unregister and original-deadline/late reply with independent guard and ordinary business. Preserve all previous failures; capability denial and deadline exhaustion are separate gates.",
         "Continue original data/security/SSAP and missing named checks without the whole control-plane race set as a prerequisite; no same-actor or natural recovery qualification is added."
       ],
       "issues": [
@@ -2303,7 +2303,23 @@
             "SDK original expiry/late reply",
             "Independent guard and ordinary business isolation"
           ],
-          "whole_issue_complete": false
+          "whole_issue_complete": false,
+          "capability_refusal_v2": {
+            "source": "f1943b16f6c2ed684c6033ab867575b5da97ad3b",
+            "status": "IMPLEMENTED_SCOPED_OFFLINE_PASS",
+            "contract": "Actual unsupported notify uses existing CLI 5000ms original deadline; exact NotSupported remains mandatory. Original 10ms v1 and failures retain their scope; expired results cannot override the deadline. No protocol timer change or blind retry.",
+            "checks": {
+              "value_verifier": 22,
+              "runner": 31,
+              "provider_fixture": 38,
+              "actual_sdk_bounded": 4,
+              "actual_daemon_terminal": 1,
+              "strict_clippy": "PASS",
+              "strict_docs": "PASS_121_DOCUMENTS"
+            },
+            "scope": "Explicit fixtures/private bus for SDK clock and daemon production terminal functions; not firmware timing diagnosis or whole lifecycle proof.",
+            "remaining": "Accurate-artifact finite evidence closure, SDK pending unregister, expiry/late reply and original remaining gates."
+          }
         }
       }
     },

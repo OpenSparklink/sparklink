@@ -151,7 +151,7 @@ def _clock_sample():
     return dict(monotonic_before_ns=before, realtime_ns=wall, monotonic_after_ns=after)
 
 
-def _clock_bounds(item):
+def _clock_bounds(item, *, action="kill"):
     """Conditional offset intersection, not an invented host/guest mapping.
 
     Guest usbmon uses CLOCK_REALTIME, truncated to microseconds; SDK receipts
@@ -175,11 +175,11 @@ def _clock_bounds(item):
                        sample['realtime_ns']-sample['monotonic_before_ns']))
     before, after = item['clock_before'], item['clock_after']
     if (not item['callback']['observed_monotonic_ns'] <= before['monotonic_before_ns']
-            <= before['monotonic_after_ns'] <= item['kill_before_monotonic_ns']
+            <= before['monotonic_after_ns'] <= item[action+'_before_monotonic_ns']
             or not item['read']['end_monotonic_ns'] <= after['monotonic_before_ns']
-            or not item['callback']['observed_wall_ns'] <= before['realtime_ns'] <= item['kill_before_wall_ns']
+            or not item['callback']['observed_wall_ns'] <= before['realtime_ns'] <= item[action+'_before_wall_ns']
             or not item['read']['end_wall_ns'] <= after['realtime_ns'] <= item['retired_read']['start_wall_ns']):
-        raise CaptureError('clock samples must bracket original kill through SDK completion')
+        raise CaptureError('clock samples must bracket original lifecycle action through SDK completion')
     lower, upper = max(v[0] for v in bounds), min(v[1] for v in bounds)
     if lower > upper:
         raise CaptureError('clock samples contradict the stated stable-offset assumption')
@@ -235,15 +235,22 @@ def _owner_exit(run, row, process, item, app, supervisor_deadline_ns):
 
 
 def execute(run, row):
-    from ws73_application_client import ssap_command, ssap_error_command
-    from ws73_ssap_owned import publisher, wait_text, wait_output, await_removed
-    from ws73_ssap_sdk_read_provider import tool_records, _wait_json, BOUND
+    from ws73_ssap_sdk_read_provider import tool_records
     if (row.get('ssap_read_provider_required') is not True or row.get('ssap_read_provider_version') != 2
             or len(row.get('ssap_read_provider_cases', [])) != 2):
         raise CaptureError('original provider sequence must finish before owner-exit extension')
     row.update({PREFIX+'_required': True, PREFIX+'_version': VERSION, PREFIX+'_tools': tool_records(),
                 PREFIX+'_cases': [], PREFIX+'_guards': []})
     run.save()
+    execute_pending_case(run, row, PREFIX, 'provider-owner-exit', _owner_exit)
+    row[PREFIX+'_status'] = PENDING; run.save()
+
+
+def execute_pending_case(run, row, prefix, label, action, *, finish=None):
+    """Shared SDK/peer/guard orchestration; each action has its own evidence contract."""
+    from ws73_application_client import ssap_command, ssap_error_command
+    from ws73_ssap_owned import publisher, wait_output, await_removed
+    from ws73_ssap_sdk_read_provider import _wait_json, BOUND
     phase = row['phase']
     if type(phase) is not int or phase not in (0, 1):
         raise CaptureError('original two-role phase required')
@@ -253,12 +260,12 @@ def execute(run, row):
     source, target = row['owners'][sender], row['owners'][1-sender]
     api = ('c', 'python')[phase]
     with publisher(run, row, sender, 'allow', operations=1,
-                   collection=PREFIX+'_guards', label='provider-exit-guard') as (guard_process, guard):
+                   collection=prefix+'_guards', label=label+'-guard') as (guard_process, guard):
         guard['registered_wall_ns'] = time.time_ns()
         run.save()
         with publisher(run, row, sender, 'allow', operations=1,
                        sdk_api=('python', 'c')[phase], read_only=True, read_provider=True,
-                       collection=PREFIX+'_cases', label='provider-owner-exit') as (process, item):
+                       collection=prefix+'_cases', label=label) as (process, item):
             item['guard'] = guard
             item['bind_before_monotonic_ns'] = time.monotonic_ns()
             process.stdin.write('provider\n'); process.stdin.flush()
@@ -267,11 +274,11 @@ def execute(run, row):
             item['bound_wall_ns'] = time.time_ns(); run.save()
             item['read'] = ssap_error_command(run, row, source,
                 ['ssap-read', source['object']['path'], str(item['handle'])], errno.EIO,
-                api=api, after_start=lambda app, deadline: _owner_exit(run, row, process, item, app, deadline))
+                api=api, after_start=lambda app, deadline: action(run, row, process, item, app, deadline))
             item['clock_after'] = _clock_sample()
             run.save()
             item['retired_read'] = run.command([str(run.args.slctl), '--adapter', source['owner']['path'],
-                'ssap-read', source['object']['path'], str(item['handle']), '0'], 10, collection=PREFIX)
+                'ssap-read', source['object']['path'], str(item['handle']), '0'], 10, collection=prefix)
             if guard_process.poll() is not None:
                 raise CaptureError('independent original guard Owner exited during Provider loss')
             guard['read'] = ssap_command(run, row, source,
@@ -280,6 +287,8 @@ def execute(run, row):
             if guard_process.poll() is not None:
                 raise CaptureError('independent original guard must survive its actual peer read')
             run.save()
+            if finish is not None:
+                finish(run, row, process, item)
         guard['quit_wall_ns'] = time.time_ns(); run.save()
         guard_process.stdin.write('quit\n'); guard_process.stdin.flush()
         wait_output(guard_process, 2)
@@ -288,7 +297,6 @@ def execute(run, row):
         guard['owner_exit_wall_ns'] = time.time_ns()
         guard['cleanup'] = await_removed(run, target, guard['start'])
         run.save()
-    row[PREFIX+'_status'] = PENDING; run.save()
 
 
 def _ordinary(item):
@@ -422,6 +430,24 @@ def _case(row, item, matched, packets):
     if any(type(v) is not int or v <= 0 for v in stamps) or stamps != sorted(stamps):
         raise CaptureError('original guard/prompt/kill/cleanup/peer/guard chronology required')
     offset_lower, _ = _clock_bounds(item)
+    response, wire, credit = corroborate_peer_guard(row, item, matched, packets, receipt,
+        deadline, offset_lower, item['kill_before_wall_ns'])
+    context = dict(phase=row['phase'], owners=row['owners'], ssap_receipts=row['ssap_receipts'])
+    if sdk:
+        context[PREFIX+'_version'] = version
+        context[PREFIX+'_tools'] = row[PREFIX+'_tools']
+    return dict(status=STATUS, version=version, sender=s, target=t, api=app['api'],
+                sdk_errno=receipt['errno'], peer_error=response[2], wire=wire,
+                context=copy.deepcopy(context),
+                case=copy.deepcopy(item)), credit
+
+
+def corroborate_peer_guard(row, item, matched, packets, receipt, deadline, offset_lower, action_wall_ns):
+    """Same paired wire and independent guard checks for distinct lifecycle actions."""
+    from ws73_application_client import ssap_receipt
+    guard, app, callback = item['guard'], item['read'], item['callback']
+    source, target = row['owners'][item['sender']], row['owners'][item['target']]
+    guard_registration = _registration(row, guard)
     _cleanup(row, item)
     if (type(guard['exit']) is not int or guard['exit'] != 0 or 'SsapReadProvider' in guard['stdout']
             or guard['stdout'].splitlines()[1] != guard_registration):
@@ -440,10 +466,10 @@ def _case(row, item, matched, packets):
             or len(lists) != 1 or any(v[0] == guard['start'] for v in json.loads(lists[0]))):
         raise CaptureError('independent guard explicit cleanup required')
     response = _response(row, item, packets)
-    # _wire's causal barrier is generic: here it is a pre-SIGKILL observation,
-    # never a fabricated Provider reply command or wait() completion time.
+    # The barrier precedes the real lifecycle action, never a fabricated reply
+    # command or wait() completion time.
     wire, credit = _wire(row, item, matched, [
-        (app, response, dict(observed_wall_ns=callback['observed_wall_ns'], reply_before_wall_ns=item['kill_before_wall_ns'])),
+        (app, response, dict(observed_wall_ns=callback['observed_wall_ns'], reply_before_wall_ns=action_wall_ns)),
         (item['retired_read'], b'\x09\x0b\x04\0', None)])
     guard_wire, extra = _wire(row, guard, matched, [(guard['read'], b'\x09\x03'+bytes.fromhex(guard['secret']), None)])
     wire.extend(guard_wire)
@@ -465,14 +491,7 @@ def _case(row, item, matched, packets):
         if (any(packet_interval(p['tx'])[1] > packet_interval(p['rx'])[0] for p in (request, reply))
                 or packet_interval(request['rx'])[1] > packet_interval(reply['tx'])[0]):
             raise CaptureError('paired real request and refusal/value must preserve physical causal order')
-    context = dict(phase=row['phase'], owners=row['owners'], ssap_receipts=row['ssap_receipts'])
-    if sdk:
-        context[PREFIX+'_version'] = version
-        context[PREFIX+'_tools'] = row[PREFIX+'_tools']
-    return dict(status=STATUS, version=version, sender=s, target=t, api=app['api'],
-                sdk_errno=receipt['errno'], peer_error=response[2], wire=wire,
-                context=copy.deepcopy(context),
-                case=copy.deepcopy(item)), credit
+    return response, wire, credit
 
 
 def corroborate(row, matched, packets):

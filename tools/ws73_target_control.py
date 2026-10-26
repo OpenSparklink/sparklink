@@ -223,6 +223,7 @@ def main():
     parser.add_argument('--ssap-read-provider-verify',action='store_true',help='with --ssap-owned-verify: actual Owned dynamic read callback and peer SDK value comparison')
     parser.add_argument('--ssap-sdk-read-provider-verify',action='store_true',help='with --ssap-read-provider-verify: actual C/Python SDK Provider callbacks and opposite-language peer verification')
     parser.add_argument('--ssap-provider-owner-exit-verify',action='store_true',help='with --ssap-read-provider-verify: version2 C/Python pending SDK Provider owner loss and independent guard delivery')
+    parser.add_argument('--ssap-provider-unregister-verify',action='store_true',help='with --ssap-read-provider-verify: C/Python pending explicit unregister and independent guard delivery')
     parser.add_argument('--ssap-provider-deadline-verify',action='store_true',help='with --ssap-provider-owner-exit-verify: immutable Provider deadline, rejected late token and ordinary CUTC continuity')
     parser.add_argument('--ssap-write-command-verify',action='store_true',help='actual C/Python no-response write,remote Read and original owner checks;dedicated ordinary socket gate')
     parser.add_argument('--ssap-write-command-policy-verify',action='store_true',help='actual command refusal and same-owner deny/allow after original positive cases;requires --ssap-write-command-verify')
@@ -295,6 +296,9 @@ def main():
     except ValueError as error:parser.error(str(error))
     from ws73_ssap_provider_owner_exit import requested as provider_exit_requested
     try:provider_exit_requested(args)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_provider_unregister import requested as provider_unregister_requested
+    try:provider_unregister_requested(args)
     except ValueError as error:parser.error(str(error))
     from ws73_ssap_provider_deadline import requested as provider_deadline_requested
     try:provider_deadline_requested(args)

@@ -428,6 +428,18 @@ free 并发或跨 fork 使用，非空 value 指针须覆盖实际 length 字节
 私有 D-Bus 检查 SDK callback 的停止，服务登记元数据仍是 fixture，不能据此声明
 daemon 数据库删除、真实对端响应、独立服务隔离或空口生命周期验收通过。
 
+专用 VM runner 的 `--ssap-provider-unregister-verify` 使用已有
+`--ssap-read-provider-verify` / `--ssap-owned-verify` 与普通双设备通道基线。
+该选择与 Owner SIGKILL、Provider 到期及正向 SDK 值序列分别运行；不得合并为
+同一种生命周期结果。工具在原 SDK 请求实际到达后发送 `provider-unregister`，
+保留 request/info/readiness fd 的检查，并要求旧回复返回 `ESHUTDOWN`；进程在
+对端拒绝、退休 handle 拒绝和独立 guard 校验期间保持存活，最后正常退出。
+
+准入的 SDK 错误只是一端观察。判定还要求两端原 USB READ/响应、原期限、同一
+controller/generation/lifetime、guard 随机值实际校验，以及注销清理之后的普通
+通道往返；缺包、旧身份、超时、错误收据或用 SIGKILL 替代均失败。工具接通及
+fixture 检查不表示这个新 artifact 已通过实机，具体资格以唯一资格入口为准。
+
 这些应用入口已在源码接通；离线封装/ABI/生命周期检查与实际产物资格独立维护，
 不从基础远端读取或历史 CLI Provider 记录推导 C/Python 服务端 Provider 实机资格。
 

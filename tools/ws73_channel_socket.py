@@ -289,6 +289,9 @@ def execute(run, phase, after_application=None):
         if getattr(run.args,'ssap_provider_owner_exit_verify',False):
             from ws73_ssap_provider_owner_exit import execute as provider_exit_execute
             provider_exit_execute(run,row)
+        if getattr(run.args,'ssap_provider_unregister_verify',False):
+            from ws73_ssap_provider_unregister import execute as provider_unregister_execute
+            provider_unregister_execute(run,row)
         if getattr(run.args,'ssap_owned_update_verify',False):
             from ws73_ssap_owned_update import execute as update_execute
             update_execute(run,row)
@@ -762,6 +765,9 @@ def corroborate(run,capture):
             from ws73_ssap_provider_owner_exit import corroborate as provider_exit_corroborate
             ssap_provider_owner_exit,provider_exit_credit=provider_exit_corroborate(row,value_matched,sdus)
             for key in ssap_credit:ssap_credit[key]+=provider_exit_credit[key]
+            from ws73_ssap_provider_unregister import corroborate as provider_unregister_corroborate
+            ssap_provider_unregister,provider_unregister_credit=provider_unregister_corroborate(row,value_matched,sdus)
+            for key in ssap_credit:ssap_credit[key]+=provider_unregister_credit[key]
             ssap_write_commands=[]
             if row.get('ssap_write_command_required',False):
                 from ws73_ssap_command import corroborate as command_corroborate
@@ -825,6 +831,9 @@ def corroborate(run,capture):
         if row.get('ssap_command_deadline_required',False):
             from ws73_ssap_command_deadline import verify_business as command_deadline_business
             command_deadline_business(row,row['ssap_command_deadline_case'],legs)
+        if row.get('ssap_provider_unregister_required',False):
+            from ws73_ssap_provider_unregister import verify_business_after as unregister_business
+            unregister_business(ssap_provider_unregister[0]['case'],legs)
         if row.get('ssap_provider_deadline_required',False):
             from ws73_ssap_provider_deadline import verify_business_evidence as provider_deadline_business
             provider_deadline_business(row,ssap_provider_deadline,legs)
@@ -897,6 +906,7 @@ def corroborate(run,capture):
         if row.get('ssap_read_provider_required',False):entry['ssap_read_providers']=ssap_read_providers
         if row.get('ssap_sdk_read_provider_required',False):entry['ssap_sdk_read_providers']=ssap_sdk_read_providers
         if row.get('ssap_provider_owner_exit_required',False):entry['ssap_provider_owner_exit']=ssap_provider_owner_exit
+        if row.get('ssap_provider_unregister_required',False):entry['ssap_provider_unregister']=ssap_provider_unregister
         if row.get('ssap_provider_deadline_required',False):entry['ssap_provider_deadline']=ssap_provider_deadline
         if row.get('ssap_write_command_required',False):entry['ssap_write_commands']=ssap_write_commands
         if row.get('ssap_command_policy_required',False):entry['ssap_command_policy']=ssap_command_policy

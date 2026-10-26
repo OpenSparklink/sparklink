@@ -34,8 +34,8 @@ VALUE={'api','property','value','application_memory_only'}
 need,integer,json_rows=shared.need,shared.integer,shared.json_rows
 
 
-def requested(args, *, passthrough=None):
-    selected=getattr(args,PREFIX+'_verify',False)
+def requested(args, *, passthrough=None, selector=PREFIX):
+    selected=getattr(args,selector+'_verify',False)
     need(type(selected)is bool,'explicit WRITE Provider selector required')
     if not selected:return False
     if passthrough is None:passthrough=getattr(args,'passthrough',False)
@@ -52,10 +52,11 @@ def requested(args, *, passthrough=None):
     return True
 
 
-def boot_requested(tokens):
+def boot_requested(tokens, *, selector=PREFIX):
     need(type(tokens)in(list,tuple)and all(type(t)is str for t in tokens),'tokenized boot arguments required')
-    found=[t for t in tokens if t=='ws73.'+PREFIX or t.startswith('ws73.'+PREFIX+'=')]
-    need(found in ([],[TOKEN]),'one exact WRITE Provider boot token required')
+    token='ws73.'+selector+'=1'
+    found=[t for t in tokens if t=='ws73.'+selector or t.startswith('ws73.'+selector+'=')]
+    need(found in ([],[token]),'one exact WRITE Provider boot token required')
     if found:
         need(tokens.count('ws73.ssap_owned=1')==1 and not any(t.startswith(('ws73.ssap_read_provider','ws73.ssap_sdk_read_provider','ws73.ssap_provider_'))for t in tokens),
              'WRITE Provider boot dependencies/conflicts differ')

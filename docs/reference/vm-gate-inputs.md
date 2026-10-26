@@ -1394,3 +1394,28 @@ ExchangeInfo 重启。Failed 后不通过该 Engine 发送远端 Read；本地 O
 不证明实际设备运行时在哪一层耗尽。新门禁仍须准确新 artifact 的 VM 验收，不能
 以输入期限调整、fixture 或历史通过宣布 SDK 生命周期成功。此变更不修改协议监督
 期限、不授予性能资格，也不覆盖 Provider 自身的原期限门禁。
+
+## SDK WRITE Provider 待决撤回门禁
+
+`--ssap-write-provider-unregister-verify` 是独立选择器，要求已有
+`--ssap-owned-verify`、普通 channel socket 的61字节/4轮基线及真实逐设备直通。
+不与 READ Provider、普通 WRITE Provider 或其他破坏性生命周期门禁组合。
+boot token 为 `ws73.ssap_write_provider_unregister=1`，version1；旧 READ
+撤回的 selector、版本和报告含义不变。
+
+每个物理连接角色使用 Python Provider/C requester 或 C Provider/Python requester。
+现有共享 pending-case 编排先登记独立 guard，绑定实际 WRITE Provider，再由普通
+用户 SDK 提交随机32字节 verified type0 WriteReq。只有原授权及 Provider 请求
+到达后才发送 `provider-unregister`；不续期原请求。原请求/拟写值快照和通知 fd
+须保留，使用有效原值的旧答复须返回 `ESHUTDOWN`，应用内存仍为空，owner 保持
+存活直到 guard 实际交付后正常退出。
+
+独立 wire 检查要求两个端点捕获同一个原 handle 的 WriteRsp 错误 AF 或4；SDK
+`EIO` 不决定线上错误值。随后旧 handle READ 必须拒绝，独立 guard 的随机值必须
+由对端 SDK 实际校验。两连接角色都完成，清理后各4轮普通业务仍需真实回复。
+收包归属、实际 TX credit、原期限、同 guest 时钟映射假设、完整日志及工具 hash
+沿原门禁验证。缺任一端、改 payload/身份/期限、模拟本地成功、guard 失败、提前
+退出或普通业务未完成，不能产生完整 PASS。
+
+这描述执行与判定契约，源码/离线 fixture 通过不构成真实设备资格。完整 WRITE
+owner death、断链、原期限、长值、command、method/描述符等门禁仍独立开放。

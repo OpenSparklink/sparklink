@@ -11,6 +11,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import secrets
 import time
 
 from ws73_capture import CaptureError, packet_interval
@@ -86,7 +87,7 @@ def validate_rows(rows, selected, *, version=None):
         raise CaptureError('one explicit Provider owner-exit evidence version required')
 
 
-def _sdk_pending(row, item, text):
+def _sdk_pending(row, item, text, *, writing=False):
     """Validate the original SDK transcript before destructive owner exit.
 
     This consumes actual SDK observations, never translates them into invented
@@ -96,9 +97,13 @@ def _sdk_pending(row, item, text):
     from ws73_application_client import AUTHORIZATION_CONTEXT_FIELDS, authorization_context
     if type(row['phase']) is not int or row['phase'] not in (0, 1):
         raise CaptureError('one of the two original SDK roles required')
+    if writing:
+        from ws73_ssap_sdk_write_provider import REQUEST
+    prefix = 'SdkWriteProvider' if writing else 'SdkReadProvider'
+    contract = 'sdk_write_provider_contract_version' if writing else 'sdk_read_provider_contract_version'
     api = ('python', 'c')[row['phase']]
-    bound = json_rows(text, 'SdkReadProviderBound', BOUND, 1)[0]
-    request = json_rows(text, 'SdkReadProviderRequest', REQUEST, 1)[0]
+    bound = json_rows(text, prefix+'Bound', BOUND, 1)[0]
+    request = json_rows(text, prefix+'Request', REQUEST, 1)[0]
     approval = json_rows(text, 'SdkAuthorizationDecision',
         AUTHORIZATION_CONTEXT_FIELDS|{'allow','decision_ns','decision_wall_ns'}, 1)[0]
     target = row['owners'][1]
@@ -107,9 +112,9 @@ def _sdk_pending(row, item, text):
     registration = f'SsapOwnedService: start={item["start"]} end={item["end"]} property={item["handle"]}; local registration only'
     if (len(lines) != 5 or lines[:2] != [f'SdkOwnedAPI: api={api} client_closed=true', registration]
             or [v.split(': ', 1)[0] for v in lines[2:]] !=
-               ['SdkReadProviderBound','SdkAuthorizationDecision','SdkReadProviderRequest']
-            or item.get('publisher_api') != api or type(item.get('sdk_read_provider_contract_version')) is not int
-            or item['sdk_read_provider_contract_version'] != 1):
+               [prefix+'Bound','SdkAuthorizationDecision',prefix+'Request']
+            or item.get('publisher_api') != api or type(item.get(contract)) is not int
+            or item[contract] != 1):
         raise CaptureError('only original SDK registration/bind/approval/pending request allowed')
     if (bound != item['bound'] or bound['api'] != api
             or any(not integer(bound[k], zero=True) for k in ('index','generation','property'))
@@ -120,14 +125,20 @@ def _sdk_pending(row, item, text):
             or not item['bind_before_monotonic_ns'] <= bound['started_ns'] <= bound['returned_ns'] < bound['deadline_ns']
             or not 0 < bound['deadline_ns']-bound['started_ns'] <= 5_000_000_000):
         raise CaptureError('actual original SDK bind and notification receipt required')
-    if (request['api'] != api or any(not integer(request[k], zero=True) for k in REQUEST-{'api'})
+    if (request['api'] != api or any(not integer(request[k], zero=True) for k in REQUEST-({'api','verify','value'} if writing else {'api'}))
             or not all(request[k] for k in ('token','request_id','lifetime','epoch','deadline_ns','property','observed_ns','observed_wall_ns'))
             or tuple(request[k] for k in ('index','generation','lifetime','handle','property')) !=
                (owner['index'],owner['generation'],link['lifetime'],link['handle'],item['handle'])
-            or (request['level'],request['local_tcid'],request['remote_tcid'],request['pi'],request['maximum_bytes']) != (0,10,10,0,2042)):
+            or (request['level'],request['local_tcid'],request['remote_tcid'],request['pi']) != (0,10,10,0)
+            or not writing and request['maximum_bytes'] != 2042):
         raise CaptureError('original basic-CUTC SDK request identity and budget required')
+    if writing and (type(item.get('proposed')) is not str or not re.fullmatch('[0-9a-f]{64}',item['proposed'])
+            or item['proposed'] == item['secret'] or request['value'] != item['proposed'] or request['verify'] is not True
+            or (request['operation'],request['data_type'],request['offset'],request['value_length']) != (13,0,0,32)):
+        raise CaptureError('original complete verified type0 WRITE payload required')
     authorization_context({k:approval[k] for k in AUTHORIZATION_CONTEXT_FIELDS}, api)
-    if (approval['allow'] is not True or approval['write'] is not False or approval['value'] != ''
+    if (approval['allow'] is not True or approval['write'] is not writing or approval['value'] != (item['proposed'] if writing else '')
+            or writing and approval['data_type'] != 0
             or any(not integer(approval[k]) for k in ('decision_ns','decision_wall_ns'))
             or any(approval[k] != request[k] for k in ('index','generation','request_id','lifetime','handle','epoch','level','deadline_ns','property','local_tcid','remote_tcid','pi'))
             or not bound['returned_ns'] <= approval['decision_ns'] <= request['observed_ns'] < request['deadline_ns']
@@ -246,7 +257,7 @@ def execute(run, row):
     row[PREFIX+'_status'] = PENDING; run.save()
 
 
-def execute_pending_case(run, row, prefix, label, action, *, finish=None):
+def execute_pending_case(run, row, prefix, label, action, *, finish=None, writing=False):
     """Shared SDK/peer/guard orchestration; each action has its own evidence contract."""
     from ws73_application_client import ssap_command, ssap_error_command
     from ws73_ssap_owned import publisher, wait_output, await_removed
@@ -263,17 +274,20 @@ def execute_pending_case(run, row, prefix, label, action, *, finish=None):
                    collection=prefix+'_guards', label=label+'-guard') as (guard_process, guard):
         guard['registered_wall_ns'] = time.time_ns()
         run.save()
-        with publisher(run, row, sender, 'allow', operations=1,
-                       sdk_api=('python', 'c')[phase], read_only=True, read_provider=True,
+        with publisher(run, row, sender, 'allow', operations=6 if writing else 1,
+                       sdk_api=('python', 'c')[phase], read_only=not writing, read_provider=not writing, write_provider=writing,
                        collection=prefix+'_cases', label=label) as (process, item):
+            if writing:
+                item['proposed'] = secrets.token_hex(32)
             item['guard'] = guard
             item['bind_before_monotonic_ns'] = time.monotonic_ns()
             process.stdin.write('provider\n'); process.stdin.flush()
-            item['bound'] = _wait_json(process, item, 'SdkReadProviderBound', BOUND, 1,
+            item['bound'] = _wait_json(process, item, 'SdkWriteProviderBound' if writing else 'SdkReadProviderBound', BOUND, 1,
                                        item['bind_before_monotonic_ns']+5_000_000_000)
             item['bound_wall_ns'] = time.time_ns(); run.save()
             item['read'] = ssap_error_command(run, row, source,
-                ['ssap-read', source['object']['path'], str(item['handle'])], errno.EIO,
+                (['ssap-write', source['object']['path'], str(item['handle']), item['proposed']] if writing else
+                 ['ssap-read', source['object']['path'], str(item['handle'])]), errno.EIO,
                 api=api, after_start=lambda app, deadline: action(run, row, process, item, app, deadline))
             item['clock_after'] = _clock_sample()
             run.save()
@@ -309,14 +323,15 @@ def _ordinary(item):
         raise CaptureError('original cap-zero owner and complete output required')
 
 
-def _registration(row, item, *, sdk=False):
+def _registration(row, item, *, sdk=False, writing=False):
+    if writing and not sdk: raise CaptureError('WRITE registration requires actual SDK caller')
     _ordinary(item)
     target = row['owners'][item['target']]
     if sdk:
         from ws73_application_client import owned_arguments, application_environment
         api = ('python', 'c')[row['phase']]
         args = owned_arguments(api, target, item['service'], item['uuid'], item['secret'], 'allow',
-                               read_only=True, read_provider=True)
+                               read_only=not writing, read_provider=not writing, write_provider=writing)
         selected = f'SdkOwnedAPI: api={api} client_closed=true'
         if item.get('environment') != application_environment() or item.get('publisher_api') != api:
             raise CaptureError('exact SDK caller argv/environment required')
@@ -327,7 +342,7 @@ def _registration(row, item, *, sdk=False):
     if (type(item['sender']) is not int or item['sender'] != 0 or type(item['target']) is not int or item['target'] != 1
             or any(type(item[k]) is not int for k in ('start', 'end', 'handle', 'pid', 'operations'))
             or not 0 < item['start'] < item['handle'] == item['end'] < 65535 or item['pid'] <= 0
-            or item['operations'] != 1 or item['policy'] != 'allow'
+            or item['operations'] != (6 if writing else 1) or item['policy'] != 'allow'
             or item['args'] != args
             or any(not re.fullmatch('[0-9a-f]{32}', item[k]) for k in ('service', 'uuid'))
             or not re.fullmatch('[0-9a-f]{64}', item['secret'])):
@@ -341,18 +356,23 @@ def _registration(row, item, *, sdk=False):
     return registration
 
 
-def _response(row, item, packets):
+def _response(row, item, packets, *, writing=False):
     """Select exactly one actual paired READ_RSP; EIO never selects its code."""
     s, t = item['sender'], item['target']
     window = item['read']
     chosen = []
+    if writing:
+        h = item['handle'].to_bytes(2,'little')
+        allowed = [(b'\x0a\0\x06\0\x0e\x07\x01'+h+bytes([e])).hex() for e in (175,4)]
+    else:
+        allowed = ('0a000400090baf00','0a000400090b0400')
     for endpoint, direction in ((t, 'out'), (s, 'in')):
         owner, link = row['owners'][endpoint]['owner'], row['owners'][endpoint]['object']
         found = [p for p in packets if (p['bus'], p['device'], p['handle'], p['direction'])
                  == (owner['bus'], owner['device'], link['handle'], direction)
                  and window['start_wall_ns'] <= p['wall_ns'] <= window['end_wall_ns']
                  and bytes.fromhex(p['data'])[:2] == b'\x0a\0']
-        if len(found) != 1 or found[0]['data'] not in ('0a000400090baf00', '0a000400090b0400'):
+        if len(found) != 1 or found[0]['data'] not in allowed:
             raise CaptureError('one actual AF/4 READ_RSP on each original endpoint required')
         chosen.append(bytes.fromhex(found[0]['data'])[4:])
     if chosen[0] != chosen[1]:
@@ -442,7 +462,7 @@ def _case(row, item, matched, packets):
                 case=copy.deepcopy(item)), credit
 
 
-def corroborate_peer_guard(row, item, matched, packets, receipt, deadline, offset_lower, action_wall_ns):
+def corroborate_peer_guard(row, item, matched, packets, receipt, deadline, offset_lower, action_wall_ns, *, writing=False):
     """Same paired wire and independent guard checks for distinct lifecycle actions."""
     from ws73_application_client import ssap_receipt
     guard, app, callback = item['guard'], item['read'], item['callback']
@@ -465,12 +485,16 @@ def corroborate_peer_guard(row, item, matched, packets, receipt, deadline, offse
             or cleanup['args'] != [row['ssap_receipts'][0]['args'][0], '--adapter', target['owner']['path'], 'ssap-list']
             or len(lists) != 1 or any(v[0] == guard['start'] for v in json.loads(lists[0]))):
         raise CaptureError('independent guard explicit cleanup required')
-    response = _response(row, item, packets)
+    response = _response(row, item, packets, writing=writing)
     # The barrier precedes the real lifecycle action, never a fabricated reply
     # command or wait() completion time.
+    requests = None
+    if writing:
+        h = item['handle'].to_bytes(2,'little')
+        requests = [b'\x0d\x23'+h+b'\0'+bytes.fromhex(item['proposed']),b'\x08\x03'+h+b'\0']
     wire, credit = _wire(row, item, matched, [
         (app, response, dict(observed_wall_ns=callback['observed_wall_ns'], reply_before_wall_ns=action_wall_ns)),
-        (item['retired_read'], b'\x09\x0b\x04\0', None)])
+        (item['retired_read'], b'\x09\x0b\x04\0', None)],requests=requests)
     guard_wire, extra = _wire(row, guard, matched, [(guard['read'], b'\x09\x03'+bytes.fromhex(guard['secret']), None)])
     wire.extend(guard_wire)
     for endpoint in credit:

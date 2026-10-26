@@ -80,12 +80,14 @@ def validate_rows(rows, selected):
              'both physical Provider receivers required')
 
 
-def withdrawal_receipt(row, item, text):
+def withdrawal_receipt(row, item, text, *, writing=False):
     """Validate original SDK output, never synthesize a successful RPC receipt."""
+    prefix = 'SdkWriteProvider' if writing else 'SdkReadProvider'
+    fields = RECEIPT|{'value_preserved'} if writing else RECEIPT
     lines = text.splitlines()
-    need(len(lines) == 6 and lines[5].startswith('SdkReadProviderUnregistered: '), 'exact pending then withdrawn transcript required')
-    request = _sdk_pending(row, item, '\n'.join(lines[:5])+'\n')
-    result = json_rows(text, 'SdkReadProviderUnregistered', RECEIPT, 1)[0]
+    need(len(lines) == (7 if writing else 6) and lines[5].startswith(prefix+'Unregistered: '), 'exact pending then withdrawn transcript required')
+    request = _sdk_pending(row, item, '\n'.join(lines[:5])+'\n',writing=writing)
+    result = json_rows(text, prefix+'Unregistered', fields, 1)[0]
     need(result['api'] == request['api'] and result['token'] == request['token']
          and result['property'] == request['property'] and result['original_deadline_ns'] == request['deadline_ns'],
          'withdrawal must belong to the original SDK request')
@@ -100,15 +102,24 @@ def withdrawal_receipt(row, item, text):
          < result['deadline_ns'] <= request['deadline_ns']
          and result['reply_returned_ns'] < item['callback']['unregister_deadline_ns'],
          'withdrawal and old reply must finish within all original deadlines')
+    if writing:
+        from ws73_ssap_sdk_write_provider import VALUE
+        value = json_rows(text,'SdkWriteProviderValue',VALUE,1)[0]
+        need(result['value_preserved'] is True and lines[6].startswith('SdkWriteProviderValue: ')
+             and value == dict(api=request['api'],property=request['property'],value=None,application_memory_only=True)
+             and type(value['property']) is int and value['application_memory_only'] is True
+             and value == item['application_value'], 'withdrawn WRITE must preserve proposed snapshot without applying value')
     return request, result
 
 
-def _unregister(run, row, process, item, app, supervisor_deadline_ns):
+def _unregister(run, row, process, item, app, supervisor_deadline_ns, *, writing=False):
     from ws73_ssap_owned import wait_text, await_removed
+    prefix = 'SdkWriteProvider' if writing else 'SdkReadProvider'
+    fields = RECEIPT|{'value_preserved'} if writing else RECEIPT
     item['read'] = app; run.save()
-    _, text = wait_text(process, Path(item['output_files'][0]), r'^SdkReadProviderRequest: (.+)$',
+    _, text = wait_text(process, Path(item['output_files'][0]), r'^'+prefix+r'Request: (.+)$',
         min(app['ssap_error_deadline_ns'], supervisor_deadline_ns)/1e9, max_count=1)
-    data = _sdk_pending(row, item, text); observed = time.monotonic_ns()
+    data = _sdk_pending(row, item, text,writing=writing); observed = time.monotonic_ns()
     need(process.poll() is None and data['observed_ns'] <= observed < data['deadline_ns'] <= observed+5_000_000_000,
          'live pending SDK request before withdrawal required')
     deadline = min(data['deadline_ns'], app['ssap_error_deadline_ns'], supervisor_deadline_ns)
@@ -119,9 +130,15 @@ def _unregister(run, row, process, item, app, supervisor_deadline_ns):
     item.update(unregister_before_wall_ns=time.time_ns(), unregister_before_monotonic_ns=time.monotonic_ns())
     run.save(); _remaining(deadline)
     process.stdin.write('provider-unregister\n'); process.stdin.flush()
-    receipt = _wait_json(process, item, 'SdkReadProviderUnregistered', RECEIPT, 1, deadline)
+    receipt = _wait_json(process, item, prefix+'Unregistered', fields, 1, deadline)
+    if writing:
+        from ws73_ssap_sdk_write_provider import VALUE
+        item['value_before_ns'] = time.monotonic_ns()
+        process.stdin.write('value\n'); process.stdin.flush()
+        item['application_value'] = _wait_json(process,item,'SdkWriteProviderValue',VALUE,1,deadline)
+        item['value_after_ns'] = time.monotonic_ns()
     item['withdrawn_stdout'] = Path(item['output_files'][0]).read_text()
-    _, checked = withdrawal_receipt(row, item, item['withdrawn_stdout'])
+    _, checked = withdrawal_receipt(row, item, item['withdrawn_stdout'],writing=writing)
     need(checked == receipt and process.poll() is None, 'withdrawn Provider process must stay alive')
     item['unregistered'] = receipt
     item.update(unregister_observed_monotonic_ns=time.monotonic_ns(), unregister_observed_wall_ns=time.time_ns())
@@ -149,19 +166,22 @@ def execute(run, row):
     row[PREFIX+'_status'] = PENDING; run.save()
 
 
-def _case(row, item, matched, packets):
+def _case(row, item, matched, packets, *, writing=False):
     from ws73_application_client import ssap_error_receipt
     from ws73_ssap_update_delivery import TOOLS
     from ws73_ssap_sdk_read_provider import EXTRA_TOOLS
     from ws73_ssap_command import _identity
     import re
-    records = row[PREFIX+'_tools']
+    prefix, status = PREFIX, STATUS
+    if writing:
+        from ws73_ssap_write_unregister import PREFIX as prefix, STATUS as status, EXTRA_TOOLS
+    records = row[prefix+'_tools']
     need(type(records) is dict and set(records) == set(TOOLS)|set(EXTRA_TOOLS)
          and all(type(v) is dict and set(v) == {'sha256','bytes'} and integer(v['bytes'])
                  and type(v['sha256']) is str and re.fullmatch('[0-9a-f]{64}',v['sha256']) for v in records.values()),
          'original SDK tool identities required')
-    _registration(row,item,sdk=True)
-    data, result = withdrawal_receipt(row,item,item['withdrawn_stdout'])
+    _registration(row,item,sdk=True,writing=writing)
+    data, result = withdrawal_receipt(row,item,item['withdrawn_stdout'],writing=writing)
     need(item['unregistered'] == result and item['pending_stdout'] == '\n'.join(item['withdrawn_stdout'].splitlines()[:5])+'\n'
          and item['stdout'] == item['withdrawn_stdout']+f"SdkOwnedClosedExit: api={data['api']} start={item['start']}\n"
          and type(item['exit']) is int and item['exit'] == 0
@@ -178,8 +198,12 @@ def _case(row, item, matched, packets):
     receipt = ssap_error_receipt(app,source,expected_errno=errno.EIO)
     deadline = min(data['deadline_ns'],receipt['deadline_ns'],app['ssap_supervisor_deadline_ns'])
     need(cb['supervisor_deadline_ns'] == app['ssap_supervisor_deadline_ns'] and cb['unregister_deadline_ns'] == deadline
-         and app['api'] == ('c','python')[row['phase']] and app['ssap_operation'] == 'ssap-read'
+         and app['api'] == ('c','python')[row['phase']] and app['ssap_operation'] == ('ssap-write' if writing else 'ssap-read')
          and app['ssap_handle'] == item['handle'], 'original peer operation and deadlines required')
+    if writing:
+        need(app['ssap_proposed'] == item['proposed'] and integer(item['value_before_ns']) and integer(item['value_after_ns'])
+             and result['reply_returned_ns'] <= item['value_before_ns'] <= item['value_after_ns']
+             <= item['unregister_observed_monotonic_ns'], 'actual pending WRITE payload and no-effect observation before cleanup required')
     times = [app['start_monotonic_ns'],receipt['call_ns'],cb['observed_monotonic_ns'],item['unregister_before_monotonic_ns'],
              result['started_ns'],result['returned_ns'],result['reply_started_ns'],result['reply_returned_ns'],
              item['unregister_observed_monotonic_ns'],item['cleanup_completed_monotonic_ns']]
@@ -195,10 +219,10 @@ def _case(row, item, matched, packets):
               guard['owner_exit_wall_ns'],guard['cleanup']['start_wall_ns'],guard['cleanup']['end_wall_ns'],guard['end_wall_ns']]
     need(all(integer(t) for t in stamps) and stamps == sorted(stamps), 'original withdrawal/peer/guard/normal-exit chronology required')
     offset,_ = _clock_bounds(item,action='unregister')
-    response,wire,credit = corroborate_peer_guard(row,item,matched,packets,receipt,deadline,offset,item['unregister_before_wall_ns'])
-    context = {k:copy.deepcopy(row[k]) for k in ('phase','owners','ssap_receipts',PREFIX+'_tools')}
-    return dict(status=STATUS,version=VERSION,sender=0,target=1,api=app['api'],sdk_errno=receipt['errno'],
-                peer_error=response[2],wire=wire,context=context,case=copy.deepcopy(item)),credit
+    response,wire,credit = corroborate_peer_guard(row,item,matched,packets,receipt,deadline,offset,item['unregister_before_wall_ns'],writing=writing)
+    context = {k:copy.deepcopy(row[k]) for k in ('phase','owners','ssap_receipts',prefix+'_tools')}
+    return dict(status=status,version=VERSION,sender=0,target=1,api=app['api'],sdk_errno=receipt['errno'],
+                peer_error=response[-1] if writing else response[2],wire=wire,context=context,case=copy.deepcopy(item)),credit
 
 
 def corroborate(row, matched, packets):
@@ -221,13 +245,16 @@ def verify_business_after(case, legs):
          'ordinary business must occur after withdrawn Provider and guard cleanup')
 
 
-def valid_summary(proof):
+def valid_summary(proof, *, writing=False):
+    prefix = PREFIX
+    if writing:
+        from ws73_ssap_write_unregister import PREFIX as prefix
     try:
         rows = proof['proofs'];need(type(rows) is list and len(rows) == 2,'both original phases required')
         receivers = set()
         for phase,row in enumerate(rows):
-            need(type(row['phase']) is int and row['phase'] == phase and len(row[PREFIX]) == 1,'original two phase proof required')
-            item = row[PREFIX][0];context,case = item['context'],item['case']
+            need(type(row['phase']) is int and row['phase'] == phase and len(row[prefix]) == 1,'original two phase proof required')
+            item = row[prefix][0];context,case = item['context'],item['case']
             need(type(item['version']) is int and item['version'] == VERSION and context['phase'] == phase
                  and context['owners'] == row['owners'] and len(item['wire']) == 6,'original unregister context required')
             owner = row['owners'][1]['owner'];receivers.add((owner['index'],owner['generation']))
@@ -238,7 +265,7 @@ def valid_summary(proof):
                          and window['start_wall_ns'] <= p['wall_ns'] <= window['end_wall_ns']]
                 need(len(found) == 1,'one retained paired USB leg required');packets.remove(found[0]);return found[0]
             verify_business_after(case,row['legs'])
-            rebuilt,_ = _case(context,case,matched,packets)
+            rebuilt,_ = _case(context,case,matched,packets,writing=writing)
             need(not packets and rebuilt == item,'entire proof must reconstruct from original evidence')
         return len(receivers) == 2
     except (KeyError,AttributeError,TypeError,ValueError):

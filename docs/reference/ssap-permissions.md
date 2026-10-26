@@ -572,6 +572,9 @@ staging 读接口。错误和过期答复不改变这个测试值；这不是通
 撤回和旧答复检查受原始请求及调用者期限约束；失败不得伪装成成功撤回。
 实际 C/Python 私有 D-Bus 回归覆盖这条 SDK 路径；它不证明 daemon Engine、内核
 取消、真实对端错误或同行隔离，后者仍需专用 VM 双端证据。
+现有 runner 的 `--ssap-write-provider-unregister-verify` 复用共享 pending-case 和 guard，
+独立检查双端 WRITE 错误及后续业务；见[执行契约](vm-gate-inputs.md#sdk-write-provider-待决撤回门禁)。
+是否取得实机资格仍以准确编译产物与执行记录为准。
 
 JSON 观察分别记录原请求、实际 SDK 调用与结果、接受值和应用内存值。
 输入行有界，支持完整2042字节值及命令开销，不静默截断。`quit` 沿原清理路径

@@ -1,25 +1,28 @@
 # SparkLink / Linux 联合实施方案
 
-## 有界 issue 清理（2026-10-27 再次读回复核）
+## 有界 issue 清理（2026-10-27 当前读回）
 
-核对 **28 个原项、7 个子项**及三个原生父子关系。本轮直接更新 **U#1、U#3、U#22**：
-更新源码锚点、让父项引用子项的唯一当前范围，并将逐轮检查说明归入历史快照。
-其余 32 项复核保留；新增关闭 **0**、新增拆分 **0**。此前五项更新是上一维护批次。
-U#21 按自身原六项验收保持关闭，不计作本轮新增关闭。既有七个子项职责明确，不重复创建。
+重新核对 **28 个原项、7 个子项**及三个原生父子关系；本次直接更新 **U#1、K#24**，
+其余 33 项复核保留。新增关闭 **0**、新建子项 **0**；U#21 保持按自身六项条件关闭。
+分类为 **19 有限收尾、3 已拆分父项、12 长期跟踪、1 已关闭**。
+此前正文整理、七个子项及后续关闭分别保留为历史，不混计本次动作。
 
-全部 35 项分类为 **19 有限收尾、3 已拆分父项、12 长期跟踪、1 已按条件关闭**。
-U#1 的 Native retry 锁等待已修复，28 项离线回归及严格检查通过；实际 Native 接线和新产物 VM 回归待验；
-U#10 自然故障根因与非人工恢复仍未闭合，不等待无关安全、Bond 或发布。
-WRITE 原期限与 owner 退出 gate 已实现，Down/restart、长值及剩余操作继续由 U#22 承接。
-K#17 → K#21/#22；K#19 → K#23/#24；U#3 → U#21/#22/#23，原验收和父项范围保留。
+U#1 的取消缺陷已经修复，实际 Native 订阅测试已接入同一 EventTask 和现有 VM runner。
+28 项 Rust 离线回归、77 项相关 Python 检查及严格 Clippy 通过；专用 VM 测试为 ignored，
+不计通过。剩余是准确新产物的实际订阅/持锁取消及适用长度、同行隔离门禁。
+源码锚点为用户态 `b154c99215c616c060a6da45350bf4baea1923d2`、内核 `52ae7f08f2eafc3d79920fe5a14892970ecdd284`；
+旧 CI 或旧镜像不能转授此源码。当前源码的 codec fuzz CI 在来源检查 git status 30 秒超时，编译/探索未执行；
+失败归入 K#24，不升级为 PASS，也不描述为 codec 崩溃。其他 CI 按准确源码单独核对。
 
-[逐项处理表与读回](issue-maintenance-20261026.json)记录每项依据及历史快照。
-源码锚点为用户态 `dfaf6ec23557caebf3d8ae72612de605c0bd84f4`、内核 `52ae7f08f2eafc3d79920fe5a14892970ecdd284`；
-五项具名 CI 按该用户态源码均已完成成功，不授整个 HEAD、实机或形式化资格。
-本轮不改运行代码、资格记录或历史失败，实机详情仍留本地。
-维护结束后继续原 Down/restart、数据面、安全与 SSAP 主线；S0–S6/19WP/10FV/12DG、
-VM-only、自然恢复原要求保持不变。本维护不是长期前置条件。
-以下表格保留原维护范围映射，本轮动作以结构化读回为准。
+U#10 保留追加的自然故障根因和非人工恢复要求；不等待无关安全、Bond 或发布。
+U#3 → U#21/#22/#23；K#17 → K#21/#22；K#19 → K#23/#24，
+原生父子关系已读回，原条件映射和全部退出门禁保留。现有子项足以承接范围，不重复拆分。
+WRITE Down/restart、长值、剩余 SSAP 操作以及数据/安全主线继续推进。
+
+[逐项处置与读回](issue-maintenance-20261026.json)是本批处理表；改写前完整正文及失败
+保留在授权本地历史索引，公开只有源码／离线摘要。资格记录、编译身份与原失败未改，
+本维护不产生实机或形式化资格。完整 S0–S6/19WP/10FV/12DG、VM-only 和原验收不变。
+本批维护到此结束，不成为后续功能的长期前置。下表为保留的原范围映射，本次动作只看结构化读回。
 
 | 原 issue | 分类 | 本批动作与剩余责任 |
 | --- | --- | --- |
@@ -42,7 +45,7 @@ VM-only、自然恢复原要求保持不变。本维护不是长期前置条件�
 | [K#17](https://github.com/OpenSparklink/linux/issues/17) | 需要拆分 | 正文收敛；K#21 credit/Ticket/撤权/复用组合；K#22 动态通道背压/公平/多设备压力；父项四条原验收保留。 |
 | [K#18](https://github.com/OpenSparklink/linux/issues/18) | 长期跟踪 | 正文收敛；完成原两角色配对/加密数据/Bond 重连和各方法的拒绝/超时/crash/错误 proof/key/重放/断链/reset；真实凭据存储由 U#5，公共机制由 K#7。SDK110 与历史111的缺包/固件诊断失败保留；既有实现或限定门禁不能关闭完整安全。 |
 | [K#19](https://github.com/OpenSparklink/linux/issues/19) | 需要拆分 | 正文收敛；K#23 资格/判定器闭包；K#24 生产 fuzz/调试 VM；跨后端、真实门禁、部署/发布边界仍属父项五条原要求。 |
-| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | 有限收尾 | 正文收敛；Native retry 不可取消锁等待已修复；同一生产等待与任务关停离线回归通过，实际 Native 接线及准确新 artifact VM 回归待验。原六条要求保留，暂不关闭。 |
+| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | 有限收尾 | Native retry 取消缺陷已修复；同一生产 EventTask 的真实 Native 订阅 VM 测试及 runner 已接通，离线回归通过；专用 VM 执行和适用长度回归未完成。原六项条件保留，不以 ignored 测试或历史普通业务关闭。 |
 | [U#2](https://github.com/OpenSparklink/sparklink/issues/2) | 有限收尾 | 正文收敛；过滤发生在丢失/截断报告之前的监控完整性缺口；实际多订阅、慢消费者、退出重开与退休回归。 |
 | [U#3](https://github.com/OpenSparklink/sparklink/issues/3) | 需要拆分 | 正文收敛；U#21 SDK READ Provider 生命周期、U#22 剩余 SSAP 操作/长值/更新事务、U#23 真实 Profile；父项原完整验收保留。 |
 | [U#4](https://github.com/OpenSparklink/sparklink/issues/4) | 长期跟踪 | 正文收敛；核对实际 PHY／telemetry 查询、合法性／监管约束及 readback；接通 per-controller/per-connection fixed、balanced、throughput、low-power 策略和 hysteresis／驻留／退避；覆盖拒绝、断链、切换与公平性。 |
@@ -2332,7 +2335,7 @@ K表示`OpenSparklink/linux`，U表示`OpenSparklink/sparklink`。以下关联�
 
 | Issue | 原范围 | 工作包与补充验收 |
 |---|---|---|
-| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | 事件循环/锁/取消 | WP12；静默D-Bus响应、锁外signal、shutdown |
+| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | 有限收尾 | Native retry 取消缺陷已修复；同一生产 EventTask 的真实 Native 订阅 VM 测试及 runner 已接通，离线回归通过；专用 VM 执行和适用长度回归未完成。原六项条件保留，不以 ignored 测试或历史普通业务关闭。 |
 | [U#2](https://github.com/OpenSparklink/sparklink/issues/2) | 独立事件/监控订阅 | WP12/16/18；多reader/overflow/旧poll删除 |
 | [U#3](https://github.com/OpenSparklink/sparklink/issues/3) | SSAP/Profile迁移 | WP04/06/08/10/18；真实服务和模式、权限、标准依赖 |
 | [U#4](https://github.com/OpenSparklink/sparklink/issues/4) | PHY policy | WP15；策略replay与真实actual能力 |
@@ -2368,7 +2371,7 @@ K表示`OpenSparklink/linux`，U表示`OpenSparklink/sparklink`。以下关联�
 | [K#17](https://github.com/OpenSparklink/linux/issues/17) | S4 TCID/ACB/credit/PDU | TCID 不当作连接 handle；253/254/255 边界、分片/重组、credit 耗尽与恢复；实机双向 |
 | [K#18](https://github.com/OpenSparklink/linux/issues/18) | S5 SMP relay / 加密 mechanism | relay layout/算法来源；双角色真实 pair/encrypt、错 key、revoke、Bond reconnect |
 | [K#19](https://github.com/OpenSparklink/linux/issues/19) | 每批证据；S6 全矩阵 | 严格 verdict、Virtual/标准 USB/WS73 分开；mixed backend、故障/PM/性能/复现与支持范围 |
-| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | S0 独立 receiver/cancel、短锁、同步 fd 分离 | 真实 D-Bus 静默 30s 仍响应；对象 signal 在锁外；并发更新与 shutdown |
+| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | 有限收尾 | Native retry 取消缺陷已修复；同一生产 EventTask 的真实 Native 订阅 VM 测试及 runner 已接通，离线回归通过；专用 VM 执行和适用长度回归未完成。原六项条件保留，不以 ignored 测试或历史普通业务关闭。 |
 | [U#2](https://github.com/OpenSparklink/sparklink/issues/2) | S2 StateSubscription/SnoopSubscription | 与 K#3 联调，工具不抢事件；移除主路径破坏性 poll/50ms fallback |
 | [U#3](https://github.com/OpenSparklink/sparklink/issues/3) | S4 SSAP Engine/session/DB/Profile；修标准 UUID/权限 | goldens+malformed+MTU/长读写；未协商事务号时单在途；真实 Battery/HID/DeviceInfo PDU；restart/卸载/并行连接 |
 | [U#4](https://github.com/OpenSparklink/sparklink/issues/4) | S5 每连接 PHY policy | telemetry replay 的 hysteresis/dwell/backoff/clamp/rollback/fairness；只广告真能力 |

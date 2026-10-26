@@ -686,7 +686,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-26T22:41:24.812691+00:00",
+  "updated_at_utc": "2026-10-26T23:26:59.354750+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -5185,15 +5185,14 @@
   "issue_maintenance": {
     "record": "project/issue-maintenance-20261026.json",
     "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
-    "execution_dependency": "Bounded issue maintenance complete. U1 source fix/offline pass; new artifact Native/VM gate pending. Continue WRITE Down/restart and existing data/security/SSAP scope; natural recovery open.",
+    "execution_dependency": "Bounded maintenance complete. Finish existing U1 actual Native VM gate and applicable preservation; continue WRITE Down/restart, data/security/SSAP. Natural recovery remains open; no full-control-plane prerequisite.",
     "followup_readback": "project/issue-maintenance-20261026.json#/followup_readback",
-    "latest_readback_at": "2026-10-26T22:27:35.493960+00:00",
+    "latest_readback_at": "2026-10-26T23:26:59.354750+00:00",
     "latest_actions": {
       "reviewed": 35,
       "updated": [
         "U#1",
-        "U#3",
-        "U#22"
+        "K#24"
       ],
       "newly_closed": [],
       "new_children": [],
@@ -5203,9 +5202,19 @@
     },
     "source_followup": {
       "issue": "sparklink#1",
-      "source": "bb7abc65ea6348e5e6aab045c04fe13a1340dd4a",
-      "state": "SOURCE_OFFLINE_PASS_NEW_ARTIFACT_VM_PENDING",
-      "observed_at": "2026-10-26T22:41:24.812691+00:00"
+      "source": "b154c99215c616c060a6da45350bf4baea1923d2",
+      "state": "TEST_IMPLEMENTED_OFFLINE_PASS_VM_EXECUTION_PENDING",
+      "observed_at": "2026-10-26T23:23:17.144349+00:00"
+    },
+    "current_source_ci_gap": {
+      "source": "b154c99215c616c060a6da45350bf4baea1923d2",
+      "run_url": "https://github.com/OpenSparklink/sparklink/actions/runs/40419316081",
+      "tested_kernel_pin": "c39a1765fc6036da0a635a755cbd2022de4f0b28",
+      "status": "FAILED_OR_UNVERIFIED",
+      "phase": "source-worktree",
+      "error": "git status --porcelain metadata timeout (30 s); compilation/corpus/exploration not executed",
+      "accepted_exploration": false,
+      "issue": "linux#24"
     }
   },
   "historical_goal_turn_audits": [

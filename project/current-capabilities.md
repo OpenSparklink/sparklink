@@ -73,9 +73,9 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-WP16-WP17-U22-owned-type0-write-provider",
-  "state": "DAEMON_RUST_WRITE_SOURCE_OFFLINE_COMPLETE_FULL_SDK_AND_REAL_DEVICE_GATES_OPEN",
-  "production_behavior": "Remote type0 WriteReq/WriteCmd reaches original application through the sole Engine, Owner callback and original deadline. Independent policy approval does not complete a write; no staging fallback, automatic retry, new Host or Engine. Rust exposes an actual low-level original-client bind; C/Python WRITE inboxes are not yet implemented.",
+  "id": "WP08-WP16-WP17-U22-shared-write-sdk",
+  "state": "SHARED_WRITE_SDK_SOURCE_OFFLINE_COMPLETE_VM_CALLERS_AND_REAL_DEVICE_GATES_OPEN",
+  "production_behavior": "Typed dynamic WRITE now uses the existing bounded Dispatcher, original Client and Owned registration through Rust/C/Python. READ/WRITE share capacity, request/callback final-reference cleanup and original deadlines. Sole daemon Engine and Native identity/effect checks remain. No stored-value fallback or new Host/Engine.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
     "WP08",
@@ -85,67 +85,68 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
   "records": [],
   "predecessor_archive": {
     "history": "batch_history",
-    "id": "WP08-WP16-WP17-R5f160-provider-sdk-shared-frontend",
-    "canonical_sha256": "67edc5ea618b2753fbac9695ab1e8990e9062b45595e4e9e35d122993bf52a21"
+    "id": "WP08-WP16-WP17-U22-owned-type0-write-provider",
+    "canonical_sha256": "8a877721774fb51baa21a53d0e7e7907ec889aadce8f87571bc2515a4eaaf2cc"
   },
   "implementation_sources": {
-    "public_source": "e6521c06d2120017f86736e70c02e1acd9576c77",
-    "scope": "Committed production source plus actual private-bus/offline tests; not a VM or device artifact qualification."
+    "public_source": "e9ea17ed57b9b7b340d5bee7f9bae13b5de165be",
+    "public_frontend_source": "075baf19468839eecf4a604ac5647759140d7f37",
+    "scope": "Committed production source and named offline actual C/Python/private-bus checks. No new VM/device artifact qualification."
   },
   "invariants": [
     "Original controller/generation/lifetime/security epoch/TCID/PI and original absolute deadline; Native admission before requesting application effects and before response. Snapshot checks cannot roll back an already started application effect.",
     "Write-only type0 property, original unique owner, one-time binding, no stored value fallback. Permission approval and application success remain separate.",
     "Bounded original server queue and callback; WriteCommand never owes a response. Verified WriteReq requires actual accepted bytes; malformed, late, mismatched replies cannot produce success.",
     "One front-of-queue future retains only its original Wire reference. Cancellation releases that reference; no detached task, extra Session or new data path.",
-    "Original production paths and all original U22 conditions remain. Offline fixture transport is explicit cfg(test); it is not Native/RF proof."
+    "Original production paths and all original U22 conditions remain. Offline fixture transport is explicit cfg(test); it is not Native/RF proof.",
+    "READ/WRITE use one bounded Dispatcher with 16 shared slots. Only final request and callback release returns a slot; readiness fd duplicates do not retain reply authority.",
+    "Typed WRITE snapshot preserves original metadata and complete value, no truncation. Invalid reply does not consume reply authority; successful verify requires the exact proposed value.",
+    "Local reply acceptance is separate from callback drain and peer application handling. Partial endpoint-install failure removes only this attempt's newly installed endpoint; owner-close and original deadline remain authoritative."
   ],
   "offline_checks": {
     "sdk_library": {
       "result": "PASS",
-      "tests": 63
+      "tests": 69
     },
-    "shared_contract": {
+    "python": {
       "result": "PASS",
-      "tests": 12,
-      "scope": "Literal signatures independent of shared caller/producer types"
+      "tests": 106
     },
-    "daemon": {
+    "external_c_python": {
       "result": "PASS",
-      "tests": 211,
-      "scope": "Includes actual private D-Bus and production Engine functions; explicit local socket fixture, not kernel/RF"
+      "scope": "Actual compiled C and Python through current SDK/private bus; fixed broker metadata and local transport fixture. Final frozen run completed supervisor/material checks. Not real Native or RF."
     },
-    "policy": {
-      "result": "PASS",
-      "tests": 8,
-      "scope": "XML/policy regression, not deployed system-bus qualification"
-    },
-    "strict_clippy": "PASS: locked offline workspace all-targets all-features -D warnings",
-    "docs": "PASS: locked strict HTML and inventory",
+    "slctl": "PASS: original all-targets tests; no new WRITE interactive CLI claim",
+    "strict_clippy": "PASS: Rust 1.96.1 locked offline workspace all-targets all-features -D warnings",
+    "c_header": "PASS: cbindgen 0.29.4 byte-identical generated header, independent 80-byte layout checks",
+    "docs": "PASS: locked strict HTML and inventory for source changes",
     "failures_preserved": [
-      "Initial daemon compile failed; no test qualification.",
-      "New SDK test first used the wrong Deadline type; compile failure retained.",
-      "New rejection fixture initially omitted existing CPCD registration prerequisite; rejection assertions retained after correcting the fixture."
-    ]
+      "external-v1 material mutation rejected",
+      "external-v2 owner closed before callback drained: NoReply",
+      "external-v4 supervisor exited 143; child PASS is not whole-run PASS",
+      "Python initial environment failures retained"
+    ],
+    "prior_daemon_and_contract_checks": "Retained at predecessor source; not silently rerun or transferred as current whole-workspace qualification."
   },
   "offline_status": "ONLY_NAMED_CHECKS_PASS",
   "formal_status": "NO_NEW_PROOF",
   "hardware_status": "NEW_SOURCE_NOT_REVALIDATED_ON_DEVICE",
   "exit_conditions": [
-    "Current finite daemon/Rust source slice: independent type contract, original-owner bind, request/command/verify behavior and deadline/removal/cancellation/refusal regressions plus strict build. Met for the stated offline scope.",
-    "Next slice: share bounded WRITE frontend with Rust/C/Python/slctl; actual original client and endpoint admission, one-shot reply, no callback/executor deadlock and fixed capacity reclaim.",
-    "Exact new compiled/execution artifacts must pass VM-only dual-device remote application write, role swap, refusal/timeout/withdrawal, peer isolation and retained original data paths.",
-    "Remaining method/long values/update transactions and all original six U22 criteria must complete before U22 closes."
+    "Finite shared SDK source slice complete: one frontend, typed Rust/C/Python entry points, independent layout, actual external consumers, original owner/deadline/capacity/cleanup and rejection checks.",
+    "Next: connect existing CLI/probe/VM runner to the actual shared WRITE SDK. Current added consumers are finite offline fixtures, not a general real-device runner.",
+    "Exact new artifacts must pass VM-only dual-device actual application write and reply, exchanged roles, refusal/deadline/withdrawal/owner exit/disconnect and peer isolation; preserve discovery/connection/data/qualified length paths.",
+    "All six original U22 criteria, remaining method/descriptor/long values/update transaction matrix and parent U3 scope remain open."
   ],
   "remaining_conditions": [
-    "C/Python WRITE inbox and shared frontend admission/lifetime integration.",
-    "Method/descriptor provider and long-write/whole-value/aggregate-budget matrix.",
-    "Actual new-artifact remote application effect and response evidence; software callback completion is not peer processing.",
-    "Original data/security/Profile/deployment scope, natural fault root causes and non-manual recovery stay open."
+    "Existing real VM runner/application entry integration for shared WRITE SDK.",
+    "Exact new-artifact device evidence including actual remote effect and reply, original READ/data paths and lifecycle checks.",
+    "Method/descriptor provider, long-write/whole-value/aggregate-budget and complete update transactions.",
+    "Original data/security/Profile/deployment, natural root causes and non-manual recovery remain open."
   ],
   "next": [
-    "Complete shared bounded application WRITE frontend and actual SDK calls without duplicating the existing authorization/Provider lifecycle.",
-    "Use exact new artifacts for controlled VM dual-device write and original discovery/connection/data/length/lifecycle regression; no old PASS transfer.",
-    "Continue remaining SSAP, data and security work without whole control-plane prerequisite."
+    "Connect existing real application/VM callers to the shared WRITE SDK, without new Engine or duplicate receive/reply loops.",
+    "Obtain exact-artifact VM-only dual-device WRITE and original path/lifecycle regressions; old READ qualification does not qualify changed shared frontend.",
+    "Continue remaining SSAP/data/security slices without whole control-plane prerequisites."
   ],
   "issues": [
     "OpenSparklink/sparklink#22",

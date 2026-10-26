@@ -190,7 +190,7 @@ def execute(run, row):
     row[PREFIX+'_status'] = PENDING; run.save()
 
 
-def _clocks(step):
+def _clocks(step, *, operation_key='read'):
     c = step['clock_contract']
     need(c == CLOCK_CONTRACT and type(c['version']) is int and type(c['usbmon_quantization_ns']) is int,
          'explicit same-guest stable-offset/usbmon quantization assumptions required')
@@ -201,7 +201,7 @@ def _clocks(step):
              and all(integer(v) for v in s.values()) and s['monotonic_before_ns'] <= s['monotonic_after_ns'],
              'original ordered clock bracket required')
         bounds.append((s['realtime_ns']-s['monotonic_after_ns'],s['realtime_ns']-s['monotonic_before_ns']))
-    before, after, app = step['clock_before'], step['clock_after'], step['read']
+    before, after, app = step['clock_before'], step['clock_after'], step[operation_key]
     need(before['realtime_ns'] <= app['start_wall_ns'] <= app['end_wall_ns'] <= after['realtime_ns']
          and before['monotonic_after_ns'] <= step['callback']['observed_monotonic_ns']
          <= step['reply']['returned_ns'] <= after['monotonic_before_ns'], 'clock brackets must contain actual SDK call/answer')

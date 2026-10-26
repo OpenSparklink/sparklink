@@ -298,14 +298,17 @@ def _cleanup(row, item):
         raise CaptureError('original owner cleanup and actual retired remote refusal required')
 
 
-def _wire(row, item, matched, exchanges):
+def _wire(row, item, matched, exchanges, *, requests=None):
     from ws73_ssap_command import _identity
     from ws73_ssap_value import command_packet, physical_sends
     identities = [_identity(o) for o in row['owners']]
     s, t, h = item['sender'], item['target'], item['handle']
     wire = []; credit = {0: 0, 1: 0}
     request = b'\x08\x03'+h.to_bytes(2, 'little')+b'\0'
-    for window, response, callback in exchanges:
+    if requests is not None and (len(requests)!=len(exchanges) or any(type(p) is not bytes for p in requests)):
+        raise CaptureError('explicit expected request for every provider exchange required')
+    for ordinal, (window, response, callback) in enumerate(exchanges):
+        if requests is not None:request=requests[ordinal]
         for sender, receiver, pdu in [(s, t, request), (t, s, response)]:
             frame = b'\x0a\0'+len(pdu).to_bytes(2, 'little')+pdu
             leg = dict(tx=matched(row['owners'][sender], 'out', frame, window),

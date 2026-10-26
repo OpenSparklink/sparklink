@@ -720,6 +720,33 @@ manifest 与每阶段结果必须匹配同一版本。
 完整 SSAP 资格。原期限到期后不要求另发错误包；后续专用期限门禁须验证旧响应
 不得新提交。上述命令只描述测试输入与判定，实际产物与结果由授权本地记录维护。
 
+### SDK WRITE Provider 的结果门禁
+
+`--ssap-sdk-write-provider-verify` 是现有 runner 的独立选择项，要求原 Owned、
+普通61字节/每角色4轮通道及显式 passthrough 配置。guest 使用唯一
+`ws73.ssap_sdk_write_provider=1`；不能混用 READ Provider、Owner-exit/unregister/
+deadline、其他 SSAP 扩展、Agent 或性能/动态通道专用模式。它不另建 Host 或 Engine。
+
+version1 的范围是 type0、`0x06` 写专用属性的 verified WriteReq。第一连接角色由
+C Provider/Python requester 执行，交换后由 Python Provider/C requester 执行。
+每角色先显式拒绝一次32字节拟写值（应用错误 FF），再接受独立随机31和32字节值。
+审批、实际 Provider 请求、应用完整验值答复、有限应用内存值、对端 SDK 验证和
+双端 USB/SSAP 捕获均单独记录。成功应用内存值不是 daemon staging；FF 步骤不改变它。
+
+判定复用原 ACB 重组、SSAP 字节 oracle、进程/原期限和同 guest 时钟映射检查。
+WriteRsp 的错误列表格式与 READ 错误格式不同，不能用通用错误字节代替。
+每条请求/响应必须匹配实际 controller/generation/lifetime/handle、TCID/PI 和捕获
+时间线；TX 物理分片用于提交计数，RX 分片不能重复计入 TX credit。NOCP 不代表应用处理。
+
+所有三次请求结束后正常退出发布者，核对登记移除和旧 handle 的远端错误4。
+完整日志、工具/编译输入身份及两连接角色缺一即失败；监督器/VM 终态、原 Owned
+和普通业务门禁仍由统一资格判定检查。本地 reply 或应用值没有双端证据不能通过。
+
+此项目前提供源码与离线 fixture 门禁，准确新产物的真实双设备执行须单独验收。
+零长、command、长写、描述符/method、待决注销/Owner 退出、断链及原期限矩阵不在
+version1 的正向范围，继续使用各自后续门禁；不称完整 SSAP、形式化或性能资格。
+真实执行继续 VM-only，固定白名单端口及每设备显式 SDK110，禁止选择其他线程设备。
+
 ### Provider 等待应用时的 Owner 退出门禁
 
 `--ssap-provider-owner-exit-verify` 是独立选择项，依赖上述

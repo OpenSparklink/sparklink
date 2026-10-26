@@ -568,8 +568,10 @@ JSON 观察分别记录原请求、实际 SDK 调用与结果、接受值和应�
 输入行有界，支持完整2042字节值及命令开销，不静默截断。`quit` 沿原清理路径
 停止准入、释放请求/fd、撤回服务；监督器必须先观察对端结果再结束 owner。
 现有 publisher 可显式选择 `write_provider=True, operations=6`；与 READ/updates
-组合明确拒绝。该调用入口及离线集成不是完整 VM WRITE 门禁：专用选择器、双端
-USB/SSAP 判定和准确新产物实机验收仍需接通，旧 READ 资格不转授。
+组合明确拒绝。现有 runner 已提供独立 `--ssap-sdk-write-provider-verify` 选择器及
+双端 USB/SSAP 判定，范围是应用拒绝和31/32字节 verified WriteReq；见
+[门禁契约](vm-gate-inputs.md#sdk-write-provider-的结果门禁)。源码/离线通过不等于
+准确新产物实机通过；command、长写及待决生命周期的完整门禁仍缺，旧 READ 资格不转授。
 
 ### 显式公开的只读属性说明
 

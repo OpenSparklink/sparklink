@@ -222,6 +222,7 @@ def main():
     parser.add_argument('--ssap-description-verify',action='store_true',help='with --ssap-owned-verify: actual public read-only description discovery and SDK read')
     parser.add_argument('--ssap-read-provider-verify',action='store_true',help='with --ssap-owned-verify: actual Owned dynamic read callback and peer SDK value comparison')
     parser.add_argument('--ssap-sdk-read-provider-verify',action='store_true',help='with --ssap-read-provider-verify: actual C/Python SDK Provider callbacks and opposite-language peer verification')
+    parser.add_argument('--ssap-sdk-write-provider-verify',action='store_true',help='with --ssap-owned-verify: actual C/Python WRITE Provider rejection and short verified values, paired USB evidence')
     parser.add_argument('--ssap-provider-owner-exit-verify',action='store_true',help='with --ssap-read-provider-verify: version2 C/Python pending SDK Provider owner loss and independent guard delivery')
     parser.add_argument('--ssap-provider-unregister-verify',action='store_true',help='with --ssap-read-provider-verify: C/Python pending explicit unregister and independent guard delivery')
     parser.add_argument('--ssap-provider-deadline-verify',action='store_true',help='with --ssap-provider-owner-exit-verify: immutable Provider deadline, rejected late token and ordinary CUTC continuity')
@@ -293,6 +294,9 @@ def main():
     except ValueError as error:parser.error(str(error))
     from ws73_ssap_sdk_read_provider import requested as sdk_provider_requested
     try:sdk_provider_requested(args)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_sdk_write_provider import requested as sdk_write_provider_requested
+    try:sdk_write_provider_requested(args)
     except ValueError as error:parser.error(str(error))
     from ws73_ssap_provider_owner_exit import requested as provider_exit_requested
     try:provider_exit_requested(args)

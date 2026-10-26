@@ -473,9 +473,9 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-WP16-WP17-U22-sdk-write-vm-gate",
-  "state": "SDK_WRITE_VM_GATE_SOURCE_OFFLINE_AVAILABLE",
-  "production_behavior": "Existing VM runner now selects and executes the common C/Python WRITE Provider gate; same Owned/ordinary baseline, original callback/deadline, complete value and application-memory checks, opposite peer verification, literal SSAP and paired USB evidence. No new Host/Engine or production protocol change.",
+  "id": "WP08-WP16-WP17-U22-write-pending-withdrawal",
+  "state": "SDK_WRITE_WITHDRAWAL_CALLERS_OFFLINE_VM_PENDING",
+  "production_behavior": "Existing parameterized C/Python Owned callers now use the same explicit unregister path for a pending WRITE. Actual SDK callback stops; immutable metadata/proposed bytes and notification fd remain observable; a valid old reply returns ESHUTDOWN before the original deadline; prior application memory is preserved. No new Engine or production protocol change.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
     "WP08",
@@ -485,12 +485,12 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
   "records": [],
   "predecessor_archive": {
     "history": "batch_history",
-    "id": "WP08-WP16-WP17-U22-shared-write-callers",
-    "canonical_sha256": "b76d67679bd056ae0cdd8c9a0c95fe214faad0b5bd4eb6fe19c0c4eb2bde353e"
+    "id": "WP08-WP16-WP17-U22-sdk-write-vm-gate",
+    "canonical_sha256": "77e8e07787a552ef1e1eb0ea80b011902d7fca60683400eb65f8538726b3c224"
   },
   "implementation_sources": {
-    "public_source": "56d7fdb2273d8b44578ca6420dace97c634ef84b",
-    "scope": "Source/offline gate wiring. Compiled/execution/report identities for real qualification are separate and private."
+    "public_source": "d77a3553a51385a5e3541079b1771f60fb1dc606",
+    "scope": "Actual caller/SDK private-bus tests; source hashes mapped to signed commit, compilation baseline and retained inputs recorded separately."
   },
   "invariants": [
     "Original controller/generation/lifetime/security epoch/TCID/PI and original absolute deadline; Native admission before requesting application effects and before response. Snapshot checks cannot roll back an already started application effect.",
@@ -505,36 +505,39 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Input budget includes full 2042-byte value plus finite command overhead. Local accepted memory, SDK reply acceptance and actual remote callback receipt remain separate."
   ],
   "offline_checks": {
+    "external_sdk": {
+      "result": "PASS",
+      "scope": "One full integration test launches actual C/Python consumers through compiled SDK and real private D-Bus. Original cases retained; pending WRITE explicit withdrawal added, including callback stop, info/value/fd retention, old reply ESHUTDOWN, original deadline, prior app value and normal final exit. Broker metadata/transport are fixtures."
+    },
     "runner": {
       "result": "PASS",
-      "tests": 160,
-      "scope": "WRITE gate plus original READ/Owner-exit/unregister/deadline/channel/SDK caller/target fixtures. Actual CLI help/parser, input/tool hash closure and paired-capture negative controls. Not hardware or kernel concurrency proof."
+      "tests": 23,
+      "scope": "Existing SDK READ/WRITE and unregister runner/negative controls; not hardware."
     },
-    "docs": "PASS: strict locked HTML and inventory (private127/public121); no device operation by documentation build.",
+    "strict": "Rust1.96.1 libsparklink all-targets/all-features Clippy -D warnings; C -Wall -Wextra -Werror through actual external test. Locked/offline, shared build lock,8jobs.",
+    "docs": "Final strict HTML and inventory outcome is recorded in the batch delivery receipt; no device execution by docs.",
     "failures_preserved": [
-      "Pre-existing uncommitted gate draft conditional syntax corrected before execution.",
-      "runner-v2: two tests lacked explicit kernel helper path in independent worktree; original output retained, invocation fixed without relaxing assertions."
-    ],
-    "prior_external_sdk_checks": "Earlier compiled external C/Python callback tests retain their source identities; not represented as rerun by this source slice."
+      "external-v1 missing explicit installed test D-Bus executable; original failure retained; v2 uses existing path, no relaxed assertions."
+    ]
   },
   "offline_status": "ONLY_NAMED_CHECKS_PASS",
   "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "NEW_SOURCE_NOT_REVALIDATED_ON_DEVICE",
+  "hardware_status": "NO_NEW_DEVICE_EXECUTION_THIS_BATCH; previous exact-artifact records retain their original identities and do not qualify this new caller.",
   "exit_conditions": [
-    "Existing host/guest selector, package identity, real executor, paired capture verdict and negative controls wired; original READ/Owned/ordinary tests maintained.",
-    "Private exact-artifact real outcomes require independently audited application output, paired capture, complete terminal, input/source mapping and retained-material registration; no public inference from offline results.",
-    "Continue pending WRITE cancellation/expiry/unregister/down and peer isolation using existing lifecycle facilities, then command/long-value and remaining original operations.",
-    "All original U22/parent criteria remain; no whole-goal, full lifecycle, natural recovery or current-tree promotion."
+    "Shared C/Python caller withdrawal implemented without duplicate loop, binding or Engine.",
+    "Actual external SDK test checks pending withdrawal, original reply rejection, retained request/value/fd, memory preservation and normal exit; existing READ and WRITE assertions preserved.",
+    "Document precise local callback versus peer-delivery boundary; source/issue/state synchronized with original scope and private evidence boundary.",
+    "Next VM lifecycle gate reuses existing pending-case/paired-capture facilities; not blocked on whole control-plane or unrelated issues."
   ],
   "remaining_conditions": [
-    "Full WRITE pending owner-exit/explicit unregister/original expiry/down and peer-isolation matrix.",
-    "WRITE command/empty/long values, method/descriptor Provider and update-transaction remainder.",
-    "Full S0-S6/19WP/10FV/12DG, existing data/security/Profile/deployment/recovery conditions."
+    "Wire pending WRITE unregister through existing VM runner, original deadlines, exact paired capture and independent guard; fresh artifact real qualification required.",
+    "WRITE owner exit/down/expiry and peer isolation, then command/long values/method/descriptor/update remainder.",
+    "All original S0-S6/19WP/10FV/12DG, security/data/Profile/deployment/recovery conditions remain."
   ],
   "next": [
-    "Reuse existing Provider lifecycle gates for pending WRITE and original-deadline/withdrawal outcomes; do not create a second Engine or parallel caller implementation.",
-    "Extend command/length/long-value application gates through the same Session/credit/Ticket/Grant path; retain current qualified paths.",
-    "Continue original data/security/SSAP work; no full control-plane prerequisite."
+    "Parameterize existing pending Provider orchestration and receipt/wire checks for WRITE without copying the READ Engine or caller.",
+    "Run new SDK withdrawal gate in own U/U VM with exact new artifacts; original baseline and peer isolation required.",
+    "Continue WRITE original expiry/down and remaining operations; natural root cause and nonmanual recovery stay open."
   ],
   "issues": [
     "OpenSparklink/sparklink#22",
@@ -552,9 +555,9 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "record": "project/issue-maintenance-20261026.json",
     "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
     "last_readback": "project/issue-maintenance-20261026.json#/followup_readback",
-    "scope": "Bounded maintenance remains complete; U3/U22 current source/offline scope updated without changing original acceptance or closing issues."
+    "scope": "Bounded issue cleanup remains complete. U22 current source/offline table replaced; all original six criteria and open parent retained."
   },
-  "qualification_boundary": "Public source/offline status only. Private device execution neither published nor inferred absent; consult authorized local records for exact artifact qualification."
+  "qualification_boundary": "Only named actual SDK/private-bus and runner checks. No daemon Engine/Native/RF or full pending-lifecycle qualification; no current-tree promotion."
 }
 ```
 

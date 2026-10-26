@@ -23,10 +23,20 @@ pub(crate) struct PrivateBus {
 
 impl PrivateBus {
     pub(crate) fn start() -> Self {
+        Self::with_config(None)
+    }
+
+    fn with_config(config: Option<&str>) -> Self {
         let executable =
             std::env::var_os("SPARKLINK_TEST_DBUS_DAEMON").unwrap_or_else(|| "dbus-daemon".into());
-        let child = Command::new(executable)
-            .args(["--session", "--nofork", "--print-address=1"])
+        let mut command = Command::new(executable);
+        if let Some(config) = config {
+            command.args(["--config-file", config]);
+        } else {
+            command.arg("--session");
+        }
+        let child = command
+            .args(["--nofork", "--print-address=1"])
             .stdout(Stdio::piped())
             .spawn()
             .expect("dbus-daemon is required for the D-Bus regression");
@@ -2223,5 +2233,161 @@ async fn retiring_registration_never_removes_another_resource_owner_at_its_path(
             .await
             .native_connection_objects
             .contains_key(&1)
+    );
+}
+
+/// Per-task test rendezvous only; absent from the default daemon binary.
+/// It changes scheduling before the production wait, never its result or state.
+pub(super) struct NativeRetryProbe {
+    before: oneshot::Sender<()>,
+    resume: oneshot::Receiver<()>,
+    pending: oneshot::Sender<()>,
+}
+
+pub(super) async fn observe_native_retry(
+    wait: impl Future<Output = Option<bool>>,
+    probe: Option<NativeRetryProbe>,
+) -> Option<bool> {
+    let Some(probe) = probe else {
+        return wait.await;
+    };
+    probe
+        .before
+        .send(())
+        .expect("VM test observes actual retry branch");
+    probe
+        .resume
+        .await
+        .expect("VM test releases pre-wait rendezvous");
+    let mut pending = Some(probe.pending);
+    let mut wait = std::pin::pin!(wait);
+    std::future::poll_fn(|cx| {
+        let result = wait.as_mut().poll(cx);
+        if result.is_pending()
+            && let Some(pending) = pending.take()
+        {
+            pending
+                .send(())
+                .expect("VM test observes real pending lock wait");
+        }
+        result
+    })
+    .await
+}
+
+/// Explicit VM-only test: real selected controller, subscription/ioctl and the
+/// whole Native EventTask loop. No management lease or firmware/device writes.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "dedicated VM, exact two controller identities and real Native kernel required"]
+async fn native_retry_real_subscription_vm() {
+    use std::os::fd::AsRawFd;
+    assert_eq!(
+        std::env::var("SPARKLINK_NATIVE_EVENT_VM").as_deref(),
+        Ok("1")
+    );
+    fn target(name: &str) -> (u16, u64) {
+        let text = std::env::var(name).expect("explicit controller index:generation required");
+        let (index, generation) = text.split_once(':').expect("index:generation");
+        let identity = (index.parse().unwrap(), generation.parse().unwrap());
+        assert_ne!(identity.1, 0);
+        identity
+    }
+    fn selected(identity: (u16, u64)) -> Adapter {
+        let mut fd = Adapter::open("/dev/sparklink").unwrap();
+        fd.select_device(identity.0).unwrap();
+        let s = fd.controller_snapshot(identity.1).unwrap();
+        assert_eq!((s.dev_index, s.generation), identity);
+        assert_eq!(s.flags, slk_protocol::CONTROLLER_READY);
+        fd
+    }
+    let victim = target("SPARKLINK_NATIVE_EVENT_TARGET");
+    let sibling = target("SPARKLINK_NATIVE_EVENT_SIBLING");
+    assert_ne!(victim.0, sibling.0);
+    let control = Arc::new(selected(victim));
+    let sibling_control = selected(sibling);
+    let before_sibling = sibling_control.controller_snapshot(sibling.1).unwrap();
+    let expected = control.controller_snapshot(victim.1).unwrap();
+    let links = control.native_link_snapshot(victim.1).unwrap();
+    assert_eq!(links.flags, slk_protocol::LINK_SNAPSHOT_KNOWN);
+    assert_eq!(
+        links.count, 0,
+        "run before physical connections; no competing SSAP owners"
+    );
+    let mut value = AdapterState::new(
+        control.clone(),
+        DaemonConfig::default(),
+        BondingStore::new(&std::env::temp_dir(), "unused-native-event-vm"),
+        ProfileRegistry::new(),
+    );
+    value.controller = expected;
+    value.native_control = Some(control.clone());
+    let state = Arc::new(Mutex::new(value));
+    let bus = PrivateBus::with_config(Some("/usr/share/sparklink/native-event-test-dbus.conf"));
+    let server = server(&bus, state.clone()).await;
+    let subscription = selected(victim);
+    let raw_fd = subscription.as_fd().as_raw_fd();
+    let receiver = subscription.into_controller_event_receiver().unwrap();
+    let (before, at_retry) = oneshot::channel();
+    let (resume, released) = oneshot::channel();
+    let (pending, at_pending) = oneshot::channel();
+    let task = EventTask::start_native_inner(
+        receiver,
+        state.clone(),
+        server,
+        expected,
+        Some(NativeRetryProbe {
+            before,
+            resume: released,
+            pending,
+        }),
+    );
+    timeout(Duration::from_secs(3), at_retry)
+        .await
+        .unwrap()
+        .unwrap();
+    let lock = state.lock().await;
+    assert!(
+        lock.native_links_known(),
+        "actual initial kernel snapshot reconciled before retry"
+    );
+    assert!(lock.native_link_barrier >= links.event_seq);
+    resume.send(()).unwrap();
+    timeout(Duration::from_secs(2), at_pending)
+        .await
+        .unwrap()
+        .unwrap();
+    timeout(Duration::from_secs(2), task.shutdown())
+        .await
+        .expect("actual Native retry cancels while SharedState remains held")
+        .unwrap();
+    assert!(state.try_lock().is_err());
+    assert_eq!(
+        std::fs::read_link(format!("/proc/self/fd/{raw_fd}"))
+            .unwrap_err()
+            .kind(),
+        std::io::ErrorKind::NotFound,
+        "actual subscription fd released at join; no substitute fd"
+    );
+    let after = control.controller_snapshot(victim.1).unwrap();
+    let after_sibling = sibling_control.controller_snapshot(sibling.1).unwrap();
+    assert_eq!(
+        (after.dev_index, after.generation, after.flags),
+        (expected.dev_index, expected.generation, expected.flags)
+    );
+    assert_eq!(
+        (
+            after_sibling.dev_index,
+            after_sibling.generation,
+            after_sibling.flags
+        ),
+        (
+            before_sibling.dev_index,
+            before_sibling.generation,
+            before_sibling.flags
+        )
+    );
+    println!(
+        "NativeRetryVm: {{\"index\":{},\"generation\":{},\"sibling_index\":{},\"sibling_generation\":{},\"initial_kernel_snapshot\":true,\"retry_pending_with_lock_held\":true,\"joined_with_lock_held\":true,\"subscription_fd_closed\":true,\"both_still_ready\":true}}",
+        victim.0, victim.1, sibling.0, sibling.1
     );
 }

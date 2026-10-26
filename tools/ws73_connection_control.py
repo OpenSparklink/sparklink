@@ -302,6 +302,9 @@ def execute(run, a, b):
     run.save()
     previous_objects=[]
     try:
+        if getattr(run.args, 'native_event_retry_verify', False):
+            from ws73_native_event_retry import execute as retry_execute
+            retry_execute(run, [a,b])
         for caller, peer in [(a,b), (b,a)]:
             phase = dict(caller=caller, peer=peer, start_wall_ns=time.time_ns())
             record['phases'].append(phase); run.save()

@@ -121,3 +121,18 @@ join，并检查任务持有的 Unix socket fd 已关闭；另覆盖取消先到
 正常取得状态和锁释放。这个 fd 是资源所有权 fixture，不是内核订阅，也不授予
 真实设备或完整 Native 事件循环的资格。故意保留旧不可取消等待时，取消优先检查
 失败且持锁关停超时；原失败单独保留。准确产物的 VM 回归另行登记。
+
+### 实际 Native 订阅的专用 VM 测试
+
+`event_loop::tests::native_retry_real_subscription_vm` 是默认忽略的 Rust 测试，
+只能由显式配置的专用 VM 运行。它按输入的两个 index/generation 打开真实
+`/dev/sparklink`，读取实际 Ready 和 LinkSnapshot，再把实际订阅交给同一个 Native
+EventTask 循环。测试屏障只在 `cfg(test)` 中存在：初次真实快照完成、进入 retry 后，
+测试持有 SharedState 锁，确认生产 future 返回 Pending，再发出原任务取消。
+断言包含 join、实际订阅 fd 关闭，以及两个 controller 原 generation/Ready 保持。
+它不取得管理租约，不生成事件或改变固件，也不证明物理在途义务已排空。
+
+测试使用独立私有 D-Bus 配置；这不是 VM system bus 权限验收。默认 daemon 没有
+该屏障、配置或测试开关。普通应用业务和双端捕获仍由既有门禁另行核对，不能以
+本测试的日志替代真实通信。编译或默认测试列表中的 ignored 不代表该 VM 测试通过。
+参数与准确 test artifact 要求见 [VM 门禁输入](vm-gate-inputs.md)。

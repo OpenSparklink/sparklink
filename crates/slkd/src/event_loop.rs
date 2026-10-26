@@ -72,10 +72,27 @@ impl EventTask {
 
     /// Native subscribers preserve full parameters and never use the legacy ring.
     pub(crate) fn start_native(
+        receiver: slk_native::ControllerEventReceiver,
+        state: SharedState,
+        connection: zbus::Connection,
+        expected: slk_protocol::SleControllerSnapshot,
+    ) -> Self {
+        Self::start_native_inner(
+            receiver,
+            state,
+            connection,
+            expected,
+            #[cfg(test)]
+            None,
+        )
+    }
+
+    fn start_native_inner(
         mut receiver: slk_native::ControllerEventReceiver,
         state: SharedState,
         connection: zbus::Connection,
         expected: slk_protocol::SleControllerSnapshot,
+        #[cfg(test)] mut retry_probe: Option<tests::NativeRetryProbe>,
     ) -> Self {
         let (cancel, mut cancelled) = oneshot::channel();
         let task = tokio::spawn(async move {
@@ -91,7 +108,10 @@ impl EventTask {
                     biased;
                     _ = &mut cancelled => break,
                     _ = retry.tick() => {
-                        let Some(retry_needed) = native_retry_needed(&state, &mut cancelled).await else {
+                        let wait = native_retry_needed(&state, &mut cancelled);
+                        #[cfg(test)]
+                        let wait = tests::observe_native_retry(wait, retry_probe.take());
+                        let Some(retry_needed) = wait.await else {
                             break;
                         };
                         if retry_needed {

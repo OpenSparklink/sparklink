@@ -224,6 +224,7 @@ def main():
     parser.add_argument('--ssap-sdk-read-provider-verify',action='store_true',help='with --ssap-read-provider-verify: actual C/Python SDK Provider callbacks and opposite-language peer verification')
     parser.add_argument('--ssap-sdk-write-provider-verify',action='store_true',help='with --ssap-owned-verify: actual C/Python WRITE Provider rejection and short verified values, paired USB evidence')
     parser.add_argument('--ssap-write-provider-unregister-verify',action='store_true',help='dedicated Owned/ordinary gate: pending C/Python WRITE unregister, original deadline, paired peer refusal and independent guard')
+    parser.add_argument('--native-event-retry-verify',action='store_true')
     parser.add_argument('--ssap-write-provider-owner-exit-verify',action='store_true',help='dedicated Owned/ordinary gate: pending C/Python WRITE owner death, original deadline, paired peer refusal and independent guard')
     parser.add_argument('--ssap-write-provider-deadline-verify',action='store_true',help='dedicated Owned/ordinary gate: pending C/Python WRITE original expiry, late rejection and ordinary business')
     parser.add_argument('--ssap-provider-owner-exit-verify',action='store_true',help='with --ssap-read-provider-verify: version2 C/Python pending SDK Provider owner loss and independent guard delivery')
@@ -338,6 +339,8 @@ def main():
     if args.channel_socket_rounds!=4 and not args.channel_socket_verify:parser.error('round count requires explicit socket gate')
     if args.channel_socket_close_prefix and (not args.channel_socket_verify or args.channel_socket_bytes!=2042 or args.channel_socket_rounds!=1 or args.channel_socket_boundaries):parser.error('prefix-close requires explicit one-round 2042-byte socket gate')
     if args.channel_socket_burst and (not args.channel_socket_verify or args.channel_socket_bytes!=2042 or args.channel_socket_rounds!=16 or args.channel_socket_close_prefix or args.channel_socket_boundaries):parser.error('burst requires explicit16-round2042-byte socket gate')
+    from ws73_native_event_retry import requested as retry_requested
+    retry_requested(args, passthrough=args.passthrough)
     if args.channel_socket_verify and (not args.connection_verify or args.acb_transport_probe or args.daemon_link_resync):parser.error('ordinary socket requires separate connection gate without test module')
     if args.acb_transport_probe and (not args.connection_verify or args.daemon_link_resync):parser.error('ACB probe requires a separate explicit connection gate')
     if args.connection_advertising!='fixed-t' and not args.connection_verify:

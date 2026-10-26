@@ -1448,3 +1448,23 @@ Provider 扩展互斥。精确 boot token 为 `ws73.ssap_write_provider_owner_ex
 双端拒绝；保留 guard 和后续普通业务的独立证据。两端完整捕获、原 SDK 输出、
 执行身份、工具闭包及原期限缺一不可。当前实现状态与准确产物资格分开记录；
 实验驱动和真实设备只在授权 VM/端口内运行，不引入新的 Host 或收发循环。
+
+## Native EventTask retry 订阅门禁
+
+准备器的 `--native-event-retry-test MANIFEST` 显式携带 Rust 测试产物，运行器的
+`--native-event-retry-verify` 要求原真实双设备 `--qmp-hotplug --connection-verify
+--channel-socket-verify` 路径。没有 test artifact 时拒绝；不会从构建目录任选二进制。
+测试在建链前分别选两只已 Ready 的 controller，之后继续原发现/连接/普通业务门禁。
+
+输入 manifest 版本为整数 `1`，`source_head` 必须等于准备器的准确用户态提交；
+`binary` 包含实际编译测试 ELF 的绝对 `path` 和 `sha256`。构建使用既有全局锁，
+由 `cargo test --offline --locked -p slkd --bin slkd --no-run --message-format=json`
+的唯一匹配 executable 记录选取并封存；不能把文档提交或任意同名程序当编译身份。
+准备器保存输入及安装程序身份，并单独安装私有测试总线配置。默认 bundle 不包含
+该测试程序，默认 daemon 不包含测试屏障；不要在宿主执行忽略测试。
+
+guest 使用显式 index/generation 和 sibling index/generation，执行恰好一个忽略测试，
+每端沿用十秒监督期限。必须看到真实 kernel 初始快照、持锁 Pending、持锁 join、
+实际订阅 fd 关闭及双方仍 Ready 的断言结果；零测试、忽略未执行、超时、身份/产物
+不符或缺失任一端均不接受。此门禁不宣称系统总线权限、SSAP、新安全能力或自然恢复。
+正式结果仍绑定准确源码/产物/工具记录，不从新增名称或源码存在推断完成。

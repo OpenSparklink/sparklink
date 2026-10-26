@@ -292,6 +292,9 @@ def execute(run, phase, after_application=None):
         if getattr(run.args,'ssap_write_provider_unregister_verify',False):
             from ws73_ssap_write_unregister import execute as write_unregister_execute
             write_unregister_execute(run,row)
+        if getattr(run.args,'ssap_write_provider_owner_exit_verify',False):
+            from ws73_ssap_write_owner_exit import execute as write_owner_exit_execute
+            write_owner_exit_execute(run,row)
         if getattr(run.args,'ssap_provider_owner_exit_verify',False):
             from ws73_ssap_provider_owner_exit import execute as provider_exit_execute
             provider_exit_execute(run,row)
@@ -777,6 +780,9 @@ def corroborate(run,capture):
             from ws73_ssap_write_unregister import corroborate as write_unregister_corroborate
             ssap_write_provider_unregisters,write_unregister_credit=write_unregister_corroborate(row,value_matched,sdus)
             for key in ssap_credit:ssap_credit[key]+=write_unregister_credit[key]
+            from ws73_ssap_write_owner_exit import corroborate as write_owner_exit_corroborate
+            ssap_write_provider_owner_exits,write_owner_exit_credit=write_owner_exit_corroborate(row,value_matched,sdus)
+            for key in ssap_credit:ssap_credit[key]+=write_owner_exit_credit[key]
             from ws73_ssap_provider_owner_exit import corroborate as provider_exit_corroborate
             ssap_provider_owner_exit,provider_exit_credit=provider_exit_corroborate(row,value_matched,sdus)
             for key in ssap_credit:ssap_credit[key]+=provider_exit_credit[key]
@@ -855,6 +861,9 @@ def corroborate(run,capture):
         if row.get('ssap_write_provider_unregister_required',False):
             from ws73_ssap_write_unregister import verify_business_after as unregister_business
             unregister_business(ssap_write_provider_unregisters[0]['case'],legs)
+        if row.get('ssap_write_provider_owner_exit_required',False):
+            from ws73_ssap_write_owner_exit import verify_business_after as unregister_business
+            unregister_business(ssap_write_provider_owner_exits[0]['case'],legs)
         if row.get('ssap_provider_deadline_required',False):
             from ws73_ssap_provider_deadline import verify_business_evidence as provider_deadline_business
             provider_deadline_business(row,ssap_provider_deadline,legs)
@@ -931,6 +940,7 @@ def corroborate(run,capture):
         if row.get('ssap_sdk_read_provider_required',False):entry['ssap_sdk_read_providers']=ssap_sdk_read_providers
         if row.get('ssap_sdk_write_provider_required',False):entry['ssap_sdk_write_providers']=ssap_sdk_write_providers
         if row.get('ssap_write_provider_unregister_required',False):entry['ssap_write_provider_unregister']=ssap_write_provider_unregisters
+        if row.get('ssap_write_provider_owner_exit_required',False):entry['ssap_write_provider_owner_exit']=ssap_write_provider_owner_exits
         if row.get('ssap_provider_owner_exit_required',False):entry['ssap_provider_owner_exit']=ssap_provider_owner_exit
         if row.get('ssap_provider_unregister_required',False):entry['ssap_provider_unregister']=ssap_provider_unregister
         if row.get('ssap_provider_deadline_required',False):entry['ssap_provider_deadline']=ssap_provider_deadline

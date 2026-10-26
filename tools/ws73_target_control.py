@@ -224,6 +224,7 @@ def main():
     parser.add_argument('--ssap-sdk-read-provider-verify',action='store_true',help='with --ssap-read-provider-verify: actual C/Python SDK Provider callbacks and opposite-language peer verification')
     parser.add_argument('--ssap-sdk-write-provider-verify',action='store_true',help='with --ssap-owned-verify: actual C/Python WRITE Provider rejection and short verified values, paired USB evidence')
     parser.add_argument('--ssap-write-provider-unregister-verify',action='store_true',help='dedicated Owned/ordinary gate: pending C/Python WRITE unregister, original deadline, paired peer refusal and independent guard')
+    parser.add_argument('--ssap-write-provider-owner-exit-verify',action='store_true',help='dedicated Owned/ordinary gate: pending C/Python WRITE owner death, original deadline, paired peer refusal and independent guard')
     parser.add_argument('--ssap-write-provider-deadline-verify',action='store_true',help='dedicated Owned/ordinary gate: pending C/Python WRITE original expiry, late rejection and ordinary business')
     parser.add_argument('--ssap-provider-owner-exit-verify',action='store_true',help='with --ssap-read-provider-verify: version2 C/Python pending SDK Provider owner loss and independent guard delivery')
     parser.add_argument('--ssap-provider-unregister-verify',action='store_true',help='with --ssap-read-provider-verify: C/Python pending explicit unregister and independent guard delivery')
@@ -302,6 +303,9 @@ def main():
     except ValueError as error:parser.error(str(error))
     from ws73_ssap_write_unregister import requested as write_unregister_requested
     try:write_unregister_requested(args)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_write_owner_exit import requested as write_owner_exit_requested
+    try:write_owner_exit_requested(args)
     except ValueError as error:parser.error(str(error))
     from ws73_ssap_provider_owner_exit import requested as provider_exit_requested
     try:provider_exit_requested(args)

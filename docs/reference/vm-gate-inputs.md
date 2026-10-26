@@ -1435,3 +1435,16 @@ WRITE expiry last among SSAP scenarios, then ordinary channel business and the
 existing disconnect. Missing captures, changed identity/payload/deadline, missing
 business or a claimed recovery cannot satisfy the gate. No timeout is renewed.
 Source/offline availability does not grant a fresh image hardware qualification.
+
+## WRITE owner 退出的独立选择器
+
+`--ssap-write-provider-owner-exit-verify` 要求原 `--ssap-owned-verify` 和
+普通用户通道基线（61 字节、4 轮），与正常 WRITE、显式撤回、原期限及 READ
+Provider 扩展互斥。精确 boot token 为 `ws73.ssap_write_provider_owner_exit=1`。
+必须使用包含新 verifier/共享 owner-exit 实现的完整 prepared manifest；旧 helper
+或工具 hash 不匹配须在 VM 启动前拒绝，不复用旧报告作为新工具资格。
+
+每种物理角色各有一次真实 C/Python 待决 WRITE owner 丢失、原期限内清理与
+双端拒绝；保留 guard 和后续普通业务的独立证据。两端完整捕获、原 SDK 输出、
+执行身份、工具闭包及原期限缺一不可。当前实现状态与准确产物资格分开记录；
+实验驱动和真实设备只在授权 VM/端口内运行，不引入新的 Host 或收发循环。

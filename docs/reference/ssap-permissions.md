@@ -670,3 +670,20 @@ SSAP recovery, and does not replace owner-loss, Down, long-write or natural
 recovery acceptance. Historical READ deadline schemas remain unchanged. This
 selector and offline tests are implementation scope; actual qualification remains
 bound to its separately registered source, artifact, tools and retained evidence.
+
+## 待决 WRITE owner 退出门禁
+
+`--ssap-write-provider-owner-exit-verify` 是独立的 SDK/Owned 验收选择器，
+复用既有 pending-case、唯一 Engine、真实 C/Python caller 和双端 USB 判定。
+它以实际 verified type0 WRITE 回调为屏障，核对 controller/generation/lifetime、
+request/epoch/property、完整 32 字节随机值及原期限后才终止 Provider 进程。
+退出、服务移除和实际 peer 错误必须处于原请求/Provider/监督期限内；不能续期。
+
+对端 WRITE 错误须由两端原始数据核对（AF 或 4），随后旧 handle READ 必须拒绝，
+另一独立 Owned guard 必须返回其真实值，普通通道仍须完成原四轮随机业务。
+进程死亡后无法查询其应用内存；不得据日志或无答复宣称应用值已回滚。
+不发送伪答复，不恢复缓存值，不把策略批准、SIGKILL 或 USB 完成当作对端结果。
+
+该选择器与其他 WRITE/READ 生命周期场景互斥；READ 历史 schema 1/2 保持不变。
+源码/离线 gate 的存在不表示新产物实机通过；Down/restart、长值和完整 SSAP
+生命周期仍按各自门禁验收。这里不提供新形式化或自然恢复资格。

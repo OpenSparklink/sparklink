@@ -39,7 +39,7 @@ def requested(args, *, passthrough=None, selector=PREFIX):
     need(type(selected)is bool,'explicit WRITE Provider selector required')
     if not selected:return False
     need(not any(getattr(args, name+'_verify',False) for name in
-        ('ssap_sdk_write_provider','ssap_write_provider_unregister','ssap_write_provider_deadline') if name != selector),
+        ('ssap_sdk_write_provider','ssap_write_provider_unregister','ssap_write_provider_deadline','ssap_write_provider_owner_exit') if name != selector),
         'one dedicated WRITE scenario required')
     if passthrough is None:passthrough=getattr(args,'passthrough',False)
     incompatible=('ssap_read_provider_verify','ssap_sdk_read_provider_verify','ssap_provider_owner_exit_verify',
@@ -62,7 +62,7 @@ def boot_requested(tokens, *, selector=PREFIX):
     need(found in ([],[token]),'one exact WRITE Provider boot token required')
     if found:
         need(not any(t == 'ws73.'+name or t.startswith('ws73.'+name+'=') for name in
-            ('ssap_sdk_write_provider','ssap_write_provider_unregister','ssap_write_provider_deadline')
+            ('ssap_sdk_write_provider','ssap_write_provider_unregister','ssap_write_provider_deadline','ssap_write_provider_owner_exit')
             if name != selector for t in tokens), 'one dedicated WRITE boot scenario required')
         need(tokens.count('ws73.ssap_owned=1')==1 and not any(t.startswith(('ws73.ssap_read_provider','ws73.ssap_sdk_read_provider','ws73.ssap_provider_'))for t in tokens),
              'WRITE Provider boot dependencies/conflicts differ')

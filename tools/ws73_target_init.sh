@@ -574,6 +574,8 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
             connection_arg="$connection_arg $sdk_write_provider_arg"
             write_unregister_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys;from ws73_ssap_write_unregister import boot_requested;print("--ssap-write-provider-unregister-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail sdk-provider-selector
             connection_arg="$connection_arg $write_unregister_arg"
+            write_owner_exit_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys;from ws73_ssap_write_owner_exit import boot_requested;print("--ssap-write-provider-owner-exit-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail sdk-provider-selector
+            connection_arg="$connection_arg $write_owner_exit_arg"
             write_deadline_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys;from ws73_ssap_write_deadline import boot_requested;print("--ssap-write-provider-deadline-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail sdk-provider-selector
             connection_arg="$connection_arg $write_deadline_arg"
             provider_exit_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys;from ws73_ssap_provider_owner_exit import boot_requested;print("--ssap-provider-owner-exit-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail provider-exit-selector

@@ -457,10 +457,11 @@
   "non_manual_recovery_qualified": false,
   "whole_goal_complete": false,
   "followup_readback": {
-    "observed_at": "2026-10-26T14:50:42.469818+00:00",
+    "observed_at": "2026-10-26T16:12:52.143801+00:00",
     "source_review": {
-      "sparklink_public": "a8e7d85203c693d2bd328b8fa3a330676a57ec4b",
-      "linux": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
+      "sparklink_public": "00b18524f3ddd7e17c34713bd7ca9437ae332c16",
+      "linux": "52ae7f08f2eafc3d79920fe5a14892970ecdd284",
+      "dirty_scope": "Existing documentation/state work preserved; no production edits in this maintenance readback."
     },
     "originals_verified": 28,
     "children_verified": 7,
@@ -485,19 +486,278 @@
       {
         "repository": "sparklink",
         "number": 3,
-        "action": "current_plan_and_capability_links_updated_historical_source_links_preserved",
+        "action": "current_authority_links_preserved",
         "body_sha256": "1dfe8fdb5db54356bd014a98590262f9c953ce6f593ee97fe15540092fdaad12"
       },
       {
         "repository": "sparklink",
         "number": 21,
-        "action": "existing_sdk_lifecycle_source_and_offline_followup_preserved",
-        "body_sha256": "7df692087b0add624fa4f237d1858fa8ac9083c21980bf29a87c24d5b24f0f5f"
+        "action": "current_source_offline_table_and_remaining_gates_reconciled_original_acceptance_unchanged",
+        "body_sha256": "56e1a3740387c2ac459adb40d0b6533ee49ae27de969ee74f2887fa03c144357"
       }
     ],
     "u1": "Native retry still awaits SharedState without cancellation; no closure. Existing 26 offline cases do not cover this production wait.",
     "u10": "Natural root cause and non-manual recovery remain its own acceptance; unrelated full security/release is not required.",
     "qualification_effect": "NONE: no hardware test or proof rerun, no historical qualification transfer; private details stay local.",
-    "resume": "Bounded maintenance is complete. Resume qualification_view.current_batch; remaining issues are not a collective prerequisite."
-  }
+    "resume": "Bounded maintenance is complete. Resume qualification_view.current_batch; remaining issues are not a collective prerequisite.",
+    "verified_issue_states": [
+      {
+        "repository": "linux",
+        "number": 1,
+        "state": "open",
+        "body_sha256": "ee86e30665eb1dbf095ef7d5e7e8486d7e163c12b4ad359ce9b19ddda049a800"
+      },
+      {
+        "repository": "linux",
+        "number": 2,
+        "state": "open",
+        "body_sha256": "02938a5c7ed417ca39b8bca5426e18a0750ebeafded33ee3e550b989f890c99b"
+      },
+      {
+        "repository": "linux",
+        "number": 3,
+        "state": "open",
+        "body_sha256": "b941964c5df91cea7529651beb8bced2df011bea36063cc835fa48a5188bfc85"
+      },
+      {
+        "repository": "linux",
+        "number": 4,
+        "state": "open",
+        "body_sha256": "b95c0a753107e46701ed1f49e204984b799593090ab53936bc784452afa8def5"
+      },
+      {
+        "repository": "linux",
+        "number": 5,
+        "state": "open",
+        "body_sha256": "81f409d72ad53033c84fc82a6f68e88631ee40e1e3b2c857b09b940dac132201"
+      },
+      {
+        "repository": "linux",
+        "number": 6,
+        "state": "open",
+        "body_sha256": "ca947ed83f2970b1d7e7058f6fd6f7e4dea9054a075551d8ea6e91c3fb985bd1"
+      },
+      {
+        "repository": "linux",
+        "number": 7,
+        "state": "open",
+        "body_sha256": "b467969389b663e3649fb5ab151f88650ce9781f5eb886511fc6369979f2fe73"
+      },
+      {
+        "repository": "linux",
+        "number": 8,
+        "state": "open",
+        "body_sha256": "97bf4feb219d1b9042e773c0c870203975abcb2244813b67f789b109d9d4fb7f"
+      },
+      {
+        "repository": "linux",
+        "number": 9,
+        "state": "open",
+        "body_sha256": "4410729ebb2ba22d7af99455887e2b102cbaa84755028679837bd41653bb113e"
+      },
+      {
+        "repository": "linux",
+        "number": 10,
+        "state": "open",
+        "body_sha256": "2d396cc97fe3ff64d0648ea272d72325b8ad82e423cb2caff7d289df832f159e"
+      },
+      {
+        "repository": "linux",
+        "number": 11,
+        "state": "open",
+        "body_sha256": "d47b1ed0d8b2fcbedc7787acc0ca9bc86607aa29746c2dce7d350f25ecdbe11e"
+      },
+      {
+        "repository": "linux",
+        "number": 12,
+        "state": "open",
+        "body_sha256": "1d60a331ef921bfbff7143444b49afd7eb1f2d0abc243d993423557e4cdb3984"
+      },
+      {
+        "repository": "linux",
+        "number": 13,
+        "state": "open",
+        "body_sha256": "7f00addcd7f5385e07775605e02cbe5c557097856486e9c483d6d7f976125c52"
+      },
+      {
+        "repository": "linux",
+        "number": 14,
+        "state": "open",
+        "body_sha256": "c527599b4c71919ae79b2e78df7e66738944683539c806e3f73dac975e81b879"
+      },
+      {
+        "repository": "linux",
+        "number": 15,
+        "state": "open",
+        "body_sha256": "49442990a56023e90c4ca64a95a8111f3c75d8d3a066a49015409dad99c18d37"
+      },
+      {
+        "repository": "linux",
+        "number": 16,
+        "state": "open",
+        "body_sha256": "d1868f17946d9665c41362dcce3e45efb1fb037865e07609ccd5454b3a228909"
+      },
+      {
+        "repository": "linux",
+        "number": 17,
+        "state": "open",
+        "body_sha256": "2b464843c7494b886c669b09c77efc6a1379c90e94e3d248f28aabf3ce4f6ca4"
+      },
+      {
+        "repository": "linux",
+        "number": 18,
+        "state": "open",
+        "body_sha256": "59b855d800418eb5a9c492172f1900240e34c244a10a1abaeb3bd1ad49a22092"
+      },
+      {
+        "repository": "linux",
+        "number": 19,
+        "state": "open",
+        "body_sha256": "9b70afad443301bce4b3d8ebb7b37f08e5b88b2e230ce6cd98a9cd5aff1aedc0"
+      },
+      {
+        "repository": "sparklink",
+        "number": 1,
+        "state": "open",
+        "body_sha256": "94bbe617548ad0a55927e455d6defcf0a47e1551a435e7c438f06f9b382f335d"
+      },
+      {
+        "repository": "sparklink",
+        "number": 2,
+        "state": "open",
+        "body_sha256": "4cb3c15b76f90dd969af3073c2c779a7b174cb11553b71ea16bcb99112948042"
+      },
+      {
+        "repository": "sparklink",
+        "number": 3,
+        "state": "open",
+        "body_sha256": "1dfe8fdb5db54356bd014a98590262f9c953ce6f593ee97fe15540092fdaad12"
+      },
+      {
+        "repository": "sparklink",
+        "number": 4,
+        "state": "open",
+        "body_sha256": "84d34c0bf0f70db4185562530c172ffb9f3a01b60240906d0944a30637b3bf73"
+      },
+      {
+        "repository": "sparklink",
+        "number": 5,
+        "state": "open",
+        "body_sha256": "36e9301e5f700ab0440f235ce2da1b21a6cd10ef1314eb27fc08b9f7e8eb0bd8"
+      },
+      {
+        "repository": "sparklink",
+        "number": 6,
+        "state": "open",
+        "body_sha256": "24bdd8ce25d51cb38068be6507d6f97f2383cd6584583949413bd5cb5412fddf"
+      },
+      {
+        "repository": "sparklink",
+        "number": 7,
+        "state": "open",
+        "body_sha256": "f877a0848d6c325672c128308612e7b78e1787ad73b67ebaf7a74cd6cdbc864f"
+      },
+      {
+        "repository": "sparklink",
+        "number": 8,
+        "state": "open",
+        "body_sha256": "bfbd4df72deb2b8b9bc59c57fb1da7eb1ab6c66ea6c625abec1ce41ecd39bf60"
+      },
+      {
+        "repository": "sparklink",
+        "number": 10,
+        "state": "open",
+        "body_sha256": "3060900931147c953d048f2f618e87ed643b2df8759ffc8f0b402c7c732b5e50"
+      },
+      {
+        "repository": "sparklink",
+        "number": 21,
+        "state": "open",
+        "body_sha256": "56e1a3740387c2ac459adb40d0b6533ee49ae27de969ee74f2887fa03c144357"
+      },
+      {
+        "repository": "sparklink",
+        "number": 22,
+        "state": "open",
+        "body_sha256": "2d4e7c877f505d51bca9a513324ebaf5c5023b524609b785ddf54aff9971ee12"
+      },
+      {
+        "repository": "sparklink",
+        "number": 23,
+        "state": "open",
+        "body_sha256": "5de03a8d7aff72e8eb2f7ed7bcfa61d41a266ee0e9c2e4f96560cc47b98c8b6d"
+      },
+      {
+        "repository": "linux",
+        "number": 21,
+        "state": "open",
+        "body_sha256": "e10558efccf5277f6a861a5943236cd0215067a0f3e28eb78429b0dd8e04460a"
+      },
+      {
+        "repository": "linux",
+        "number": 22,
+        "state": "open",
+        "body_sha256": "978697253ce70f36db07fbf1980dfbcc874db3d56b9f277fc85410e86f20717d"
+      },
+      {
+        "repository": "linux",
+        "number": 23,
+        "state": "open",
+        "body_sha256": "eb0ca80df84dacafd5dc2bab0ab99987c07ceb87021487e0001f99ccb3a855a4"
+      },
+      {
+        "repository": "linux",
+        "number": 24,
+        "state": "open",
+        "body_sha256": "5682cc14c11702e4f79887075650ca19a3d46583559f2e01791c569d6425932c"
+      }
+    ],
+    "classification_basis": "Latest Native retry source still contains uncancelled state.lock await; original classifications unchanged. New SDK implementation reuses existing U#21; no duplicate issue."
+  },
+  "followup_readback_history": [
+    {
+      "observed_at": "2026-10-26T14:50:42.469818+00:00",
+      "source_review": {
+        "sparklink_public": "a8e7d85203c693d2bd328b8fa3a330676a57ec4b",
+        "linux": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
+      },
+      "originals_verified": 28,
+      "children_verified": 7,
+      "closed": [],
+      "original_classifications_changed": false,
+      "parent_relations": {
+        "sparklink#3": [
+          21,
+          22,
+          23
+        ],
+        "linux#17": [
+          21,
+          22
+        ],
+        "linux#19": [
+          23,
+          24
+        ]
+      },
+      "updates": [
+        {
+          "repository": "sparklink",
+          "number": 3,
+          "action": "current_plan_and_capability_links_updated_historical_source_links_preserved",
+          "body_sha256": "1dfe8fdb5db54356bd014a98590262f9c953ce6f593ee97fe15540092fdaad12"
+        },
+        {
+          "repository": "sparklink",
+          "number": 21,
+          "action": "existing_sdk_lifecycle_source_and_offline_followup_preserved",
+          "body_sha256": "7df692087b0add624fa4f237d1858fa8ac9083c21980bf29a87c24d5b24f0f5f"
+        }
+      ],
+      "u1": "Native retry still awaits SharedState without cancellation; no closure. Existing 26 offline cases do not cover this production wait.",
+      "u10": "Natural root cause and non-manual recovery remain its own acceptance; unrelated full security/release is not required.",
+      "qualification_effect": "NONE: no hardware test or proof rerun, no historical qualification transfer; private details stay local.",
+      "resume": "Bounded maintenance is complete. Resume qualification_view.current_batch; remaining issues are not a collective prerequisite."
+    }
+  ]
 }

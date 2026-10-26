@@ -30,20 +30,8 @@
     },
     "public_scope": "Only source/plan and subsequent source/offline summaries are public. Exact compiled/executor/report identities and actual device results remain local; non-disclosure is not a statement that execution has or has not occurred.",
     "implementation_sources": {
-      "plan_source_baseline": "c8770b55de770115e5152ff73994d0da77cc2383",
-      "scope": "Public source/offline view only; private compiled, executor, report and actual results are not disclosed or inferred.",
-      "public_source": "116bbe9a6ac2ded16e5115f8acfd916a3f338310",
-      "public_commits": [
-        {
-          "stage": "plan",
-          "commit": "e8721935e55ccd77422fe03fa3470253e35e0914"
-        },
-        {
-          "stage": "implementation",
-          "commit": "116bbe9a6ac2ded16e5115f8acfd916a3f338310"
-        }
-      ],
-      "source_offline_scope": "Shared bounded SDK Provider frontend, migrated slctl, and C/Python Provider public interfaces over the original caller and sole daemon Engine. Named offline checks only; no transfer of hardware qualification."
+      "public_source": "f1943b16f6c2ed684c6033ab867575b5da97ad3b",
+      "scope": "Current gate source/offline contract; historical SDK frontend source mappings retained separately. Public view does not infer private artifact results or whole HEAD qualification."
     },
     "invariants": [
       "Reuse the original Client/Arc<SyncClient>, current Owned registration, unique daemon and full generation/lifetime/epoch/channel identity; the daemon remains the unique SSAP Engine over the existing Session/Grant/credit/Ticket path.",
@@ -174,7 +162,7 @@
       "Retain all original failures, counterexamples, scope and qualification identities. UserHost remains low-priority planning; no original issue is closed by this batch transition."
     ],
     "next": [
-      "Complete finite SDK Owner-exit evidence closure using the existing registry, then actual pending SDK unregister and original-deadline/late reply with independent guard and ordinary business. Preserve all previous failures; capability denial and deadline exhaustion are separate gates.",
+      "Proceed with the actual pending SDK unregister gate through the existing shared frontend, original request deadline, retained request/readiness fd, late-answer rejection and independent guard; then SDK expiry/late reply. Exact artifact qualification and failures remain under authorized local evidence authority, never inferred from this public source/offline view.",
       "Continue original data/security/SSAP and missing named checks without the whole control-plane race set as a prerequisite; no same-actor or natural recovery qualification is added."
     ],
     "issues": [
@@ -282,7 +270,7 @@
         "whole_issue_complete": false
       },
       "sdk_provider_owner_exit_v2": {
-        "state": "SDK_OWNER_EXIT_V2_SCOPED_EVIDENCE_CLOSURE_IN_PROGRESS",
+        "state": "SDK_PROVIDER_LIFECYCLE_GATES_IN_PROGRESS_PRIVATE_QUALIFICATION_SEPARATE",
         "source": "c7feed7b4118efe747ca8b8366530b953f8960da",
         "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
         "behavior": "Existing owner-exit runner now uses actual Python/C SDK Providers across roles; validates SDK bind/approval/request before SIGKILL, retains original deadline, paired AF/4 and retired-handle checks, independent guard and baseline. Current host/guest require v2; old CLI v1 retains historical scope.",
@@ -294,10 +282,9 @@
         },
         "scope": "Tooling/fixture checks only; not actual USB/callback/VM qualification. Source is public; exact hardware attempts remain private.",
         "remaining": [
-          "Seal and register the finite exact-artifact SDK Owner-exit evidence; source/offline results alone cannot satisfy this.",
-          "Explicit pending SDK unregister",
+          "Actual pending SDK unregister with retained request/fd and independent guard",
           "SDK original expiry/late reply",
-          "Complete the original named lifecycle scope; finite guard/ordinary checks do not qualify all isolation combinations."
+          "Exact-artifact qualification remains controlled by authorized local evidence; no whole issue or current HEAD result is inferred from this public source/offline summary."
         ],
         "whole_issue_complete": false,
         "capability_refusal_v2": {
@@ -317,7 +304,25 @@
           "remaining": "Accurate-artifact finite evidence closure, SDK pending unregister, expiry/late reply and original remaining gates."
         }
       }
-    }
+    },
+    "implementation_sources_history": [
+      {
+        "plan_source_baseline": "c8770b55de770115e5152ff73994d0da77cc2383",
+        "scope": "Public source/offline view only; private compiled, executor, report and actual results are not disclosed or inferred.",
+        "public_source": "116bbe9a6ac2ded16e5115f8acfd916a3f338310",
+        "public_commits": [
+          {
+            "stage": "plan",
+            "commit": "e8721935e55ccd77422fe03fa3470253e35e0914"
+          },
+          {
+            "stage": "implementation",
+            "commit": "116bbe9a6ac2ded16e5115f8acfd916a3f338310"
+          }
+        ],
+        "source_offline_scope": "Shared bounded SDK Provider frontend, migrated slctl, and C/Python Provider public interfaces over the original caller and sole daemon Engine. Named offline checks only; no transfer of hardware qualification."
+      }
+    ]
   },
   "overall_required_records": [
     "deadline-real21",

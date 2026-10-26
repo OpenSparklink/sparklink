@@ -816,12 +816,15 @@
     "children_created": 7,
     "body_and_parent_readback": true
   },
-  "previous_goal_turn_classification": "PROGRESS_ARCHITECTURE_CANONICAL_DEPLOYMENT_AND_ACTUAL_PACKAGE_BASE_SCOPED_VM_EVIDENCE_FULL_ARCHITECTURE_OPEN",
+  "previous_goal_turn_classification": {
+    "classification": "PROGRESS",
+    "reason": "Bounded issue maintenance completed, GitHub read back and signed public docs pushed; full goal preserved."
+  },
   "current_goal_turn_classification": {
     "classification": "PROGRESS",
     "goal_complete": false,
-    "authority": "qualification_view.current_batch",
-    "reason": "SDK owner-exit v2 tooling wired to existing runner, version and identity checks added, historical CLI v1 preserved; current slice remains unqualified. Full original scope and natural recovery remain open."
+    "authority": "qualification_view.current_batch.followups.sdk_provider_unregister_v1",
+    "reason": "Distinct pending unregister runner and fail-closed verifier implemented using existing SDK/shared peer helpers; named offline checks pass, exact-artifact VM execution pending."
   },
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
@@ -2166,7 +2169,7 @@
         "Retain all original failures, counterexamples, scope and qualification identities. UserHost remains low-priority planning; no original issue is closed by this batch transition."
       ],
       "next": [
-        "Proceed with the actual pending SDK unregister gate through the existing shared frontend, original request deadline, retained request/readiness fd, late-answer rejection and independent guard; then SDK expiry/late reply. Exact artifact qualification and failures remain under authorized local evidence authority, never inferred from this public source/offline view.",
+        "Build/prepare and execute the distinct SDK pending-unregister gate with the exact signed artifact; original request barrier, deadlines, retained info/fd, live Provider/guard and paired peer evidence. Then SDK expiry/late reply; no broad control-plane prerequisite.",
         "Continue original data/security/SSAP and missing named checks without the whole control-plane race set as a prerequisite; no same-actor or natural recovery qualification is added."
       ],
       "issues": [
@@ -2307,6 +2310,25 @@
             "scope": "Explicit fixtures/private bus for SDK clock and daemon production terminal functions; not firmware timing diagnosis or whole lifecycle proof.",
             "remaining": "Accurate-artifact finite evidence closure, SDK pending unregister, expiry/late reply and original remaining gates."
           }
+        },
+        "sdk_provider_unregister_v1": {
+          "state": "RUNNER_WIRED_NAMED_OFFLINE_CHECKS_PASS_EXACT_VM_GATE_PENDING",
+          "public_source": "8b55945aafbc82b097737fb8a8232f1085b18d2b",
+          "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
+          "behavior": "Existing SDK provider-unregister after actual pending READ, immutable info/readiness fd, ESHUTDOWN and original deadlines; live process through peer/retired-handle/independent-guard checks, ordinary business after cleanup. Shared owner-exit execution/wire helpers; distinct selectors and proof.",
+          "offline_checks": [
+            "10 unregister gate tests: actual CLI/boot selector, stale-input prelaunch refusal, original receipt/identity/deadline, missing capture, no SIGKILL substitution, business ordering",
+            "Owner-exit, Provider deadline, SDK Provider, target and channel fixture suites pass; exact counts in named logs",
+            "Strict HTML and 121-document inventory pass"
+          ],
+          "test_boundaries": "Literal packet/SDK transcript and controlled dependencies; no new actual device, callback, kernel concurrency or formal qualification. Metadata-only proof reconstruction is not replay.",
+          "retained_failures": "Initial test syntax error and target test missing explicit kernel-source directory retained; assertions unchanged, only syntax/environment corrected.",
+          "remaining": [
+            "Build and prepare exact signed artifact using shared lock/resource budget",
+            "VM-only two assigned U leaves: actual pending unregister across C/Python and physical roles with both raw captures and original guard/ordinary baseline",
+            "Original expiry/late answer and all named U#21 conditions remain open"
+          ],
+          "whole_issue_complete": false
         }
       },
       "implementation_sources_history": [

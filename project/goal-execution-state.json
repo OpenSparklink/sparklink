@@ -5379,7 +5379,8 @@
   "issue_maintenance": {
     "record": "project/issue-maintenance-20261026.json",
     "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
-    "execution_dependency": "Complete bounded maintenance then resume qualification_view.current_batch; not a prerequisite to completing all parent issues."
+    "execution_dependency": "Complete bounded maintenance then resume qualification_view.current_batch; not a prerequisite to completing all parent issues.",
+    "followup_readback": "project/issue-maintenance-20261026.json#/followup_readback"
   },
   "historical_goal_turn_audits": [
     {

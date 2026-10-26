@@ -15,7 +15,8 @@
     "finite_followups": 15,
     "split_parents": 3,
     "long_term": 10,
-    "children_created": 7
+    "children_created": 7,
+    "children_closed_after_maintenance": 1
   },
   "originals": [
     {
@@ -372,9 +373,9 @@
       "title": "收尾：C/Python READ Provider 待决撤回、原期限与同伴隔离",
       "url": "https://github.com/OpenSparklink/sparklink/issues/21",
       "parent": 3,
-      "state": "open",
-      "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "4c4db6a597d2d6ad8a1193d33c07f640ea6a87dfb22cab1b55f101011aaea79f"
+      "state": "closed",
+      "action": "original_scope_acceptance_closed",
+      "body_sha256": "a801d33aa788a8b5d410a1a8cdbade503a99ed4e88502d3b15f109cd8986dac6"
     },
     {
       "repository": "sparklink",
@@ -1053,6 +1054,47 @@
         }
       ],
       "classification_basis": "Latest Native retry source still contains uncancelled state.lock await; original classifications unchanged. New SDK implementation reuses existing U#21; no duplicate issue."
+    }
+  ],
+  "later_dispositions": [
+    {
+      "issue": "sparklink#21",
+      "state": "closed",
+      "parent": "sparklink#3",
+      "parent_state": "open",
+      "basis": "Original six acceptance items audited; direct 16-slot capacity test completed. Public source/offline only; private evidence separately retained.",
+      "source": "792c56e99bdc6eaf16070c188c6031d459458e53",
+      "original_28_classifications_unchanged": true,
+      "receipt": {
+        "status": "CLOSED_CHILD_OPEN_PARENT_READ_BACK",
+        "issues": [
+          {
+            "number": 21,
+            "state": "closed",
+            "body_sha256": "a801d33aa788a8b5d410a1a8cdbade503a99ed4e88502d3b15f109cd8986dac6",
+            "source_offline_and_disposition_only": true
+          },
+          {
+            "number": 3,
+            "state": "open",
+            "body_sha256": "63077dbcf5009d1238ef61d4e1e3cd0f51710c2cd09321eae0108fb6347922b9",
+            "source_offline_and_disposition_only": true
+          }
+        ],
+        "private_hardware_details_published": false
+      }
+    }
+  ],
+  "child_state_history": [
+    {
+      "repository": "sparklink",
+      "number": 21,
+      "title": "收尾：C/Python READ Provider 待决撤回、原期限与同伴隔离",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/21",
+      "parent": 3,
+      "state": "open",
+      "action": "created_and_native_parent_relation_verified",
+      "body_sha256": "4c4db6a597d2d6ad8a1193d33c07f640ea6a87dfb22cab1b55f101011aaea79f"
     }
   ]
 }

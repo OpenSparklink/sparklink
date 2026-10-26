@@ -2,11 +2,12 @@
 
 ## 本批 issue 状态核对
 
-在线再次读回保留原分类与全部验收；U#21 现有 SDK 生命周期工具及具名离线范围保留。
-剩余容量回收核对属于原第 4 条验收；本次维护不重跑或转授任何实机/形式化记录。
+U#21 已按原六项验收收尾，新增直接生产容量／引用回归及具名离线检查。
+该 issue 处置不授予当前 HEAD 整体实机资格，历史产物仍各自绑定编译和执行身份。
+父 U#3 与剩余服务、数据、安全和恢复范围继续开放。
 
 [逐项处理记录](issue-maintenance-20261026.json)记录已读回的 28 项正文和 7 个子项关系。
-原 issue 关闭 0 项；15 项有限收尾、3 项拆分父项、10 项长期跟踪仍按自身条件开放。
+原维护批次的原 issue 关闭 0 项，后续独立关闭子项 U#21；15 项有限收尾、3 项拆分父项、10 项长期跟踪仍按自身条件开放。
 本批只提供源码/离线状态核对：现行静默 D-Bus handler 测试与严格检查通过，
 Native retry 锁等待取消仍未覆盖；不新增实机资格，不改变下方准确产物记录。
 具体剩余条件与依赖见[唯一计划](implementation-plan.md)。
@@ -73,7 +74,7 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
 ```json
 {
   "id": "WP08-WP16-WP17-R5f160-provider-sdk-shared-frontend",
-  "state": "SDK_PROVIDER_LIFECYCLE_FOLLOWUP_IN_PROGRESS_ORIGINAL_SCOPE_OPEN",
+  "state": "SDK_PROVIDER_U21_FINITE_SCOPE_CLOSED_PARENT_AND_FULL_GOAL_OPEN",
   "production_behavior": "Expose dynamic read Providers through the ordinary Rust/C/Python SDK over the existing original Client and sole daemon SSAP Engine. Move the concrete bounded value frontend into the SDK and migrate slctl to the same dispatch/admission/reply/lifetime implementation; keep authorization decisions separate from supplied bytes. No additional Host, Engine, codec, stored-value fallback or controller privilege.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
@@ -220,7 +221,7 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
     "Natural fault RCA, nonmanual recovery, E/mixed/cold-ROM and production identity remain open; manual/hub/QMP actions or deliberate reconnect do not establish natural recovery.",
     "Retain all original failures, counterexamples, scope and qualification identities. UserHost remains low-priority planning; no original issue is closed by this batch transition."
   ],
-  "next": "Reconcile U21 original acceptance with its existing separate evidence and production SDK regressions; complete genuinely missing gates, then continue remaining SSAP/data/security work. Do not impose unrelated safety/recovery/release or all-control-plane prerequisites. Actual hardware state stays in the authorized local index.",
+  "next": "Resume U22: audit current implemented SSAP operations and exact evidence, choose the next missing real service behavior without a second Engine. Data/security work continues in parallel; parent/global race completion is not a prerequisite.",
   "issues": [
     "OpenSparklink/sparklink#3",
     "OpenSparklink/sparklink#8",
@@ -297,111 +298,22 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
     "scope": "Public source/offline issue status only; no qualification promotion."
   },
   "followups": {
-    "sdk_provider_pending_unregister": {
-      "state": "EXTERNAL_SDK_PENDING_UNREGISTER_OFFLINE_PASS_REAL_DEVICE_PENDING",
+    "sdk_provider_lifecycle_u21": {
+      "state": "CLOSED_ORIGINAL_SIX_ITEMS_REVIEWED",
       "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
-      "source_commit": "670e4aafa24a9a4b1ca160344e379ecb16f1e1fe",
-      "source_files": {
-        "tools/testing/application_client/client.c": "886fcf7d77cd5b69431f8ca12e9b0d25917c202bc4e4742e878f03b9e1ba3531",
-        "tools/testing/application_client/client.py": "4c3a009c293e3c58371720fcf8a60bef2a144eba8ed9beb66ebcb3bb1fa85167",
-        "crates/libsparklink/tests/application_ffi/read_provider.rs": "56a1b73a34b500efa251b48ce3cb6dc2fd3b3eb385ec0fa4b85c5df5e29e8db9",
-        "docs/reference/ssap-permissions.md": "efa9c7cbfd371a8fadbde6cfe967f582909d4c75fe4bb5336e388a9dbfc21bc4"
-      },
-      "behavior": "External C/Python consumers retain a delivered Provider request and readiness fd across actual SDK unregister; observe original deadline, unchanged info and ESHUTDOWN; independent real private D-Bus callback stops.",
-      "checks": [
-        "Existing application_ffi integration passed: each C/Python caller retains normal empty/value/error/expiry/quit, plus a fresh registration for pending unregister; distinct receipts for both scenarios",
-        "External C compiled with -std=c11 -Wall -Wextra -Werror",
-        "Pinned Rust 1.96.1 locked libsparklink all-targets/all-features clippy -D warnings",
-        "Workspace rustfmt check"
-      ],
-      "evidence_scope": "Same tested source files in the retained development checkout and public source commit; service metadata is fixture. Not a qualification of the whole public HEAD or daemon database/wire/VM/device behavior.",
-      "failed_attempt": "First local attempt could not locate dbus-daemon on default PATH; did not enter callback cases. Original log/artifacts retained; rerun explicitly selected existing private-bus daemon without changing assertions.",
-      "remaining": [
-        "Real pending caller loss and explicit service withdrawal in both SDK languages",
-        "Original deadline and late reply with actual paired evidence",
-        "Independent Owned guard and ordinary business isolation"
-      ],
-      "changes_runtime": false,
-      "hardware_replayed": false,
-      "whole_issue_complete": false
-    },
-    "sdk_provider_owner_exit_v2": {
-      "state": "SDK_PROVIDER_LIFECYCLE_GATES_IN_PROGRESS_PRIVATE_QUALIFICATION_SEPARATE",
-      "source": "c7feed7b4118efe747ca8b8366530b953f8960da",
-      "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
-      "behavior": "Existing owner-exit runner now uses actual Python/C SDK Providers across roles; validates SDK bind/approval/request before SIGKILL, retains original deadline, paired AF/4 and retired-handle checks, independent guard and baseline. Current host/guest require v2; old CLI v1 retains historical scope.",
+      "parent_state": "OPEN",
+      "source_commit": "792c56e99bdc6eaf16070c188c6031d459458e53",
+      "production_changed": false,
       "offline_checks": {
-        "provider_family": 55,
-        "target_runner": 31,
-        "channel_verdict": 33,
-        "strict_html": "passed;121 documents"
+        "sdk_provider_tests": 10,
+        "daemon_provider_tests": 10,
+        "actual_external_C_Python_integration": 1,
+        "strict_clippy": "PASS"
       },
-      "scope": "Tooling/fixture checks only; not actual USB/callback/VM qualification. Source is public; exact hardware attempts remain private.",
-      "remaining": [
-        "Actual pending SDK unregister with retained request/fd and independent guard",
-        "SDK original expiry/late reply",
-        "Exact-artifact qualification remains controlled by authorized local evidence; no whole issue or current HEAD result is inferred from this public source/offline summary."
-      ],
-      "whole_issue_complete": false,
-      "capability_refusal_v2": {
-        "source": "f1943b16f6c2ed684c6033ab867575b5da97ad3b",
-        "status": "IMPLEMENTED_SCOPED_OFFLINE_PASS",
-        "contract": "Actual unsupported notify uses existing CLI 5000ms original deadline; exact NotSupported remains mandatory. Original 10ms v1 and failures retain their scope; expired results cannot override the deadline. No protocol timer change or blind retry.",
-        "checks": {
-          "value_verifier": 22,
-          "runner": 31,
-          "provider_fixture": 38,
-          "actual_sdk_bounded": 4,
-          "actual_daemon_terminal": 1,
-          "strict_clippy": "PASS",
-          "strict_docs": "PASS_121_DOCUMENTS"
-        },
-        "scope": "Explicit fixtures/private bus for SDK clock and daemon production terminal functions; not firmware timing diagnosis or whole lifecycle proof.",
-        "remaining": "Accurate-artifact finite evidence closure, SDK pending unregister, expiry/late reply and original remaining gates."
-      }
-    },
-    "sdk_provider_unregister_v1": {
-      "state": "SOURCE_OFFLINE_AVAILABLE_PRIVATE_QUALIFICATION_SEPARATE",
-      "public_source": "8b55945aafbc82b097737fb8a8232f1085b18d2b",
-      "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
-      "behavior": "Existing SDK provider-unregister after actual pending READ, immutable info/readiness fd, ESHUTDOWN and original deadlines; live process through peer/retired-handle/independent-guard checks, ordinary business after cleanup. Shared owner-exit execution/wire helpers; distinct selectors and proof.",
-      "offline_checks": [
-        "10 unregister gate tests: actual CLI/boot selector, stale-input prelaunch refusal, original receipt/identity/deadline, missing capture, no SIGKILL substitution, business ordering",
-        "Owner-exit, Provider deadline, SDK Provider, target and channel fixture suites pass; exact counts in named logs",
-        "Strict HTML and 121-document inventory pass"
-      ],
-      "test_boundaries": "Literal packet/SDK transcript and controlled dependencies; no new actual device, callback, kernel concurrency or formal qualification. Metadata-only proof reconstruction is not replay.",
-      "retained_failures": "Initial test syntax error and target test missing explicit kernel-source directory retained; assertions unchanged, only syntax/environment corrected.",
-      "remaining": [
-        "Exact-artifact VM results and finite scope are maintained in authorized local qualification records, not inferred from the public source/offline summary.",
-        "SDK original expiry/late answer and full original U21 lifecycle requirements."
-      ],
-      "whole_issue_complete": false
-    },
-    "sdk_provider_deadline_v2": {
-      "state": "SOURCE_OFFLINE_AVAILABLE_PRIVATE_QUALIFICATION_SEPARATE",
-      "public_source": "47829c7ccbce9cee5484f79b824c41075a56d390",
-      "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
-      "behavior": "Current existing deadline runner uses C/Python SDK Providers, actual pending callback/approval, unchanged original deadlines, actual late request.reply ETIMEDOUT, persistent actor terminal, full paired capture bounded absence and independent ordinary CUTC business. Live host/guest pin v2; historical CLI v1 remains reader-only, with no qualification transfer.",
-      "offline_checks": [
-        "25 deadline oracle/barrier tests (including original CLI evidence, SDK shapes, full retained and business proof reconstruction and negative controls)",
-        "18 Owner-exit,10 unregister,7 SDK Provider,31 target and33 channel tests pass",
-        "Strict HTML and121-document inventory pass"
-      ],
-      "test_boundaries": "Literal SDK/packet fixtures and mocked process/clock for arrival-barrier tests; actual CLI prelaunch refusal is tested without launching a VM. Does not prove SDK execution, real daemon expiry, USB, kernel concurrency or hardware recovery.",
-      "retained_failures": "First SDK fixtures omitted original guard/pipe metadata; corrected fixture setup without weakening validators. Original live-runner test expected version1; now explicitly pins migrated SDK version2 and retains prelaunch rejection assertions. All original failure logs remain local.",
-      "exit_conditions": [
-        "Exact new compiled/executor artifact and SDK110 explicit US pair in dedicated VM",
-        "Both connection roles, actual late SDK API call returns ETIMEDOUT after original request deadline; wrong token/parser/ESHUTDOWN/ESTALE cannot substitute",
-        "Complete two-end USB READ evidence and no response/fallback/late value through cleanup, actual independent CUTC peer validation/reply, normal Provider cleanup",
-        "Independent raw audit and negative controls, then finite registration only; preserve Owner-exit/unregister records and original failures"
-      ],
-      "remaining": [
-        "Exact compiled/executor VM evidence and finite qualification must be checked in the authorized local index; public source/offline results do not imply performed, pending, passed or failed hardware execution.",
-        "U21 original acceptance audit and any missing original gates; no closure from a tool version or partial result."
-      ],
-      "formal_status": "NOT_RUN for this tool change; no new proof",
-      "whole_issue_complete": false
+      "failed_attempt": "daemon-provider-v1 selected zero tests: NOT_PASS; actual module-name v2 independently ran ten cases.",
+      "scope": "Only original U21 READ Provider lifecycle. Public source/offline and disposition; exact private qualification remains separately indexed, no current HEAD artifact transfer.",
+      "remaining": "U22 remaining SSAP operations/long values, U23 Profile and original data/security/recovery/deployment scope remain open.",
+      "private_hardware_published": false
     }
   },
   "implementation_sources_history": [
@@ -424,6 +336,116 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
     {
       "public_source": "f1943b16f6c2ed684c6033ab867575b5da97ad3b",
       "scope": "Current gate source/offline contract; historical SDK frontend source mappings retained separately. Public view does not infer private artifact results or whole HEAD qualification."
+    }
+  ],
+  "followup_history": [
+    {
+      "sdk_provider_pending_unregister": {
+        "state": "EXTERNAL_SDK_PENDING_UNREGISTER_OFFLINE_PASS_REAL_DEVICE_PENDING",
+        "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
+        "source_commit": "670e4aafa24a9a4b1ca160344e379ecb16f1e1fe",
+        "source_files": {
+          "tools/testing/application_client/client.c": "886fcf7d77cd5b69431f8ca12e9b0d25917c202bc4e4742e878f03b9e1ba3531",
+          "tools/testing/application_client/client.py": "4c3a009c293e3c58371720fcf8a60bef2a144eba8ed9beb66ebcb3bb1fa85167",
+          "crates/libsparklink/tests/application_ffi/read_provider.rs": "56a1b73a34b500efa251b48ce3cb6dc2fd3b3eb385ec0fa4b85c5df5e29e8db9",
+          "docs/reference/ssap-permissions.md": "efa9c7cbfd371a8fadbde6cfe967f582909d4c75fe4bb5336e388a9dbfc21bc4"
+        },
+        "behavior": "External C/Python consumers retain a delivered Provider request and readiness fd across actual SDK unregister; observe original deadline, unchanged info and ESHUTDOWN; independent real private D-Bus callback stops.",
+        "checks": [
+          "Existing application_ffi integration passed: each C/Python caller retains normal empty/value/error/expiry/quit, plus a fresh registration for pending unregister; distinct receipts for both scenarios",
+          "External C compiled with -std=c11 -Wall -Wextra -Werror",
+          "Pinned Rust 1.96.1 locked libsparklink all-targets/all-features clippy -D warnings",
+          "Workspace rustfmt check"
+        ],
+        "evidence_scope": "Same tested source files in the retained development checkout and public source commit; service metadata is fixture. Not a qualification of the whole public HEAD or daemon database/wire/VM/device behavior.",
+        "failed_attempt": "First local attempt could not locate dbus-daemon on default PATH; did not enter callback cases. Original log/artifacts retained; rerun explicitly selected existing private-bus daemon without changing assertions.",
+        "remaining": [
+          "Real pending caller loss and explicit service withdrawal in both SDK languages",
+          "Original deadline and late reply with actual paired evidence",
+          "Independent Owned guard and ordinary business isolation"
+        ],
+        "changes_runtime": false,
+        "hardware_replayed": false,
+        "whole_issue_complete": false
+      },
+      "sdk_provider_owner_exit_v2": {
+        "state": "SDK_PROVIDER_LIFECYCLE_GATES_IN_PROGRESS_PRIVATE_QUALIFICATION_SEPARATE",
+        "source": "c7feed7b4118efe747ca8b8366530b953f8960da",
+        "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
+        "behavior": "Existing owner-exit runner now uses actual Python/C SDK Providers across roles; validates SDK bind/approval/request before SIGKILL, retains original deadline, paired AF/4 and retired-handle checks, independent guard and baseline. Current host/guest require v2; old CLI v1 retains historical scope.",
+        "offline_checks": {
+          "provider_family": 55,
+          "target_runner": 31,
+          "channel_verdict": 33,
+          "strict_html": "passed;121 documents"
+        },
+        "scope": "Tooling/fixture checks only; not actual USB/callback/VM qualification. Source is public; exact hardware attempts remain private.",
+        "remaining": [
+          "Actual pending SDK unregister with retained request/fd and independent guard",
+          "SDK original expiry/late reply",
+          "Exact-artifact qualification remains controlled by authorized local evidence; no whole issue or current HEAD result is inferred from this public source/offline summary."
+        ],
+        "whole_issue_complete": false,
+        "capability_refusal_v2": {
+          "source": "f1943b16f6c2ed684c6033ab867575b5da97ad3b",
+          "status": "IMPLEMENTED_SCOPED_OFFLINE_PASS",
+          "contract": "Actual unsupported notify uses existing CLI 5000ms original deadline; exact NotSupported remains mandatory. Original 10ms v1 and failures retain their scope; expired results cannot override the deadline. No protocol timer change or blind retry.",
+          "checks": {
+            "value_verifier": 22,
+            "runner": 31,
+            "provider_fixture": 38,
+            "actual_sdk_bounded": 4,
+            "actual_daemon_terminal": 1,
+            "strict_clippy": "PASS",
+            "strict_docs": "PASS_121_DOCUMENTS"
+          },
+          "scope": "Explicit fixtures/private bus for SDK clock and daemon production terminal functions; not firmware timing diagnosis or whole lifecycle proof.",
+          "remaining": "Accurate-artifact finite evidence closure, SDK pending unregister, expiry/late reply and original remaining gates."
+        }
+      },
+      "sdk_provider_unregister_v1": {
+        "state": "SOURCE_OFFLINE_AVAILABLE_PRIVATE_QUALIFICATION_SEPARATE",
+        "public_source": "8b55945aafbc82b097737fb8a8232f1085b18d2b",
+        "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
+        "behavior": "Existing SDK provider-unregister after actual pending READ, immutable info/readiness fd, ESHUTDOWN and original deadlines; live process through peer/retired-handle/independent-guard checks, ordinary business after cleanup. Shared owner-exit execution/wire helpers; distinct selectors and proof.",
+        "offline_checks": [
+          "10 unregister gate tests: actual CLI/boot selector, stale-input prelaunch refusal, original receipt/identity/deadline, missing capture, no SIGKILL substitution, business ordering",
+          "Owner-exit, Provider deadline, SDK Provider, target and channel fixture suites pass; exact counts in named logs",
+          "Strict HTML and 121-document inventory pass"
+        ],
+        "test_boundaries": "Literal packet/SDK transcript and controlled dependencies; no new actual device, callback, kernel concurrency or formal qualification. Metadata-only proof reconstruction is not replay.",
+        "retained_failures": "Initial test syntax error and target test missing explicit kernel-source directory retained; assertions unchanged, only syntax/environment corrected.",
+        "remaining": [
+          "Exact-artifact VM results and finite scope are maintained in authorized local qualification records, not inferred from the public source/offline summary.",
+          "SDK original expiry/late answer and full original U21 lifecycle requirements."
+        ],
+        "whole_issue_complete": false
+      },
+      "sdk_provider_deadline_v2": {
+        "state": "SOURCE_OFFLINE_AVAILABLE_PRIVATE_QUALIFICATION_SEPARATE",
+        "public_source": "47829c7ccbce9cee5484f79b824c41075a56d390",
+        "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
+        "behavior": "Current existing deadline runner uses C/Python SDK Providers, actual pending callback/approval, unchanged original deadlines, actual late request.reply ETIMEDOUT, persistent actor terminal, full paired capture bounded absence and independent ordinary CUTC business. Live host/guest pin v2; historical CLI v1 remains reader-only, with no qualification transfer.",
+        "offline_checks": [
+          "25 deadline oracle/barrier tests (including original CLI evidence, SDK shapes, full retained and business proof reconstruction and negative controls)",
+          "18 Owner-exit,10 unregister,7 SDK Provider,31 target and33 channel tests pass",
+          "Strict HTML and121-document inventory pass"
+        ],
+        "test_boundaries": "Literal SDK/packet fixtures and mocked process/clock for arrival-barrier tests; actual CLI prelaunch refusal is tested without launching a VM. Does not prove SDK execution, real daemon expiry, USB, kernel concurrency or hardware recovery.",
+        "retained_failures": "First SDK fixtures omitted original guard/pipe metadata; corrected fixture setup without weakening validators. Original live-runner test expected version1; now explicitly pins migrated SDK version2 and retains prelaunch rejection assertions. All original failure logs remain local.",
+        "exit_conditions": [
+          "Exact new compiled/executor artifact and SDK110 explicit US pair in dedicated VM",
+          "Both connection roles, actual late SDK API call returns ETIMEDOUT after original request deadline; wrong token/parser/ESHUTDOWN/ESTALE cannot substitute",
+          "Complete two-end USB READ evidence and no response/fallback/late value through cleanup, actual independent CUTC peer validation/reply, normal Provider cleanup",
+          "Independent raw audit and negative controls, then finite registration only; preserve Owner-exit/unregister records and original failures"
+        ],
+        "remaining": [
+          "Exact compiled/executor VM evidence and finite qualification must be checked in the authorized local index; public source/offline results do not imply performed, pending, passed or failed hardware execution.",
+          "U21 original acceptance audit and any missing original gates; no closure from a tool version or partial result."
+        ],
+        "formal_status": "NOT_RUN for this tool change; no new proof",
+        "whole_issue_complete": false
+      }
     }
   ]
 }

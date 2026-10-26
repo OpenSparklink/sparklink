@@ -77,6 +77,61 @@ class ActualValueEvidence(unittest.TestCase):
         row,matched,_=self.fixture();row['ssap_update_local_rejection_required']=True;row['unsupported_incoming']=[]
         with self.assertRaises(CaptureError):corroborate(row,matched)
 
+    def refusal_v2(self, error=None):
+        # Invokes the actual gate command path. Explicit receipts are fixtures,
+        # not a controller, daemon, SDK, clock or RF qualification.
+        from ws73_ssap_value import execute_update_rejections, UPDATE_REJECTION_ERROR
+        row, matched, wire = self.fixture(); calls = []; saved = []
+        def command(args, timeout, **kwargs):
+            calls.append((args, timeout, kwargs))
+            return dict(args=args, exit=1, stderr=error or UPDATE_REJECTION_ERROR+'\n')
+        run = SimpleNamespace(args=SimpleNamespace(slctl='/usr/bin/slctl'), command=command,
+                              save=lambda: saved.append(copy.deepcopy(row)))
+        local = [dict(discovered_handle=2), dict(discovered_handle=2)]
+        return run, row, local, calls, saved, matched, wire
+
+    def test_current_refusal_command_and_proof_preserve_original_budget(self):
+        from ws73_ssap_value import execute_update_rejections, validate_update_rejections
+        run, row, local, calls, saved, matched, wire = self.refusal_v2()
+        execute_update_rejections(run, row, local)
+        self.assertEqual(len(calls), 2); self.assertEqual(len(saved), 2)
+        self.assertTrue(all(c[0][-2:] == ['notify', '5000'] and c[1] == 10 for c in calls))
+        self.assertEqual(validate_update_rejections(row, expected_version=2)['wait_ms'], 5000)
+        proof, credit = corroborate(row, matched)
+        self.assertEqual(proof[0]['local_update_rejection']['version'], 2)
+        self.assertEqual(credit, {0:24,1:24}); self.assertFalse(wire)
+
+    def test_timeout_remains_failure_saved_once_without_retry(self):
+        from ws73_ssap_value import execute_update_rejections
+        run, row, local, calls, saved, _, _ = self.refusal_v2('error: channel: Connection timed out (os error 110)\n')
+        with self.assertRaisesRegex(CaptureError, 'must explicitly reject'):
+            execute_update_rejections(run, row, local)
+        self.assertEqual(len(calls), 1); self.assertEqual(len(saved), 1)
+        self.assertIn('timed out', saved[0]['unsupported_incoming'][0]['receipt']['stderr'])
+
+    def test_current_refusal_rejects_relabelled_deadlines_wrong_owner_and_error(self):
+        from ws73_ssap_value import execute_update_rejections, validate_update_rejections
+        run, original, local, *_ = self.refusal_v2(); execute_update_rejections(run, original, local)
+        for kind in ('legacy', 'boolean', 'unknown', 'budget', 'command', 'owner', 'timeout', 'mixed_error', 'success', 'duplicate'):
+            row = copy.deepcopy(original); receipt = row['unsupported_incoming'][0]['receipt']
+            if kind == 'legacy': row.pop('ssap_update_local_rejection_version')
+            elif kind == 'boolean': row['ssap_update_local_rejection_version'] = True
+            elif kind == 'unknown': row['ssap_update_local_rejection_version'] = 3
+            elif kind == 'budget': row['ssap_update_local_rejection_wait_ms'] = 10
+            elif kind == 'command': receipt['args'][-1] = '10'
+            elif kind == 'owner': receipt['args'][2] = '/other'
+            elif kind == 'timeout': receipt['stderr'] = 'error: channel: Connection timed out (os error 110)'
+            elif kind == 'mixed_error': receipt['stderr'] += '\nConnection timed out'
+            elif kind == 'success': receipt['exit'] = 0
+            elif kind == 'duplicate': row['unsupported_incoming'][1] = row['unsupported_incoming'][0]
+            with self.subTest(kind=kind), self.assertRaises(CaptureError):
+                validate_update_rejections(row, expected_version=2)
+        # A historical 10ms record is still v1, never current v2.
+        row = copy.deepcopy(original); row.pop('ssap_update_local_rejection_version'); row.pop('ssap_update_local_rejection_wait_ms')
+        for item in row['unsupported_incoming']: item['receipt']['args'][-1] = '10'
+        self.assertEqual(validate_update_rejections(row)['version'], 1)
+        with self.assertRaises(CaptureError): validate_update_rejections(row, expected_version=2)
+
     def length_fixture(self):
         """Verifier fixture only; no claim to execute a real peer or decoder."""
         row,matched,wire=self.uuid_fixture(lengths=True)

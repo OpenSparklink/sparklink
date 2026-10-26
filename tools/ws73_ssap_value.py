@@ -9,6 +9,63 @@ LENGTHS = (32,32,32,32,0,1,248,249,250,251,252,253,254,255,1024,2037)
 FRAGMENT_LENGTHS = LENGTHS + (2038,2039,2040,2041,2042)
 
 
+
+# Capability denial and deadline exhaustion are different gates. V1 retained its
+# original 10ms request; v2 uses the CLI default budget, never a renewed deadline.
+UPDATE_REJECTION_VERSION = 2
+UPDATE_REJECTION_WAIT_MS = 5000
+UPDATE_REJECTION_REASON = 'peer has not advertised requested property update capabilities'
+UPDATE_REJECTION_ERROR = 'error: broker: org.freedesktop.DBus.Error.NotSupported: ' + UPDATE_REJECTION_REASON
+
+
+def validate_update_rejections(row, *, expected_version=None):
+    version = row.get('ssap_update_local_rejection_version', 1)
+    if (type(version) is not int or version not in (1, 2)
+            or expected_version is not None and version != expected_version):
+        raise CaptureError('unsupported local receive evidence version')
+    wait = 10 if version == 1 else UPDATE_REJECTION_WAIT_MS
+    if version == 2 and (type(row.get('ssap_update_local_rejection_wait_ms')) is not int
+                        or row['ssap_update_local_rejection_wait_ms'] != wait):
+        raise CaptureError('original capability refusal budget required')
+    if version == 1 and 'ssap_update_local_rejection_wait_ms' in row:
+        raise CaptureError('legacy evidence cannot inherit a new request budget')
+    rows = row.get('unsupported_incoming', [])
+    if (row.get('ssap_update_local_rejection_required') is not True or len(rows) != 2
+            or any(type(x.get('sender')) is not int or type(x.get('target')) is not int for x in rows)
+            or {x['sender'] for x in rows} != {0, 1}):
+        raise CaptureError('both actual peer local receive rejections required')
+    for item in rows:
+        sender, target = item['sender'], item['target']
+        receipt = item['receipt']; source = row['owners'][sender]
+        expected = ['ssap-receive', source['object']['path'], str(item['handle']), 'notify', str(wait)]
+        if (target != 1 - sender or receipt['exit'] == 0 or receipt['args'][-5:] != expected
+                or UPDATE_REJECTION_REASON not in receipt['stderr']):
+            raise CaptureError('actual unsupported local receive receipt required')
+        if version == 2 and (receipt['stderr'].strip() != UPDATE_REJECTION_ERROR
+                or receipt['args'][1:] != ['--adapter', source['owner']['path'], *expected]):
+            raise CaptureError('exact current owner and typed NotSupported required, not timeout')
+    return dict(version=version, wait_ms=wait, receipts=rows)
+
+
+def execute_update_rejections(run, row, local):
+    row.update(ssap_update_local_rejection_required=True,
+               ssap_update_local_rejection_version=UPDATE_REJECTION_VERSION,
+               ssap_update_local_rejection_wait_ms=UPDATE_REJECTION_WAIT_MS,
+               unsupported_incoming=[])
+    for sender, target in ((0, 1), (1, 0)):
+        source = row['owners'][sender]; prop = local[target]
+        args = [str(run.args.slctl), '--adapter', source['owner']['path'], 'ssap-receive',
+                source['object']['path'], str(prop['discovered_handle']), 'notify',
+                str(UPDATE_REJECTION_WAIT_MS)]
+        receipt = run.command(args, 10, collection='ssap_values')
+        row['unsupported_incoming'].append(dict(sender=sender, target=target,
+                                               handle=prop['discovered_handle'], receipt=receipt))
+        run.save()  # Preserve the first failure before leaving; no retry.
+        if receipt['exit'] == 0 or receipt['stderr'].strip() != UPDATE_REJECTION_ERROR:
+            raise CaptureError('non-notifying actual peer must explicitly reject local receive interest')
+    validate_update_rejections(row, expected_version=UPDATE_REJECTION_VERSION)
+
+
 def physical_sends(packet):
     if 'ssap_fragments' in packet:return sum(physical_sends(p) for p in packet['ssap_fragments'])
     return len(packet.get('fragments',[packet]))
@@ -280,12 +337,7 @@ def execute(run,row,*,value_command=None,services=None,local_value_command=None,
     with services(run,row,command) if services is not None else manager_services() as local:
         from ws73_ssap_discovery import execute as discover
         discover(run,row,command,local)
-        row['unsupported_incoming']=[]
-        for sender,target in [(0,1),(1,0)]:
-            source=owners[sender];prop=local[target]
-            args=[str(run.args.slctl),'--adapter',source['owner']['path'],'ssap-receive',source['object']['path'],str(prop['discovered_handle']),'notify','10']
-            receipt=run.command(args,10,collection='ssap_values');row['unsupported_incoming'].append(dict(sender=sender,target=target,handle=prop['discovered_handle'],receipt=receipt));run.save()
-            if receipt['exit']==0 or 'peer has not advertised requested property update capabilities' not in receipt['stderr']:raise CaptureError('non-notifying actual peer must explicitly reject local receive interest')
+        execute_update_rejections(run,row,local)
         if lengths:
             for sender,target in [(0,1),(1,0)]:
                 source=owners[sender];prop=local[target]
@@ -425,12 +477,9 @@ def corroborate(row,matched):
         elif row.get('ssap_read_limits'):raise CaptureError('read limits cannot claim legacy length qualification')
     elif row.get('ssap_length_rejections') or 'ssap_length_mtu' in row:raise CaptureError('unexpected unrequested SSAP length evidence')
     if row.get('ssap_update_local_rejection_required'):
-        rows=row.get('unsupported_incoming',[])
-        if len(rows)!=2 or {x['sender'] for x in rows}!={0,1}:raise CaptureError('both actual peer local receive rejections required')
-        for item in rows:
-            sender,target=item['sender'],item['target'];r=item['receipt'];source=owners[sender]
-            expected=['ssap-receive',source['object']['path'],str(item['handle']),'notify','10']
-            if target!=1-sender or r['exit']==0 or r['args'][-5:]!=expected or 'peer has not advertised requested property update capabilities' not in r['stderr']:raise CaptureError('actual unsupported local receive receipt required')
+        rejection = validate_update_rejections(row)
+        if rejection['version'] == 2:
+            proof[0]['local_update_rejection'] = rejection
     return proof,credit
 
 

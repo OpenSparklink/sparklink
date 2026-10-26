@@ -31,6 +31,13 @@ async fn live_deadline_preserves_success_and_typed_inner_errors() -> anyhow::Res
     assert_eq!(bounded(&client, original, async { Ok(42) }).await?, 42);
     assert!(matches!(
         bounded::<()>(&client, original, async {
+            Err(zbus::Error::from(zbus::fdo::Error::NotSupported("capability denial".into())).into())
+        }).await,
+        Err(ApplicationError::Bus(zbus::Error::FDO(error)))
+            if matches!(*error, zbus::fdo::Error::NotSupported(_))
+    ));
+    assert!(matches!(
+        bounded::<()>(&client, original, async {
             Err(ApplicationError::Invalid("explicit pre-deadline refusal"))
         })
         .await,
@@ -51,6 +58,7 @@ async fn a_ready_inner_result_cannot_bypass_the_original_deadline() -> anyhow::R
     let (_server, client) = client(&bus).await?;
     for outcome in [
         Ok(()),
+        Err(zbus::Error::from(zbus::fdo::Error::NotSupported("capability denial".into())).into()),
         Err(ApplicationError::Invalid("explicit ready error")),
         Err(std::io::Error::from_raw_os_error(nix::libc::EACCES).into()),
     ] {

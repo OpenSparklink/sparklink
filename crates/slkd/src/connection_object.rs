@@ -2342,11 +2342,19 @@ mod grant_tests {
             ),
             Err(zbus::fdo::Error::Failed(_))
         ));
+        assert!(matches!(
+            finish_scoped_ssap_call::<()>(
+                fresh,
+                Err(zbus::fdo::Error::NotSupported("capability denial".into()))
+            ),
+            Err(zbus::fdo::Error::NotSupported(_))
+        ));
         let expired =
             slk_channel::deadline::Deadline::after(std::time::Duration::from_millis(5)).unwrap();
         tokio::time::sleep_until(expired.instant().into()).await;
         for result in [
             Ok(()),
+            Err(zbus::fdo::Error::NotSupported("capability denial".into())),
             Err(zbus::fdo::Error::Failed("ready inner failure".into())),
         ] {
             assert!(matches!(

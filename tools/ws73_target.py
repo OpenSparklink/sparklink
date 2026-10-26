@@ -2402,6 +2402,8 @@ def _run(args):
                         if not all(row.get('ssap_read_uuid_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires actual ReadByUUID values')
                         m['ssap_read_uuid_acceptance']=True
                         if not all(row.get('ssap_update_local_rejection_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires unsupported local update capability refusal')
+                        from ws73_ssap_value import validate_update_rejections, UPDATE_REJECTION_VERSION
+                        for row in control['channel_socket']:validate_update_rejections(row,expected_version=UPDATE_REJECTION_VERSION)
                         m['ssap_local_update_rejection_acceptance']=True
                         if not all(row.get('ssap_discovery_required') is True for row in control['channel_socket']):raise ValueError('current socket gate requires actual SSAP discovery')
                         m['ssap_discovery_acceptance']=True

@@ -8,7 +8,7 @@
 
 [逐项处置及最新读回](issue-maintenance-20261026.json)和[唯一计划](implementation-plan.md)
 说明具体剩余条件：U#1 Native retry 取消缺口仍在；U#10 自然恢复仍未闭合；
-WRITE 原期限 gate 已实现，不能继续列为缺失，但 owner 退出／Down 等仍未完成。
+WRITE 原期限及 owner 退出 gate 已实现，不能继续列为缺失；准确产物范围分别登记，Down/restart 等仍未完成。
 
 本批只有源码、在线任务、留存报告/证明边界和准确源码 CI 的复核，没有新增实机、形式化
 或完整回归资格。运行代码、编译/执行身份、以下资格记录及历史失败均未改动；
@@ -75,9 +75,9 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-WP16-WP17-U22-write-original-deadline",
-  "state": "WRITE_ORIGINAL_DEADLINE_SOURCE_OFFLINE_AVAILABLE",
-  "production_behavior": "Extend the existing Provider original-deadline runner and actual C/Python caller checks to verified type0 WRITE. Preserve requester/Provider original deadlines; a matching late SDK call must return ETIMEDOUT, leave app value unchanged and preserve actor terminal. Require paired original request, complete bounded response window and subsequent ordinary channel business. No new Engine, success response or recovery claim.",
+  "id": "WP08-WP16-WP17-U22-write-pending-owner-exit",
+  "state": "WRITE_OWNER_EXIT_SOURCE_OFFLINE_AVAILABLE",
+  "production_behavior": "Extend the existing pending SDK/guard runner and owner-exit oracle to typed verified WRITE. Validate actual callback identity/value before SIGKILL; bound cleanup and peer refusal by original requester/Provider/supervisor deadlines. Require paired literal WRITE refusal, retired handle READ rejection, independent live guard and subsequent ordinary business. No new Host/Engine, no synthetic success and no dead-process memory rollback claim.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
     "WP08",
@@ -87,54 +87,48 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
   "records": [],
   "predecessor_archive": {
     "history": "batch_history",
-    "id": "WP08-WP16-WP17-U22-write-pending-withdrawal",
-    "canonical_sha256": "7c2e080ed3d91d234981eb3b0d796531d39a5e4eaf2fba5b66642b6ed2b1a4f7"
+    "id": "WP08-WP16-WP17-U22-write-original-deadline",
+    "canonical_sha256": "8def5627682982f74bacde378b99b1ecf4aafd46a4769df003002206a576d3b1"
   },
   "implementation_sources": {
-    "public_source": "f128face4e28efa4d0e1ded2faa84cbc50ade401",
-    "scope": "Source/offline identity; compiled/execution/report identities and private hardware scope remain separate."
+    "public_source": "dfaf6ec23557caebf3d8ae72612de605c0bd84f4",
+    "scope": "Source/offline identity; compilation/execution/report and exact private hardware scope remain separate."
   },
   "invariants": [
-    "Original controller/generation/lifetime/security epoch/TCID/PI and original absolute deadline; Native admission before requesting application effects and before response. Snapshot checks cannot roll back an already started application effect.",
-    "Write-only type0 property, original unique owner, one-time binding, no stored value fallback. Permission approval and application success remain separate.",
-    "Bounded original server queue and callback; WriteCommand never owes a response. Verified WriteReq requires actual accepted bytes; malformed, late, mismatched replies cannot produce success.",
-    "One front-of-queue future retains only its original Wire reference. Cancellation releases that reference; no detached task, extra Session or new data path.",
-    "Original production paths and all original U22 conditions remain. Offline fixture transport is explicit cfg(test); it is not Native/RF proof.",
-    "READ/WRITE use one bounded Dispatcher with 16 shared slots. Only final request and callback release returns a slot; readiness fd duplicates do not retain reply authority.",
-    "Typed WRITE snapshot preserves original metadata and complete value, no truncation. Invalid reply does not consume reply authority; successful verify requires the exact proposed value.",
-    "Local reply acceptance is separate from callback drain and peer application handling. Partial endpoint-install failure removes only this attempt's newly installed endpoint; owner-close and original deadline remain authoritative.",
-    "Explicit write-only 0x06 publisher and original parameterized controller/generation. Wrong value/token does not consume the pending request; no implicit acceptance or staging readback.",
-    "Input budget includes full 2042-byte value plus finite command overhead. Local accepted memory, SDK reply acceptance and actual remote callback receipt remain separate."
+    "Actual pending verified WRITE identity and complete payload precede owner kill.",
+    "No deadline renewal; kill, cleanup and peer result bounded by original requester, Provider and supervisor deadlines.",
+    "Original owner dies; old handle cannot deliver cached value; independent guard and ordinary peer business remain separately checked.",
+    "SDK error/USB completion is not peer delivery; paired bytes and real application result are required.",
+    "READ historical schemas, bounded queues, production Engine/Session/Grant/credit/Ticket and original qualification identities remain unchanged."
   ],
   "offline_checks": {
     "runner": {
       "result": "PASS",
-      "tests": 160,
-      "scope": "New typed verified WRITE deadline/late reply/no-effect, both-end absence/identity/clock/business/manifest negative controls, exact CLI/boot and retained READ/WRITE/unregister/channel/target checks."
+      "tests": 169,
+      "scope": "Typed WRITE owner-exit, original callback/kill/cleanup deadline, paired literal bytes, guard/ordinary-business and identity/manifest negative controls, actual host CLI/boot parser, prior READ/WRITE/unregister/deadline/channel/target cases."
     },
-    "external": "Actual C/Python private-D-Bus SDK check PASS including verified WriteReq expiry and unchanged prior app value; broker metadata/transport fixtures, no Engine/kernel/RF claim.",
-    "strict": "libsparklink --all-targets Clippy -D warnings, locked/offline Rust1.96.1, fmt, Python compile, shell syntax PASS. Eight-job global build lock retained.",
-    "docs": "Locked strict HTML/inventory results recorded in final delivery; no device operation by docs.",
-    "failures": "Wrong-worktree invocation and shared constant shadow failure retained; corrected invocation/import alias without assertion weakening. Formatting-only changes rechecked against actual C/Python test."
+    "rust": "No production Rust or C/Python caller implementation changes; existing SDK tests retain original source identity and were not relabeled as rerun. Fresh signed bundle/prepared inputs use the original fixed build and global lock, eight-job cap.",
+    "docs": "Strict locked public HTML/inventory PASS; final canonical/private checks recorded in delivery. No device operations by documentation.",
+    "failures": "First fixture run caught WRITE status index inherited from READ; fixed typed index. Invalid-token test now rejects boolean token rather than assuming an arbitrary consistent positive token must fail. Original failure log retained. Public/private documentation mismatch stopped copy; only the new section was applied, preserving private history."
   },
-  "offline_status": "ONLY_NAMED_CHECKS_PASS",
+  "offline_status": "SCOPED_OFFLINE_PASS",
   "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "Exact-artifact qualification is maintained in authorized local records; public source/offline summary neither grants hardware qualification nor infers execution absent.",
+  "hardware_status": "Exact-artifact qualification remains in authorized local records; public source/offline summary neither grants hardware qualification nor implies execution absent.",
   "exit_conditions": [
-    "Actual typed verified WRITE callback before its original deadline; valid matching late answer invokes SDK and is rejected, no app value applied.",
-    "Paired original request, bounded full response window, persistent terminal and after-expiry ordinary business; finite clock assumptions remain explicit.",
-    "Fresh tool/input identity, complete terminal and fail-closed evidence reconstruction, negative controls and private retained material closure.",
-    "Keep existing positive WRITE and READ/withdrawal qualification identities separate; complete owner-loss/Down and remaining original U22 operations next."
+    "Actual typed callback before destructive action, original process exit and cleanup within unchanged deadlines.",
+    "Original peer WRITE refusal, retired READ4, independent guard and ordinary random business corroborated from paired bytes and actual SDK outputs.",
+    "Exact fresh source/artifact/tool/firmware closure, terminal VM and fail-closed retained evidence; no private detail published.",
+    "Keep prior positive WRITE/READ/expiry/withdrawal identities separate; U22 original six requirements stay open."
   ],
   "remaining_conditions": [
-    "WRITE pending owner loss, connection Down and daemon/restart combinations with original deadlines, old replies and peer isolation.",
-    "Command/long value/method/descriptor/update and all original U22 SSAP acceptance.",
-    "Full S0-S6/19WP/10FV/12DG, natural root cause/nonmanual recovery and unchanged data/security/Profile/deployment/release scope."
+    "WRITE connection Down, daemon restart and old-lifetime combinations under original deadlines.",
+    "Long values, method/descriptor/update and full original U22 operation matrix.",
+    "Full S0-S6/19WP/10FV/12DG, remaining data/security/Profile/deployment/release, natural root cause and nonmanual recovery."
   ],
   "next": [
-    "Reuse original shared pending-case runner for WRITE owner exit, then Down and old-lifetime combinations.",
-    "Continue long values and remaining SSAP operations through unique Engine/Session; data/security remain parallel.",
-    "UserHost remains P4 and full control-plane competition is not a collective prerequisite."
+    "Reuse the same Engine/Session and pending request barrier for WRITE Down/restart and stale lifetime rejection.",
+    "Continue long values and remaining SSAP operations alongside data/security; no collective control-plane prerequisite.",
+    "UserHost remains low-priority P4 planning."
   ],
   "issues": [
     "OpenSparklink/sparklink#22",
@@ -143,20 +137,36 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
     "OpenSparklink/linux#17"
   ],
   "issue_sync": {
-    "issue": "sparklink#22",
+    "issues": [
+      "sparklink#22",
+      "sparklink#3"
+    ],
     "state": "open",
-    "body_sha256": "c28c37ba25e135ec73be72c6a13e5be25f5ecc06b516d6644cf4a01d93b4681e",
+    "updates": [
+      {
+        "repository": "sparklink",
+        "number": 22,
+        "prior_body_sha256": "c28c37ba25e135ec73be72c6a13e5be25f5ecc06b516d6644cf4a01d93b4681e",
+        "body_sha256": "3662934200fc4e1a03f75479de7c602a4735452bc36dcd9ddb86ad4fc01876d8"
+      },
+      {
+        "repository": "sparklink",
+        "number": 3,
+        "prior_body_sha256": "27cbeeb6fcc8161ab84a2b52f026aceb92d61e621da4f5d484b7e7b5d03490a0",
+        "body_sha256": "64ceabe462b8189e87bea9cd5c523cea80ba3812043841af380b34f2f983816d"
+      }
+    ],
     "source_offline_only": true,
-    "original_six_criteria_unchanged": true
+    "original_criteria_unchanged": true
   },
   "public_scope": "Only source/offline/disposition. Private device details and execution identities remain local.",
   "issue_maintenance": {
     "record": "project/issue-maintenance-20261026.json",
     "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
     "last_readback": "project/issue-maintenance-20261026.json#/followup_readback",
-    "scope": "Bounded maintenance remains complete; U22 current source/offline table replaced, original six criteria and parent stay open."
+    "scope": "Previous bounded maintenance complete; U22/U3 source/offline scope updated without altering original criteria or reopening closed READ scope."
   },
-  "qualification_boundary": "Public source/offline only; original private exact-artifact evidence does not qualify a whole latest tree."
+  "qualification_boundary": "Public source/offline only; private exact-artifact qualification is not a whole latest HEAD qualification."
 }
 ```
 

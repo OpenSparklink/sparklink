@@ -686,7 +686,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-26T21:41:01.458707+00:00",
+  "updated_at_utc": "2026-10-26T21:54:16.263655+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -5206,8 +5206,24 @@
   "issue_maintenance": {
     "record": "project/issue-maintenance-20261026.json",
     "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
-    "execution_dependency": "Bounded maintenance complete; continue WRITE owner loss/Down and remaining SSAP/data/security scope, no collective control-plane prerequisite.",
-    "followup_readback": "project/issue-maintenance-20261026.json#/followup_readback"
+    "execution_dependency": "Bounded maintenance complete. Resume U22 pending WRITE owner exit/Down/restart and remaining SSAP/data/security delivery. U1 finite cancellation fix remains independent; natural root cause and non-manual recovery remain open.",
+    "followup_readback": "project/issue-maintenance-20261026.json#/followup_readback",
+    "latest_readback_at": "2026-10-26T21:54:16.263655+00:00",
+    "latest_actions": {
+      "reviewed": 35,
+      "updated": [
+        "U#1",
+        "U#3",
+        "U#10",
+        "K#17",
+        "K#19"
+      ],
+      "newly_closed": [],
+      "new_children": [],
+      "retained_closed": [
+        "U#21"
+      ]
+    }
   },
   "historical_goal_turn_audits": [
     {

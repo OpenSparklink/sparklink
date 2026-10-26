@@ -244,7 +244,14 @@
           "receipt": null
         }
       }
-    ]
+    ],
+    "issue_maintenance": {
+      "id": "issue-maintenance-20261026",
+      "status": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
+      "record": "project/issue-maintenance-20261026.json",
+      "next": "Bounded maintenance complete; resume this original feature batch without waiting for unrelated parent issues.",
+      "scope": "Public source/offline issue status only; no qualification promotion."
+    }
   },
   "overall_required_records": [
     "deadline-real21",

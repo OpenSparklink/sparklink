@@ -1,0 +1,459 @@
+{
+  "schema_version": 1,
+  "id": "issue-maintenance-20261026",
+  "status": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
+  "scope": "Source/offline issue maintenance only; full S0-S6/19WP/10FV/12DG, original acceptance, VM-only and UserHost P4 unchanged. Not a new goal or feature qualification.",
+  "source_review": {
+    "sparklink": "3f39f2510933666be27a0d595beebe7181798100",
+    "linux": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
+  },
+  "online_readback_utc": "2026-10-26T12:09:11.808795+00:00",
+  "counts": {
+    "originals_reviewed": 28,
+    "bodies_updated": 28,
+    "closed": 0,
+    "finite_followups": 15,
+    "split_parents": 3,
+    "long_term": 10,
+    "children_created": 7
+  },
+  "originals": [
+    {
+      "repository": "linux",
+      "number": 1,
+      "title": "明确 DLI Host、Controller Backend 与内部 Channel Seam",
+      "url": "https://github.com/OpenSparklink/linux/issues/1",
+      "classification": "长期跟踪",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "Native 实现与验收分别由 K#2–#19 承接，本项维护所有权边界与映射；UserHost 独占包接口、状态屏障、权限/租约/故障矩阵由 U#7 和 WP14 延后实现。保留全部经修订的原要求，不把 P4 接管设为当前 Native 业务前置。",
+      "body_sha256": "ee86e30665eb1dbf095ef7d5e7e8486d7e163c12b4ad359ce9b19ddda049a800",
+      "children": []
+    },
+    {
+      "repository": "linux",
+      "number": 2,
+      "title": "补齐广播、扫描与建链的真实 DLI 事务",
+      "url": "https://github.com/OpenSparklink/linux/issues/2",
+      "classification": "有限收尾",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "按实际支持的标准/WS73 profile 逐项核齐参数、顺序、Status/Complete/领域终态、取消与晚到；保持故障拒绝和完整 packet 边界。未来 UserHost 不是 Native Backend；原厂商 Host 要求按 U#7 单独适配，不能用该延期项阻塞已支持 Native 路径收尾。",
+      "body_sha256": "02938a5c7ed417ca39b8bca5426e18a0750ebeafded33ee3e550b989f890c99b",
+      "children": []
+    },
+    {
+      "repository": "linux",
+      "number": 3,
+      "title": "统一事件订阅、命令完成关联与原始 snoop",
+      "url": "https://github.com/OpenSparklink/linux/issues/3",
+      "classification": "有限收尾",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "收尾 U#2 的过滤后捕获完整性；按准确产物验证多订阅/慢消费者/退出重开/高流量、copy fault、退休唤醒与结果作者隔离。保留输入截断、订阅 overflow 与完整日志负对照；不把模型/fixture 升级为真实内核并发资格。",
+      "body_sha256": "b941964c5df91cea7529651beb8bced2df011bea36063cc835fa48a5188bfc85",
+      "children": []
+    },
+    {
+      "repository": "linux",
+      "number": 4,
+      "title": "让每个控制器独立拥有协议状态与工作队列",
+      "url": "https://github.com/OpenSparklink/linux/issues/4",
+      "classification": "有限收尾",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "将现有双设备交错及单侧退休门禁逐项映射到当前支持范围，继续补回调/worker/drain 与分配失败组合；多通道/四设备压力由 K#17 子项承接。安全/PHY 子系统功能由各自 issue 负责，本项验证其状态归属，不能等待全部协议特性后才判断隔离。",
+      "body_sha256": "b95c0a753107e46701ed1f49e204984b799593090ab53936bc784452afa8def5",
+      "children": []
+    },
+    {
+      "repository": "linux",
+      "number": 5,
+      "title": "收窄控制面并限制 raw DLI 命令",
+      "url": "https://github.com/OpenSparklink/linux/issues/5",
+      "classification": "有限收尾",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "按实际公开入口核齐唯一管理者、CAP/凭据、fd 传递/最终关闭、旧 generation/Grant epoch 与畸形输入；系统总线部署权限须在 VM 验证。原 BackendProxy 条款按 ADR0003 转为 U#7 的 UserHost 独占授权/隔离要求，不恢复 Native 任意命令旁路。",
+      "body_sha256": "81f409d72ad53033c84fc82a6f68e88631ee40e1e3b2c857b09b940dac132201",
+      "children": []
+    },
+    {
+      "repository": "linux",
+      "number": 6,
+      "title": "为用户态 SSAP Engine 暴露 per-connection channel",
+      "url": "https://github.com/OpenSparklink/linux/issues/6",
+      "classification": "有限收尾",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "按实际支持模式补齐 syscall/poll、预算、撤权/关闭/断链、原期限与旧 lifetime 拒绝；protected/可靠模式只按真实机制开放，未支持明确拒绝。双连接、长 PDU、慢 owner 与 daemon 退出继续按原门禁验收；SSAP 事务/属性业务归 U#3，data credit/通道公平归 K#17。",
+      "body_sha256": "ca947ed83f2970b1d7e7058f6fd6f7e4dea9054a075551d8ea6e91c3fb985bd1",
+      "children": []
+    },
+    {
+      "repository": "linux",
+      "number": 7,
+      "title": "为 slkd 配对策略暴露机制型 Security Interface",
+      "url": "https://github.com/OpenSparklink/linux/issues/7",
+      "classification": "长期跟踪",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "按方法完成真实 prompt/action、错误证明/密钥、重放、撤销、断链、owner 丢失及安装失败；实现/验证真实重连凭据 import/remove 与安全清理。opaque token 仅可选版本化能力，不伪造支持；长期协议/安全模型和 U#5/K#18 原验收继续开放。",
+      "body_sha256": "b467969389b663e3649fb5ab151f88650ce9781f5eb886511fc6369979f2fe73",
+      "children": []
+    },
+    {
+      "repository": "linux",
+      "number": 8,
+      "title": "跟踪：厂商控制器驱动框架与 WS73 USB 原生支持",
+      "url": "https://github.com/OpenSparklink/linux/issues/8",
+      "classification": "长期跟踪",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "由 K#1–#7/#9–#19 及 U#1–#8/#10 和本批子项逐条承接原范围；原厂商 Proxy 方向按 UserHost 修订。兼容期要求已由未发布 UAPI 的同步迁移/删除规则替代，旧编号不复用。全部必需条件完成前保持父项开放。",
+      "body_sha256": "97bf4feb219d1b9042e773c0c870203975abcb2244813b67f789b109d9d4fb7f",
+      "children": []
+    },
+    {
+      "repository": "linux",
+      "number": 9,
+      "title": "实现可注册的 per-controller Backend 接口与模块所有权",
+      "url": "https://github.com/OpenSparklink/linux/issues/9",
+      "classification": "有限收尾",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "逐项核齐注册失败回滚、模块引用、两实例交错、并发 unregister、旧 callback、stop/drain 和部分初始化；内建/模块组合由 K#12 联验。保留确定终态和引用排空要求，不以应用 fd 数量代替物理 drain。",
+      "body_sha256": "4410729ebb2ba22d7af99455887e2b102cbaa84755028679837bd41653bb113e",
+      "children": []
+    },
+    {
+      "repository": "linux",
+      "number": 10,
+      "title": "拆分控制器注册、setup、enable 与恢复生命周期",
+      "url": "https://github.com/OpenSparklink/linux/issues/10",
+      "classification": "长期跟踪",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "保留部分初始化/重复 enable-disable/fd 最终关闭/stop-drain 门禁；查清自然启动超时、重枚举失败、消失及不依赖人工操作的有界恢复，之后验证 PM/reset-resume。人工拔插、hub 切电、QMP 与注入只能作各自受控测试，不能结算自然恢复。接口/固件/USB 根因分别复用 K#9/#14/#15；不新建重复总项。",
+      "body_sha256": "2d396cc97fe3ff64d0648ea272d72325b8ad82e423cb2caff7d289df832f159e",
+      "children": []
+    },
+    {
+      "repository": "linux",
+      "number": 11,
+      "title": "区分总线、DLI 方言、控制器能力、限制与 quirks",
+      "url": "https://github.com/OpenSparklink/linux/issues/11",
+      "classification": "有限收尾",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "按设备/固件审计 known/unknown/unsupported、limits/quirks 和失败策略，补精确匹配/错误 fallback 与跨语言输出门禁。E/U 主固件与两份校准必须每设备一致；冷 ROM READM 有效性/稳定性及混合型号资格未闭合前保留显式板型。",
+      "body_sha256": "d47b1ed0d8b2fcbedc7787acc0ca9bc86607aa29746c2dce7d350f25ecdbe11e",
+      "children": []
+    },
+    {
+      "repository": "linux",
+      "number": 12,
+      "title": "将硬件 Backend 移至 drivers/sparklink 并拆分构建选项",
+      "url": "https://github.com/OpenSparklink/linux/issues/12",
+      "classification": "有限收尾",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "核齐所声明支持的 USB off/Virtual、通用 USB/WS73 独立开关、built-in/module 与实际加载卸载；检查匹配无抢占与迁移前后回归。Kconfig help 中遗留的功能状态说明需按当前资格边界更新，不能从目录迁移宣称所有构建或其他总线完成。",
+      "body_sha256": "1d60a331ef921bfbff7143444b49afd7eb1f2d0abc243d993423557e4cdb3984",
+      "children": []
+    },
+    {
+      "repository": "linux",
+      "number": 13,
+      "title": "建立 WS73 协议差异矩阵、捕获样本与来源审查",
+      "url": "https://github.com/OpenSparklink/linux/issues/13",
+      "classification": "有限收尾",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "审计 opcode/event、ACB/TCID/relay、USB/HCC/BSLE 字段矩阵的来源类型和未知项；核齐去敏 fixture 的来源/许可、最小配置/版本查询与每份固件适用范围。参考库不是标准裁判；不复制受限标准或未授权 blob。",
+      "body_sha256": "7f00addcd7f5385e07775605e02cbe5c557097856486e9c483d6d7f976125c52",
+      "children": []
+    },
+    {
+      "repository": "linux",
+      "number": 14,
+      "title": "实现 WS73 USB/HCC 传输、聚合解析与安全 URB 队列",
+      "url": "https://github.com/OpenSparklink/linux/issues/14",
+      "classification": "有限收尾",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "补适用 KASAN/lockdep/故障注入、畸形/截断/聚合、取消/拔出/重提交与 buffer 所有权门禁；测量单 RX URB callback/重提交空窗后再决定有界多 URB 或热路径优化，保持顺序/generation/stop-drain。自然 USB 根因由 K#10/#15 协同，不能以重新枚举替代状态清除。",
+      "body_sha256": "c527599b4c71919ae79b2e78df7e66738944683539c806e3f73dac975e81b879",
+      "children": []
+    },
+    {
+      "repository": "linux",
+      "number": 15,
+      "title": "实现 WS73 固件下载、BSLE customize 与 SLE 启动握手",
+      "url": "https://github.com/OpenSparklink/linux/issues/15",
+      "classification": "长期跟踪",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "继续缺失/损坏镜像、通知乱序/超时、部分初始化/退出与自然启动失败根因；E 运行期实验地址不等于出厂唯一身份，cold-ROM 自动选择、混合型号与无人工恢复仍须各自原门禁。许可/来源与复现输入保持外部，不上传未授权固件。",
+      "body_sha256": "49442990a56023e90c4ca64a95a8111f3c75d8d3a066a49015409dad99c18d37",
+      "children": []
+    },
+    {
+      "repository": "linux",
+      "number": 16,
+      "title": "在 DLI Host 实现 WS73 方言编解码与真实命令事务",
+      "url": "https://github.com/OpenSparklink/linux/issues/16",
+      "classification": "有限收尾",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "核齐 READ/version/buffer、广播/扫描/建链/断链与同 opcode 并发、取消/超时后晚到、异步交错和重置身份；各 profile 的 golden 与实际支持接口分别验收。未知操作保持明确不支持，诊断入口遵循独占权限。",
+      "body_sha256": "d1868f17946d9665c41362dcce3e45efb1fb037865e07609ccd5454b3a228909",
+      "children": []
+    },
+    {
+      "repository": "linux",
+      "number": 17,
+      "title": "补齐 WS73 TCID 数据通道、ACB 重组与发送 credit",
+      "url": "https://github.com/OpenSparklink/linux/issues/17",
+      "classification": "需要拆分",
+      "action": "body_replaced_and_scope_split",
+      "state": "open",
+      "closure_basis": "K#21 credit/Ticket/撤权/复用组合；K#22 动态通道背压/公平/多设备压力；父项四条原验收保留。",
+      "body_sha256": "2b464843c7494b886c669b09c77efc6a1379c90e94e3d248f28aabf3ce4f6ca4",
+      "children": [
+        21,
+        22
+      ]
+    },
+    {
+      "repository": "linux",
+      "number": 18,
+      "title": "为 WS73 接入主机配对 relay 与链路加密机制",
+      "url": "https://github.com/OpenSparklink/linux/issues/18",
+      "classification": "长期跟踪",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "完成原两角色配对/加密数据/Bond 重连和各方法的拒绝/超时/crash/错误 proof/key/重放/断链/reset；真实凭据存储由 U#5，公共机制由 K#7。SDK110 与历史111的缺包/固件诊断失败保留；既有实现或限定门禁不能关闭完整安全。",
+      "body_sha256": "59b855d800418eb5a9c492172f1900240e34c244a10a1abaeb3bd1ad49a22092",
+      "children": []
+    },
+    {
+      "repository": "linux",
+      "number": 19,
+      "title": "建立厂商 Backend 回归矩阵、WS73 硬件 gates 与维护文档",
+      "url": "https://github.com/OpenSparklink/linux/issues/19",
+      "classification": "需要拆分",
+      "action": "body_replaced_and_scope_split",
+      "state": "open",
+      "closure_basis": "K#23 资格/判定器闭包；K#24 生产 fuzz/调试 VM；跨后端、真实门禁、部署/发布边界仍属父项五条原要求。",
+      "body_sha256": "9b70afad443301bce4b3d8ebb7b37f08e5b88b2e230ce6cd98a9cd5aff1aedc0",
+      "children": [
+        23,
+        24
+      ]
+    },
+    {
+      "repository": "sparklink",
+      "number": 1,
+      "title": "解除 slkd 事件循环持锁等待",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/1",
+      "classification": "有限收尾",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "Native retry 分支等待 SharedState 时仍须响应取消；补直接覆盖该生产等待的 join/fd 释放回归。现有 fixture shutdown 不能代替。",
+      "body_sha256": "94bbe617548ad0a55927e455d6defcf0a47e1551a435e7c438f06f9b382f335d",
+      "children": []
+    },
+    {
+      "repository": "sparklink",
+      "number": 2,
+      "title": "让 slkd 与监控工具使用独立事件订阅",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/2",
+      "classification": "有限收尾",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "过滤发生在丢失/截断报告之前的监控完整性缺口；实际多订阅、慢消费者、退出重开与退休回归。",
+      "body_sha256": "4cb3c15b76f90dd969af3073c2c779a7b174cb11553b71ea16bcb99112948042",
+      "children": []
+    },
+    {
+      "repository": "sparklink",
+      "number": 3,
+      "title": "把 SSAP Engine 与 Profile 数据迁入 slkd",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/3",
+      "classification": "需要拆分",
+      "action": "body_replaced_and_scope_split",
+      "state": "open",
+      "closure_basis": "U#21 SDK READ Provider 生命周期、U#22 剩余 SSAP 操作/长值/更新事务、U#23 真实 Profile；父项原完整验收保留。",
+      "body_sha256": "2e6c5722372e1de626d0c6071ab32b3fd8c46bd447e82f848ceb61ce5dcc348b",
+      "children": [
+        21,
+        22,
+        23
+      ]
+    },
+    {
+      "repository": "sparklink",
+      "number": 4,
+      "title": "把 PHY 选择策略迁入 slkd",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/4",
+      "classification": "长期跟踪",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "核对实际 PHY／telemetry 查询、合法性／监管约束及 readback；接通 per-controller/per-connection fixed、balanced、throughput、low-power 策略和 hysteresis／驻留／退避；覆盖拒绝、断链、切换与公平性。",
+      "body_sha256": "84d34c0bf0f70db4185562530c172ffb9f3a01b60240906d0944a30637b3bf73",
+      "children": []
+    },
+    {
+      "repository": "sparklink",
+      "number": 5,
+      "title": "让 slkd 拥有配对策略与持久化 Bond",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/5",
+      "classification": "长期跟踪",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "完成各认证方法的 Agent/调用者退出、原期限、晚到批准及安装失败门禁；真实重连凭据的安全存储、原子持久化、迁移、撤销与 bonded reconnect 仍按原范围验收。机制依赖 K#7/#18，不新造安全 Engine。",
+      "body_sha256": "36e9301e5f700ab0440f235ce2da1b21a6cd10ef1314eb27fc08b9f7e8eb0bd8",
+      "children": []
+    },
+    {
+      "repository": "sparklink",
+      "number": 6,
+      "title": "为每个控制器创建独立 D-Bus 对象并暴露启用状态",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/6",
+      "classification": "有限收尾",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "按准确产物核齐产品 disable/enable、初始化失败、同地址不同地址类型、单侧退休与重新发布；确认每一公开方法的角色/权限和 unavailable 错误。独立 Bond/PHY 能力由 U#5/#4负责；本项只验证路由与状态消费，不等待它们整项交付。",
+      "body_sha256": "24bdd8ce25d51cb38068be6507d6f97f2383cd6584583949413bd5cb5412fddf",
+      "children": []
+    },
+    {
+      "repository": "sparklink",
+      "number": 7,
+      "title": "规划可选 UserHost 接管适配与厂商 Host 隔离（低优先级）",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/7",
+      "classification": "长期跟踪/P4",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "UserHost 独占所有权、接管/退出屏障、授权与隔离；P4 规划，非 Native 主线前置。",
+      "body_sha256": "f877a0848d6c325672c128308612e7b78e1787ad73b67ebaf7a74cd6cdbc864f",
+      "children": []
+    },
+    {
+      "repository": "sparklink",
+      "number": 8,
+      "title": "跟踪：Linux 与用户态 SparkLink 全部 issues 的联合实施和验收",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/8",
+      "classification": "长期跟踪",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "完整 S0–S6、19WP、10FV、12DG 及原验收全部保留；按每个生产行为的小项独立收尾/关闭，父跟踪只维护范围映射。自然故障根因、非人工恢复、剩余数据/安全/SSAP/Profile、部署/发布继续开放；UserHost 低优先级且非当前前置。",
+      "body_sha256": "bfbd4df72deb2b8b9bc59c57fb1da7eb1ab6c66ea6c625abec1ce41ecd39bf60",
+      "children": []
+    },
+    {
+      "repository": "sparklink",
+      "number": 10,
+      "title": "第一北极星：普通用户的双真实 WS73 广播发现与热插拔闭环",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/10",
+      "classification": "有限收尾",
+      "action": "body_replaced",
+      "state": "open",
+      "closure_basis": "保留运行期/物理拔插闭环原验收，以及用户追加的不依赖人工拔插故障恢复要求。后者仍须查明自然启动超时、重枚举失败与设备消失根因，并验证有界自动恢复及同行隔离；对应 K#10/#14/#15/#19 复用现有任务，不另建重复恢复跟踪。不等待与本里程碑无关的完整安全、Bond 或发布。",
+      "body_sha256": "3060900931147c953d048f2f618e87ed643b2df8759ffc8f0b402c7c732b5e50",
+      "children": []
+    }
+  ],
+  "children": [
+    {
+      "repository": "sparklink",
+      "number": 21,
+      "title": "收尾：C/Python READ Provider 待决撤回、原期限与同伴隔离",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/21",
+      "parent": 3,
+      "state": "open",
+      "action": "created_and_native_parent_relation_verified",
+      "body_sha256": "4c4db6a597d2d6ad8a1193d33c07f640ea6a87dfb22cab1b55f101011aaea79f"
+    },
+    {
+      "repository": "sparklink",
+      "number": 22,
+      "title": "SSAP：唯一 Engine 的剩余操作、长值与更新事务验收",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/22",
+      "parent": 3,
+      "state": "open",
+      "action": "created_and_native_parent_relation_verified",
+      "body_sha256": "2d4e7c877f505d51bca9a513324ebaf5c5023b524609b785ddf54aff9971ee12"
+    },
+    {
+      "repository": "sparklink",
+      "number": 23,
+      "title": "Profile：Battery、DeviceInfo 与 HID 的真实业务接入和卸载",
+      "url": "https://github.com/OpenSparklink/sparklink/issues/23",
+      "parent": 3,
+      "state": "open",
+      "action": "created_and_native_parent_relation_verified",
+      "body_sha256": "5de03a8d7aff72e8eb2f7ed7bcfa61d41a266ee0e9c2e4f96560cc47b98c8b6d"
+    },
+    {
+      "repository": "linux",
+      "number": 21,
+      "title": "ACB credit／提交票据／撤权与 handle 复用的组合义务",
+      "url": "https://github.com/OpenSparklink/linux/issues/21",
+      "parent": 17,
+      "state": "open",
+      "action": "created_and_native_parent_relation_verified",
+      "body_sha256": "e10558efccf5277f6a861a5943236cd0215067a0f3e28eb78429b0dd8e04460a"
+    },
+    {
+      "repository": "linux",
+      "number": 22,
+      "title": "动态通道背压、公平调度与多设备业务压力验收",
+      "url": "https://github.com/OpenSparklink/linux/issues/22",
+      "parent": 17,
+      "state": "open",
+      "action": "created_and_native_parent_relation_verified",
+      "body_sha256": "978697253ce70f36db07fbf1980dfbcc874db3d56b9f277fc85410e86f20717d"
+    },
+    {
+      "repository": "linux",
+      "number": 23,
+      "title": "资格证据与测试判定器的 fail-closed 闭包",
+      "url": "https://github.com/OpenSparklink/linux/issues/23",
+      "parent": 19,
+      "state": "open",
+      "action": "created_and_native_parent_relation_verified",
+      "body_sha256": "eb0ca80df84dacafd5dc2bab0ab99987c07ceb87021487e0001f99ccb3a855a4"
+    },
+    {
+      "repository": "linux",
+      "number": 24,
+      "title": "生产入口 fuzz 与调试 VM 的分层回归门禁",
+      "url": "https://github.com/OpenSparklink/linux/issues/24",
+      "parent": 19,
+      "state": "open",
+      "action": "created_and_native_parent_relation_verified",
+      "body_sha256": "5682cc14c11702e4f79887075650ca19a3d46583559f2e01791c569d6425932c"
+    }
+  ],
+  "history_policy": {
+    "original_bodies": "All 28 complete original bodies retained in the authorized local maintenance archive. Existing comments, source commits, original failures and counterexamples remain linked under their original identities.",
+    "public": "Only source/offline scope and public issue metadata. Private hardware details, execution identities and raw materials remain local.",
+    "access": "Maintainer authorization is required for the local original-body and evidence index; it is not a public replay artifact."
+  },
+  "offline_test": {
+    "source_commit": "b1be6b6636bf8bc4ad134bb4e0daab045049aad5",
+    "test_file": "crates/slkd/src/event_loop_tests.rs",
+    "source_sha256": "a0f93581d9af1050b7c6f85bbccd249747f9497d9f1f8f8c115f440dd3f73026",
+    "result": "SCOPED_OFFLINE_PASS",
+    "tests": "26 selected event_loop tests; zero failed/ignored. 180 other daemon and 5 integration cases filtered, not a full suite.",
+    "strict_check": "slkd --all-targets clippy -D warnings",
+    "environment": "Rust 1.96.1, locked/offline; shared fixed Cargo directory and global build lock; 8 jobs; real private D-Bus 1.16.2, controlled EventSource and /dev/null.",
+    "limits": "No real kernel/USB/RF, system-bus deployment, formal proof or full Native shutdown qualification. Native retry-lock cancellation remains U#1."
+  },
+  "resume": "Resume the existing R160 SDK Provider sequence and U#21 pending-withdrawal/original-deadline/peer-isolation gates; data, security and SSAP remain parallel. Do not turn all 28 remaining issues into a prerequisite.",
+  "natural_root_cause_closed": false,
+  "non_manual_recovery_qualified": false,
+  "whole_goal_complete": false
+}

@@ -1,5 +1,58 @@
 # SparkLink / Linux 联合实施方案
 
+## 有界 issue 清理（2026-10-26，已完成维护）
+
+本批直接更新 GitHub 原 28 项正文，建立 7 个职责子项并读回父子关系；
+完整逐项分类、保留开放的自身依据及公开正文校验值见
+[处理记录](issue-maintenance-20261026.json)。它是本批维护记录，后续执行仍以本计划为准。
+已关闭 **0** 项：15 项有限收尾、3 项拆分父项、10 项长期跟踪均仍有自己的具名条件。
+不因迁移未完成条件而关闭父项，也不要求有限项等待无关的全部安全、恢复或发布。
+
+| 原 issue | 分类 | 本批动作与剩余责任 |
+| --- | --- | --- |
+| [K#1](https://github.com/OpenSparklink/linux/issues/1) | 长期跟踪 | 正文收敛；Native 实现与验收分别由 K#2–#19 承接，本项维护所有权边界与映射；UserHost 独占包接口、状态屏障、权限/租约/故障矩阵由 U#7 和 WP14 延后实现。保留全部经修订的原要求，不把 P4 接管设为当前 Native 业务前置。 |
+| [K#2](https://github.com/OpenSparklink/linux/issues/2) | 有限收尾 | 正文收敛；按实际支持的标准/WS73 profile 逐项核齐参数、顺序、Status/Complete/领域终态、取消与晚到；保持故障拒绝和完整 packet 边界。未来 UserHost 不是 Native Backend；原厂商 Host 要求按 U#7 单独适配，不能用该延期项阻塞已支持 Native 路径收尾。 |
+| [K#3](https://github.com/OpenSparklink/linux/issues/3) | 有限收尾 | 正文收敛；收尾 U#2 的过滤后捕获完整性；按准确产物验证多订阅/慢消费者/退出重开/高流量、copy fault、退休唤醒与结果作者隔离。保留输入截断、订阅 overflow 与完整日志负对照；不把模型/fixture 升级为真实内核并发资格。 |
+| [K#4](https://github.com/OpenSparklink/linux/issues/4) | 有限收尾 | 正文收敛；将现有双设备交错及单侧退休门禁逐项映射到当前支持范围，继续补回调/worker/drain 与分配失败组合；多通道/四设备压力由 K#17 子项承接。安全/PHY 子系统功能由各自 issue 负责，本项验证其状态归属，不能等待全部协议特性后才判断隔离。 |
+| [K#5](https://github.com/OpenSparklink/linux/issues/5) | 有限收尾 | 正文收敛；按实际公开入口核齐唯一管理者、CAP/凭据、fd 传递/最终关闭、旧 generation/Grant epoch 与畸形输入；系统总线部署权限须在 VM 验证。原 BackendProxy 条款按 ADR0003 转为 U#7 的 UserHost 独占授权/隔离要求，不恢复 Native 任意命令旁路。 |
+| [K#6](https://github.com/OpenSparklink/linux/issues/6) | 有限收尾 | 正文收敛；按实际支持模式补齐 syscall/poll、预算、撤权/关闭/断链、原期限与旧 lifetime 拒绝；protected/可靠模式只按真实机制开放，未支持明确拒绝。双连接、长 PDU、慢 owner 与 daemon 退出继续按原门禁验收；SSAP 事务/属性业务归 U#3，data credit/通道公平归 K#17。 |
+| [K#7](https://github.com/OpenSparklink/linux/issues/7) | 长期跟踪 | 正文收敛；按方法完成真实 prompt/action、错误证明/密钥、重放、撤销、断链、owner 丢失及安装失败；实现/验证真实重连凭据 import/remove 与安全清理。opaque token 仅可选版本化能力，不伪造支持；长期协议/安全模型和 U#5/K#18 原验收继续开放。 |
+| [K#8](https://github.com/OpenSparklink/linux/issues/8) | 长期跟踪 | 正文收敛；由 K#1–#7/#9–#19 及 U#1–#8/#10 和本批子项逐条承接原范围；原厂商 Proxy 方向按 UserHost 修订。兼容期要求已由未发布 UAPI 的同步迁移/删除规则替代，旧编号不复用。全部必需条件完成前保持父项开放。 |
+| [K#9](https://github.com/OpenSparklink/linux/issues/9) | 有限收尾 | 正文收敛；逐项核齐注册失败回滚、模块引用、两实例交错、并发 unregister、旧 callback、stop/drain 和部分初始化；内建/模块组合由 K#12 联验。保留确定终态和引用排空要求，不以应用 fd 数量代替物理 drain。 |
+| [K#10](https://github.com/OpenSparklink/linux/issues/10) | 长期跟踪 | 正文收敛；保留部分初始化/重复 enable-disable/fd 最终关闭/stop-drain 门禁；查清自然启动超时、重枚举失败、消失及不依赖人工操作的有界恢复，之后验证 PM/reset-resume。人工拔插、hub 切电、QMP 与注入只能作各自受控测试，不能结算自然恢复。接口/固件/USB 根因分别复用 K#9/#14/#15；不新建重复总项。 |
+| [K#11](https://github.com/OpenSparklink/linux/issues/11) | 有限收尾 | 正文收敛；按设备/固件审计 known/unknown/unsupported、limits/quirks 和失败策略，补精确匹配/错误 fallback 与跨语言输出门禁。E/U 主固件与两份校准必须每设备一致；冷 ROM READM 有效性/稳定性及混合型号资格未闭合前保留显式板型。 |
+| [K#12](https://github.com/OpenSparklink/linux/issues/12) | 有限收尾 | 正文收敛；核齐所声明支持的 USB off/Virtual、通用 USB/WS73 独立开关、built-in/module 与实际加载卸载；检查匹配无抢占与迁移前后回归。Kconfig help 中遗留的功能状态说明需按当前资格边界更新，不能从目录迁移宣称所有构建或其他总线完成。 |
+| [K#13](https://github.com/OpenSparklink/linux/issues/13) | 有限收尾 | 正文收敛；审计 opcode/event、ACB/TCID/relay、USB/HCC/BSLE 字段矩阵的来源类型和未知项；核齐去敏 fixture 的来源/许可、最小配置/版本查询与每份固件适用范围。参考库不是标准裁判；不复制受限标准或未授权 blob。 |
+| [K#14](https://github.com/OpenSparklink/linux/issues/14) | 有限收尾 | 正文收敛；补适用 KASAN/lockdep/故障注入、畸形/截断/聚合、取消/拔出/重提交与 buffer 所有权门禁；测量单 RX URB callback/重提交空窗后再决定有界多 URB 或热路径优化，保持顺序/generation/stop-drain。自然 USB 根因由 K#10/#15 协同，不能以重新枚举替代状态清除。 |
+| [K#15](https://github.com/OpenSparklink/linux/issues/15) | 长期跟踪 | 正文收敛；继续缺失/损坏镜像、通知乱序/超时、部分初始化/退出与自然启动失败根因；E 运行期实验地址不等于出厂唯一身份，cold-ROM 自动选择、混合型号与无人工恢复仍须各自原门禁。许可/来源与复现输入保持外部，不上传未授权固件。 |
+| [K#16](https://github.com/OpenSparklink/linux/issues/16) | 有限收尾 | 正文收敛；核齐 READ/version/buffer、广播/扫描/建链/断链与同 opcode 并发、取消/超时后晚到、异步交错和重置身份；各 profile 的 golden 与实际支持接口分别验收。未知操作保持明确不支持，诊断入口遵循独占权限。 |
+| [K#17](https://github.com/OpenSparklink/linux/issues/17) | 需要拆分 | 正文收敛；K#21 credit/Ticket/撤权/复用组合；K#22 动态通道背压/公平/多设备压力；父项四条原验收保留。 |
+| [K#18](https://github.com/OpenSparklink/linux/issues/18) | 长期跟踪 | 正文收敛；完成原两角色配对/加密数据/Bond 重连和各方法的拒绝/超时/crash/错误 proof/key/重放/断链/reset；真实凭据存储由 U#5，公共机制由 K#7。SDK110 与历史111的缺包/固件诊断失败保留；既有实现或限定门禁不能关闭完整安全。 |
+| [K#19](https://github.com/OpenSparklink/linux/issues/19) | 需要拆分 | 正文收敛；K#23 资格/判定器闭包；K#24 生产 fuzz/调试 VM；跨后端、真实门禁、部署/发布边界仍属父项五条原要求。 |
+| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | 有限收尾 | 正文收敛；Native retry 分支等待 SharedState 时仍须响应取消；补直接覆盖该生产等待的 join/fd 释放回归。现有 fixture shutdown 不能代替。 |
+| [U#2](https://github.com/OpenSparklink/sparklink/issues/2) | 有限收尾 | 正文收敛；过滤发生在丢失/截断报告之前的监控完整性缺口；实际多订阅、慢消费者、退出重开与退休回归。 |
+| [U#3](https://github.com/OpenSparklink/sparklink/issues/3) | 需要拆分 | 正文收敛；U#21 SDK READ Provider 生命周期、U#22 剩余 SSAP 操作/长值/更新事务、U#23 真实 Profile；父项原完整验收保留。 |
+| [U#4](https://github.com/OpenSparklink/sparklink/issues/4) | 长期跟踪 | 正文收敛；核对实际 PHY／telemetry 查询、合法性／监管约束及 readback；接通 per-controller/per-connection fixed、balanced、throughput、low-power 策略和 hysteresis／驻留／退避；覆盖拒绝、断链、切换与公平性。 |
+| [U#5](https://github.com/OpenSparklink/sparklink/issues/5) | 长期跟踪 | 正文收敛；完成各认证方法的 Agent/调用者退出、原期限、晚到批准及安装失败门禁；真实重连凭据的安全存储、原子持久化、迁移、撤销与 bonded reconnect 仍按原范围验收。机制依赖 K#7/#18，不新造安全 Engine。 |
+| [U#6](https://github.com/OpenSparklink/sparklink/issues/6) | 有限收尾 | 正文收敛；按准确产物核齐产品 disable/enable、初始化失败、同地址不同地址类型、单侧退休与重新发布；确认每一公开方法的角色/权限和 unavailable 错误。独立 Bond/PHY 能力由 U#5/#4负责；本项只验证路由与状态消费，不等待它们整项交付。 |
+| [U#7](https://github.com/OpenSparklink/sparklink/issues/7) | 长期跟踪/P4 | 正文收敛；UserHost 独占所有权、接管/退出屏障、授权与隔离；P4 规划，非 Native 主线前置。 |
+| [U#8](https://github.com/OpenSparklink/sparklink/issues/8) | 长期跟踪 | 正文收敛；完整 S0–S6、19WP、10FV、12DG 及原验收全部保留；按每个生产行为的小项独立收尾/关闭，父跟踪只维护范围映射。自然故障根因、非人工恢复、剩余数据/安全/SSAP/Profile、部署/发布继续开放；UserHost 低优先级且非当前前置。 |
+| [U#10](https://github.com/OpenSparklink/sparklink/issues/10) | 有限收尾 | 正文收敛；保留运行期/物理拔插闭环原验收，以及用户追加的不依赖人工拔插故障恢复要求。后者仍须查明自然启动超时、重枚举失败与设备消失根因，并验证有界自动恢复及同行隔离；对应 K#10/#14/#15/#19 复用现有任务，不另建重复恢复跟踪。不等待与本里程碑无关的完整安全、Bond 或发布。 |
+
+拆分映射：U#3 → U#21（SDK READ Provider 待决撤回/原期限/同行）、U#22（唯一 Engine
+剩余操作/长值/更新）、U#23（真实 Profile）；K#17 → K#21（credit/Ticket/撤权/复用）、
+K#22（通道背压/公平/多设备压力）；K#19 → K#23（资格判定闭包）、K#24（fuzz/调试 VM）。
+每项接口、依赖、退出条件和剩余门禁已写入对应 issue；原范围仍由父项映射，不另建总跟踪。
+
+U#1 的静默测试已改用现行 ConnectDeviceTyped，保留旧入口 UnknownMethod 负向；
+准确测试源的 26 项 event-loop 与严格 slkd clippy 通过，但 Native retry 锁等待取消仍缺。
+U#2 保留过滤前丢失报告缺口；U#10 保留用户追加的第八项自然恢复，不能只按七项早期范围关闭。
+旧正文完整留于授权本地快照，评论、原提交、失败与反例保留；公共表不披露实机详情。
+本批无生产协议变化、无新实机/形式化资格，未修改既有资格记录或把旧 PASS 转授新 HEAD。
+
+维护退出后继续既有 R160 SDK Provider 与 U#21 的纵向门禁，完整 S0–S6、19WP、10FV、
+12DG、VM-only、UserHost P4 及原范围不变；自然根因、非人工恢复继续开放。
+
 ### 历史批次 R156：Owned type0 动态只读 Provider
 
 当前批次以本页生成摘要为准；下文保留 R156 的源码职责与限定范围，不表示后续产物已验收。
@@ -632,7 +685,14 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
         "receipt": null
       }
     }
-  ]
+  ],
+  "issue_maintenance": {
+    "id": "issue-maintenance-20261026",
+    "status": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
+    "record": "project/issue-maintenance-20261026.json",
+    "next": "Bounded maintenance complete; resume this original feature batch without waiting for unrelated parent issues.",
+    "scope": "Public source/offline issue status only; no qualification promotion."
+  }
 }
 ```
 

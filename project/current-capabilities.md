@@ -1,5 +1,13 @@
 # 当前能力与资格
 
+## 本批 issue 状态核对
+
+[逐项处理记录](issue-maintenance-20261026.json)记录已读回的 28 项正文和 7 个子项关系。
+原 issue 关闭 0 项；15 项有限收尾、3 项拆分父项、10 项长期跟踪仍按自身条件开放。
+本批只提供源码/离线状态核对：现行静默 D-Bus handler 测试与严格检查通过，
+Native retry 锁等待取消仍未覆盖；不新增实机资格，不改变下方准确产物记录。
+具体剩余条件与依赖见[唯一计划](implementation-plan.md)。
+
 本页是唯一当前资格入口。源码、编译产物、执行工具、校验工具及必需门禁从下方
 结构化记录读取；报告或文档提交不替代编译身份，局部 PASS 不授整个 HEAD 资格。
 
@@ -292,7 +300,14 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
         "receipt": null
       }
     }
-  ]
+  ],
+  "issue_maintenance": {
+    "id": "issue-maintenance-20261026",
+    "status": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
+    "record": "project/issue-maintenance-20261026.json",
+    "next": "Bounded maintenance complete; resume this original feature batch without waiting for unrelated parent issues.",
+    "scope": "Public source/offline issue status only; no qualification promotion."
+  }
 }
 ```
 

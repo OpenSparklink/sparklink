@@ -572,3 +572,135 @@ async fn original_client_identity_and_reportable_guard_are_production_checks() {
     drop(inbox);
     unsafe { slk_client_close(_c) };
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn dispatcher_capacity_waits_for_last_queue_reference_not_readiness_fd() {
+    use crate::ssap::local::ServiceRegistration;
+    use slk_channel::deadline::Deadline;
+
+    async fn register(client: &Client) -> ServiceRegistration {
+        client
+            .controller(PATH)
+            .await
+            .unwrap()
+            .local_services()
+            .register_service(
+                vec![1, 0],
+                vec![(vec![2, 0], 1, 0, vec![7, 8, 9])],
+                zbus::zvariant::OwnedObjectPath::try_from("/").unwrap(),
+                Deadline::after(Duration::from_secs(2)).unwrap(),
+            )
+            .await
+            .unwrap()
+    }
+    let deadline = || Deadline::after(Duration::from_secs(2)).unwrap();
+    for request_first in [true, false] {
+        let (bus, server, _script, fixture_client) = fixture_with_operations(1).await;
+        let client = Client::from_connection(
+            zbus::connection::Builder::address(bus.address.as_str())
+                .unwrap()
+                .build()
+                .await
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+        let dispatcher = Dispatcher::new(
+            &client,
+            zbus::zvariant::OwnedObjectPath::try_from(PROVIDER_PATH).unwrap(),
+        )
+        .unwrap();
+        let weak = Arc::downgrade(&dispatcher);
+        let watch = dispatcher.watch();
+        let mut registration = register(&client).await;
+        let inbox = dispatcher
+            .bind(&mut registration, 17, deadline())
+            .await
+            .unwrap();
+        let notification = inbox.fd().unwrap();
+        let duplicate = notification.try_clone().unwrap();
+        let dispatch = dispatcher.dispatch(prompt(ns()), server.unique_name().map(|n| n.as_str()));
+        let answer = async {
+            let request = inbox.next().await.unwrap();
+            request.reply(0, &[0x7d]).unwrap();
+            request
+        };
+        let (outcome, request) = tokio::join!(dispatch, answer);
+        let mut outcome = Some(outcome.unwrap());
+        let mut request = Some(request);
+        assert!(outcome.as_ref().unwrap().reportable());
+
+        // The broker fixture returns the same property metadata per registration.
+        // Dispatch above precedes these additional registrations: this tests the
+        // actual allocator/reference budget, not daemon handle allocation or
+        // simultaneous routing of identically keyed properties.
+        let mut held = Vec::new();
+        for _ in 0..15 {
+            let mut registration = register(&client).await;
+            let inbox = dispatcher
+                .bind(&mut registration, 17, deadline())
+                .await
+                .unwrap();
+            held.push((registration, inbox));
+        }
+        let mut overflow = register(&client).await;
+        let full = |result| match result {
+            Err(ApplicationError::Io(e)) => assert_eq!(e.raw_os_error(), Some(nix::libc::EAGAIN)),
+            _ => panic!("dispatcher must reject the seventeenth live queue"),
+        };
+        full(dispatcher.bind(&mut overflow, 17, deadline()).await);
+
+        // Close admission while retaining the actual request and callback outcome.
+        // Neither a duplicated notification fd nor retained request grants reply.
+        drop(registration);
+        drop(inbox);
+        assert!(ready(&notification) && ready(&duplicate));
+        assert_eq!(
+            request
+                .as_ref()
+                .unwrap()
+                .reply(0, &[0x7e])
+                .unwrap_err()
+                .raw_os_error(),
+            Some(nix::libc::ESHUTDOWN)
+        );
+        full(dispatcher.bind(&mut overflow, 17, deadline()).await);
+        if request_first {
+            drop(request.take());
+        } else {
+            drop(outcome.take());
+        }
+        full(dispatcher.bind(&mut overflow, 17, deadline()).await);
+        drop(request.take());
+        drop(outcome.take());
+        let replacement = dispatcher
+            .bind(&mut overflow, 17, deadline())
+            .await
+            .unwrap();
+        // Notification fds still exist, but cannot keep the original queue charged.
+        assert!(ready(&notification) && ready(&duplicate));
+        drop((overflow, replacement));
+        drop(held);
+
+        // A second complete fill demonstrates reclamation, not just one spare slot.
+        let mut held = Vec::new();
+        for _ in 0..16 {
+            let mut registration = register(&client).await;
+            let inbox = dispatcher
+                .bind(&mut registration, 17, deadline())
+                .await
+                .unwrap();
+            held.push((registration, inbox));
+        }
+        let mut overflow = register(&client).await;
+        full(dispatcher.bind(&mut overflow, 17, deadline()).await);
+        drop((overflow, held));
+        drop(watch);
+        drop(dispatcher);
+        // The watch task holds Weak, not an independent dispatcher owner.
+        assert!(weak.upgrade().is_none());
+        assert!(ready(&notification) && ready(&duplicate));
+        drop((notification, duplicate));
+        unsafe { slk_client_close(fixture_client) };
+    }
+}

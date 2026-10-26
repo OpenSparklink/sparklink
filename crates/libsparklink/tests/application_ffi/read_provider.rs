@@ -17,7 +17,7 @@ pub(super) fn line(reader: &mut impl BufRead, transcript: &mut String) -> anyhow
     transcript.push_str(&text);
     Ok(text)
 }
-fn receipt(
+pub(super) fn receipt(
     reader: &mut impl BufRead,
     transcript: &mut String,
     prefix: &str,

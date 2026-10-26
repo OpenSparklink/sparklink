@@ -24,7 +24,7 @@ def wait(fd, event, deadline):
 
 def main():
     if sys.argv[1:2]==['subscription']:return subscription_mode()
-    if sys.argv[1:2] in (['owned'],['owned-readonly'],['owned-updates']):return owned_mode()
+    if sys.argv[1:2] in (['owned'],['owned-readonly'],['owned-writeonly'],['owned-updates']):return owned_mode()
     if sys.argv[1:2] in (['update-peer'],['update-error'],['update-retired']):return update_peer_mode()
     if sys.argv[1:2] == ['discovery']:return discovery_mode()
     if sys.argv[1:2] in (['ssap'], ['ssap-error']):return ssap_mode()
@@ -193,13 +193,17 @@ def owned_lifecycle(stage,receipt,created,end,error=0,token=0,request_id=0,call_
         call_started_ns=call_started,call_returned_ns=call_returned)),flush=True)
 
 
-def owned_provider_info(info):
-    return dict(api='python',index=info.controller.index,generation=info.controller.generation,
+def owned_provider_info(info, value=None):
+    result=dict(api='python',index=info.controller.index,generation=info.controller.generation,
         token=info.token,request_id=info.request_id,lifetime=info.connection_lifetime,
         handle=info.connection_handle,epoch=info.security_epoch,level=info.security_level,
-        deadline_ns=info.deadline_ns,property=info.property,maximum_bytes=info.maximum_bytes,
+        deadline_ns=info.deadline_ns,property=info.property,
         local_tcid=info.local_tcid,remote_tcid=info.remote_tcid,pi=info.pi,
         observed_ns=time.monotonic_ns(),observed_wall_ns=time.time_ns())
+    if value is None:result['maximum_bytes']=info.maximum_bytes
+    else:result.update(operation=info.operation,data_type=info.data_type,offset=info.offset,
+        value_length=info.value_length,verify=info.verify,value=value.hex())
+    return result
 
 
 def owned_provider_command(line):
@@ -232,6 +236,10 @@ def owned_provider_command(line):
 def owned_mode():
     from sparklink import LocalProperty, SsapOperations, SsapAccess
     updates=sys.argv[1]=='owned-updates'
+    writing=sys.argv[1]=='owned-writeonly'
+    provider_mode=writing or sys.argv[1]=='owned-readonly'
+    provider_prefix='SdkWriteProvider' if writing else 'SdkReadProvider'
+    applied=None
     if len(sys.argv) not in ((9,) if updates else (7,8)):raise ValueError('owned index generation service property initial-hex [allow|deny|ask] [update-connection]')
     policy=sys.argv[7] if len(sys.argv)>=8 else None
     if policy not in (None,'allow','deny','ask'):raise ValueError('explicit application test policy required')
@@ -242,7 +250,7 @@ def owned_mode():
     link=None
     with Client(deadline_ns=original) as client:
         view=client.register_local_service(identity,service,
-            [LocalProperty(uuid,SsapOperations(541 if updates else 1 if sys.argv[1]=='owned-readonly' else 5),SsapAccess(36 if policy and not updates else 0),value)],
+            [LocalProperty(uuid,SsapOperations(541 if updates else 6 if writing else 1 if sys.argv[1]=='owned-readonly' else 5),SsapAccess(36 if policy and not updates else 0),value)],
             deadline_ns=original,authorization='requests' if policy else 'none')
         if updates:link=client.connection(identity,sys.argv[8],deadline_ns=original)
     observing=False;created=end=0
@@ -301,7 +309,7 @@ def owned_mode():
                             # A stopped notification stays readable; while this view
                             # is held, only stdin can decide/release it. Avoid spin.
                             if provider_polling:poller.unregister(provider_fd);provider_polling=False
-                            print('SdkReadProviderRequest: '+json.dumps(owned_provider_info(provider_pending.info)),flush=True)
+                            print(provider_prefix+'Request: '+json.dumps(owned_provider_info(provider_pending.info,provider_pending.value if writing else None)),flush=True)
                     left=end-time.monotonic_ns()
                     if left<=0:raise TimeoutError(errno.ETIMEDOUT,'original publisher deadline')
                     ready=dict(poller.poll((left+999999)//1000000))
@@ -316,19 +324,19 @@ def owned_mode():
                     if not byte:raise BrokenPipeError('publisher input closed')
                     line+=byte
                     if byte!=b'\n':
-                        if len(line)>=4095:raise ValueError('bounded owned command required')
+                        if len(line)>=2*2042+63:raise ValueError('bounded owned command required')
                         continue
                     if line==b'lifecycle\n':
                         if updates or policy!='allow' or closed or observing:raise ValueError('one live plain allow publisher observation required')
                         if time.monotonic_ns()>=end:raise TimeoutError(errno.ETIMEDOUT,'original publisher deadline')
                         observing=True;owned_lifecycle('observed',receipt,created,end)
-                    elif sys.argv[1]=='owned-readonly' and line==b'provider\n':
+                    elif provider_mode and line==b'provider\n':
                         if closed or provider_attempted:raise ValueError('one live original provider bind attempt required')
                         provider_attempted=True
                         started=time.monotonic_ns();deadline=min(started+5_000_000_000,end)
                         if started>=end:raise TimeoutError(errno.ETIMEDOUT,'original publisher deadline')
                         result=0;notification_result=None;notification_ready=False;failure=None
-                        try:provider=view.bind_read_provider(handle,deadline_ns=deadline)
+                        try:provider=(view.bind_write_provider if writing else view.bind_read_provider)(handle,deadline_ns=deadline)
                         except BaseException as error:
                             result=owned_exit_error();failure=error
                         finally:returned=time.monotonic_ns()
@@ -340,12 +348,12 @@ def owned_mode():
                             except BaseException as error:
                                 if notification_result is None:notification_result=owned_exit_error()
                                 failure=error
-                        print('SdkReadProviderBound: '+json.dumps(dict(api='python',index=index,generation=generation,
+                        print(provider_prefix+'Bound: '+json.dumps(dict(api='python',index=index,generation=generation,
                             property=handle,started_ns=started,deadline_ns=deadline,returned_ns=returned,result=result,
                             notification_result=notification_result,notification_ready=notification_ready,
                             local_binding_only=True)),flush=True)
                         if failure is not None:raise failure
-                    elif sys.argv[1]=='owned-readonly' and (line.startswith(b'provide ') or line.startswith(b'provider-error ')):
+                    elif provider_mode and (line.startswith(b'provide ') or line.startswith(b'provider-error ')):
                         if closed or provider is None or not provider_attempted:
                             raise OSError(errno.ESHUTDOWN,'live original provider required')
                         token,status,provided=owned_provider_command(line)
@@ -354,14 +362,20 @@ def owned_mode():
                         called=provider_pending is not None and token==current
                         started=time.monotonic_ns();result=-errno.ESTALE;failure=None
                         if started>=end:raise TimeoutError(errno.ETIMEDOUT,'original publisher deadline')
+                        matched=called and (not writing or status!=0 or provided==provider_pending.value)
+                        response=provided if not writing or (info is not None and info.verify) else b''
+                        if called and not matched:result=-errno.EINVAL;called=False
                         if called:
-                            try:provider_pending.reply(provided,status=status);result=0
+                            try:provider_pending.reply(response,status=status);result=0
                             except BaseException as error:
                                 result=owned_exit_error();failure=error
+                        if writing and called and result==0 and status==0:applied=provided
                         returned=time.monotonic_ns()
-                        print('SdkReadProviderReply: '+json.dumps(dict(api='python',token=token,current_token=current,
-                            api_called=called,status=status,value=provided.hex(),deadline_ns=info.deadline_ns if info else 0,
-                            started_ns=started,returned_ns=returned,result=result,local_acceptance_only=True)),flush=True)
+                        reply_record=dict(api='python',token=token,current_token=current,
+                            api_called=called,status=status,value=response.hex(),deadline_ns=info.deadline_ns if info else 0,
+                            started_ns=started,returned_ns=returned,result=result,local_acceptance_only=True)
+                        if writing:reply_record.update(matched_value=matched,accepted_value=provided.hex() if called and result==0 and status==0 else None)
+                        print(provider_prefix+'Reply: '+json.dumps(reply_record),flush=True)
                         if failure is not None and (not isinstance(failure,OSError) or failure.errno not in
                                 (errno.EINVAL,errno.EMSGSIZE,errno.ESTALE,errno.ETIMEDOUT,errno.ESHUTDOWN)):
                             raise failure
@@ -400,6 +414,9 @@ def owned_mode():
                         view.close();closed=True
                         if fd is not None:poller.unregister(fd)
                         stop_provider()
+                    elif writing and line==b'value\n':
+                        print('SdkWriteProviderValue: '+json.dumps(dict(api='python',property=handle,
+                            value=None if applied is None else applied.hex(),application_memory_only=True)),flush=True)
                     elif line==b'value\n':
                         actual=view.read_local(handle,deadline_ns=time.monotonic_ns()+5_000_000_000)
                         print(f'SsapOwnedValue: handle={handle} value={actual.hex()}',flush=True)

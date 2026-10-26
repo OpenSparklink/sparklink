@@ -536,21 +536,6 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         "actual SDK consumer compile: {}",
         String::from_utf8_lossy(&compiled.stderr)
     );
-    let write_probe = directory.join("sdk-write-provider");
-    let compiled = Command::new(&compiler)
-        .args(["-std=c11", "-Wall", "-Wextra", "-Werror"])
-        .arg(root.join("tools/testing/application_client/write_provider.c"))
-        .arg("-I")
-        .arg(root.join("crates/libsparklink/include"))
-        .arg(&library)
-        .arg("-o")
-        .arg(&write_probe)
-        .output()?;
-    anyhow::ensure!(
-        compiled.status.success(),
-        "WRITE SDK C consumer compile: {}",
-        String::from_utf8_lossy(&compiled.stderr)
-    );
     // Explicit qualification retention keeps the actual executable and outputs;
     // recompiling a consumer later cannot reconstruct its execution identity.
     let identities = Command::new("sha256sum")
@@ -558,9 +543,6 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         .arg(&runtime_library)
         .arg(&c)
         .arg(&sdk_probe)
-        .arg(&write_probe)
-        .arg(root.join("tools/testing/application_client/write_provider.c"))
-        .arg(root.join("tools/testing/application_client/write_provider.py"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/write_provider.rs"))
         .arg(root.join("crates/libsparklink/src/ffi_service_write_provider.rs"))
         .arg(root.join("crates/libsparklink/src/ssap/provider/request.rs"))
@@ -1441,7 +1423,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     .await?;
     write_provider::exercise(
         &root,
-        &write_probe,
+        &sdk_probe,
         &runtime_library,
         &directory,
         &bus.address,

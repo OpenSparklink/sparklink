@@ -340,12 +340,13 @@ def channel_pair(run, row):
             row.setdefault('end_wall_ns',time.time_ns());run.save()
 
 
-def owned_arguments(api,owner,service,uuid,initial,policy,*,read_only=False,update_connection=None,read_provider=False):
-    # Provider tests opt into the existing READ-only owner. This selects the
-    # consumer entry only: the later actual bind/reply and peer evidence remain
+def owned_arguments(api,owner,service,uuid,initial,policy,*,read_only=False,update_connection=None,read_provider=False,write_provider=False):
+    # Provider tests explicitly select READ-only or WRITE-only Owned consumers.
+    # This chooses the entry only: actual bind/reply and peer evidence remain
     # separate gates, and historical callers retain their original restrictions.
     if (api not in ('c','python') or policy not in ('none','allow','deny','ask')
-            or type(read_only)is not bool or type(read_provider)is not bool
+            or type(read_only)is not bool or type(read_provider)is not bool or type(write_provider)is not bool
+            or (write_provider and (read_only or read_provider or update_connection is not None))
             or (read_provider and (not read_only or update_connection is not None))
             or (read_only and policy!='none' and not read_provider)):
         raise CaptureError('explicit SDK language and application policy required')
@@ -354,7 +355,7 @@ def owned_arguments(api,owner,service,uuid,initial,policy,*,read_only=False,upda
         if read_only or policy=='none' or update_connection!=owner['object']['path']:
             raise CaptureError('explicit original owned-update connection and policy required')
         return prefix+['owned-updates',str(owner['owner']['index']),str(owner['owner']['generation']),service,uuid,initial,policy,update_connection]
-    return prefix+['owned-readonly'if read_only else'owned',str(owner['owner']['index']),str(owner['owner']['generation']),service,uuid,initial]+([]if policy=='none'else[policy])
+    return prefix+['owned-writeonly'if write_provider else'owned-readonly'if read_only else'owned',str(owner['owner']['index']),str(owner['owner']['generation']),service,uuid,initial]+([]if policy=='none'else[policy])
 
 
 @contextmanager

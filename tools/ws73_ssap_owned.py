@@ -105,11 +105,12 @@ def wait_text(process, path, pattern, deadline, min_count=1, *, max_count=16, co
 
 
 @contextmanager
-def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api=None,read_only=False,updates=False,application_uid=1000,operations=5,read_provider=False):
-    if (type(read_provider)is not bool or (read_provider and
-            (sdk_api not in ('c','python') or read_only is not True or operations!=1 or updates))):
-        raise CaptureError('explicit READ-only SDK Provider test owner required')
-    if type(operations)is not int or operations not in (1,3,5) or (operations!=5 and sdk_api is not None and not read_provider):
+def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api=None,read_only=False,updates=False,application_uid=1000,operations=5,read_provider=False,write_provider=False):
+    if (type(read_provider)is not bool or type(write_provider)is not bool
+            or (read_provider and (write_provider or sdk_api not in ('c','python') or read_only is not True or operations!=1 or updates))
+            or (write_provider and (sdk_api not in ('c','python') or read_only is not False or operations!=6 or updates))):
+        raise CaptureError('explicit non-overlapping READ/WRITE SDK Provider test owner required')
+    if type(operations)is not int or operations not in (1,3,5,6) or (operations==6 and not write_provider) or (operations!=5 and sdk_api is not None and not (read_provider or write_provider)):
         raise CaptureError('explicit CLI READ, READ/WRITE_COMMAND or original publisher operations required')
     if application_uid not in (1000,1005):raise CaptureError('fixed publisher test role required')
     if application_uid==1005:
@@ -125,12 +126,13 @@ def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api
     if sdk_api is not None:
         from ws73_application_client import application_environment,owned_arguments
         args=owned_arguments(sdk_api,target,service,uuid,secret,policy,read_only=read_only,
-            update_connection=target['object']['path'] if updates else None,read_provider=read_provider)
+            update_connection=target['object']['path'] if updates else None,read_provider=read_provider,write_provider=write_provider)
         environment=application_environment()
     item=dict(sender=sender,target=1-sender,policy=policy,secret=secret,value=value,uuid=uuid,service=service,args=args,start_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
     if operations!=5:item['operations']=operations
     if sdk_api is not None:item.update(publisher_api=sdk_api,environment=environment)
     if read_provider:item['sdk_read_provider_contract_version']=1
+    if write_provider:item['sdk_write_provider_contract_version']=1
     row.setdefault(collection,[]).append(item);run.save();process=None
     try:
         with observed_process(args,item,out,err,env=dict(os.environ,**environment)if environment else None,stdin=subprocess.PIPE,text=True,**({'user':1005,'group':1005,'extra_groups':[]}if application_uid==1005 else {}))as process:

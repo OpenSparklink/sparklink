@@ -293,14 +293,21 @@ static int owned_answer(struct OwnedPending *p,uint64_t token,int allow) {
 struct OwnedProviderPending {
     struct SlkReadProviderRequest *request;
     struct SlkReadProviderRequestInfo info;
+    struct SlkWriteProviderRequest *write_request;
+    struct SlkWriteProviderRequestInfo write_info;
+    uint8_t proposed[2042],applied[2042];
+    size_t applied_length;
+    int has_applied;
 };
 static void owned_provider_clear(struct OwnedProviderPending *p) {
     slk_read_provider_request_free(p->request);p->request=NULL;
+    slk_write_provider_request_free(p->write_request);p->write_request=NULL;
 }
 static int owned_provider_close(struct OwnedProviderPending *p,
-                                struct SlkReadProvider **provider,int *fd) {
+                                struct SlkReadProvider **provider,struct SlkWriteProvider **writer,int *fd) {
     /* Stop new callback admission before releasing the delivered request. */
     slk_read_provider_free(*provider);*provider=NULL;
+    slk_write_provider_free(*writer);*writer=NULL;
     owned_provider_clear(p);
     int result=0;
     if (*fd>=0 && close(*fd)) result=-errno;
@@ -331,6 +338,37 @@ static int owned_provider_receive(struct SlkReadProvider *provider,
         info->connection_lifetime,info->connection_handle,info->security_epoch,
         info->security_level,info->deadline_ns,info->property,info->maximum_bytes,
         info->local_tcid,info->remote_tcid,info->pi,observed,observed_wall);
+    fflush(stdout);return 0;
+}
+static int owned_write_provider_receive(struct SlkWriteProvider *provider,
+                                        const struct SlkServiceReceipt *receipt,
+                                        struct OwnedProviderPending *p) {
+    if (p->write_request) return 0;
+    int error=slk_write_provider_next(provider,&p->write_request);
+    if (error==-EAGAIN) return 0;
+    if (error) return error;
+    error=slk_write_provider_request_info(p->write_request,&p->write_info);
+    const struct SlkWriteProviderRequestInfo *i=&p->write_info;
+    if (!error && (i->controller.index!=receipt->controller.index
+        || i->controller.generation!=receipt->controller.generation
+        || i->property!=receipt->handles[0] || !i->token || !i->request_id
+        || !i->connection_lifetime || !i->security_epoch || !i->deadline_ns
+        || i->connection_handle>0x0fff || i->security_level>2 || i->value_length>2042
+        || i->local_tcid!=10 || i->remote_tcid!=10 || i->pi || i->offset || i->data_type
+        || (i->operation!=12 && i->operation!=13) || i->verify>1
+        || (i->operation==12 && i->verify))) error=-EPROTO;
+    for (size_t n=0;n<sizeof i->reserved;n++) if (i->reserved[n]) error=-EPROTO;
+    for (size_t n=0;n<sizeof i->controller.reserved;n++) if (i->controller.reserved[n]) error=-EPROTO;
+    size_t length=0;
+    if (!error) error=slk_write_provider_request_value(p->write_request,p->proposed,sizeof p->proposed,&length);
+    if (!error && length!=i->value_length) error=-EPROTO;
+    if (error) {owned_provider_clear(p);return error;}
+    printf("SdkWriteProviderRequest: {\"api\":\"c\",\"index\":%u,\"generation\":%"PRIu64",\"token\":%"PRIu64",\"request_id\":%"PRIu64",\"lifetime\":%"PRIu64",\"handle\":%u,\"epoch\":%"PRIu64",\"level\":%u,\"deadline_ns\":%"PRIu64",\"property\":%u,\"local_tcid\":%u,\"remote_tcid\":%u,\"pi\":%u,\"operation\":%u,\"data_type\":%u,\"offset\":%u,\"value_length\":%u,\"verify\":%s,\"value\":\"",
+        i->controller.index,i->controller.generation,i->token,i->request_id,i->connection_lifetime,
+        i->connection_handle,i->security_epoch,i->security_level,i->deadline_ns,i->property,
+        i->local_tcid,i->remote_tcid,i->pi,i->operation,i->data_type,i->offset,i->value_length,i->verify?"true":"false");
+    hex_print(p->proposed,length);
+    printf("\",\"observed_ns\":%"PRIu64",\"observed_wall_ns\":%"PRIu64"}\n",now_ns(),wall_ns());
     fflush(stdout);return 0;
 }
 /* This bounded UI parser only selects an opaque SDK request. No request_id or
@@ -370,18 +408,28 @@ static int owned_provider_input(char *line,uint64_t *token,uint16_t *status,
 }
 static int owned_provider_answer(struct OwnedProviderPending *p,
                                  uint64_t token,uint16_t status,
-                                 const uint8_t *value,size_t length,uint64_t end) {
-    const int called=p->request && p->info.token==token;
-    const uint64_t current=p->request?p->info.token:0;
-    const uint64_t deadline=p->request?p->info.deadline_ns:0;
+                                 const uint8_t *value,size_t length,uint64_t end,int writing) {
+    int called=writing?(p->write_request && p->write_info.token==token):(p->request && p->info.token==token);
+    const uint64_t current=writing?(p->write_request?p->write_info.token:0):(p->request?p->info.token:0);
+    const uint64_t deadline=writing?(p->write_request?p->write_info.deadline_ns:0):(p->request?p->info.deadline_ns:0);
     const uint64_t started=now_ns();
     if (started>=end) return -ETIMEDOUT;
-    const int result=called?slk_read_provider_request_reply(p->request,status,value,length):-ESTALE;
+    const int matched=called && (!writing || status!=0 || (length==p->write_info.value_length && !memcmp(value,p->proposed,length)));
+    const size_t response_length=writing && !p->write_info.verify?0:length;
+    int result=-ESTALE;
+    if (called && !matched) {result=-EINVAL;called=0;}
+    if (called) result=writing?slk_write_provider_request_reply(p->write_request,status,value,response_length):slk_read_provider_request_reply(p->request,status,value,length);
+    if (writing && called && !result && !status) {memcpy(p->applied,value,length);p->applied_length=length;p->has_applied=1;}
     const uint64_t returned=now_ns();
-    printf("SdkReadProviderReply: {\"api\":\"c\",\"token\":%"PRIu64",\"current_token\":%"PRIu64",\"status\":%u,\"value\":\"",
-        token,current,status);hex_print(value,length);
-    printf("\",\"api_called\":%s,\"result\":%d,\"deadline_ns\":%"PRIu64",\"started_ns\":%"PRIu64",\"returned_ns\":%"PRIu64",\"local_acceptance_only\":true}\n",
-        called?"true":"false",result,deadline,started,returned);fflush(stdout);
+    printf("%sReply: {\"api\":\"c\",\"token\":%"PRIu64",\"current_token\":%"PRIu64",\"status\":%u,\"value\":\"",
+        writing?"SdkWriteProvider":"SdkReadProvider",token,current,status);hex_print(value,response_length);
+    printf("\",\"api_called\":%s,\"result\":%d,\"deadline_ns\":%"PRIu64",\"started_ns\":%"PRIu64",\"returned_ns\":%"PRIu64",\"local_acceptance_only\":true",
+        called?"true":"false",result,deadline,started,returned);
+    if (writing) {
+        printf(",\"matched_value\":%s,\"accepted_value\":",matched?"true":"false");
+        if (called && !result && !status) {printf("\"");hex_print(value,length);printf("\"");}else printf("null");
+    }
+    printf("}\n");fflush(stdout);
     if (called && (result==0 || result==-ESTALE || result==-ETIMEDOUT || result==-ESHUTDOWN)) owned_provider_clear(p);
     /* Validation failures do not consume the same opaque request. Wrong UI
      * tokens never called the API and cannot clear someone else's request. */
@@ -391,7 +439,7 @@ static int owned_provider_answer(struct OwnedProviderPending *p,
 
 /* Actual Owned SDK publisher. No wire codec, database or callback simulation. */
 static int owned_mode(int argc,char **argv) {
-    int updates=!strcmp(argv[1],"owned-updates");
+    int updates=!strcmp(argv[1],"owned-updates"),writing=!strcmp(argv[1],"owned-writeonly");
     if ((updates && argc!=9) || (!updates && argc!=7 && argc!=8)) return 2;
     int requests=updates || argc==8,allow=requests && !strcmp(argv[7],"allow"),ask=requests && !strcmp(argv[7],"ask");
     if (requests && !allow && !ask && strcmp(argv[7],"deny")) return 2;
@@ -399,13 +447,13 @@ static int owned_mode(int argc,char **argv) {
     uint8_t service[2042],property_uuid[2042],initial[2042];
     size_t service_n=bytes(argv[4],service),property_n=bytes(argv[5],property_uuid),initial_n=bytes(argv[6],initial);
     if (index>UINT16_MAX || !generation || (service_n!=2 && service_n!=16) || (property_n!=2 && property_n!=16)) return 2;
-    struct SlkServiceProperty property={.operations=updates?541:!strcmp(argv[1],"owned-readonly")?1:5,.access=requests && !updates?36:0,.uuid_length=(uint8_t)property_n,.value_length=(uint16_t)initial_n};
+    struct SlkServiceProperty property={.operations=updates?541:writing?6:!strcmp(argv[1],"owned-readonly")?1:5,.access=requests && !updates?36:0,.uuid_length=(uint8_t)property_n,.value_length=(uint16_t)initial_n};
     memcpy(property.uuid,property_uuid,property_n);memcpy(property.value,initial,initial_n);
     struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};
     struct SlkClient *client=NULL;struct SlkLocalService *view=NULL;struct SlkServiceReceipt receipt={0};
     struct SlkConnection *link=NULL;
     int status=1,error,approval_fd=-1,observing=0;uint64_t created=0,end=0;
-    struct SlkReadProvider *provider=NULL;struct OwnedProviderPending provider_pending={0};
+    struct SlkReadProvider *provider=NULL;struct SlkWriteProvider *writer=NULL;struct OwnedProviderPending provider_pending={0};
     int provider_fd=-1,provider_attempted=0;
     struct OwnedPending pending={0};const uint64_t original=now_ns()+5000000000ULL;
     error=slk_client_open_system(original,&client);if (error) {errno=-error;goto done;}
@@ -419,15 +467,15 @@ static int owned_mode(int argc,char **argv) {
     }
     slk_client_close(client);client=NULL;
     printf("SdkOwnedAPI: api=c client_closed=true\nSsapOwnedService: start=%u end=%u property=%u; local registration only\n",receipt.start,receipt.end,receipt.handles[0]);fflush(stdout);
-    created=now_ns();end=created+30000000000ULL;char line[4096];size_t used=0;
+    created=now_ns();end=created+30000000000ULL;char line[2*2042+64];size_t used=0;
     for (;;) {
         /* Try next before sleeping;the duplicated eventfd is poll-only. */
         if (requests && view) {error=owned_receive(view,&receipt,&pending,ask,allow,observing?created:0,end);if (error) {errno=-error;goto done;}}
         uint64_t now=now_ns();if (now>=end) {errno=ETIMEDOUT;goto done;}
-        if (provider && view) {error=owned_provider_receive(provider,&receipt,&provider_pending);if (error) {errno=-error;goto done;}}
+        if ((provider || writer) && view) {error=writing?owned_write_provider_receive(writer,&receipt,&provider_pending):owned_provider_receive(provider,&receipt,&provider_pending);if (error) {errno=-error;goto done;}}
         now=now_ns();if (now>=end) {errno=ETIMEDOUT;goto done;}
         struct pollfd fds[3]={{.fd=STDIN_FILENO,.events=POLLIN},{.fd=view?approval_fd:-1,.events=POLLIN},
-            {.fd=view && provider && !provider_pending.request?provider_fd:-1,.events=POLLIN}};
+            {.fd=view && (provider || writer) && !provider_pending.request && !provider_pending.write_request?provider_fd:-1,.events=POLLIN}};
         int count=poll(fds,3,(int)((end-now+999999)/1000000));
         if (count<0 && errno==EINTR) continue;
         if (count<=0) {if (!count) errno=ETIMEDOUT;goto done;}
@@ -443,26 +491,26 @@ static int owned_mode(int argc,char **argv) {
         if (line[used++]!='\n') {if (used==sizeof line-1) {errno=E2BIG;goto done;}continue;}
         line[used]='\0';used=0;
         if (!strcmp(line,"provider\n")) {
-            if (strcmp(argv[1],"owned-readonly") || updates || !view || provider_attempted) {errno=EINVAL;goto done;}
+            if ((!writing && strcmp(argv[1],"owned-readonly")) || updates || !view || provider_attempted) {errno=EINVAL;goto done;}
             const uint64_t started=now_ns();
             if (started>=end) {errno=ETIMEDOUT;goto done;}
             uint64_t deadline=started+5000000000ULL;if (deadline>end) deadline=end;
             provider_attempted=1;
-            error=slk_local_service_bind_read_provider(view,receipt.handles[0],deadline,&provider);
+            error=writing?slk_local_service_bind_write_provider(view,receipt.handles[0],deadline,&writer):slk_local_service_bind_read_provider(view,receipt.handles[0],deadline,&provider);
             const uint64_t returned=now_ns();
             const int notification_called=error==0;
-            const int notification_error=notification_called?slk_read_provider_fd(provider,&provider_fd):0;
-            printf("SdkReadProviderBound: {\"api\":\"c\",\"index\":%u,\"generation\":%"PRIu64",\"property\":%u,\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64",\"result\":%d,\"notification_result\":",
-                receipt.controller.index,receipt.controller.generation,receipt.handles[0],started,deadline,returned,error);
+            const int notification_error=notification_called?(writing?slk_write_provider_fd(writer,&provider_fd):slk_read_provider_fd(provider,&provider_fd)):0;
+            printf("%sBound: {\"api\":\"c\",\"index\":%u,\"generation\":%"PRIu64",\"property\":%u,\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64",\"result\":%d,\"notification_result\":",
+                writing?"SdkWriteProvider":"SdkReadProvider",receipt.controller.index,receipt.controller.generation,receipt.handles[0],started,deadline,returned,error);
             if (notification_called) printf("%d",notification_error);else printf("null");
             printf(",\"notification_ready\":%s,\"local_binding_only\":true}\n",notification_called && !notification_error?"true":"false");fflush(stdout);
             if (error || notification_error) {errno=error?-error:-notification_error;goto done;}
         } else if (!strncmp(line,"provide ",8) || !strncmp(line,"provider-error ",15)) {
-            if (!view || !provider || !provider_attempted) {errno=ESHUTDOWN;goto done;}
+            if (!view || (!provider && !writer) || !provider_attempted) {errno=ESHUTDOWN;goto done;}
             uint64_t token=0;uint16_t reply_status=0;uint8_t value[2042];size_t length=0;
             error=owned_provider_input(line,&token,&reply_status,value,&length);
             if (error) {errno=-error;goto done;}
-            error=owned_provider_answer(&provider_pending,token,reply_status,value,length,end);
+            error=owned_provider_answer(&provider_pending,token,reply_status,value,length,end,writing);
             if (error) {errno=-error;goto done;}
         } else if (!strcmp(line,"provider-unregister\n")) {
             if (strcmp(argv[1],"owned-readonly") || !view || !provider || !provider_pending.request) {errno=EINVAL;goto done;}
@@ -489,11 +537,15 @@ static int owned_mode(int argc,char **argv) {
             if (removed) {errno=-removed;goto done;}
             if (!same || !notification_alive || rejected!=-ESHUTDOWN || reply_returned>=deadline) {errno=EPROTO;goto done;}
             slk_local_service_free(view);view=NULL;
-            error=owned_provider_close(&provider_pending,&provider,&provider_fd);if (error) {errno=-error;goto done;}
+            error=owned_provider_close(&provider_pending,&provider,&writer,&provider_fd);if (error) {errno=-error;goto done;}
         } else if (!strcmp(line,"lifecycle\n")) {
             if (updates || !allow || !view || observing) {errno=EINVAL;goto done;}
             if (now_ns()>=end) {errno=ETIMEDOUT;goto done;}
             observing=1;owned_lifecycle("observed",&receipt,created,end,0,0,0,0,0);
+        } else if (writing && !strcmp(line,"value\n")) {
+            printf("SdkWriteProviderValue: {\"api\":\"c\",\"property\":%u,\"value\":",receipt.handles[0]);
+            if (provider_pending.has_applied) {printf("\"");hex_print(provider_pending.applied,provider_pending.applied_length);printf("\"");}else printf("null");
+            printf(",\"application_memory_only\":true}\n");fflush(stdout);
         } else if (!strcmp(line,"value\n")) {
             if (!view) {errno=ESHUTDOWN;goto done;}
             uint8_t value[2042];uintptr_t length=0;
@@ -547,7 +599,7 @@ static int owned_mode(int argc,char **argv) {
             if (!same || !notification_alive || rejected!=-ESTALE) {errno=EPROTO;goto done;}
         } else if (!strcmp(line,"quit\n")) {
             if (!view) {printf("SdkOwnedClosedExit: api=c start=%u\n",receipt.start);fflush(stdout);status=0;break;}
-            error=owned_provider_close(&provider_pending,&provider,&provider_fd);if (error) {errno=-error;goto done;}
+            error=owned_provider_close(&provider_pending,&provider,&writer,&provider_fd);if (error) {errno=-error;goto done;}
             uint64_t cleanup_deadline=now_ns()+5000000000ULL;
             if (provider_attempted && cleanup_deadline>end) cleanup_deadline=end;
             error=slk_local_service_unregister(view,cleanup_deadline);if (error) {errno=-error;goto done;}
@@ -557,7 +609,7 @@ static int owned_mode(int argc,char **argv) {
 done:
     if (observing) owned_lifecycle("cleanup_begin",&receipt,created,end,status?-errno:0,0,0,0,0);
     if (status) perror("application-client-c-owned");
-    int provider_cleanup=owned_provider_close(&provider_pending,&provider,&provider_fd);
+    int provider_cleanup=owned_provider_close(&provider_pending,&provider,&writer,&provider_fd);
     if (provider_cleanup && !status) {errno=-provider_cleanup;perror("application-client-c-owned-provider-close");status=1;}
     owned_clear(&pending);
     if (approval_fd>=0) close(approval_fd);
@@ -709,7 +761,7 @@ done:
 
 int main(int argc,char **argv) {
     if (argc>1 && !strcmp(argv[1],"subscription")) return subscription_mode(argc,argv);
-    if (argc>1 && (!strcmp(argv[1],"owned") || !strcmp(argv[1],"owned-readonly") || !strcmp(argv[1],"owned-updates"))) return owned_mode(argc,argv);
+    if (argc>1 && (!strcmp(argv[1],"owned") || !strcmp(argv[1],"owned-readonly") || !strcmp(argv[1],"owned-writeonly") || !strcmp(argv[1],"owned-updates"))) return owned_mode(argc,argv);
     if (argc>1 && (!strcmp(argv[1],"update-peer") || !strcmp(argv[1],"update-error") || !strcmp(argv[1],"update-retired"))) return update_peer_mode(argc,argv);
     if (argc>1 && !strcmp(argv[1],"discovery")) return discovery_mode(argc,argv);
     if (argc>1 && (!strcmp(argv[1],"ssap") || !strcmp(argv[1],"ssap-error"))) return ssap_mode(argc,argv);

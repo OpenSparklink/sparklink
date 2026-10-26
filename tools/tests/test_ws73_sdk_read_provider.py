@@ -22,6 +22,23 @@ class ProviderOwnerAdmission(unittest.TestCase):
                 self.assertEqual(args, prefix + ['owned-readonly', '7', '11', '1234',
                     '5678', 'ab'] + ([] if policy == 'none' else [policy]))
 
+    def test_write_provider_reuses_parameterized_owned_consumer(self):
+        for api in ('c','python'):
+            for policy in ('none','allow','deny','ask'):
+                args=owned_arguments(api,self.owner,'1234','5678','ab',policy,write_provider=True)
+                self.assertEqual(args[-6:] if policy=='none' else args[-7:],
+                    ['owned-writeonly','7','11','1234','5678','ab']+([]if policy=='none'else[policy]))
+        for options in (dict(write_provider=1),dict(write_provider=True,read_only=True),
+                        dict(write_provider=True,read_provider=True),dict(write_provider=True,update_connection='/connection')):
+            with self.subTest(options=options),self.assertRaises(CaptureError):self.arguments(**options)
+        for options in (dict(write_provider=True),dict(write_provider=True,sdk_api='c',operations=5),
+                        dict(write_provider=True,sdk_api='c',operations=6,updates=True),
+                        dict(write_provider=True,sdk_api='c',operations=6,read_only=True),
+                        dict(write_provider=True,sdk_api='c',operations=6,read_provider=True),
+                        dict(sdk_api='c',operations=6)):
+            with self.subTest(options=options),self.assertRaises(CaptureError):
+                with publisher(None,None,0,'allow',**options):self.fail('invalid WRITE scope reached spawn')
+
     def test_historical_entry_and_restrictions_are_unchanged(self):
         self.assertEqual(self.arguments(), ['/bin/ws73-application-client-c', 'owned',
             '7', '11', '1234', '5678', 'ab', 'allow'])

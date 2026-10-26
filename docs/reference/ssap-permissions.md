@@ -550,6 +550,27 @@ sleep 假定已排空。真实 SSAP 对端业务确认仍须单独验证。
 本次创建的 READ 接口，不删除外来对象；取消部分安装只留下已停止的有界端点，直到
 原连接释放，不自动重试。同步 Client 打开失败会释放该原连接。
 
+#### 现有验收调用者的 WRITE 模式
+
+`tools/testing/application_client/client.c` 和 `client.py` 的
+`owned-writeonly INDEX GENERATION SERVICE_UUID PROPERTY_UUID INITIAL_HEX [allow|deny|ask]`
+复用原 Owned 登记、授权、poll 和清理循环；操作位固定为 `0x06`，不能冒充完整
+method、描述符、动态通道或长写协议支持。运行身份来自明确参数，不再使用独立
+WRITE 示例中固定的 controller/handle。测试工具不是生产服务数据库。
+
+`provider` 通过实际 SDK 绑定，`provide pTOKEN HEX` 先将输入完整值与原拟写值比较，
+相等后才答复；verify 返回接受值，其他成功答复为空。`-` 表示空值，
+`provider-error pTOKEN AF..FF` 返回应用错误。错误 token/值不答复、不清除待决请求。
+本地答复接受后更新该测试应用的有限内存值；`value` 单独报告它，不调用 daemon
+staging 读接口。错误和过期答复不改变这个测试值；这不是通用业务副作用的回滚承诺。
+
+JSON 观察分别记录原请求、实际 SDK 调用与结果、接受值和应用内存值。
+输入行有界，支持完整2042字节值及命令开销，不静默截断。`quit` 沿原清理路径
+停止准入、释放请求/fd、撤回服务；监督器必须先观察对端结果再结束 owner。
+现有 publisher 可显式选择 `write_provider=True, operations=6`；与 READ/updates
+组合明确拒绝。该调用入口及离线集成不是完整 VM WRITE 门禁：专用选择器、双端
+USB/SSAP 判定和准确新产物实机验收仍需接通，旧 READ 资格不转授。
+
 ### 显式公开的只读属性说明
 
 `SetOwnedLocalDescription(handle:q, description:s, deadline:(ttttt))` 为原 Owned

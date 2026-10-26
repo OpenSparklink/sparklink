@@ -2037,8 +2037,8 @@
       },
       "public_scope": "Only source/plan and subsequent source/offline summaries are public. Exact compiled/executor/report identities and actual device results remain local; non-disclosure is not a statement that execution has or has not occurred.",
       "implementation_sources": {
-        "public_source": "f1943b16f6c2ed684c6033ab867575b5da97ad3b",
-        "scope": "Current gate source/offline contract; historical SDK frontend source mappings retained separately. Public view does not infer private artifact results or whole HEAD qualification."
+        "public_source": "8b55945aafbc82b097737fb8a8232f1085b18d2b",
+        "scope": "Current explicit SDK unregister runner source/offline contract. Private exact-artifact qualification remains separate; no whole HEAD inference."
       },
       "invariants": [
         "Reuse the original Client/Arc<SyncClient>, current Owned registration, unique daemon and full generation/lifetime/epoch/channel identity; the daemon remains the unique SSAP Engine over the existing Session/Grant/credit/Ticket path.",
@@ -2169,7 +2169,7 @@
         "Retain all original failures, counterexamples, scope and qualification identities. UserHost remains low-priority planning; no original issue is closed by this batch transition."
       ],
       "next": [
-        "Build/prepare and execute the distinct SDK pending-unregister gate with the exact signed artifact; original request barrier, deadlines, retained info/fd, live Provider/guard and paired peer evidence. Then SDK expiry/late reply; no broad control-plane prerequisite.",
+        "Continue the SDK original-expiry/late-answer gate through the existing shared dispatcher and sole Engine. Preserve distinct Owner-exit and explicit-unregister contracts; exact artifact qualification stays under authorized local evidence authority.",
         "Continue original data/security/SSAP and missing named checks without the whole control-plane race set as a prerequisite; no same-actor or natural recovery qualification is added."
       ],
       "issues": [
@@ -2312,7 +2312,7 @@
           }
         },
         "sdk_provider_unregister_v1": {
-          "state": "RUNNER_WIRED_NAMED_OFFLINE_CHECKS_PASS_EXACT_VM_GATE_PENDING",
+          "state": "SOURCE_OFFLINE_AVAILABLE_PRIVATE_QUALIFICATION_SEPARATE",
           "public_source": "8b55945aafbc82b097737fb8a8232f1085b18d2b",
           "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
           "behavior": "Existing SDK provider-unregister after actual pending READ, immutable info/readiness fd, ESHUTDOWN and original deadlines; live process through peer/retired-handle/independent-guard checks, ordinary business after cleanup. Shared owner-exit execution/wire helpers; distinct selectors and proof.",
@@ -2324,9 +2324,8 @@
           "test_boundaries": "Literal packet/SDK transcript and controlled dependencies; no new actual device, callback, kernel concurrency or formal qualification. Metadata-only proof reconstruction is not replay.",
           "retained_failures": "Initial test syntax error and target test missing explicit kernel-source directory retained; assertions unchanged, only syntax/environment corrected.",
           "remaining": [
-            "Build and prepare exact signed artifact using shared lock/resource budget",
-            "VM-only two assigned U leaves: actual pending unregister across C/Python and physical roles with both raw captures and original guard/ordinary baseline",
-            "Original expiry/late answer and all named U#21 conditions remain open"
+            "Exact-artifact VM results and finite scope are maintained in authorized local qualification records, not inferred from the public source/offline summary.",
+            "SDK original expiry/late answer and full original U21 lifecycle requirements."
           ],
           "whole_issue_complete": false
         }
@@ -2347,6 +2346,10 @@
             }
           ],
           "source_offline_scope": "Shared bounded SDK Provider frontend, migrated slctl, and C/Python Provider public interfaces over the original caller and sole daemon Engine. Named offline checks only; no transfer of hardware qualification."
+        },
+        {
+          "public_source": "f1943b16f6c2ed684c6033ab867575b5da97ad3b",
+          "scope": "Current gate source/offline contract; historical SDK frontend source mappings retained separately. Public view does not infer private artifact results or whole HEAD qualification."
         }
       ]
     },

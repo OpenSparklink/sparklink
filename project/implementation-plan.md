@@ -510,7 +510,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
   },
   "offline_status": "SCOPED_OFFLINE_PASS",
   "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "NOT_RUN_FOR_NEW_SOURCE; previous selected exact artifact remains historical qualification only.",
+  "hardware_status": "No hardware result published here. Consult authorized local records; public source/offline evidence does not qualify the whole HEAD or the remaining Native interleaving.",
   "exit_conditions": [
     "Run accurate new artifact through VM-only actual Native event integration/exit and applicable dual-device discovery/connect/short-message/length/peer-isolation gates.",
     "Reconcile U1 original six requirements and close only when its relevant evidence is sufficient."

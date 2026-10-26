@@ -728,7 +728,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
       "whole_issue_complete": false
     },
     "sdk_provider_owner_exit_v2": {
-      "state": "SDK_OWNER_EXIT_V2_WIRED_OFFLINE_REAL_DEVICE_PENDING",
+      "state": "SDK_OWNER_EXIT_V2_SCOPED_EVIDENCE_CLOSURE_IN_PROGRESS",
       "source": "c7feed7b4118efe747ca8b8366530b953f8960da",
       "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
       "behavior": "Existing owner-exit runner now uses actual Python/C SDK Providers across roles; validates SDK bind/approval/request before SIGKILL, retains original deadline, paired AF/4 and retired-handle checks, independent guard and baseline. Current host/guest require v2; old CLI v1 retains historical scope.",
@@ -740,10 +740,10 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
       },
       "scope": "Tooling/fixture checks only; not actual USB/callback/VM qualification. Source is public; exact hardware attempts remain private.",
       "remaining": [
-        "Accurate-artifact SDK owner loss paired evidence",
+        "Seal and register the finite exact-artifact SDK Owner-exit evidence; source/offline results alone cannot satisfy this.",
         "Explicit pending SDK unregister",
         "SDK original expiry/late reply",
-        "Independent guard and ordinary business isolation"
+        "Complete the original named lifecycle scope; finite guard/ordinary checks do not qualify all isolation combinations."
       ],
       "whole_issue_complete": false,
       "capability_refusal_v2": {

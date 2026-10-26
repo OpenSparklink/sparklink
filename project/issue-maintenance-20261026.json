@@ -261,8 +261,8 @@
       "classification": "有限收尾",
       "action": "body_replaced",
       "state": "open",
-      "closure_basis": "Native retry 分支等待 SharedState 时仍须响应取消；补直接覆盖该生产等待的 join/fd 释放回归。现有 fixture shutdown 不能代替。",
-      "body_sha256": "c35ae036c9a68899e9dfa968f0aa084e175a0c810d724be89cbfa8709069cfb0",
+      "closure_basis": "Native retry 不可取消锁等待已修复；同一生产等待与任务关停离线回归通过，实际 Native 接线及准确新 artifact VM 回归待验。原六条要求保留，暂不关闭。",
+      "body_sha256": "14777e48d79430c756652abfceb45a2e0be067d6a6049f3951c7deb3e6b635f5",
       "children": []
     },
     {
@@ -467,7 +467,7 @@
     "environment": "Rust 1.96.1, locked/offline; shared fixed Cargo directory and global build lock; 8 jobs; real private D-Bus 1.16.2, controlled EventSource and /dev/null.",
     "limits": "No real kernel/USB/RF, system-bus deployment, formal proof or full Native shutdown qualification. Native retry-lock cancellation remains U#1."
   },
-  "resume": "Bounded maintenance complete. Continue WRITE Down/restart and existing data/security/SSAP delivery. U1 finite cancellation fix independent; natural root cause and nonmanual recovery open.",
+  "resume": "Bounded issue maintenance complete. U1 source fix/offline pass; new artifact Native/VM gate pending. Continue WRITE Down/restart and existing data/security/SSAP scope; natural recovery open.",
   "natural_root_cause_closed": false,
   "non_manual_recovery_qualified": false,
   "whole_goal_complete": false,
@@ -2620,5 +2620,17 @@
     }
   ],
   "source_review_scope": "Original maintenance snapshot; current reviewed source is followup_readback.source_review.",
-  "counts_scope": "Original 28-issue maintenance and existing child dispositions; followup_readback identifies changes made in the current bounded refresh."
+  "counts_scope": "Original 28-issue maintenance and existing child dispositions; followup_readback identifies changes made in the current bounded refresh.",
+  "source_followups": [
+    {
+      "repository": "sparklink",
+      "number": 1,
+      "prior_body_sha256": "c35ae036c9a68899e9dfa968f0aa084e175a0c810d724be89cbfa8709069cfb0",
+      "body_sha256": "14777e48d79430c756652abfceb45a2e0be067d6a6049f3951c7deb3e6b635f5",
+      "source_offline_only": true,
+      "state": "open",
+      "observed_at": "2026-10-26T22:41:24.812691+00:00",
+      "scope": "U1 production wait fix and offline coverage; full 35-issue readback remains its historical snapshot."
+    }
+  ]
 }

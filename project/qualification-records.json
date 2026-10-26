@@ -13,98 +13,67 @@
     "replay": "每份记录按自身源码映射、编译artifact、冻结执行/校验工具和原manifest命令重放；只在授权VM中执行驱动/实机。历史575等工具仅适用于各自原记录，不是全registry的统一重放入口。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "WP08-WP16-WP17-U22-write-pending-owner-exit",
-    "state": "WRITE_OWNER_EXIT_SOURCE_OFFLINE_AVAILABLE",
-    "production_behavior": "Extend the existing pending SDK/guard runner and owner-exit oracle to typed verified WRITE. Validate actual callback identity/value before SIGKILL; bound cleanup and peer refusal by original requester/Provider/supervisor deadlines. Require paired literal WRITE refusal, retired handle READ rejection, independent live guard and subsequent ordinary business. No new Host/Engine, no synthetic success and no dead-process memory rollback claim.",
+    "id": "WP16-U1-native-event-retry-cancellation",
+    "state": "SOURCE_OFFLINE_PASS_NEW_ARTIFACT_VM_PENDING",
+    "production_behavior": "Native EventTask retry uses the same cancellable SharedState snapshot wait; pending or already-ready cancellation exits without subsequent refresh/maintenance. Retry cadence and receiver ownership unchanged.",
     "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
     "work_packages": [
-      "WP08",
-      "WP16",
-      "WP17"
+      "WP16"
     ],
     "records": [],
     "predecessor_archive": {
       "history": "batch_history",
-      "id": "WP08-WP16-WP17-U22-write-original-deadline",
-      "canonical_sha256": "8def5627682982f74bacde378b99b1ecf4aafd46a4769df003002206a576d3b1"
+      "id": "WP08-WP16-WP17-U22-write-pending-owner-exit",
+      "canonical_sha256": "be7d1383c42461ed7fc9d2f696eabb54714cfece39b23cb787423dd6c50a483c"
     },
     "implementation_sources": {
-      "public_source": "dfaf6ec23557caebf3d8ae72612de605c0bd84f4",
-      "scope": "Source/offline identity; compilation/execution/report and exact private hardware scope remain separate."
+      "public_source": "bb7abc65ea6348e5e6aab045c04fe13a1340dd4a",
+      "scope": "Source and offline checks only; no new hardware qualification."
     },
     "invariants": [
-      "Actual pending verified WRITE identity and complete payload precede owner kill.",
-      "No deadline renewal; kill, cleanup and peer result bounded by original requester, Provider and supervisor deadlines.",
-      "Original owner dies; old handle cannot deliver cached value; independent guard and ordinary peer business remain separately checked.",
-      "SDK error/USB completion is not peer delivery; paired bytes and real application result are required.",
-      "READ historical schemas, bounded queues, production Engine/Session/Grant/credit/Ticket and original qualification identities remain unchanged."
+      "Cancellation covers the actual retry lock wait; ready cancellation wins.",
+      "Business lock remains held while actual EventTask shutdown joins and owned resource closes.",
+      "Snapshot guard is dropped before refresh; no new polling or deadline renewal.",
+      "Task exit is not physical controller drain; old artifact qualification is not transferred."
     ],
     "offline_checks": {
-      "runner": {
-        "result": "PASS",
-        "tests": 169,
-        "scope": "Typed WRITE owner-exit, original callback/kill/cleanup deadline, paired literal bytes, guard/ordinary-business and identity/manifest negative controls, actual host CLI/boot parser, prior READ/WRITE/unregister/deadline/channel/target cases."
-      },
-      "rust": "No production Rust or C/Python caller implementation changes; existing SDK tests retain original source identity and were not relabeled as rerun. Fresh signed bundle/prepared inputs use the original fixed build and global lock, eight-job cap.",
-      "docs": "Strict locked public HTML/inventory PASS; final canonical/private checks recorded in delivery. No device operations by documentation.",
-      "failures": "First fixture run caught WRITE status index inherited from READ; fixed typed index. Invalid-token test now rejects boolean token rather than assuming an arbitrary consistent positive token must fail. Original failure log retained. Public/private documentation mismatch stopped copy; only the new section was applied, preserving private history."
+      "event_loop": "28 tests PASS, including actual production wait, real EventTask shutdown with Unix socket resource fixture, original 30-second private D-Bus and starvation negative control.",
+      "strict": "Rust1.96.1 offline locked slkd all-targets clippy -D warnings PASS. Shared build lock, eight jobs.",
+      "negative_control": "Old uncancellable production wait: two expected failures, ready cancellation mismatch and pending lock join timeout. Retained separately.",
+      "failures": "Initial clippy nested-if warning fixed without suppression; final checks rerun.",
+      "limits": "Resource fixture is not ControllerEventReceiver or a real kernel subscription; not full Native loop, RF, concurrency proof or physical drain."
     },
     "offline_status": "SCOPED_OFFLINE_PASS",
     "formal_status": "NO_NEW_PROOF",
-    "hardware_status": "Exact-artifact qualification remains in authorized local records; public source/offline summary neither grants hardware qualification nor implies execution absent.",
+    "hardware_status": "NOT_RUN_FOR_NEW_SOURCE; previous selected exact artifact remains historical qualification only.",
     "exit_conditions": [
-      "Actual typed callback before destructive action, original process exit and cleanup within unchanged deadlines.",
-      "Original peer WRITE refusal, retired READ4, independent guard and ordinary random business corroborated from paired bytes and actual SDK outputs.",
-      "Exact fresh source/artifact/tool/firmware closure, terminal VM and fail-closed retained evidence; no private detail published.",
-      "Keep prior positive WRITE/READ/expiry/withdrawal identities separate; U22 original six requirements stay open."
+      "Run accurate new artifact through VM-only actual Native event integration/exit and applicable dual-device discovery/connect/short-message/length/peer-isolation gates.",
+      "Reconcile U1 original six requirements and close only when its relevant evidence is sufficient."
     ],
     "remaining_conditions": [
-      "WRITE connection Down, daemon restart and old-lifetime combinations under original deadlines.",
-      "Long values, method/descriptor/update and full original U22 operation matrix.",
-      "Full S0-S6/19WP/10FV/12DG, remaining data/security/Profile/deployment/release, natural root cause and nonmanual recovery."
+      "Actual Native subscription/new artifact VM regression; U1 remains open.",
+      "WRITE Down/restart, long values and remaining SSAP/data/security full original scope.",
+      "Natural fault root causes and nonmanual recovery remain open."
     ],
     "next": [
-      "Reuse the same Engine/Session and pending request barrier for WRITE Down/restart and stale lifetime rejection.",
-      "Continue long values and remaining SSAP operations alongside data/security; no collective control-plane prerequisite.",
-      "UserHost remains low-priority P4 planning."
+      "Complete bounded U1 actual Native/new-artifact regression without making unrelated control-plane combinations prerequisite.",
+      "Resume existing WRITE Down/restart, data/security and SSAP delivery.",
+      "UserHost P4 planning remains nonblocking."
     ],
     "issues": [
-      "OpenSparklink/sparklink#22",
-      "OpenSparklink/sparklink#3",
-      "OpenSparklink/linux#6",
-      "OpenSparklink/linux#17"
+      "OpenSparklink/sparklink#1"
     ],
     "issue_sync": {
-      "issues": [
-        "sparklink#22",
-        "sparklink#3"
-      ],
-      "state": "open",
-      "updates": [
-        {
-          "repository": "sparklink",
-          "number": 22,
-          "prior_body_sha256": "c28c37ba25e135ec73be72c6a13e5be25f5ecc06b516d6644cf4a01d93b4681e",
-          "body_sha256": "3662934200fc4e1a03f75479de7c602a4735452bc36dcd9ddb86ad4fc01876d8"
-        },
-        {
-          "repository": "sparklink",
-          "number": 3,
-          "prior_body_sha256": "27cbeeb6fcc8161ab84a2b52f026aceb92d61e621da4f5d484b7e7b5d03490a0",
-          "body_sha256": "64ceabe462b8189e87bea9cd5c523cea80ba3812043841af380b34f2f983816d"
-        }
-      ],
+      "repository": "sparklink",
+      "number": 1,
+      "prior_body_sha256": "c35ae036c9a68899e9dfa968f0aa084e175a0c810d724be89cbfa8709069cfb0",
+      "body_sha256": "14777e48d79430c756652abfceb45a2e0be067d6a6049f3951c7deb3e6b635f5",
       "source_offline_only": true,
-      "original_criteria_unchanged": true
+      "state": "open",
+      "observed_at": "2026-10-26T22:41:24.812691+00:00"
     },
-    "public_scope": "Only source/offline/disposition. Private device details and execution identities remain local.",
-    "issue_maintenance": {
-      "record": "project/issue-maintenance-20261026.json",
-      "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
-      "last_readback": "project/issue-maintenance-20261026.json#/followup_readback",
-      "scope": "Previous bounded maintenance complete; U22/U3 source/offline scope updated without altering original criteria or reopening closed READ scope."
-    },
-    "qualification_boundary": "Public source/offline only; private exact-artifact qualification is not a whole latest HEAD qualification."
+    "qualification_boundary": "No new record or material registered; all prior source-bound records and original failures retained without qualification transfer.",
+    "public_scope": "Source/offline only; private hardware details remain local."
   },
   "overall_required_records": [
     "deadline-real21",
@@ -526154,6 +526123,100 @@
         "scope": "Bounded maintenance remains complete; U22 current source/offline table replaced, original six criteria and parent stay open."
       },
       "qualification_boundary": "Public source/offline only; original private exact-artifact evidence does not qualify a whole latest tree."
+    },
+    {
+      "id": "WP08-WP16-WP17-U22-write-pending-owner-exit",
+      "state": "WRITE_OWNER_EXIT_SOURCE_OFFLINE_AVAILABLE",
+      "production_behavior": "Extend the existing pending SDK/guard runner and owner-exit oracle to typed verified WRITE. Validate actual callback identity/value before SIGKILL; bound cleanup and peer refusal by original requester/Provider/supervisor deadlines. Require paired literal WRITE refusal, retired handle READ rejection, independent live guard and subsequent ordinary business. No new Host/Engine, no synthetic success and no dead-process memory rollback claim.",
+      "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
+      "work_packages": [
+        "WP08",
+        "WP16",
+        "WP17"
+      ],
+      "records": [],
+      "predecessor_archive": {
+        "history": "batch_history",
+        "id": "WP08-WP16-WP17-U22-write-original-deadline",
+        "canonical_sha256": "8def5627682982f74bacde378b99b1ecf4aafd46a4769df003002206a576d3b1"
+      },
+      "implementation_sources": {
+        "public_source": "dfaf6ec23557caebf3d8ae72612de605c0bd84f4",
+        "scope": "Source/offline identity; compilation/execution/report and exact private hardware scope remain separate."
+      },
+      "invariants": [
+        "Actual pending verified WRITE identity and complete payload precede owner kill.",
+        "No deadline renewal; kill, cleanup and peer result bounded by original requester, Provider and supervisor deadlines.",
+        "Original owner dies; old handle cannot deliver cached value; independent guard and ordinary peer business remain separately checked.",
+        "SDK error/USB completion is not peer delivery; paired bytes and real application result are required.",
+        "READ historical schemas, bounded queues, production Engine/Session/Grant/credit/Ticket and original qualification identities remain unchanged."
+      ],
+      "offline_checks": {
+        "runner": {
+          "result": "PASS",
+          "tests": 169,
+          "scope": "Typed WRITE owner-exit, original callback/kill/cleanup deadline, paired literal bytes, guard/ordinary-business and identity/manifest negative controls, actual host CLI/boot parser, prior READ/WRITE/unregister/deadline/channel/target cases."
+        },
+        "rust": "No production Rust or C/Python caller implementation changes; existing SDK tests retain original source identity and were not relabeled as rerun. Fresh signed bundle/prepared inputs use the original fixed build and global lock, eight-job cap.",
+        "docs": "Strict locked public HTML/inventory PASS; final canonical/private checks recorded in delivery. No device operations by documentation.",
+        "failures": "First fixture run caught WRITE status index inherited from READ; fixed typed index. Invalid-token test now rejects boolean token rather than assuming an arbitrary consistent positive token must fail. Original failure log retained. Public/private documentation mismatch stopped copy; only the new section was applied, preserving private history."
+      },
+      "offline_status": "SCOPED_OFFLINE_PASS",
+      "formal_status": "NO_NEW_PROOF",
+      "hardware_status": "Exact-artifact qualification remains in authorized local records; public source/offline summary neither grants hardware qualification nor implies execution absent.",
+      "exit_conditions": [
+        "Actual typed callback before destructive action, original process exit and cleanup within unchanged deadlines.",
+        "Original peer WRITE refusal, retired READ4, independent guard and ordinary random business corroborated from paired bytes and actual SDK outputs.",
+        "Exact fresh source/artifact/tool/firmware closure, terminal VM and fail-closed retained evidence; no private detail published.",
+        "Keep prior positive WRITE/READ/expiry/withdrawal identities separate; U22 original six requirements stay open."
+      ],
+      "remaining_conditions": [
+        "WRITE connection Down, daemon restart and old-lifetime combinations under original deadlines.",
+        "Long values, method/descriptor/update and full original U22 operation matrix.",
+        "Full S0-S6/19WP/10FV/12DG, remaining data/security/Profile/deployment/release, natural root cause and nonmanual recovery."
+      ],
+      "next": [
+        "Reuse the same Engine/Session and pending request barrier for WRITE Down/restart and stale lifetime rejection.",
+        "Continue long values and remaining SSAP operations alongside data/security; no collective control-plane prerequisite.",
+        "UserHost remains low-priority P4 planning."
+      ],
+      "issues": [
+        "OpenSparklink/sparklink#22",
+        "OpenSparklink/sparklink#3",
+        "OpenSparklink/linux#6",
+        "OpenSparklink/linux#17"
+      ],
+      "issue_sync": {
+        "issues": [
+          "sparklink#22",
+          "sparklink#3"
+        ],
+        "state": "open",
+        "updates": [
+          {
+            "repository": "sparklink",
+            "number": 22,
+            "prior_body_sha256": "c28c37ba25e135ec73be72c6a13e5be25f5ecc06b516d6644cf4a01d93b4681e",
+            "body_sha256": "3662934200fc4e1a03f75479de7c602a4735452bc36dcd9ddb86ad4fc01876d8"
+          },
+          {
+            "repository": "sparklink",
+            "number": 3,
+            "prior_body_sha256": "27cbeeb6fcc8161ab84a2b52f026aceb92d61e621da4f5d484b7e7b5d03490a0",
+            "body_sha256": "64ceabe462b8189e87bea9cd5c523cea80ba3812043841af380b34f2f983816d"
+          }
+        ],
+        "source_offline_only": true,
+        "original_criteria_unchanged": true
+      },
+      "public_scope": "Only source/offline/disposition. Private device details and execution identities remain local.",
+      "issue_maintenance": {
+        "record": "project/issue-maintenance-20261026.json",
+        "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
+        "last_readback": "project/issue-maintenance-20261026.json#/followup_readback",
+        "scope": "Previous bounded maintenance complete; U22/U3 source/offline scope updated without altering original criteria or reopening closed READ scope."
+      },
+      "qualification_boundary": "Public source/offline only; private exact-artifact qualification is not a whole latest HEAD qualification."
     }
   ]
 }

@@ -607,7 +607,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Natural fault RCA, nonmanual recovery, E/mixed/cold-ROM and production identity remain open; manual/hub/QMP actions or deliberate reconnect do not establish natural recovery.",
     "Retain all original failures, counterexamples, scope and qualification identities. UserHost remains low-priority planning; no original issue is closed by this batch transition."
   ],
-  "next": "Prepare and execute SDK Provider deadline v2 on the assigned U pair in a dedicated VM, audit and register only its exact finite result. Resume original data/security/SSAP mainline; Owner-exit and explicit unregister retain separate records. No whole-control-plane prerequisite.",
+  "next": "Reconcile U21 original acceptance with its existing separate evidence and production SDK regressions; complete genuinely missing gates, then continue remaining SSAP/data/security work. Do not impose unrelated safety/recovery/release or all-control-plane prerequisites. Actual hardware state stays in the authorized local index.",
   "issues": [
     "OpenSparklink/sparklink#3",
     "OpenSparklink/sparklink#8",
@@ -766,7 +766,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
       "whole_issue_complete": false
     },
     "sdk_provider_deadline_v2": {
-      "state": "SOURCE_OFFLINE_AVAILABLE_EXACT_ARTIFACT_GATE_REQUIRED",
+      "state": "SOURCE_OFFLINE_AVAILABLE_PRIVATE_QUALIFICATION_SEPARATE",
       "public_source": "47829c7ccbce9cee5484f79b824c41075a56d390",
       "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
       "behavior": "Current existing deadline runner uses C/Python SDK Providers, actual pending callback/approval, unchanged original deadlines, actual late request.reply ETIMEDOUT, persistent actor terminal, full paired capture bounded absence and independent ordinary CUTC business. Live host/guest pin v2; historical CLI v1 remains reader-only, with no qualification transfer.",
@@ -784,8 +784,8 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
         "Independent raw audit and negative controls, then finite registration only; preserve Owner-exit/unregister records and original failures"
       ],
       "remaining": [
-        "New-artifact VM gate, independent audit and exact finite qualification",
-        "Original full U21 lifecycle and S0-S6 scope; natural faults/non-manual recovery remain open"
+        "Exact compiled/executor VM evidence and finite qualification must be checked in the authorized local index; public source/offline results do not imply performed, pending, passed or failed hardware execution.",
+        "U21 original acceptance audit and any missing original gates; no closure from a tool version or partial result."
       ],
       "formal_status": "NOT_RUN for this tool change; no new proof",
       "whole_issue_complete": false

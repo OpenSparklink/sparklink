@@ -76,9 +76,9 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-WP16-WP17-U22-write-pending-withdrawal",
-  "state": "SDK_WRITE_WITHDRAWAL_VM_GATE_SOURCE_OFFLINE_AVAILABLE",
-  "production_behavior": "Existing shared pending-case runner now drives actual C/Python WRITE unregister after original typed callback, preserves snapshots/fd, observes valid old reply ESHUTDOWN and unchanged app memory. Paired error is selected from actual wire, followed by old-handle refusal, independent guard delivery and ordinary business in both roles. This is a finite gate, not the full WRITE lifecycle or another Engine.",
+  "id": "WP08-WP16-WP17-U22-write-original-deadline",
+  "state": "WRITE_ORIGINAL_DEADLINE_SOURCE_OFFLINE_AVAILABLE",
+  "production_behavior": "Extend the existing Provider original-deadline runner and actual C/Python caller checks to verified type0 WRITE. Preserve requester/Provider original deadlines; a matching late SDK call must return ETIMEDOUT, leave app value unchanged and preserve actor terminal. Require paired original request, complete bounded response window and subsequent ordinary channel business. No new Engine, success response or recovery claim.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
     "WP08",
@@ -88,12 +88,12 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
   "records": [],
   "predecessor_archive": {
     "history": "batch_history",
-    "id": "WP08-WP16-WP17-U22-sdk-write-vm-gate",
-    "canonical_sha256": "77e8e07787a552ef1e1eb0ea80b011902d7fca60683400eb65f8538726b3c224"
+    "id": "WP08-WP16-WP17-U22-write-pending-withdrawal",
+    "canonical_sha256": "7c2e080ed3d91d234981eb3b0d796531d39a5e4eaf2fba5b66642b6ed2b1a4f7"
   },
   "implementation_sources": {
-    "public_source": "4dc3af433e25b51b8333bee062876db3b1b2f956",
-    "scope": "Source/offline gate identity. Compiled/executed/report identities and exact device scope remain separate in authorized local records."
+    "public_source": "f128face4e28efa4d0e1ded2faa84cbc50ade401",
+    "scope": "Source/offline identity; compiled/execution/report identities and private hardware scope remain separate."
   },
   "invariants": [
     "Original controller/generation/lifetime/security epoch/TCID/PI and original absolute deadline; Native admission before requesting application effects and before response. Snapshot checks cannot roll back an already started application effect.",
@@ -110,31 +110,32 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
   "offline_checks": {
     "runner": {
       "result": "PASS",
-      "tests": 145,
-      "scope": "Typed WRITE/authorization/withdrawal snapshots, error/no-effect result, missing/changed paired data, lifetime/guard/deadline/clock, exact terminal/verifier, actual CLI/boot; original READ/exit/deadline/WRITE-short/SDK caller/channel/target retained."
+      "tests": 160,
+      "scope": "New typed verified WRITE deadline/late reply/no-effect, both-end absence/identity/clock/business/manifest negative controls, exact CLI/boot and retained READ/WRITE/unregister/channel/target checks."
     },
-    "syntax": "Python and shell PASS. No Rust production changes; earlier external C/Python and Clippy checks retain their exact source identities, not claimed rerun.",
-    "docs": "Final locked strict HTML and inventory outcome is recorded in the delivery receipt; no device operation by docs.",
-    "failures_preserved": "No observed failed execution in this batch; prior historical failures and counterexamples retained without replacement."
+    "external": "Actual C/Python private-D-Bus SDK check PASS including verified WriteReq expiry and unchanged prior app value; broker metadata/transport fixtures, no Engine/kernel/RF claim.",
+    "strict": "libsparklink --all-targets Clippy -D warnings, locked/offline Rust1.96.1, fmt, Python compile, shell syntax PASS. Eight-job global build lock retained.",
+    "docs": "Locked strict HTML/inventory results recorded in final delivery; no device operation by docs.",
+    "failures": "Wrong-worktree invocation and shared constant shadow failure retained; corrected invocation/import alias without assertion weakening. Formatting-only changes rechecked against actual C/Python test."
   },
   "offline_status": "ONLY_NAMED_CHECKS_PASS",
   "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "Private exact-artifact qualification is maintained separately; public source/offline summary neither grants device qualification nor infers execution absent.",
+  "hardware_status": "Exact-artifact qualification is maintained in authorized local records; public source/offline summary neither grants hardware qualification nor infers execution absent.",
   "exit_conditions": [
-    "Typed WRITE support reuses original pending-case/registration/withdrawal and paired-wire helpers; READ versioned behavior retained.",
-    "Current selectors, package/tool identity, both roles, complete terminal, original deadline, no app effect, actual peer error and guard/ordinary evidence are required; negative controls reject missing or altered evidence.",
-    "Private exact-artifact outcome must pass independent original-output/literal-wire audit and retained source/material registration; public summary only names source/offline scope.",
-    "Original six U22 criteria remain open; proceed to owner death/original expiry/down and remaining operations without unrelated control-plane prerequisites."
+    "Actual typed verified WRITE callback before its original deadline; valid matching late answer invokes SDK and is rejected, no app value applied.",
+    "Paired original request, bounded full response window, persistent terminal and after-expiry ordinary business; finite clock assumptions remain explicit.",
+    "Fresh tool/input identity, complete terminal and fail-closed evidence reconstruction, negative controls and private retained material closure.",
+    "Keep existing positive WRITE and READ/withdrawal qualification identities separate; complete owner-loss/Down and remaining original U22 operations next."
   ],
   "remaining_conditions": [
-    "WRITE pending owner death, original expiry/late reply, physical Down and daemon/owner loss combinations with peer isolation.",
-    "WRITE command/long-value/method/descriptor/update matrix and full original U22 conditions.",
-    "Full S0-S6/19WP/10FV/12DG, natural root cause/nonmanual recovery and original data/security/Profile/deployment scope."
+    "WRITE pending owner loss, connection Down and daemon/restart combinations with original deadlines, old replies and peer isolation.",
+    "Command/long value/method/descriptor/update and all original U22 SSAP acceptance.",
+    "Full S0-S6/19WP/10FV/12DG, natural root cause/nonmanual recovery and unchanged data/security/Profile/deployment/release scope."
   ],
   "next": [
-    "Reuse the same typed pending WRITE context for original-expiry and owner-death/down gates; keep each original deadline and exact peer outcome.",
-    "Continue command/long values and remaining SSAP operations through unique Engine/Session, not a parallel caller or wire path.",
-    "Continue data/security work; UserHost remains P4 and no full control-plane prerequisite."
+    "Reuse original shared pending-case runner for WRITE owner exit, then Down and old-lifetime combinations.",
+    "Continue long values and remaining SSAP operations through unique Engine/Session; data/security remain parallel.",
+    "UserHost remains P4 and full control-plane competition is not a collective prerequisite."
   ],
   "issues": [
     "OpenSparklink/sparklink#22",
@@ -143,18 +144,20 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
     "OpenSparklink/linux#17"
   ],
   "issue_sync": {
-    "U22": "OPEN; source/offline matrix and original six criteria retained",
-    "U3": "OPEN; parent scope and checkboxes unchanged",
-    "U21": "CLOSED by its original six criteria; no reopening for unrelated WRITE work"
+    "issue": "sparklink#22",
+    "state": "open",
+    "body_sha256": "c28c37ba25e135ec73be72c6a13e5be25f5ecc06b516d6644cf4a01d93b4681e",
+    "source_offline_only": true,
+    "original_six_criteria_unchanged": true
   },
   "public_scope": "Only source/offline/disposition. Private device details and execution identities remain local.",
   "issue_maintenance": {
     "record": "project/issue-maintenance-20261026.json",
     "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
     "last_readback": "project/issue-maintenance-20261026.json#/followup_readback",
-    "scope": "Bounded maintenance complete; U22 current gate/source/offline scope replaced, all six original criteria and open parent retained."
+    "scope": "Bounded maintenance remains complete; U22 current source/offline table replaced, original six criteria and parent stay open."
   },
-  "qualification_boundary": "Public source/offline only; original device records retain exact identities and do not qualify a whole latest tree."
+  "qualification_boundary": "Public source/offline only; original private exact-artifact evidence does not qualify a whole latest tree."
 }
 ```
 

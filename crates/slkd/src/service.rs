@@ -281,6 +281,27 @@ impl SsapManagerIface {
         })
         .await
     }
+    /// Delegate a write-only property's effects to its original application.
+    /// Binding consumes staging and cannot be undone or reused after retirement.
+    async fn bind_owned_write_provider(
+        &self,
+        handle: u16,
+        provider: zbus::zvariant::OwnedObjectPath,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<()> {
+        let original =
+            Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).map_err(deadline_error)?;
+        if handle == 0 || provider.as_str() == "/" || provider.as_str().len() > 255 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "invalid write provider handle/path".into(),
+            ));
+        }
+        self.commit_owned_local(original, header, move |database, caller| {
+            database.bind_owned_write_provider(handle, caller, provider)
+        })
+        .await
+    }
     /// Set local type1 metadata for this existing Owned property. It is public
     /// and remotely read-only, independently of property permissions. Success
     /// is local commit only, not remote discovery or readback.
@@ -459,6 +480,7 @@ mod validation_tests {
             ("ReadOwnedLocalValue", vec!["q", "(ttttt)"]),
             ("ReplaceOwnedLocalValue", vec!["q", "ay", "(ttttt)"]),
             ("BindOwnedReadProvider", vec!["q", "o", "(ttttt)"]),
+            ("BindOwnedWriteProvider", vec!["q", "o", "(ttttt)"]),
             ("SetOwnedLocalDescription", vec!["q", "s", "(ttttt)"]),
             ("UnregisterOwnedLocalService", vec!["q", "(ttttt)"]),
         ] {

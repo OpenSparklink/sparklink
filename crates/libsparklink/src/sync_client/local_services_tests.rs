@@ -74,6 +74,30 @@ impl Services {
         }
         Ok(())
     }
+    async fn bind_owned_write_provider(
+        &self,
+        handle: u16,
+        path: zbus::zvariant::OwnedObjectPath,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<()> {
+        assert_eq!(handle, 17);
+        assert_eq!(self.0.expected_operations, 6);
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        self.0.stamps.lock().unwrap().push(deadline);
+        self.0.provider_binds.fetch_add(1, Ordering::SeqCst);
+        *self.0.provider.lock().unwrap() = path.to_string();
+        match self.0.mode.load(Ordering::SeqCst) {
+            12 => {
+                return Err(zbus::fdo::Error::NotSupported(
+                    "fixture bind refusal".into(),
+                ));
+            }
+            13 => tokio::time::sleep(Duration::from_millis(100)).await,
+            _ => (),
+        }
+        Ok(())
+    }
     async fn register_owned_local_service(
         &self,
         uuid: Vec<u8>,
@@ -754,4 +778,80 @@ async fn actual_owned_description_ffi_preserves_utf8_bounds_owner_and_original_d
     assert_eq!(script.descriptions.lock().unwrap().len(), 4);
     assert!(script.replacements.lock().unwrap().is_empty());
     unsafe { slk_local_service_free(view) };
+}
+
+// Actual public Rust entry and real private D-Bus; broker metadata/errors are
+// fixtures. This does not exercise the daemon database, Native or RF.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn rust_write_provider_binding_preserves_owner_deadline_and_refusal() {
+    use slk_channel::deadline::Deadline;
+    let (bus, _server, script, c) = fixture_with_operations(6).await;
+    unsafe { slk_client_close(c) };
+    let client = Client::from_connection(
+        zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap(),
+    )
+    .await
+    .unwrap();
+    let controller = client.controller(PATH).await.unwrap();
+    let registration = controller
+        .local_services()
+        .register_service(
+            vec![1, 0],
+            vec![(vec![2, 0], 6, 0, vec![7, 8, 9])],
+            zbus::zvariant::OwnedObjectPath::try_from("/").unwrap(),
+            Deadline::after(Duration::from_secs(2)).unwrap(),
+        )
+        .await
+        .unwrap();
+    let path = || zbus::zvariant::OwnedObjectPath::try_from("/writer").unwrap();
+    for (handle, name) in [(18, "/writer"), (17, "/")] {
+        assert!(
+            registration
+                .bind_write_provider(
+                    handle,
+                    zbus::zvariant::OwnedObjectPath::try_from(name).unwrap(),
+                    Deadline::after(Duration::from_secs(1)).unwrap()
+                )
+                .await
+                .is_err()
+        );
+    }
+    assert_eq!(script.provider_binds.load(Ordering::SeqCst), 0);
+    let original = Deadline::after(Duration::from_secs(1)).unwrap();
+    registration
+        .bind_write_provider(17, path(), original)
+        .await
+        .unwrap();
+    assert_eq!(*script.provider.lock().unwrap(), "/writer");
+    assert_eq!(
+        *script.stamps.lock().unwrap().last().unwrap(),
+        slk_contract::deadline_wire(original.stamp())
+    );
+    script.mode.store(12, Ordering::SeqCst);
+    let refusal = registration
+        .bind_write_provider(17, path(), Deadline::after(Duration::from_secs(1)).unwrap())
+        .await
+        .unwrap_err();
+    assert!(refusal.to_string().contains("NotSupported"), "{refusal}");
+    script.mode.store(13, Ordering::SeqCst);
+    assert!(
+        registration
+            .bind_write_provider(
+                17,
+                path(),
+                Deadline::after(Duration::from_millis(20)).unwrap()
+            )
+            .await
+            .is_err()
+    );
+    tokio::time::sleep(Duration::from_millis(120)).await;
+    assert_eq!(
+        script.provider_binds.load(Ordering::SeqCst),
+        3,
+        "uncertain bind must not retry"
+    );
 }

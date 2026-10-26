@@ -101,6 +101,29 @@ pub mod ssap {
     pub const MAX_PROVIDER_VALUE_BYTES: usize = 2042;
     pub const PROVIDER_UNAVAILABLE: u16 = 0xaf;
 
+    /// Application-owned type0 write, after independent policy approval.
+    /// Operation is the actual SSAP opcode (12 command, 13 request). This base
+    /// single-value interface has offset0; no synthetic long-write transaction.
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type)]
+    pub struct WriteProviderRequest {
+        pub request_id: u64,
+        pub identity: SsapAuthorizationIdentity,
+        pub property: u16,
+        pub deadline_ns: u64,
+        pub operation: u8,
+        pub data_type: u8,
+        pub offset: u16,
+        pub value: Vec<u8>,
+        pub verify: bool,
+    }
+    /// Status0 accepts the original whole write. Verified writes must return
+    /// the actually accepted bytes, equal to the request; otherwise empty.
+    /// Application error0xAF..0xFF requires empty bytes. Transport failure or
+    /// timeout cannot establish whether the application already had an effect.
+    pub type WriteProviderReply = (u8, Vec<u8>);
+    pub const WRITE_PROVIDER_INTERFACE: &str = "org.sparklink.SsapWriteProvider";
+    pub const WRITE_PROVIDER_METHOD: &str = "WriteValue";
+
     /// Local manager staging and caller-owned registration are distinct roles.
     pub mod local {
         pub const MANAGER: &str = "org.sparklink.ServiceManager";
@@ -114,6 +137,7 @@ pub mod ssap {
         pub const REPLACE_OWNED: &str = "ReplaceOwnedLocalValue";
         pub const SET_DESCRIPTION_OWNED: &str = "SetOwnedLocalDescription";
         pub const BIND_READ_PROVIDER_OWNED: &str = "BindOwnedReadProvider";
+        pub const BIND_WRITE_PROVIDER_OWNED: &str = "BindOwnedWriteProvider";
         /// Implementation bound in UTF-8 bytes, not a standard maximum.
         pub const MAX_DESCRIPTION_BYTES: usize = 244;
         pub type PropertyDefinition = (Vec<u8>, u32, u32, Vec<u8>);
@@ -130,6 +154,7 @@ pub mod ssap {
         pub type OwnedValueRequest = (u16, Vec<u8>, crate::Deadline);
         pub type OwnedDescriptionRequest = (u16, String, crate::Deadline);
         pub type OwnedReadProviderRequest = (u16, zvariant::OwnedObjectPath, crate::Deadline);
+        pub type OwnedWriteProviderRequest = (u16, zvariant::OwnedObjectPath, crate::Deadline);
     }
     pub const DISCOVER: &str = "DiscoverSsap";
     pub const CACHED: &str = "GetCachedSsap";
@@ -375,6 +400,19 @@ mod tests {
         assert_eq!(ssap::ReadProviderReply::SIGNATURE.to_string(), "(qay)");
         assert_eq!(
             ssap::local::OwnedReadProviderRequest::SIGNATURE.to_string(),
+            "(qo(ttttt))"
+        );
+    }
+    #[test]
+    fn write_provider_has_independent_literal_signatures() {
+        use zvariant::Type;
+        assert_eq!(
+            ssap::WriteProviderRequest::SIGNATURE.to_string(),
+            "(t(qttqtuyyy)qtyyqayb)"
+        );
+        assert_eq!(ssap::WriteProviderReply::SIGNATURE.to_string(), "(yay)");
+        assert_eq!(
+            ssap::local::OwnedWriteProviderRequest::SIGNATURE.to_string(),
             "(qo(ttttt))"
         );
     }

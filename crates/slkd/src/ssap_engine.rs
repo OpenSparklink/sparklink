@@ -1122,6 +1122,8 @@ struct ServerDecision {
     packet: ServerPacket,
     approvals: Vec<crate::ssap_authorization::Approval>,
     values: Vec<crate::ssap_read_provider::ReadValue>,
+    write: Option<crate::ssap_write_provider::WriteResult>,
+    admission_error: Option<io::Error>,
 }
 type ServerTask = std::pin::Pin<Box<dyn std::future::Future<Output = ServerDecision> + Send>>;
 
@@ -1250,7 +1252,72 @@ async fn authorize_server(packet: ServerPacket, database: Store) -> ServerDecisi
         packet,
         approvals,
         values,
+        write: None,
+        admission_error: None,
     }
+}
+
+/// Same front-of-queue obligation and original deadline. Policy approval is
+/// not application success. Recheck Native identity before requesting an
+/// effect; a later revocation can stop the response but cannot undo that effect.
+async fn resolve_server(packet: ServerPacket, database: Store, wire: Wire) -> ServerDecision {
+    let mut decision = authorize_server(packet, database.clone()).await;
+    if !matches!(decision.packet.bytes[0], 12 | 13) {
+        return decision;
+    }
+    let Some(c) = decision.packet.constraint else {
+        return decision;
+    };
+    let Ok(pdu) = ValuePdu::decode(decision.packet.mtu, &decision.packet.bytes) else {
+        return decision;
+    };
+    let target = database
+        .lock()
+        .ok()
+        .and_then(|db| db.write_provider_target(pdu, decision.packet.level, &decision.approvals));
+    let Some(target) = target else {
+        return decision;
+    };
+    if let Err(error) = recheck_server_context(&wire, &decision.packet) {
+        decision.admission_error = Some(error);
+        return decision;
+    }
+    let (value, verify) = match pdu {
+        ValuePdu::Write { value, verify, .. } => (value, verify),
+        ValuePdu::WriteCommand { value, .. } => (value, false),
+        _ => return decision,
+    };
+    let request = slk_contract::ssap::WriteProviderRequest {
+        request_id: decision.packet.request_id,
+        identity: (
+            c.controller,
+            c.generation,
+            c.lifetime,
+            c.handle,
+            c.security_epoch,
+            decision.packet.level,
+            c.local_tcid,
+            c.remote_tcid,
+            c.pi,
+        ),
+        property: target.handle,
+        deadline_ns: c.deadline_monotonic_ns,
+        operation: decision.packet.bytes[0],
+        data_type: 0,
+        offset: 0,
+        value: value.to_vec(),
+        verify,
+    };
+    let result = target
+        .binding
+        .write(&request, decision.packet.deadline)
+        .await;
+    decision.write = Some(crate::ssap_write_provider::WriteResult {
+        target,
+        request,
+        result,
+    });
+    decision
 }
 
 #[cfg(test)]
@@ -1260,13 +1327,14 @@ fn server_response(
     approvals: &[crate::ssap_authorization::Approval],
     configurations: &mut crate::ssap_engine_config::ClientConfigurations,
 ) -> io::Result<Vec<u8>> {
-    server_response_resolved(packet, database, approvals, &[], configurations)
+    server_response_resolved(packet, database, approvals, &[], None, configurations)
 }
 fn server_response_resolved(
     packet: &ServerPacket,
     database: &Store,
     approvals: &[crate::ssap_authorization::Approval],
     values: &[crate::ssap_read_provider::ReadValue],
+    write: Option<&crate::ssap_write_provider::WriteResult>,
     configurations: &mut crate::ssap_engine_config::ClientConfigurations,
 ) -> io::Result<Vec<u8>> {
     let raw = &packet.bytes;
@@ -1356,7 +1424,16 @@ fn server_response_resolved(
                     )
                     .map_err(io::Error::other);
             }
-            if !values.is_empty() {
+            if write.is_some() {
+                database.answer_with_providers(
+                    request,
+                    negotiated,
+                    packet.level,
+                    approvals,
+                    values,
+                    write,
+                )
+            } else if !values.is_empty() {
                 database.answer_resolved(request, negotiated, packet.level, approvals, values)
             } else if approvals.is_empty() {
                 database.answer(request, negotiated, packet.level)
@@ -1390,18 +1467,69 @@ fn complete_server(
     database: &Store,
     configurations: &mut crate::ssap_engine_config::ClientConfigurations,
 ) -> io::Result<Option<Pending>> {
-    if Instant::now() >= decision.packet.deadline {
+    if let Some(error) = decision.admission_error {
+        return Err(error);
+    }
+    recheck_server_context(wire, &decision.packet)?;
+    if decision.packet.bytes[0] == 12 {
+        // A command never manufactures a normal or error response.
+        if let Ok(request) = ValuePdu::decode(decision.packet.mtu, &decision.packet.bytes) {
+            let mut db = database
+                .lock()
+                .map_err(|_| io::Error::other("database poisoned"))?;
+            let _ = if decision.write.is_some() {
+                db.command_resolved(
+                    request,
+                    decision.packet.mtu,
+                    decision.packet.level,
+                    &decision.approvals,
+                    decision.write.as_ref(),
+                )
+            } else {
+                db.command_authorized(
+                    request,
+                    decision.packet.mtu,
+                    decision.packet.level,
+                    &decision.approvals,
+                )
+            };
+        }
+        return Ok(None);
+    }
+    let response = server_response_resolved(
+        &decision.packet,
+        database,
+        &decision.approvals,
+        &decision.values,
+        decision.write.as_ref(),
+        configurations,
+    )?;
+    Ok(Some(Pending {
+        sent: 0,
+        bytes: response,
+        deadline: decision.packet.deadline,
+        purpose: Purpose::ValueResponse,
+        constraint: decision.packet.constraint,
+    }))
+}
+
+fn recheck_server_context(wire: &Wire, packet: &ServerPacket) -> io::Result<()> {
+    if Instant::now() >= packet.deadline {
         return Err(io::Error::new(
             io::ErrorKind::TimedOut,
             "original SSAP authorization deadline",
         ));
     }
-    if let Some(original) = decision.packet.constraint {
+    #[cfg(test)]
+    if wire.fixture {
+        return Ok(());
+    }
+    if let Some(original) = packet.constraint {
         // A recheck is an admission snapshot, not an atomic transaction across
         // kernel security state and the userspace database. Later revocation
         // can stop the original response; it cannot roll back a prior write.
         let now = wire
-            .prepare(original.minimum, decision.packet.deadline)?
+            .prepare(original.minimum, packet.deadline)?
             .ok_or_else(|| io::Error::other("missing native authorization recheck"))?;
         if (
             now.controller,
@@ -1428,57 +1556,31 @@ fn complete_server(
             ));
         }
     }
-    if decision.packet.bytes[0] == 12 {
-        // A malformed/denied command is silent on the wire. The same bounded
-        // owner, access and security checks as WriteReq precede mutation; no
-        // command success or refusal can manufacture an ErrorRsp/WriteRsp.
-        if let Ok(request) = ValuePdu::decode(decision.packet.mtu, &decision.packet.bytes) {
-            let _ = database
-                .lock()
-                .map_err(|_| io::Error::other("database poisoned"))?
-                .command_authorized(
-                    request,
-                    decision.packet.mtu,
-                    decision.packet.level,
-                    &decision.approvals,
-                );
-        }
-        return Ok(None);
-    }
-    let response = server_response_resolved(
-        &decision.packet,
-        database,
-        &decision.approvals,
-        &decision.values,
-        configurations,
-    )?;
-    Ok(Some(Pending {
-        sent: 0,
-        bytes: response,
-        deadline: decision.packet.deadline,
-        purpose: Purpose::ValueResponse,
-        constraint: decision.packet.constraint,
-    }))
+    Ok(())
 }
 
 // Native always checks actual kernel receipt facts. Local fixtures are explicit
 // test-only transports, never a production fallback or fabricated security.
+#[derive(Clone)]
 struct Wire {
-    fd: AsyncFd<OwnedFd>,
+    fd: std::sync::Arc<AsyncFd<OwnedFd>>,
     #[cfg(test)]
     fixture: bool,
 }
 impl Wire {
     fn native(fd: AsyncFd<OwnedFd>) -> Self {
         Self {
-            fd,
+            fd: std::sync::Arc::new(fd),
             #[cfg(test)]
             fixture: false,
         }
     }
     #[cfg(test)]
     fn fixture(fd: AsyncFd<OwnedFd>) -> Self {
-        Self { fd, fixture: true }
+        Self {
+            fd: std::sync::Arc::new(fd),
+            fixture: true,
+        }
     }
     fn receive(
         &self,
@@ -1799,7 +1901,7 @@ async fn exchange_loop(
         {
             server = Some((
                 packet.deadline,
-                Box::pin(authorize_server(packet, database.clone())),
+                Box::pin(resolve_server(packet, database.clone(), wire.clone())),
             ));
         }
         let server_load = server_queue.len() + usize::from(server.is_some());
@@ -2603,6 +2705,8 @@ mod tests {
         let mut configuration = crate::ssap_engine_config::ClientConfigurations::default();
         let decision = |bytes: Vec<u8>, deadline| ServerDecision {
             values: vec![],
+            write: None,
+            admission_error: None,
             packet: ServerPacket {
                 bytes,
                 deadline,
@@ -3101,7 +3205,10 @@ mod tests {
                 .raw_os_error(),
             Some(nix::libc::EAFNOSUPPORT)
         );
-        let fixture = Wire::fixture(native.fd);
+        let fixture = Wire {
+            fixture: true,
+            ..native
+        };
         let (count, context) = fixture
             .receive(fixture.fd.get_ref(), &mut bytes, fixture_capabilities(0))
             .unwrap();

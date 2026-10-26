@@ -49,13 +49,16 @@ impl WrongReply {
 struct Policy {
     allowed: Arc<AtomicBool>,
     calls: Arc<AtomicUsize>,
+    expected_write: Arc<AtomicBool>,
 }
 #[zbus::interface(name = "org.sparklink.SsapAuthorizer")]
 impl Policy {
     fn authorize_value(&self, prompt: SsapAuthorizationPrompt) -> bool {
         assert_eq!(prompt.6, 0);
-        assert!(!prompt.3);
-        assert!(prompt.5.is_empty());
+        assert_eq!(prompt.3, self.expected_write.load(Ordering::SeqCst));
+        if !prompt.3 {
+            assert!(prompt.5.is_empty());
+        }
         self.calls.fetch_add(1, Ordering::SeqCst);
         self.allowed.load(Ordering::SeqCst)
     }
@@ -68,6 +71,8 @@ struct Fixture {
     calls: mpsc::Receiver<Call>,
     allowed: Arc<AtomicBool>,
     policy_calls: Arc<AtomicUsize>,
+    expected_write: Arc<AtomicBool>,
+    write_calls: mpsc::Receiver<write_provider_tests::Call>,
 }
 impl Fixture {
     async fn new() -> Self {
@@ -85,6 +90,8 @@ impl Fixture {
         let (tx, calls) = mpsc::channel(4);
         let allowed = Arc::new(AtomicBool::new(true));
         let policy_calls = Arc::new(AtomicUsize::new(0));
+        let expected_write = Arc::new(AtomicBool::new(false));
+        let (write_tx, write_calls) = mpsc::channel(4);
         // Builder::serve_at provides the object-server startup barrier.
         let owner = zbus::connection::Builder::address(bus.address.as_str())
             .unwrap()
@@ -99,10 +106,21 @@ impl Fixture {
             .serve_at("/wrong", WrongReply)
             .unwrap()
             .serve_at(
+                "/writer",
+                write_provider_tests::Provider {
+                    calls: write_tx,
+                    policy_calls: policy_calls.clone(),
+                },
+            )
+            .unwrap()
+            .serve_at("/wrong_writer", write_provider_tests::WrongReply)
+            .unwrap()
+            .serve_at(
                 "/authorizer",
                 Policy {
                     allowed: allowed.clone(),
                     calls: policy_calls.clone(),
+                    expected_write: expected_write.clone(),
                 },
             )
             .unwrap()
@@ -117,6 +135,8 @@ impl Fixture {
             calls,
             allowed,
             policy_calls,
+            expected_write,
+            write_calls,
         }
     }
     async fn register(&self, access: u32) -> (u16, u16) {
@@ -129,6 +149,9 @@ impl Fixture {
             .unwrap()
     }
 }
+
+#[path = "ssap_write_provider_tests.rs"]
+mod write_provider_tests;
 async fn manager(connection: &Connection) -> zbus::Proxy<'_> {
     zbus::Proxy::new(
         connection,
@@ -169,6 +192,7 @@ fn resolved(decision: &ServerDecision, db: &Store) -> Vec<u8> {
         db,
         &decision.approvals,
         &decision.values,
+        decision.write.as_ref(),
         &mut crate::ssap_engine_config::ClientConfigurations::default(),
     )
     .unwrap()

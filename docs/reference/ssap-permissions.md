@@ -463,6 +463,56 @@ SSAP stdin 管道单行上限4160字节，含换行。终端输入须少于4096�
 先读取数据库并提交响应，再通知应用。内部可选值字段不是公开动态 provider 契约。
 本实现据此区分授权与提供值，未将参考 Host 当作标准裁判，也不宣称完整符合性。
 
+### Owned write-only Provider（源码接线，待新产物实机验收）
+
+这一路径复用唯一 Engine、原 Owned 登记和同一连接的有界服务端义务队列。
+它与审批回调分开：审批 `true` 不执行应用写入，也不能生成写成功。
+当前提供 daemon 类型化 D-Bus 入口和 Rust 低层绑定；C/Python 的 WRITE 收件箱、
+method 回调及完整长写事务仍缺失。READ Provider 的既有资格不转授这条新路径。
+
+`ServiceManager.BindOwnedWriteProvider(handle:q, provider:o, deadline:(ttttt))->()`
+仅允许原登记的 unique caller，经 `sparklink-services` 权限调用。属性须为 type0
+写专用，操作位为 `0x02`、`0x04` 或 `0x06`；混合 READ/WRITE 属性不能绑定此 Provider。
+未知/外来 handle、根路径、超长路径与原期限按 Owned 规则拒绝。绑定在原数据库锁下
+一次提交，移除初始存储值；已绑定、重新绑定或不支持的模式返回 NotSupported。
+此后本地读取/替换均不支持，没有原值回退。原绑定超时或回复丢失不能证明未提交，
+不自动重试。撤回原登记仍使用现有卸载路径。
+
+Rust `ServiceRegistration.bind_write_provider` 绑定同一 `Client::from_connection`
+连接上的应用对象，不自动创建回调收件箱。应用须先导出
+`org.sparklink.SsapWriteProvider.WriteValue` 并校验原 daemon unique sender；
+不能把任意进程发来的 callback 当作授权。请求为单个结构体
+`(t(qttqtuyyy)qtyyqayb)`：
+
+| 字段 | 类型 | 含义 |
+|---|---|---|
+| request_id | t | 当前原服务端义务标识 |
+| identity | (qttqtuyyy) | controller、generation、lifetime、handle、security epoch、机制、local/remote TCID、PI |
+| property / deadline_ns | q / t | 原属性与单调时钟绝对期限 |
+| operation | y | 12：无回复命令；13：有回复请求 |
+| data_type / offset | y / q | 当前仅 0 / 0；不隐含长写或描述符支持 |
+| value | ay | 原 PDU 的有界完整拟写值，最多2042字节且须满足实际协商 MTU |
+| verify | b | 原请求要求回送已接受值；命令恒 false |
+
+响应为 `(yay)`：状态0且 verify=false 必须附空数组；verify=true 必须附应用实际
+接受的完整原值，逐字节不符则拒绝。`0xaf..0xff` 应用错误必须附空数组。
+未知状态、错误附值、布尔答复、畸形答复、丢失或过期均不能作为成功，不截断值。
+服务端只在实际有效答复后形成 WriteRsp；WRITE command 无论成功失败都不生成响应。
+verify 的回送不能用方法 echo 或授权 allow 代替实际应用提交。
+
+Engine 在请求应用副作用前重新查询 Native 身份与权限，并在完成答复前再次检查原
+controller/generation/lifetime/epoch/通道和期限；当前测试传输的跳过仅存在于
+`cfg(test)`。这些检查不是跨内核与应用的原子事务：应用已经执行后若撤权、断链、
+退出或超时，可能不再发送成功响应，但不能宣称应用副作用已经回滚。调用者需处理
+结果不确定性；不自动重放写操作。原 worker 取消会释放该义务持有的 Wire 引用，
+不新增 detached worker、第二个 Session 或控制器发送路径。
+
+固定 NearLink Host `f0872dfaac33ffa99b80b352f6c05fba2df6414e` 的
+`ssaps_server_app.c` 将写操作和值交给上层回调，`ssaps_server_write.c` 按原请求的
+返回标志形成应答。本项目保留该操作区分，但跨进程应用答复、原期限和撤回语义由
+上述契约约束；参考行为不作为标准裁判。独立签名、实际私有 D-Bus 与生产 Engine
+回归不等于内核并发证明或真实对端业务交付，新 artifact 必须单独取得 VM 实机资格。
+
 ### 显式公开的只读属性说明
 
 `SetOwnedLocalDescription(handle:q, description:s, deadline:(ttttt))` 为原 Owned

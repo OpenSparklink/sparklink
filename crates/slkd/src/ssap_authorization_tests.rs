@@ -591,6 +591,8 @@ async fn original_deadline_and_native_recheck_precede_value_mutation() {
     assert_eq!(db.lock().unwrap().local_read(h).unwrap(), [7]);
     let decision = ServerDecision {
         values: vec![],
+        write: None,
+        admission_error: None,
         packet: packet(
             ValuePdu::Write {
                 handle: h,

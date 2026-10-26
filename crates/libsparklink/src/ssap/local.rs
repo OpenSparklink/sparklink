@@ -245,6 +245,30 @@ impl ServiceRegistration {
         provider: zbus::zvariant::OwnedObjectPath,
         original: Deadline,
     ) -> Result<()> {
+        self.bind_provider(handle, provider, original, wire::BIND_READ_PROVIDER_OWNED)
+            .await
+    }
+    /// Delegate a write-only property to a WriteValue endpoint on the original
+    /// caller connection. Bind once; no staging fallback or automatic retry.
+    /// This low-level Rust surface does not install an inbox. The application
+    /// owns its endpoint and must enforce original identity/deadline. A lost
+    /// callback response does not roll back an application write effect.
+    pub async fn bind_write_provider(
+        &self,
+        handle: u16,
+        provider: zbus::zvariant::OwnedObjectPath,
+        original: Deadline,
+    ) -> Result<()> {
+        self.bind_provider(handle, provider, original, wire::BIND_WRITE_PROVIDER_OWNED)
+            .await
+    }
+    async fn bind_provider(
+        &self,
+        handle: u16,
+        provider: zbus::zvariant::OwnedObjectPath,
+        original: Deadline,
+        method: &str,
+    ) -> Result<()> {
         if self.state != RegistrationState::Active
             || !self.receipt.2.contains(&handle)
             || provider.as_str() == "/"
@@ -262,8 +286,7 @@ impl ServiceRegistration {
         let _: () = bounded(
             &self.controller.client,
             original,
-            self.controller
-                .call(wire::MANAGER, wire::BIND_READ_PROVIDER_OWNED, &request),
+            self.controller.call(wire::MANAGER, method, &request),
         )
         .await?;
         original.remaining()?;

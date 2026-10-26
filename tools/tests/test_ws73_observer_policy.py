@@ -127,12 +127,13 @@ class ObserverPolicyTests(unittest.TestCase):
     def test_dynamic_read_provider_binding_is_service_authority_only(self):
         # Static deployment-role contract; not a real system-bus or RF gate.
         root=ET.parse(Path(__file__).resolve().parents[2]/'data/dbus/sparklink.conf').getroot()
-        binding=('org.sparklink.ServiceManager','BindOwnedReadProvider')
         def allows(policy):
             return {(r.get('send_interface'),r.get('send_member')) for r in policy.findall('allow')}
-        self.assertIn(binding,allows(root.find("policy[@group='sparklink-services']")))
-        self.assertNotIn(binding,allows(root.find("policy[@group='sparklink-apps']")))
-        self.assertNotIn(binding,allows(root.find("policy[@context='default']")))
+        for method in ('BindOwnedReadProvider', 'BindOwnedWriteProvider'):
+            binding=('org.sparklink.ServiceManager',method)
+            self.assertIn(binding,allows(root.find("policy[@group='sparklink-services']")))
+            self.assertNotIn(binding,allows(root.find("policy[@group='sparklink-apps']")))
+            self.assertNotIn(binding,allows(root.find("policy[@context='default']")))
 
     def test_synthetic_complete_role_fixture_requires_actual_original_wire(self):
         record,run,capture=fixture();p=corroborate(record,run,capture)

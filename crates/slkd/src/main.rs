@@ -26,6 +26,7 @@ mod ssap_engine_config;
 mod ssap_read_provider;
 mod ssap_receive_transaction;
 mod ssap_subscription;
+mod ssap_write_provider;
 mod state;
 
 use std::{path::PathBuf, sync::Arc};

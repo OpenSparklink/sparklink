@@ -22,12 +22,13 @@ pub(crate) use slk_contract::ssap::local::{PropertyDefinition, ServiceRecord as 
 enum ValueSource {
     Stored(Vec<u8>),
     Provider(Arc<crate::ssap_read_provider::Binding>),
+    Writer(Arc<crate::ssap_write_provider::Binding>),
 }
 impl ValueSource {
     fn stored(&self) -> Option<&[u8]> {
         match self {
             Self::Stored(value) => Some(value),
-            Self::Provider(_) => None,
+            Self::Provider(_) | Self::Writer(_) => None,
         }
     }
     fn bytes(&self) -> usize {
@@ -312,6 +313,44 @@ impl Database {
             .ok_or(LocalValueError::Unsupported)?
             .len();
         property.value = ValueSource::Provider(Arc::new(crate::ssap_read_provider::Binding {
+            owner: service.owner.as_ref().expect("owned service").clone(),
+            path,
+        }));
+        self.bytes -= size;
+        Ok(())
+    }
+    /// A write-only property delegates effects to its original owner. Consume
+    /// staging once; no read fallback, rebinding or automatic local mutation.
+    pub(crate) fn bind_owned_write_provider(
+        &mut self,
+        handle: u16,
+        caller: &str,
+        path: zbus::zvariant::OwnedObjectPath,
+    ) -> Result<(), LocalValueError> {
+        let service = self
+            .services
+            .values_mut()
+            .find(|s| {
+                s.properties.contains_key(&handle)
+                    && s.owner
+                        .as_ref()
+                        .is_some_and(|o| o.current() && o.name == caller)
+            })
+            .ok_or(LocalValueError::Owner)?;
+        if path.as_str() == "/" || path.as_str().len() > 255 {
+            return Err(LocalValueError::Length);
+        }
+        let property = service.properties.get_mut(&handle).expect("owned property");
+        let supported = SsapOperations::WRITE_WITH_RSP | SsapOperations::WRITE_NO_RSP;
+        if property.operations.bits() == 0 || !supported.contains(property.operations) {
+            return Err(LocalValueError::Unsupported);
+        }
+        let size = property
+            .value
+            .stored()
+            .ok_or(LocalValueError::Unsupported)?
+            .len();
+        property.value = ValueSource::Writer(Arc::new(crate::ssap_write_provider::Binding {
             owner: service.owner.as_ref().expect("owned service").clone(),
             path,
         }));
@@ -822,6 +861,7 @@ impl Database {
     ) -> Result<&'a [u8], u16> {
         match &self.property(handle).ok_or(4u16)?.value {
             ValueSource::Stored(value) => Ok(value),
+            ValueSource::Writer(_) => Err(6),
             ValueSource::Provider(binding) => {
                 if !binding.owner.current() {
                     return Err(4);
@@ -846,31 +886,29 @@ impl Database {
         if !matches!(request, ValuePdu::WriteCommand { .. }) {
             return Err(2);
         }
-        self.write_value(request, mtu, level, approvals)
+        self.command_resolved(request, mtu, level, approvals, None)
     }
-    /// Called under the database mutex after the Engine's original context
-    /// recheck. Permission remains specific to the request or command opcode.
-    fn write_value(
+    pub(crate) fn command_resolved(
         &mut self,
         request: ValuePdu<'_>,
         mtu: u16,
         level: u32,
         approvals: &[Approval],
+        result: Option<&crate::ssap_write_provider::WriteResult>,
     ) -> Result<(), u8> {
-        let (handle, data_type, value, operation) = match request {
-            ValuePdu::Write {
-                handle,
-                data_type,
-                value,
-                ..
-            } => (handle, data_type, value, SsapOperations::WRITE_WITH_RSP),
-            ValuePdu::WriteCommand {
-                handle,
-                data_type,
-                value,
-            } => (handle, data_type, value, SsapOperations::WRITE_NO_RSP),
-            _ => return Err(2),
-        };
+        if !matches!(request, ValuePdu::WriteCommand { .. }) {
+            return Err(2);
+        }
+        self.write_value(request, mtu, level, approvals, result)
+    }
+    fn write_access(
+        &self,
+        handle: u16,
+        data_type: u8,
+        operation: SsapOperations,
+        level: u32,
+        approvals: &[Approval],
+    ) -> Result<&Property, u8> {
         let service = self
             .services
             .values()
@@ -891,6 +929,107 @@ impl Database {
             true,
             self.locally_authorized(handle, data_type, true, approvals),
         )?;
+        Ok(property)
+    }
+    pub(crate) fn write_provider_target(
+        &self,
+        request: ValuePdu<'_>,
+        level: u32,
+        approvals: &[Approval],
+    ) -> Option<crate::ssap_write_provider::Target> {
+        let (handle, data_type, value, operation) = match request {
+            ValuePdu::Write {
+                handle,
+                data_type,
+                value,
+                ..
+            } => (handle, data_type, value, SsapOperations::WRITE_WITH_RSP),
+            ValuePdu::WriteCommand {
+                handle,
+                data_type,
+                value,
+            } => (handle, data_type, value, SsapOperations::WRITE_NO_RSP),
+            _ => return None,
+        };
+        if value.len() > slk_contract::ssap::MAX_PROVIDER_VALUE_BYTES {
+            return None;
+        }
+        let property = self
+            .write_access(handle, data_type, operation, level, approvals)
+            .ok()?;
+        let ValueSource::Writer(binding) = &property.value else {
+            return None;
+        };
+        binding
+            .owner
+            .current()
+            .then(|| crate::ssap_write_provider::Target {
+                handle,
+                binding: binding.clone(),
+            })
+    }
+    /// Called under the database mutex after the Engine's original context
+    /// recheck. Permission remains specific to the request or command opcode.
+    fn write_value(
+        &mut self,
+        request: ValuePdu<'_>,
+        mtu: u16,
+        level: u32,
+        approvals: &[Approval],
+        result: Option<&crate::ssap_write_provider::WriteResult>,
+    ) -> Result<(), u8> {
+        let (handle, data_type, value, operation) = match request {
+            ValuePdu::Write {
+                handle,
+                data_type,
+                value,
+                ..
+            } => (handle, data_type, value, SsapOperations::WRITE_WITH_RSP),
+            ValuePdu::WriteCommand {
+                handle,
+                data_type,
+                value,
+            } => (handle, data_type, value, SsapOperations::WRITE_NO_RSP),
+            _ => return Err(2),
+        };
+        let property = self.write_access(handle, data_type, operation, level, approvals)?;
+        if value
+            .len()
+            .checked_add(5)
+            .is_none_or(|size| size > usize::from(mtu))
+        {
+            return Err(16);
+        }
+        if let ValueSource::Writer(binding) = &property.value {
+            let unavailable = slk_contract::ssap::PROVIDER_UNAVAILABLE as u8;
+            let result = result.ok_or(unavailable)?;
+            let opcode = if matches!(request, ValuePdu::WriteCommand { .. }) {
+                12
+            } else {
+                13
+            };
+            let verify = matches!(request, ValuePdu::Write { verify: true, .. });
+            if result.target.handle != handle
+                || !Arc::ptr_eq(&result.target.binding, binding)
+                || result.request.property != handle
+                || result.request.operation != opcode
+                || result.request.data_type != data_type
+                || result.request.offset != 0
+                || result.request.value != value
+                || result.request.verify != verify
+            {
+                return Err(unavailable);
+            }
+            return match &result.result {
+                Ok(accepted)
+                    if (verify && accepted == value) || (!verify && accepted.is_empty()) =>
+                {
+                    Ok(())
+                }
+                Err(error @ 0xaf..=0xff) => Err(*error),
+                _ => Err(unavailable),
+            };
+        }
         let next = budget::replacement_bytes(
             self.bytes,
             property.value.stored().ok_or(7u8)?.len(),
@@ -939,6 +1078,17 @@ impl Database {
         level: u32,
         approvals: &[Approval],
         values: &[crate::ssap_read_provider::ReadValue],
+    ) -> Result<Vec<u8>, String> {
+        self.answer_with_providers(request, mtu, level, approvals, values, None)
+    }
+    pub(crate) fn answer_with_providers(
+        &mut self,
+        request: ValuePdu<'_>,
+        mtu: u16,
+        level: u32,
+        approvals: &[Approval],
+        values: &[crate::ssap_read_provider::ReadValue],
+        write: Option<&crate::ssap_write_provider::WriteResult>,
     ) -> Result<Vec<u8>, String> {
         let mut out = vec![0; usize::from(mtu)];
         let response = match request {
@@ -1000,7 +1150,7 @@ impl Database {
                 data_type,
                 value,
                 verify,
-            } => match self.write_value(request, mtu, level, approvals) {
+            } => match self.write_value(request, mtu, level, approvals, write) {
                 Err(16) => return Err("write exceeds negotiated PDU".into()),
                 Err(error) => ValuePdu::WriteError { handle, error },
                 Ok(()) if verify => ValuePdu::WrittenValue {

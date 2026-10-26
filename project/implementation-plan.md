@@ -1,19 +1,21 @@
 # SparkLink / Linux 联合实施方案
 
-## 有界 issue 清理（2026-10-26，已完成维护）
+## 有界 issue 清理（原维护及 2026-10-27 复核已完成）
 
-原 28 项正文与 7 个子项映射保留。后续 U#21 已按自身六项原验收关闭：
-补齐现有 Dispatcher 的 16 个名额在 callback／request／inbox 最终释放及通知 fd
-副本存活时的直接回归；源码、离线及受限资格分别核对，历史记录不转授当前镜像。
-父 U#3、U#22 剩余 SSAP 操作／长值、U#23 Profile 继续开放；现在推进下一条真实服务行为。
-U#1 的 Native retry 取消和 U#10 的自然恢复仍按自身条件收尾，均不成为 U#22 全局前置。
-原维护批次关闭 0 项，后续独立关闭子项 1 项；完整范围与历史失败保留。
+已在线复核全部 **28 个原项和 7 个子项**，状态及父子关系与现有记录一致。
+本次直接收敛 U#1、U#3、U#10、U#21、K#17、K#19 六项正文：当前范围、原验收映射、
+剩余条件与源码/历史入口；不再增加逐轮进展。未新建重复子项，未新增关闭。
+原维护的 28 项正文更新与 7 项拆分仍有效；随后独立关闭的 U#21 按原六条条件保持关闭。
 
-本批直接更新 GitHub 原 28 项正文，建立 7 个职责子项并读回父子关系；
-完整逐项分类、保留开放的自身依据及公开正文校验值见
-[处理记录](issue-maintenance-20261026.json)。它是本批维护记录，后续执行仍以本计划为准。
-原 28 项关闭 **0** 项，子项已关闭 **1** 项（U#21）：15 项有限收尾、3 项拆分父项、10 项长期跟踪均仍有自己的具名条件。
-不因迁移未完成条件而关闭父项，也不要求有限项等待无关的全部安全、恢复或发布。
+**原项分类：15 项有限收尾、3 项拆分父项、10 项长期跟踪；28 项均开放。**
+原验收和历史失败保留。当前源码仍有 U#1 Native retry 锁等待取消缺口；
+U#10 保留用户追加的自然根因/非人工恢复条件，不等待无关安全、Bond 或发布。
+U#3/K#17/K#19 正文明确每条原条件由哪些子项交付、哪些仍由父项验收，搬迁不代表完成。
+
+[逐项处理记录及在线读回](issue-maintenance-20261026.json)是本批处置入口；
+本计划继续是唯一实施计划。此次未重跑实机或模型，旧资格不转授新 HEAD；
+正在开发的 WRITE VM 门禁原样保留。维护批次到此结束，继续既有 U#22 主线，
+不把全部历史问题清理设为数据面、安全或 SSAP 的新前置。
 
 | 原 issue | 分类 | 本批动作与剩余责任 |
 | --- | --- | --- |
@@ -45,6 +47,16 @@ U#1 的 Native retry 取消和 U#10 的自然恢复仍按自身条件收尾，�
 | [U#7](https://github.com/OpenSparklink/sparklink/issues/7) | 长期跟踪/P4 | 正文收敛；UserHost 独占所有权、接管/退出屏障、授权与隔离；P4 规划，非 Native 主线前置。 |
 | [U#8](https://github.com/OpenSparklink/sparklink/issues/8) | 长期跟踪 | 正文收敛；完整 S0–S6、19WP、10FV、12DG 及原验收全部保留；按每个生产行为的小项独立收尾/关闭，父跟踪只维护范围映射。自然故障根因、非人工恢复、剩余数据/安全/SSAP/Profile、部署/发布继续开放；UserHost 低优先级且非当前前置。 |
 | [U#10](https://github.com/OpenSparklink/sparklink/issues/10) | 有限收尾 | 正文收敛；保留运行期/物理拔插闭环原验收，以及用户追加的不依赖人工拔插故障恢复要求。后者仍须查明自然启动超时、重枚举失败与设备消失根因，并验证有界自动恢复及同行隔离；对应 K#10/#14/#15/#19 复用现有任务，不另建重复恢复跟踪。不等待与本里程碑无关的完整安全、Bond 或发布。 |
+
+| 已有子项 | 当前处置 | 独立退出范围 |
+| --- | --- | --- |
+| [U#21](https://github.com/OpenSparklink/sparklink/issues/21) | 可关闭，已独立关闭；本次复核保留 | 原六项 READ SDK Provider 生命周期；后续代码不继承旧资格 |
+| [U#22](https://github.com/OpenSparklink/sparklink/issues/22) | 有限分批收尾，开放 | 唯一 Engine 剩余操作/长值/更新；WRITE 调用者已接通，完整 VM 门禁与新产物验收未完成 |
+| [U#23](https://github.com/OpenSparklink/sparklink/issues/23) | 长期跟踪，开放 | Battery/DeviceInfo/HID 的真实调用、启用/卸载及隔离 |
+| [K#21](https://github.com/OpenSparklink/linux/issues/21) | 有限分批收尾，开放 | credit/Ticket/撤权/断链/原期限/复用组合及硬件假设 |
+| [K#22](https://github.com/OpenSparklink/linux/issues/22) | 有限分批收尾，开放 | 动态通道背压、公平性、多设备业务及关闭隔离 |
+| [K#23](https://github.com/OpenSparklink/linux/issues/23) | 有限分批收尾，开放 | 资格身份/原材料/判定器闭包，缺失和篡改负对照 |
+| [K#24](https://github.com/OpenSparklink/linux/issues/24) | 长期跟踪，开放 | 生产 fuzz、实际调试镜像和适用内核接口覆盖 |
 
 拆分映射：U#3 → U#21（SDK READ Provider 待决撤回/原期限/同行）、U#22（唯一 Engine
 剩余操作/长值/更新）、U#23（真实 Profile）；K#17 → K#21（credit/Ticket/撤权/复用）、
@@ -545,7 +557,9 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
   "public_scope": "Only source/offline/disposition. Private device details and execution identities remain local.",
   "issue_maintenance": {
     "record": "project/issue-maintenance-20261026.json",
-    "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN"
+    "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
+    "last_readback": "project/issue-maintenance-20261026.json#/followup_readback",
+    "scope": "Bounded maintenance complete: 35 existing issues rechecked, six bodies consolidated, existing seven children reused, U21 earlier closure retained; original criteria and qualification unchanged."
   }
 }
 ```

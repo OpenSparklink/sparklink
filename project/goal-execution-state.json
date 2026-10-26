@@ -686,7 +686,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-26T19:50:20.998080+00:00",
+  "updated_at_utc": "2026-10-26T20:05:20.238187+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -2104,7 +2104,9 @@
       "public_scope": "Only source/offline/disposition. Private device details and execution identities remain local.",
       "issue_maintenance": {
         "record": "project/issue-maintenance-20261026.json",
-        "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN"
+        "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
+        "last_readback": "project/issue-maintenance-20261026.json#/followup_readback",
+        "scope": "Bounded maintenance complete: 35 existing issues rechecked, six bodies consolidated, existing seven children reused, U21 earlier closure retained; original criteria and qualification unchanged."
       }
     },
     "selected_qualification": {
@@ -5200,7 +5202,7 @@
   "issue_maintenance": {
     "record": "project/issue-maintenance-20261026.json",
     "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
-    "execution_dependency": "Maintenance complete; continue U22 actual callers/VM gate without unrelated prerequisites. U21 original closure unchanged.",
+    "execution_dependency": "Bounded refresh complete; resume the existing U22 WRITE VM gate. U1 finite fix, U10 natural recovery and other open criteria are not a new global prerequisite.",
     "followup_readback": "project/issue-maintenance-20261026.json#/followup_readback"
   },
   "historical_goal_turn_audits": [

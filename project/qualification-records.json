@@ -97,7 +97,9 @@
     "public_scope": "Only source/offline/disposition. Private device details and execution identities remain local.",
     "issue_maintenance": {
       "record": "project/issue-maintenance-20261026.json",
-      "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN"
+      "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
+      "last_readback": "project/issue-maintenance-20261026.json#/followup_readback",
+      "scope": "Bounded maintenance complete: 35 existing issues rechecked, six bodies consolidated, existing seven children reused, U21 earlier closure retained; original criteria and qualification unchanged."
     }
   },
   "overall_required_records": [

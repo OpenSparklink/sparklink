@@ -2,15 +2,18 @@
 
 ## 本批 issue 状态核对
 
-U#21 已按原六项验收收尾，新增直接生产容量／引用回归及具名离线检查。
-该 issue 处置不授予当前 HEAD 整体实机资格，历史产物仍各自绑定编译和执行身份。
-父 U#3 与剩余服务、数据、安全和恢复范围继续开放。
+本次在线复核 28 个原项和 7 个子项，更新六项正文的范围、验收映射及历史入口。
+28 个原项仍按自身条件开放（15 有限收尾、3 拆分父项、10 长期跟踪）；
+已有 U#21 关闭处置保持，其原六条 READ Provider 验收未改变，父 U#3 开放。
+本次新增关闭 0 项、新建子项 0 项，复用已有七个职责子项。
 
-[逐项处理记录](issue-maintenance-20261026.json)记录已读回的 28 项正文和 7 个子项关系。
-原维护批次的原 issue 关闭 0 项，后续独立关闭子项 U#21；15 项有限收尾、3 项拆分父项、10 项长期跟踪仍按自身条件开放。
-本批只提供源码/离线状态核对：现行静默 D-Bus handler 测试与严格检查通过，
-Native retry 锁等待取消仍未覆盖；不新增实机资格，不改变下方准确产物记录。
-具体剩余条件与依赖见[唯一计划](implementation-plan.md)。
+[逐项处置/读回](issue-maintenance-20261026.json)与[唯一计划](implementation-plan.md)
+记录当前剩余条件。U#1 Native retry 锁等待取消仍缺直接生产路径回归；
+U#10 的自然故障根因与非人工恢复仍开放，均不成为 U#22 的全局前置。
+
+维护仅核对源码、留存报告/形式化边界与 CI 状态，没有新增实机、形式化或完整回归资格。
+具名离线结果仍绑定各自提交；未提交的 WRITE VM verifier 不计已接通或已验收。
+已有编译产物、执行工具、失败/反例、原资格选择和以下记录全部保留。
 
 本页是唯一当前资格入口。源码、编译产物、执行工具、校验工具及必需门禁从下方
 结构化记录读取；报告或文档提交不替代编译身份，局部 PASS 不授整个 HEAD 资格。
@@ -157,7 +160,9 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
   "public_scope": "Only source/offline/disposition. Private device details and execution identities remain local.",
   "issue_maintenance": {
     "record": "project/issue-maintenance-20261026.json",
-    "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN"
+    "state": "BOUNDED_MAINTENANCE_COMPLETE_ORIGINAL_SCOPE_OPEN",
+    "last_readback": "project/issue-maintenance-20261026.json#/followup_readback",
+    "scope": "Bounded maintenance complete: 35 existing issues rechecked, six bodies consolidated, existing seven children reused, U21 earlier closure retained; original criteria and qualification unchanged."
   }
 }
 ```

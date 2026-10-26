@@ -383,10 +383,11 @@ def owned_mode():
                             provider_pending.close();provider_pending=None
                             if not closed:
                                 poller.register(provider_fd,select.POLLIN);provider_polling=True
-                    elif sys.argv[1]=='owned-readonly' and line==b'provider-unregister\n':
+                    elif provider_mode and line==b'provider-unregister\n':
                         if closed or provider is None or provider_pending is None:
                             raise ValueError('live service and delivered Provider request required')
                         snapshot=provider_pending.info
+                        proposed=provider_pending.value if writing else None
                         started=time.monotonic_ns();deadline=min(snapshot.deadline_ns,end)
                         if started>=deadline:raise TimeoutError(errno.ETIMEDOUT,'original Provider deadline')
                         removed=0;failure=None
@@ -395,21 +396,24 @@ def owned_mode():
                             removed=owned_exit_error();failure=error
                         returned=time.monotonic_ns()
                         same=provider_pending.info==snapshot
+                        value_preserved=not writing or provider_pending.value==proposed
                         notification_alive=os.fstat(provider_fd) is not None
                         reply_started=time.monotonic_ns();rejected=0;reply_failure=None
-                        try:provider_pending.reply(b'')
+                        try:provider_pending.reply(proposed if writing and snapshot.verify else b'')
                         except BaseException as error:
                             rejected=owned_exit_error();reply_failure=error
                         reply_returned=time.monotonic_ns()
-                        print('SdkReadProviderUnregistered: '+json.dumps(dict(api='python',token=snapshot.token,
+                        withdrawal=dict(api='python',token=snapshot.token,
                             property=snapshot.property,original_deadline_ns=snapshot.deadline_ns,deadline_ns=deadline,
                             started_ns=started,returned_ns=returned,result=removed,info_preserved=same,
                             notification_fd_alive=notification_alive,reply_started_ns=reply_started,
-                            reply_returned_ns=reply_returned,reply_result=rejected,local_observation_only=True)),flush=True)
+                            reply_returned_ns=reply_returned,reply_result=rejected,local_observation_only=True)
+                        if writing:withdrawal['value_preserved']=value_preserved
+                        print(provider_prefix+'Unregistered: '+json.dumps(withdrawal),flush=True)
                         if failure is not None:raise failure
                         if not isinstance(reply_failure,OSError) or reply_failure.errno!=errno.ESHUTDOWN:
                             raise AssertionError('withdrawn original Provider request did not reject reply')
-                        if not same or not notification_alive or reply_returned>=deadline:
+                        if not same or not value_preserved or not notification_alive or reply_returned>=deadline:
                             raise AssertionError('withdrawal must preserve views and finish before original deadline')
                         view.close();closed=True
                         if fd is not None:poller.unregister(fd)

@@ -513,29 +513,52 @@ static int owned_mode(int argc,char **argv) {
             error=owned_provider_answer(&provider_pending,token,reply_status,value,length,end,writing);
             if (error) {errno=-error;goto done;}
         } else if (!strcmp(line,"provider-unregister\n")) {
-            if (strcmp(argv[1],"owned-readonly") || !view || !provider || !provider_pending.request) {errno=EINVAL;goto done;}
-            /* Keep the original opaque request and notification fd alive while
-             * the SDK closes admission and performs the actual withdrawal. */
+            if (!view || (writing?(!writer || !provider_pending.write_request):
+                    (strcmp(argv[1],"owned-readonly") || !provider || !provider_pending.request))) {errno=EINVAL;goto done;}
+            /* Keep the original opaque request, immutable proposed bytes and
+             * notification fd while the SDK closes admission and withdraws. */
             const struct SlkReadProviderRequestInfo snapshot=provider_pending.info;
+            const struct SlkWriteProviderRequestInfo write_snapshot=provider_pending.write_info;
+            const uint64_t token=writing?write_snapshot.token:snapshot.token;
+            const uint16_t property=writing?write_snapshot.property:snapshot.property;
+            const uint64_t original_deadline=writing?write_snapshot.deadline_ns:snapshot.deadline_ns;
             const uint64_t started=now_ns();
-            uint64_t deadline=snapshot.deadline_ns;if (deadline>end) deadline=end;
+            uint64_t deadline=original_deadline;if (deadline>end) deadline=end;
             if (started>=deadline) {errno=ETIMEDOUT;goto done;}
             const int removed=slk_local_service_unregister(view,deadline);
             const uint64_t returned=now_ns();
-            struct SlkReadProviderRequestInfo after={0};
-            const int info_result=slk_read_provider_request_info(provider_pending.request,&after);
-            const int same=!info_result && !memcmp(&after,&snapshot,sizeof after);
+            int same=0,value_preserved=1;
+            if (writing) {
+                struct SlkWriteProviderRequestInfo after={0};
+                const int info_result=slk_write_provider_request_info(provider_pending.write_request,&after);
+                same=!info_result && !memcmp(&after,&write_snapshot,sizeof after);
+                uint8_t bytes_after[2042];uintptr_t length_after=0;
+                const int value_result=slk_write_provider_request_value(provider_pending.write_request,
+                    bytes_after,sizeof bytes_after,&length_after);
+                value_preserved=!value_result && length_after==write_snapshot.value_length
+                    && !memcmp(bytes_after,provider_pending.proposed,length_after);
+            } else {
+                struct SlkReadProviderRequestInfo after={0};
+                const int info_result=slk_read_provider_request_info(provider_pending.request,&after);
+                same=!info_result && !memcmp(&after,&snapshot,sizeof after);
+            }
             const int notification_alive=fcntl(provider_fd,F_GETFD)>=0;
             const uint64_t reply_started=now_ns();
-            const int rejected=slk_read_provider_request_reply(provider_pending.request,0,NULL,0);
+            /* Use valid original WRITE bytes so validation cannot mask the
+             * withdrawal result. This attempt must not mutate app memory. */
+            const int rejected=writing?slk_write_provider_request_reply(provider_pending.write_request,0,
+                provider_pending.proposed,write_snapshot.verify?write_snapshot.value_length:0):
+                slk_read_provider_request_reply(provider_pending.request,0,NULL,0);
             const uint64_t reply_returned=now_ns();
-            printf("SdkReadProviderUnregistered: {\"api\":\"c\",\"token\":%"PRIu64",\"property\":%u,\"original_deadline_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"started_ns\":%"PRIu64",\"returned_ns\":%"PRIu64",\"result\":%d,\"info_preserved\":%s,\"notification_fd_alive\":%s,\"reply_started_ns\":%"PRIu64",\"reply_returned_ns\":%"PRIu64",\"reply_result\":%d,\"local_observation_only\":true}\n",
-                snapshot.token,snapshot.property,snapshot.deadline_ns,deadline,started,returned,removed,
-                same?"true":"false",notification_alive?"true":"false",reply_started,reply_returned,rejected);fflush(stdout);
+            printf("%sUnregistered: {\"api\":\"c\",\"token\":%"PRIu64",\"property\":%u,\"original_deadline_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"started_ns\":%"PRIu64",\"returned_ns\":%"PRIu64",\"result\":%d,\"info_preserved\":%s,\"notification_fd_alive\":%s,\"reply_started_ns\":%"PRIu64",\"reply_returned_ns\":%"PRIu64",\"reply_result\":%d,\"local_observation_only\":true",
+                writing?"SdkWriteProvider":"SdkReadProvider",token,property,original_deadline,deadline,started,returned,removed,
+                same?"true":"false",notification_alive?"true":"false",reply_started,reply_returned,rejected);
+            if (writing) printf(",\"value_preserved\":%s",value_preserved?"true":"false");
+            printf("}\n");fflush(stdout);
             /* Preserve uncertain failures; never print a successful removal for
              * a failed RPC. The supervisor checks the separate peer outcome. */
             if (removed) {errno=-removed;goto done;}
-            if (!same || !notification_alive || rejected!=-ESHUTDOWN || reply_returned>=deadline) {errno=EPROTO;goto done;}
+            if (!same || !value_preserved || !notification_alive || rejected!=-ESHUTDOWN || reply_returned>=deadline) {errno=EPROTO;goto done;}
             slk_local_service_free(view);view=NULL;
             error=owned_provider_close(&provider_pending,&provider,&writer,&provider_fd);if (error) {errno=-error;goto done;}
         } else if (!strcmp(line,"lifecycle\n")) {

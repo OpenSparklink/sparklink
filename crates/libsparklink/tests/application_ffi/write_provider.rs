@@ -76,7 +76,7 @@ pub(super) async fn exercise(
         assert_eq!(bound["notification_ready"], true);
         let mut applied: Option<String> = None;
         let mut previous_token = 0;
-        for n in 1..=5 {
+        for n in 1..=6 {
             let mut value = vec![
                 0;
                 match n {
@@ -130,7 +130,7 @@ pub(super) async fn exercise(
                 data_type: 0,
                 offset: 0,
                 value: value.clone(),
-                verify: n == 1 || n == 5,
+                verify: matches!(n, 1 | 5 | 6),
             };
             let path = metadata.provider.lock().unwrap().clone();
             let bus = server.clone();
@@ -170,10 +170,86 @@ pub(super) async fn exercise(
             ] {
                 assert_eq!(observed[field].as_u64(), Some(expected), "{field}");
             }
-            assert_eq!(observed["verify"], n == 1 || n == 5);
+            assert_eq!(observed["verify"], matches!(n, 1 | 5 | 6));
             let token = observed["token"].as_u64().unwrap();
             assert!(token > previous_token);
             previous_token = token;
+            if n == 6 {
+                // Same live consumer and actual SDK request, after successful
+                // writes. Withdrawal must not overwrite the previous app value.
+                assert!(!task.is_finished(), "withdraw an actually pending callback");
+                let removals = metadata.removed.load(Ordering::SeqCst);
+                send(&mut child, "provider-unregister\n")?;
+                let removed = json_line(
+                    &mut reader,
+                    &mut transcript,
+                    "SdkWriteProviderUnregistered: ",
+                )?;
+                let fields = [
+                    "api",
+                    "token",
+                    "property",
+                    "original_deadline_ns",
+                    "deadline_ns",
+                    "started_ns",
+                    "returned_ns",
+                    "result",
+                    "info_preserved",
+                    "notification_fd_alive",
+                    "reply_started_ns",
+                    "reply_returned_ns",
+                    "reply_result",
+                    "local_observation_only",
+                    "value_preserved",
+                ];
+                assert_eq!(removed.as_object().unwrap().len(), fields.len());
+                assert!(fields.iter().all(|key| removed.get(*key).is_some()));
+                assert_eq!(removed["api"], language);
+                assert_eq!(removed["token"], token);
+                assert_eq!(removed["property"], 17);
+                assert_eq!(removed["original_deadline_ns"], deadline);
+                assert_eq!(removed["deadline_ns"], deadline);
+                assert_eq!(removed["result"], 0);
+                assert_eq!(removed["reply_result"], -nix::libc::ESHUTDOWN);
+                for key in [
+                    "info_preserved",
+                    "notification_fd_alive",
+                    "value_preserved",
+                    "local_observation_only",
+                ] {
+                    assert_eq!(removed[key], true, "{key}");
+                }
+                let times = [
+                    observed["observed_ns"].as_u64().unwrap(),
+                    removed["started_ns"].as_u64().unwrap(),
+                    removed["returned_ns"].as_u64().unwrap(),
+                    removed["reply_started_ns"].as_u64().unwrap(),
+                    removed["reply_returned_ns"].as_u64().unwrap(),
+                ];
+                assert!(times.windows(2).all(|pair| pair[0] <= pair[1]));
+                assert!(
+                    times[4] < deadline,
+                    "withdrawal does not renew the original deadline"
+                );
+                let reply = tokio::time::timeout(original.remaining()?, task).await???;
+                assert_eq!(
+                    reply,
+                    (0xaf, vec![]),
+                    "actual SDK callback stop; not a wire outcome"
+                );
+                assert_eq!(metadata.removed.load(Ordering::SeqCst), removals + 1);
+                assert!(
+                    child.try_wait()?.is_none(),
+                    "retired views do not kill their owner"
+                );
+                send(&mut child, "value\n")?;
+                let actual = json_line(&mut reader, &mut transcript, "SdkWriteProviderValue: ")?;
+                assert_eq!(
+                    actual,
+                    serde_json::json!({"api":language,"property":17,"value":applied,"application_memory_only":true})
+                );
+                continue;
+            }
             if n == 1 {
                 send(&mut child, &format!("provide p{} {hex}\n", token + 100))?;
                 let wrong = json_line(&mut reader, &mut transcript, "SdkWriteProviderReply: ")?;
@@ -266,7 +342,7 @@ pub(super) async fn exercise(
         send(&mut child, "quit\n")?;
         assert_eq!(
             read_provider::line(&mut reader, &mut transcript)?,
-            format!("SdkOwnedRemoved: api={language} start=16\n")
+            format!("SdkOwnedClosedExit: api={language} start=16\n")
         );
         let output = child.wait_with_output()?;
         std::fs::write(

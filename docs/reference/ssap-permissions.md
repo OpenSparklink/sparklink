@@ -564,6 +564,15 @@ WRITE 示例中固定的 controller/handle。测试工具不是生产服务数�
 本地答复接受后更新该测试应用的有限内存值；`value` 单独报告它，不调用 daemon
 staging 读接口。错误和过期答复不改变这个测试值；这不是通用业务副作用的回滚承诺。
 
+`provider-unregister` 在已交付但未答复的 READ 或 WRITE 请求上沿同一服务撤回路径
+停止准入，保留原请求快照和通知 fd 供观察，并实际尝试旧答复；WRITE 使用原拟写值，
+防止参数校验错误掩盖应有的 `ESHUTDOWN`。`SdkWriteProviderUnregistered` 额外记录
+`value_preserved`，表示原拟写快照仍可读取，不代表该值已应用。撤回后 `value` 必须
+仍是之前实际接受的应用值，进程继续存活至 `quit`，正常输出 `SdkOwnedClosedExit`。
+撤回和旧答复检查受原始请求及调用者期限约束；失败不得伪装成成功撤回。
+实际 C/Python 私有 D-Bus 回归覆盖这条 SDK 路径；它不证明 daemon Engine、内核
+取消、真实对端错误或同行隔离，后者仍需专用 VM 双端证据。
+
 JSON 观察分别记录原请求、实际 SDK 调用与结果、接受值和应用内存值。
 输入行有界，支持完整2042字节值及命令开销，不静默截断。`quit` 沿原清理路径
 停止准入、释放请求/fd、撤回服务；监督器必须先观察对端结果再结束 owner。

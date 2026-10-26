@@ -38,24 +38,24 @@ def boot_requested(tokens):
     return selected
 
 
-def tool_records(root=Path('/')):
+def tool_records(root=Path('/'), *, extra_tools=EXTRA_TOOLS):
     result=sdk.tool_records(root)
-    for name in EXTRA_TOOLS[len(sdk.EXTRA_TOOLS):]:
+    for name in extra_tools[len(sdk.EXTRA_TOOLS):]:
         p=root/name.lstrip('/');result[name]=dict(sha256=hashlib.sha256(p.read_bytes()).hexdigest(),bytes=p.stat().st_size)
     return result
 
 
-def validate_tools(records,root,manifest):
-    need(records==tool_records(root),'fresh exact pending WRITE tool identities required')
-    sdk.validate_tools({k:v for k,v in records.items() if k not in EXTRA_TOOLS[len(sdk.EXTRA_TOOLS):]},root,manifest)
-    for name in EXTRA_TOOLS[len(sdk.EXTRA_TOOLS):]:
+def validate_tools(records,root,manifest, *, extra_tools=EXTRA_TOOLS):
+    need(records==tool_records(root,extra_tools=extra_tools),'fresh exact pending WRITE tool identities required')
+    sdk.validate_tools({k:v for k,v in records.items() if k not in extra_tools[len(sdk.EXTRA_TOOLS):]},root,manifest)
+    for name in extra_tools[len(sdk.EXTRA_TOOLS):]:
         p=(root/name.lstrip('/')).resolve(strict=True);found=[x for x in manifest if Path(x['path']).resolve()==p]
         need(len(found)==1 and found[0]['sha256']==records[name]['sha256'],'pending WRITE helper missing from build manifest')
 
 
-def validate_inputs(package):
+def validate_inputs(package, *, extra_tools=EXTRA_TOOLS):
     sdk.validate_inputs(package)
-    for name in EXTRA_TOOLS[len(sdk.EXTRA_TOOLS):]:
+    for name in extra_tools[len(sdk.EXTRA_TOOLS):]:
         p=Path(__file__).resolve().parent/Path(name).name;found=[x for x in package.get('inputs',[])if Path(x['path']).resolve()==p]
         need(len(found)==1 and found[0]['sha256']==hashlib.sha256(p.read_bytes()).hexdigest(),'fresh pending WRITE helper required')
 

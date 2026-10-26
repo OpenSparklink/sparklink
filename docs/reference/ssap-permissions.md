@@ -652,3 +652,21 @@ actor 定时器或授权结果消费处；两者都不得修改属性、重置�
 普通 CUTC 属于同一 Native Session 的其他逻辑通道，其是否继续交付须以两端
 应用校验和回复验证。SSAP actor 退出不结算 Native 已开始的提交、credit 或 NOCP
 义务，也不等于完整物理清理已经完成。
+
+## Pending WRITE original expiry gate
+
+The optional `--ssap-write-provider-deadline-verify` VM gate reuses the existing
+Provider original-deadline runner with a typed verified type0 WRITE request.
+The application must receive the actual authorized request before expiry. The
+requester call deadline, Provider deadline and finite terminal-observation budget
+remain distinct. A late matching value must actually call the SDK and return
+`ETIMEDOUT`; the application value must remain unchanged. Neither that local
+error nor bounded absence of a wire response proves delivery or physical drain.
+
+The gate records paired request USB evidence and the complete bounded response
+window, then checks ordinary socket business in both connection roles. The
+expired SSAP actor must remain terminal. It does not require or claim same-actor
+SSAP recovery, and does not replace owner-loss, Down, long-write or natural
+recovery acceptance. Historical READ deadline schemas remain unchanged. This
+selector and offline tests are implementation scope; actual qualification remains
+bound to its separately registered source, artifact, tools and retained evidence.

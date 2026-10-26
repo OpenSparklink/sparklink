@@ -1419,3 +1419,19 @@ boot token 为 `ws73.ssap_write_provider_unregister=1`，version1；旧 READ
 
 这描述执行与判定契约，源码/离线 fixture 通过不构成真实设备资格。完整 WRITE
 owner death、断链、原期限、长值、command、method/描述符等门禁仍独立开放。
+
+## SDK WRITE original deadline
+
+`--ssap-write-provider-deadline-verify` selects a dedicated ordinary 61-byte,
+four-round channel run with `--ssap-owned-verify`. It is mutually exclusive
+with normal WRITE Provider, pending WRITE unregister and READ Provider scenarios.
+The guest token is `ws73.ssap_write_provider_deadline=1`; duplicate, malformed
+or conflicting tokens fail before the scenario runs.
+
+The existing package includes `ws73_ssap_write_deadline.py` and its shared
+Provider-deadline, SDK, command-deadline and policy helpers. Host/guest tool
+identities and complete terminal status must match. The shared runner executes
+WRITE expiry last among SSAP scenarios, then ordinary channel business and the
+existing disconnect. Missing captures, changed identity/payload/deadline, missing
+business or a claimed recovery cannot satisfy the gate. No timeout is renewed.
+Source/offline availability does not grant a fresh image hardware qualification.

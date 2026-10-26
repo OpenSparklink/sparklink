@@ -76,7 +76,7 @@ pub(super) async fn exercise(
         assert_eq!(bound["notification_ready"], true);
         let mut applied: Option<String> = None;
         let mut previous_token = 0;
-        for n in 1..=6 {
+        for n in 1..=7 {
             let mut value = vec![
                 0;
                 match n {
@@ -87,12 +87,9 @@ pub(super) async fn exercise(
             ];
             std::fs::File::open("/dev/urandom")?.read_exact(&mut value)?;
             let hex = value.iter().map(|b| format!("{b:02x}")).collect::<String>();
-            let original =
-                slk_channel::deadline::Deadline::after(Duration::from_millis(if n == 4 {
-                    350
-                } else {
-                    3000
-                }))?;
+            let original = slk_channel::deadline::Deadline::after(Duration::from_millis(
+                if n == 4 || n == 6 { 350 } else { 3000 },
+            ))?;
             let deadline = original.stamp().monotonic_ns;
             // Independent authorization callback is actually answered first;
             // that policy result is not a WRITE result or application effect.
@@ -130,7 +127,7 @@ pub(super) async fn exercise(
                 data_type: 0,
                 offset: 0,
                 value: value.clone(),
-                verify: matches!(n, 1 | 5 | 6),
+                verify: matches!(n, 1 | 5 | 6 | 7),
             };
             let path = metadata.provider.lock().unwrap().clone();
             let bus = server.clone();
@@ -170,11 +167,11 @@ pub(super) async fn exercise(
             ] {
                 assert_eq!(observed[field].as_u64(), Some(expected), "{field}");
             }
-            assert_eq!(observed["verify"], matches!(n, 1 | 5 | 6));
+            assert_eq!(observed["verify"], matches!(n, 1 | 5 | 6 | 7));
             let token = observed["token"].as_u64().unwrap();
             assert!(token > previous_token);
             previous_token = token;
-            if n == 6 {
+            if n == 7 {
                 // Same live consumer and actual SDK request, after successful
                 // writes. Withdrawal must not overwrite the previous app value.
                 assert!(!task.is_finished(), "withdraw an actually pending callback");
@@ -269,7 +266,9 @@ pub(super) async fn exercise(
                     "bad UI input cannot answer the actual callback"
                 );
             }
-            if n == 4 {
+            // Both ordinary WriteReq and verified WriteReq retain the original
+            // callback deadline; late matching bytes cannot alter app memory.
+            if n == 4 || n == 6 {
                 while let Ok(left) = original.remaining() {
                     tokio::time::sleep(left).await;
                 }
@@ -312,21 +311,35 @@ pub(super) async fn exercise(
             assert_eq!(result["status"], if n == 3 { 0xaf } else { 0 });
             assert_eq!(
                 result["result"],
-                if n == 4 { -nix::libc::ETIMEDOUT } else { 0 }
+                if n == 4 || n == 6 {
+                    -nix::libc::ETIMEDOUT
+                } else {
+                    0
+                }
             );
+            if n == 4 || n == 6 {
+                assert!(result["started_ns"].as_u64().unwrap() >= deadline);
+                assert!(
+                    result["returned_ns"].as_u64().unwrap()
+                        >= result["started_ns"].as_u64().unwrap()
+                );
+            }
             if n == 1 || n == 2 || n == 5 {
                 assert_eq!(result["accepted_value"], hex);
                 applied = Some(hex.clone());
             } else {
                 assert!(result["accepted_value"].is_null());
             }
-            assert_eq!(result["value"], if n == 1 || n == 5 { &hex } else { "" });
+            assert_eq!(
+                result["value"],
+                if n == 1 || n == 5 || n == 6 { &hex } else { "" }
+            );
             // Drain the real callback BEFORE close/next operation; no sleep or
             // local success is substituted for receipt by the original caller.
             let reply = task.await??;
             assert_eq!(
                 reply,
-                if n == 3 || n == 4 {
+                if n == 3 || n == 4 || n == 6 {
                     (0xaf, vec![])
                 } else {
                     (0, if n == 1 || n == 5 { value } else { vec![] })

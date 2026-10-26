@@ -347,12 +347,12 @@ system bus角色分离也已在该VM实际核对，但无controller的允许调�
 |---|---|---|
 | Native 管理／诊断 | 版本化请求，controller generation／所有权检查；已实现标准 Diagnostic，限查询；准确新实机范围见资格页 | `slk-native/src/ioctl.rs`、内核 `sparklink_core.rs` |
 | Native WS73 发现／连接／通道 | 已接通路径；实机资格仅限能力页所列准确提交及场景 | `slkd/src/connection.rs`／`controller.rs`、`slk-native` API、内核 socket |
-| D-Bus ServiceManager／RemoteService | RegisterLocalService/ListLocalServices/RemoveLocalService/ReadLocalValue 是本地数据库操作；Owned 登记、读取、替换、说明设置及撤回按原 caller 约束；READ Provider 绑定适用于原 Owned type0；WRITE Provider 的 daemon/Rust 低层绑定仅支持写专用 type0，完整 C/Python WRITE 收件箱仍缺，准确资格由能力入口维护；旧 facade 方法与 RemoteService 已删除；真实远端操作走 Connection 唯一 SSAP actor | `slkd/src/service.rs` |
+| D-Bus ServiceManager／RemoteService | RegisterLocalService/ListLocalServices/RemoveLocalService/ReadLocalValue 是本地数据库操作；Owned 登记、读取、替换、说明设置及撤回按原 caller 约束；READ Provider 绑定适用于原 Owned type0；WRITE Provider 的 daemon/Rust 绑定及 Rust/C/Python 共用收件箱仅支持写专用 type0，准确资格由能力入口维护；旧 facade 方法与 RemoteService 已删除；真实远端操作走 Connection 唯一 SSAP actor | `slkd/src/service.rs` |
 | 旧 SSAP ioctl | 业务命令已删除，旧编号 ENOTTY，不提供兼容 fallback；权限类型继续复用 | `slk-native/src/ioctl.rs`、内核 UAPI |
 | 旧 property／write facade | 未发布入口与调用者已删除，历史 248/252 限制仅保留在原资格/纯测试；当前协商与长写限制单独表达 | 原 git／codec 回归 |
 | Profile／transport 实验 | 独立 `slk-experimental`；不构成默认生产能力 | 实验 crate README、构建 feature |
 | UserHost／厂商 Host 适配 | P4 规划，接口／实现／证明／实机均未完成 | ADR 0003 |
-| 新用户态 SSAP Engine | 唯一用户态 actor 的 ExchangeInfo、单值读写/分片、UUID/结构发现、CPCD、Owned 通知/指示及订阅已有对应路径；只读 type1 说明复用发现/读取。Owned type0 动态只读 Provider 复用同一 actor 和原授权，不能据此宣称完整服务资格；动态 type0 WRITE 的 daemon/Rust 低层绑定已接通，完整 SDK 写收件箱、method、其他描述符与完整服务/长写契约仍缺；准确资格仅能力入口 | 唯一实施计划 WP08、准确能力入口 |
+| 新用户态 SSAP Engine | 唯一用户态 actor 的 ExchangeInfo、单值读写/分片、UUID/结构发现、CPCD、Owned 通知/指示及订阅已有对应路径；只读 type1 说明复用发现/读取。Owned type0 动态只读 Provider 复用同一 actor 和原授权，不能据此宣称完整服务资格；动态 type0 WRITE 的 daemon/Rust 绑定及共享 SDK 写收件箱已接通，method、其他描述符与完整服务/长写契约仍缺；准确资格仅能力入口 | 唯一实施计划 WP08、准确能力入口 |
 
 C 头、Rust FFI 和 Python 绑定应匹配准确源码，不能根据函数声明推导硬件支持。本表是状态查找参考，完整资格仍仅维护于能力入口；逐字段自动生成 API 及全错误矩阵尚待下一批。
 
@@ -1070,8 +1070,9 @@ WRITE Provider 新入口仍为未发布、限量支持的源码契约；不能�
 当前只有 type0、offset0，opcode12 为无回复命令、13 为有回复请求。状态0的 verify
 答复须提供应用实际接受且逐字节一致的值，非 verify 须为空；`0xAF..0xFF` 错误须为空。
 策略批准不产生应用成功，超时/撤权不能回滚已发生的应用副作用。完整权限、预算、
-期限与拒绝条件见[SSAP WRITE Provider 契约](ssap-permissions.md)。C/Python WRITE
-收件箱及 method/长写仍未接通，新 artifact 的 VM 实机验收仍需单独取得。
+期限与拒绝条件见[SSAP WRITE Provider 契约](ssap-permissions.md)。Rust/C/Python WRITE
+收件箱共用原前端及容量/释放；C 的 bind/fd/next/info/value/reply/free 和 Python 对应视图
+见上述契约。method/长写仍未接通，新 artifact 的 VM 实机验收仍需单独取得。
 
 ## 安装布局与卸载边界
 

@@ -467,8 +467,8 @@ SSAP stdin 管道单行上限4160字节，含换行。终端输入须少于4096�
 
 这一路径复用唯一 Engine、原 Owned 登记和同一连接的有界服务端义务队列。
 它与审批回调分开：审批 `true` 不执行应用写入，也不能生成写成功。
-当前提供 daemon 类型化 D-Bus 入口和 Rust 低层绑定；C/Python 的 WRITE 收件箱、
-method 回调及完整长写事务仍缺失。READ Provider 的既有资格不转授这条新路径。
+当前提供 daemon 类型化 D-Bus 入口、Rust 低层绑定和共用 Dispatcher 的 Rust/C/Python
+WRITE 收件箱；method 回调及完整长写事务仍缺失。READ Provider 的既有资格不转授这条新路径。
 
 `ServiceManager.BindOwnedWriteProvider(handle:q, provider:o, deadline:(ttttt))->()`
 仅允许原登记的 unique caller，经 `sparklink-services` 权限调用。属性须为 type0
@@ -512,6 +512,43 @@ controller/generation/lifetime/epoch/通道和期限；当前测试传输的跳�
 返回标志形成应答。本项目保留该操作区分，但跨进程应用答复、原期限和撤回语义由
 上述契约约束；参考行为不作为标准裁判。独立签名、实际私有 D-Bus 与生产 Engine
 回归不等于内核并发证明或真实对端业务交付，新 artifact 必须单独取得 VM 实机资格。
+
+#### SDK WRITE 收件箱
+
+Rust `Dispatcher.bind_write`、C `slk_local_service_bind_write_provider` 和 Python
+`LocalService.bind_write_provider` 使用原 Client/服务登记、原绑定期限及同一 Dispatcher。
+READ/WRITE 共用16个登记槽及各槽单个待决请求，不另开 WRITE 容量池；原 authorizer
+仍是独立审批。服务 stop、owner loss、绑定不确定性、通知 fd、原期限、队列唤醒和最终
+引用释放使用同一前端实现，写类型只增加准入字段和实际接受值的检查。
+
+| C | Python | 作用 |
+|---|---|---|
+| `slk_local_service_bind_write_provider` | `LocalService.bind_write_provider` | 一次原 owner 绑定；返回有限收件箱 |
+| `slk_write_provider_fd` | `WriteProvider.notification_fd()` | 调用者持有 CLOEXEC fd，仅供 poll，不携带答复权 |
+| `slk_write_provider_next` | `WriteProvider.next_request()` | 非阻塞取请求；Python 可选绝对期限仅限制本地等待，不续期原回调 |
+| `slk_write_provider_request_info` | `WriteProviderRequest.info` | 原 request/context/operation/offset/verify/长度快照；不是当前授权 |
+| `slk_write_provider_request_value` | `WriteProviderRequest.value` | 原拟写值的完整有界只读快照；C 短缓冲返回 ENOSPC，告知完整长度、不改缓冲 |
+| `slk_write_provider_request_reply` | `WriteProviderRequest.reply(value, status=0)` | 一次本地答复，不能代替实际应用副作用或对端收到 |
+| `slk_write_provider_request_free` / `slk_write_provider_free` | `request.close()` / `provider.close()` | 释放请求或停止本地准入；不回滚应用副作用，不隐含撤回服务 |
+
+`SlkWriteProviderRequestInfo` 固定80字节、8对齐；所有 reserved 必须为0。包含原
+controller、token、request id、lifetime、epoch、deadline、security level、handle、
+property、offset、value_length、local/remote TCID、PI、operation、data_type、verify。
+C 的非 NULL 指针仍须满足调用者内存契约，不能把调用者 UB 当作内核 EFAULT 支持。
+Python `info` 冻结、`value` 为不可变 bytes，实例禁止 fork 后使用。
+
+回复不通过同步 RPC executor，因此原 executor 等待其他调用时，本地答复不会排在其后。
+status 必须是0或 AF..FF；错误携值/未知状态为 EINVAL，超原答复预算为 EMSGSIZE，
+verify 的非一致接受值为 EINVAL；这些拒绝不消耗答复权。过期 ETIMEDOUT、停止
+ESHUTDOWN、失去原 daemon 或旧请求 ESTALE；没有静默截断、重试或新期限参数。
+返回0只表示本地接收了应用答复，若此后立即关闭最后 owner/bus，真实回调可能被丢弃。
+测试若要求观察远端 callback，应通过实际接收屏障保持原 owner，不能用本地0或固定
+sleep 假定已排空。真实 SSAP 对端业务确认仍须单独验证。
+
+原请求释放和 callback drain 是两个条件，仍存活的任一引用都保留容量；fd 的 dup
+只保留通知描述符，不能替代服务或恢复答复权。端点安装遇到已占用 WRITE 时仅移除
+本次创建的 READ 接口，不删除外来对象；取消部分安装只留下已停止的有界端点，直到
+原连接释放，不自动重试。同步 Client 打开失败会释放该原连接。
 
 ### 显式公开的只读属性说明
 

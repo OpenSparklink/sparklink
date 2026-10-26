@@ -10,6 +10,8 @@ mod subscription;
 mod support;
 #[path = "application_ffi/value_update.rs"]
 mod value_update;
+#[path = "application_ffi/write_provider.rs"]
+mod write_provider;
 use std::{
     io::{BufRead, Read, Write},
     path::PathBuf,
@@ -329,7 +331,7 @@ impl OwnedServices {
         assert_eq!(uuid, [1, 0]);
         let access = properties[0].2;
         assert!(matches!(access, 0 | 36));
-        assert!(matches!(properties[0].1, 1 | 5));
+        assert!(matches!(properties[0].1, 1 | 5 | 6));
         assert_eq!(
             properties,
             [(vec![2, 0], properties[0].1, access, vec![7, 8, 9])]
@@ -363,6 +365,24 @@ impl OwnedServices {
             .unwrap();
         assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
         assert_eq!(self.0.operations.load(Ordering::SeqCst), 1);
+        assert_eq!(handle, 17);
+        assert_eq!(provider.as_str(), "/org/sparklink/sdk/ssap_read_provider");
+        let mut current = self.0.provider.lock().unwrap();
+        assert!(current.is_empty(), "one bind per original registration");
+        *current = provider.to_string();
+        self.0.provider_binds.fetch_add(1, Ordering::SeqCst);
+    }
+    fn bind_owned_write_provider(
+        &self,
+        handle: u16,
+        provider: zbus::zvariant::OwnedObjectPath,
+        original: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        assert_eq!(self.0.operations.load(Ordering::SeqCst), 6);
         assert_eq!(handle, 17);
         assert_eq!(provider.as_str(), "/org/sparklink/sdk/ssap_read_provider");
         let mut current = self.0.provider.lock().unwrap();
@@ -516,6 +536,21 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         "actual SDK consumer compile: {}",
         String::from_utf8_lossy(&compiled.stderr)
     );
+    let write_probe = directory.join("sdk-write-provider");
+    let compiled = Command::new(&compiler)
+        .args(["-std=c11", "-Wall", "-Wextra", "-Werror"])
+        .arg(root.join("tools/testing/application_client/write_provider.c"))
+        .arg("-I")
+        .arg(root.join("crates/libsparklink/include"))
+        .arg(&library)
+        .arg("-o")
+        .arg(&write_probe)
+        .output()?;
+    anyhow::ensure!(
+        compiled.status.success(),
+        "WRITE SDK C consumer compile: {}",
+        String::from_utf8_lossy(&compiled.stderr)
+    );
     // Explicit qualification retention keeps the actual executable and outputs;
     // recompiling a consumer later cannot reconstruct its execution identity.
     let identities = Command::new("sha256sum")
@@ -523,6 +558,12 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         .arg(&runtime_library)
         .arg(&c)
         .arg(&sdk_probe)
+        .arg(&write_probe)
+        .arg(root.join("tools/testing/application_client/write_provider.c"))
+        .arg(root.join("tools/testing/application_client/write_provider.py"))
+        .arg(root.join("crates/libsparklink/tests/application_ffi/write_provider.rs"))
+        .arg(root.join("crates/libsparklink/src/ffi_service_write_provider.rs"))
+        .arg(root.join("crates/libsparklink/src/ssap/provider/request.rs"))
         .arg(root.join("crates/libsparklink/include/sparklink.h"))
         .arg(root.join("crates/libsparklink/tests/fixtures/application_client.c"))
         .arg(root.join("crates/libsparklink/tests/fixtures/application_client.py"))
@@ -1391,6 +1432,16 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     read_provider::exercise(
         &root,
         &sdk_probe,
+        &runtime_library,
+        &directory,
+        &bus.address,
+        &server,
+        &owned,
+    )
+    .await?;
+    write_provider::exercise(
+        &root,
+        &write_probe,
         &runtime_library,
         &directory,
         &bus.address,

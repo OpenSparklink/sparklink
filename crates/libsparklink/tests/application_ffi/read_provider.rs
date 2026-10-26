@@ -5,7 +5,7 @@ use super::*;
 use slk_channel::deadline::Deadline;
 use std::time::Duration;
 
-fn line(reader: &mut impl BufRead, transcript: &mut String) -> anyhow::Result<String> {
+pub(super) fn line(reader: &mut impl BufRead, transcript: &mut String) -> anyhow::Result<String> {
     let mut text = String::new();
     anyhow::ensure!(
         reader.read_line(&mut text)? != 0,

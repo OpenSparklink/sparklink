@@ -247,17 +247,30 @@ class LocalService:
         Authorization remains separate and uses the original callback deadline.
         """
         from .service_provider import ReadProvider, _configure as configure_provider
+        return self._bind_provider(handle, deadline_ns, ReadProvider, configure_provider,
+                                   'slk_local_service_bind_read_provider')
+
+    def bind_write_provider(self, handle, *, deadline_ns):
+        """Bind an original write-only type0 property once. No stored fallback,
+        rebind or automatic retry after uncertain commit. Apply the application
+        effect before replying; callback expiry cannot reverse that effect.
+        """
+        from .service_provider import WriteProvider, _configure_write
+        return self._bind_provider(handle, deadline_ns, WriteProvider, _configure_write,
+                                   'slk_local_service_bind_write_provider')
+
+    def _bind_provider(self, handle, deadline_ns, provider, configure, method):
         if type(handle) is not int or not 1 <= handle <= 65535:
             raise ValueError('nonzero property handle required')
         deadline_ns = _deadline(deadline_ns)
         self._live()
         with self._lock:
             self._live()
-            configure_provider(self._lib)
+            configure(self._lib)
             output = ctypes.c_void_p()
-            _result(self._lib.slk_local_service_bind_read_provider(
+            _result(getattr(self._lib, method)(
                 self._handle, handle, deadline_ns, ctypes.byref(output)))
-            return ReadProvider._from_view(self._lib, output, self.receipt.controller, handle)
+            return provider._from_view(self._lib, output, self.receipt.controller, handle)
 
     def set_description(self, handle, description, *, deadline_ns):
         """Set a public read-only description,1..244 UTF-8 bytes,as this owner.

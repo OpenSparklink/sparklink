@@ -5171,11 +5171,12 @@
     "state": "BOUNDED_MAINTENANCE_COMPLETE_U1_U21_CLOSED",
     "execution_dependency": "Bounded maintenance complete; U1 independently closed. Resume existing WRITE Down/restart, data/security/SSAP and applicable preservation; retain all original failures. No full-control-plane prerequisite.",
     "followup_readback": "project/issue-maintenance-20261026.json#/followup_readback",
-    "latest_readback_at": "2026-10-27T01:38:48.682701+00:00",
+    "latest_readback_at": "2026-10-27T03:35:39.829684+00:00",
     "latest_actions": {
       "reviewed": 35,
       "updated": [
-        "U#8"
+        "U#22",
+        "U#3"
       ],
       "newly_closed": [],
       "new_children": [],
@@ -5183,7 +5184,7 @@
         "U#1",
         "U#21"
       ],
-      "note": "U8 stale status table replaced after readback; prior closures remain in maintenance history. No feature or qualification change."
+      "note": "All states and native child mappings verified. Consolidated current source/offline scope; removed stale U1 pending conclusion from plan. No qualification change."
     },
     "source_followup": {
       "issue": "sparklink#1",

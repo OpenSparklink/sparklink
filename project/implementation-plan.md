@@ -19,7 +19,8 @@ slkd，不能声称进程故障只影响一只。原期限、完整捕获和历�
 ## 有界 issue 清理结果与主线恢复
 
 已复核35项：2项按自身条件关闭（U#1、U#21），18项有限收尾、3个已拆分父项、12项长期跟踪。
-本轮关闭U#1并更新K#24；既有7个子项复核保留，没有重复创建。
+前轮按原条件关闭U#1并更新K#24；本次读回35项及原生父子关系，收敛U#22正文并同步U#3。
+既有7个子项复核保留，本次没有新增关闭或重复创建。
 [逐项处置与历史读回](issue-maintenance-20261026.json)保留原范围、快照和失败。
 
 U#1原六条事件循环条件已逐项核对，关闭只结算该范围。Native receiver、retry取消、
@@ -70,7 +71,7 @@ S0–S6/19WP/10FV/12DG、VM-only和UserHost低优先级规划不变。
 | 已有子项 | 当前处置 | 独立退出范围 |
 | --- | --- | --- |
 | [U#21](https://github.com/OpenSparklink/sparklink/issues/21) | 可关闭，已独立关闭；本次复核保留 | 原六项 READ SDK Provider 生命周期；后续代码不继承旧资格 |
-| [U#22](https://github.com/OpenSparklink/sparklink/issues/22) | 有限分批收尾，开放 | 唯一 Engine 剩余操作/长值/更新；WRITE runner/双端判定已接通；完整生命周期及其余原操作门禁继续开放，准确产物资格按授权记录核对 |
+| [U#22](https://github.com/OpenSparklink/sparklink/issues/22) | 有限分批收尾，开放 | 唯一 Engine 剩余操作/长值/更新；Down/晚答门禁及 SDK owner 接任限定离线检查已接通；真实 daemon 接任及完整原操作门禁仍开放，准确资格按授权本地记录核对 |
 | [U#23](https://github.com/OpenSparklink/sparklink/issues/23) | 长期跟踪，开放 | Battery/DeviceInfo/HID 的真实调用、启用/卸载及隔离 |
 | [K#21](https://github.com/OpenSparklink/linux/issues/21) | 有限分批收尾，开放 | credit/Ticket/撤权/断链/原期限/复用组合及硬件假设 |
 | [K#22](https://github.com/OpenSparklink/linux/issues/22) | 有限分批收尾，开放 | 动态通道背压、公平性、多设备业务及关闭隔离 |
@@ -82,14 +83,14 @@ S0–S6/19WP/10FV/12DG、VM-only和UserHost低优先级规划不变。
 K#22（通道背压/公平/多设备压力）；K#19 → K#23（资格判定闭包）、K#24（fuzz/调试 VM）。
 每项接口、依赖、退出条件和剩余门禁已写入对应 issue；原范围仍由父项映射，不另建总跟踪。
 
-U#1 的静默测试已改用现行 ConnectDeviceTyped，保留旧入口 UnknownMethod 负向；
-早期 26 项检查保留原身份。本轮 Native retry 锁等待取消已修复，28 项 event-loop
-及严格 slkd clippy 通过；实际 Native 订阅与准确新产物 VM 回归仍待验。
+U#1 已按原六条条件关闭；同一 Native receiver 的 suite v2、原期限、取消及关闭依据
+见该 issue 与维护记录。旧入口 UnknownMethod、早期 fixture 和完整业务保持失败均保留
+原身份；后续产物仍按改动范围回归，不能把旧“Native 订阅待验”继续作为本项关闭缺口。
 U#2 保留过滤前丢失报告缺口；U#10 保留用户追加的第八项自然恢复，不能只按七项早期范围关闭。
 旧正文完整留于授权本地快照，评论、原提交、失败与反例保留；公共表不披露实机详情。
 本批无生产协议变化、无新实机/形式化资格，未修改既有资格记录或把旧 PASS 转授新 HEAD。
 
-U#21 收尾后继续 U#22 的真实服务行为及既有数据／安全主线；完整 S0–S6、19WP、
+U#21 已收尾；继续 U#22 的真实服务行为及既有数据／安全主线；完整 S0–S6、19WP、
 10FV、12DG、VM-only、UserHost P4 及原范围不变；自然根因、非人工恢复继续开放。
 
 ### 历史批次 R156：Owned type0 动态只读 Provider

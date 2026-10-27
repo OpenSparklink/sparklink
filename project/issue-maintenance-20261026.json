@@ -286,7 +286,7 @@
       "action": "body_replaced_and_scope_split",
       "state": "open",
       "closure_basis": "U#21 SDK READ Provider 生命周期、U#22 剩余 SSAP 操作/长值/更新事务、U#23 真实 Profile；父项原完整验收保留。",
-      "body_sha256": "35d2910873b3724ace723424fda7af263a90103e4e9e47a857407f20a77ebb4b",
+      "body_sha256": "52568a9f439d2621f9179662502439fe59e409acccbd8d9f2406c774c539ce48",
       "children": [
         21,
         22,
@@ -387,7 +387,7 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "ce4c83aec7a2e892772974d1d1d7fc878f777043ce3f5704cb590313da394498",
+      "body_sha256": "ac5aed261b97ec59b9dd1f925c09445d62e8932ba29093223fa904e7e2862af7",
       "classification": "有限收尾",
       "closure_basis": "Existing dynamic WRITE command Provider v3 source/offline gate added; original six SSAP conditions OPEN. Exact actual qualification in authorized local index."
     },
@@ -6945,6 +6945,29 @@
         }
       ],
       "scope": "Method CLI source/offline only; original conditions and history retained; no closure."
+    },
+    {
+      "observed_at": "2026-10-27T18:21:05.131845+00:00",
+      "sources": {
+        "public": "42c944b0d93a6a9214f8208d5080efb7180080d7"
+      },
+      "updates": [
+        {
+          "repository": "sparklink",
+          "number": 3,
+          "state": "open",
+          "body_sha256": "52568a9f439d2621f9179662502439fe59e409acccbd8d9f2406c774c539ce48",
+          "source_offline_only": true
+        },
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "state": "open",
+          "body_sha256": "ac5aed261b97ec59b9dd1f925c09445d62e8932ba29093223fa904e7e2862af7",
+          "source_offline_only": true
+        }
+      ],
+      "scope": "Actual method VM request tools source/offline only; original scope and failures retained; no closure."
     }
   ],
   "current_disposition": {

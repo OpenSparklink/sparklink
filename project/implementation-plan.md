@@ -1,28 +1,29 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前批次：CLI 方法服务端与 VM 场景接线
+## 当前批次：方法 VM 请求工具与双端场景接线
 
-WP08/U#22公开源码89d74d5接通ssap-serve-method。复用现有SDK Dispatcher及
-slctl输入/审批/停止撤回循环，方法权限与属性权限分开；应用明确提供独立结果，
-不自动echo参数。参数2043、结果最多2045且受请求预算限制；command只能空结果，
-READ原2042字节上限不变。C/Python方法收件箱的上一批源码和离线结果独立保留。
+WP08/U#22公开源码42c944b接通现有C/Python VM请求工具的ssap-call-method，
+调用既有SDK，复用原监督器、普通用户凭据、五秒绝对期限和启动屏障。
+参数与结果分别记录并完整核对；方法参数2043/结果2045字节，属性2042上限不变。
+CLI及Rust/C/Python服务端沿用此前源码，不新增Engine或收发循环。
 
-workspace597项通过（2项VM专用ignored不计通过），严格Clippy/HTML和man渲染通过。
-实际slctl进程在私有D-Bus上检查明确审批、完整参数、独立结果、超限拒绝、command、
-原期限晚答和待决quit；controller/登记是fixture，不授真实部署权限或硬件资格。
-初次语法和u16/u8回调编译失败保留；状态采用检查转换，未放宽断言或原期限。
+实际C/Python进程在原私有总线fixture上完成独立结果、空值、边界、错误码、
+超限输入和未释放屏障检查；既有application_ffi套件、58项相关Python检查、
+严格Clippy及HTML通过。首次屏障负对照因Child.wait关闭stdin提前EOF而失败，
+已明确保留管道写端重验原期限，未放宽时间断言；原失败与INCOMPLETE材料保留。
+这些是工具/SDK与有限fixture范围，不授真实部署权限、VM、空口或形式化资格。
 
-下一批在现有VM runner加入方法场景和双端证据闭包，生成随机参数并由对端应用
-实际校验/给出独立结果，再以准确新artifact验证真实方法交付、角色交换及原路径保持。
-不以fixture、CLI日志或源码接通代替对端收到。本批没有硬件运行或新增形式化证明。
-完整S0–S6/19WP/10FV/12DG、VM-only、低优先级UserHost和自然恢复原条件保持。
+下一步沿既有VM runner绑定随机参数和独立结果、实际Provider上下文/参数校验，
+并完成双端USB请求/响应闭包；随后以准确新artifact取得真实方法交付、角色交换
+及原路径保持门禁。方法命令、完整操作/长值/更新和生命周期原条件继续保留。
+完整S0–S6/19WP/10FV/12DG、VM-only、低优先级UserHost和自然恢复原范围不变。
 
 ## 有界 issue 清理结果与主线恢复
 
 已复核35项：2项按自身条件关闭（U#1、U#21），18项有限收尾、3个已拆分父项、12项长期跟踪。
 本批重新读回35项；U#1/U#21既有关闭维持，七个既有子项不重复创建。
 U#3/U#22正文已收敛为89d74d5所覆盖的方法入口；C/Python及CLI不再误列为缺失实现。
-K#17/#19现有范围及七个子项关系已复核，原验收条款不变。Rust/C/Python/CLI方法入口已接通；VM场景与真实方法交付仍缺，源码不转授实机资格。
+K#17/#19现有范围及七个子项关系已复核，原验收条款不变。Rust/C/Python/CLI方法入口及VM请求工具已接通；VM场景与双端真实交付仍缺，源码不转授实机资格。
 本次没有新增关闭或拆分。历史CI、失败及反例保留原身份，不冒充最新HEAD的检查。
 [逐项处置与历史读回](issue-maintenance-20261026.json)保留原范围、快照和失败。
 
@@ -497,103 +498,51 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-METHOD-CLI-v1",
-  "state": "METHOD_CLI_OFFLINE_PASS_VM_AND_HARDWARE_PENDING",
+  "id": "WP08-METHOD-VM-REQUESTER-v1",
+  "state": "METHOD_VM_REQUESTER_OFFLINE_PASS_SCENARIO_AND_HARDWARE_PENDING",
   "implementation_sources": {
-    "public": "89d74d58d7c5ebd2d6df7a10afd937e671cc08c8"
+    "public": "42c944b0d93a6a9214f8208d5080efb7180080d7"
   },
-  "production_behavior": "ssap-serve-method shares existing SDK Dispatcher, CLI input/authorization and stop-withdrawal loop. Distinct method permissions and explicit independent result; 2043-byte arguments/max2045-byte results, command zero result. Original READ limit unchanged; no extra Engine.",
+  "production_behavior": "Existing C/Python VM request tools call production SDK method request through the same one-shot supervisor. Independent arguments/results and exact errno; original five-second call/start barrier. Method arguments2043/results2045, property limit2042 unchanged. No Engine or new receive loop.",
   "offline_checks": {
-    "workspace_passed": 597,
-    "vm_only_ignored": 2,
-    "actual_method_cli_process": "PASS",
-    "strict_clippy": "PASS",
+    "actual_c_python_vm_consumers": "PASS",
+    "existing_application_ffi_suite": "PASS",
+    "related_python_checks_passed": 58,
+    "strict_libsparklink_clippy": "PASS",
     "strict_html": "PASS",
-    "man_render": "PASS"
+    "original_5s_unreleased_barrier": "PASS_BOTH_LANGUAGES"
   },
-  "offline_scope": "Actual slctl binary, shared SDK and private D-Bus with controller/registration metadata fixtures; independent literal method callback signature, explicit policy, full arguments, independent result, command zero result, original expiry and pending quit. No VM/hardware run, real system-bus policy or new formal proof.",
-  "retained_failure": "Initial rustfmt rejected an unparenthesized match expression in let-else; corrected syntax. Initial check rejected u16 dispatcher status where method D-Bus requires u8; corrected checked conversion, rejects out-of-range rather than truncating. Raw compiler log retained in check-first.log. No protocol or deadline assertion weakened.",
+  "offline_scope": "Actual C/Python VM requester executables and production SDK against existing private D-Bus finite metadata/result fixture; exact independent/empty/bounded results, errors, input rejection, original start barrier. 20 additional actual method RPCs, no submissions after invalid input or unreleased barrier. 58 supervisor/verifier checks. Not Engine/kernel concurrency, VM, radio, deployed bus policy or new formal proof.",
+  "retained_failure": "First actual FFI run failed the unreleased-barrier elapsed assertion: Child.wait closed stdin, causing EOF. Fixed by moving write-end ownership out of Child until wait ends; original timing assertion retained. Raw first failure and INCOMPLETE fixture directory retained. Initial Rust test harness ELF was not separately archived before rebuild; no claim of replayable initial harness binary. Current tested ELF and SDK/tool artifacts are archived.",
   "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "No hardware run or new qualification in this batch. Prior artifact attempts and failures remain in the authorized local index; no historic PASS transfers.",
+  "hardware_status": "No VM/hardware run or new qualification in this batch. Prior artifact failures retained in authorized local index; old PASS never transfers.",
   "issue_sync": {
-    "observed_at": "2026-10-27T18:00:41.897029+00:00",
+    "observed_at": "2026-10-27T18:21:05.131845+00:00",
     "updates": [
       {
         "repository": "sparklink",
         "number": 3,
         "state": "open",
-        "body_sha256": "638725d20996062ec9cd030069be82c2e0f8b8bba62343cfe870eed59766f02c",
+        "body_sha256": "52568a9f439d2621f9179662502439fe59e409acccbd8d9f2406c774c539ce48",
         "source_offline_only": true
       },
       {
         "repository": "sparklink",
         "number": 22,
         "state": "open",
-        "body_sha256": "2c3064abaca2a08ae84b75a53210a95b11f1f273614bd732aed25a9fba611490",
-        "source_offline_only": true
-      },
-      {
-        "repository": "linux",
-        "number": 19,
-        "state": "open",
-        "body_sha256": "092a48d01cba3383a24fafa091bd866e93bf73ae4c158358453a4eafb22d8c0c",
+        "body_sha256": "ac5aed261b97ec59b9dd1f925c09445d62e8932ba29093223fa904e7e2862af7",
         "source_offline_only": true
       }
     ],
-    "scope": "Public source/offline only; original acceptance unchanged; no issue closed."
+    "scope": "Source/offline only; original conditions unchanged, both issues OPEN."
   },
   "exit_conditions": [
-    "Actual CLI entry uses same SDK registration/authorization/Provider and input loop",
-    "Method and READ budgets remain distinct; explicit independent result, command zero result",
-    "Actual CLI private-bus tests cover policy, context, limits, original expiry and pending quit; old callers stay passing",
-    "VM method scenario, dual-end closure and true delivery remain required"
+    "Actual C/Python VM request tools consume existing SDK without echo/fallback",
+    "Separate argument/result budgets and exact failure receipts; original start barrier/deadline",
+    "External consumer and shared supervisor negative checks; old property/Provider paths retained",
+    "Next VM method scenario and paired USB closure still required before real delivery qualification"
   ],
-  "next": [
-    "VM method scenario through current runner with random arguments and independent application result",
-    "Dual-end evidence closure and accurate artifact original-path preservation and true method delivery",
-    "Original SSAP/data/security/recovery and full goal scope remain open"
-  ],
-  "ci_observation": {
-    "source": "89d74d58d7c5ebd2d6df7a10afd937e671cc08c8",
-    "runs": [
-      {
-        "id": 40555799029,
-        "name": "Offline tools and application SDK",
-        "status": "in_progress",
-        "conclusion": null,
-        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/40555799029"
-      },
-      {
-        "id": 40555799444,
-        "name": "Production codec bounded fuzz",
-        "status": "completed",
-        "conclusion": "success",
-        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/40555799444"
-      },
-      {
-        "id": 40555798967,
-        "name": "Qualification integrity",
-        "status": "completed",
-        "conclusion": "success",
-        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/40555798967"
-      },
-      {
-        "id": 40555798969,
-        "name": "Documentation",
-        "status": "completed",
-        "conclusion": "success",
-        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/40555798969"
-      },
-      {
-        "id": 40555788051,
-        "name": "Documentation",
-        "status": "in_progress",
-        "conclusion": null,
-        "html_url": "https://github.com/OpenSparklink/sparklink/actions/runs/40555788051"
-      }
-    ],
-    "scope": "Point-in-time named jobs only; SDK workflow still running, not whole CI or device qualification."
-  }
+  "next": "Use the existing publisher/session runner with random arguments and an independently prepared result, verify actual Provider callback identity and parameters, correlate both USB legs, then accurate VM artifact real method delivery and preserved paths. Request/command distinctions and remaining U22 scope retained."
 }
 ```
 

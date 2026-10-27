@@ -1,12 +1,19 @@
 //! Operation-specific checks only. Queue, references, cancellation and reply
 //! ownership are implemented once by frontend; this is not a protocol Engine.
 use super::{admit, await_reply};
-use crate::ssap::authorization::{self, AuthorizationContext};
+use crate::ssap::authorization::{self, AuthorizationContext, MethodAuthorizationContext};
+use crate::ssap::local::EntryRequirements;
 use slk_contract::ssap::{
-    MAX_PROVIDER_VALUE_BYTES, PROVIDER_UNAVAILABLE, ReadProviderReply, ReadProviderRequest,
+    MAX_METHOD_ARGUMENT_BYTES, MAX_METHOD_RESULT_BYTES, MAX_PROVIDER_VALUE_BYTES, METHOD_TARGET,
+    MethodProviderRequest, PROVIDER_UNAVAILABLE, ReadProviderReply, ReadProviderRequest,
     SsapAuthorizationIdentity, WriteProviderRequest,
 };
 use slk_protocol::SsapOperations;
+
+pub(super) enum ProviderContext<'a> {
+    Property(AuthorizationContext<'a>),
+    Method(MethodAuthorizationContext<'a>),
+}
 use std::{io, time::Instant};
 use tokio::sync::{oneshot, watch};
 
@@ -14,50 +21,59 @@ use tokio::sync::{oneshot, watch};
 pub(super) enum ProviderKind {
     Read,
     Write,
+    Method,
 }
 impl ProviderKind {
-    pub(super) fn supports(self, operations: SsapOperations) -> bool {
-        match self {
-            Self::Read => operations == SsapOperations::READ,
-            Self::Write => {
+    pub(super) fn supports(self, requirements: EntryRequirements) -> bool {
+        match (self, requirements) {
+            (Self::Read, EntryRequirements::Property(operations, _)) => {
+                operations == SsapOperations::READ
+            }
+            (Self::Write, EntryRequirements::Property(operations, _)) => {
                 operations.bits() != 0
                     && (SsapOperations::WRITE_WITH_RSP | SsapOperations::WRITE_NO_RSP)
                         .contains(operations)
             }
+            (Self::Method, EntryRequirements::Method(_)) => true,
+            _ => false,
         }
     }
 }
 pub(super) enum RequestData {
     Read(ReadProviderRequest),
     Write(WriteProviderRequest),
+    Method(MethodProviderRequest),
 }
 impl RequestData {
     pub(super) fn kind(&self) -> ProviderKind {
         match self {
             Self::Read(_) => ProviderKind::Read,
             Self::Write(_) => ProviderKind::Write,
+            Self::Method(_) => ProviderKind::Method,
         }
     }
     pub(super) fn identity(&self) -> SsapAuthorizationIdentity {
         match self {
             Self::Read(r) => r.identity,
             Self::Write(r) => r.identity,
+            Self::Method(r) => r.identity,
         }
     }
     pub(super) fn property(&self) -> u16 {
         match self {
             Self::Read(r) => r.property,
             Self::Write(r) => r.property,
+            Self::Method(r) => r.method,
         }
     }
     pub(super) fn admit(
         &self,
-        context: &AuthorizationContext<'_>,
+        context: &ProviderContext<'_>,
         sender: Option<&str>,
     ) -> zbus::fdo::Result<Option<Instant>> {
-        match self {
-            Self::Read(r) => admit(context, sender, r),
-            Self::Write(r) => {
+        match (self, context) {
+            (Self::Read(r), ProviderContext::Property(context)) => admit(context, sender, r),
+            (Self::Write(r), ProviderContext::Property(context)) => {
                 // A foreign caller is rejected even for a malformed request.
                 authorization::check_sender(context.daemon_owner, sender)?;
                 let operation = match r.operation {
@@ -65,8 +81,10 @@ impl RequestData {
                     13 => SsapOperations::WRITE_WITH_RSP,
                     _ => return Ok(None),
                 };
-                if !self.kind().supports(context.operations)
-                    || !context.operations.contains(operation)
+                if !self.kind().supports(EntryRequirements::Property(
+                    context.operations,
+                    context.access,
+                )) || !context.operations.contains(operation)
                     || r.property == 0
                     || r.identity.1 == 0
                     || r.identity.3 > 0x0fff
@@ -93,6 +111,30 @@ impl RequestData {
                     ),
                 )
             }
+            (Self::Method(r), ProviderContext::Method(context)) => {
+                authorization::check_sender(context.daemon_owner, sender)?;
+                if !matches!(r.operation, 18 | 19)
+                    || r.arguments.len() > MAX_METHOD_ARGUMENT_BYTES
+                    || usize::from(r.maximum_result_bytes) > MAX_METHOD_RESULT_BYTES
+                    || r.operation == 18 && r.maximum_result_bytes != 0
+                {
+                    return Ok(None);
+                }
+                authorization::admit_method(
+                    context,
+                    sender,
+                    &(
+                        r.request_id,
+                        r.identity,
+                        r.method,
+                        true,
+                        r.deadline_ns,
+                        r.arguments.clone(),
+                        METHOD_TARGET,
+                    ),
+                )
+            }
+            _ => Ok(None),
         }
     }
     pub(super) fn validate_reply(&self, status: u16, value: &[u8]) -> io::Result<()> {
@@ -102,6 +144,7 @@ impl RequestData {
         }
         let maximum = match self {
             Self::Read(r) => usize::from(r.maximum_bytes),
+            Self::Method(r) => usize::from(r.maximum_result_bytes),
             Self::Write(r) => {
                 if r.verify {
                     r.value.len()
@@ -130,7 +173,7 @@ impl RequestData {
     ) -> ReadProviderReply {
         match self {
             Self::Read(r) => await_reply(result, lost, original, r.maximum_bytes).await,
-            Self::Write(_) => authorization::await_reply(result, lost, original)
+            Self::Write(_) | Self::Method(_) => authorization::await_reply(result, lost, original)
                 .await
                 .filter(|(status, value)| self.validate_reply(*status, value).is_ok())
                 .unwrap_or_else(|| (PROVIDER_UNAVAILABLE, Vec::new())),

@@ -21,6 +21,7 @@ struct State {
     stamps: Mutex<Vec<slk_contract::Deadline>>,
     read_only_property: AtomicBool,
     provider_mode: AtomicU8,
+    method_entry: AtomicBool,
     provider_bindings: Mutex<Vec<(u16, String, slk_contract::Deadline)>>,
 }
 struct Manager;
@@ -52,7 +53,11 @@ impl Services {
     ) -> zbus::fdo::Result<(u16, u16, Vec<u16>)> {
         slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
             .unwrap();
-        assert!(methods.is_empty());
+        if self.0.method_entry.load(Ordering::SeqCst) {
+            assert_eq!(methods, [(vec![3, 0], 4)]);
+        } else {
+            assert!(methods.is_empty());
+        }
         assert_eq!(uuid, [1, 0]);
         let (operations, access) = if self.0.read_only_property.load(Ordering::SeqCst) {
             (1, 32)
@@ -72,7 +77,11 @@ impl Services {
             }
             _ => {}
         }
-        Ok((16, 17, vec![17]))
+        Ok(if self.0.method_entry.load(Ordering::SeqCst) {
+            (16, 18, vec![17, 18])
+        } else {
+            (16, 17, vec![17])
+        })
     }
     fn read_owned_local_value(
         &self,
@@ -108,6 +117,24 @@ impl Services {
             _ => {}
         }
         Ok(())
+    }
+    fn bind_owned_method_provider(
+        &self,
+        handle: u16,
+        provider: OwnedObjectPath,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) {
+        assert!(self.0.method_entry.load(Ordering::SeqCst));
+        assert_eq!(handle, 18);
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .unwrap();
+        self.0
+            .provider_bindings
+            .lock()
+            .unwrap()
+            .push((handle, provider.to_string(), deadline));
     }
     fn unregister_owned_local_service(
         &self,
@@ -551,3 +578,6 @@ async fn read_provider_binding_wait_is_bounded_without_retry_or_error_fallback()
     }
     Ok(())
 }
+
+#[path = "owned_client/method_provider.rs"]
+mod method_provider;

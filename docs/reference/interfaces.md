@@ -295,7 +295,7 @@ index/generation和物理lifetime/handle/role/地址类型/地址。`connection.
 | `read_description(handle, minimum, Deadline)` | `ReadSsapDescription` | 已发现的公开只读 type1；1..244 UTF-8 字节、无 NUL，非法成功响应 EPROTO，不回退属性值 |
 | `write(handle, value, minimum, Deadline)` | `WriteSsapValue`，协议响应字节 | daemon当前协商的有界写；不截断、不echo、不另做分片 |
 | `write_without_response(handle, value, minimum, Deadline)` | `WriteSsapCommand`，空返回 | 单属性WRITE_NO_RSP；全部片软件准入不等于远端交付，失败可有部分副作用 |
-| `call_method(handle, arguments, minimum, Deadline)` | `CallSsapMethod`，`ay` | 独立对端结果，非参数 echo；请求端接线，当前 daemon 未支持本地 method Provider |
+| `call_method(handle, arguments, minimum, Deadline)` | `CallSsapMethod`，`ay` | 独立对端结果，非参数 echo；请求端与daemon本地方法Provider已接通；语言绑定服务端和实机资格按下文范围 |
 | `call_method_without_response(handle, arguments, minimum, Deadline)` | `CallSsapMethodCommand`，空返回 | 仅全部片软件准入，无协议响应或对端处理保证 |
 | `read_by_uuid(start, end, data_type, uuid, minimum)` | `ReadSsapByUuid` | 返回每项结果及原trace；不是本地构造成功 |
 | `receive_update(handles, modes, wait_ms)` / `receive_until(..., Deadline)` | `ReceiveSsapUpdate` | 单次CPCD启用/接收/验证停用；需真实认证及拥有者授权；不覆盖已有配置 |
@@ -616,7 +616,7 @@ WRITE_NO_RSP、descriptor、notify/indicate等声明明确NotSupported；共享�
 服务成员位分别查询属性和方法，共用原5秒期限、96页及80条总预算；方法查询失败
 或跨类别重复handle使整次发现失败，不发布部分结果为完整缓存。
 `slctl ssap-discover CONNECTION method UUID_HEX` 使用同一SDK/daemon发现入口。
-本地method登记与D-Bus Provider已接入同一数据库/Engine；SDK方法收件箱仍待接通。
+本地method登记与D-Bus Provider已接入同一数据库/Engine；Rust共享Dispatcher方法收件箱已接通，C/Python与CLI服务端仍待迁移。
 发现方法不表示调用成功、授权或安全资格。完整服务数据库快照、事件/引用发现及
 ServiceChanged一致性尚无承诺。C/Python现有method调用入口保留，本批未新增其发现封装。
 普通服务从handle16分配，保留旧流量证据但不转授旧范围为标准合格。
@@ -1096,7 +1096,7 @@ WRITE Provider 新入口仍为未发布、限量支持的源码契约；不能�
 策略批准不产生应用成功，超时/撤权不能回滚已发生的应用副作用。完整权限、预算、
 期限与拒绝条件见[SSAP WRITE Provider 契约](ssap-permissions.md)。Rust/C/Python WRITE
 收件箱共用原前端及容量/释放；C 的 bind/fd/next/info/value/reply/free 和 Python 对应视图
-见上述契约。method服务端D-Bus接线见下表，SDK方法收件箱仍待接通；长值按已协商
+见上述契约。method服务端D-Bus接线见下表，Rust共享Dispatcher方法收件箱已接通，C/Python与CLI服务端仍待迁移；长值按已协商
 分片及各自准确资格开放，新artifact的VM实机验收仍需单独取得。
 
 | 方法服务端接口 | 签名 | 范围 |
@@ -1104,7 +1104,7 @@ WRITE Provider 新入口仍为未发布、限量支持的源码契约；不能�
 | `ServiceManager.BindOwnedMethodProvider` | `(handle:q, provider:o, deadline:(ttttt))->()` | 原登记owner、方法条目、一次绑定，无存储值回退 |
 | `org.sparklink.SsapMethodProvider.CallMethod` | `(request:(t(qttqtuyyy)qtyayq))->(yay)` | 原id/identity/handle/期限、opcode、参数、结果上限；独立结果，command无线上响应 |
 
-完整登记、权限、预算及未接通SDK范围见[方法服务端契约](ssap-permissions.md#owned-method-服务端)。
+完整登记、权限、预算及SDK支持范围见[方法服务端契约](ssap-permissions.md#owned-method-服务端)。
 
 ## 安装布局与卸载边界
 

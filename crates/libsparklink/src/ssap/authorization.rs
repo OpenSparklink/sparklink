@@ -73,17 +73,69 @@ pub fn admit(
         }
         _ => false,
     };
-    if context.owner_lost
+    admit_identity(
+        context.controller,
+        context.owner_lost,
+        context.property,
+        prompt,
+        permitted,
+        2042,
+    )
+}
+
+/// Original method observation, distinct from property operation indicators.
+/// Approval here is local policy only; the daemon retains final authority.
+/// cbindgen:ignore
+pub struct MethodAuthorizationContext<'a> {
+    pub daemon_owner: &'a str,
+    pub owner_lost: bool,
+    pub controller: ControllerId,
+    pub method: Option<u16>,
+    pub access: slk_protocol::ssap::access::MethodAccess,
+}
+
+pub fn admit_method(
+    context: &MethodAuthorizationContext<'_>,
+    sender: Option<&str>,
+    prompt: &Prompt,
+) -> zbus::fdo::Result<Option<Instant>> {
+    check_sender(context.daemon_owner, sender)?;
+    let permitted = prompt.6 == slk_contract::ssap::METHOD_TARGET
+        && prompt.3
+        && prompt.2 != 0
+        && prompt.1.1 != 0
+        && prompt.1.3 <= 0x0fff
+        && context.access.check(prompt.1.5, true).is_ok();
+    admit_identity(
+        context.controller,
+        context.owner_lost,
+        context.method,
+        prompt,
+        permitted,
+        slk_contract::ssap::MAX_METHOD_ARGUMENT_BYTES,
+    )
+}
+
+fn admit_identity(
+    controller: ControllerId,
+    owner_lost: bool,
+    target: Option<u16>,
+    prompt: &Prompt,
+    permitted: bool,
+    maximum: usize,
+) -> zbus::fdo::Result<Option<Instant>> {
+    let id = prompt.1;
+    if owner_lost
         || prompt.0 == 0
-        || context.property != Some(prompt.2)
+        || target != Some(prompt.2)
         || !permitted
-        || id.0 != context.controller.index
-        || id.1 != context.controller.generation
+        || id.0 != controller.index
+        || id.1 != controller.generation
         || id.2 == 0
         || id.4 == 0
         || id.5 > 2
         || (id.6, id.7, id.8) != (10, 10, 0)
-        || prompt.5.len() > 2042
+        || prompt.5.len() > maximum
         || !prompt.3 && !prompt.5.is_empty()
     {
         return Ok(None);

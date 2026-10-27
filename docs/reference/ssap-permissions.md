@@ -468,7 +468,7 @@ SSAP stdin 管道单行上限4160字节，含换行。终端输入须少于4096�
 这一路径复用唯一 Engine、原 Owned 登记和同一连接的有界服务端义务队列。
 它与审批回调分开：审批 `true` 不执行应用写入，也不能生成写成功。
 当前提供 daemon 类型化 D-Bus 入口、Rust 低层绑定和共用 Dispatcher 的 Rust/C/Python
-WRITE 收件箱；method 回调及完整长写事务仍缺失。READ Provider 的既有资格不转授这条新路径。
+WRITE 收件箱；method 的 daemon/Rust 回调已接通，C/Python/CLI服务端及完整长写事务仍缺失。READ Provider 的既有资格不转授这条新路径。
 
 `ServiceManager.BindOwnedWriteProvider(handle:q, provider:o, deadline:(ttttt))->()`
 仅允许原登记的 unique caller，经 `sparklink-services` 权限调用。属性须为 type0
@@ -783,7 +783,25 @@ opcode、arguments及maximum_result_bytes；返回 `(status:y, result:ay)`。
 
 调用与返回均复核原上下文、权限及期限。撤回后旧绑定不能完成新登记；应用已经
 开始的副作用不可因取消回滚，超时结果不确定，调用者不得隐式重试。
-当前接线是 daemon/类型化 D-Bus 服务端；Rust/C/Python共享 Dispatcher 的方法收件箱
-和CLI服务端调用者仍待接通，不能把已有属性 Provider 收件箱描述为方法入口。
+当前接线包含 daemon/类型化 D-Bus 服务端和 Rust 共享 Dispatcher 方法收件箱。
+C/Python方法收件箱和CLI服务端调用者仍待迁移，不从属性Provider接口推导支持。
+
+Rust `LocalServices::register_entries(uuid, properties, methods, authorizer, Deadline)`
+复用原登记和清理流程；`register_service`继续只登记属性。方法使用`MethodAccess`，
+不伪装成属性操作位；同一receipt按属性、方法顺序给出handle。属性读值、替换、说明
+及READ/WRITE绑定入口拒绝方法handle，方法绑定拒绝属性handle。
+
+`Dispatcher::bind_method`返回`MethodInbox`，与READ/WRITE共享16槽、原owner观察、
+登记撤回域和callback/request引用计账。`fd`只提供readiness；`try_next`/`next`取得
+原始`MethodProviderRequest`，`MethodRequest::reply(status, result)`只消费一次本地
+答复权。结果可以不同于参数；超限和非法错误状态拒绝且不截断，仍可在原期限内
+提交合法答复。command18的结果上限为0，本地答复不是线上ACK；daemon不发送
+方法命令响应。关闭、最终引用、撤回、owner丢失及期限沿原共享生命周期处理，
+不撤销已经发生的应用副作用，也不隐式重试。
+
+方法应用策略可使用`MethodAuthorizationContext`与`admit_method`校验原daemon、
+身份、target kind3、权限及原期限；它只验证本地观察，不授安全等级或内核Grant。
+新增接口安装失败只清理此次安装的READ/WRITE接口，保留原已占用接口；取消后
+遗留接口关闭准入并随原总线释放，不制造成功绑定。
 私有总线/生产函数 fixture 不验证 Native锁、USB、固件或真实对端交付；准确新产物的
 双设备方法业务和原路径保持仍需VM-only验收。

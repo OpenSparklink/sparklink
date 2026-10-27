@@ -1,17 +1,18 @@
 //! One application-side value inbox, shared by Rust, CLI and language bindings.
-//! No protocol engine: the original daemon owns each READ/WRITE obligation. Registry
+//! No protocol engine: the original daemon owns each READ/WRITE/method obligation. Registry
 //! locks never span queue locks or await. A delivered slot remains charged until
 //! both the callback guard and the application request have been released.
+use super::request::ProviderContext;
 use super::{ProviderKind, RequestData};
+use crate::ssap::{authorization::MethodAuthorizationContext, local::EntryRequirements};
 use crate::{ApplicationError, Client, Deadline, ssap::authorization::AuthorizationContext};
 use slk_contract::{
     ControllerId,
     ssap::{
-        PROVIDER_UNAVAILABLE, ReadProviderReply, ReadProviderRequest, WriteProviderReply,
-        WriteProviderRequest,
+        MethodProviderReply, MethodProviderRequest, PROVIDER_UNAVAILABLE, ReadProviderReply,
+        ReadProviderRequest, WriteProviderReply, WriteProviderRequest,
     },
 };
-use slk_protocol::{SsapOperations, ssap::access::SsapAccess};
 use std::{
     io,
     os::fd::{AsRawFd, FromRawFd, OwnedFd},
@@ -121,6 +122,25 @@ impl WriteEndpoint {
         ))
     }
 }
+struct MethodEndpoint(Arc<Dispatcher>);
+#[zbus::interface(name = "org.sparklink.SsapMethodProvider")]
+impl MethodEndpoint {
+    async fn call_method(
+        &self,
+        request: MethodProviderRequest,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<MethodProviderReply> {
+        let (status, value) = self
+            .0
+            .dispatch_method(request, header.sender().map(|s| s.as_str()))
+            .await?
+            .into_reply();
+        Ok((
+            u8::try_from(status).unwrap_or(PROVIDER_UNAVAILABLE as u8),
+            value,
+        ))
+    }
+}
 impl Dispatcher {
     /// Prepare a concrete dispatcher for an endpoint exported by the caller.
     /// The CLI uses this adapter surface to log the final local result before
@@ -190,6 +210,31 @@ impl Dispatcher {
                 ));
             }
         }
+        match client
+            .bus()
+            .object_server()
+            .at(PATH, MethodEndpoint(d.clone()))
+            .await
+        {
+            Ok(true) => (),
+            result => {
+                // Only remove interfaces installed by this open attempt.
+                client
+                    .bus()
+                    .object_server()
+                    .remove::<WriteEndpoint, _>(PATH)
+                    .await?;
+                client
+                    .bus()
+                    .object_server()
+                    .remove::<Endpoint, _>(PATH)
+                    .await?;
+                result?;
+                return Err(ApplicationError::Invalid(
+                    "caller SDK method provider path already occupied",
+                ));
+            }
+        }
         install_stop.0 = Weak::new();
         Ok(d)
     }
@@ -250,6 +295,20 @@ impl Dispatcher {
                 .await?,
         })
     }
+    /// Method invocation uses the same16slots and original registration scope.
+    /// Local reply is not wire delivery and does not roll back application effects.
+    pub async fn bind_method(
+        self: &Arc<Self>,
+        registration: &mut crate::ssap::local::ServiceRegistration,
+        method: u16,
+        original: Deadline,
+    ) -> Result<MethodInbox, ApplicationError> {
+        Ok(MethodInbox {
+            core: self
+                .bind_inner(registration, method, original, ProviderKind::Method)
+                .await?,
+        })
+    }
     async fn bind_inner(
         self: &Arc<Self>,
         registration: &mut crate::ssap::local::ServiceRegistration,
@@ -267,12 +326,12 @@ impl Dispatcher {
                 "provider belongs to a different original Client",
             ));
         }
-        let (controller, operations, access) = registration.provider_context(property)?;
-        if !kind.supports(operations) {
+        let (controller, requirements) = registration.provider_context(property)?;
+        if !kind.supports(requirements) {
             return Err(io_error(nix::libc::EOPNOTSUPP).into());
         }
         let scope = registration.provider_scope();
-        let queue = self.reserve(controller, property, operations, access, &scope)?;
+        let queue = self.reserve(controller, property, requirements, &scope)?;
         let inbox = InboxCore { queue };
         scope.attach(property, &inbox.queue)?;
         // Publish only after the original property has been claimed. A refused
@@ -290,6 +349,11 @@ impl Dispatcher {
                     .bind_write_provider(property, self.path.clone(), original)
                     .await?
             }
+            ProviderKind::Method => {
+                registration
+                    .bind_method_provider(property, self.path.clone(), original)
+                    .await?
+            }
         }
         original.remaining()?;
         if !inbox.queue.open() {
@@ -301,8 +365,7 @@ impl Dispatcher {
         &self,
         controller: ControllerId,
         property: u16,
-        operations: SsapOperations,
-        access: SsapAccess,
+        requirements: EntryRequirements,
         scope: &Arc<RegistrationScope>,
     ) -> io::Result<Arc<Queue>> {
         let permit = self
@@ -318,8 +381,7 @@ impl Dispatcher {
         let queue = Arc::new(Queue {
             controller,
             property,
-            operations,
-            access,
+            requirements,
             daemon: self.daemon.clone(),
             lost: self.lost.clone(),
             scope: scope.clone(),
@@ -362,6 +424,15 @@ impl Dispatcher {
         sender: Option<&str>,
     ) -> zbus::fdo::Result<CallbackOutcome> {
         self.dispatch_inner(RequestData::Write(request), sender)
+            .await
+    }
+    /// Method adapter, with no separate execution loop or response authority.
+    pub async fn dispatch_method(
+        self: &Arc<Self>,
+        request: MethodProviderRequest,
+        sender: Option<&str>,
+    ) -> zbus::fdo::Result<CallbackOutcome> {
+        self.dispatch_inner(RequestData::Method(request), sender)
             .await
     }
     async fn dispatch_inner(
@@ -463,8 +534,7 @@ struct State {
 struct Queue {
     controller: ControllerId,
     property: u16,
-    operations: SsapOperations,
-    access: SsapAccess,
+    requirements: EntryRequirements,
     daemon: String,
     lost: watch::Receiver<bool>,
     scope: Arc<RegistrationScope>,
@@ -487,21 +557,36 @@ impl Queue {
                 self.controller.generation,
                 self.property,
             )
-            && r.kind().supports(self.operations)
+            && r.kind().supports(self.requirements)
             && self.open()
     }
-    fn context(&self, s: &State) -> AuthorizationContext<'_> {
-        AuthorizationContext {
-            daemon_owner: &self.daemon,
-            owner_lost: *self.lost.borrow() || self.lost.has_changed().is_err(),
-            controller: self.controller,
-            property: if s.closed || self.scope.closed.load(Ordering::Acquire) {
-                None
-            } else {
-                Some(self.property)
-            },
-            operations: self.operations,
-            access: self.access,
+    fn context(&self, s: &State) -> ProviderContext<'_> {
+        let target = if s.closed || self.scope.closed.load(Ordering::Acquire) {
+            None
+        } else {
+            Some(self.property)
+        };
+        let owner_lost = *self.lost.borrow() || self.lost.has_changed().is_err();
+        match self.requirements {
+            EntryRequirements::Property(operations, access) => {
+                ProviderContext::Property(AuthorizationContext {
+                    daemon_owner: &self.daemon,
+                    owner_lost,
+                    controller: self.controller,
+                    property: target,
+                    operations,
+                    access,
+                })
+            }
+            EntryRequirements::Method(access) => {
+                ProviderContext::Method(MethodAuthorizationContext {
+                    daemon_owner: &self.daemon,
+                    owner_lost,
+                    controller: self.controller,
+                    method: target,
+                    access,
+                })
+            }
         }
     }
     fn notify(&self, s: &mut State, ready: bool) -> io::Result<()> {
@@ -865,5 +950,46 @@ impl WriteRequest {
     /// unconsumed. Original expiry/revocation can still refuse a later answer.
     pub fn reply(&self, status: u16, accepted: &[u8]) -> io::Result<()> {
         self.core.reply(status, accepted)
+    }
+}
+
+/// Method inbox over the existing finite queue, notification and stop domain.
+pub struct MethodInbox {
+    core: InboxCore,
+}
+impl MethodInbox {
+    pub fn close(&self) {
+        self.core.close()
+    }
+    pub fn fd(&self) -> io::Result<OwnedFd> {
+        self.core.fd()
+    }
+    pub fn try_next(&self) -> io::Result<MethodRequest> {
+        self.core.try_next().map(|core| MethodRequest { core })
+    }
+    pub async fn next(&self) -> io::Result<MethodRequest> {
+        self.core.next().await.map(|core| MethodRequest { core })
+    }
+}
+/// Independent application result; command18 accepts only an empty local result.
+/// Local success is not protocol/peer delivery. Drop unanswered means unavailable.
+pub struct MethodRequest {
+    core: RequestCore,
+}
+impl MethodRequest {
+    pub fn request(&self) -> &MethodProviderRequest {
+        match &self.core.data.request {
+            RequestData::Method(r) => r,
+            _ => unreachable!("typed method inbox"),
+        }
+    }
+    pub fn token(&self) -> u64 {
+        self.core.token()
+    }
+    pub fn is_active(&self) -> bool {
+        self.core.is_active()
+    }
+    pub fn reply(&self, status: u16, result: &[u8]) -> io::Result<()> {
+        self.core.reply(status, result)
     }
 }

@@ -10,7 +10,6 @@ import os
 from pathlib import Path
 import re
 import secrets
-import stat
 import subprocess
 import time
 from ws73_capture import CaptureError
@@ -54,12 +53,8 @@ def record(application,owners,daemon_pid,folder=Path('/evidence/service-policy')
                     # The CLI deliberately reopens stdin for an independent
                     # O_NONBLOCK description. A root-owned inherited pipe is
                     # not reopenable after setuid, despite its inherited fd.
-                    readfd,writefd=os.pipe2(os.O_CLOEXEC)
-                    files.callback(os.close,readfd)
-                    writer=files.enter_context(os.fdopen(writefd,'wb',buffering=0))
-                    os.fchown(readfd,1005,1005);os.fchmod(readfd,0o600)
-                    pipe=os.fstat(readfd)
-                    entry['stdin']={'uid':pipe.st_uid,'gid':pipe.st_gid,'mode':stat.S_IMODE(pipe.st_mode),'fifo':stat.S_ISFIFO(pipe.st_mode)}
+                    from ws73_ssap_owned import owned_input
+                    readfd,writer,entry['stdin']=owned_input(files,1005,1005)
                     process=files.enter_context(observed_process(args,entry,out,err,text=True,stdin=readfd,user=1005,group=1005,extra_groups=[]))
                     entry.update(pid=process.pid,credentials=credentials(process.pid));save()
                     matches,_=wait_text(process,out,r'^SsapOwnedService: start=(\d+) end=(\d+) property=(\d+); local registration only$',time.monotonic()+5)

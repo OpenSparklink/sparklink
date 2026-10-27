@@ -11,6 +11,7 @@ import re
 import json
 import os
 import secrets
+import stat
 import subprocess
 import time
 import traceback
@@ -18,6 +19,24 @@ from ws73_capture import CaptureError
 from ws73_channel_socket import credentials
 
 OUTPUT_MAXIMUM=2*1024*1024
+
+
+def owned_input(files,uid,gid,*,text=False):
+    """One new test pipe, reopenable by its child after the supervisor drops uid.
+
+    Reuses the service-role gate's ownership rule. Never changes inherited
+    caller stdin, global permissions or the CLI's independent O_NONBLOCK open.
+    """
+    readfd,writefd=os.pipe2(os.O_CLOEXEC)
+    files.callback(os.close,readfd)
+    writer=files.enter_context(os.fdopen(writefd,'w' if text else 'wb',buffering=1 if text else 0))
+    pipe=os.fstat(readfd)
+    if (pipe.st_uid,pipe.st_gid)!=(uid,gid):os.fchown(readfd,uid,gid)
+    os.fchmod(readfd,0o600)
+    pipe=os.fstat(readfd)
+    identity=dict(uid=pipe.st_uid,gid=pipe.st_gid,mode=stat.S_IMODE(pipe.st_mode),fifo=stat.S_ISFIFO(pipe.st_mode))
+    if identity!=dict(uid=uid,gid=gid,mode=0o600,fifo=True):raise CaptureError('actual child-owned stdin pipe required')
+    return readfd,writer,identity
 
 
 @contextmanager
@@ -34,7 +53,11 @@ def observed_process(args,item,out,err,**options):
         reader=ApplicationOutput(OUTPUT_MAXIMUM);files.callback(reader.close)
         try:
             sinks=[files.enter_context(p.open('xb'))for p in (out,err)]
+            writer=None
+            if options.get('stdin')==subprocess.PIPE and options.get('user') is not None:
+                options['stdin'],writer,item['stdin']=owned_input(files,options['user'],options['group'],text=options.get('text',False))
             process=subprocess.Popen(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE,**options)
+            if writer is not None:process.stdin=writer
             process.ws73_observed_output=(reader,item,(out,err))
             reader.add(process,item,sinks)
             item['output_collection']['complete']=False

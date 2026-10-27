@@ -7,6 +7,7 @@ Native syscall,wire parser,security decision or application delivery is stubbed.
 import copy
 import errno
 import fcntl
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -23,6 +24,41 @@ from ws73_ssap_subscription import request_tools,tool_records,OUTPUT_TOOLS,TOOLS
 
 
 class SsapOutput(unittest.TestCase):
+    def test_explicit_child_uid_can_reopen_actual_stdin_without_shared_flag_change(self):
+        with tempfile.TemporaryDirectory()as tmp:
+            out,err=[Path(tmp)/n for n in ('stdout','stderr')];item={}
+            program=("import os,fcntl,select;"
+                     "fd=os.open('/proc/self/fd/0',os.O_RDONLY|os.O_NONBLOCK|os.O_CLOEXEC);"
+                     "assert not fcntl.fcntl(0,fcntl.F_GETFL)&os.O_NONBLOCK;"
+                     "print('ready',flush=True);assert select.select([fd],[],[],2)[0];"
+                     "assert os.read(fd,64)==b'hello\\n';os.close(fd);print('received',flush=True)")
+            with observed_process([sys.executable,'-c',program],item,out,err,
+                                  stdin=subprocess.PIPE,text=True,user=os.getuid(),group=os.getgid())as proc:
+                wait_text(proc,out,'^ready$',time.monotonic()+2)
+                self.assertEqual(item['stdin'],dict(uid=os.getuid(),gid=os.getgid(),mode=0o600,fifo=True))
+                proc.stdin.write('hello\n');proc.stdin.flush()
+                self.assertEqual(wait_output(proc,2),0)
+            verify_output(item);self.assertEqual(item['stdout'],'ready\nreceived\n')
+            self.assertEqual(item['stderr'],'')
+
+    def test_pipe_ownership_failure_closes_both_fds_without_launch(self):
+        original=os.pipe2;opened=[]
+        def allocate(flags):
+            pair=original(flags);opened.extend(pair);return pair
+        with tempfile.TemporaryDirectory()as tmp:
+            out,err=[Path(tmp)/n for n in ('stdout','stderr')]
+            with patch('ws73_ssap_owned.os.pipe2',side_effect=allocate), \
+                 patch('ws73_ssap_owned.os.fchown',side_effect=PermissionError('explicit ownership failure')), \
+                 patch('ws73_ssap_owned.subprocess.Popen')as launch:
+                with self.assertRaisesRegex(PermissionError,'ownership failure'):
+                    with observed_process(['unused'],{},out,err,stdin=subprocess.PIPE,text=True,
+                                          user=os.getuid()+1,group=os.getgid()):
+                        self.fail('ownership failure must not reach a child')
+                launch.assert_not_called()
+            self.assertEqual(len(opened),2)
+            for fd in opened:
+                with self.assertRaises(OSError):os.fstat(fd)
+
     def test_request_and_root_share_actual_dependency_selection(self):
         # Real opaque files for hashing only; no SDK binary is executed/stubbed.
         with tempfile.TemporaryDirectory()as tmp:

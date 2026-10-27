@@ -556,6 +556,9 @@ scope 标为失效；原 owner 仍在时保留 NoReply，不凭错误名称推�
 接任后的连接门禁复用既有 beacon 配置及停止流程，先建立真实停止态 beacon，
 再要求删除／重建 connectable 集。该准备不替代随机发现或业务验收；失败立即保留，
 不接受首次直接建集来绕过原重建断言。
+VM 的 root 监督器在启动普通用户 CLI Provider 时，仅将新建的测试 stdin 管道交给
+该用户所有；复用 service-only 门禁的管道规则并记录 uid/gid/权限。CLI 仍独立重开
+非阻塞输入，不修改继承的共享文件状态。管道准备失败不得继续启动或伪造注册成功。
 实际 C 导出/private D-Bus 回归覆盖原 parent Client 关闭、owner 切换、旧请求 ESTALE、
 新 sender 向旧端点的 AccessDenied，以及新 lifetime 只接受自己的答复。Adapter/服务
 元数据为显式 fixture；这不是 slkd SIGKILL、内核清理或真实业务恢复资格。

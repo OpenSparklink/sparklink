@@ -387,9 +387,9 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "6244dc9d51cc0d8f01c0dbdf850856180e8c8ddf8fda5959888a717c97f8a43f",
+      "body_sha256": "814816af10cb56ae422867fda3bb3a20fae87f51846bc547f270234a989e1139",
       "classification": "有限收尾",
-      "closure_basis": "Pending WRITE actual VM supervisor v2 wired; scoped offline checks passed. Accurate new artifact real VM evidence and full original SSAP scope remain open."
+      "closure_basis": "Synchronous SDK owner-loss and VM coordinator/source finalization updated; exact qualification private, original six SSAP conditions remain OPEN."
     },
     {
       "repository": "sparklink",
@@ -760,9 +760,9 @@
         "state": "open",
         "classification": "有限收尾",
         "action": "body_consolidated",
-        "body_sha256": "6244dc9d51cc0d8f01c0dbdf850856180e8c8ddf8fda5959888a717c97f8a43f",
-        "basis": "v2 WRITE daemon restart runner wired with original callback/credit/Session and new-connection business; offline checks only, exact real VM qualification and all original U22 conditions remain open.",
-        "source_followup_observed_at": "2026-10-27T04:27:49.292801+00:00"
+        "body_sha256": "814816af10cb56ae422867fda3bb3a20fae87f51846bc547f270234a989e1139",
+        "basis": "Current source/offline summary synchronized; whole original operation/value/lifecycle scope remains open. Exact VM qualification available only via authorized local index.",
+        "source_followup_observed_at": "2026-10-27T05:26:33.400145+00:00"
       },
       {
         "repository": "sparklink",
@@ -4649,6 +4649,14 @@
       "prior_body_sha256": "a426e1d1503e8b2d7d0a3a5a69f3384c2eed7cfccedfc36e4691d63ece08ff62",
       "body_sha256": "6244dc9d51cc0d8f01c0dbdf850856180e8c8ddf8fda5959888a717c97f8a43f",
       "scope": "Pending WRITE v2 actual VM supervisor wired; 89 scoped offline checks; real artifact validation pending; six original conditions unchanged."
+    },
+    {
+      "repository": "sparklink",
+      "number": 22,
+      "observed_at": "2026-10-27T05:26:33.400145+00:00",
+      "public_source": "fad8f3fd9369dd66f2bb73fde1599d11bfb1a451",
+      "body_sha256": "814816af10cb56ae422867fda3bb3a20fae87f51846bc547f270234a989e1139",
+      "scope": "Source/offline only. Original six conditions unchanged, OPEN. No private execution identity, hardware detail or private hash."
     }
   ]
 }

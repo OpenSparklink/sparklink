@@ -1,20 +1,19 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前批次：待决 WRITE 跨 daemon 退出／接任 v2
+## 当前批次：同步 SDK owner-loss 与 WRITE 接任门禁收尾
 
-WP08 / U#22 的 v2 工具已接通真实 SDK WRITE 回调屏障、既有 init SIGKILL/reap、
-原请求 ESTALE 与旧视图观察、两 controller Free/empty、新 owner 和新连接业务。
-新业务复用原连接/socket/Owned/SDK WRITE runner，不新增 Engine 或收发循环。
-root 监督的 slktest 显式降权至 UID1000；原旧 fd、原期限及完整双端判定保持。
+WP08 / U#22 的普通 C/Python 调用现已接入现有 Client owner-loss/NoReply 处理，
+保留入队时的原绝对期限、不重试、不跟随新 owner；不新增 Host、Engine 或 credit 状态。
+真实私有总线及实际外部 SDK 套件覆盖释放服务名、总线断开和存活 owner 的 NoReply，
+72项库回归及严格 Clippy 通过；原超时负对照保留。协调器另复用已停止 beacon、
+普通用户管道所有权及每设备 HCC 输入汇总，原重建和最终验收断言没有放宽。
 
-89项相关离线检查通过；收据、进程参数及捕获 fixture 不证明实际 daemon/内核/设备
-行为。新 v2 仍需封存准确 VM 产物，按本线程两只 U 的白名单和实际占用检查后，
-分别验证两方向旧请求与接任后八轮普通业务及 SDK WRITE。v1 资格不能升级为 v2。
-原回放 fixture 缺事件输入、worktree 缺内核路径的失败保留；没有放宽成功断言。
+公开材料只描述源码和限定离线结果。准确编译产物、执行工具、双端原件、失败及实机
+范围继续由授权本地索引维护；fixture、源码和工具安装不授予当前 HEAD 整体资格。
 
-两 controller 共用 daemon，退出影响两者，不声称独立进程故障域。完整
-S0–S6/19WP/10FV/12DG、长值/更新/Profile 和自然故障/非人工恢复条件保持开放；
-不追加无关控制面组合前置。准确源码、离线范围和下一步由生成摘要关联。
+本纵向批次后继续剩余 SSAP 操作/长值/更新和既有数据、安全主线，不追加控制面全集
+前置。U#22六项原验收、完整S0–S6/19WP/10FV/12DG、VM-only、UserHost低优先级及
+自然故障根因/非人工恢复条件不变，未关闭任何整项。生成摘要是当前批次唯一状态。
 
 ## 有界 issue 清理结果与主线恢复
 
@@ -495,52 +494,39 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-SDK-WRITE-daemon-restart-v2",
-  "state": "VM_GATE_WIRED_OFFLINE_PASS_HARDWARE_PENDING",
-  "production_behavior": "No Engine or protocol change. Existing actual VM init death/reap/successor gate now arms on real SDK WRITE arrival, retains revoked views/fds and reuses original new-connection/socket/WRITE runners. Root-supervised slktest explicitly drops to UID1000.",
-  "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
-  "work_packages": [
-    "WP08",
-    "WP16"
-  ],
-  "records": [],
+  "id": "WP08-SDK-WRITE-sync-owner-and-restart-v2",
+  "state": "SOURCE_OFFLINE_PASS_PRIVATE_VM_RECORDS_SEPARATE",
+  "production_behavior": "Synchronous SDK calls reuse the original Client owner-loss/NoReply handler and exact queued deadline. VM coordination reuses stopped beacon setup, child-owned stdin and common per-device HCC input checks. No new Engine, retry, credit or protocol path.",
   "implementation_sources": {
-    "public_source": "e2077da0f9f86d363f41d415a00062bcc560e9e6"
+    "sdk": "e9ac4f21eea85f53483b4acecbfe8738d224fd5d",
+    "latest_tools": "fad8f3fd9369dd66f2bb73fde1599d11bfb1a451"
   },
-  "offline_status": "SCOPED_OFFLINE_PASS",
   "offline_checks": {
-    "python": "89 related parser/runner/negative-control tests; recorded-shape captures and process fixtures, not real kernel concurrency",
-    "negative": "missing RX, payload/identity/deadline, success after revocation, retained old success, missing successor WRITE proof rejected; original fixture and environment failures retained",
-    "docs": "strict public HTML, inventories and integrity checks"
+    "library": "72 PASS",
+    "external": "Full actual C/Python private-bus suite PASS; six new pending WRITE cases",
+    "coordinator_groups": "70,63,69 PASS in overlapping suites, not summed",
+    "formal": "No new formal proof"
   },
-  "hardware_status": "NO_NEW_HARDWARE_RUN; v1 daemon fd and earlier Down qualification not transferred to v2",
-  "formal_status": "NO_NEW_PROOF",
   "issue_sync": {
     "repository": "sparklink",
     "number": 22,
-    "state": "open",
-    "observed_at": "2026-10-27T04:27:49.292801+00:00",
-    "source_offline_only": true,
-    "source": "e2077da0f9f86d363f41d415a00062bcc560e9e6",
-    "prior_body_sha256": "a426e1d1503e8b2d7d0a3a5a69f3384c2eed7cfccedfc36e4691d63ece08ff62",
-    "body_sha256": "6244dc9d51cc0d8f01c0dbdf850856180e8c8ddf8fda5959888a717c97f8a43f",
-    "scope": "Pending WRITE v2 actual VM supervisor wired; 89 scoped offline checks; real artifact validation pending; six original conditions unchanged."
+    "observed_at": "2026-10-27T05:26:33.400145+00:00",
+    "public_source": "fad8f3fd9369dd66f2bb73fde1599d11bfb1a451",
+    "body_sha256": "814816af10cb56ae422867fda3bb3a20fae87f51846bc547f270234a989e1139",
+    "scope": "Source/offline only. Original six conditions unchanged, OPEN. No private execution identity, hardware detail or private hash."
   },
+  "hardware_status": "Public scope is source/offline only; exact VM identities and results are available through the authorized local evidence index, not inherited by current HEAD.",
+  "formal_status": "NO_NEW_PROOF",
   "exit_conditions": [
-    "Actual SDK WRITE callback before existing init SIGKILL/reap; original requester and retained SDK views reject within original deadline.",
-    "Both controller cleanup Ready/Free/empty before new owner; old fd/request/object identity never revived.",
-    "New physical connections in both roles use original ordinary user and SDK WRITE gates with two-end USB evidence."
-  ],
-  "remaining_conditions": [
-    "Actual slkd SIGKILL/reap, per-controller cleanup before successor, retained SDK old-owner refusal and fresh wire business in VM",
-    "Full original U22 operation/value/lifecycle scope; natural fault/nonmanual recovery remain open"
+    "Actual external C/Python entry: owner release/disconnect ESTALE within original deadline; live-owner NoReply preserved.",
+    "Same existing VM gate: pending callback before kill/reap, both Free/empty, old views/fds/objects denied, successor new physical lifetimes and peer-validated ordinary/SDK WRITE.",
+    "Missing input/capture, stale identity/deadline and incomplete supervisor stay fail-closed; preserve every original failure."
   ],
   "next": [
-    "Freeze new tools into existing SDK110 U prepared VM; recheck exact allowed ports, live use and source/tool/artifact hashes.",
-    "Run existing dedicated --channel-daemon-crash v2 with each index; retain failed attempts and pair raw evidence.",
-    "Complete remaining U22 operation/value/lifecycle gates and original data/security/SSAP work without full-control-plane prerequisite."
-  ],
-  "qualification_boundary": "Source/offline and retained hardware identities separate; no change to selected qualification or existing records/materials."
+    "Resume remaining unique SSAP Engine operation/value/update gates and existing data/security work.",
+    "Expand only the next vertical behavior with its relevant invariants; no full control-plane concurrency prerequisite.",
+    "Keep natural root cause/nonmanual recovery, physical drain and complete original S0-S6/19WP/10FV/12DG scope open."
+  ]
 }
 ```
 

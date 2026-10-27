@@ -181,7 +181,7 @@ impl Link {
         kind: u8,
     ) -> zbus::fdo::Result<slk_contract::ssap::Discovery> {
         self.0.calls.fetch_add(1, Ordering::SeqCst);
-        if (uuid, kind) != (vec![1, 2], 3) {
+        if uuid != [1, 2] || !matches!(kind, 3 | 4) {
             return Err(zbus::fdo::Error::NotSupported(
                 "unsupported fixture discovery".into(),
             ));
@@ -314,6 +314,21 @@ async fn actual_ssap_client_serializes_all_existing_methods_without_echo_or_fall
     let (entries, trace) = remote.discover(vec![1, 2], 3).await?;
     assert_eq!(entries, remote.cached().await?);
     assert_eq!(trace, [(vec![0x11], vec![0x22])]);
+    let (methods, method_trace) = remote.discover(vec![1, 2], 4).await?;
+    assert_eq!(methods, entries);
+    assert_eq!(method_trace, trace);
+    let before = state.calls.load(Ordering::SeqCst);
+    for kind in [2, 5, 6, 255] {
+        assert!(matches!(
+            remote.discover(vec![1, 2], kind).await,
+            Err(ApplicationError::Invalid(_))
+        ));
+    }
+    assert!(matches!(
+        remote.discover(vec![1, 2, 3], 4).await,
+        Err(ApplicationError::Invalid(_))
+    ));
+    assert_eq!(state.calls.load(Ordering::SeqCst), before);
     assert_eq!(
         remote.read_by_uuid(17, 20, 0, vec![1, 2], 2).await?,
         (vec![(17, true, 0, vec![0xab])], vec![0x12], vec![0x34])
@@ -324,13 +339,13 @@ async fn actual_ssap_client_serializes_all_existing_methods_without_echo_or_fall
     );
     assert_eq!(remote.exchange_info().await?.5, 240);
     assert_eq!(link.transport_status().await?.5, 1);
-    assert_eq!(state.calls.load(Ordering::SeqCst), 9); // No hidden retry, fallback or engine calls.
+    assert_eq!(state.calls.load(Ordering::SeqCst), 10); // No hidden retry, fallback or engine calls.
     state.role.store(1, Ordering::SeqCst);
     assert!(matches!(
         remote.read(17, 2, deadline()).await,
         Err(ApplicationError::Identity(_))
     ));
-    assert_eq!(state.calls.load(Ordering::SeqCst), 9);
+    assert_eq!(state.calls.load(Ordering::SeqCst), 10);
     Ok(())
 }
 #[tokio::test]

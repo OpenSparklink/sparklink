@@ -6,6 +6,7 @@ pub enum FindKind {
     Structure,
     Primary,
     Properties,
+    Methods,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum EntryClass {
@@ -56,6 +57,7 @@ impl<'a> FindRequest<'a> {
             FindKind::Structure => 0,
             FindKind::Primary => 1,
             FindKind::Properties => 3,
+            FindKind::Methods => 4,
         }) | match self.class {
             EntryClass::Standard => 0,
             EntryClass::Custom => 8,
@@ -99,6 +101,7 @@ impl<'a> FindRequest<'a> {
             0 => FindKind::Structure,
             1 => FindKind::Primary,
             3 => FindKind::Properties,
+            4 => FindKind::Methods,
             _ => return Err(FindError::Unsupported),
         };
         let class = match raw[1] & 24 {
@@ -183,6 +186,7 @@ pub fn decode_page(
         let mut category = match request.kind {
             FindKind::Primary => 0,
             FindKind::Properties => 2,
+            FindKind::Methods => 3,
             FindKind::Structure => bytes(raw, &mut offset, 1)?[0],
         };
         if request.kind == FindKind::Structure {
@@ -276,7 +280,7 @@ pub fn encode_page(
         item.extend(e.handle.to_le_bytes());
         match request.kind {
             FindKind::Structure => {
-                if !matches!(e.category, 0 | 8 | 2 | 10) {
+                if !matches!(e.category, 0 | 8 | 2 | 10 | 3 | 11) {
                     return Err(FindError::Unsupported);
                 }
                 item.push(e.category);
@@ -289,6 +293,11 @@ pub fn encode_page(
             }
             FindKind::Properties => {
                 if !matches!(e.category, 2 | 10) {
+                    return Err(FindError::Metadata);
+                }
+            }
+            FindKind::Methods => {
+                if !matches!(e.category, 3 | 11) {
                     return Err(FindError::Metadata);
                 }
             }
@@ -321,6 +330,91 @@ pub fn encode_page(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn method_golden_requests_and_entries_keep_the_original_schema() {
+        let request = FindRequest {
+            kind: FindKind::Methods,
+            class: EntryClass::Mixed,
+            start: 1,
+            end: 65535,
+            uuid: None,
+        };
+        let mut bytes = [0; 22];
+        let n = request.encode(249, &mut bytes).unwrap();
+        assert_eq!(&bytes[..n], &[4, 0x14, 1, 0, 255, 255]);
+        assert_eq!(FindRequest::decode(249, &bytes[..n]), Ok(request));
+        let by_uuid = FindRequest {
+            uuid: Some(&[0x34, 0x12]),
+            ..request
+        };
+        let n = by_uuid.encode(249, &mut bytes).unwrap();
+        assert_eq!(&bytes[..n], &[6, 0x14, 1, 0, 255, 255, 0x34, 0x12]);
+        assert_eq!(FindRequest::decode(249, &bytes[..n]), Ok(by_uuid));
+        // Independent table61 vector, not produced by the encoder under test.
+        let raw = [5, 3, 17, 0, 0x34, 0x12, 0, 0, 0, 0, 0];
+        let method = Entry {
+            category: 3,
+            handle: 17,
+            end: 17,
+            uuid: vec![0x34, 0x12],
+            operations: 0,
+            descriptors: vec![],
+            members: 0,
+        };
+        assert_eq!(decode_page(request, 249, &raw), Ok(vec![method.clone()]));
+        for len in 0..raw.len() {
+            assert!(decode_page(request, 249, &raw[..len]).is_err());
+        }
+        let (encoded, n) = encode_page(request, 249, std::slice::from_ref(&method)).unwrap();
+        assert_eq!(n, 1);
+        assert_eq!(encoded, [5, 11, 1, 17, 0, 0x34, 0x12, 0, 0, 0, 0, 0]);
+        let custom = Entry {
+            category: 11,
+            handle: 18,
+            end: 18,
+            uuid: vec![0xa5; 16],
+            ..method.clone()
+        };
+        for kind in [FindKind::Methods, FindKind::Structure] {
+            let r = FindRequest { kind, ..request };
+            let (raw, n) = encode_page(r, 249, &[method.clone(), custom.clone()]).unwrap();
+            assert_eq!(n, 2);
+            assert_eq!(
+                decode_page(r, 249, &raw),
+                Ok(vec![method.clone(), custom.clone()])
+            );
+        }
+        assert_eq!(
+            encode_page(
+                FindRequest {
+                    kind: FindKind::Properties,
+                    ..request
+                },
+                249,
+                std::slice::from_ref(&method)
+            ),
+            Err(FindError::Metadata)
+        );
+        assert_eq!(
+            encode_page(
+                request,
+                249,
+                &[Entry {
+                    category: 2,
+                    ..method
+                }]
+            ),
+            Err(FindError::Metadata)
+        );
+        let mut bad = raw;
+        bad[10] = 1; // claims a descriptor byte that does not exist
+        assert!(decode_page(request, 249, &bad).is_err());
+        assert_eq!(
+            decode_page(FindRequest { end: 16, ..request }, 249, &raw),
+            Err(FindError::Handle)
+        );
+    }
+
     #[test]
     fn primary_property_full_and_uuid_schema_roundtrip() {
         let primary = Entry {

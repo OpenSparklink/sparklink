@@ -139,7 +139,15 @@ impl<'a> RemoteSsap<'a> {
         )
         .await
     }
+    /// Discover structure(0), primary services(1), properties(3) or methods(4).
+    /// Primary discovery follows advertised property/method members using the
+    /// daemon's single original deadline and bounded page/entry budget.
     pub async fn discover(&self, uuid: Vec<u8>, kind: u8) -> Result<wire::Discovery> {
+        if !matches!(kind, 0 | 1 | 3 | 4) || !uuid.is_empty() && !matches!(uuid.len(), 2 | 16) {
+            return Err(ApplicationError::Invalid(
+                "unsupported SSAP discovery kind/UUID",
+            ));
+        }
         self.current(async {
             Ok(self
                 .link

@@ -193,6 +193,14 @@ no implicit retry. Descriptor and multi-item commands are not exposed.
 Use ssap-write when the supported operation requires a protocol response.
 .SS Statistics and Diagnostics
 .TP
+.BI ssap-discover " connection-path [structure|service|property|method uuid-hex]"
+Discover peer metadata through the existing application Client. Method discovery
+uses kind4 and standard/custom method categories3/11. Default primary discovery
+follows advertised property and method members within one five-second deadline,
+96-page and80-entry total budgets. A method-query error or duplicate handle
+fails the whole discovery; metadata is not method execution or authorization.
+Local method registration and Providers remain unsupported.
+.TP
 .BI ssap-call-method " connection-path handle arguments-hex [minimum]"
 Invoke a remote method using the original Session and deadline. Prints the
 independent peer result, never an input echo. Current slkd method Providers

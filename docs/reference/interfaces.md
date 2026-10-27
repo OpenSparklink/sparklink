@@ -289,7 +289,7 @@ index/generation和物理lifetime/handle/role/地址类型/地址。`connection.
 
 | Rust客户端方法 | 现有daemon方法／结果 | 限制 |
 |---|---|---|
-| `discover(uuid, kind)` | `DiscoverSsap`，条目及实际事务trace | 仅daemon当前支持的种类；不创建客户端缓存 |
+| `discover(uuid, kind)` | `DiscoverSsap`，条目及实际事务trace | structure=0、primary=1、property=3、method=4；不创建客户端缓存 |
 | `cached()` | `GetCachedSsap` | 该lifetime的建议性缓存，不能授予可用性/安全 |
 | `read(handle, minimum, Deadline)` | `ReadSsapValue` | 原机制要求；错误原样传播，无弱化fallback |
 | `read_description(handle, minimum, Deadline)` | `ReadSsapDescription` | 已发现的公开只读 type1；1..244 UTF-8 字节、无 NUL，非法成功响应 EPROTO，不回退属性值 |
@@ -610,9 +610,15 @@ lifetime 的终态记录和真实通道／USB证据，不能把日志或状态�
 WRITE_NO_RSP、descriptor、notify/indicate等声明明确NotSupported；共享权限类型
 仍保留标准完整语义。此拒绝只有生产数据库/实际D-Bus离线门禁，不转授Ub5实机资格。
 
-Connection新增DiscoverSsap(uuid,kind)/GetCachedSsap，按实际SMTC响应产生元数据，
-未知缓存失败；无参UUID+primary模式取得primary/property建议缓存，完整服务
-数据库快照、方法/事件/引用生命周期与ServiceChanged一致性尚无承诺。
+`Connection.DiscoverSsap(uuid,kind)` 与 `GetCachedSsap` 按实际 SMTC 响应产生元数据；
+未知缓存失败。kind 为结构0、首要服务1、属性3或方法4，UUID为空或2/16字节。
+方法类别为标准3/自定义11，不能把属性类别2/10当作方法。空UUID+primary模式按
+服务成员位分别查询属性和方法，共用原5秒期限、96页及80条总预算；方法查询失败
+或跨类别重复handle使整次发现失败，不发布部分结果为完整缓存。
+`slctl ssap-discover CONNECTION method UUID_HEX` 使用同一SDK/daemon发现入口。
+本地method登记/Provider仍未接通，当前本地方法查询返回真实未找到条目；发现对端
+方法不表示调用成功、授权或安全资格。完整服务数据库快照、事件/引用发现及
+ServiceChanged一致性尚无承诺。C/Python现有method调用入口保留，本批未新增其发现封装。
 普通服务从handle16分配，保留旧流量证据但不转授旧范围为标准合格。
 
 ### ReadByUUID：有限完整PDU模式

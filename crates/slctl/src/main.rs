@@ -143,7 +143,7 @@ Commands:
   link-measurement <path> <rssi|phy> [timeout-ms]  Read a real Managed link observation
   link-payload-preference <path> <octets> [timeout-ms]  Request link payload preference; acknowledgment only
   disconnect-object <path>      Disconnect the exact physical lifetime
-  ssap-discover <path> [structure|service|property uuid-hex] Discover actual peer metadata
+  ssap-discover <path> [structure|service|property|method uuid-hex] Discover actual peer metadata
   ssap-list                            Inspect local service metadata only
   ssap-register <service-hex> <property-hex> <ops> <access> <value-hex> Configure local database only
   ssap-serve <service-hex> <property-hex> <ops> <access> <value-hex> [ask|allow|deny] Own a foreground local service; policy decision is not peer receipt

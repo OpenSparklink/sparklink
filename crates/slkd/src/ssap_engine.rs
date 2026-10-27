@@ -425,6 +425,9 @@ impl Observer {
                         if service.members & 2 != 0 {
                             ranges.push((FindKind::Properties, service.handle, service.end));
                         }
+                        if service.members & 4 != 0 {
+                            ranges.push((FindKind::Methods, service.handle, service.end));
+                        }
                     }
                 }
                 entries.extend(page);
@@ -2425,6 +2428,88 @@ mod tests {
             [1, 0, 19, 0x34, 0x12, 1]
         );
     }
+    #[tokio::test]
+    async fn discovery_follows_methods_in_one_bounded_original_transaction() {
+        use slk_protocol::ssap::discovery::FindKind;
+        // Production Observer pagination. The queue consumer supplies explicit
+        // peer bytes/errors; it is not a Native channel or hardware fixture.
+        for scenario in 0..3 {
+            let info: Info = (0, 7, 13, 1, 249, 249, vec![], vec![], vec![], vec![]);
+            let (_status, state) = watch::channel(Status::Negotiated(info.clone()));
+            let (queries, mut incoming) = mpsc::channel(8);
+            let observer = Observer { state, queries };
+            let task = tokio::spawn(observer.discover(None, FindKind::Primary));
+            let Some(Query::Info(reply)) = incoming.recv().await else {
+                panic!("info")
+            };
+            reply.send(Ok(info)).unwrap();
+            let mut original = None;
+            let method_handle = if scenario == 2 { 17 } else { 18 };
+            let cases = [
+                (1, 1, 65535, vec![5, 11, 1, 16, 0, 19, 0, 1, 2, 6]),
+                (1, 20, 65535, vec![1, 0, 4, 20, 0, 11]),
+                (
+                    4,
+                    16,
+                    19,
+                    vec![5, 11, 1, method_handle, 0, 0x34, 0x12, 0, 0, 0, 0, 0],
+                ),
+                (
+                    4,
+                    u16::from(method_handle) + 1,
+                    19,
+                    vec![1, 0, 4, method_handle + 1, 0, 11],
+                ),
+                (3, 16, 19, vec![5, 11, 1, 17, 0, 0x35, 0x12, 1, 0, 0, 0, 0]),
+                (3, 18, 19, vec![1, 0, 4, 18, 0, 11]),
+            ];
+            for (index, (kind, start, end, response)) in cases.into_iter().enumerate() {
+                let Some(Query::Value {
+                    bytes,
+                    deadline,
+                    minimum,
+                    reply,
+                }) = incoming.recv().await
+                else {
+                    panic!("value queue")
+                };
+                let expected = [
+                    4,
+                    0x10 | kind,
+                    start as u8,
+                    (start >> 8) as u8,
+                    end as u8,
+                    (end >> 8) as u8,
+                ];
+                assert_eq!(bytes, expected);
+                assert_eq!(minimum, 0);
+                assert_eq!(deadline, *original.get_or_insert(deadline));
+                if scenario == 1 && index == 2 {
+                    reply.send(Err("method dependency refused".into())).unwrap();
+                    break;
+                }
+                reply.send(Ok(response)).unwrap();
+            }
+            let result = task.await.unwrap();
+            match scenario {
+                0 => {
+                    let (entries, trace) = result.unwrap();
+                    assert_eq!(
+                        entries
+                            .iter()
+                            .map(|e| (e.category, e.handle))
+                            .collect::<Vec<_>>(),
+                        [(0, 16), (2, 17), (3, 18)]
+                    );
+                    assert_eq!(trace.len(), 6);
+                }
+                1 => assert!(result.unwrap_err().contains("method dependency refused")),
+                _ => assert!(result.unwrap_err().contains("duplicate remote handle")),
+            }
+            assert!(incoming.try_recv().is_err());
+        }
+    }
+
     #[tokio::test]
     async fn method_requester_reuses_queue_and_preserves_original_deadline() {
         // Actual Observer encoder/admission; metadata and queue consumer are

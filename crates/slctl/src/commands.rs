@@ -52,7 +52,7 @@ impl Context {
             "ssap-discover" => {
                 if args.len() != 2 && args.len() != 4 {
                     anyhow::bail!(
-                        "ssap-discover requires path [structure|service|property uuid-hex]"
+                        "ssap-discover requires path [structure|service|property|method uuid-hex]"
                     );
                 }
                 let kind = if args.len() == 2 {
@@ -62,6 +62,7 @@ impl Context {
                         "structure" => 0,
                         "service" => 1,
                         "property" => 3,
+                        "method" => 4,
                         _ => anyhow::bail!("unknown discovery kind"),
                     }
                 };

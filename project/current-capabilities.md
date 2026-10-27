@@ -5,10 +5,11 @@
 上次完整维护核对35项；U#21保持按原条件关闭，U#1继续有限收尾。已有七个子项及父项原范围
 保持，不新增重复跟踪。当前剩余条件见[逐项处置](issue-maintenance-20261026.json)和[唯一计划](implementation-plan.md)。
 
-Native取消及实际订阅测试保留；suite v2已实现同一Native接收future的静默期门禁。
-旧EventSource用例仍仅为历史fixture，v1不升级为v2；源码和离线通过不授当前产物资格。
-原六项条件与适用保持门禁逐条核对，具体执行结果和失败仅在授权本地记录；公开不从
-未公开资料宣称实机通过或未执行。历史资格不能转授新源码。
+U#1已按原六条事件循环条件独立关闭；suite v2及取消门禁沿同一Native循环，
+原期限与历史负对照保留。具体准确产物审计留在授权本地索引；关闭决定不授予
+当前HEAD整体资格，也不覆盖原业务保持FAIL、自然故障或未执行门禁。
+旧EventSource只作历史fixture，v1不升级为v2。K#24已核对bac12d1的有限fuzz报告，
+其测试内核pin、边界与开发HEAD分开，旧CI超时不因新成功被覆盖。
 原始失败保留。U#10 自然恢复继续开放；K#24保留公开 CI 的来源检查超时，探索未执行不计通过。
 
 本页是唯一当前资格入口。源码、编译产物、执行工具、校验工具及必需门禁从下方
@@ -72,9 +73,9 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP16-U1-native-quiet30-and-original-preservation",
-  "state": "SOURCE_OFFLINE_VALIDATED_ORIGINAL_CLOSURE_PENDING",
-  "production_behavior": "Same Native EventTask/receiver; cfg(test)-only receive observer and shared actual-controller fixture. Suite v2 adds original quiet30 gate; v1 retains held-lock-only scope. Default daemon has no observer or synthetic events.",
+  "id": "WP16-bounded-issue-maintenance-closeout",
+  "state": "MAINTENANCE_COMPLETE_U1_CLOSED_ORIGINAL_SCOPE_OPEN",
+  "production_behavior": "No production change. Reconcile 35 issues and their original contracts; close U1 independently, retain U21 closure, correct K24 exact-source offline status; no duplicated children.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
     "WP16"
@@ -82,57 +83,50 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
   "records": [],
   "predecessor_archive": {
     "history": "batch_history",
-    "id": "WP16-U1-native-event-retry-cancellation",
-    "canonical_sha256": "fcc639fc98b38b68758bf9b033361ac5084fe9f3a91321d2420aeaf7c174ac70"
+    "id": "WP16-U1-native-quiet30-and-original-preservation",
+    "canonical_sha256": "0b3dfe09796afcd46870146d6efbbccfb43132d4d115186402d738afb00100d3"
   },
   "implementation_sources": {
     "public_source": "bac12d127cd4d32874949b61b0088baa0c0fe9e8",
-    "scope": "Actual Native quiet30 test and versioned runner; source/offline scope distinct from exact artifact results."
+    "kernel": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
   },
-  "invariants": [
-    "Cancellation covers the actual retry lock wait; ready cancellation wins.",
-    "Business lock remains held while actual EventTask shutdown joins and owned resource closes.",
-    "Snapshot guard is dropped before refresh; no new polling or deadline renewal.",
-    "Task exit is not physical controller drain; old artifact qualification is not transferred."
+  "issue_sync": [
+    {
+      "repository": "sparklink",
+      "number": 1,
+      "state": "closed",
+      "state_reason": "completed",
+      "body_sha256": "ea00e821b693bf9f2cf912fc2a5011f438f928312ae8dc8eed5e8416a1d4c977",
+      "prior_body_sha256": "ea2662fbd8c09c3bea7886ddfcaf123209b73c12b9da01b01ab267c147c20ec3",
+      "observed_at": "2026-10-27T01:00:07.151247+00:00",
+      "source_offline_only": true
+    },
+    {
+      "repository": "linux",
+      "number": 24,
+      "state": "open",
+      "state_reason": null,
+      "body_sha256": "ecc07115be580e800b74a6f584a098b1cf8f5f41f3c37ccf0f8fe87018b48d69",
+      "prior_body_sha256": "41bc81632768461e0c066bac32bd161943eb6f13b447653cba9fcd0f610717d4",
+      "observed_at": "2026-10-27T01:00:09.814565+00:00",
+      "source_offline_only": true
+    }
   ],
-  "offline_checks": {
-    "event_loop": "28 passed;2 actual Native tests ignored offline, ignored is not PASS.",
-    "runner": "79 tests passed; actual transcript tamper controls separately retained.",
-    "strict": "Rust1.96.1 offline locked all-targets Clippy; shared lock8jobs.",
-    "failures": "Missing JSON dependency corrected without dependency addition; absent default dbus-daemon and omitted kernel-root failures retained; fixed D-Bus1.16.2 and explicit kernel source used on final runs.",
-    "limits": "Legacy EventSource quiet fixture is not Native qualification; finite offline tests do not prove kernel concurrency/drain."
-  },
-  "offline_status": "SCOPED_OFFLINE_PASS",
-  "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "Private exact-artifact results and original failures remain in authorized local index. No hardware verdict or execution identity published here; no current HEAD qualification inferred.",
   "exit_conditions": [
-    "Reconcile original six U1 requirements with exact artifact evidence; preserve applicable original regression conditions and all failures. Do not make unrelated full security/recovery/release prerequisites."
+    "35 issues classified; original six U1 criteria audited; parent scopes preserved; canonical views and online state consistent."
   ],
   "remaining_conditions": [
-    "Original U1 closure audit and applicable preserved paths; distinguish event-loop behavior from controller/transport Down obligations.",
-    "Original WRITE Down/restart, data/security/SSAP remaining scope.",
-    "Natural root causes and nonmanual recovery remain open."
+    "Original complete preservation failure remains FAIL; no new whole-head qualification or natural fault root cause.",
+    "U10 natural recovery; K17/K19 original parents and child gates; U3/U22/U23 remaining SSAP/Profile."
   ],
   "next": [
-    "Audit original U1 criteria independently; use exact evidence and keep incomplete preservation visible.",
-    "Continue existing Down timeline/transport analysis and missing length preservation without relaxing original deadlines or overwriting failures.",
-    "Resume original WRITE/data/security/SSAP vertical work; no full control-plane prerequisite."
+    "Resume existing WRITE Down/restart and data/security/SSAP vertical work with original artifact-bound preservation gates.",
+    "Keep natural root causes/nonmanual recovery open; no full-control-plane prerequisite."
   ],
-  "issues": [
-    "OpenSparklink/sparklink#1"
-  ],
-  "issue_sync": {
-    "repository": "sparklink",
-    "number": 1,
-    "prior_body_sha256": "d1d8bb776f4a27df75239d39b4b60f6ec9fc16142c9384fde424a2484f46e351",
-    "body_sha256": "ea2662fbd8c09c3bea7886ddfcaf123209b73c12b9da01b01ab267c147c20ec3",
-    "source": "bac12d127cd4d32874949b61b0088baa0c0fe9e8",
-    "state": "open",
-    "source_offline_only": true,
-    "observed_at": "2026-10-27T00:44:13.688749+00:00"
-  },
-  "qualification_boundary": "No new PASS record registered; all historical records/materials and selected qualification unchanged. Current source, compiled artifact, execution and report identities remain distinct.",
-  "public_scope": "Source/offline only; private hardware details remain local."
+  "hardware_status": "No new hardware execution. Detailed existing artifact records remain in authorized local index; no hardware details published.",
+  "formal_status": "NO_NEW_PROOF",
+  "offline_status": "SOURCE_AND_RETAINED_EVIDENCE_AUDIT_ONLY",
+  "qualification_boundary": "No PASS record added or transferred; records/materials/selected qualification unchanged."
 }
 ```
 

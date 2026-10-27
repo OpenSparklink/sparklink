@@ -1,26 +1,24 @@
 # SparkLink / Linux 联合实施方案
 
-## 有界 issue 清理与 U#1 当前范围
+## 有界 issue 清理结果与主线恢复
 
-上一维护批次已读回 35 项及三个父子关系：19 项有限收尾、3 个已拆分父项、12 项长期跟踪、
-1 项按自身条件关闭（U#21）。原七个子项和全部验收保留；本次没有新增关闭或拆分。
-[处置与历史读回](issue-maintenance-20261026.json)区分完整维护快照及后续源码范围修正。
-维护已结束，不成为数据、安全或 SSAP 的长期前置。
+已复核35项：2项按自身条件关闭（U#1、U#21），18项有限收尾、3个已拆分父项、12项长期跟踪。
+本轮关闭U#1并更新K#24；既有7个子项复核保留，没有重复创建。
+[逐项处置与历史读回](issue-maintenance-20261026.json)保留原范围、快照和失败。
 
-U#1 retry取消与实际Native订阅测试继续复用。suite v2已补同一接收future的30秒静默观察，
-不注入事件、不暂停循环；查询与无管理租约的扫描/连接拒绝分别检查，不能混同控制器成功。
-28项离线事件回归、79项runner回归和严格Clippy通过；两个VM-only测试的ignored不计通过。
-准确产物结果及原失败只在授权本地索引，当前按原六项条件与适用保持门禁逐条审计；
-区分事件循环与controller/transport的Down责任，不等待无关完整安全、恢复或发布。
+U#1原六条事件循环条件已逐项核对，关闭只结算该范围。Native receiver、retry取消、
+最小临界区和原期限保持；fixture、离线检查及授权本地准确产物材料分别解释。
+原完整保持运行失败仍是FAIL，不能由此关闭其他项或授予当前HEAD整体资格。
 
-源码入口为 `bac12d127cd4d32874949b61b0088baa0c0fe9e8`，内核仍为
-`52ae7f08f2eafc3d79920fe5a14892970ecdd284`。历史b154的4项CI成功和codec fuzz来源检查超时
-保留原身份，由K#24跟进；不转授本提交，也不把尚未探索记作fuzz通过。
+公开源码`bac12d127cd4d32874949b61b0088baa0c0fe9e8`的五项CI完成；其中WS73/CMTC
+有界fuzz报告及artifact已核对，实际内核pin为`c39a1765fc6036da0a635a755cbd2022de4f0b28`，
+不是开发内核`52ae7f08f2eafc3d79920fe5a14892970ecdd284`。旧b154来源检查超时保留，
+新成功不证明旧超时根因已修复；K#24的调试VM及完整覆盖继续开放。
 
-U#10 自然根因/非人工恢复继续开放；U#3 → U#21/#22/#23，K#17 → K#21/#22，
-K#19 → K#23/#24。WRITE Down/restart、长值及其余原数据/安全/SSAP 范围继续推进。
-完整 S0–S6/19WP/10FV/12DG、VM-only、原失败和低优先级 UserHost 不变。
-下表保留原维护范围映射，当前逐项状态与源码后续由结构化处置记录维护。
+U#10自然根因/非人工恢复保持原条件。U#3→U#21/#22/#23，K#17→K#21/#22，
+K#19→K#23/#24；父项原验收不因拆分而减少。维护批次已完成，随后恢复WRITE
+Down/restart、适用保持门禁及原数据/安全/SSAP主线，不追加无关完整控制面前置。
+S0–S6/19WP/10FV/12DG、VM-only和UserHost低优先级规划不变。
 
 | 原 issue | 分类 | 本批动作与剩余责任 |
 | --- | --- | --- |
@@ -43,7 +41,7 @@ K#19 → K#23/#24。WRITE Down/restart、长值及其余原数据/安全/SSAP �
 | [K#17](https://github.com/OpenSparklink/linux/issues/17) | 需要拆分 | 正文收敛；K#21 credit/Ticket/撤权/复用组合；K#22 动态通道背压/公平/多设备压力；父项四条原验收保留。 |
 | [K#18](https://github.com/OpenSparklink/linux/issues/18) | 长期跟踪 | 正文收敛；完成原两角色配对/加密数据/Bond 重连和各方法的拒绝/超时/crash/错误 proof/key/重放/断链/reset；真实凭据存储由 U#5，公共机制由 K#7。SDK110 与历史111的缺包/固件诊断失败保留；既有实现或限定门禁不能关闭完整安全。 |
 | [K#19](https://github.com/OpenSparklink/linux/issues/19) | 需要拆分 | 正文收敛；K#23 资格/判定器闭包；K#24 生产 fuzz/调试 VM；跨后端、真实门禁、部署/发布边界仍属父项五条原要求。 |
-| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | 有限收尾 | suite v2 已沿同一实际 Native 循环接通，28项离线事件与79项runner回归、严格Clippy通过；原六项及适用保持门禁继续核对，准确产物结果与原失败留本地。不得从局部结果或未公开材料推断整项通过。 |
+| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | 可关闭／已关闭 | 原六条事件循环条件逐项审计完成，按自身范围关闭；源码/离线与授权本地准确材料分开。原业务保持失败和剩余门禁不改判，未授当前HEAD整体资格。 |
 | [U#2](https://github.com/OpenSparklink/sparklink/issues/2) | 有限收尾 | 正文收敛；过滤发生在丢失/截断报告之前的监控完整性缺口；实际多订阅、慢消费者、退出重开与退休回归。 |
 | [U#3](https://github.com/OpenSparklink/sparklink/issues/3) | 需要拆分 | 正文收敛；U#21 SDK READ Provider 生命周期、U#22 剩余 SSAP 操作/长值/更新事务、U#23 真实 Profile；父项原完整验收保留。 |
 | [U#4](https://github.com/OpenSparklink/sparklink/issues/4) | 长期跟踪 | 正文收敛；核对实际 PHY／telemetry 查询、合法性／监管约束及 readback；接通 per-controller/per-connection fixed、balanced、throughput、low-power 策略和 hysteresis／驻留／退避；覆盖拒绝、断链、切换与公平性。 |
@@ -479,9 +477,9 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP16-U1-native-quiet30-and-original-preservation",
-  "state": "SOURCE_OFFLINE_VALIDATED_ORIGINAL_CLOSURE_PENDING",
-  "production_behavior": "Same Native EventTask/receiver; cfg(test)-only receive observer and shared actual-controller fixture. Suite v2 adds original quiet30 gate; v1 retains held-lock-only scope. Default daemon has no observer or synthetic events.",
+  "id": "WP16-bounded-issue-maintenance-closeout",
+  "state": "MAINTENANCE_COMPLETE_U1_CLOSED_ORIGINAL_SCOPE_OPEN",
+  "production_behavior": "No production change. Reconcile 35 issues and their original contracts; close U1 independently, retain U21 closure, correct K24 exact-source offline status; no duplicated children.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
     "WP16"
@@ -489,57 +487,50 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
   "records": [],
   "predecessor_archive": {
     "history": "batch_history",
-    "id": "WP16-U1-native-event-retry-cancellation",
-    "canonical_sha256": "fcc639fc98b38b68758bf9b033361ac5084fe9f3a91321d2420aeaf7c174ac70"
+    "id": "WP16-U1-native-quiet30-and-original-preservation",
+    "canonical_sha256": "0b3dfe09796afcd46870146d6efbbccfb43132d4d115186402d738afb00100d3"
   },
   "implementation_sources": {
     "public_source": "bac12d127cd4d32874949b61b0088baa0c0fe9e8",
-    "scope": "Actual Native quiet30 test and versioned runner; source/offline scope distinct from exact artifact results."
+    "kernel": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
   },
-  "invariants": [
-    "Cancellation covers the actual retry lock wait; ready cancellation wins.",
-    "Business lock remains held while actual EventTask shutdown joins and owned resource closes.",
-    "Snapshot guard is dropped before refresh; no new polling or deadline renewal.",
-    "Task exit is not physical controller drain; old artifact qualification is not transferred."
+  "issue_sync": [
+    {
+      "repository": "sparklink",
+      "number": 1,
+      "state": "closed",
+      "state_reason": "completed",
+      "body_sha256": "ea00e821b693bf9f2cf912fc2a5011f438f928312ae8dc8eed5e8416a1d4c977",
+      "prior_body_sha256": "ea2662fbd8c09c3bea7886ddfcaf123209b73c12b9da01b01ab267c147c20ec3",
+      "observed_at": "2026-10-27T01:00:07.151247+00:00",
+      "source_offline_only": true
+    },
+    {
+      "repository": "linux",
+      "number": 24,
+      "state": "open",
+      "state_reason": null,
+      "body_sha256": "ecc07115be580e800b74a6f584a098b1cf8f5f41f3c37ccf0f8fe87018b48d69",
+      "prior_body_sha256": "41bc81632768461e0c066bac32bd161943eb6f13b447653cba9fcd0f610717d4",
+      "observed_at": "2026-10-27T01:00:09.814565+00:00",
+      "source_offline_only": true
+    }
   ],
-  "offline_checks": {
-    "event_loop": "28 passed;2 actual Native tests ignored offline, ignored is not PASS.",
-    "runner": "79 tests passed; actual transcript tamper controls separately retained.",
-    "strict": "Rust1.96.1 offline locked all-targets Clippy; shared lock8jobs.",
-    "failures": "Missing JSON dependency corrected without dependency addition; absent default dbus-daemon and omitted kernel-root failures retained; fixed D-Bus1.16.2 and explicit kernel source used on final runs.",
-    "limits": "Legacy EventSource quiet fixture is not Native qualification; finite offline tests do not prove kernel concurrency/drain."
-  },
-  "offline_status": "SCOPED_OFFLINE_PASS",
-  "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "Private exact-artifact results and original failures remain in authorized local index. No hardware verdict or execution identity published here; no current HEAD qualification inferred.",
   "exit_conditions": [
-    "Reconcile original six U1 requirements with exact artifact evidence; preserve applicable original regression conditions and all failures. Do not make unrelated full security/recovery/release prerequisites."
+    "35 issues classified; original six U1 criteria audited; parent scopes preserved; canonical views and online state consistent."
   ],
   "remaining_conditions": [
-    "Original U1 closure audit and applicable preserved paths; distinguish event-loop behavior from controller/transport Down obligations.",
-    "Original WRITE Down/restart, data/security/SSAP remaining scope.",
-    "Natural root causes and nonmanual recovery remain open."
+    "Original complete preservation failure remains FAIL; no new whole-head qualification or natural fault root cause.",
+    "U10 natural recovery; K17/K19 original parents and child gates; U3/U22/U23 remaining SSAP/Profile."
   ],
   "next": [
-    "Audit original U1 criteria independently; use exact evidence and keep incomplete preservation visible.",
-    "Continue existing Down timeline/transport analysis and missing length preservation without relaxing original deadlines or overwriting failures.",
-    "Resume original WRITE/data/security/SSAP vertical work; no full control-plane prerequisite."
+    "Resume existing WRITE Down/restart and data/security/SSAP vertical work with original artifact-bound preservation gates.",
+    "Keep natural root causes/nonmanual recovery open; no full-control-plane prerequisite."
   ],
-  "issues": [
-    "OpenSparklink/sparklink#1"
-  ],
-  "issue_sync": {
-    "repository": "sparklink",
-    "number": 1,
-    "prior_body_sha256": "d1d8bb776f4a27df75239d39b4b60f6ec9fc16142c9384fde424a2484f46e351",
-    "body_sha256": "ea2662fbd8c09c3bea7886ddfcaf123209b73c12b9da01b01ab267c147c20ec3",
-    "source": "bac12d127cd4d32874949b61b0088baa0c0fe9e8",
-    "state": "open",
-    "source_offline_only": true,
-    "observed_at": "2026-10-27T00:44:13.688749+00:00"
-  },
-  "qualification_boundary": "No new PASS record registered; all historical records/materials and selected qualification unchanged. Current source, compiled artifact, execution and report identities remain distinct.",
-  "public_scope": "Source/offline only; private hardware details remain local."
+  "hardware_status": "No new hardware execution. Detailed existing artifact records remain in authorized local index; no hardware details published.",
+  "formal_status": "NO_NEW_PROOF",
+  "offline_status": "SOURCE_AND_RETAINED_EVIDENCE_AUDIT_ONLY",
+  "qualification_boundary": "No PASS record added or transferred; records/materials/selected qualification unchanged."
 }
 ```
 
@@ -2333,7 +2324,7 @@ K表示`OpenSparklink/linux`，U表示`OpenSparklink/sparklink`。以下关联�
 
 | Issue | 原范围 | 工作包与补充验收 |
 |---|---|---|
-| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | 有限收尾 | suite v2 已沿同一实际 Native 循环接通，28项离线事件与79项runner回归、严格Clippy通过；原六项及适用保持门禁继续核对，准确产物结果与原失败留本地。不得从局部结果或未公开材料推断整项通过。 |
+| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | 可关闭／已关闭 | 原六条事件循环条件逐项审计完成，按自身范围关闭；源码/离线与授权本地准确材料分开。原业务保持失败和剩余门禁不改判，未授当前HEAD整体资格。 |
 | [U#2](https://github.com/OpenSparklink/sparklink/issues/2) | 独立事件/监控订阅 | WP12/16/18；多reader/overflow/旧poll删除 |
 | [U#3](https://github.com/OpenSparklink/sparklink/issues/3) | SSAP/Profile迁移 | WP04/06/08/10/18；真实服务和模式、权限、标准依赖 |
 | [U#4](https://github.com/OpenSparklink/sparklink/issues/4) | PHY policy | WP15；策略replay与真实actual能力 |
@@ -2369,7 +2360,7 @@ K表示`OpenSparklink/linux`，U表示`OpenSparklink/sparklink`。以下关联�
 | [K#17](https://github.com/OpenSparklink/linux/issues/17) | S4 TCID/ACB/credit/PDU | TCID 不当作连接 handle；253/254/255 边界、分片/重组、credit 耗尽与恢复；实机双向 |
 | [K#18](https://github.com/OpenSparklink/linux/issues/18) | S5 SMP relay / 加密 mechanism | relay layout/算法来源；双角色真实 pair/encrypt、错 key、revoke、Bond reconnect |
 | [K#19](https://github.com/OpenSparklink/linux/issues/19) | 每批证据；S6 全矩阵 | 严格 verdict、Virtual/标准 USB/WS73 分开；mixed backend、故障/PM/性能/复现与支持范围 |
-| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | 有限收尾 | suite v2 已沿同一实际 Native 循环接通，28项离线事件与79项runner回归、严格Clippy通过；原六项及适用保持门禁继续核对，准确产物结果与原失败留本地。不得从局部结果或未公开材料推断整项通过。 |
+| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | 可关闭／已关闭 | 原六条事件循环条件逐项审计完成，按自身范围关闭；源码/离线与授权本地准确材料分开。原业务保持失败和剩余门禁不改判，未授当前HEAD整体资格。 |
 | [U#2](https://github.com/OpenSparklink/sparklink/issues/2) | S2 StateSubscription/SnoopSubscription | 与 K#3 联调，工具不抢事件；移除主路径破坏性 poll/50ms fallback |
 | [U#3](https://github.com/OpenSparklink/sparklink/issues/3) | S4 SSAP Engine/session/DB/Profile；修标准 UUID/权限 | goldens+malformed+MTU/长读写；未协商事务号时单在途；真实 Battery/HID/DeviceInfo PDU；restart/卸载/并行连接 |
 | [U#4](https://github.com/OpenSparklink/sparklink/issues/4) | S5 每连接 PHY policy | telemetry replay 的 hysteresis/dwell/backoff/clamp/rollback/fairness；只广告真能力 |

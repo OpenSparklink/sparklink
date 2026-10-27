@@ -7,7 +7,7 @@
     "sparklink": "3f39f2510933666be27a0d595beebe7181798100",
     "linux": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
   },
-  "online_readback_utc": "2026-10-26T12:09:11.808795+00:00",
+  "online_readback_utc": "2026-10-27T01:01:48.727620+00:00",
   "counts": {
     "originals_reviewed": 28,
     "bodies_updated": 28,
@@ -258,11 +258,11 @@
       "number": 1,
       "title": "解除 slkd 事件循环持锁等待",
       "url": "https://github.com/OpenSparklink/sparklink/issues/1",
-      "classification": "有限收尾",
-      "action": "body_replaced",
-      "state": "open",
-      "closure_basis": "suite v2 已沿同一实际 Native 循环接通，28项离线事件与79项runner回归、严格Clippy通过；原六项及适用保持门禁继续核对，准确产物结果与原失败留本地。不得从局部结果或未公开材料推断整项通过。",
-      "body_sha256": "ea2662fbd8c09c3bea7886ddfcaf123209b73c12b9da01b01ab267c147c20ec3",
+      "classification": "可关闭",
+      "action": "original_six_acceptance_closed",
+      "state": "closed",
+      "closure_basis": "原六条事件循环条件逐项审计完成，按自身范围关闭；源码/离线与授权本地准确材料分开。原业务保持失败和剩余门禁不改判，未授当前HEAD整体资格。",
+      "body_sha256": "ea00e821b693bf9f2cf912fc2a5011f438f928312ae8dc8eed5e8416a1d4c977",
       "children": []
     },
     {
@@ -446,10 +446,10 @@
       "url": "https://github.com/OpenSparklink/linux/issues/24",
       "parent": 19,
       "state": "open",
-      "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "41bc81632768461e0c066bac32bd161943eb6f13b447653cba9fcd0f610717d4",
+      "action": "source_offline_status_updated",
+      "body_sha256": "ecc07115be580e800b74a6f584a098b1cf8f5f41f3c37ccf0f8fe87018b48d69",
       "classification": "长期跟踪",
-      "closure_basis": "生产 fuzz 与实际调试 VM 分层覆盖继续开放；新增公开 CI 来源检查 git status 30秒超时，探索未执行。保留失败并定位元数据阶段，不能把未执行当 PASS。"
+      "closure_basis": "准确bac12d1 CI的WS73/CMTC固定语料及有界探索完成；旧b154来源检查超时保留且根因未证实修复。生产有状态/syscall、调试VM覆盖与原退出条件仍开放。"
     }
   ],
   "history_policy": {
@@ -467,28 +467,39 @@
     "environment": "Rust 1.96.1, locked/offline; shared fixed Cargo directory and global build lock; 8 jobs; real private D-Bus 1.16.2, controlled EventSource and /dev/null.",
     "limits": "No real kernel/USB/RF, system-bus deployment, formal proof or full Native shutdown qualification. Native retry-lock cancellation remains U#1."
   },
-  "resume": "Bounded maintenance complete; U1 original closure audit, applicable preservation, and existing data/security/SSAP mainline. No full-control-plane prerequisite.",
+  "resume": "Bounded maintenance complete; U1 independently closed. Resume existing WRITE Down/restart, data/security/SSAP and applicable preservation; retain all original failures. No full-control-plane prerequisite.",
   "natural_root_cause_closed": false,
   "non_manual_recovery_qualified": false,
   "whole_goal_complete": false,
   "followup_readback": {
-    "observed_at": "2026-10-27T00:17:16.082710+00:00",
+    "observed_at": "2026-10-27T01:01:48.727620+00:00",
     "originals_verified": 28,
     "children_verified": 7,
-    "readback_scope": "All 35 bodies/states and three native parent relations; public source/offline scope only. U1 original Native quiet30 coverage remains pending.",
+    "readback_scope": "35 current issue bodies/states and existing three parent relations. U1 closed against unchanged six criteria; historical failures retained. Public source/offline only.",
     "source_review": {
-      "sparklink_public": "b154c99215c616c060a6da45350bf4baea1923d2",
+      "sparklink_public": "bac12d127cd4d32874949b61b0088baa0c0fe9e8",
       "linux": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
     },
     "updates": [
       {
         "repository": "sparklink",
         "number": 1,
-        "prior_body_sha256": "3f499830a45438b1bd3734c5441dbedc5b446f77c5022dc7e4268fe1c62200c7",
-        "body_sha256": "56dbd9ea414d7fbcf3eca8ad7ce43f402879a44e59d83ff522b2d41cee916a13",
+        "state": "closed",
+        "state_reason": "completed",
+        "body_sha256": "ea00e821b693bf9f2cf912fc2a5011f438f928312ae8dc8eed5e8416a1d4c977",
+        "prior_body_sha256": "ea2662fbd8c09c3bea7886ddfcaf123209b73c12b9da01b01ab267c147c20ec3",
+        "observed_at": "2026-10-27T01:00:07.151247+00:00",
+        "source_offline_only": true
+      },
+      {
+        "repository": "linux",
+        "number": 24,
         "state": "open",
-        "source_offline_only": true,
-        "observed_at": "2026-10-27T00:06:14.442354+00:00"
+        "state_reason": null,
+        "body_sha256": "ecc07115be580e800b74a6f584a098b1cf8f5f41f3c37ccf0f8fe87018b48d69",
+        "prior_body_sha256": "41bc81632768461e0c066bac32bd161943eb6f13b447653cba9fcd0f610717d4",
+        "observed_at": "2026-10-27T01:00:09.814565+00:00",
+        "source_offline_only": true
       }
     ],
     "verified_issue_states": [
@@ -666,11 +677,11 @@
       {
         "repository": "sparklink",
         "number": 1,
-        "state": "open",
-        "classification": "有限收尾",
-        "action": "body_scope_corrected",
-        "body_sha256": "56dbd9ea414d7fbcf3eca8ad7ce43f402879a44e59d83ff522b2d41cee916a13",
-        "basis": "Native 取消修复与实际订阅门禁已经接通；准确产物结果在授权本地索引。原静默30秒用例仍走测试专用 EventSource，须补同一实际 Native 循环的现行 D-Bus handler 验证，再按原六项条件关闭。"
+        "state": "closed",
+        "classification": "可关闭",
+        "action": "original_six_acceptance_closed",
+        "body_sha256": "ea00e821b693bf9f2cf912fc2a5011f438f928312ae8dc8eed5e8416a1d4c977",
+        "basis": "原六条事件循环条件逐项审计完成，按自身范围关闭；源码/离线与授权本地准确材料分开。原业务保持失败和剩余门禁不改判，未授当前HEAD整体资格。"
       },
       {
         "repository": "sparklink",
@@ -803,22 +814,18 @@
         "number": 24,
         "state": "open",
         "classification": "长期跟踪",
-        "action": "reviewed_retained",
-        "body_sha256": "41bc81632768461e0c066bac32bd161943eb6f13b447653cba9fcd0f610717d4",
-        "basis": "生产 fuzz 与实际调试 VM 分层覆盖继续开放；新增公开 CI 来源检查 git status 30秒超时，探索未执行。保留失败并定位元数据阶段，不能把未执行当 PASS。"
+        "action": "source_offline_status_updated",
+        "body_sha256": "ecc07115be580e800b74a6f584a098b1cf8f5f41f3c37ccf0f8fe87018b48d69",
+        "basis": "准确bac12d1 CI的WS73/CMTC固定语料及有界探索完成；旧b154来源检查超时保留且根因未证实修复。生产有状态/syscall、调试VM覆盖与原退出条件仍开放。"
       }
     ],
-    "newly_closed": [],
-    "new_children": [],
-    "retained_closed": [
-      "U#21"
-    ],
-    "classification_counts": {
-      "finite": 19,
-      "split_parent": 3,
-      "long_term": 12,
-      "closed": 1
-    }
+    "counts": {
+      "closed": 2,
+      "finite_followups": 18,
+      "split_parents": 3,
+      "long_term": 12
+    },
+    "new_children": []
   },
   "followup_readback_history": [
     {
@@ -3298,6 +3305,355 @@
         "accepted_exploration": false,
         "issue": "linux#24"
       }
+    },
+    {
+      "observed_at": "2026-10-27T00:17:16.082710+00:00",
+      "originals_verified": 28,
+      "children_verified": 7,
+      "readback_scope": "All 35 bodies/states and three native parent relations; public source/offline scope only. U1 original Native quiet30 coverage remains pending.",
+      "source_review": {
+        "sparklink_public": "b154c99215c616c060a6da45350bf4baea1923d2",
+        "linux": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
+      },
+      "updates": [
+        {
+          "repository": "sparklink",
+          "number": 1,
+          "prior_body_sha256": "3f499830a45438b1bd3734c5441dbedc5b446f77c5022dc7e4268fe1c62200c7",
+          "body_sha256": "56dbd9ea414d7fbcf3eca8ad7ce43f402879a44e59d83ff522b2d41cee916a13",
+          "state": "open",
+          "source_offline_only": true,
+          "observed_at": "2026-10-27T00:06:14.442354+00:00"
+        }
+      ],
+      "verified_issue_states": [
+        {
+          "repository": "linux",
+          "number": 1,
+          "state": "open",
+          "classification": "长期跟踪",
+          "action": "reviewed_retained",
+          "body_sha256": "ee86e30665eb1dbf095ef7d5e7e8486d7e163c12b4ad359ce9b19ddda049a800",
+          "basis": "Native 实现与验收分别由 K#2–#19 承接，本项维护所有权边界与映射；UserHost 独占包接口、状态屏障、权限/租约/故障矩阵由 U#7 和 WP14 延后实现。保留全部经修订的原要求，不把 P4 接管设为当前 Native 业务前置。"
+        },
+        {
+          "repository": "linux",
+          "number": 2,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "reviewed_retained",
+          "body_sha256": "02938a5c7ed417ca39b8bca5426e18a0750ebeafded33ee3e550b989f890c99b",
+          "basis": "按实际支持的标准/WS73 profile 逐项核齐参数、顺序、Status/Complete/领域终态、取消与晚到；保持故障拒绝和完整 packet 边界。未来 UserHost 不是 Native Backend；原厂商 Host 要求按 U#7 单独适配，不能用该延期项阻塞已支持 Native 路径收尾。"
+        },
+        {
+          "repository": "linux",
+          "number": 3,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "reviewed_retained",
+          "body_sha256": "b941964c5df91cea7529651beb8bced2df011bea36063cc835fa48a5188bfc85",
+          "basis": "收尾 U#2 的过滤后捕获完整性；按准确产物验证多订阅/慢消费者/退出重开/高流量、copy fault、退休唤醒与结果作者隔离。保留输入截断、订阅 overflow 与完整日志负对照；不把模型/fixture 升级为真实内核并发资格。"
+        },
+        {
+          "repository": "linux",
+          "number": 4,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "reviewed_retained",
+          "body_sha256": "b95c0a753107e46701ed1f49e204984b799593090ab53936bc784452afa8def5",
+          "basis": "将现有双设备交错及单侧退休门禁逐项映射到当前支持范围，继续补回调/worker/drain 与分配失败组合；多通道/四设备压力由 K#17 子项承接。安全/PHY 子系统功能由各自 issue 负责，本项验证其状态归属，不能等待全部协议特性后才判断隔离。"
+        },
+        {
+          "repository": "linux",
+          "number": 5,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "reviewed_retained",
+          "body_sha256": "81f409d72ad53033c84fc82a6f68e88631ee40e1e3b2c857b09b940dac132201",
+          "basis": "按实际公开入口核齐唯一管理者、CAP/凭据、fd 传递/最终关闭、旧 generation/Grant epoch 与畸形输入；系统总线部署权限须在 VM 验证。原 BackendProxy 条款按 ADR0003 转为 U#7 的 UserHost 独占授权/隔离要求，不恢复 Native 任意命令旁路。"
+        },
+        {
+          "repository": "linux",
+          "number": 6,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "reviewed_retained",
+          "body_sha256": "ca947ed83f2970b1d7e7058f6fd6f7e4dea9054a075551d8ea6e91c3fb985bd1",
+          "basis": "按实际支持模式补齐 syscall/poll、预算、撤权/关闭/断链、原期限与旧 lifetime 拒绝；protected/可靠模式只按真实机制开放，未支持明确拒绝。双连接、长 PDU、慢 owner 与 daemon 退出继续按原门禁验收；SSAP 事务/属性业务归 U#3，data credit/通道公平归 K#17。"
+        },
+        {
+          "repository": "linux",
+          "number": 7,
+          "state": "open",
+          "classification": "长期跟踪",
+          "action": "reviewed_retained",
+          "body_sha256": "b467969389b663e3649fb5ab151f88650ce9781f5eb886511fc6369979f2fe73",
+          "basis": "按方法完成真实 prompt/action、错误证明/密钥、重放、撤销、断链、owner 丢失及安装失败；实现/验证真实重连凭据 import/remove 与安全清理。opaque token 仅可选版本化能力，不伪造支持；长期协议/安全模型和 U#5/K#18 原验收继续开放。"
+        },
+        {
+          "repository": "linux",
+          "number": 8,
+          "state": "open",
+          "classification": "长期跟踪",
+          "action": "reviewed_retained",
+          "body_sha256": "97bf4feb219d1b9042e773c0c870203975abcb2244813b67f789b109d9d4fb7f",
+          "basis": "由 K#1–#7/#9–#19 及 U#1–#8/#10 和本批子项逐条承接原范围；原厂商 Proxy 方向按 UserHost 修订。兼容期要求已由未发布 UAPI 的同步迁移/删除规则替代，旧编号不复用。全部必需条件完成前保持父项开放。"
+        },
+        {
+          "repository": "linux",
+          "number": 9,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "reviewed_retained",
+          "body_sha256": "4410729ebb2ba22d7af99455887e2b102cbaa84755028679837bd41653bb113e",
+          "basis": "逐项核齐注册失败回滚、模块引用、两实例交错、并发 unregister、旧 callback、stop/drain 和部分初始化；内建/模块组合由 K#12 联验。保留确定终态和引用排空要求，不以应用 fd 数量代替物理 drain。"
+        },
+        {
+          "repository": "linux",
+          "number": 10,
+          "state": "open",
+          "classification": "长期跟踪",
+          "action": "reviewed_retained",
+          "body_sha256": "2d396cc97fe3ff64d0648ea272d72325b8ad82e423cb2caff7d289df832f159e",
+          "basis": "保留部分初始化/重复 enable-disable/fd 最终关闭/stop-drain 门禁；查清自然启动超时、重枚举失败、消失及不依赖人工操作的有界恢复，之后验证 PM/reset-resume。人工拔插、hub 切电、QMP 与注入只能作各自受控测试，不能结算自然恢复。接口/固件/USB 根因分别复用 K#9/#14/#15；不新建重复总项。"
+        },
+        {
+          "repository": "linux",
+          "number": 11,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "reviewed_retained",
+          "body_sha256": "d47b1ed0d8b2fcbedc7787acc0ca9bc86607aa29746c2dce7d350f25ecdbe11e",
+          "basis": "按设备/固件审计 known/unknown/unsupported、limits/quirks 和失败策略，补精确匹配/错误 fallback 与跨语言输出门禁。E/U 主固件与两份校准必须每设备一致；冷 ROM READM 有效性/稳定性及混合型号资格未闭合前保留显式板型。"
+        },
+        {
+          "repository": "linux",
+          "number": 12,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "reviewed_retained",
+          "body_sha256": "1d60a331ef921bfbff7143444b49afd7eb1f2d0abc243d993423557e4cdb3984",
+          "basis": "核齐所声明支持的 USB off/Virtual、通用 USB/WS73 独立开关、built-in/module 与实际加载卸载；检查匹配无抢占与迁移前后回归。Kconfig help 中遗留的功能状态说明需按当前资格边界更新，不能从目录迁移宣称所有构建或其他总线完成。"
+        },
+        {
+          "repository": "linux",
+          "number": 13,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "reviewed_retained",
+          "body_sha256": "7f00addcd7f5385e07775605e02cbe5c557097856486e9c483d6d7f976125c52",
+          "basis": "审计 opcode/event、ACB/TCID/relay、USB/HCC/BSLE 字段矩阵的来源类型和未知项；核齐去敏 fixture 的来源/许可、最小配置/版本查询与每份固件适用范围。参考库不是标准裁判；不复制受限标准或未授权 blob。"
+        },
+        {
+          "repository": "linux",
+          "number": 14,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "reviewed_retained",
+          "body_sha256": "c527599b4c71919ae79b2e78df7e66738944683539c806e3f73dac975e81b879",
+          "basis": "补适用 KASAN/lockdep/故障注入、畸形/截断/聚合、取消/拔出/重提交与 buffer 所有权门禁；测量单 RX URB callback/重提交空窗后再决定有界多 URB 或热路径优化，保持顺序/generation/stop-drain。自然 USB 根因由 K#10/#15 协同，不能以重新枚举替代状态清除。"
+        },
+        {
+          "repository": "linux",
+          "number": 15,
+          "state": "open",
+          "classification": "长期跟踪",
+          "action": "reviewed_retained",
+          "body_sha256": "49442990a56023e90c4ca64a95a8111f3c75d8d3a066a49015409dad99c18d37",
+          "basis": "继续缺失/损坏镜像、通知乱序/超时、部分初始化/退出与自然启动失败根因；E 运行期实验地址不等于出厂唯一身份，cold-ROM 自动选择、混合型号与无人工恢复仍须各自原门禁。许可/来源与复现输入保持外部，不上传未授权固件。"
+        },
+        {
+          "repository": "linux",
+          "number": 16,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "reviewed_retained",
+          "body_sha256": "d1868f17946d9665c41362dcce3e45efb1fb037865e07609ccd5454b3a228909",
+          "basis": "核齐 READ/version/buffer、广播/扫描/建链/断链与同 opcode 并发、取消/超时后晚到、异步交错和重置身份；各 profile 的 golden 与实际支持接口分别验收。未知操作保持明确不支持，诊断入口遵循独占权限。"
+        },
+        {
+          "repository": "linux",
+          "number": 17,
+          "state": "open",
+          "classification": "需要拆分",
+          "action": "reviewed_retained",
+          "body_sha256": "c7d089992d364d1f62d7ad1682e9f450444bff7c50c0bf20bb134170d147c0a4",
+          "basis": "K#21 credit/Ticket/撤权/复用组合；K#22 动态通道背压/公平/多设备压力；父项四条原验收保留。"
+        },
+        {
+          "repository": "linux",
+          "number": 18,
+          "state": "open",
+          "classification": "长期跟踪",
+          "action": "reviewed_retained",
+          "body_sha256": "59b855d800418eb5a9c492172f1900240e34c244a10a1abaeb3bd1ad49a22092",
+          "basis": "完成原两角色配对/加密数据/Bond 重连和各方法的拒绝/超时/crash/错误 proof/key/重放/断链/reset；真实凭据存储由 U#5，公共机制由 K#7。SDK110 与历史111的缺包/固件诊断失败保留；既有实现或限定门禁不能关闭完整安全。"
+        },
+        {
+          "repository": "linux",
+          "number": 19,
+          "state": "open",
+          "classification": "需要拆分",
+          "action": "reviewed_retained",
+          "body_sha256": "aabc17a668586212a862cc90aaf4139f95a05c6248de3f9960d75474311ad12d",
+          "basis": "K#23 资格/判定器闭包；K#24 生产 fuzz/调试 VM；跨后端、真实门禁、部署/发布边界仍属父项五条原要求。"
+        },
+        {
+          "repository": "sparklink",
+          "number": 1,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "body_scope_corrected",
+          "body_sha256": "56dbd9ea414d7fbcf3eca8ad7ce43f402879a44e59d83ff522b2d41cee916a13",
+          "basis": "Native 取消修复与实际订阅门禁已经接通；准确产物结果在授权本地索引。原静默30秒用例仍走测试专用 EventSource，须补同一实际 Native 循环的现行 D-Bus handler 验证，再按原六项条件关闭。"
+        },
+        {
+          "repository": "sparklink",
+          "number": 2,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "reviewed_retained",
+          "body_sha256": "4cb3c15b76f90dd969af3073c2c779a7b174cb11553b71ea16bcb99112948042",
+          "basis": "过滤发生在丢失/截断报告之前的监控完整性缺口；实际多订阅、慢消费者、退出重开与退休回归。"
+        },
+        {
+          "repository": "sparklink",
+          "number": 3,
+          "state": "open",
+          "classification": "需要拆分",
+          "action": "reviewed_retained",
+          "body_sha256": "629806a6f51b101e64eb42fe8c4c8739585c25ec27e3afdb4d626574c3e5017f",
+          "basis": "U#21 SDK READ Provider 生命周期、U#22 剩余 SSAP 操作/长值/更新事务、U#23 真实 Profile；父项原完整验收保留。"
+        },
+        {
+          "repository": "sparklink",
+          "number": 4,
+          "state": "open",
+          "classification": "长期跟踪",
+          "action": "reviewed_retained",
+          "body_sha256": "84d34c0bf0f70db4185562530c172ffb9f3a01b60240906d0944a30637b3bf73",
+          "basis": "核对实际 PHY／telemetry 查询、合法性／监管约束及 readback；接通 per-controller/per-connection fixed、balanced、throughput、low-power 策略和 hysteresis／驻留／退避；覆盖拒绝、断链、切换与公平性。"
+        },
+        {
+          "repository": "sparklink",
+          "number": 5,
+          "state": "open",
+          "classification": "长期跟踪",
+          "action": "reviewed_retained",
+          "body_sha256": "36e9301e5f700ab0440f235ce2da1b21a6cd10ef1314eb27fc08b9f7e8eb0bd8",
+          "basis": "完成各认证方法的 Agent/调用者退出、原期限、晚到批准及安装失败门禁；真实重连凭据的安全存储、原子持久化、迁移、撤销与 bonded reconnect 仍按原范围验收。机制依赖 K#7/#18，不新造安全 Engine。"
+        },
+        {
+          "repository": "sparklink",
+          "number": 6,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "reviewed_retained",
+          "body_sha256": "24bdd8ce25d51cb38068be6507d6f97f2383cd6584583949413bd5cb5412fddf",
+          "basis": "按准确产物核齐产品 disable/enable、初始化失败、同地址不同地址类型、单侧退休与重新发布；确认每一公开方法的角色/权限和 unavailable 错误。独立 Bond/PHY 能力由 U#5/#4负责；本项只验证路由与状态消费，不等待它们整项交付。"
+        },
+        {
+          "repository": "sparklink",
+          "number": 7,
+          "state": "open",
+          "classification": "长期跟踪/P4",
+          "action": "reviewed_retained",
+          "body_sha256": "f877a0848d6c325672c128308612e7b78e1787ad73b67ebaf7a74cd6cdbc864f",
+          "basis": "UserHost 独占所有权、接管/退出屏障、授权与隔离；P4 规划，非 Native 主线前置。"
+        },
+        {
+          "repository": "sparklink",
+          "number": 8,
+          "state": "open",
+          "classification": "长期跟踪",
+          "action": "reviewed_retained",
+          "body_sha256": "bfbd4df72deb2b8b9bc59c57fb1da7eb1ab6c66ea6c625abec1ce41ecd39bf60",
+          "basis": "完整 S0–S6、19WP、10FV、12DG 及原验收全部保留；按每个生产行为的小项独立收尾/关闭，父跟踪只维护范围映射。自然故障根因、非人工恢复、剩余数据/安全/SSAP/Profile、部署/发布继续开放；UserHost 低优先级且非当前前置。"
+        },
+        {
+          "repository": "sparklink",
+          "number": 10,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "reviewed_retained",
+          "body_sha256": "777a542d88cb8f8c06e2eec8005fccf8d98c621d9d94802de800e4cf56f7b508",
+          "basis": "保留运行期/物理拔插闭环原验收，以及用户追加的不依赖人工拔插故障恢复要求。后者仍须查明自然启动超时、重枚举失败与设备消失根因，并验证有界自动恢复及同行隔离；对应 K#10/#14/#15/#19 复用现有任务，不另建重复恢复跟踪。不等待与本里程碑无关的完整安全、Bond 或发布。"
+        },
+        {
+          "repository": "sparklink",
+          "number": 21,
+          "state": "closed",
+          "classification": "可关闭",
+          "action": "reviewed_retained",
+          "body_sha256": "80d79c7ce0575d36c8d367f36e7b37c5626da64cba7f48131fd037de579a11dc",
+          "basis": "已按原六项 READ SDK Provider 验收关闭；不授予当前 HEAD 整体资格。"
+        },
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "reviewed_retained",
+          "body_sha256": "4520b08b8b6a73f9d3910fb32730ab96590c1adf846d7aafb8924bea5f7ff12a",
+          "basis": "WRITE 显式注销、原期限与 owner 退出 gate 已接通；Down/restart、长值及原操作/更新矩阵继续开放。源码、离线与准确产物资格分别记录。"
+        },
+        {
+          "repository": "sparklink",
+          "number": 23,
+          "state": "open",
+          "classification": "长期跟踪",
+          "action": "reviewed_retained",
+          "body_sha256": "5de03a8d7aff72e8eb2f7ed7bcfa61d41a266ee0e9c2e4f96560cc47b98c8b6d",
+          "basis": "Battery/DeviceInfo/HID 真实业务、启用/卸载、隔离与原门禁。"
+        },
+        {
+          "repository": "linux",
+          "number": 21,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "reviewed_retained",
+          "body_sha256": "e10558efccf5277f6a861a5943236cd0215067a0f3e28eb78429b0dd8e04460a",
+          "basis": "credit/Ticket/撤权/断链/原期限/晚到完成/复用组合；环境假设须独立验证。"
+        },
+        {
+          "repository": "linux",
+          "number": 22,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "reviewed_retained",
+          "body_sha256": "978697253ce70f36db07fbf1980dfbcc874db3d56b9f277fc85410e86f20717d",
+          "basis": "动态通道背压、公平性、多设备实际业务与关闭隔离。"
+        },
+        {
+          "repository": "linux",
+          "number": 23,
+          "state": "open",
+          "classification": "有限收尾",
+          "action": "reviewed_retained",
+          "body_sha256": "eb0ca80df84dacafd5dc2bab0ab99987c07ceb87021487e0001f99ccb3a855a4",
+          "basis": "资格身份、原材料、判定器闭包及缺失/篡改/过期负对照。"
+        },
+        {
+          "repository": "linux",
+          "number": 24,
+          "state": "open",
+          "classification": "长期跟踪",
+          "action": "reviewed_retained",
+          "body_sha256": "41bc81632768461e0c066bac32bd161943eb6f13b447653cba9fcd0f610717d4",
+          "basis": "生产 fuzz 与实际调试 VM 分层覆盖继续开放；新增公开 CI 来源检查 git status 30秒超时，探索未执行。保留失败并定位元数据阶段，不能把未执行当 PASS。"
+        }
+      ],
+      "newly_closed": [],
+      "new_children": [],
+      "retained_closed": [
+        "U#21"
+      ],
+      "classification_counts": {
+        "finite": 19,
+        "split_parent": 3,
+        "long_term": 12,
+        "closed": 1
+      }
     }
   ],
   "later_dispositions": [
@@ -3327,6 +3683,12 @@
         ],
         "private_hardware_details_published": false
       }
+    },
+    {
+      "issue": "sparklink#1",
+      "state": "closed",
+      "reason": "原六条事件循环条件逐项审计完成，按自身范围关闭；源码/离线与授权本地准确材料分开。原业务保持失败和剩余门禁不改判，未授当前HEAD整体资格。",
+      "observed_at": "2026-10-27T01:01:48.727620+00:00"
     }
   ],
   "child_state_history": [
@@ -3342,7 +3704,7 @@
     }
   ],
   "source_review_scope": "Original maintenance snapshot; current reviewed source is followup_readback.source_review.",
-  "counts_scope": "Original 28-issue maintenance and existing child dispositions; followup_readback identifies changes made in the current bounded refresh.",
+  "counts_scope": "counts preserves original maintenance snapshot; current disposition is followup_readback.counts, not a new qualification.",
   "source_followups": [
     {
       "repository": "sparklink",
@@ -3384,6 +3746,26 @@
       "source_offline_only": true,
       "observed_at": "2026-10-27T00:44:13.688749+00:00",
       "scope": "Actual quiet30 suite v2 implementation and scoped offline validation; private execution evidence withheld."
+    },
+    {
+      "repository": "sparklink",
+      "number": 1,
+      "state": "closed",
+      "state_reason": "completed",
+      "body_sha256": "ea00e821b693bf9f2cf912fc2a5011f438f928312ae8dc8eed5e8416a1d4c977",
+      "prior_body_sha256": "ea2662fbd8c09c3bea7886ddfcaf123209b73c12b9da01b01ab267c147c20ec3",
+      "observed_at": "2026-10-27T01:00:07.151247+00:00",
+      "source_offline_only": true
+    },
+    {
+      "repository": "linux",
+      "number": 24,
+      "state": "open",
+      "state_reason": null,
+      "body_sha256": "ecc07115be580e800b74a6f584a098b1cf8f5f41f3c37ccf0f8fe87018b48d69",
+      "prior_body_sha256": "41bc81632768461e0c066bac32bd161943eb6f13b447653cba9fcd0f610717d4",
+      "observed_at": "2026-10-27T01:00:09.814565+00:00",
+      "source_offline_only": true
     }
   ]
 }

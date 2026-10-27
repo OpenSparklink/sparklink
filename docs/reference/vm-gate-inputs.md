@@ -723,7 +723,9 @@ manifest 与每阶段结果必须匹配同一版本。
 ### SDK WRITE Provider 的结果门禁
 
 `--ssap-sdk-write-provider-verify` 是现有 runner 的独立选择项，要求原 Owned、
-普通61字节/每角色4轮通道及显式 passthrough 配置。guest 使用唯一
+普通61字节/每角色4轮通道、显式 passthrough 和
+`--connection-advertising negotiable-t` 配置。缺失或 Fixed-T 在启动前拒绝；
+Fixed-T 仍可用既有独立连接门禁作对照，不能混入本 WRITE 门禁的基线。guest 使用唯一
 `ws73.ssap_sdk_write_provider=1`；不能混用 READ Provider、Owner-exit/unregister/
 deadline、其他 SSAP 扩展、Agent 或性能/动态通道专用模式。它不另建 Host 或 Engine。
 

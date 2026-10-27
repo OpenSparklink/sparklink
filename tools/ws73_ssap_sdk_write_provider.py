@@ -50,6 +50,9 @@ def requested(args, *, passthrough=None, selector=PREFIX):
     selected=getattr(args,selector+'_verify',False)
     need(type(selected)is bool,'explicit WRITE Provider selector required')
     if not selected:return False
+    if selector==PREFIX:
+        need(getattr(args,'connection_advertising',None)=='negotiable-t',
+             'SDK WRITE value gate requires explicit negotiable-t; fixed-t is a separate connection contrast')
     need(not any(getattr(args, name+'_verify',False) for name in
         ('ssap_sdk_write_provider','ssap_write_provider_unregister','ssap_write_provider_deadline','ssap_write_provider_owner_exit','ssap_write_provider_down') if name != selector),
         'one dedicated WRITE scenario required')

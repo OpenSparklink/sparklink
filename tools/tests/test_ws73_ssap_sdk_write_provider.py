@@ -118,9 +118,9 @@ class WriteEvidence(unittest.TestCase):
         self.assertTrue(gate.valid_manifest({}))
 
     def test_explicit_selector_and_original_baseline(self):
-        args=dict(ssap_sdk_write_provider_verify=True,passthrough=True,ssap_owned_verify=True,channel_socket_verify=True,channel_socket_rounds=4,channel_socket_bytes=61)
+        args=dict(ssap_sdk_write_provider_verify=True,connection_advertising='negotiable-t',passthrough=True,ssap_owned_verify=True,channel_socket_verify=True,channel_socket_rounds=4,channel_socket_bytes=61)
         self.assertTrue(gate.requested(SimpleNamespace(**args)))
-        for key,value in [('ssap_sdk_write_provider_verify',1),('ssap_owned_verify',False),('passthrough',False),('ssap_read_provider_verify',True),('ssap_provider_unregister_verify',True),('channel_socket_bytes',62),('ssap_value_lengths_verify',True)]:
+        for key,value in [('connection_advertising',None),('connection_advertising','fixed-t'),('ssap_sdk_write_provider_verify',1),('ssap_owned_verify',False),('passthrough',False),('ssap_read_provider_verify',True),('ssap_provider_unregister_verify',True),('channel_socket_bytes',62),('ssap_value_lengths_verify',True)]:
             with self.subTest(key=key),self.assertRaises(CaptureError):gate.requested(SimpleNamespace(**dict(args,**{key:value})))
         for tokens in ([gate.TOKEN],[gate.TOKEN,gate.TOKEN,'ws73.ssap_owned=1'],['ws73.ssap_sdk_write_provider=0'],[gate.TOKEN,'ws73.ssap_owned=1','ws73.ssap_read_provider=1']):
             with self.assertRaises(CaptureError):gate.boot_requested(tokens)

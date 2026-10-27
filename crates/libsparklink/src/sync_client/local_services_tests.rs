@@ -316,7 +316,15 @@ async fn fixture_with_operations(
         expected_operations: operations,
         ..Script::default()
     });
-    let server = zbus::connection::Builder::address(bus.address.as_str())
+    let server = service_server(&bus.address, script.clone()).await;
+    let c = service_client(&bus.address);
+    (bus, server, script, c)
+}
+
+// Shared private-bus metadata fixture. Replacing its owner exercises the real
+// Client/Dispatcher watches; it never represents slkd, a kernel or a radio.
+async fn service_server(address: &str, script: Arc<Script>) -> zbus::Connection {
+    zbus::connection::Builder::address(address)
         .unwrap()
         .name("org.sparklink")
         .unwrap()
@@ -324,12 +332,15 @@ async fn fixture_with_operations(
         .unwrap()
         .serve_at(PATH, Adapter)
         .unwrap()
-        .serve_at(format!("{PATH}/services"), Services(script.clone()))
+        .serve_at(format!("{PATH}/services"), Services(script))
         .unwrap()
         .build()
         .await
-        .unwrap();
-    let address = bus.address.clone();
+        .unwrap()
+}
+
+fn service_client(address: &str) -> *mut SlkClient {
+    let address = address.to_owned();
     let exec = SyncClient::start(
         Deadline::from_monotonic_ns(ns()).unwrap(),
         move || async move {
@@ -342,15 +353,11 @@ async fn fixture_with_operations(
         },
     )
     .unwrap();
-    (
-        bus,
-        server,
-        script,
-        Box::into_raw(Box::new(SlkClient {
-            inner: Arc::new(exec),
-        })),
-    )
+    Box::into_raw(Box::new(SlkClient {
+        inner: Arc::new(exec),
+    }))
 }
+
 unsafe fn acquire(c: *const SlkClient, deadline: u64) -> (i32, *mut SlkLocalService) {
     let mut output = std::ptr::null_mut();
     let code = unsafe {

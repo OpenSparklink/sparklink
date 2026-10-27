@@ -541,6 +541,13 @@ Python `info` 冻结、`value` 为不可变 bytes，实例禁止 fork 后使用�
 status 必须是0或 AF..FF；错误携值/未知状态为 EINVAL，超原答复预算为 EMSGSIZE，
 verify 的非一致接受值为 EINVAL；这些拒绝不消耗答复权。过期 ETIMEDOUT、停止
 ESHUTDOWN、失去原 daemon 或旧请求 ESTALE；没有静默截断、重试或新期限参数。
+同名 daemon 接任不更新既有 Client/Provider 的 owner：旧请求、注册及通知 fd 继续
+绑定原 unique owner；新客户端须重新取得注册，旧请求号或相同 controller 元数据
+不能恢复旧答复权。通知 fd 可因 owner 丢失而唤醒，其最后引用存活不代表权限存活。
+实际 C 导出/private D-Bus 回归覆盖原 parent Client 关闭、owner 切换、旧请求 ESTALE、
+新 sender 向旧端点的 AccessDenied，以及新 lifetime 只接受自己的答复。Adapter/服务
+元数据为显式 fixture；这不是 slkd SIGKILL、内核清理或真实业务恢复资格。
+
 返回0只表示本地接收了应用答复，若此后立即关闭最后 owner/bus，真实回调可能被丢弃。
 测试若要求观察远端 callback，应通过实际接收屏障保持原 owner，不能用本地0或固定
 sleep 假定已排空。真实 SSAP 对端业务确认仍须单独验证。

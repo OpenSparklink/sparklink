@@ -465,3 +465,157 @@ async fn occupied_write_endpoint_removes_only_our_partial_read_installation() {
     assert!(xml.contains("org.sparklink.SsapReadProvider"));
     assert!(xml.contains("org.sparklink.SsapWriteProvider"));
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn write_owner_takeover_keeps_old_request_stale_and_new_registration_independent() {
+    use std::os::fd::AsRawFd;
+    // Actual C API, dispatcher, notification fd and private D-Bus owner change.
+    // Adapter/service metadata are explicit fixtures with repeated numeric
+    // identities. This is not a slkd process death, kernel drain or RF test.
+    let (bus, old_server, old_script, old_client) = fixture_with_operations(6).await;
+    let old_service = unsafe { service(old_client) };
+    let old_provider = unsafe { bind(old_service) };
+    unsafe { slk_client_close(old_client) }; // surviving views retain their original owner
+    let mut raw = -1;
+    assert_eq!(unsafe { slk_write_provider_fd(old_provider, &mut raw) }, 0);
+    let old_fd = unsafe { OwnedFd::from_raw_fd(raw) };
+    let original = prompt(true);
+    let original_deadline = original.deadline_ns;
+    let proposed = original.value.clone();
+    let old_call = callback(&old_server, &old_script, original.clone());
+    let old_request = unsafe { next(old_provider).await };
+    let snapshot = unsafe { info(old_request) };
+    assert_eq!(snapshot.deadline_ns, original_deadline);
+    let old_owner = old_script.owner.lock().unwrap().clone();
+    let old_path = old_script.provider.lock().unwrap().clone();
+    old_server.release_name("org.sparklink").await.unwrap();
+    let fresh_script = Arc::new(Script {
+        expected_operations: 6,
+        ..Script::default()
+    });
+    let successor = service_server(&bus.address, fresh_script.clone()).await;
+    assert_ne!(old_server.unique_name(), successor.unique_name());
+    let until = Instant::now() + Duration::from_secs(2);
+    loop {
+        let mut poll = nix::libc::pollfd {
+            fd: old_fd.as_raw_fd(),
+            events: nix::libc::POLLIN,
+            revents: 0,
+        };
+        assert!(unsafe { nix::libc::poll(&mut poll, 1, 0) } >= 0);
+        if poll.revents & nix::libc::POLLIN != 0 {
+            break;
+        }
+        assert!(
+            Instant::now() < until,
+            "owner loss did not wake surviving notification fd"
+        );
+        tokio::task::yield_now().await;
+    }
+    assert_eq!(
+        unsafe {
+            slk_write_provider_request_reply(old_request, 0, proposed.as_ptr(), proposed.len())
+        },
+        -nix::libc::ESTALE
+    );
+    assert_eq!(
+        tokio::time::timeout(Duration::from_secs(2), old_call)
+            .await
+            .unwrap()
+            .unwrap()
+            .unwrap(),
+        (0xaf, vec![])
+    );
+    let mut sentinel = std::ptr::dangling_mut();
+    assert_eq!(
+        unsafe { slk_write_provider_next(old_provider, &mut sentinel) },
+        -nix::libc::ESTALE
+    );
+    assert_eq!(sentinel, std::ptr::dangling_mut());
+    let mut rebound = std::ptr::dangling_mut();
+    assert!(
+        unsafe { slk_local_service_bind_write_provider(old_service, 17, ns(), &mut rebound) } < 0
+    );
+    assert_eq!(rebound, std::ptr::dangling_mut());
+    assert_eq!(old_script.provider_binds.load(Ordering::SeqCst), 1);
+    assert_eq!(fresh_script.provider_binds.load(Ordering::SeqCst), 0);
+
+    // A fresh client and registration bind to the new unique owner. Keep the
+    // old numeric generation/handle/request_id in the fixture deliberately;
+    // a new physical lifetime below is separate from daemon owner identity.
+    let fresh_client = service_client(&bus.address);
+    let fresh_service = unsafe { service(fresh_client) };
+    let fresh_provider = unsafe { bind(fresh_service) };
+    unsafe { slk_client_close(fresh_client) };
+    let mut fresh_prompt = prompt(true);
+    fresh_prompt.identity.2 = 29;
+    fresh_prompt.value = vec![0x5a, 0xc3, 0x17];
+    let fresh_value = fresh_prompt.value.clone();
+    let mut fresh_call = callback(&successor, &fresh_script, fresh_prompt);
+    let fresh_request = unsafe { next(fresh_provider).await };
+    assert_eq!(unsafe { info(fresh_request) }.connection_lifetime, 29);
+    assert_eq!(
+        unsafe { info(fresh_request) }.request_id,
+        snapshot.request_id
+    );
+
+    // The new well-known owner cannot issue work to an old inbox. Rejected by
+    // the production unique-sender check before it can obtain new authority.
+    let foreign = successor
+        .call_method(
+            Some(old_owner.as_str()),
+            old_path.as_str(),
+            Some("org.sparklink.SsapWriteProvider"),
+            "WriteValue",
+            &(original,),
+        )
+        .await;
+    assert!(
+        matches!(foreign, Err(zbus::Error::MethodError(name, _, _)) if name.as_str() == "org.freedesktop.DBus.Error.AccessDenied")
+    );
+    assert_eq!(
+        unsafe {
+            slk_write_provider_request_reply(old_request, 0, proposed.as_ptr(), proposed.len())
+        },
+        -nix::libc::ESTALE
+    );
+    assert!(
+        tokio::time::timeout(Duration::from_millis(30), &mut fresh_call)
+            .await
+            .is_err(),
+        "old answer completed a fresh pending callback"
+    );
+    assert_eq!(
+        unsafe {
+            slk_write_provider_request_reply(
+                fresh_request,
+                0,
+                fresh_value.as_ptr(),
+                fresh_value.len(),
+            )
+        },
+        0
+    );
+    assert_eq!(fresh_call.await.unwrap().unwrap(), (0, fresh_value));
+    assert_eq!(unsafe { info(old_request) }.deadline_ns, original_deadline);
+    assert!(
+        slk_channel::deadline::Deadline::from_monotonic_ns(original_deadline)
+            .unwrap()
+            .remaining()
+            .is_ok(),
+        "expiry must not stand in for owner revocation"
+    );
+    assert_eq!(fresh_script.registrations.load(Ordering::SeqCst), 1);
+    assert_eq!(fresh_script.provider_binds.load(Ordering::SeqCst), 1);
+    unsafe {
+        slk_write_provider_request_free(old_request);
+        slk_write_provider_free(old_provider);
+        slk_local_service_free(old_service);
+        slk_write_provider_request_free(fresh_request);
+        slk_write_provider_free(fresh_provider);
+        slk_local_service_free(fresh_service);
+    }
+    // The duplicated notification fd may outlive the views, but grants no reply
+    // authority. OwnedFd Drop closes this final reference without a daemon RPC.
+    assert!(unsafe { nix::libc::fcntl(old_fd.as_raw_fd(), nix::libc::F_GETFD) } >= 0);
+}

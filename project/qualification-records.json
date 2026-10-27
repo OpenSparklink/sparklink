@@ -13,45 +13,45 @@
     "replay": "每份记录按自身源码映射、编译artifact、冻结执行/校验工具和原manifest命令重放；只在授权VM中执行驱动/实机。历史575等工具仅适用于各自原记录，不是全registry的统一重放入口。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "WP08-METHOD-COMMAND-TOOLS-v1",
+    "id": "WP08-METHOD-COMMAND-GATE-v2",
     "state": "SOURCE_OFFLINE_PROGRESS_REAL_METHOD_DELIVERY_UNQUALIFIED",
     "implementation_sources": {
-      "public": "76707d01919711ca44304bcc56b21f9955aa1613",
+      "public": "349aa4e37bbe9d5ac4db5b7bd4edc2a38a2f5f5d",
+      "sdk_tools": "76707d01919711ca44304bcc56b21f9955aa1613",
       "production_kernel_unchanged": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
     },
-    "production_behavior": "Actual C/Python application helpers invoke the existing method command API through the shared command executor/barrier and original deadline. No new Engine, daemon or kernel runtime change.",
+    "production_behavior": "Existing method VM scenario v2 retains request/error/result/withdrawal and adds command Provider rejection/acceptance, typed actual SDK admission, original deadlines, paired command wire and complete bounded SDU inventory. Unattributed method opcodes rejected. No daemon/SDK/kernel runtime change.",
     "offline_checks": {
-      "actual_c_python_sdk_private_bus": "PASS",
-      "actual_command_rpc_scope_and_original_deadline": "PASS",
-      "empty_short_2043_arguments_and_errors": "PASS",
-      "overlimit_invalid_input_and_unreleased_barrier_no_rpc": "PASS",
-      "tool_verdict_tests": 24,
-      "strict_clippy": "PASS",
-      "strict_html_and_document_checks": "PASS"
+      "related_python_tests": 141,
+      "private_and_public_source_checks": "PASS",
+      "strict_html_and_document_checks": "PASS",
+      "v1_scope_preserved_no_v2_upgrade": true,
+      "command_peer_processing_and_inventory_negative_controls": "PASS",
+      "initial_v1_and_missing_window_fixture_failures": "RETAINED"
     },
-    "offline_scope": "Actual external C/Python programs and compiled SDK; service/connection results are finite private D-Bus fixtures. Typed receipt verdicts use authored finite fixtures. Not daemon Engine, real kernel concurrency, deployment permissions, RF or peer delivery.",
+    "offline_scope": "Production executor/corroborator with explicit finite process/I/O and independently authored packet fixtures. Not real peer delivery, kernel concurrency, deployment permission, firmware behavior or proof of perpetual response absence. Prior actual SDK/private-bus result retains its original source identity.",
     "formal_status": "NO_NEW_PROOF",
-    "hardware_status": "NO_NEW_METHOD_QUALIFICATION; historical startup failures and exact hardware identities remain in authorized local evidence.",
+    "hardware_status": "NO_NEW_HARDWARE_ATTEMPT_OR_QUALIFICATION; original failures and accurate identities retained in authorized local evidence.",
     "issue_sync": {
-      "observed_at": "2026-10-27T19:40:24.419792+00:00",
+      "observed_at": "2026-10-27T19:53:10.533906+00:00",
       "updates": [
         {
           "repository": "sparklink",
           "number": 22,
           "state": "open",
-          "body_sha256": "f29296425d300695a80abf04fa26f2ee01ad5d13bc1ad101ab5f7d259c7d7441",
+          "body_sha256": "5a7dfa10adcc83366155cdb0916186bac1c055c0041f24dec3491d4cc8fc7d6d",
           "source_offline_only": true
         }
       ],
-      "scope": "Actual method command helper source/offline only; original acceptance unchanged, no hardware qualification or closure."
+      "scope": "Method gate v2 source/offline summary only; original acceptance unchanged, no new hardware/formal qualification or closure."
     },
     "exit_conditions": [
-      "Reuse existing command executor and SDK API without duplicate Engine",
-      "Distinguish command RPC, original arguments/deadline and admission-only receipt",
-      "Actual C/Python empty/boundary/error/unreleased-barrier regression and verdict negative controls",
-      "Preserve WRITE receipt schema, historical qualification and original issue acceptance"
+      "Same Engine/Provider and VM runner; original request/withdrawal baseline retained",
+      "Actual command admission separated from peer callback processing and USB pair",
+      "Complete command-window inventory and residual opcode rejection; original deadline and transmit accounting",
+      "v1/v2 identity separation and fail-closed missing/mutated material regressions"
     ],
-    "next": "Extend the existing method VM scenario for command peer processing and paired USB evidence, then discovery/long result/lifecycle gates. Diagnose startup with bounded submit/cancel/callback ownership observations; no CLOSE bypass, unchanged retry or all-control-plane prerequisite."
+    "next": "Add bounded startup diagnostic submission/cancellation/callback/free observations before another hardware attempt; then exact-artifact v2 paired method delivery and preservation. Continue discovery, long results and lifecycle gates; no CLOSE bypass, unchanged startup retry or all-control-plane prerequisite."
   },
   "overall_required_records": [
     "deadline-real21",
@@ -527536,6 +527536,47 @@
         "No new delivery or recovery qualification inferred"
       ],
       "next": "Diagnose original warm-bootstrap and post-CLOSE transport state from captured timing and fixed SDK/libws73/NearLink references; no ACK bypass or unchanged retry. Continue remaining method command/discovery/long-result and lifecycle paths in parallel. Real paired method delivery and preservation still require startup and exact artifacts, not all recovery/control-plane completion."
+    },
+    {
+      "id": "WP08-METHOD-COMMAND-TOOLS-v1",
+      "state": "SOURCE_OFFLINE_PROGRESS_REAL_METHOD_DELIVERY_UNQUALIFIED",
+      "implementation_sources": {
+        "public": "76707d01919711ca44304bcc56b21f9955aa1613",
+        "production_kernel_unchanged": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
+      },
+      "production_behavior": "Actual C/Python application helpers invoke the existing method command API through the shared command executor/barrier and original deadline. No new Engine, daemon or kernel runtime change.",
+      "offline_checks": {
+        "actual_c_python_sdk_private_bus": "PASS",
+        "actual_command_rpc_scope_and_original_deadline": "PASS",
+        "empty_short_2043_arguments_and_errors": "PASS",
+        "overlimit_invalid_input_and_unreleased_barrier_no_rpc": "PASS",
+        "tool_verdict_tests": 24,
+        "strict_clippy": "PASS",
+        "strict_html_and_document_checks": "PASS"
+      },
+      "offline_scope": "Actual external C/Python programs and compiled SDK; service/connection results are finite private D-Bus fixtures. Typed receipt verdicts use authored finite fixtures. Not daemon Engine, real kernel concurrency, deployment permissions, RF or peer delivery.",
+      "formal_status": "NO_NEW_PROOF",
+      "hardware_status": "NO_NEW_METHOD_QUALIFICATION; historical startup failures and exact hardware identities remain in authorized local evidence.",
+      "issue_sync": {
+        "observed_at": "2026-10-27T19:40:24.419792+00:00",
+        "updates": [
+          {
+            "repository": "sparklink",
+            "number": 22,
+            "state": "open",
+            "body_sha256": "f29296425d300695a80abf04fa26f2ee01ad5d13bc1ad101ab5f7d259c7d7441",
+            "source_offline_only": true
+          }
+        ],
+        "scope": "Actual method command helper source/offline only; original acceptance unchanged, no hardware qualification or closure."
+      },
+      "exit_conditions": [
+        "Reuse existing command executor and SDK API without duplicate Engine",
+        "Distinguish command RPC, original arguments/deadline and admission-only receipt",
+        "Actual C/Python empty/boundary/error/unreleased-barrier regression and verdict negative controls",
+        "Preserve WRITE receipt schema, historical qualification and original issue acceptance"
+      ],
+      "next": "Extend the existing method VM scenario for command peer processing and paired USB evidence, then discovery/long result/lifecycle gates. Diagnose startup with bounded submit/cancel/callback ownership observations; no CLOSE bypass, unchanged retry or all-control-plane prerequisite."
     }
   ]
 }

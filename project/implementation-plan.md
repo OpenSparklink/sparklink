@@ -1,21 +1,21 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前批次：实际 SDK 方法 command 调用与交付边界
+## 当前批次：方法command双端门禁v2
 
-已提交实际C/Python `ssap-method-command`，复用现有SDK、command执行器、启动屏障
-和五秒原期限。0/短值/2043字节、真实RPC种类/参数/期限、错误及未释放屏障回归通过；
-24项工具判定检查、严格Clippy和文档构建通过。WRITE原收据及2042字节限制保持。
-准入只表示软件接收，不证明对端处理。服务端为有限私有D-Bus fixture，尚无新增
-真实method command、内核并发、部署权限或形式化资格；历史失败与旧资格不改判。
-当前源码与范围由下方结构化batch维护。
+现有方法VM场景已扩展为v2：保留原错误/空值/独立结果和退出拒绝，增加两次method
+command的真实Provider拒绝/接受步骤、原期限、实际SDK准入及双端数据判定。
+完整command窗口清单与预期包一致才可通过；通用残留检查补齐method opcode。
+141项相关离线回归、严格文档构建通过；执行器I/O和报文均为明确的有限fixture。
+v1按原请求范围保留，不能升级成v2；旧失败不改判。当前尚无新增实机或形式化资格。
+当前执行范围及准确源码由下方同一结构化batch维护。
 
-下一批沿同一方法VM场景增加command对端Provider参数与处理记录、双端捕获及准确
-artifact门禁；请求响应、命令无协议响应和应用实际处理分别判定。发现、长结果及
-取消/退出/断链/原期限继续并行，不将全部控制面竞争或恢复全集设为前置。
-启动诊断继续核对提交返回、取消返回、callback入口与最终释放；现有普通完成日志
-可能不覆盖已取消请求，不能将日志缺失当作排空或根因证据。禁止跳过CLOSE确认、
-猜测性唤醒或重复未变化的失败实验。自然根因、非人工恢复及原完整验收继续开放。
-完整S0–S6/19WP/10FV/12DG、VM-only、UserHost P4及唯一Engine分层保持。
+下一步补启动提交、取消、callback入口及最终释放的有界诊断，区分缺失普通完成日志
+与实际排空；不跳过CLOSE确认、不猜测性唤醒或重复未变化的失败尝试。具备明确诊断
+差异后，以准确新artifact执行v2及原路径保持；运行期地址、每设备镜像和资源白名单
+仍按已有流程。command仅有局部准入，必须观察实际对端参数、处理与双端数据。
+方法发现、长结果/分片和生命周期继续并行，不以恢复全集或控制面全集作为前置。
+完整S0–S6/19WP/10FV/12DG、VM-only、UserHost P4和原验收保持；自然根因及非人工
+恢复继续开放。部分门禁源码和离线通过不关闭U#22或其他完整任务。
 
 ## 有界 issue 清理结果与主线恢复
 
@@ -499,45 +499,45 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-METHOD-COMMAND-TOOLS-v1",
+  "id": "WP08-METHOD-COMMAND-GATE-v2",
   "state": "SOURCE_OFFLINE_PROGRESS_REAL_METHOD_DELIVERY_UNQUALIFIED",
   "implementation_sources": {
-    "public": "76707d01919711ca44304bcc56b21f9955aa1613",
+    "public": "349aa4e37bbe9d5ac4db5b7bd4edc2a38a2f5f5d",
+    "sdk_tools": "76707d01919711ca44304bcc56b21f9955aa1613",
     "production_kernel_unchanged": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
   },
-  "production_behavior": "Actual C/Python application helpers invoke the existing method command API through the shared command executor/barrier and original deadline. No new Engine, daemon or kernel runtime change.",
+  "production_behavior": "Existing method VM scenario v2 retains request/error/result/withdrawal and adds command Provider rejection/acceptance, typed actual SDK admission, original deadlines, paired command wire and complete bounded SDU inventory. Unattributed method opcodes rejected. No daemon/SDK/kernel runtime change.",
   "offline_checks": {
-    "actual_c_python_sdk_private_bus": "PASS",
-    "actual_command_rpc_scope_and_original_deadline": "PASS",
-    "empty_short_2043_arguments_and_errors": "PASS",
-    "overlimit_invalid_input_and_unreleased_barrier_no_rpc": "PASS",
-    "tool_verdict_tests": 24,
-    "strict_clippy": "PASS",
-    "strict_html_and_document_checks": "PASS"
+    "related_python_tests": 141,
+    "private_and_public_source_checks": "PASS",
+    "strict_html_and_document_checks": "PASS",
+    "v1_scope_preserved_no_v2_upgrade": true,
+    "command_peer_processing_and_inventory_negative_controls": "PASS",
+    "initial_v1_and_missing_window_fixture_failures": "RETAINED"
   },
-  "offline_scope": "Actual external C/Python programs and compiled SDK; service/connection results are finite private D-Bus fixtures. Typed receipt verdicts use authored finite fixtures. Not daemon Engine, real kernel concurrency, deployment permissions, RF or peer delivery.",
+  "offline_scope": "Production executor/corroborator with explicit finite process/I/O and independently authored packet fixtures. Not real peer delivery, kernel concurrency, deployment permission, firmware behavior or proof of perpetual response absence. Prior actual SDK/private-bus result retains its original source identity.",
   "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "NO_NEW_METHOD_QUALIFICATION; historical startup failures and exact hardware identities remain in authorized local evidence.",
+  "hardware_status": "NO_NEW_HARDWARE_ATTEMPT_OR_QUALIFICATION; original failures and accurate identities retained in authorized local evidence.",
   "issue_sync": {
-    "observed_at": "2026-10-27T19:40:24.419792+00:00",
+    "observed_at": "2026-10-27T19:53:10.533906+00:00",
     "updates": [
       {
         "repository": "sparklink",
         "number": 22,
         "state": "open",
-        "body_sha256": "f29296425d300695a80abf04fa26f2ee01ad5d13bc1ad101ab5f7d259c7d7441",
+        "body_sha256": "5a7dfa10adcc83366155cdb0916186bac1c055c0041f24dec3491d4cc8fc7d6d",
         "source_offline_only": true
       }
     ],
-    "scope": "Actual method command helper source/offline only; original acceptance unchanged, no hardware qualification or closure."
+    "scope": "Method gate v2 source/offline summary only; original acceptance unchanged, no new hardware/formal qualification or closure."
   },
   "exit_conditions": [
-    "Reuse existing command executor and SDK API without duplicate Engine",
-    "Distinguish command RPC, original arguments/deadline and admission-only receipt",
-    "Actual C/Python empty/boundary/error/unreleased-barrier regression and verdict negative controls",
-    "Preserve WRITE receipt schema, historical qualification and original issue acceptance"
+    "Same Engine/Provider and VM runner; original request/withdrawal baseline retained",
+    "Actual command admission separated from peer callback processing and USB pair",
+    "Complete command-window inventory and residual opcode rejection; original deadline and transmit accounting",
+    "v1/v2 identity separation and fail-closed missing/mutated material regressions"
   ],
-  "next": "Extend the existing method VM scenario for command peer processing and paired USB evidence, then discovery/long result/lifecycle gates. Diagnose startup with bounded submit/cancel/callback ownership observations; no CLOSE bypass, unchanged retry or all-control-plane prerequisite."
+  "next": "Add bounded startup diagnostic submission/cancellation/callback/free observations before another hardware attempt; then exact-artifact v2 paired method delivery and preservation. Continue discovery, long results and lifecycle gates; no CLOSE bypass, unchanged startup retry or all-control-plane prerequisite."
 }
 ```
 

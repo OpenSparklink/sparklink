@@ -387,7 +387,7 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "f29296425d300695a80abf04fa26f2ee01ad5d13bc1ad101ab5f7d259c7d7441",
+      "body_sha256": "5a7dfa10adcc83366155cdb0916186bac1c055c0041f24dec3491d4cc8fc7d6d",
       "classification": "有限收尾",
       "closure_basis": "Existing dynamic WRITE command Provider v3 source/offline gate added; original six SSAP conditions OPEN. Exact actual qualification in authorized local index."
     },
@@ -8231,6 +8231,22 @@
         }
       ],
       "scope": "Actual method command helper source/offline only; original acceptance unchanged, no hardware qualification or closure."
+    },
+    {
+      "sources": {
+        "public": "349aa4e37bbe9d5ac4db5b7bd4edc2a38a2f5f5d"
+      },
+      "observed_at": "2026-10-27T19:53:10.533906+00:00",
+      "updates": [
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "state": "open",
+          "body_sha256": "5a7dfa10adcc83366155cdb0916186bac1c055c0041f24dec3491d4cc8fc7d6d",
+          "source_offline_only": true
+        }
+      ],
+      "scope": "Method gate v2 source/offline summary only; original acceptance unchanged, no new hardware/formal qualification or closure."
     }
   ],
   "current_disposition": {

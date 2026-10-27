@@ -2012,67 +2012,60 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP08-METHOD-SERVER-v1",
-      "state": "DAEMON_SOURCE_OFFLINE_PASS_SDK_PROVIDER_PENDING",
-      "production_behavior": "Owned method entries, shared server obligation, original policy/context/deadline and owner callback; independent results, command no wire response",
+      "id": "WP08-METHOD-SDK-v1",
+      "state": "RUST_METHOD_SDK_OFFLINE_PASS_LANGUAGE_FRONTENDS_PENDING",
       "implementation_sources": {
-        "public": "686483d726f5fd7d32a5de895f53da20382d0a3b"
+        "public": "fde4985278168ce533559e0c3ac248540b511aaa"
       },
+      "production_behavior": "Typed property/method registration and Rust MethodInbox reuse the existing Dispatcher16slots, callback/request drain, original owner/context/deadline and actual result. No argument echo or command wire response; property-only APIs reject methods. Partial endpoint installation preserves foreign interfaces.",
       "offline_checks": {
-        "workspace_passed": 590,
-        "workspace_vm_only_ignored": 2,
-        "final_daemon_passed": 227,
-        "final_daemon_vm_only_ignored": 2,
-        "method_actual_dbus_cases": 5,
-        "policy_python_passed": 14,
+        "workspace_passed": 594,
+        "vm_only_ignored": 2,
+        "final_sdk_integration_passed": 8,
         "strict_clippy": "PASS",
-        "strict_html": "PASS",
-        "scope": "Actual private D-Bus and production owner/database/render functions; explicit Wire identity fixture. No Native/USB/RF/formal refinement claim. SDK method inboxes and positive method gate remain.",
-        "retained_failures": [
-          "initial test compile/type errors",
-          "independent literal registration signature needed methods field migration; exact assertion preserved",
-          "Clippy precedence fixed; scoped expect for five flat wire fields plus injected connection/header/self documented"
-        ]
+        "strict_html": "PASS"
       },
+      "offline_scope": "Actual Rust registration and shared Dispatcher on private D-Bus; explicit manager and identity fixtures. Final targeted rerun after test supervisor bounds and entry-count naming. Existing external C/Python property callers preserved; no method frontend there yet. No Native/USB/RF execution or formal refinement.",
+      "retained_failure": "First new test tried private Client::bus; fixed to original caller connection identity without exposing an API. Raw compiler output retained.",
       "formal_status": "NO_NEW_PROOF",
-      "hardware_status": "No new hardware qualification assigned. Exact attempts, failures and artifacts remain in the authorized local index; previous qualifications do not transfer.",
+      "hardware_status": "No hardware run or new qualification in this batch. Prior artifact attempts and failures remain in the authorized local index; no historic PASS transfers.",
       "issue_sync": {
-        "observed_at": "2026-10-27T17:12:18.750074+00:00",
+        "observed_at": "2026-10-27T17:25:59.150052+00:00",
         "updates": [
           {
             "repository": "sparklink",
             "number": 3,
             "state": "open",
-            "body_sha256": "a16ef988ba15a832cfbc17460e78aa4d68b1e2cc0603547100c9db010f28f5e5",
+            "body_sha256": "8eb6ba0b69340d0a7807f7048713a7c1acbd9a0590ef0c3a24db04cbddc29a36",
             "source_offline_only": true
           },
           {
             "repository": "sparklink",
             "number": 22,
             "state": "open",
-            "body_sha256": "f51e428b304d964ab5ef59ba83687209d638936661394b568e7d9f269a691e0b",
+            "body_sha256": "2b2e2181317333f30e8b9664e263b01179a0d73ccb116916237e74b27da32ad6",
             "source_offline_only": true
           },
           {
             "repository": "linux",
             "number": 19,
             "state": "open",
-            "body_sha256": "8499d4f3afd648b26b871679c376b940c2aef953db90bb398d27a2e3d28cdfd4",
+            "body_sha256": "bed35e33a3989c9d6e5f240c0c563669f6f068f09332fbf06feae6a9085cd4d9",
             "source_offline_only": true
           }
         ],
-        "scope": "Public source/offline only; original acceptance unchanged; all three issues remain OPEN."
+        "scope": "Public source/offline only; original acceptance unchanged; no issue closed."
       },
       "exit_conditions": [
-        "Owned method registration and typed daemon callback use the existing server obligation, policy and original deadline",
-        "Independent result; command never generates a wire response; owner and context rechecked",
-        "Property callers, exact D-Bus signature, policy and interface documentation migrated",
-        "SDK method inbox, real application callers and positive peer delivery still required"
+        "Rust methods are distinct typed entries, not property operation sentinels",
+        "Shared admission/queue/reply/stop lifecycle, independent result and explicit command budget",
+        "Private D-Bus tests exercise production SDK, errors, bounds, original deadline, owner loss, withdrawal and partial install",
+        "C/Python, CLI and actual dual-device method gates remain required"
       ],
       "next": [
-        "Reuse the existing shared Provider Dispatcher for Rust/C/Python method inboxes and actual CLI callers",
-        "Acquire new-artifact preservation and genuine dual-device method result validation; do not substitute fixture or USB success",
-        "Continue original data, security and SSAP scope without a control-plane-combinations prerequisite; natural root cause and non-manual recovery remain open"
+        "C/Python and CLI method providers using same Dispatcher",
+        "Accurate new artifact original-path preservation and genuine dual-device method delivery",
+        "Original full SSAP/data/security/recovery scope remains open"
       ]
     },
     "selected_qualification": {
@@ -5273,8 +5266,12 @@
     "status": "Historical discovery slice; superseded for current execution by method_server_execution"
   },
   "method_server_execution": {
+    "authority": "project/qualification-records.json:batch_history",
+    "status": "Daemon slice retained; current SDK execution tracked by method_sdk_execution"
+  },
+  "method_sdk_execution": {
     "authority": "project/qualification-records.json:batch",
-    "next": "Reuse shared SDK Dispatcher and actual callers, then accurate artifact and true peer method delivery; no parallel Engine",
-    "hardware_details": "Authorized local evidence only; no new method qualification"
+    "next": "C/Python and CLI callers reuse the existing MethodInbox; then accurate artifact and true peer method delivery",
+    "hardware_details": "No run this batch; prior failures retained locally"
   }
 }

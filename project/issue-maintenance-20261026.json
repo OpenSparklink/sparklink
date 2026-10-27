@@ -247,7 +247,7 @@
       "action": "body_replaced_and_scope_split",
       "state": "open",
       "closure_basis": "K#23 资格/判定器闭包；K#24 生产 fuzz/调试 VM；跨后端、真实门禁、部署/发布边界仍属父项五条原要求。",
-      "body_sha256": "8499d4f3afd648b26b871679c376b940c2aef953db90bb398d27a2e3d28cdfd4",
+      "body_sha256": "bed35e33a3989c9d6e5f240c0c563669f6f068f09332fbf06feae6a9085cd4d9",
       "children": [
         23,
         24
@@ -286,7 +286,7 @@
       "action": "body_replaced_and_scope_split",
       "state": "open",
       "closure_basis": "U#21 SDK READ Provider 生命周期、U#22 剩余 SSAP 操作/长值/更新事务、U#23 真实 Profile；父项原完整验收保留。",
-      "body_sha256": "a16ef988ba15a832cfbc17460e78aa4d68b1e2cc0603547100c9db010f28f5e5",
+      "body_sha256": "8eb6ba0b69340d0a7807f7048713a7c1acbd9a0590ef0c3a24db04cbddc29a36",
       "children": [
         21,
         22,
@@ -387,7 +387,7 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "f51e428b304d964ab5ef59ba83687209d638936661394b568e7d9f269a691e0b",
+      "body_sha256": "2b2e2181317333f30e8b9664e263b01179a0d73ccb116916237e74b27da32ad6",
       "classification": "有限收尾",
       "closure_basis": "Existing dynamic WRITE command Provider v3 source/offline gate added; original six SSAP conditions OPEN. Exact actual qualification in authorized local index."
     },
@@ -6446,6 +6446,36 @@
         }
       ],
       "scope": "Committed method daemon/offline scope; SDK and positive method delivery remain. No new qualification or closure."
+    },
+    {
+      "observed_at": "2026-10-27T17:25:59.150052+00:00",
+      "sources": {
+        "public": "fde4985278168ce533559e0c3ac248540b511aaa"
+      },
+      "updates": [
+        {
+          "repository": "sparklink",
+          "number": 3,
+          "state": "open",
+          "body_sha256": "8eb6ba0b69340d0a7807f7048713a7c1acbd9a0590ef0c3a24db04cbddc29a36",
+          "source_offline_only": true
+        },
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "state": "open",
+          "body_sha256": "2b2e2181317333f30e8b9664e263b01179a0d73ccb116916237e74b27da32ad6",
+          "source_offline_only": true
+        },
+        {
+          "repository": "linux",
+          "number": 19,
+          "state": "open",
+          "body_sha256": "bed35e33a3989c9d6e5f240c0c563669f6f068f09332fbf06feae6a9085cd4d9",
+          "source_offline_only": true
+        }
+      ],
+      "scope": "Rust method SDK source/offline only; original conditions and history retained; no closure."
     }
   ],
   "current_disposition": {

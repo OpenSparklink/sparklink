@@ -247,7 +247,7 @@
       "action": "body_replaced_and_scope_split",
       "state": "open",
       "closure_basis": "K#23 资格/判定器闭包；K#24 生产 fuzz/调试 VM；跨后端、真实门禁、部署/发布边界仍属父项五条原要求。",
-      "body_sha256": "bed35e33a3989c9d6e5f240c0c563669f6f068f09332fbf06feae6a9085cd4d9",
+      "body_sha256": "f55a9b64503dd4d1e3308185212aa239252913ef4eb82a5ff79f20b150749762",
       "children": [
         23,
         24
@@ -286,7 +286,7 @@
       "action": "body_replaced_and_scope_split",
       "state": "open",
       "closure_basis": "U#21 SDK READ Provider 生命周期、U#22 剩余 SSAP 操作/长值/更新事务、U#23 真实 Profile；父项原完整验收保留。",
-      "body_sha256": "8eb6ba0b69340d0a7807f7048713a7c1acbd9a0590ef0c3a24db04cbddc29a36",
+      "body_sha256": "4f99ddfdd30125b926dbd7e33abdcab190bb2612a743afdd0665deda04c63b1d",
       "children": [
         21,
         22,
@@ -387,7 +387,7 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "2b2e2181317333f30e8b9664e263b01179a0d73ccb116916237e74b27da32ad6",
+      "body_sha256": "2f3e90fd8270a4d76be26ad6bf750dbc558141518295013b638c45cef1d108cd",
       "classification": "有限收尾",
       "closure_basis": "Existing dynamic WRITE command Provider v3 source/offline gate added; original six SSAP conditions OPEN. Exact actual qualification in authorized local index."
     },
@@ -6476,6 +6476,36 @@
         }
       ],
       "scope": "Rust method SDK source/offline only; original conditions and history retained; no closure."
+    },
+    {
+      "observed_at": "2026-10-27T17:47:55.387699+00:00",
+      "sources": {
+        "public": "5b0056e1b1ea56312db4841b74249812482d536b"
+      },
+      "updates": [
+        {
+          "repository": "sparklink",
+          "number": 3,
+          "state": "open",
+          "body_sha256": "4f99ddfdd30125b926dbd7e33abdcab190bb2612a743afdd0665deda04c63b1d",
+          "source_offline_only": true
+        },
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "state": "open",
+          "body_sha256": "2f3e90fd8270a4d76be26ad6bf750dbc558141518295013b638c45cef1d108cd",
+          "source_offline_only": true
+        },
+        {
+          "repository": "linux",
+          "number": 19,
+          "state": "open",
+          "body_sha256": "f55a9b64503dd4d1e3308185212aa239252913ef4eb82a5ff79f20b150749762",
+          "source_offline_only": true
+        }
+      ],
+      "scope": "C/Python method SDK source/offline only; original conditions and history retained; no closure."
     }
   ],
   "current_disposition": {

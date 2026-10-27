@@ -3,7 +3,7 @@
 ## Issue 状态与验证边界
 
 本批完整维护核对35项：U#1、U#21按各自原条件关闭，18项有限收尾、3个已拆分父项、
-12项长期跟踪。既有七个子项及父项原范围保留，不新增重复跟踪。本次读回35项并修正K#19旧状态；method请求/发现及daemon方法Provider已提交，Rust方法收件箱已由fde4985接通，C/Python/CLI服务端和真实方法交付仍缺。原失败及资格不变，不新增实机或形式化结论。当前剩余条件见[逐项处置](issue-maintenance-20261026.json)和[唯一计划](implementation-plan.md)。
+12项长期跟踪。既有七个子项及父项原范围保留，不新增重复跟踪。本次读回35项并修正K#19旧状态；method请求/发现及daemon方法Provider已提交，Rust/C/Python方法收件箱已由5b0056e接通，CLI服务端和真实方法交付仍缺。原失败及资格不变，不新增实机或形式化结论。当前剩余条件见[逐项处置](issue-maintenance-20261026.json)和[唯一计划](implementation-plan.md)。
 
 U#1已按原六条事件循环条件独立关闭；suite v2及取消门禁沿同一Native循环，
 原期限与历史负对照保留。具体准确产物审计留在授权本地索引；关闭决定不授予
@@ -82,60 +82,62 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-METHOD-SDK-v1",
-  "state": "RUST_METHOD_SDK_OFFLINE_PASS_LANGUAGE_FRONTENDS_PENDING",
+  "id": "WP08-METHOD-LANGUAGE-v1",
+  "state": "METHOD_C_PYTHON_SDK_OFFLINE_PASS_CLI_AND_HARDWARE_PENDING",
   "implementation_sources": {
-    "public": "fde4985278168ce533559e0c3ac248540b511aaa"
+    "public": "5b0056e1b1ea56312db4841b74249812482d536b"
   },
-  "production_behavior": "Typed property/method registration and Rust MethodInbox reuse the existing Dispatcher16slots, callback/request drain, original owner/context/deadline and actual result. No argument echo or command wire response; property-only APIs reject methods. Partial endpoint installation preserves foreign interfaces.",
+  "production_behavior": "C/Python typed method registration, authorization target3 and Provider views reuse the existing Rust Dispatcher, queue, callback/request lifetime, original owner/deadline and independent result. Full2043-byte arguments; max2045-byte results; command zero result. No extra Engine or wire response.",
   "offline_checks": {
     "workspace_passed": 594,
     "vm_only_ignored": 2,
-    "final_sdk_integration_passed": 8,
+    "python_passed": 111,
+    "final_external_c_python_suite": "PASS",
     "strict_clippy": "PASS",
+    "generated_header_matches": "PASS",
     "strict_html": "PASS"
   },
-  "offline_scope": "Actual Rust registration and shared Dispatcher on private D-Bus; explicit manager and identity fixtures. Final targeted rerun after test supervisor bounds and entry-count naming. Existing external C/Python property callers preserved; no method frontend there yet. No Native/USB/RF execution or formal refinement.",
-  "retained_failure": "First new test tried private Client::bus; fixed to original caller connection identity without exposing an API. Raw compiler output retained.",
+  "offline_scope": "Actual C/Python public entry -> shared Rust SDK and private D-Bus callbacks; metadata and controller identity are fixtures. Workspace passed before final test-only expiry addition; final external-consumer suite and Clippy cover that addition. No Native/USB/RF or new proof.",
+  "retained_failure": "Initial Python environment missing canonical paths/libs/socket access retained; corrected environment, no assertions weakened. First workspace run exposed old property-count label after entry-count contract migration; exact label and combined-count no-broker-side-effect regression updated. Original 64-entry ceiling/deadlines preserved.",
   "formal_status": "NO_NEW_PROOF",
   "hardware_status": "No hardware run or new qualification in this batch. Prior artifact attempts and failures remain in the authorized local index; no historic PASS transfers.",
   "issue_sync": {
-    "observed_at": "2026-10-27T17:25:59.150052+00:00",
+    "observed_at": "2026-10-27T17:47:55.387699+00:00",
     "updates": [
       {
         "repository": "sparklink",
         "number": 3,
         "state": "open",
-        "body_sha256": "8eb6ba0b69340d0a7807f7048713a7c1acbd9a0590ef0c3a24db04cbddc29a36",
+        "body_sha256": "4f99ddfdd30125b926dbd7e33abdcab190bb2612a743afdd0665deda04c63b1d",
         "source_offline_only": true
       },
       {
         "repository": "sparklink",
         "number": 22,
         "state": "open",
-        "body_sha256": "2b2e2181317333f30e8b9664e263b01179a0d73ccb116916237e74b27da32ad6",
+        "body_sha256": "2f3e90fd8270a4d76be26ad6bf750dbc558141518295013b638c45cef1d108cd",
         "source_offline_only": true
       },
       {
         "repository": "linux",
         "number": 19,
         "state": "open",
-        "body_sha256": "bed35e33a3989c9d6e5f240c0c563669f6f068f09332fbf06feae6a9085cd4d9",
+        "body_sha256": "f55a9b64503dd4d1e3308185212aa239252913ef4eb82a5ff79f20b150749762",
         "source_offline_only": true
       }
     ],
     "scope": "Public source/offline only; original acceptance unchanged; no issue closed."
   },
   "exit_conditions": [
-    "Rust methods are distinct typed entries, not property operation sentinels",
-    "Shared admission/queue/reply/stop lifecycle, independent result and explicit command budget",
-    "Private D-Bus tests exercise production SDK, errors, bounds, original deadline, owner loss, withdrawal and partial install",
-    "C/Python, CLI and actual dual-device method gates remain required"
+    "C/Python actual public entry uses shared production registration/authorization/Provider",
+    "Exact receipt and authorization snapshot ABI, distinct method access/targets and combined64-entry budget",
+    "Actual external C/Python callbacks validate full arguments, independent result, command, duplicate/invalid replies, original expiry and withdrawal",
+    "CLI/VM callers and actual dual-device method gates remain required"
   ],
   "next": [
-    "C/Python and CLI method providers using same Dispatcher",
-    "Accurate new artifact original-path preservation and genuine dual-device method delivery",
-    "Original full SSAP/data/security/recovery scope remains open"
+    "CLI method Provider and VM caller reuse same SDK frontend",
+    "Accurate artifact original-path preservation and genuine dual-device method independent-result delivery",
+    "Remaining original SSAP/data/security/recovery scope remains open"
   ]
 }
 ```

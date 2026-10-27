@@ -1,28 +1,30 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前批次：method SDK 与语言调用者
+## 当前批次：C/Python method Provider 调用者
 
-WP08/U#22公开源码fde4985接通Rust方法登记与共享Dispatcher收件箱。沿用同一
-16槽预算、登记撤回域、callback/request引用、原owner及绝对期限；方法权限为
-独立类型，属性入口不能混用方法handle。应用结果独立于参数，command不产生
-线上回复；新增endpoint安装失败保留外来接口并清理此次部分安装。
+WP08/U#22公开源码5b0056e接通C/Python类型化方法登记、授权目标3及共享方法
+收件箱，复用同一Rust Dispatcher、16槽预算、原owner/期限与撤回域。参数完整
+保留2043字节，独立结果最多2045；command无结果/线上回复，不把参数echo当结果。
+未发布receipt区分属性/方法计数，绑定、头文件和文档同步；CLI方法服务端仍缺。
 
-workspace 594项检查通过，另2项VM专用ignored不计通过；最终SDK集成8项复核、
-严格Clippy和HTML通过。实际私有D-Bus调用的是生产SDK，manager/身份仍为fixture，
-不证明Native并发、固件、实机方法交付或形式化性质。首次测试访问私有bus的编译
-失败保留；修正为应用原连接身份，没有扩大生产API。测试监督期限不更新协议期限。
+生产源码workspace594项通过（另2项VM专用ignored），Python111项、严格Clippy、
+生成头一致性及HTML通过。最终实际外部C/Python消费者复验包括原期限晚答，
+其新增用例发生在workspace通过之后；最终外部消费者及Clippy覆盖该测试版本。
+登记/controller元数据为fixture，不能推导Native并发、固件或真实method交付。
+初次环境缺项和旧property-count文字断言失败保留；按合计entry契约修正并补
+混合超限不得调用broker的负对照，未放宽64条上限、原期限或其他断言。
 
-下一批将C/Python方法收件箱与CLI服务端接入这条共享实现，随后以准确新artifact
-验证原路径保持及真实双设备参数校验、独立应用结果、交换角色和生命周期。
-本批未运行硬件、不新增资格；此前失败与历史产物身份保留，不能转授新HEAD。
-完整S0–S6/19WP/10FV/12DG、VM-only、UserHost低优先级及自然恢复条件不变。
+下一批接CLI方法服务端及VM调用者，继续同一SDK/Engine，随后用准确新artifact
+验证原路径保持与真实双设备参数校验、独立结果、交换角色和生命周期。
+本批没有硬件运行或新增证明，不转授历史资格；原失败继续留在授权本地索引。
+完整S0–S6/19WP/10FV/12DG、VM-only、低优先级UserHost和自然恢复条件保持。
 
 ## 有界 issue 清理结果与主线恢复
 
 已复核35项：2项按自身条件关闭（U#1、U#21），18项有限收尾、3个已拆分父项、12项长期跟踪。
 本批重新读回35项；U#1/U#21既有关闭维持，七个既有子项不重复创建。
 U#3/U#22已记录方法daemon源码686483d，本次修正K#19残留的“Provider未提交”描述；
-原验收条款不变。C/Python方法收件箱、CLI服务端与真实方法交付仍缺，源码不转授实机资格。
+原验收条款不变。C/Python方法收件箱已接通；CLI服务端与真实方法交付仍缺，源码不转授实机资格。
 本次没有新增关闭或拆分。历史CI、失败及反例保留原身份，不冒充最新HEAD的检查。
 [逐项处置与历史读回](issue-maintenance-20261026.json)保留原范围、快照和失败。
 
@@ -74,7 +76,7 @@ S0–S6/19WP/10FV/12DG、VM-only和UserHost低优先级规划不变。
 | 已有子项 | 当前处置 | 独立退出范围 |
 | --- | --- | --- |
 | [U#21](https://github.com/OpenSparklink/sparklink/issues/21) | 可关闭，已独立关闭；本次复核保留 | 原六项 READ SDK Provider 生命周期；后续代码不继承旧资格 |
-| [U#22](https://github.com/OpenSparklink/sparklink/issues/22) | 有限分批收尾，开放 | 唯一 Engine 剩余操作/长值/更新；Down/晚答、daemon restart v2、长值 v2 及 command Provider v3 门禁已接通；method请求/发现与daemon方法Provider已接通；Rust方法收件箱已接通，C/Python/CLI、描述符Provider及完整原操作矩阵仍需收尾，准确产物资格按授权本地记录核对 |
+| [U#22](https://github.com/OpenSparklink/sparklink/issues/22) | 有限分批收尾，开放 | 唯一 Engine 剩余操作/长值/更新；Down/晚答、daemon restart v2、长值 v2 及 command Provider v3 门禁已接通；method请求/发现与daemon方法Provider已接通；Rust/C/Python方法收件箱已接通，CLI、描述符Provider及完整原操作矩阵仍需收尾，准确产物资格按授权本地记录核对 |
 | [U#23](https://github.com/OpenSparklink/sparklink/issues/23) | 长期跟踪，开放 | Battery/DeviceInfo/HID 的真实调用、启用/卸载及隔离 |
 | [K#21](https://github.com/OpenSparklink/linux/issues/21) | 有限分批收尾，开放 | credit/Ticket/撤权/断链/原期限/复用组合及硬件假设 |
 | [K#22](https://github.com/OpenSparklink/linux/issues/22) | 有限分批收尾，开放 | 动态通道背压、公平性、多设备业务及关闭隔离 |
@@ -497,60 +499,62 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-METHOD-SDK-v1",
-  "state": "RUST_METHOD_SDK_OFFLINE_PASS_LANGUAGE_FRONTENDS_PENDING",
+  "id": "WP08-METHOD-LANGUAGE-v1",
+  "state": "METHOD_C_PYTHON_SDK_OFFLINE_PASS_CLI_AND_HARDWARE_PENDING",
   "implementation_sources": {
-    "public": "fde4985278168ce533559e0c3ac248540b511aaa"
+    "public": "5b0056e1b1ea56312db4841b74249812482d536b"
   },
-  "production_behavior": "Typed property/method registration and Rust MethodInbox reuse the existing Dispatcher16slots, callback/request drain, original owner/context/deadline and actual result. No argument echo or command wire response; property-only APIs reject methods. Partial endpoint installation preserves foreign interfaces.",
+  "production_behavior": "C/Python typed method registration, authorization target3 and Provider views reuse the existing Rust Dispatcher, queue, callback/request lifetime, original owner/deadline and independent result. Full2043-byte arguments; max2045-byte results; command zero result. No extra Engine or wire response.",
   "offline_checks": {
     "workspace_passed": 594,
     "vm_only_ignored": 2,
-    "final_sdk_integration_passed": 8,
+    "python_passed": 111,
+    "final_external_c_python_suite": "PASS",
     "strict_clippy": "PASS",
+    "generated_header_matches": "PASS",
     "strict_html": "PASS"
   },
-  "offline_scope": "Actual Rust registration and shared Dispatcher on private D-Bus; explicit manager and identity fixtures. Final targeted rerun after test supervisor bounds and entry-count naming. Existing external C/Python property callers preserved; no method frontend there yet. No Native/USB/RF execution or formal refinement.",
-  "retained_failure": "First new test tried private Client::bus; fixed to original caller connection identity without exposing an API. Raw compiler output retained.",
+  "offline_scope": "Actual C/Python public entry -> shared Rust SDK and private D-Bus callbacks; metadata and controller identity are fixtures. Workspace passed before final test-only expiry addition; final external-consumer suite and Clippy cover that addition. No Native/USB/RF or new proof.",
+  "retained_failure": "Initial Python environment missing canonical paths/libs/socket access retained; corrected environment, no assertions weakened. First workspace run exposed old property-count label after entry-count contract migration; exact label and combined-count no-broker-side-effect regression updated. Original 64-entry ceiling/deadlines preserved.",
   "formal_status": "NO_NEW_PROOF",
   "hardware_status": "No hardware run or new qualification in this batch. Prior artifact attempts and failures remain in the authorized local index; no historic PASS transfers.",
   "issue_sync": {
-    "observed_at": "2026-10-27T17:25:59.150052+00:00",
+    "observed_at": "2026-10-27T17:47:55.387699+00:00",
     "updates": [
       {
         "repository": "sparklink",
         "number": 3,
         "state": "open",
-        "body_sha256": "8eb6ba0b69340d0a7807f7048713a7c1acbd9a0590ef0c3a24db04cbddc29a36",
+        "body_sha256": "4f99ddfdd30125b926dbd7e33abdcab190bb2612a743afdd0665deda04c63b1d",
         "source_offline_only": true
       },
       {
         "repository": "sparklink",
         "number": 22,
         "state": "open",
-        "body_sha256": "2b2e2181317333f30e8b9664e263b01179a0d73ccb116916237e74b27da32ad6",
+        "body_sha256": "2f3e90fd8270a4d76be26ad6bf750dbc558141518295013b638c45cef1d108cd",
         "source_offline_only": true
       },
       {
         "repository": "linux",
         "number": 19,
         "state": "open",
-        "body_sha256": "bed35e33a3989c9d6e5f240c0c563669f6f068f09332fbf06feae6a9085cd4d9",
+        "body_sha256": "f55a9b64503dd4d1e3308185212aa239252913ef4eb82a5ff79f20b150749762",
         "source_offline_only": true
       }
     ],
     "scope": "Public source/offline only; original acceptance unchanged; no issue closed."
   },
   "exit_conditions": [
-    "Rust methods are distinct typed entries, not property operation sentinels",
-    "Shared admission/queue/reply/stop lifecycle, independent result and explicit command budget",
-    "Private D-Bus tests exercise production SDK, errors, bounds, original deadline, owner loss, withdrawal and partial install",
-    "C/Python, CLI and actual dual-device method gates remain required"
+    "C/Python actual public entry uses shared production registration/authorization/Provider",
+    "Exact receipt and authorization snapshot ABI, distinct method access/targets and combined64-entry budget",
+    "Actual external C/Python callbacks validate full arguments, independent result, command, duplicate/invalid replies, original expiry and withdrawal",
+    "CLI/VM callers and actual dual-device method gates remain required"
   ],
   "next": [
-    "C/Python and CLI method providers using same Dispatcher",
-    "Accurate new artifact original-path preservation and genuine dual-device method delivery",
-    "Original full SSAP/data/security/recovery scope remains open"
+    "CLI method Provider and VM caller reuse same SDK frontend",
+    "Accurate artifact original-path preservation and genuine dual-device method independent-result delivery",
+    "Remaining original SSAP/data/security/recovery scope remains open"
   ]
 }
 ```

@@ -1,18 +1,14 @@
 # 当前能力与资格
 
-## 本批 issue 状态核对
+## Issue 状态与验证边界
 
-35 项及三个父子关系已再次读回；本次更新 U#1、K#24，33 项复核保留。新增关闭 0、新建子项 0；
-U#21 保持原六项条件下的关闭。19 项有限收尾、3 个已拆分父项、12 项长期跟踪和 1 项已关闭。
+上次完整维护核对35项；U#21保持按原条件关闭，U#1继续有限收尾。已有七个子项及父项原范围
+保持，不新增重复跟踪。当前剩余条件见[逐项处置](issue-maintenance-20261026.json)和[唯一计划](implementation-plan.md)。
 
-[逐项处置](issue-maintenance-20261026.json)与[唯一计划](implementation-plan.md)记录依据。
-U#1 取消缺陷已修复，实际 Native 订阅测试/runner 已实现、离线检查通过；该专用 VM 测试
-尚未执行，ignored 不计通过。新源码不继承历史业务、长度或 CI 资格。
-当前源码 CI 的 fuzz 来源检查超时、探索未执行，归入 K#24，保持未验证。
-U#10 自然恢复未闭合；U#3、K#17/#19 保留既有七个子项及全部原验收。
-
-本次维护没有改动资格记录或运行代码，也没有新增实机、形式化通过。公开仅源码／离线摘要，
-实机详情和原失败保持本地访问条件。维护结束后继续原功能主线。
+Native 取消修复、实际订阅测试、原业务/长度及 SSAP 保持门禁各有独立来源与限定范围。
+旧静默30秒用例走测试专用 EventSource，不能作为实际 Native 循环资格；该原有覆盖条件仍须补齐。
+公开页面只表达源码/离线及任务状态，不发布私有产物与实机详情；下方历史资格不能转授新源码。
+原始失败保留。U#10 自然恢复继续开放；K#24保留公开 CI 的来源检查超时，探索未执行不计通过。
 
 本页是唯一当前资格入口。源码、编译产物、执行工具、校验工具及必需门禁从下方
 结构化记录读取；报告或文档提交不替代编译身份，局部 PASS 不授整个 HEAD 资格。
@@ -76,7 +72,7 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
 ```json
 {
   "id": "WP16-U1-native-event-retry-cancellation",
-  "state": "SOURCE_OFFLINE_PASS_NEW_ARTIFACT_VM_PENDING",
+  "state": "SOURCE_OFFLINE_SCOPED_NATIVE_QUIET30_PENDING",
   "production_behavior": "Native EventTask retry uses the same cancellable SharedState snapshot wait; pending or already-ready cancellation exits without subsequent refresh/maintenance. Retry cadence and receiver ownership unchanged.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
@@ -89,8 +85,8 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
     "canonical_sha256": "be7d1383c42461ed7fc9d2f696eabb54714cfece39b23cb787423dd6c50a483c"
   },
   "implementation_sources": {
-    "public_source": "bb7abc65ea6348e5e6aab045c04fe13a1340dd4a",
-    "scope": "Source and offline checks only; no new hardware qualification."
+    "public_source": "b154c99215c616c060a6da45350bf4baea1923d2",
+    "scope": "Native retry fix and test wiring; original quiet30 fixture is legacy test-only loop, not Native coverage."
   },
   "invariants": [
     "Cancellation covers the actual retry lock wait; ready cancellation wins.",
@@ -99,28 +95,28 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
     "Task exit is not physical controller drain; old artifact qualification is not transferred."
   ],
   "offline_checks": {
-    "event_loop": "28 tests PASS, including actual production wait, real EventTask shutdown with Unix socket resource fixture, original 30-second private D-Bus and starvation negative control.",
-    "strict": "Rust1.96.1 offline locked slkd all-targets clippy -D warnings PASS. Shared build lock, eight jobs.",
-    "negative_control": "Old uncancellable production wait: two expected failures, ready cancellation mismatch and pending lock join timeout. Retained separately.",
-    "failures": "Initial clippy nested-if warning fixed without suppression; final checks rerun.",
-    "limits": "Resource fixture is not ControllerEventReceiver or a real kernel subscription; not full Native loop, RF, concurrency proof or physical drain."
+    "event_loop": "28 offline tests passed; actual Native subscription test is ignored offline and requires the dedicated VM gate. Legacy quiet30 EventSource/start is explicitly not Native-loop coverage.",
+    "runner": "77 Python tests passed for runner, parser and fail-closed receipt handling.",
+    "strict": "Rust 1.96.1, offline locked slkd all-targets clippy -D warnings passed; shared build lock and eight jobs.",
+    "negative_control": "Original uncancellable production wait failures remain retained: ready cancellation mismatch and pending lock join timeout.",
+    "failures": "Original clippy nested-if warning and first failure evidence retained; fixed without suppression.",
+    "limits": "These are source/offline results, not kernel concurrency or physical drain proofs. Exact Native VM execution is recorded separately; actual Native quiet30 remains unverified."
   },
   "offline_status": "SCOPED_OFFLINE_PASS",
   "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "No hardware result published here. Consult authorized local records; public source/offline evidence does not qualify the whole HEAD or the remaining Native interleaving.",
+  "hardware_status": "No hardware verdict or private execution identity published. Consult authorized local records; original Native quiet30 requirement remains unverified, and historical qualifications never transfer to a new HEAD.",
   "exit_conditions": [
-    "Run accurate new artifact through VM-only actual Native event integration/exit and applicable dual-device discovery/connect/short-message/length/peer-isolation gates.",
-    "Reconcile U1 original six requirements and close only when its relevant evidence is sufficient."
+    "Complete original quiet30 D-Bus requirement on same actual Native loop, preserving current production paths and accurate artifact boundaries; then audit all six original U1 conditions."
   ],
   "remaining_conditions": [
-    "Actual Native subscription/new artifact VM regression; U1 remains open.",
-    "WRITE Down/restart, long values and remaining SSAP/data/security full original scope.",
+    "Original U1 quiet30 test uses legacy test-only EventSource/start; actual Native-loop quiet-period D-Bus responsiveness remains unverified.",
+    "WRITE Down/restart, full remaining SSAP/data/security/lifecycle original scope.",
     "Natural fault root causes and nonmanual recovery remain open."
   ],
   "next": [
-    "Complete bounded U1 actual Native/new-artifact regression without making unrelated control-plane combinations prerequisite.",
-    "Resume existing WRITE Down/restart, data/security and SSAP delivery.",
-    "UserHost P4 planning remains nonblocking."
+    "Reuse actual Native subscription/EventTask and current VM infrastructure for original quiet30 gate; no simplified loop or default-daemon injection.",
+    "Then reconcile U1 original six conditions for independent closure.",
+    "Resume WRITE Down/restart and original data/security/SSAP delivery; UserHost P4 nonblocking."
   ],
   "issues": [
     "OpenSparklink/sparklink#1"
@@ -128,13 +124,13 @@ Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完
   "issue_sync": {
     "repository": "sparklink",
     "number": 1,
-    "prior_body_sha256": "c35ae036c9a68899e9dfa968f0aa084e175a0c810d724be89cbfa8709069cfb0",
-    "body_sha256": "14777e48d79430c756652abfceb45a2e0be067d6a6049f3951c7deb3e6b635f5",
-    "source_offline_only": true,
+    "prior_body_sha256": "3f499830a45438b1bd3734c5441dbedc5b446f77c5022dc7e4268fe1c62200c7",
+    "body_sha256": "56dbd9ea414d7fbcf3eca8ad7ce43f402879a44e59d83ff522b2d41cee916a13",
     "state": "open",
-    "observed_at": "2026-10-26T22:41:24.812691+00:00"
+    "source_offline_only": true,
+    "observed_at": "2026-10-27T00:06:14.442354+00:00"
   },
-  "qualification_boundary": "No new record or material registered; all prior source-bound records and original failures retained without qualification transfer.",
+  "qualification_boundary": "No new public qualification record or material registered. Private execution details are withheld; historical source-bound records and failures remain unchanged and do not transfer qualification to a new HEAD.",
   "public_scope": "Source/offline only; private hardware details remain local."
 }
 ```

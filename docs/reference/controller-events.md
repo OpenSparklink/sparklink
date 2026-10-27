@@ -136,3 +136,11 @@ EventTask 循环。测试屏障只在 `cfg(test)` 中存在：初次真实快照
 该屏障、配置或测试开关。普通应用业务和双端捕获仍由既有门禁另行核对，不能以
 本测试的日志替代真实通信。编译或默认测试列表中的 ignored 不代表该 VM 测试通过。
 参数与准确 test artifact 要求见 [VM 门禁输入](vm-gate-inputs.md)。
+
+### 静默期测试的覆盖边界
+
+现有 `silent_30s_dbus_requests_and_event_dispatch_do_not_share_wait_lock` 使用测试专用
+`EventSource`/`EventTask::start`，虽调用现行 D-Bus handler，仍不能代表 Native 接收循环。
+它保留为明确边界的饥饿和拒绝回归。实际 Native 的持锁取消测试只覆盖相应退出交错；
+不能推导静默30秒、完整 Node 发布或 Runtime drain。原静默期要求需在同一 Native
+循环上补齐，再按 U#1 原条件验收；不增加另一套简化事件循环。

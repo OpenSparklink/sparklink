@@ -2,18 +2,19 @@
 
 ## 本批实现与验证边界
 
-方法VM场景已有准确源码，真实方法交付尚未取得新资格；尝试详情与失败只留授权本地索引。
-20608ef新增生产BSLE sequencer的无CLOSE回复回归，严格C及原selftest通过，绕过等待错误的
-变异版本被拒绝。只验证有限I/O／时钟fixture下的原期限、禁止OPEN及独立实例；不授予
-固件恢复、USB drain或真实同行隔离资格。当前执行范围从下方同一结构化batch读取。
+真实方法交付尚未取得新资格；准确尝试、原失败和材料仅留授权本地索引。
+56415d7新增生产BSLE配置发送失败矩阵，严格C构建及selftest通过，忽略首笔错误的
+变异版本被拒绝。仅验证有限fixture下保留错误、停止发送／OPEN及不回滚序号；
+不授予USB drain、固件恢复或真实同行隔离资格。运行代码和原资格记录保持不变。
+当前执行范围从下方同一结构化batch读取。
 
 ## Issue 状态与验证边界
 
-本批只做issue维护：35项及七个子项关系已读回，U#1/U#21维持原范围关闭；
+最近一次有界issue维护已完成：35项及七个子项关系已读回，U#1/U#21维持原范围关闭；
 18项有限收尾、3个已拆分父项、12项长期跟踪。U#3的旧“方法VM场景缺失”描述已删除，
 K#19的重复业务进度改为职责链接。原验收逐字保留，没有新增关闭或重复子项。
 方法场景及双端判定已实现，准确新产物真实交付仍未取得资格；原启动失败继续保留。
-本轮未改运行代码、未重跑硬件或模型，资格记录和当前选定材料未变。
+该维护批次未改运行代码、未重跑硬件或模型，资格记录和当前选定材料未变。
 逐项处置见[维护记录](issue-maintenance-20261026.json)；维护完成后恢复[原主线](implementation-plan.md)。
 
 U#1已按原六条事件循环条件独立关闭；suite v2及取消门禁沿同一Native循环，
@@ -93,51 +94,46 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-METHOD-VM-CLOSE-WAIT-v1",
+  "id": "WP08-METHOD-CONFIG-SEND-BOUNDARY-v1",
   "state": "SOURCE_OFFLINE_PROGRESS_REAL_METHOD_DELIVERY_UNQUALIFIED",
   "implementation_sources": {
     "method_tools": "5c06c49e2e4e4eb9416059a35e3b40e2aa133124",
-    "kernel_selftest": "20608ef7099528925c38fd44d90d783b18f2e05d",
+    "kernel_selftest": "56415d7272ec790c585eaa9e99e5d38e7217d2a3",
     "production_kernel_unchanged": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
   },
-  "production_behavior": "Method VM scenario and two-end verifier reuse existing SDK/Engine/runner. This batch extends the production BSLE selftest only; no runtime driver behavior change.",
+  "production_behavior": "Existing method Engine/SDK/runner unchanged; production BSLE selftest adds all six configuration-send failures after CLOSE acknowledgement. No driver runtime change.",
   "offline_checks": {
     "strict_c_build": "PASS",
-    "existing_bsle_suite": "PASS",
-    "successful_close_but_silent_or_empty_receive": "ORIGINAL_10S_TIMEOUT_NO_CONFIGURE_OPEN_OR_TX_ADVANCE",
-    "independent_fixture_instance": "UNCHANGED_AND_CAN_START",
-    "temporary_missing_ack_bypass_mutant": "REJECTED"
+    "bsle_suite_checks": 7482,
+    "configuration_send_timeout_positions": 6,
+    "error_retained_no_continuation_open_retry_or_sequence_rollback": true,
+    "independent_fixture_unchanged": true,
+    "ignore_first_send_failure_mutant": "REJECTED_BY_FOUR_ASSERTIONS",
+    "existing_address_and_method_tool_tests": 27
   },
-  "offline_scope": "Actual bsle.c/wire.c linked directly; I/O, time and second instance are finite fixtures. No USB drain, kernel concurrency or firmware recovery proof. First wrapper/mutator preparation errors retained; only actual compiled executions counted.",
+  "offline_scope": "Direct production bsle.c/wire.c; I/O/time/peer are finite fixtures. Not actual USB drain, kernel concurrency, firmware recovery or formal proof. Existing tool fixtures do not establish real delivery.",
   "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "NO_NEW_METHOD_QUALIFICATION; exact attempt identity, raw materials, failures and audit remain only in authorized local index. Old qualifications never transfer.",
+  "hardware_status": "NO_NEW_METHOD_QUALIFICATION; accurate attempts and failures only in authorized local evidence. No historic qualification transfer.",
   "issue_sync": {
-    "observed_at": "2026-10-27T19:00:49.544112+00:00",
+    "observed_at": "2026-10-27T19:22:13.027976+00:00",
     "updates": [
-      {
-        "repository": "linux",
-        "number": 10,
-        "state": "open",
-        "body_sha256": "b6a9df76d2e4c28247e27e2575cb2af9b17eaf91fe9063d3ccd1411560ea4370",
-        "source_offline_only": true
-      },
       {
         "repository": "linux",
         "number": 15,
         "state": "open",
-        "body_sha256": "fdb37e122214e4a77afc4bfb78ff464d60b09688bb2d05faf44aa57770802bc0",
+        "body_sha256": "3100ad65f00a562245250f6e585b465942813d768ed803ae98add80bb9f770ee",
         "source_offline_only": true
       }
     ],
-    "scope": "Public source/offline only; original acceptance and open states retained."
+    "scope": "Public source/offline only, OPEN and original acceptance unchanged."
   },
   "exit_conditions": [
-    "Existing method scenario attempted only through assigned VM resources and exact artifact checks; outcome retained privately",
-    "Missing/empty CLOSE reply cannot become OPEN or renew original deadline in production sequencer test",
-    "Independent fixture instance and missing-ACK bypass negative control checked",
-    "No hardware or natural-recovery qualification inferred; no issue closed"
+    "Exact-artifact method attempt retained under existing VM/resource boundaries",
+    "All six configuration failures terminate without further sends, OPEN or sequence rollback",
+    "Independent fixture and ignored-failure negative control checked",
+    "No new delivery or recovery qualification inferred"
   ],
-  "next": "Continue source/firmware warm-bootstrap and CLOSE barrier diagnosis without bypassing acknowledgements or repeating an unchanged attempt. In parallel continue the existing method Engine/SDK path and remaining operation/lifetime gates. Resume real paired method delivery with accurate artifacts when startup prerequisites hold; do not require all recovery or control-plane work first."
+  "next": "Diagnose original warm-bootstrap and post-CLOSE transport state from captured timing and fixed SDK/libws73/NearLink references; no ACK bypass or unchanged retry. Continue remaining method command/discovery/long-result and lifecycle paths in parallel. Real paired method delivery and preservation still require startup and exact artifacts, not all recovery/control-plane completion."
 }
 ```
 

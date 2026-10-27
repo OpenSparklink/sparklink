@@ -1,22 +1,22 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前批次：方法门禁与 CLOSE 原期限回归
+## 当前批次：方法交付与 CLOSE 后配置发送边界
 
-方法VM场景及双端判定已由5c06c49接通，复用唯一Engine、实际SDK和原runner；
-准确编译／执行身份及尝试结果只在授权本地索引维护，没有新增真实方法资格。
-本批不重复实现收发循环，也不把USB完成或工具存在当作业务交付。
+现有方法Engine、SDK、VM场景及双端判定继续复用，没有新增真实方法资格。
+准确编译／执行身份、尝试及失败只在授权本地索引保存；原U组失败不被后续结果覆盖。
 
-内核测试源码20608ef直接链接生产bsle.c/wire.c，新增CLOSE传输回调成功、但随后
-持续超时／空读取的两种情况：原10秒期限必须终结，不能配置、OPEN或推进发送序号；
-另一独立fixture实例保持可启动。严格C构建及原selftest通过；忽略CLOSE错误的临时
-生产源码变异版本被断言拒绝。传输、时钟及同行均为fixture，不证明真实固件恢复、
-USB drain或并发隔离。生产内核保持52ae7f08不变，测试分支单独供review。
+内核测试源码56415d7直接链接生产bsle.c/wire.c，在真实格式CLOSE确认后逐笔覆盖
+六次配置发送超时：保留原错误、停止后续发送和OPEN、不隐式重试或回滚发送序号。
+严格C构建与7482项selftest检查通过；忽略首笔发送错误的临时生产源码变异被四条断言拒绝。
+另一fixture实例保持未变并可启动，原无CLOSE确认的10秒期限回归继续保留。
+I/O、时钟及同行均为fixture，不证明USB drain、固件恢复或真实并发隔离；运行内核未改动。
 
-继续核对既有warm bootstrap与CLOSE屏障，不通过跳过确认或重复相同尝试取得表面成功。
-方法Engine/SDK及其剩余操作／生命周期工作并行；具备启动条件后继续准确artifact的
-真实双端方法及原路径保持门禁，不等待恢复全集或全部控制面竞争完成。
-K#10/#15只更新源码／离线范围，原自然根因和非人工恢复条件继续开放。
-完整S0–S6/19WP/10FV/12DG、VM-only及UserHost P4保持；issue维护已完成，不再作前置。
+下一步核对warm bootstrap、CLOSE后传输状态和固定参考实现的封装／时序差异，
+不能从USB完成推导固件活性，也不能从发送超时推导完全未消费。缺少证据时不引入
+猜测性的唤醒或跳过ACK。方法命令、发现、长结果及生命周期链路并行，具备启动条件后
+继续准确artifact的真实双端方法交付和原路径保持，不等恢复全集或控制面竞争全集。
+K#15仅更新源码／离线范围，所有自然根因、非人工恢复及未完成门禁保持开放。
+完整S0–S6/19WP/10FV/12DG、VM-only和UserHost P4不变；已完成的issue维护不再作前置。
 
 ## 有界 issue 清理结果与主线恢复
 
@@ -499,51 +499,46 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-METHOD-VM-CLOSE-WAIT-v1",
+  "id": "WP08-METHOD-CONFIG-SEND-BOUNDARY-v1",
   "state": "SOURCE_OFFLINE_PROGRESS_REAL_METHOD_DELIVERY_UNQUALIFIED",
   "implementation_sources": {
     "method_tools": "5c06c49e2e4e4eb9416059a35e3b40e2aa133124",
-    "kernel_selftest": "20608ef7099528925c38fd44d90d783b18f2e05d",
+    "kernel_selftest": "56415d7272ec790c585eaa9e99e5d38e7217d2a3",
     "production_kernel_unchanged": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
   },
-  "production_behavior": "Method VM scenario and two-end verifier reuse existing SDK/Engine/runner. This batch extends the production BSLE selftest only; no runtime driver behavior change.",
+  "production_behavior": "Existing method Engine/SDK/runner unchanged; production BSLE selftest adds all six configuration-send failures after CLOSE acknowledgement. No driver runtime change.",
   "offline_checks": {
     "strict_c_build": "PASS",
-    "existing_bsle_suite": "PASS",
-    "successful_close_but_silent_or_empty_receive": "ORIGINAL_10S_TIMEOUT_NO_CONFIGURE_OPEN_OR_TX_ADVANCE",
-    "independent_fixture_instance": "UNCHANGED_AND_CAN_START",
-    "temporary_missing_ack_bypass_mutant": "REJECTED"
+    "bsle_suite_checks": 7482,
+    "configuration_send_timeout_positions": 6,
+    "error_retained_no_continuation_open_retry_or_sequence_rollback": true,
+    "independent_fixture_unchanged": true,
+    "ignore_first_send_failure_mutant": "REJECTED_BY_FOUR_ASSERTIONS",
+    "existing_address_and_method_tool_tests": 27
   },
-  "offline_scope": "Actual bsle.c/wire.c linked directly; I/O, time and second instance are finite fixtures. No USB drain, kernel concurrency or firmware recovery proof. First wrapper/mutator preparation errors retained; only actual compiled executions counted.",
+  "offline_scope": "Direct production bsle.c/wire.c; I/O/time/peer are finite fixtures. Not actual USB drain, kernel concurrency, firmware recovery or formal proof. Existing tool fixtures do not establish real delivery.",
   "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "NO_NEW_METHOD_QUALIFICATION; exact attempt identity, raw materials, failures and audit remain only in authorized local index. Old qualifications never transfer.",
+  "hardware_status": "NO_NEW_METHOD_QUALIFICATION; accurate attempts and failures only in authorized local evidence. No historic qualification transfer.",
   "issue_sync": {
-    "observed_at": "2026-10-27T19:00:49.544112+00:00",
+    "observed_at": "2026-10-27T19:22:13.027976+00:00",
     "updates": [
-      {
-        "repository": "linux",
-        "number": 10,
-        "state": "open",
-        "body_sha256": "b6a9df76d2e4c28247e27e2575cb2af9b17eaf91fe9063d3ccd1411560ea4370",
-        "source_offline_only": true
-      },
       {
         "repository": "linux",
         "number": 15,
         "state": "open",
-        "body_sha256": "fdb37e122214e4a77afc4bfb78ff464d60b09688bb2d05faf44aa57770802bc0",
+        "body_sha256": "3100ad65f00a562245250f6e585b465942813d768ed803ae98add80bb9f770ee",
         "source_offline_only": true
       }
     ],
-    "scope": "Public source/offline only; original acceptance and open states retained."
+    "scope": "Public source/offline only, OPEN and original acceptance unchanged."
   },
   "exit_conditions": [
-    "Existing method scenario attempted only through assigned VM resources and exact artifact checks; outcome retained privately",
-    "Missing/empty CLOSE reply cannot become OPEN or renew original deadline in production sequencer test",
-    "Independent fixture instance and missing-ACK bypass negative control checked",
-    "No hardware or natural-recovery qualification inferred; no issue closed"
+    "Exact-artifact method attempt retained under existing VM/resource boundaries",
+    "All six configuration failures terminate without further sends, OPEN or sequence rollback",
+    "Independent fixture and ignored-failure negative control checked",
+    "No new delivery or recovery qualification inferred"
   ],
-  "next": "Continue source/firmware warm-bootstrap and CLOSE barrier diagnosis without bypassing acknowledgements or repeating an unchanged attempt. In parallel continue the existing method Engine/SDK path and remaining operation/lifetime gates. Resume real paired method delivery with accurate artifacts when startup prerequisites hold; do not require all recovery or control-plane work first."
+  "next": "Diagnose original warm-bootstrap and post-CLOSE transport state from captured timing and fixed SDK/libws73/NearLink references; no ACK bypass or unchanged retry. Continue remaining method command/discovery/long-result and lifecycle paths in parallel. Real paired method delivery and preservation still require startup and exact artifacts, not all recovery/control-plane completion."
 }
 ```
 

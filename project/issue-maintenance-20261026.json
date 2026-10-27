@@ -196,7 +196,7 @@
       "action": "body_replaced",
       "state": "open",
       "closure_basis": "继续缺失/损坏镜像、通知乱序/超时、部分初始化/退出与自然启动失败根因；E 运行期实验地址不等于出厂唯一身份，cold-ROM 自动选择、混合型号与无人工恢复仍须各自原门禁。许可/来源与复现输入保持外部，不上传未授权固件。",
-      "body_sha256": "fdb37e122214e4a77afc4bfb78ff464d60b09688bb2d05faf44aa57770802bc0",
+      "body_sha256": "3100ad65f00a562245250f6e585b465942813d768ed803ae98add80bb9f770ee",
       "children": []
     },
     {
@@ -7824,6 +7824,24 @@
         }
       ],
       "scope": "Production sequencer CLOSE timeout regression only; no driver change, new hardware/formal claim or closure."
+    },
+    {
+      "observed_at": "2026-10-27T19:22:13.027976+00:00",
+      "sources": {
+        "method_tools": "5c06c49e2e4e4eb9416059a35e3b40e2aa133124",
+        "kernel_selftest": "56415d7272ec790c585eaa9e99e5d38e7217d2a3",
+        "production_kernel_unchanged": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
+      },
+      "updates": [
+        {
+          "repository": "linux",
+          "number": 15,
+          "state": "open",
+          "body_sha256": "3100ad65f00a562245250f6e585b465942813d768ed803ae98add80bb9f770ee",
+          "source_offline_only": true
+        }
+      ],
+      "scope": "Configuration send failure selftest only; no hardware or formal claim, no closure."
     }
   ],
   "current_disposition": {

@@ -9,6 +9,7 @@ pub(super) fn exercise(
     library: &Path,
     directory: &Path,
     address: &str,
+    command_calls: &Mutex<Vec<CommandCall>>,
 ) -> anyhow::Result<()> {
     for language in ["c", "python"] {
         let command = || {
@@ -196,6 +197,149 @@ pub(super) fn exercise(
         assert!(elapsed >= std::time::Duration::from_millis(4500));
         assert_eq!(status.code(), Some(1));
         assert!(!output.stderr.is_empty());
+
+        for (label, handle, arguments, success) in [
+            ("short", "64", "5612".to_owned(), true),
+            ("empty", "65", String::new(), true),
+            ("boundary", "66", "31".repeat(2043), true),
+            ("unsupported", "67", "5612".to_owned(), false),
+            ("timeout-error", "68", "5612".to_owned(), false),
+        ] {
+            let before = command_calls.lock().unwrap().len();
+            let mut child = command()
+                .args([
+                    "ssap-method-command",
+                    "2",
+                    "7",
+                    PATH,
+                    handle,
+                    &arguments,
+                    "0",
+                ])
+                .spawn()?;
+            let mut stdout = std::io::BufReader::new(child.stdout.take().unwrap());
+            let mut barrier = String::new();
+            stdout.read_line(&mut barrier)?;
+            let parsed: serde_json::Value = serde_json::from_str(&barrier)?;
+            assert_eq!(parsed["stage"], "ssap_command_start_barrier");
+            assert_eq!(parsed["api"], language);
+            assert_eq!(parsed["client_closed"], true);
+            assert_eq!(parsed["mode"], "ssap-method-command");
+            assert_eq!(parsed["method"], "CallSsapMethodCommand");
+            assert_eq!(parsed["schema_version"], 1);
+            child.stdin.as_mut().unwrap().write_all(b"start\n")?;
+            let mut remaining = String::new();
+            stdout.read_to_string(&mut remaining)?;
+            let output = child.wait_with_output()?;
+            let name = format!("method-command-{language}-{label}");
+            std::fs::write(
+                directory.join(format!("{name}.stdout")),
+                barrier + &remaining,
+            )?;
+            std::fs::write(directory.join(format!("{name}.stderr")), &output.stderr)?;
+            assert_eq!(output.status.success(), success, "{name}");
+            let calls = command_calls.lock().unwrap();
+            assert_eq!(
+                calls.len(),
+                before + 1,
+                "request RPC cannot impersonate command RPC"
+            );
+            let actual = &calls[before];
+            assert_eq!(actual.0, handle.parse::<u16>()?);
+            assert_eq!(actual.1, 0);
+            assert_eq!(
+                actual.2,
+                (0..arguments.len())
+                    .step_by(2)
+                    .map(|n| u8::from_str_radix(&arguments[n..n + 2], 16).unwrap())
+                    .collect::<Vec<_>>()
+            );
+            assert_eq!(
+                slk_contract::deadline_stamp(actual.3).monotonic_ns,
+                parsed["deadline_ns"].as_u64().unwrap()
+            );
+            if success {
+                assert!(output.stderr.is_empty());
+                assert_eq!(remaining.lines().count(), 1);
+                let receipt: serde_json::Value = serde_json::from_str(
+                    remaining
+                        .trim_end()
+                        .strip_prefix("SSAP_COMMAND_ADMITTED: ")
+                        .unwrap(),
+                )?;
+                assert_eq!(receipt["mode"], "ssap-method-command");
+                assert_eq!(receipt["method"], "CallSsapMethodCommand");
+                assert_eq!(receipt["schema_version"], 1);
+                assert_eq!(receipt["api"], language);
+                assert_eq!(receipt["handle"], actual.0);
+                assert_eq!(receipt["minimum"], 0);
+                assert_eq!(receipt["value"], arguments);
+                assert_eq!(receipt["admission_only"], true);
+                assert_eq!(receipt["peer_delivery_confirmed"], false);
+                assert_eq!(receipt["deadline_ns"], parsed["deadline_ns"]);
+                assert!(
+                    receipt["call_ns"].as_u64().unwrap() < receipt["returned_ns"].as_u64().unwrap()
+                );
+                assert!(
+                    receipt["returned_ns"].as_u64().unwrap()
+                        < parsed["deadline_ns"].as_u64().unwrap()
+                );
+            } else {
+                assert_eq!(output.status.code(), Some(1));
+                assert!(!output.stderr.is_empty());
+                assert!(remaining.is_empty());
+            }
+        }
+        let before = command_calls.lock().unwrap().len();
+        for arguments in ["31".repeat(2044), "0g".to_owned()] {
+            let output = command()
+                .args(["ssap-method-command", "2", "7", PATH, "64", &arguments, "0"])
+                .output()?;
+            assert!(!output.status.success());
+            assert!(
+                output.stdout.is_empty(),
+                "invalid arguments fail before Client acquisition"
+            );
+        }
+        let mut child = command()
+            .args(["ssap-method-command", "2", "7", PATH, "64", "5612", "0"])
+            .spawn()?;
+        let mut stdout = std::io::BufReader::new(child.stdout.take().unwrap());
+        let mut barrier = String::new();
+        stdout.read_line(&mut barrier)?;
+        let parsed: serde_json::Value = serde_json::from_str(&barrier)?;
+        assert_eq!(parsed["mode"], "ssap-method-command");
+        let started = std::time::Instant::now();
+        let unreleased = child.stdin.take().unwrap();
+        let status = child.wait()?;
+        let elapsed = started.elapsed();
+        drop(unreleased);
+        let mut remaining = String::new();
+        stdout.read_to_string(&mut remaining)?;
+        let output = child.wait_with_output()?;
+        std::fs::write(
+            directory.join(format!("method-command-{language}-unreleased.stdout")),
+            barrier,
+        )?;
+        std::fs::write(
+            directory.join(format!("method-command-{language}-unreleased.stderr")),
+            &output.stderr,
+        )?;
+        std::fs::write(
+            directory.join(format!("method-command-{language}-unreleased-timing.json")),
+            serde_json::to_vec(
+                &serde_json::json!({"elapsed_ns":elapsed.as_nanos(),"exit_code":status.code()}),
+            )?,
+        )?;
+        assert!(elapsed >= std::time::Duration::from_millis(4500));
+        assert_eq!(status.code(), Some(1));
+        assert!(remaining.is_empty());
+        assert!(!output.stderr.is_empty());
+        assert_eq!(
+            command_calls.lock().unwrap().len(),
+            before,
+            "invalid/unreleased commands never submit"
+        );
     }
     Ok(())
 }

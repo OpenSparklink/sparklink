@@ -136,7 +136,7 @@ def validate_inputs(package):
 
 
 def command_arguments(api, entry, handle, payload, *, mode="ssap-command"):
-    if mode not in ("ssap-command", "ssap-command-reject"):
+    if mode not in ("ssap-command", "ssap-command-reject", "ssap-method-command"):
         raise CaptureError("explicit supported command helper mode required")
     if api not in APIS or type(handle) is not int or not 1 <= handle <= 65535:
         raise CaptureError('explicit command language/property required')
@@ -154,21 +154,27 @@ def ordinary(record):
         raise CaptureError('exact uid1000 cap-zero process required; not apps-only qualification')
 
 
-def admission(app, entry, handle, payload):
+def admission(app, entry, handle, payload, *, mode="ssap-command"):
+    if mode not in ("ssap-command", "ssap-method-command"):
+        raise CaptureError("explicit admission command mode required")
     verify_output(app)
     ordinary(app)
-    if (app['api'] not in APIS or app['args'] != command_arguments(app['api'], entry, handle, payload)
+    if (app['api'] not in APIS or app['args'] != command_arguments(app['api'], entry, handle, payload, mode=mode)
             or app['environment'] != application_environment() or app['exit'] != 0 or app['stderr']):
         raise CaptureError('exact successful actual command helper required')
     lines = app['stdout'].splitlines()
     if len(lines) != 2 or not lines[1].startswith('SSAP_COMMAND_ADMITTED: '):
         raise CaptureError('one command barrier and admission-only receipt required')
     barrier = json.loads(lines[0]); result = json.loads(lines[1].split(': ', 1)[1])
-    if (set(barrier) != {'stage', 'api', 'deadline_ns', 'client_closed'}
+    typed = {'schema_version': 1, 'mode': mode, 'method': 'CallSsapMethodCommand'} if mode == 'ssap-method-command' else {}
+    if any(type(record.get('schema_version')) is not int or any(record.get(k) != v for k, v in typed.items())
+           for record in (barrier, result) if typed):
+        raise CaptureError('typed method command receipt required')
+    if (set(barrier) != {'stage', 'api', 'deadline_ns', 'client_closed'} | typed.keys()
             or barrier['stage'] != 'ssap_command_start_barrier' or barrier['api'] != app['api']
             or barrier['client_closed'] is not True
             or set(result) != {'api', 'handle', 'value', 'minimum', 'admission_only',
-                               'peer_delivery_confirmed', 'deadline_ns', 'call_ns', 'returned_ns'}
+                               'peer_delivery_confirmed', 'deadline_ns', 'call_ns', 'returned_ns'} | typed.keys()
             or result['api'] != app['api'] or result['handle'] != handle
             or result['value'] != payload or type(result['minimum']) is not int or result['minimum'] != 0
             or result['admission_only'] is not True or result['peer_delivery_confirmed'] is not False
@@ -182,11 +188,13 @@ def admission(app, entry, handle, payload):
     return result
 
 
-def execute_command(run, row, case, entry, *, rejected=False, label="write-command"):
-    if type(rejected) is not bool or label not in ("write-command", "command-policy-oversized", "command-policy-denied", "command-policy-allowed", "command-original-deadline"):
+def execute_command(run, row, case, entry, *, rejected=False, label="write-command", mode="ssap-command"):
+    if type(rejected) is not bool or label not in ("write-command", "command-policy-oversized", "command-policy-denied", "command-policy-allowed", "command-original-deadline", "method-command"):
         raise CaptureError("explicit finite command invocation required")
+    if mode not in ('ssap-command', 'ssap-method-command') or (rejected and mode != 'ssap-command'):
+        raise CaptureError('explicit command operation/rejection scope required')
     payload, api, handle = case['value'], case['api'], case['handle']
-    args = command_arguments(api, entry, handle, payload, mode="ssap-command-reject" if rejected else "ssap-command")
+    args = command_arguments(api, entry, handle, payload, mode="ssap-command-reject" if rejected else mode)
     prefix = run.output / f'{label}-{row["phase"]}-{case["sequence"]}-{api}'
     out, err = Path(str(prefix) + '.stdout'), Path(str(prefix) + '.stderr')
     app = dict(api=api, args=args, environment=application_environment(), start_wall_ns=time.time_ns(),
@@ -209,7 +217,7 @@ def execute_command(run, row, case, entry, *, rejected=False, label="write-comma
         from ws73_ssap_command_policy import rejection_receipt
         rejection_receipt(app, entry, handle, payload)
     else:
-        admission(app, entry, handle, payload)
+        admission(app, entry, handle, payload, mode=mode)
 
 
 def negotiated(row):

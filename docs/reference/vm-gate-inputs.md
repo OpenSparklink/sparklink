@@ -58,6 +58,29 @@ ssap-error INDEX GENERATION CONNECTION ssap-call-method HANDLE EXPECTED_ERRNO AR
 这些工具检查不是方法的双设备交付资格；VM 方法场景还须核对实际 Provider 参数、
 独立结果、双端 USB 请求/响应和准确 artifact，不能从 SDK stdout 单独判 PASS。
 
+## 方法 command 的实际 SDK 测试入口
+
+同一 C/Python 应用 helper 增加明确模式：
+
+```text
+ssap-method-command INDEX GENERATION CONNECTION HANDLE ARGUMENTS_HEX [MINIMUM]
+```
+
+参数为 0–2043 字节；WRITE command 的 2042 字节限制保持不变。复用原 command
+执行器、普通用户 Connection、Client 关闭后的启动屏障和从申请起的五秒绝对期限。
+实际调用现有 `CallSsapMethodCommand`，没有第二套收发循环或 Engine。
+新模式的屏障和准入收据带 `schema_version=1`、`mode=ssap-method-command`、
+`method=CallSsapMethodCommand`；已有 WRITE 收据及报告版本不变。
+
+`SSAP_COMMAND_ADMITTED` 仅表示软件准入，`peer_delivery_confirmed=false`。
+没有响应值；不隐式重试，不把请求方法的结果丢弃后伪装成 command。实际 SDK
+私有总线回归区分 RPC、原参数/期限，覆盖空值、上界、超限、错误和未释放屏障。
+服务端仍为明确的有限 fixture，不证明 daemon Engine、内核并发或真实交付。
+
+该入口尚不是独立的双设备 method command 资格门禁。后续必须通过唯一 Engine
+触发真实对端 Provider，核对原参数、应用处理记录、双端 USB 及准确新 artifact；
+不能用准入、NOCP、请求方法或 WRITE 的历史通过替代。
+
 ## 显式链路发送载荷偏好
 
 可选 `--link-payload-preference reported-acb-maximum` 仅用于独立的双设备 Native

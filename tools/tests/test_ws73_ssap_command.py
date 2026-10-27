@@ -123,6 +123,44 @@ def matcher(capture):
     return match, packets
 
 
+class MethodCommandAdmission(unittest.TestCase):
+    def test_typed_receipts_cannot_be_write_or_peer_delivery(self):
+        row, _ = fixture()
+        for original in row['ssap_write_commands']:
+            with self.subTest(api=original['api'], size=original['application_bytes']):
+                app = copy.deepcopy(original['command'])
+                entry = row['owners'][original['sender']]
+                handle, payload = original['handle'], original['value']
+                app['args'] = gate.command_arguments(app['api'], entry, handle, payload, mode='ssap-method-command')
+                barrier, receipt = app['stdout'].splitlines()
+                barrier = json.loads(barrier); receipt = json.loads(receipt.split(': ', 1)[1])
+                typed = dict(mode='ssap-method-command', method='CallSsapMethodCommand', schema_version=1)
+                barrier.update(typed); receipt.update(typed)
+                def update(target, b, r):
+                    target['stdout'] = json.dumps(b)+'\nSSAP_COMMAND_ADMITTED: '+json.dumps(r)+'\n'
+                    output(target)
+                update(app, barrier, receipt)
+                self.assertFalse(gate.admission(app, entry, handle, payload, mode='ssap-method-command')['peer_delivery_confirmed'])
+                with self.assertRaises(CaptureError):gate.admission(app, entry, handle, payload)
+                for field, wrong in [('mode', 'ssap-command'), ('method', 'WriteSsapCommand'),
+                        ('schema_version', True), ('admission_only', False), ('peer_delivery_confirmed', True),
+                        ('deadline_ns', receipt['returned_ns']-1), ('value', payload+'01')]:
+                    changed = copy.deepcopy(app); invalid = dict(receipt); invalid[field] = wrong
+                    update(changed, barrier, invalid)
+                    with self.assertRaises(CaptureError, msg=field):
+                        gate.admission(changed, entry, handle, payload, mode='ssap-method-command')
+                for part in ('barrier', 'receipt'):
+                    changed = copy.deepcopy(app); b, r = dict(barrier), dict(receipt)
+                    for key in typed:(b if part=='barrier' else r).pop(key)
+                    update(changed,b,r)
+                    with self.assertRaises(CaptureError):gate.admission(changed,entry,handle,payload,mode='ssap-method-command')
+
+    def test_conflicting_command_scope_rejected_before_process(self):
+        with self.assertRaises(CaptureError):
+            gate.execute_command(None, None, None, None, rejected=True, mode='ssap-method-command')
+        with self.assertRaises(CaptureError):gate.admission(None,None,None,None,mode='ssap-command-reject')
+
+
 class CommandGate(unittest.TestCase):
     def test_boot_and_raw_row_selectors_cannot_smuggle_unrequested_evidence(self):
         self.assertFalse(gate.boot_requested(['console=ttyS0']))

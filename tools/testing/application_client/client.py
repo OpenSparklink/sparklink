@@ -28,7 +28,7 @@ def main():
     if sys.argv[1:2] in (['update-peer'],['update-error'],['update-retired']):return update_peer_mode()
     if sys.argv[1:2] == ['discovery']:return discovery_mode()
     if sys.argv[1:2] in (['ssap'], ['ssap-error']):return ssap_mode()
-    if sys.argv[1:2] in (['ssap-command'],['ssap-command-reject']):return ssap_command_mode()
+    if sys.argv[1:2] in (['ssap-command'],['ssap-command-reject'],['ssap-method-command']):return ssap_command_mode()
     if len(sys.argv)!=7:raise ValueError("index generation connection role request reply required")
     index,generation=int(sys.argv[1]),int(sys.argv[2]);path=sys.argv[3];role=int(sys.argv[4])
     request,reply=bytes.fromhex(sys.argv[5]),bytes.fromhex(sys.argv[6])
@@ -114,18 +114,21 @@ def ssap_mode():
 def ssap_command_mode():
     if len(sys.argv) not in (7,8):raise ValueError('ssap-command index generation path handle value-hex [minimum]')
     reject=sys.argv[1]=='ssap-command-reject'
+    method=sys.argv[1]=='ssap-method-command'
+    maximum=2043 if method or reject else 2042
     index,generation=int(sys.argv[2]),int(sys.argv[3]);path=sys.argv[4];handle=int(sys.argv[5])
     minimum=int(sys.argv[7]) if len(sys.argv)==8 else 0
-    if not 1<=handle<=65535 or not 0<=minimum<=2 or not 0<=len(sys.argv[6])<=(4086 if reject else 4084):raise ValueError('bounded command test inputs')
+    if not 1<=handle<=65535 or not 0<=minimum<=2 or not 0<=len(sys.argv[6])<=2*maximum:raise ValueError('bounded command test inputs')
     if reject and (minimum!=0 or not 0<=index<=65535 or not 1<=generation<=2**64-1 or not 1<=len(path)<=256):raise ValueError('exact oversize rejection scope required')
     value=bytes.fromhex(sys.argv[6])
-    if (len(value)!=2043 if reject else not 0<=len(value)<=2042):raise ValueError('bounded command test value')
+    if (len(value)!=2043 if reject else not 0<=len(value)<=maximum):raise ValueError('bounded command test value')
     deadline=time.monotonic_ns()+5_000_000_000
     with Client(deadline_ns=deadline) as client:
         link=client.connection(ControllerId(index,generation),path,deadline_ns=deadline)
     with link:
         barrier=dict(stage='ssap_command_start_barrier',api='python',deadline_ns=deadline,client_closed=True)
         if reject:barrier.update(mode='ssap-command-reject',schema_version=1)
+        if method:barrier.update(mode='ssap-method-command',schema_version=1,method='CallSsapMethodCommand')
         print(json.dumps(barrier),flush=True)
         wait(0,select.POLLIN,deadline)
         if os.read(0,6)!=b'start\n':raise ValueError('explicit original command start barrier required')
@@ -133,7 +136,8 @@ def ssap_command_mode():
         called=time.monotonic_ns()
         if reject and called>=deadline:raise TimeoutError(errno.ETIMEDOUT,'original command rejection deadline')
         try:
-            result=remote.write_without_response(handle,value,minimum=minimum,deadline_ns=deadline)
+            submit=remote.call_method_without_response if method else remote.write_without_response
+            result=submit(handle,value,minimum=minimum,deadline_ns=deadline)
         except OSError as error:
             returned=time.monotonic_ns()
             if not reject or error.errno!=errno.EINVAL:raise
@@ -146,8 +150,10 @@ def ssap_command_mode():
         returned=time.monotonic_ns()
         if reject:raise AssertionError('oversize SDK command unexpectedly succeeded')
         if result is not None:raise ValueError('command must return software admission without response bytes')
-        print('SSAP_COMMAND_ADMITTED: '+json.dumps(dict(api='python',handle=handle,value=value.hex(),minimum=minimum,
-            admission_only=True,peer_delivery_confirmed=False,deadline_ns=deadline,call_ns=called,returned_ns=returned)),flush=True)
+        receipt=dict(api='python',handle=handle,value=value.hex(),minimum=minimum,
+            admission_only=True,peer_delivery_confirmed=False,deadline_ns=deadline,call_ns=called,returned_ns=returned)
+        if method:receipt.update(mode='ssap-method-command',schema_version=1,method='CallSsapMethodCommand')
+        print('SSAP_COMMAND_ADMITTED: '+json.dumps(receipt),flush=True)
 
 
 def discovery_mode():

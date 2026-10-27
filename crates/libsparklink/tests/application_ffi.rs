@@ -129,6 +129,7 @@ struct Link(
     Arc<Mutex<Vec<CommandCall>>>,
     Arc<AtomicUsize>,
     Arc<AtomicUsize>,
+    Arc<Mutex<Vec<CommandCall>>>,
 );
 #[zbus::interface(name = "org.sparklink.Connection")]
 impl Link {
@@ -285,6 +286,10 @@ impl Link {
         minimum: u32,
         original: slk_contract::Deadline,
     ) -> zbus::fdo::Result<()> {
+        self.7
+            .lock()
+            .unwrap()
+            .push((handle, minimum, arguments.clone(), original));
         self.call_ssap_method(handle, arguments, minimum, original)
             .map(|_| ())
     }
@@ -670,6 +675,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     let calls = Arc::new(AtomicUsize::new(0));
     let ssap_calls = Arc::new(AtomicUsize::new(0));
     let method_calls = Arc::new(AtomicUsize::new(0));
+    let method_command_calls = Arc::new(Mutex::new(Vec::new()));
     let description_reads = Arc::new(AtomicUsize::new(0));
     let command_calls = Arc::new(Mutex::new(Vec::new()));
     let lifetime = Arc::new(AtomicU64::new(11));
@@ -690,6 +696,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
                 command_calls.clone(),
                 description_reads.clone(),
                 method_calls.clone(),
+                method_command_calls.clone(),
             ),
         )?
         .build()
@@ -1550,11 +1557,12 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         &runtime_library,
         &directory,
         &bus.address,
+        &method_command_calls,
     )?;
     assert_eq!(
         method_calls.load(Ordering::SeqCst),
-        27,
-        "twenty additional actual method calls; invalid inputs and unreleased barriers never submit"
+        37,
+        "twenty request and ten command calls; invalid inputs and unreleased barriers never submit"
     );
     let unchanged = Command::new("sha256sum")
         .arg("--check")

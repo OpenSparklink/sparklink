@@ -215,6 +215,37 @@ def valid_summary(proof, *, version=VERSION):
         return False
 
 
+def validate_connection_evidence(record, proof):
+    """Recheck existing raw-Down proof binding without changing run status."""
+    connections = record.get('connection_corroboration', [])
+    need(type(connections) is list and len(connections) == 2 and len(proof.get('proofs', [])) == 2, 'original two physical connection proofs required')
+    for phase, row in enumerate(proof.get('proofs', [])):
+        connection = connections[phase]
+        need(len(row.get(PREFIX, [])) == 1, 'one original pending WRITE case per role required')
+        for item in row[PREFIX]:
+            owners = item['context']['owners']; case = item['case']
+            need([connection['caller'], connection['peer']] == [o['owner'] for o in owners], 'same original connection owners required')
+            step = connection['steps'][1]; command = step['command']
+            # The canonical DLI command schema has no direction field.
+            # corroborate_wire_status selects a successful USB OUT/Status
+            # from the raw capture; preserve that producer contract rather
+            # than inventing a field in the retained command receipt.
+            need(command['opcode'] == 0x1403
+                 and (command['bus'], command['device']) == (owners[0]['owner']['bus'], owners[0]['owner']['device'])
+                 and command['params'] == (owners[0]['object']['handle'].to_bytes(2,'little')+b'\x10').hex()
+                 and case['down_before_wall_ns'] <= command['wall_ns'] <= case['down_completed_wall_ns'],
+                 'actual original typed Disconnect OUT after callback required')
+            need(len(step['outcomes']) == 2, 'both raw Down outcomes required')
+            for owner in owners:
+                events = [e for e in step['outcomes'] if (e['bus'],e['device']) == (owner['owner']['bus'],owner['owner']['device'])]
+                need(len(events) == 1, 'one raw Down per original controller required')
+                event = events[0]; body = bytes.fromhex(event['params'])
+                need(event['event'] in (5,0x1405) and len(body) >= 4 and body[0] == 0
+                     and int.from_bytes(body[1:3],'little') == owner['object']['handle']
+                     and command['wall_ns'] <= event['wall_ns'] <= case['down_completed_wall_ns'],
+                     'successful raw Down must match each original lifetime handle')
+
+
 def valid_manifest(record):
     try:
         selected = record.get(PREFIX+'_requested', False)
@@ -226,28 +257,9 @@ def valid_manifest(record):
         verifier = record[PREFIX+'_verifier']
         need(type(verifier) is dict and set(verifier) == {'path','sha256','bytes'} and Path(verifier['path']).name == 'ws73_ssap_write_down.py'
              and integer(verifier['bytes']) and re.fullmatch('[0-9a-f]{64}', verifier['sha256']), 'exact Down verifier identity required')
-        connections = record.get('connection_corroboration', [])
-        need(type(connections) is list and len(connections) == 2, 'original two physical connection proofs required')
-        for phase, row in enumerate(proof.get('proofs', [])):
-            connection = connections[phase]
-            for item in row.get(PREFIX, []):
-                owners = item['context']['owners']; case = item['case']
-                need([connection['caller'], connection['peer']] == [o['owner'] for o in owners], 'same original connection owners required')
-                step = connection['steps'][1]; command = step['command']
-                need(command['opcode'] == 0x1403 and command['direction'] == 'out'
-                     and (command['bus'], command['device']) == (owners[0]['owner']['bus'], owners[0]['owner']['device'])
-                     and command['params'] == (owners[0]['object']['handle'].to_bytes(2,'little')+b'\x10').hex()
-                     and case['down_before_wall_ns'] <= command['wall_ns'] <= case['down_completed_wall_ns'],
-                     'actual original typed Disconnect OUT after callback required')
-                need(len(step['outcomes']) == 2, 'both raw Down outcomes required')
-                for owner in owners:
-                    events = [e for e in step['outcomes'] if (e['bus'],e['device']) == (owner['owner']['bus'],owner['owner']['device'])]
-                    need(len(events) == 1, 'one raw Down per original controller required')
-                    event = events[0]; body = bytes.fromhex(event['params'])
-                    need(event['event'] in (5,0x1405) and len(body) >= 4 and body[0] == 0
-                         and int.from_bytes(body[1:3],'little') == owner['object']['handle']
-                         and command['wall_ns'] <= event['wall_ns'] <= case['down_completed_wall_ns'],
-                         'successful raw Down must match each original lifetime handle')
+        validate_connection_evidence(record, proof)
+        for row in proof['proofs']:
+            for item in row[PREFIX]:
                 need(item['context'][PREFIX+'_tools'][EXTRA_TOOLS[-1]] == {k:verifier[k] for k in ('sha256','bytes')}, 'guest Down verifier mismatch')
         return (record.get('status') == 'PASSTHROUGH_SUPPORT_PASS' and type(record.get('qemu_exit')) is int and record['qemu_exit'] == 0
                 and record.get('ssap_owned_acceptance') is True and record.get('ordinary_channel_socket_acceptance') is True

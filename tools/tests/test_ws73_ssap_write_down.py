@@ -104,7 +104,9 @@ class WriteDown(unittest.TestCase):
         p=proof();connections=[]
         for row in p['proofs']:
             item=row[gate.PREFIX][0];owners=row['owners'];case=item['case']
-            command=dict(opcode=0x1403,direction='out',bus=owners[0]['owner']['bus'],
+            # Actual corroborate_wire_status command shape: OUT is selected
+            # by the producer, not serialized as a fictitious direction key.
+            command=dict(opcode=0x1403,bus=owners[0]['owner']['bus'],
                          device=owners[0]['owner']['device'],wall_ns=case['down_before_wall_ns']+1,
                          params=(owners[0]['object']['handle'].to_bytes(2,'little')+b'\x10').hex())
             events=[dict(bus=o['owner']['bus'],device=o['owner']['device'],event=0x1405,

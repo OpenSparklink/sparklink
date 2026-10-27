@@ -387,9 +387,9 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "bc88b2d4277e2f7bb637276ddedec2e28a6d7eabfa21adf61ad4528c1879d29d",
+      "body_sha256": "411b27d2a27da8dcab2245a962bb747ffa99c125832b7a999140e939ad8f024d",
       "classification": "有限收尾",
-      "closure_basis": "v2 late local SDK reply gate,104 related offline checks, accurate hardware scope retained locally. Original six exit conditions, restart/new-lifetime and full operation/value/update remain open."
+      "closure_basis": "SDK WRITE owner-takeover source/private-bus coverage added; actual VM daemon SIGKILL/successor and original full operation/value/lifecycle remain open."
     },
     {
       "repository": "sparklink",
@@ -3799,6 +3799,16 @@
       "source_offline_only": true,
       "observed_at": "2026-10-27T02:56:36.711387+00:00",
       "scope": "v2 actual late SDK reply gate and104 scoped offline checks; no private identities/hardware verdict; original six exit conditions unchanged"
+    },
+    {
+      "repository": "sparklink",
+      "number": 22,
+      "state": "open",
+      "prior_body_sha256": "bc88b2d4277e2f7bb637276ddedec2e28a6d7eabfa21adf61ad4528c1879d29d",
+      "body_sha256": "411b27d2a27da8dcab2245a962bb747ffa99c125832b7a999140e939ad8f024d",
+      "source_offline_only": true,
+      "observed_at": "2026-10-27T03:21:22.738419+00:00",
+      "scope": "SDK WRITE owner takeover actual C/private-bus test,70lib tests,strict Clippy/docs; missing owner-watch publication negative rejected. No hardware/formal upgrade; original six conditions unchanged."
     }
   ]
 }

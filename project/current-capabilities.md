@@ -70,6 +70,10 @@ WP08待决WRITE连接Down门禁已扩展v2晚到本地答复：同一SDK token�
 授予实机资格；v1历史结果不转授v2。本地接收结果与远端终态分开，不能宣称回滚。
 daemon restart、新lifetime复用和完整SSAP条件仍开放。
 
+SDK WRITE daemon owner 接任新增实际 C/私有 D-Bus 离线回归：70项库测试及严格
+Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 daemon 接任恢复，
+新注册必须收到自己的回调答复。元数据为fixture，不是新实机或slkd进程重启资格。
+
 ## 选定产物与来源
 
 <!-- qualification-summary:start -->
@@ -78,9 +82,9 @@ daemon restart、新lifetime复用和完整SSAP条件仍开放。
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-pending-WRITE-Down-late-local-reply",
-  "state": "LATE_REPLY_GATE_IMPLEMENTED_OFFLINE_CHECKED",
-  "production_behavior": "No production Engine change. Same actual SDK callback and typed Disconnect; original requester EIO and both Down precede same-token SDK reply attempt before original deadline. Local acceptance or stale/shutdown refusal is distinct from old wire response; application effect recorded honestly. Explicit service cleanup afterward.",
+  "id": "WP08-SDK-WRITE-daemon-owner-takeover",
+  "state": "SCOPED_OFFLINE_PASS_VM_RESTART_PENDING",
+  "production_behavior": "No runtime behavior change. New actual C/private-bus regression checks old pending WRITE/fd/registration remain bound to original daemon unique owner; fresh registration completes only its own callback. Existing metadata fixture helpers shared.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
     "WP08",
@@ -88,40 +92,42 @@ daemon restart、新lifetime复用和完整SSAP条件仍开放。
   ],
   "records": [],
   "implementation_sources": {
-    "public_gate": "734d326efec35acff6661ebec3fca3a6ef77b9f9"
-  },
-  "offline_checks": {
-    "related_tests": "104 selected Python tests; explicit paired USB/SDK fixtures and actual CLI parser",
-    "documentation": "private/public strict HTML and document inventories passed",
-    "qualification_checker": "Six new-record missing/stale/corrupt/scope/gate negative controls rejected in local validation; no full-project or new formal proof"
+    "public_source": "38bbb12fbe10d3d0fab4330d241879c19780a03b"
   },
   "offline_status": "SCOPED_OFFLINE_PASS",
-  "hardware_status": "Accurate artifact results, attempts and scope remain in authorized local records; no hardware verdict or private identities published here.",
+  "offline_checks": {
+    "library": "70 libsparklink lib tests, including exact new owner takeover",
+    "clippy": "libsparklink all-targets -D warnings",
+    "negative": "Missing production Client owner-loss publication rejects notification wake; original restored",
+    "docs": "strict HTML private/public and document inventories passed"
+  },
+  "hardware_status": "NO_NEW_HARDWARE_RUN; retained v1/v2 physical Down evidence remains source-bound locally, not transferred to this test commit.",
   "formal_status": "NO_NEW_PROOF",
   "issue_sync": {
     "repository": "sparklink",
     "number": 22,
     "state": "open",
-    "prior_body_sha256": "bf13f7f89b15bf3ea130b49e6dc1ccdb287c07b4f77914ebad9aa922ef7f3a4e",
-    "body_sha256": "bc88b2d4277e2f7bb637276ddedec2e28a6d7eabfa21adf61ad4528c1879d29d",
+    "prior_body_sha256": "bc88b2d4277e2f7bb637276ddedec2e28a6d7eabfa21adf61ad4528c1879d29d",
+    "body_sha256": "411b27d2a27da8dcab2245a962bb747ffa99c125832b7a999140e939ad8f024d",
     "source_offline_only": true,
-    "observed_at": "2026-10-27T02:56:36.711387+00:00",
-    "scope": "v2 actual late SDK reply gate and104 scoped offline checks; no private identities/hardware verdict; original six exit conditions unchanged"
+    "observed_at": "2026-10-27T03:21:22.738419+00:00",
+    "scope": "SDK WRITE owner takeover actual C/private-bus test,70lib tests,strict Clippy/docs; missing owner-watch publication negative rejected. No hardware/formal upgrade; original six conditions unchanged."
   },
   "exit_conditions": [
-    "Original callback, typed Disconnect, both Down and requester EIO retain original deadlines and existing application/Owned baseline.",
-    "Original SDK token reply is attempted after Down/EIO before expiry; local acceptance/refusal and application value are recorded; no old wire response in complete paired capture.",
-    "Exact v1/v2 artifacts, execution tools and reports remain distinct; missing/stale/scope/gate negatives reject invalid qualification; first failed terminal retained."
+    "Old pending request and surviving notification fd lose authority on actual original owner loss before expiry.",
+    "New unique owner is refused at old endpoint; new registration/lifetime finishes only with its own actual C reply.",
+    "Negative control rejects missing owner notification, original restored, exact frozen test artifact passes; production semantics unchanged."
   ],
   "remaining_conditions": [
-    "Daemon restart and new lifetime reuse after late reply; full WRITE/method/long-value/update/Profile scope.",
-    "Natural roots/nonmanual recovery and original S0-S6/19WP/10FV/12DG."
+    "Actual slkd SIGKILL/reap, per-controller cleanup before successor, retained SDK old-owner refusal and fresh wire business in VM",
+    "Full original U22 operation/value/lifecycle scope; natural fault/nonmanual recovery remain open"
   ],
   "next": [
-    "Add daemon restart/owner takeover gate using existing Engine stop and SDK ownership, preserving original requests and failure evidence.",
-    "Continue original data/security/SSAP delivery; this bounded lifecycle batch is not a full control-plane prerequisite."
+    "Extend existing VM init SIGKILL/reap/successor supervision to a real pending SSAP WRITE, without a second Host or Engine.",
+    "Observe both controllers Free/empty before new daemon, old SDK authority stays stale, then fresh connections and ordinary/SSAP peer replies under successor.",
+    "Keep original data/security/SSAP work parallel; do not gate it on all control-plane combinations."
   ],
-  "qualification_boundary": "v1 historical runs do not qualify v2. Compiled payload, execution tools and reports remain distinct; selected qualification unchanged. Local reply acceptance is not remote delivery or rollback."
+  "qualification_boundary": "Source/offline and retained hardware identities separate; no change to selected qualification or existing records/materials."
 }
 ```
 

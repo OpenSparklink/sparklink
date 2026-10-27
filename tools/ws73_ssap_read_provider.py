@@ -298,10 +298,25 @@ def _cleanup(row, item):
         raise CaptureError('original owner cleanup and actual retired remote refusal required')
 
 
-def _wire(row, item, matched, exchanges, *, requests=None):
+def paired_leg(row, sender, receiver, frame, window, matched):
+    """One real paired frame, shared by complete exchanges and pending Down."""
     from ws73_ssap_command import _identity
-    from ws73_ssap_value import command_packet, physical_sends
+    from ws73_ssap_value import command_packet
     identities = [_identity(o) for o in row['owners']]
+    leg = dict(tx=matched(row['owners'][sender], 'out', frame, window),
+               rx=matched(row['owners'][receiver], 'in', frame, window))
+    for side, endpoint, direction in [('tx', sender, 'out'), ('rx', receiver, 'in')]:
+        packet = leg[side]; command_packet(packet, frame, window)
+        for fragment in [packet, *packet['fragments']]:
+            if (any(type(fragment[k]) is not int for k in ('bus', 'device', 'handle'))
+                    or tuple(fragment[k] for k in ('bus', 'device', 'handle', 'direction'))
+                        != (identities[endpoint]['bus'], identities[endpoint]['device'], identities[endpoint]['handle'], direction)):
+                raise CaptureError('original endpoint required on every provider USB fragment')
+    return leg
+
+
+def _wire(row, item, matched, exchanges, *, requests=None):
+    from ws73_ssap_value import physical_sends
     s, t, h = item['sender'], item['target'], item['handle']
     wire = []; credit = {0: 0, 1: 0}
     request = b'\x08\x03'+h.to_bytes(2, 'little')+b'\0'
@@ -311,15 +326,7 @@ def _wire(row, item, matched, exchanges, *, requests=None):
         if requests is not None:request=requests[ordinal]
         for sender, receiver, pdu in [(s, t, request), (t, s, response)]:
             frame = b'\x0a\0'+len(pdu).to_bytes(2, 'little')+pdu
-            leg = dict(tx=matched(row['owners'][sender], 'out', frame, window),
-                       rx=matched(row['owners'][receiver], 'in', frame, window))
-            for side, endpoint, direction in [('tx', sender, 'out'), ('rx', receiver, 'in')]:
-                packet = leg[side]; command_packet(packet, frame, window)
-                for fragment in [packet, *packet['fragments']]:
-                    if (any(type(fragment[k]) is not int for k in ('bus', 'device', 'handle'))
-                            or tuple(fragment[k] for k in ('bus', 'device', 'handle', 'direction'))
-                                != (identities[endpoint]['bus'], identities[endpoint]['device'], identities[endpoint]['handle'], direction)):
-                        raise CaptureError('original endpoint required on every provider USB fragment')
+            leg = paired_leg(row, sender, receiver, frame, window, matched)
             if callback is not None:
                 if sender == s and packet_interval(leg['rx'])[1] > callback['observed_wall_ns']:
                     raise CaptureError('original peer request must precede the observed provider callback')

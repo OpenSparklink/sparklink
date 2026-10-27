@@ -710,6 +710,8 @@ def reject_unattributed_ssap(row, sdus):
 
 
 def corroborate(run,capture):
+    from ws73_ssap_write_down import validate_phases as validate_write_down_phases
+    validate_write_down_phases(run)
     rows=run.get('channel_socket')
     if rows is None or len(rows)!=2:raise CaptureError('two connection direction phases required')
     sdus=reassemble_acb(capture);proofs=[];all_nonces=set();all_sequences=set()
@@ -783,6 +785,9 @@ def corroborate(run,capture):
             from ws73_ssap_write_owner_exit import corroborate as write_owner_exit_corroborate
             ssap_write_provider_owner_exits,write_owner_exit_credit=write_owner_exit_corroborate(row,value_matched,sdus)
             for key in ssap_credit:ssap_credit[key]+=write_owner_exit_credit[key]
+            from ws73_ssap_write_down import corroborate as write_down_corroborate
+            ssap_write_provider_downs,write_down_credit=write_down_corroborate(row,value_matched,sdus)
+            for key in ssap_credit:ssap_credit[key]+=write_down_credit[key]
             from ws73_ssap_provider_owner_exit import corroborate as provider_exit_corroborate
             ssap_provider_owner_exit,provider_exit_credit=provider_exit_corroborate(row,value_matched,sdus)
             for key in ssap_credit:ssap_credit[key]+=provider_exit_credit[key]
@@ -941,6 +946,7 @@ def corroborate(run,capture):
         if row.get('ssap_sdk_write_provider_required',False):entry['ssap_sdk_write_providers']=ssap_sdk_write_providers
         if row.get('ssap_write_provider_unregister_required',False):entry['ssap_write_provider_unregister']=ssap_write_provider_unregisters
         if row.get('ssap_write_provider_owner_exit_required',False):entry['ssap_write_provider_owner_exit']=ssap_write_provider_owner_exits
+        if row.get('ssap_write_provider_down_required',False):entry['ssap_write_provider_down']=ssap_write_provider_downs
         if row.get('ssap_provider_owner_exit_required',False):entry['ssap_provider_owner_exit']=ssap_provider_owner_exit
         if row.get('ssap_provider_unregister_required',False):entry['ssap_provider_unregister']=ssap_provider_unregister
         if row.get('ssap_provider_deadline_required',False):entry['ssap_provider_deadline']=ssap_provider_deadline

@@ -701,3 +701,15 @@ request/epoch/property、完整 32 字节随机值及原期限后才终止 Provi
 测试故意使用没有 graceful-stop receiver 的既有 task fixture，以覆盖 abort/join，
 不会新增第二个 Engine 或把 Unix socket 当作 Native 通道。它不覆盖完整接收循环、
 内核 Down、USB drain、daemon restart 或无线交付；这些条件继续由 VM 门禁验收。
+
+### 待决 WRITE 与物理连接退出
+
+连接会话退出与服务所有者退出具有不同作用域。`ConnectionOwner` 停止该 lifetime
+的 Engine；controller 所属 Owned 注册及其 Provider 进程有自己的生命周期。
+连接 Down 不能作为服务已注销、远端应用副作用已回滚或物理发送义务已排空的证据。
+
+`--ssap-write-provider-down-verify` 沿同一回调屏障、原 typed Disconnect 和普通
+用户 SDK 检查这一边界：先真实收到待决 WRITE，再断链；Provider 保持存活，
+原请求在原期限内失败，之后显式清理服务。没有发送 Provider 答复，因而此切片
+不证明迟到答复的最终归属或 daemon restart 收敛。完整范围仍由 U#22 追踪。
+测试参数与证据要求见 [VM 门禁输入](vm-gate-inputs.md#待决-write-的连接-down-门禁)。

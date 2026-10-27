@@ -1483,3 +1483,22 @@ v2 每设备分别执行两个 exact ignored 测试：原 retry 监督期限10�
 缺任一端结果均失败。v1 历史报告不改写，也不升级为 v2；旧 carrier 未携带新 suite
 选择文件时应重新准备明确输入，不能通过缺省版本冒充新门禁。实际 VM 结果按准确
 产物单独登记，准备、构建或 fixture parser 通过不授实机资格。
+
+### 待决 WRITE 的连接 Down 门禁
+
+`--ssap-write-provider-down-verify` 使用原 `--connection-verify`、
+`--channel-socket-verify` 和 `--ssap-owned-verify`，限定普通 61 字节、每角色 4 轮，
+与其他 READ/WRITE Provider 生命周期场景互斥。它在普通业务完成后等待真实
+C/Python WRITE Provider 回调，再调用原 typed Disconnect；不生成 Provider 答复。
+
+Provider 进程保持存活至两端原连接 Down，随后显式退出和注销服务。原 SDK 请求
+必须在原期限内返回 EIO；ETIMEDOUT 不算本场景通过。原共享 5 秒 Down 观察窗口、
+旧对象拒绝、两 controller 的被动状态检查与下一角色连接均保留。
+
+判定需要同一 generation/lifetime 的随机 WRITE TX/RX、真实 SDK 原请求终态、
+原 Disconnect OUT 和两端原 handle 的 Down；残留 SSAP 响应由既有完整捕获归属
+检查拒绝。新参数、工具和 SDK artifact 单独记录准确身份。离线 fixture 只能检验
+编排和判定器，不能授予无线资格；此入口接通不表示实机门禁已通过。
+
+本场景不验证 daemon restart、迟到 Provider 答复、应用副作用回滚、物理 drain
+或自然恢复，也不把连接 Down 描述为 controller 所属 Owned 服务自动注销。

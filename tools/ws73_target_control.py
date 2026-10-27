@@ -72,6 +72,18 @@ class ConnectionControlRun(PassthroughControlRun):
         self.data['connection_down_failure_observe_seconds'] = getattr(args, 'connection_down_failure_observe_seconds', 0)
         self.save()
 
+    def channel_completion(self, phase, finish):
+        if not getattr(self.args, 'ssap_write_provider_down_verify', False):
+            return None
+        def pending_write_down():
+            from ws73_ssap_write_down import execute
+            rows = [row for row in self.data.get('channel_socket', [])
+                    if row.get('owners') == phase['typed_objects']]
+            if len(rows) != 1:
+                raise ValueError('one original channel row for pending WRITE Down required')
+            execute(self, rows[0], phase, finish)
+        return pending_write_down
+
     def phase(self, a, b, count, label):
         if self.native_controller_return and label == 'replug':
             self.native_controller_return.replug(a, b)
@@ -226,6 +238,7 @@ def main():
     parser.add_argument('--ssap-write-provider-unregister-verify',action='store_true',help='dedicated Owned/ordinary gate: pending C/Python WRITE unregister, original deadline, paired peer refusal and independent guard')
     parser.add_argument('--native-event-retry-verify',action='store_true')
     parser.add_argument('--ssap-write-provider-owner-exit-verify',action='store_true',help='dedicated Owned/ordinary gate: pending C/Python WRITE owner death, original deadline, paired peer refusal and independent guard')
+    parser.add_argument('--ssap-write-provider-down-verify',action='store_true',help='actual pending WRITE callback before typed Disconnect and two-end Down')
     parser.add_argument('--ssap-write-provider-deadline-verify',action='store_true',help='dedicated Owned/ordinary gate: pending C/Python WRITE original expiry, late rejection and ordinary business')
     parser.add_argument('--ssap-provider-owner-exit-verify',action='store_true',help='with --ssap-read-provider-verify: version2 C/Python pending SDK Provider owner loss and independent guard delivery')
     parser.add_argument('--ssap-provider-unregister-verify',action='store_true',help='with --ssap-read-provider-verify: C/Python pending explicit unregister and independent guard delivery')
@@ -307,6 +320,9 @@ def main():
     except ValueError as error:parser.error(str(error))
     from ws73_ssap_write_owner_exit import requested as write_owner_exit_requested
     try:write_owner_exit_requested(args)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_write_down import requested as write_down_requested
+    try:write_down_requested(args)
     except ValueError as error:parser.error(str(error))
     from ws73_ssap_provider_owner_exit import requested as provider_exit_requested
     try:provider_exit_requested(args)

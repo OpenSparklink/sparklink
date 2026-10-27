@@ -197,9 +197,9 @@ def _clock_bounds(item, *, action="kill"):
     return lower, upper
 
 
-def _owner_exit(run, row, process, item, app, supervisor_deadline_ns, *, writing=False):
-    """After-start hook; no answer, renewed deadline or synthetic Complete."""
-    from ws73_ssap_owned import wait_text, wait_output, await_removed
+def pending_callback(run, row, process, item, app, supervisor_deadline_ns, *, writing=False):
+    """Shared actual SDK arrival barrier; does not choose a lifecycle action."""
+    from ws73_ssap_owned import wait_text
     item['read'] = app
     run.save()
     sdk_deadline = app['ssap_error_deadline_ns']
@@ -225,6 +225,14 @@ def _owner_exit(run, row, process, item, app, supervisor_deadline_ns, *, writing
         raise CaptureError('SDK arrival wall observation must precede supervisor owner exit')
     run.save()
     _remaining(deadline)
+    return deadline
+
+
+def _owner_exit(run, row, process, item, app, supervisor_deadline_ns, *, writing=False):
+    """After-start hook; no answer, renewed deadline or synthetic Complete."""
+    from ws73_ssap_owned import wait_output, await_removed
+    deadline = pending_callback(run, row, process, item, app, supervisor_deadline_ns, writing=writing)
+    target = row['owners'][item['target']]
     item['clock_contract'] = copy.deepcopy(CLOCK_CONTRACT)
     item['clock_before'] = _clock_sample()
     # This pre-kill timestamp is the causal lower bound. A real wire refusal may

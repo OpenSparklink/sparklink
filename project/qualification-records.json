@@ -13,42 +13,46 @@
     "replay": "每份记录按自身源码映射、编译artifact、冻结执行/校验工具和原manifest命令重放；只在授权VM中执行驱动/实机。历史575等工具仅适用于各自原记录，不是全registry的统一重放入口。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "WP08-SDK-WRITE-complete-fragmented-values-v2",
-    "state": "SOURCE_OFFLINE_PASS_PRIVATE_VM_RECORDS_SEPARATE",
-    "production_behavior": "No production protocol change. Existing actual SDK/Owned runner gains2037/2042-byte verified WRITE evidence, explicit stopped beacon setup and per-packet pipeline causality. Existing Engine, Session, credit, Grant, Ticket and original deadlines unchanged.",
+    "id": "issue-maintenance-current-reconciliation",
+    "state": "BOUNDED_MAINTENANCE_COMPLETE",
+    "production_behavior": "Issue bodies, classifications, parent relations and canonical summaries reconciled. Test module formatting only; no production behavior change.",
     "implementation_sources": {
-      "value_gate": "d595725ef9fac4c05a291dbe7e3f93c39e96afd2",
-      "beacon_setup": "373837534ee2da1e4f1d546fdbdf80faf59ab739",
-      "latest_tools": "c94806d63d2b2135f006443b5752771baf146a6c"
+      "public": "552de28d8cf3fb02d5d04120c57d0554df2b3779",
+      "previous_tool_gate": "c83e164e38e58f1085ca509e5d513450cac3d9a0"
     },
     "offline_checks": {
-      "related_regressions": "110 PASS; synthetic capture/transcript and explicit coordinator fixtures, not actual RF or new external SDK execution",
-      "docs": "strict Sphinx HTML and inventory/example checks PASS",
-      "formal": "NO_NEW_PROOF",
-      "counterexample": "Old new-v2 oracle rejected valid fragment pipeline; retained fixed regression. Historical v1 unchanged."
+      "format": "Rust 1.96.1 cargo fmt --all -- --check PASS",
+      "source_gate": "111 scoped prior tool tests; not a full suite or formal proof",
+      "ci": "c83e164 WS73 offline workflow: tooling/input jobs PASS, SDK job formatting FAIL; subsequent checks unexecuted. Formatting-only correction does not grant full CI PASS.",
+      "maintenance_regressions": "69 qualification/docs integrity tests PASS",
+      "documentation": "121-document inventory PASS; locked Sphinx nitpicky warnings-as-errors HTML PASS; no new browser or external-link qualification",
+      "generated_views": "Plan/capabilities/existing goal association agree with structured records; previous qualification records and selected artifact unchanged"
     },
     "issue_sync": {
-      "repository": "sparklink",
-      "number": 22,
-      "state": "open",
-      "observed_at": "2026-10-27T05:57:16Z",
-      "public_source": "c94806d63d2b2135f006443b5752771baf146a6c",
-      "body_sha256": "998d2a30af9a7aa103a5cc4c95ab9c119d52fc7c9453d7592183b5b3ef259f71",
-      "source_offline_only": true,
-      "scope": "Consolidated WRITE length and pipeline source/offline summary; original six exit conditions unchanged; private hardware details withheld."
+      "source": "project/issue-maintenance-20261026.json",
+      "counts": {
+        "reviewed": 35,
+        "closed": 2,
+        "finite": 18,
+        "split_parents": 3,
+        "long_term": 12
+      },
+      "new_issues": 0,
+      "new_closures": 0,
+      "public_source_offline_only": true
     },
-    "hardware_status": "Exact compiled/execution identities, failures and hardware scope remain in authorized local evidence. Public source/offline results grant no real-device qualification.",
+    "hardware_status": "Exact prior execution results and private identities remain only in authorized local evidence; maintenance adds no real-device qualification.",
     "formal_status": "NO_NEW_PROOF",
     "exit_conditions": [
-      "Both physical connection and C/Python Provider/requester roles, original ordinary/Owned gates preserved",
-      "Application FF rejection then exact2037/2042-byte acceptance and actual peer verification",
-      "Negotiated sequence capability, both USB legs for every fragment, original identity/deadline and cleanup",
-      "Failures retained; incomplete capture, wrong payload/sequence/order/identity/deadline cannot PASS"
+      "35 issue bodies/states and seven parent relations read back",
+      "Original acceptance preserved; completed U1/U21 kept closed, remaining 33 kept open",
+      "Public source/offline summaries separated from private hardware evidence",
+      "Canonical plan/capabilities/goal views consistent; resume original work"
     ],
     "next": [
-      "Complete accurate-artifact WRITE length real gate; investigate connection failure through existing DLI/raw evidence before further controlled attempts",
-      "Continue remaining SSAP/data/security work in parallel; no all-control or all-recovery prerequisite",
-      "Keep full S0-S6/19WP/10FV/12DG, natural root/nonmanual recovery and original issue conditions open"
+      "Resume U22 remaining operation/value/transaction and applicable lifecycle gates using the existing Engine",
+      "Continue data/security work without new all-control-plane prerequisites",
+      "Keep full S0-S6/19WP/10FV/12DG; natural root cause/nonmanual recovery and original parent acceptance open"
     ]
   },
   "overall_required_records": [
@@ -526766,6 +526770,45 @@
         "Resume remaining unique SSAP Engine operation/value/update gates and existing data/security work.",
         "Expand only the next vertical behavior with its relevant invariants; no full control-plane concurrency prerequisite.",
         "Keep natural root cause/nonmanual recovery, physical drain and complete original S0-S6/19WP/10FV/12DG scope open."
+      ]
+    },
+    {
+      "id": "WP08-SDK-WRITE-complete-fragmented-values-v2",
+      "state": "SOURCE_OFFLINE_PASS_PRIVATE_VM_RECORDS_SEPARATE",
+      "production_behavior": "No production protocol change. Existing actual SDK/Owned runner gains2037/2042-byte verified WRITE evidence, explicit stopped beacon setup and per-packet pipeline causality. Existing Engine, Session, credit, Grant, Ticket and original deadlines unchanged.",
+      "implementation_sources": {
+        "value_gate": "d595725ef9fac4c05a291dbe7e3f93c39e96afd2",
+        "beacon_setup": "373837534ee2da1e4f1d546fdbdf80faf59ab739",
+        "latest_tools": "c94806d63d2b2135f006443b5752771baf146a6c"
+      },
+      "offline_checks": {
+        "related_regressions": "110 PASS; synthetic capture/transcript and explicit coordinator fixtures, not actual RF or new external SDK execution",
+        "docs": "strict Sphinx HTML and inventory/example checks PASS",
+        "formal": "NO_NEW_PROOF",
+        "counterexample": "Old new-v2 oracle rejected valid fragment pipeline; retained fixed regression. Historical v1 unchanged."
+      },
+      "issue_sync": {
+        "repository": "sparklink",
+        "number": 22,
+        "state": "open",
+        "observed_at": "2026-10-27T05:57:16Z",
+        "public_source": "c94806d63d2b2135f006443b5752771baf146a6c",
+        "body_sha256": "998d2a30af9a7aa103a5cc4c95ab9c119d52fc7c9453d7592183b5b3ef259f71",
+        "source_offline_only": true,
+        "scope": "Consolidated WRITE length and pipeline source/offline summary; original six exit conditions unchanged; private hardware details withheld."
+      },
+      "hardware_status": "Exact compiled/execution identities, failures and hardware scope remain in authorized local evidence. Public source/offline results grant no real-device qualification.",
+      "formal_status": "NO_NEW_PROOF",
+      "exit_conditions": [
+        "Both physical connection and C/Python Provider/requester roles, original ordinary/Owned gates preserved",
+        "Application FF rejection then exact2037/2042-byte acceptance and actual peer verification",
+        "Negotiated sequence capability, both USB legs for every fragment, original identity/deadline and cleanup",
+        "Failures retained; incomplete capture, wrong payload/sequence/order/identity/deadline cannot PASS"
+      ],
+      "next": [
+        "Complete accurate-artifact WRITE length real gate; investigate connection failure through existing DLI/raw evidence before further controlled attempts",
+        "Continue remaining SSAP/data/security work in parallel; no all-control or all-recovery prerequisite",
+        "Keep full S0-S6/19WP/10FV/12DG, natural root/nonmanual recovery and original issue conditions open"
       ]
     }
   ]

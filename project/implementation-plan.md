@@ -1,23 +1,21 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前批次：SDK WRITE 完整值与分片值门禁
+## 当前批次：有界 issue 状态清理完成，恢复原功能主线
 
-WP08/U#22 复用唯一 Engine、SDK/Owned 执行循环和原双端字节预期，独立 v2 门禁
-检查应用错误 FF 后的2037／2042字节 verified WRITE。前者加5字节头为完整2042字节
-PDU，后者需要实际协商有序号分片；C/Python Provider 与 requester 交换角色。
-每个完整SMTC包的发送／接收必须因果有序，允许不同SSAP片流水重叠；完整请求仍须
-先于应用回调及响应。旧v1、daemon-restart原短值范围与历史证据身份保持。
+35 项及7个原生父子关系已在线读回：U#1/U#21按自身条件保持关闭，18项有限收尾、
+3个已拆分父项、12项长期跟踪保持开放。本次更新U#22源码/离线摘要及K#19的准确
+CI状态，没有重复建单或新增关闭。逐项依据见[当前处置记录](issue-maintenance-20261026.json)
+的 `followup_readback`；较早处置表与原正文保留历史身份，不能继续当作当前结论。
 
-109项旧/新相关离线检查后又补合法流水反例，共110项当前回归通过；该数字是
-同一相关套件，不累加前轮次数。严格HTML、文档清单与示例静态检查通过。
-测试使用显式协调fixture和合成捕获／应用记录，不是新实机或形式化资格。
-固定NearLink Host分片WRITE操作位与本项目协商序号封装区别已核对，未复制另一套Engine。
-公开只保留源码／离线摘要，准确执行产物、所有失败和实机细节由授权本地索引维护。
+U#22门禁现要求显式negotiable-t，并按双端ACB字节前缀检查流式因果；保留完整请求
+早于回调/响应、原期限、身份、序号和清理。111项相关离线检查不是整套CI资格。
+公开c83e164的SDK CI在格式检查失败，后续ABI/私有总线未执行；模块排序已修正，
+固定工具链本地格式检查通过，新CI结果单独核对。原失败和反例不覆盖。
 
-本批退出仍需准确新artifact双角色真实完整验值和回复、逐片USB证据、原期限、
-清理及普通业务保持。先从既有原始时间线定位阻挡长值运行的建链问题，并行继续
-剩余SSAP／数据／安全；不追加控制面全集前置。U#22保持开放，完整S0–S6、19WP、
-10FV、12DG、VM-only、UserHost低优先级及自然恢复原要求不变。
+本维护批次已退出。下一批复用唯一用户态Engine推进剩余操作/值类型/更新事务及适用
+生命周期门禁，数据与安全并行；不再将已存在入口列为未实现，不以历史失败否定后续
+准确限定结果。公开实机状态仍只经授权本地索引核对，不发布私有执行身份或详情。
+完整S0–S6/19WP/10FV/12DG、VM-only、原验收及UserHost低优先级保持。
 
 ## 有界 issue 清理结果与主线恢复
 
@@ -498,42 +496,46 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-SDK-WRITE-complete-fragmented-values-v2",
-  "state": "SOURCE_OFFLINE_PASS_PRIVATE_VM_RECORDS_SEPARATE",
-  "production_behavior": "No production protocol change. Existing actual SDK/Owned runner gains2037/2042-byte verified WRITE evidence, explicit stopped beacon setup and per-packet pipeline causality. Existing Engine, Session, credit, Grant, Ticket and original deadlines unchanged.",
+  "id": "issue-maintenance-current-reconciliation",
+  "state": "BOUNDED_MAINTENANCE_COMPLETE",
+  "production_behavior": "Issue bodies, classifications, parent relations and canonical summaries reconciled. Test module formatting only; no production behavior change.",
   "implementation_sources": {
-    "value_gate": "d595725ef9fac4c05a291dbe7e3f93c39e96afd2",
-    "beacon_setup": "373837534ee2da1e4f1d546fdbdf80faf59ab739",
-    "latest_tools": "c94806d63d2b2135f006443b5752771baf146a6c"
+    "public": "552de28d8cf3fb02d5d04120c57d0554df2b3779",
+    "previous_tool_gate": "c83e164e38e58f1085ca509e5d513450cac3d9a0"
   },
   "offline_checks": {
-    "related_regressions": "110 PASS; synthetic capture/transcript and explicit coordinator fixtures, not actual RF or new external SDK execution",
-    "docs": "strict Sphinx HTML and inventory/example checks PASS",
-    "formal": "NO_NEW_PROOF",
-    "counterexample": "Old new-v2 oracle rejected valid fragment pipeline; retained fixed regression. Historical v1 unchanged."
+    "format": "Rust 1.96.1 cargo fmt --all -- --check PASS",
+    "source_gate": "111 scoped prior tool tests; not a full suite or formal proof",
+    "ci": "c83e164 WS73 offline workflow: tooling/input jobs PASS, SDK job formatting FAIL; subsequent checks unexecuted. Formatting-only correction does not grant full CI PASS.",
+    "maintenance_regressions": "69 qualification/docs integrity tests PASS",
+    "documentation": "121-document inventory PASS; locked Sphinx nitpicky warnings-as-errors HTML PASS; no new browser or external-link qualification",
+    "generated_views": "Plan/capabilities/existing goal association agree with structured records; previous qualification records and selected artifact unchanged"
   },
   "issue_sync": {
-    "repository": "sparklink",
-    "number": 22,
-    "state": "open",
-    "observed_at": "2026-10-27T05:57:16Z",
-    "public_source": "c94806d63d2b2135f006443b5752771baf146a6c",
-    "body_sha256": "998d2a30af9a7aa103a5cc4c95ab9c119d52fc7c9453d7592183b5b3ef259f71",
-    "source_offline_only": true,
-    "scope": "Consolidated WRITE length and pipeline source/offline summary; original six exit conditions unchanged; private hardware details withheld."
+    "source": "project/issue-maintenance-20261026.json",
+    "counts": {
+      "reviewed": 35,
+      "closed": 2,
+      "finite": 18,
+      "split_parents": 3,
+      "long_term": 12
+    },
+    "new_issues": 0,
+    "new_closures": 0,
+    "public_source_offline_only": true
   },
-  "hardware_status": "Exact compiled/execution identities, failures and hardware scope remain in authorized local evidence. Public source/offline results grant no real-device qualification.",
+  "hardware_status": "Exact prior execution results and private identities remain only in authorized local evidence; maintenance adds no real-device qualification.",
   "formal_status": "NO_NEW_PROOF",
   "exit_conditions": [
-    "Both physical connection and C/Python Provider/requester roles, original ordinary/Owned gates preserved",
-    "Application FF rejection then exact2037/2042-byte acceptance and actual peer verification",
-    "Negotiated sequence capability, both USB legs for every fragment, original identity/deadline and cleanup",
-    "Failures retained; incomplete capture, wrong payload/sequence/order/identity/deadline cannot PASS"
+    "35 issue bodies/states and seven parent relations read back",
+    "Original acceptance preserved; completed U1/U21 kept closed, remaining 33 kept open",
+    "Public source/offline summaries separated from private hardware evidence",
+    "Canonical plan/capabilities/goal views consistent; resume original work"
   ],
   "next": [
-    "Complete accurate-artifact WRITE length real gate; investigate connection failure through existing DLI/raw evidence before further controlled attempts",
-    "Continue remaining SSAP/data/security work in parallel; no all-control or all-recovery prerequisite",
-    "Keep full S0-S6/19WP/10FV/12DG, natural root/nonmanual recovery and original issue conditions open"
+    "Resume U22 remaining operation/value/transaction and applicable lifecycle gates using the existing Engine",
+    "Continue data/security work without new all-control-plane prerequisites",
+    "Keep full S0-S6/19WP/10FV/12DG; natural root cause/nonmanual recovery and original parent acceptance open"
   ]
 }
 ```

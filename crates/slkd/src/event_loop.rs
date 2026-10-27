@@ -84,6 +84,8 @@ impl EventTask {
             expected,
             #[cfg(test)]
             None,
+            #[cfg(test)]
+            None,
         )
     }
 
@@ -93,6 +95,7 @@ impl EventTask {
         connection: zbus::Connection,
         expected: slk_protocol::SleControllerSnapshot,
         #[cfg(test)] mut retry_probe: Option<tests::NativeRetryProbe>,
+        #[cfg(test)] receive_probe: Option<std::sync::Arc<tests::NativeReceiveProbe>>,
     ) -> Self {
         let (cancel, mut cancelled) = oneshot::channel();
         let task = tokio::spawn(async move {
@@ -104,6 +107,9 @@ impl EventTask {
                 _ = refresh_native(&state, &connection, expected, 0) => {},
             }
             loop {
+                let receive = receiver.next_event();
+                #[cfg(test)]
+                let receive = tests::observe_native_receive(receive, receive_probe.as_deref());
                 let event = tokio::select! {
                     biased;
                     _ = &mut cancelled => break,
@@ -128,7 +134,7 @@ impl EventTask {
                         }
                         continue;
                     },
-                    event = receiver.next_event() => event,
+                    event = receive => event,
                 };
                 tokio::select! {
                     biased;

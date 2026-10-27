@@ -1468,3 +1468,18 @@ guest 使用显式 index/generation 和 sibling index/generation，执行恰好�
 实际订阅 fd 关闭及双方仍 Ready 的断言结果；零测试、忽略未执行、超时、身份/产物
 不符或缺失任一端均不接受。此门禁不宣称系统总线权限、SSAP、新安全能力或自然恢复。
 正式结果仍绑定准确源码/产物/工具记录，不从新增名称或源码存在推断完成。
+
+
+### Native 事件测试 suite 版本
+
+`--native-event-retry-test` 的显式输入 manifest 用 `version: 1` 保留原持锁取消
+测试范围；`version: 2` 增加同一实际 Native 循环的30秒静默期 D-Bus 门禁。
+`source_head` 必须等于准备镜像的用户态编译来源，`binary.path` 与 `binary.sha256`
+必须匹配实际测试可执行文件。准备阶段写入专用 suite 选择文件；不靠 binary 文件名
+猜测测试版本。运行仍使用 `--native-event-retry-verify` 及既有双设备连接/通道门禁。
+
+v2 每设备分别执行两个 exact ignored 测试：原 retry 监督期限10秒不变；quiet
+监督期限40秒，观察窗口至少30秒。零测试、忽略、超时、身份不符、静默期有事件、
+缺任一端结果均失败。v1 历史报告不改写，也不升级为 v2；旧 carrier 未携带新 suite
+选择文件时应重新准备明确输入，不能通过缺省版本冒充新门禁。实际 VM 结果按准确
+产物单独登记，准备、构建或 fixture parser 通过不授实机资格。

@@ -2275,12 +2275,29 @@ pub(super) async fn observe_native_retry(
     .await
 }
 
-/// Explicit VM-only test: real selected controller, subscription/ioctl and the
-/// whole Native EventTask loop. No management lease or firmware/device writes.
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-#[ignore = "dedicated VM, exact two controller identities and real Native kernel required"]
-async fn native_retry_real_subscription_vm() {
-    use std::os::fd::AsRawFd;
+struct NativeVmFixture {
+    victim: (u16, u64),
+    sibling: (u16, u64),
+    control: Arc<Adapter>,
+    sibling_control: Adapter,
+    expected: slk_protocol::SleControllerSnapshot,
+    before_sibling: slk_protocol::SleControllerSnapshot,
+    links: slk_protocol::SleLinkSnapshot,
+    state: SharedState,
+    bus: PrivateBus,
+    server: zbus::Connection,
+}
+
+fn selected_native(identity: (u16, u64)) -> Adapter {
+    let mut fd = Adapter::open("/dev/sparklink").unwrap();
+    fd.select_device(identity.0).unwrap();
+    let s = fd.controller_snapshot(identity.1).unwrap();
+    assert_eq!((s.dev_index, s.generation), identity);
+    assert_eq!(s.flags, slk_protocol::CONTROLLER_READY);
+    fd
+}
+
+async fn native_vm_fixture() -> NativeVmFixture {
     assert_eq!(
         std::env::var("SPARKLINK_NATIVE_EVENT_VM").as_deref(),
         Ok("1")
@@ -2292,19 +2309,11 @@ async fn native_retry_real_subscription_vm() {
         assert_ne!(identity.1, 0);
         identity
     }
-    fn selected(identity: (u16, u64)) -> Adapter {
-        let mut fd = Adapter::open("/dev/sparklink").unwrap();
-        fd.select_device(identity.0).unwrap();
-        let s = fd.controller_snapshot(identity.1).unwrap();
-        assert_eq!((s.dev_index, s.generation), identity);
-        assert_eq!(s.flags, slk_protocol::CONTROLLER_READY);
-        fd
-    }
     let victim = target("SPARKLINK_NATIVE_EVENT_TARGET");
     let sibling = target("SPARKLINK_NATIVE_EVENT_SIBLING");
     assert_ne!(victim.0, sibling.0);
-    let control = Arc::new(selected(victim));
-    let sibling_control = selected(sibling);
+    let control = Arc::new(selected_native(victim));
+    let sibling_control = selected_native(sibling);
     let before_sibling = sibling_control.controller_snapshot(sibling.1).unwrap();
     let expected = control.controller_snapshot(victim.1).unwrap();
     let links = control.native_link_snapshot(victim.1).unwrap();
@@ -2324,7 +2333,43 @@ async fn native_retry_real_subscription_vm() {
     let state = Arc::new(Mutex::new(value));
     let bus = PrivateBus::with_config(Some("/usr/share/sparklink/native-event-test-dbus.conf"));
     let server = server(&bus, state.clone()).await;
-    let subscription = selected(victim);
+    NativeVmFixture {
+        victim,
+        sibling,
+        control,
+        sibling_control,
+        expected,
+        before_sibling,
+        links,
+        state,
+        bus,
+        server,
+    }
+}
+
+/// Explicit VM-only test: real selected controller, subscription/ioctl and the
+/// whole Native EventTask loop. No management lease or firmware/device writes.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "dedicated VM, exact two controller identities and real Native kernel required"]
+async fn native_retry_real_subscription_vm() {
+    use std::os::fd::AsRawFd;
+    assert_eq!(
+        std::env::var("SPARKLINK_NATIVE_EVENT_VM").as_deref(),
+        Ok("1")
+    );
+    let NativeVmFixture {
+        victim,
+        sibling,
+        control,
+        sibling_control,
+        expected,
+        before_sibling,
+        links,
+        state,
+        bus: _bus,
+        server,
+    } = native_vm_fixture().await;
+    let subscription = selected_native(victim);
     let raw_fd = subscription.as_fd().as_raw_fd();
     let receiver = subscription.into_controller_event_receiver().unwrap();
     let (before, at_retry) = oneshot::channel();
@@ -2340,6 +2385,7 @@ async fn native_retry_real_subscription_vm() {
             resume: released,
             pending,
         }),
+        None,
     );
     timeout(Duration::from_secs(3), at_retry)
         .await
@@ -2389,5 +2435,196 @@ async fn native_retry_real_subscription_vm() {
     println!(
         "NativeRetryVm: {{\"index\":{},\"generation\":{},\"sibling_index\":{},\"sibling_generation\":{},\"initial_kernel_snapshot\":true,\"retry_pending_with_lock_held\":true,\"joined_with_lock_held\":true,\"subscription_fd_closed\":true,\"both_still_ready\":true}}",
         victim.0, victim.1, sibling.0, sibling.1
+    );
+}
+
+/// Observes polls of the actual receiver future; no event fixture, delay,
+/// replacement wakeup or synthetic completion. Absent from default slkd.
+#[derive(Default)]
+pub(super) struct NativeReceiveProbe {
+    pending: std::sync::atomic::AtomicU64,
+    completed: std::sync::atomic::AtomicU64,
+    entered: tokio::sync::Notify,
+}
+
+pub(super) async fn observe_native_receive<T>(
+    receive: impl Future<Output = T>,
+    probe: Option<&NativeReceiveProbe>,
+) -> T {
+    use std::sync::atomic::Ordering::SeqCst;
+    let mut receive = std::pin::pin!(receive);
+    std::future::poll_fn(|cx| {
+        let result = receive.as_mut().poll(cx);
+        if let Some(probe) = probe {
+            if result.is_pending() {
+                probe.pending.fetch_add(1, SeqCst);
+                probe.entered.notify_one();
+            } else {
+                probe.completed.fetch_add(1, SeqCst);
+            }
+        }
+        result
+    })
+    .await
+}
+
+/// Actual Native loop stays active throughout the quiet window. No management
+/// lease is acquired by this test: scan/connect must be rejected by production
+/// handlers, while the query reads the real kernel. This is not RF success or
+/// system-bus deployment policy qualification.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "dedicated VM and exact two real Native controller identities required"]
+async fn native_quiet_real_subscription_vm() {
+    use std::os::fd::AsRawFd;
+    use std::sync::atomic::Ordering::SeqCst;
+    let NativeVmFixture {
+        victim,
+        sibling,
+        control,
+        sibling_control,
+        expected,
+        before_sibling,
+        links: _,
+        state,
+        bus,
+        server,
+    } = native_vm_fixture().await;
+    let client = client(&bus).await;
+    let proxy = adapter_proxy(&client).await;
+    let controller = zbus::Proxy::new(
+        &client,
+        "org.sparklink",
+        "/org/sparklink/slk0/controller",
+        "org.sparklink.Controller",
+    )
+    .await
+    .unwrap();
+    let subscription = selected_native(victim);
+    let raw_fd = subscription.as_fd().as_raw_fd();
+    let receiver = subscription.into_controller_event_receiver().unwrap();
+    let probe = Arc::new(NativeReceiveProbe::default());
+    let task = EventTask::start_native_inner(
+        receiver,
+        state.clone(),
+        server,
+        expected,
+        None,
+        Some(probe.clone()),
+    );
+    timeout(Duration::from_secs(3), async {
+        loop {
+            let entered = probe.entered.notified();
+            if probe.pending.load(SeqCst) != 0 {
+                break;
+            }
+            entered.await;
+        }
+    })
+    .await
+    .expect("actual Native receive reached Pending");
+    assert!(state.lock().await.native_links_known());
+    let watermark = control.native_link_snapshot(victim.1).unwrap();
+    let completed = probe.completed.load(SeqCst);
+    let pending = probe.pending.load(SeqCst);
+    let quiet = Instant::now();
+    let mut rounds = 0_u64;
+    while quiet.elapsed() < Duration::from_secs(30) {
+        let (name, summary, scan, connect) = tokio::join!(
+            timeout(Duration::from_secs(2), proxy.get_property::<String>("Name")),
+            timeout(
+                Duration::from_secs(2),
+                controller.call::<_, _, (u16, u64, u64, u64, u32)>("GetLinkSummary", &())
+            ),
+            timeout(
+                Duration::from_secs(2),
+                proxy.call::<_, _, ()>("StartControllerScan", &())
+            ),
+            timeout(
+                Duration::from_secs(2),
+                proxy.call::<_, _, ()>("ConnectDeviceTyped", &("01:02:03:04:05:06", 0_u8))
+            ),
+        );
+        assert!(!name.unwrap().unwrap().is_empty());
+        let info = summary.unwrap().unwrap();
+        assert_eq!(
+            info,
+            (
+                victim.0,
+                victim.1,
+                watermark.revision,
+                watermark.event_seq,
+                0
+            )
+        );
+        for result in [scan, connect] {
+            match result
+                .expect("current handler responded within original two seconds")
+                .unwrap_err()
+            {
+                zbus::Error::MethodError(name, detail, _) => {
+                    assert_eq!(name.as_str(), "org.freedesktop.DBus.Error.Failed");
+                    assert_eq!(detail.as_deref(), Some("management unavailable"));
+                }
+                error => panic!("unexpected D-Bus transport/error: {error}"),
+            }
+        }
+        assert_eq!(
+            probe.completed.load(SeqCst),
+            completed,
+            "real receiver completed during declared silence"
+        );
+        rounds += 1;
+        tokio::time::sleep(Duration::from_millis(250)).await;
+    }
+    let quiet_ms = quiet.elapsed().as_millis();
+    assert!(rounds >= 10, "queries span the actual quiet window");
+    assert_eq!(probe.completed.load(SeqCst), completed);
+    let pending_polls = probe.pending.load(SeqCst) - pending;
+    assert!(
+        pending_polls > 0,
+        "Native loop remained live across retry ticks"
+    );
+    let after_links = control.native_link_snapshot(victim.1).unwrap();
+    assert_eq!(
+        (
+            after_links.event_seq,
+            after_links.revision,
+            after_links.count,
+            after_links.flags
+        ),
+        (
+            watermark.event_seq,
+            watermark.revision,
+            0,
+            slk_protocol::LINK_SNAPSHOT_KNOWN
+        )
+    );
+    timeout(Duration::from_secs(2), task.shutdown())
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        std::fs::read_link(format!("/proc/self/fd/{raw_fd}"))
+            .unwrap_err()
+            .kind(),
+        std::io::ErrorKind::NotFound
+    );
+    let after = control.controller_snapshot(victim.1).unwrap();
+    let other = sibling_control.controller_snapshot(sibling.1).unwrap();
+    assert_eq!(
+        (after.dev_index, after.generation, after.flags),
+        (expected.dev_index, expected.generation, expected.flags)
+    );
+    assert_eq!(
+        (other.dev_index, other.generation, other.flags),
+        (
+            before_sibling.dev_index,
+            before_sibling.generation,
+            before_sibling.flags
+        )
+    );
+    println!(
+        "NativeQuietVm: {{\"index\":{},\"generation\":{},\"sibling_index\":{},\"sibling_generation\":{},\"quiet_ms\":{},\"rounds\":{},\"pending_polls\":{},\"receive_completions\":0,\"actual_native_loop\":true,\"kernel_watermark_unchanged\":true,\"query_verified\":true,\"scan_rejected_without_lease\":true,\"connect_rejected_without_lease\":true,\"subscription_fd_closed\":true,\"both_still_ready\":true}}",
+        victim.0, victim.1, sibling.0, sibling.1, quiet_ms, rounds, pending_polls
     );
 }

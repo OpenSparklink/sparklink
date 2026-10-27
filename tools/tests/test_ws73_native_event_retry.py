@@ -30,6 +30,29 @@ def fixture():
     return control,package
 
 
+def quiet_fixture():
+    control, package = fixture()
+    control['native_event_retry']['version'] = 2
+    package['native_event_retry_test']['version'] = 2
+    control['native_event_retry']['quiet_receipts'] = []
+    control['native_event_quiet_commands'] = []
+    owners = control['connection_control']['owners']
+    for a, b in (owners, owners[::-1]):
+        value = dict(index=a['index'], generation=a['generation'],
+            sibling_index=b['index'], sibling_generation=b['generation'],
+            quiet_ms=30_100, rounds=120, pending_polls=31, receive_completions=0,
+            actual_native_loop=True, kernel_watermark_unchanged=True, query_verified=True,
+            scan_rejected_without_lease=True, connect_rejected_without_lease=True,
+            subscription_fd_closed=True, both_still_ready=True)
+        row = copy.deepcopy(control['native_event_retry_commands'][len(control['native_event_quiet_commands'])])
+        row['args'][4] = gate.QUIET_TEST
+        row['stdout'] = 'NativeQuietVm: ' + json.dumps(value) + '\n' + 'test result: ok. 1 passed; 0 failed; 0 ignored;\n'
+        row['end_monotonic_ns'] = row['start_monotonic_ns'] + 31_000_000_000
+        control['native_event_quiet_commands'].append(row)
+        control['native_event_retry']['quiet_receipts'].append(value)
+    return control, package
+
+
 class NativeRetry(unittest.TestCase):
     def test_explicit_selectors(self):
         self.assertFalse(gate.boot_requested([]));self.assertTrue(gate.boot_requested([gate.TOKEN+'=1']))
@@ -52,9 +75,14 @@ class NativeRetry(unittest.TestCase):
             spec=Path(tmp)/'input.json';data=dict(version=1,source_head='1'*40,binary=gate.pin(binary));spec.write_text(json.dumps(data))
             manifest=dict(userspace_head='1'*40,inputs=[],unstripped_programs=[])
             # ELF/dependency copying is an explicit fixture; actual prepare uses copy_elf.
-            gate.stage(spec,root,manifest,lambda source,target,root:shutil.copyfile(source,target))
-            self.assertEqual(manifest['native_event_retry_test']['input'],data['binary'])
-            self.assertTrue((root/gate.CONFIG.lstrip('/')).is_file())
+            for version in (1, 2):
+                data['version'] = version
+                spec.write_text(json.dumps(data))
+                gate.stage(spec,root,manifest,lambda source,target,root:shutil.copyfile(source,target))
+                self.assertEqual(manifest['native_event_retry_test']['input'],data['binary'])
+                self.assertEqual(json.loads((root/gate.SUITE.lstrip('/')).read_text()), dict(version=version))
+                self.assertEqual(manifest['native_event_retry_test']['version'], version)
+                self.assertTrue((root/gate.CONFIG.lstrip('/')).is_file())
             for mode in ['source','version','binary']:
                 changed=copy.deepcopy(data)
                 if mode=='source':changed['source_head']='2'*40
@@ -62,6 +90,69 @@ class NativeRetry(unittest.TestCase):
                 else:changed['binary']['sha256']='3'*64
                 spec.write_text(json.dumps(changed))
                 with self.subTest(mode=mode),self.assertRaises(ValueError):gate.stage(spec,root,manifest,lambda *args:None)
+
+    def test_quiet_v2_scope_and_negative_controls(self):
+        c, p = quiet_fixture()
+        proof = gate.corroborate(c, p)
+        m = dict(native_event_retry_requested=True, native_event_retry_acceptance=True,
+            native_event_retry_test=p['native_event_retry_test'], native_event_retry_corroboration=proof)
+        self.assertTrue(gate.accepted(m))
+        for mode in ['short', 'events', 'wrong-id', 'boolean-count', 'no-polls', 'no-query',
+                     'no-scan', 'no-connect', 'missing', 'timeout', 'fake-duration', 'wrong-test',
+                     'ignored', 'changed-receipt', 'version']:
+            bad = copy.deepcopy(c)
+            row = bad['native_event_quiet_commands'][0]
+            value = copy.deepcopy(bad['native_event_retry']['quiet_receipts'][0])
+            fields = {'short': ('quiet_ms', 29_999), 'events': ('receive_completions', 1),
+                'wrong-id': ('generation', 90), 'boolean-count': ('rounds', True),
+                'no-polls': ('pending_polls', 0), 'no-query': ('query_verified', False),
+                'no-scan': ('scan_rejected_without_lease', False), 'no-connect': ('connect_rejected_without_lease', False)}
+            if mode in fields:
+                key, v = fields[mode]; value[key] = v
+                row['stdout'] = 'NativeQuietVm: ' + json.dumps(value) + '\n' + 'test result: ok. 1 passed; 0 failed; 0 ignored;\n'
+            elif mode == 'missing': bad['native_event_quiet_commands'].pop()
+            elif mode == 'timeout': row['exit'] = 'timeout'
+            elif mode == 'fake-duration': row['end_monotonic_ns'] = row['start_monotonic_ns'] + 100
+            elif mode == 'wrong-test': row['args'][4] = gate.TEST
+            elif mode == 'ignored': row['stdout'] = row['stdout'].replace('1 passed', '0 passed')
+            elif mode == 'changed-receipt': bad['native_event_retry']['quiet_receipts'][0]['rounds'] += 1
+            else: bad['native_event_retry']['version'] = 1
+            with self.subTest(mode=mode), self.assertRaises((ValueError, KeyError)):
+                gate.corroborate(bad, p)
+        for mode in ['missing', 'short', 'old-version', 'no-fd']:
+            bad = copy.deepcopy(m); v = bad['native_event_retry_corroboration']
+            if mode == 'missing': v.pop('quiet_receipts')
+            elif mode == 'short': v['quiet_receipts'][0]['quiet_ms'] = 1
+            elif mode == 'old-version': v['version'] = 1
+            else: v['quiet_receipts'][0]['subscription_fd_closed'] = False
+            with self.subTest(mode=mode): self.assertFalse(gate.accepted(bad))
+        # A historical v1 is still valid only for its original held-lock scope.
+        c1, p1 = fixture(); old = gate.corroborate(c1, p1)
+        self.assertNotIn('quiet_receipts', old)
+        self.assertTrue(gate.accepted(dict(native_event_retry_requested=True,
+            native_event_retry_acceptance=True, native_event_retry_test=p1['native_event_retry_test'],
+            native_event_retry_corroboration=old)))
+
+    def test_execution_uses_separate_original_deadlines(self):
+        c, p = quiet_fixture()
+        class Run:
+            def __init__(self): self.data = {}; self.calls = []; self.checked = []
+            def save(self): pass
+            def check(self, owner): self.checked.append(owner)
+            def command(self, args, deadline, *, collection, environment):
+                self.calls.append((collection, deadline))
+                rows = c[collection]
+                index = sum(name == collection for name, _ in self.calls) - 1
+                row = copy.deepcopy(rows[index])
+                if args != row['args'] or environment != row['environment']:
+                    raise AssertionError('actual executable selector/environment differs')
+                return row
+        run = Run()
+        with patch.object(Path, 'read_text', return_value='{"version":2}'), patch.object(gate, 'pin', return_value=c['native_event_retry']['binary']):
+            gate.execute(run, c['connection_control']['owners'])
+        self.assertEqual(run.calls, [('native_event_retry_commands', 10), ('native_event_quiet_commands', 40)] * 2)
+        self.assertEqual(len(run.checked), 4)
+        self.assertEqual(run.data['native_event_retry']['quiet_receipts'], c['native_event_retry']['quiet_receipts'])
 
     def test_actual_cli(self):
         import ws73_target

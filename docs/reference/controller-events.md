@@ -144,3 +144,22 @@ EventTask 循环。测试屏障只在 `cfg(test)` 中存在：初次真实快照
 它保留为明确边界的饥饿和拒绝回归。实际 Native 的持锁取消测试只覆盖相应退出交错；
 不能推导静默30秒、完整 Node 发布或 Runtime drain。原静默期要求需在同一 Native
 循环上补齐，再按 U#1 原条件验收；不增加另一套简化事件循环。
+
+
+### 实际 Native 静默期门禁（suite v2）
+
+`native_quiet_real_subscription_vm` 与持锁取消用例共用真实 controller 选择、
+内核 snapshot 和订阅准备，直接启动同一 `start_native_inner`。测试专用 observer
+只统计实际接收 future 的 Pending／完成，不替换事件、不暂停循环、不注入成功。
+初次 Pending 后至少30秒内，不允许实际接收完成；前后内核事件水位也必须一致。
+查询读取真实空连接快照；扫描及 typed connect 在测试未持有管理租约时必须返回
+准确的 `management unavailable`，不是硬件操作成功。各次 D-Bus 请求仍限2秒。
+
+suite v2 对两只显式设备分别执行原持锁取消测试和新静默期测试。前者监督期限仍为
+10秒、持锁 shutdown 仍为2秒；后者独立监督期限40秒。退出检查真实订阅fd释放、
+两设备身份及 Ready 保持。测试使用私有总线，不宣称 system bus 部署权限、完整
+Node 发布、物理 drain、RF、形式化证明或自动恢复。默认 daemon 不包含 observer。
+
+现有 v1 结果只具有原持锁取消含义，不能推导静默期；v2 缺任一测试、任一设备、
+实际30秒窗口或完整原输出时不得通过。编译成功及 ignored 列表不是实际 VM 验收；
+新测试必须绑定其准确 binary/source，原业务门禁继续独立运行。

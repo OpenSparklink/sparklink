@@ -387,9 +387,9 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "a426e1d1503e8b2d7d0a3a5a69f3384c2eed7cfccedfc36e4691d63ece08ff62",
+      "body_sha256": "6244dc9d51cc0d8f01c0dbdf850856180e8c8ddf8fda5959888a717c97f8a43f",
       "classification": "有限收尾",
-      "closure_basis": "External C/Python SDK owner-loss observation tested offline; actual VM daemon death/successor and full original SSAP operations remain open."
+      "closure_basis": "Pending WRITE actual VM supervisor v2 wired; scoped offline checks passed. Accurate new artifact real VM evidence and full original SSAP scope remain open."
     },
     {
       "repository": "sparklink",
@@ -760,8 +760,9 @@
         "state": "open",
         "classification": "有限收尾",
         "action": "body_consolidated",
-        "body_sha256": "a426e1d1503e8b2d7d0a3a5a69f3384c2eed7cfccedfc36e4691d63ece08ff62",
-        "basis": "WRITE Down/晚到本地答复门禁及 SDK owner 接任的源码/限定离线检查已经接通；真实 daemon SIGKILL/接任、新连接业务、长值及完整原操作/更新矩阵继续开放。准确实机范围只查授权本地记录。"
+        "body_sha256": "6244dc9d51cc0d8f01c0dbdf850856180e8c8ddf8fda5959888a717c97f8a43f",
+        "basis": "v2 WRITE daemon restart runner wired with original callback/credit/Session and new-connection business; offline checks only, exact real VM qualification and all original U22 conditions remain open.",
+        "source_followup_observed_at": "2026-10-27T04:27:49.292801+00:00"
       },
       {
         "repository": "sparklink",
@@ -4637,6 +4638,17 @@
       "scope": "Consolidate evidence chronology into existing historical entry; six original acceptance conditions unchanged.",
       "prior_body_sha256": "a8e8002064b6ab94c90dabb97367f93b941dd0878b99866e314af0704957e5e6",
       "body_sha256": "a426e1d1503e8b2d7d0a3a5a69f3384c2eed7cfccedfc36e4691d63ece08ff62"
+    },
+    {
+      "repository": "sparklink",
+      "number": 22,
+      "state": "open",
+      "observed_at": "2026-10-27T04:27:49.292801+00:00",
+      "source_offline_only": true,
+      "source": "e2077da0f9f86d363f41d415a00062bcc560e9e6",
+      "prior_body_sha256": "a426e1d1503e8b2d7d0a3a5a69f3384c2eed7cfccedfc36e4691d63ece08ff62",
+      "body_sha256": "6244dc9d51cc0d8f01c0dbdf850856180e8c8ddf8fda5959888a717c97f8a43f",
+      "scope": "Pending WRITE v2 actual VM supervisor wired; 89 scoped offline checks; real artifact validation pending; six original conditions unchanged."
     }
   ]
 }

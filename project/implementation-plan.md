@@ -1,19 +1,20 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前批次：待决 WRITE 的 daemon 退出观察
+## 当前批次：待决 WRITE 跨 daemon 退出／接任 v2
 
-WP08 / U#22 已将旧请求观察接入同一外部 C/Python SDK 消费者：保持真实请求和通知
-fd，原期限内验证 ESTALE；新 unique owner 接任且原期限已过后，旧权限仍不恢复。
-它只暂停测试 UI 自动取件，不修改 Engine 或 SDK 状态。活 owner 负对照必须失败；
-退出仅释放本地视图，不报告远端注销。准确源码及限定离线结果见本页生成摘要。
+WP08 / U#22 的 v2 工具已接通真实 SDK WRITE 回调屏障、既有 init SIGKILL/reap、
+原请求 ESTALE 与旧视图观察、两 controller Free/empty、新 owner 和新连接业务。
+新业务复用原连接/socket/Owned/SDK WRITE runner，不新增 Engine 或收发循环。
+root 监督的 slktest 显式降权至 UID1000；原旧 fd、原期限及完整双端判定保持。
 
-既有 VM init SIGKILL/reap/successor 监督仍待接通该观察：真实 WRITE 回调到达后
-退出旧 slkd，两 controller 清理 Free/empty 后启动新 owner，旧 SDK 保持 stale，
-新连接完成普通业务及 SSAP 对端校验。两 controller 共用 daemon，不声称进程故障
-只影响单只。原期限、完整捕获和原失败保留；本批没有新实机或形式化资格。
+89项相关离线检查通过；收据、进程参数及捕获 fixture 不证明实际 daemon/内核/设备
+行为。新 v2 仍需封存准确 VM 产物，按本线程两只 U 的白名单和实际占用检查后，
+分别验证两方向旧请求与接任后八轮普通业务及 SDK WRITE。v1 资格不能升级为 v2。
+原回放 fixture 缺事件输入、worktree 缺内核路径的失败保留；没有放宽成功断言。
 
-完整 S0–S6/19WP/10FV/12DG、长值/更新/Profile 与自然恢复要求不变；不追加
-控制面竞争全集前置。负对照早期 NoReply 断言失败原样保留，不覆盖历史失败。
+两 controller 共用 daemon，退出影响两者，不声称独立进程故障域。完整
+S0–S6/19WP/10FV/12DG、长值/更新/Profile 和自然故障/非人工恢复条件保持开放；
+不追加无关控制面组合前置。准确源码、离线范围和下一步由生成摘要关联。
 
 ## 有界 issue 清理结果与主线恢复
 
@@ -494,9 +495,9 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-SDK-WRITE-external-owner-loss-observer",
-  "state": "SCOPED_OFFLINE_PASS_VM_RESTART_PENDING",
-  "production_behavior": "No protocol/daemon Engine change. Existing external C/Python consumers retain real pending WRITE/fd while observing loss of the original owner. Root VM supervisor drops publisher to ordinary UID1000, matching existing SDK callers.",
+  "id": "WP08-SDK-WRITE-daemon-restart-v2",
+  "state": "VM_GATE_WIRED_OFFLINE_PASS_HARDWARE_PENDING",
+  "production_behavior": "No Engine or protocol change. Existing actual VM init death/reap/successor gate now arms on real SDK WRITE arrival, retains revoked views/fds and reuses original new-connection/socket/WRITE runners. Root-supervised slktest explicitly drops to UID1000.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
     "WP08",
@@ -504,43 +505,40 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
   ],
   "records": [],
   "implementation_sources": {
-    "public_source": "6a1468ba182f7a1862c3532738ec096dd01f0781"
+    "public_source": "e2077da0f9f86d363f41d415a00062bcc560e9e6"
   },
   "offline_status": "SCOPED_OFFLINE_PASS",
   "offline_checks": {
-    "external_ffi": "actual C/Python integration suite; exact frozen executable rerun",
-    "python": "42 targeted checks including root supervisor credential arguments",
-    "negative": "live owner cannot pass owner-loss observation; original intermediate NoReply assertion failure retained",
-    "clippy": "libsparklink all-targets -D warnings",
-    "C": "strict C11 syntax/header check",
-    "docs": "strict public HTML and inventories; private HTML checked separately"
+    "python": "89 related parser/runner/negative-control tests; recorded-shape captures and process fixtures, not real kernel concurrency",
+    "negative": "missing RX, payload/identity/deadline, success after revocation, retained old success, missing successor WRITE proof rejected; original fixture and environment failures retained",
+    "docs": "strict public HTML, inventories and integrity checks"
   },
-  "hardware_status": "NO_NEW_HARDWARE_RUN; retained v1/v2 physical Down evidence remains source-bound locally, not transferred to this test commit.",
+  "hardware_status": "NO_NEW_HARDWARE_RUN; v1 daemon fd and earlier Down qualification not transferred to v2",
   "formal_status": "NO_NEW_PROOF",
   "issue_sync": {
     "repository": "sparklink",
     "number": 22,
     "state": "open",
+    "observed_at": "2026-10-27T04:27:49.292801+00:00",
     "source_offline_only": true,
-    "observed_at": "2026-10-27T03:59:03Z",
-    "source": "6a1468ba182f7a1862c3532738ec096dd01f0781",
-    "prior_body_sha256": "c6c46d052261e148272870450023868ddcb1abad8c110b1a9f97b0fa2f2302d5",
-    "body_sha256": "a8e8002064b6ab94c90dabb97367f93b941dd0878b99866e314af0704957e5e6",
-    "scope": "External C/Python old WRITE views retained across owner loss/takeover, original deadline and live-owner negatives; source/offline only, six original conditions unchanged."
+    "source": "e2077da0f9f86d363f41d415a00062bcc560e9e6",
+    "prior_body_sha256": "a426e1d1503e8b2d7d0a3a5a69f3384c2eed7cfccedfc36e4691d63ece08ff62",
+    "body_sha256": "6244dc9d51cc0d8f01c0dbdf850856180e8c8ddf8fda5959888a717c97f8a43f",
+    "scope": "Pending WRITE v2 actual VM supervisor wired; 89 scoped offline checks; real artifact validation pending; six original conditions unchanged."
   },
   "exit_conditions": [
-    "Actual external C/Python old WRITE request and fd stay inspectable; next/authorization/reply return ESTALE before original deadline.",
-    "New daemon unique owner does not restore authority even after the original deadline; immutable request/value and live fd remain distinct from authority.",
-    "Live owner negative controls fail; local view cleanup is never described as successful remote unregister."
+    "Actual SDK WRITE callback before existing init SIGKILL/reap; original requester and retained SDK views reject within original deadline.",
+    "Both controller cleanup Ready/Free/empty before new owner; old fd/request/object identity never revived.",
+    "New physical connections in both roles use original ordinary user and SDK WRITE gates with two-end USB evidence."
   ],
   "remaining_conditions": [
     "Actual slkd SIGKILL/reap, per-controller cleanup before successor, retained SDK old-owner refusal and fresh wire business in VM",
     "Full original U22 operation/value/lifecycle scope; natural fault/nonmanual recovery remain open"
   ],
   "next": [
-    "Use existing VM channel-daemon-crash supervisor and the same external SDK observer; no extra Engine or independent protocol loop.",
-    "Arm real pending WRITE before init SIGKILL/reap; observe original request terminal before deadline, both controllers Free/empty, then actual successor and old-view refusal.",
-    "Fresh connection and ordinary/SSAP business must be verified by actual peer under new daemon; preserve all original fd, capture and lifecycle assertions."
+    "Freeze new tools into existing SDK110 U prepared VM; recheck exact allowed ports, live use and source/tool/artifact hashes.",
+    "Run existing dedicated --channel-daemon-crash v2 with each index; retain failed attempts and pair raw evidence.",
+    "Complete remaining U22 operation/value/lifecycle gates and original data/security/SSAP work without full-control-plane prerequisite."
   ],
   "qualification_boundary": "Source/offline and retained hardware identities separate; no change to selected qualification or existing records/materials."
 }

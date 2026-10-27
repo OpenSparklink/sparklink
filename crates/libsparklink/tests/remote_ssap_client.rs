@@ -140,6 +140,41 @@ impl Link {
         // Finite RPC fixture: no wire response or remote-delivery claim.
         Ok(())
     }
+
+    async fn call_ssap_method(
+        &self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        self.0.calls.fetch_add(1, Ordering::SeqCst);
+        self.0.description_stamps.lock().unwrap().push(original);
+        if handle == 99 {
+            self.0.entered.notify_one();
+            self.0.release.notified().await;
+        } else if handle == 98 {
+            return Ok(vec![0; 2046]);
+        } else if (handle, minimum, arguments) != (17, 1, vec![0x56, 0x12]) {
+            return Err(zbus::fdo::Error::NotSupported(
+                "unmatched method fixture".into(),
+            ));
+        }
+        Ok(vec![0x90, 0x78, 0x34])
+    }
+    async fn call_ssap_method_command(
+        &self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<()> {
+        self.call_ssap_method(handle, arguments, minimum, original)
+            .await
+            .map(|_| ())
+    }
     fn discover_ssap(
         &self,
         uuid: Vec<u8>,
@@ -579,5 +614,91 @@ async fn description_rejects_invalid_peer_text_without_property_fallback() -> an
     }
     assert_eq!(state.calls.load(Ordering::SeqCst), 4);
     assert_eq!(state.description_stamps.lock().unwrap().len(), 4);
+    Ok(())
+}
+
+#[tokio::test]
+async fn method_client_is_bounded_scoped_and_never_echoes_or_retries() -> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let (_server, caller, state) = fixture(&bus.address).await?;
+    let client = Client::from_connection(caller).await?;
+    let link = client.connection(BASE, PATH).await?;
+    let original = deadline();
+    assert_eq!(
+        link.ssap()
+            .call_method(17, vec![0x56, 0x12], 1, original)
+            .await?,
+        [0x90, 0x78, 0x34]
+    );
+    assert_eq!(
+        state.description_stamps.lock().unwrap()[0].0,
+        original.stamp().monotonic_ns
+    );
+    link.ssap()
+        .call_method_without_response(17, vec![0x56, 0x12], 1, deadline())
+        .await?;
+    assert!(
+        link.ssap()
+            .call_method(18, vec![], 0, deadline())
+            .await
+            .is_err()
+    );
+    assert!(
+        matches!(link.ssap().call_method(98,vec![],0,deadline()).await,Err(ApplicationError::Io(e)) if e.raw_os_error()==Some(nix::libc::EPROTO))
+    );
+    let calls = state.calls.load(Ordering::SeqCst);
+    for command in [false, true] {
+        let r = if command {
+            link.ssap()
+                .call_method_without_response(17, vec![0; 2044], 0, deadline())
+                .await
+                .map(|_| vec![])
+        } else {
+            link.ssap()
+                .call_method(17, vec![0; 2044], 0, deadline())
+                .await
+        };
+        assert!(
+            matches!(r,Err(ApplicationError::Io(e)) if e.raw_os_error()==Some(nix::libc::EMSGSIZE))
+        );
+    }
+    assert_eq!(state.calls.load(Ordering::SeqCst), calls);
+    for command in [false, true] {
+        let original = libsparklink::Deadline::after(Duration::from_millis(100))?;
+        let call = async {
+            if command {
+                link.ssap()
+                    .call_method_without_response(99, vec![], 0, original)
+                    .await
+                    .map(|_| vec![])
+            } else {
+                link.ssap().call_method(99, vec![], 0, original).await
+            }
+        };
+        let interleave = async {
+            state.entered.notified().await;
+            tokio::time::sleep(Duration::from_millis(200)).await;
+            state.release.notify_one();
+        };
+        let (r, ()) = tokio::time::timeout(Duration::from_secs(3), async {
+            tokio::join!(call, interleave)
+        })
+        .await?;
+        assert!(
+            matches!(r,Err(ApplicationError::Io(e)) if e.raw_os_error()==Some(nix::libc::ETIMEDOUT))
+        );
+    }
+    assert_eq!(state.calls.load(Ordering::SeqCst), calls + 2);
+    let call = async { link.ssap().call_method(99, vec![], 0, deadline()).await };
+    let interleave = async {
+        state.entered.notified().await;
+        state.generation.store(8, Ordering::SeqCst);
+        state.release.notify_one();
+    };
+    let (r, ()) = tokio::time::timeout(Duration::from_secs(3), async {
+        tokio::join!(call, interleave)
+    })
+    .await?;
+    assert!(matches!(r, Err(ApplicationError::Identity(_))));
     Ok(())
 }

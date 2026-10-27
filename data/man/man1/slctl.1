@@ -193,6 +193,17 @@ no implicit retry. Descriptor and multi-item commands are not exposed.
 Use ssap-write when the supported operation requires a protocol response.
 .SS Statistics and Diagnostics
 .TP
+.BI ssap-call-method " connection-path handle arguments-hex [minimum]"
+Invoke a remote method using the original Session and deadline. Prints the
+independent peer result, never an input echo. Current slkd method Providers
+are unsupported. Arguments are bounded by 2043 bytes and negotiated transport
+limits. Timeout may follow an executed remote effect; no implicit retry.
+.TP
+.BI ssap-call-method-command " connection-path handle arguments-hex [minimum]"
+Submit a method command. Success is all-fragment software admission only,
+not peer processing. No protocol reply or automatic retry.
+
+.TP
 .B stats
 Show the native LinkSnapshot summary; not mixed legacy subsystem counters.
 .TP

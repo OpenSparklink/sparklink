@@ -295,6 +295,8 @@ index/generation和物理lifetime/handle/role/地址类型/地址。`connection.
 | `read_description(handle, minimum, Deadline)` | `ReadSsapDescription` | 已发现的公开只读 type1；1..244 UTF-8 字节、无 NUL，非法成功响应 EPROTO，不回退属性值 |
 | `write(handle, value, minimum, Deadline)` | `WriteSsapValue`，协议响应字节 | daemon当前协商的有界写；不截断、不echo、不另做分片 |
 | `write_without_response(handle, value, minimum, Deadline)` | `WriteSsapCommand`，空返回 | 单属性WRITE_NO_RSP；全部片软件准入不等于远端交付，失败可有部分副作用 |
+| `call_method(handle, arguments, minimum, Deadline)` | `CallSsapMethod`，`ay` | 独立对端结果，非参数 echo；请求端接线，当前 daemon 未支持本地 method Provider |
+| `call_method_without_response(handle, arguments, minimum, Deadline)` | `CallSsapMethodCommand`，空返回 | 仅全部片软件准入，无协议响应或对端处理保证 |
 | `read_by_uuid(start, end, data_type, uuid, minimum)` | `ReadSsapByUuid` | 返回每项结果及原trace；不是本地构造成功 |
 | `receive_update(handles, modes, wait_ms)` / `receive_until(..., Deadline)` | `ReceiveSsapUpdate` | 单次CPCD启用/接收/验证停用；需真实认证及拥有者授权；不覆盖已有配置 |
 | `subscribe(handles, modes, duration_ms, Deadline)` | `SubscribeSsapUpdates` | 持有原 caller／lifetime 的有限接收租约；读取、续租与关闭复用同一 Engine，当前一 actor 一个租约 |
@@ -308,6 +310,22 @@ index/generation和物理lifetime/handle/role/地址类型/地址。`connection.
 VALUE_HEX [MINIMUM]`只显示`SsapCommandAdmission`及`peer_delivery=unconfirmed`；
 `ssap-write`仍要求原协议响应。新入口的实机资格须独立取得，名字、空返回或离线fixture
 不构成对端交付证明。
+
+method 请求和命令均使用 `q, ay, u, (ttttt)` 输入，分别返回 `ay` 和空输出。
+Rust/Python 的 `call_method` 返回独立结果；C 为 `slk_connection_ssap_call_method`，
+无回复 C 入口为 `slk_connection_ssap_call_method_command`。CLI 对应
+`ssap-call-method PATH HANDLE ARGUMENTS_HEX [MINIMUM]` 和
+`ssap-call-method-command PATH HANDLE ARGUMENTS_HEX [MINIMUM]`。
+
+当前完整逻辑 PDU 上限2047字节，method参数至多2043字节、结果至多2045字节；
+实际协商MTU及分片能力可能给出更小的可发送范围。超限拒绝，不截断；保留原绝对期限
+及5秒上限，不因排队、取消或分片续期。C输出容量不足不重新执行 method；原调用可能
+已有远端副作用，超时也不能推断回滚。命令成功只代表软件准入。
+
+此批仅接通请求端，复用唯一 Session/Engine/Grant/credit/Ticket。当前 daemon 的本地
+method请求返回携带原handle的 Unsupported，命令无线上回复；不复用属性数据库伪造
+method处理，不将参数echo成结果。离线私有总线使用显式固定返回fixture，不是对端
+业务资格。真实双设备 method Provider、正向交付及新artifact保持门禁仍待独立验收。
 
 相应slctl远端命令通过这一客户端调用，CLI仅解析参数和显示结果；唯一wire Engine、
 事务/分片及服务数据库仍在slkd。共享wire元组由slk-contract提供，daemon直接消费契约，

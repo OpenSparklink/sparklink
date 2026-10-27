@@ -31,14 +31,14 @@ pub enum Error {
 }
 
 fn supported(op: u8) -> bool {
-    matches!(op, 8 | 9 | 11 | 12 | 13 | 14 | 15 | 16)
+    matches!(op, 8 | 9 | 11 | 12 | 13 | 14 | 15 | 16 | 18 | 19 | 20)
 }
 
 /// Requests, responses and updates retain independent partial streams.
 pub fn lane(opcode: u8) -> Option<usize> {
     match opcode & 0x7f {
-        8 | 12 | 13 => Some(0),
-        9 | 11 | 14 => Some(1),
+        8 | 12 | 13 | 18 | 19 => Some(0),
+        9 | 11 | 14 | 20 => Some(1),
         15 | 16 => Some(2),
         _ => None,
     }
@@ -113,6 +113,9 @@ pub struct Plan<'a> {
 impl<'a> Plan<'a> {
     pub fn new(raw: &'a [u8], mtu: u16, sequenced: bool) -> Result<Self, Error> {
         let layout = Layout::new(raw.len(), mtu)?;
+        if matches!(raw[0], 18..=20) && raw[1] != 3 {
+            return Err(Error::Control);
+        }
         if raw.len() > logical_limit(raw[0]) {
             return Err(Error::Length);
         }
@@ -243,6 +246,9 @@ impl<C: Copy + Eq, D: Copy + Ord> Reassembly<C, D> {
             return Err(Error::Length);
         }
         let mut control = raw[1] | 3;
+        if matches!(op, 18..=20) && raw[1] & !3 != 0 {
+            return Err(Error::Control);
+        }
         if op == 12 && raw[1] & 0xe4 != 0 {
             return Err(Error::Control);
         }
@@ -339,7 +345,7 @@ mod tests {
     use super::*;
     #[test]
     fn real_value_shapes_roundtrip_with_frozen_identity_and_first_deadline() {
-        for op in [8, 9, 11, 12, 13, 14, 15, 16] {
+        for op in [8, 9, 11, 12, 13, 14, 15, 16, 18, 19, 20] {
             for mtu in [6, 16, 249, 2042] {
                 for n in [5, 16, 32, 249, 250, 254, 255, 1024, 2042, 2047, 2048] {
                     let mut raw = vec![0xa5; n];

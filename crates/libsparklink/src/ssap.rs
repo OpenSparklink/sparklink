@@ -281,7 +281,7 @@ impl<'a> RemoteSsap<'a> {
         value: Option<Vec<u8>>,
         minimum: u32,
         original: crate::Deadline,
-        read_method: &'static str,
+        method: &'static str,
     ) -> Result<Vec<u8>> {
         let original = original.capped(slk_channel::deadline::PROTOCOL_WAIT)?;
         let result = tokio::time::timeout_at(
@@ -296,14 +296,10 @@ impl<'a> RemoteSsap<'a> {
                 original.remaining()?;
                 let deadline = contract::deadline_wire(original.stamp());
                 let result: Vec<u8> = match value {
-                    None => {
-                        proxy
-                            .call(read_method, &(handle, minimum, deadline))
-                            .await?
-                    }
+                    None => proxy.call(method, &(handle, minimum, deadline)).await?,
                     Some(value) => {
                         proxy
-                            .call(wire::WRITE, &(handle, value, minimum, deadline))
+                            .call(method, &(handle, value, minimum, deadline))
                             .await?
                     }
                 };
@@ -328,8 +324,64 @@ impl<'a> RemoteSsap<'a> {
         minimum: u32,
         original: crate::Deadline,
     ) -> Result<Vec<u8>> {
-        self.value(handle, Some(value), minimum, original, wire::READ)
+        self.value(handle, Some(value), minimum, original, wire::WRITE)
             .await
+    }
+    /// Invoke a remote method, returning its independent application result.
+    /// No retry or input echo. A timeout may follow an executed remote effect.
+    /// Current local daemon method providers are not yet supported.
+    pub async fn call_method(
+        &self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        original: crate::Deadline,
+    ) -> Result<Vec<u8>> {
+        Self::method_arguments(handle, minimum, &arguments)?;
+        let result = self
+            .value(
+                handle,
+                Some(arguments),
+                minimum,
+                original,
+                wire::CALL_METHOD,
+            )
+            .await?;
+        if result.len() > 2045 {
+            return Err(ApplicationError::Io(std::io::Error::from_raw_os_error(
+                nix::libc::EPROTO,
+            )));
+        }
+        Ok(result)
+    }
+    fn method_arguments(handle: u16, minimum: u32, arguments: &[u8]) -> Result<()> {
+        if handle == 0 || minimum > 2 {
+            return Err(ApplicationError::Invalid("method handle/security"));
+        }
+        if arguments.len() > 2043 {
+            return Err(ApplicationError::Io(std::io::Error::from_raw_os_error(
+                nix::libc::EMSGSIZE,
+            )));
+        }
+        Ok(())
+    }
+    /// Software admission only; no method response or delivery confirmation.
+    pub async fn call_method_without_response(
+        &self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        original: crate::Deadline,
+    ) -> Result<()> {
+        Self::method_arguments(handle, minimum, &arguments)?;
+        self.command(
+            handle,
+            arguments,
+            minimum,
+            original,
+            wire::CALL_METHOD_COMMAND,
+        )
+        .await
     }
     /// Submit one property WRITE_NO_RSP through the existing daemon actor.
     /// Success means all command fragments entered the software socket path;
@@ -343,6 +395,17 @@ impl<'a> RemoteSsap<'a> {
         value: Vec<u8>,
         minimum: u32,
         original: crate::Deadline,
+    ) -> Result<()> {
+        self.command(handle, value, minimum, original, wire::WRITE_COMMAND)
+            .await
+    }
+    async fn command(
+        &self,
+        handle: u16,
+        value: Vec<u8>,
+        minimum: u32,
+        original: crate::Deadline,
+        method: &'static str,
     ) -> Result<()> {
         let original = original.capped(slk_channel::deadline::PROTOCOL_WAIT)?;
         crate::client::bounded(
@@ -358,7 +421,7 @@ impl<'a> RemoteSsap<'a> {
                 original.remaining()?;
                 let _: () = proxy
                     .call(
-                        wire::WRITE_COMMAND,
+                        method,
                         &(
                             handle,
                             value,

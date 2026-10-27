@@ -124,6 +124,7 @@ struct Link(
     Arc<subscription::Metadata>,
     Arc<Mutex<Vec<CommandCall>>>,
     Arc<AtomicUsize>,
+    Arc<AtomicUsize>,
 );
 #[zbus::interface(name = "org.sparklink.Connection")]
 impl Link {
@@ -246,6 +247,33 @@ impl Link {
                 "finite description fixture".into(),
             )),
         }
+    }
+
+    fn call_ssap_method(
+        &self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        libsparklink::Deadline::from_stamp(slk_contract::deadline_stamp(original)).unwrap();
+        self.6.fetch_add(1, Ordering::SeqCst);
+        if (handle, minimum, arguments) != (17, 1, vec![0x56, 0x12]) {
+            return Err(zbus::fdo::Error::NotSupported(
+                "finite method fixture".into(),
+            ));
+        }
+        Ok(vec![0x90, 0x78, 0x34])
+    }
+    fn call_ssap_method_command(
+        &self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<()> {
+        self.call_ssap_method(handle, arguments, minimum, original)
+            .map(|_| ())
     }
     fn write_ssap_value(
         &self,
@@ -575,6 +603,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     let bus = support::Bus::start();
     let calls = Arc::new(AtomicUsize::new(0));
     let ssap_calls = Arc::new(AtomicUsize::new(0));
+    let method_calls = Arc::new(AtomicUsize::new(0));
     let description_reads = Arc::new(AtomicUsize::new(0));
     let command_calls = Arc::new(Mutex::new(Vec::new()));
     let lifetime = Arc::new(AtomicU64::new(11));
@@ -594,6 +623,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
                 subscriptions.clone(),
                 command_calls.clone(),
                 description_reads.clone(),
+                method_calls.clone(),
             ),
         )?
         .build()
@@ -947,6 +977,11 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         calls.load(Ordering::SeqCst),
         22,
         "no retry or weaker fallback, invalid inputs never reach OpenChannel"
+    );
+    assert_eq!(
+        method_calls.load(Ordering::SeqCst),
+        7,
+        "C four/Python three actual method RPCs; invalid and expired calls never retry"
     );
     assert_eq!(
         ssap_calls.load(Ordering::SeqCst),

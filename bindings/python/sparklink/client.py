@@ -86,6 +86,11 @@ def _library():
                                        ctypes.c_size_t, ctypes.POINTER(ctypes.c_size_t), ctypes.c_uint64],
         "slk_connection_ssap_write_command": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
                                                ctypes.c_void_p, ctypes.c_size_t, ctypes.c_uint64],
+        "slk_connection_ssap_call_method": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
+            ctypes.c_void_p, ctypes.c_size_t, ctypes.c_void_p, ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t), ctypes.c_uint64],
+        "slk_connection_ssap_call_method_command": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
+            ctypes.c_void_p, ctypes.c_size_t, ctypes.c_uint64],
         "slk_connection_ssap_receive": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
                                         ctypes.POINTER(_SsapUpdate), ctypes.c_uint64],
         "slk_connection_ssap_send_owned": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
@@ -394,7 +399,7 @@ class RemoteSsap:
             raise OSError(errno.EMSGSIZE, os.strerror(errno.EMSGSIZE))
         return bytes(value)
 
-    def _call(self, handle, minimum, deadline_ns, value, read_method="slk_connection_ssap_read"):
+    def _call(self, handle, minimum, deadline_ns, value, read_method="slk_connection_ssap_read", write_method="slk_connection_ssap_write"):
         deadline_ns = self._value_scope(handle, minimum, deadline_ns)
         # Fixed memory budget, not negotiated MTU or long-write support. A
         # single operation, never count-query/retry after an executed remote read.
@@ -410,7 +415,7 @@ class RemoteSsap:
                     ctypes.byref(count), deadline_ns)
             else:
                 data = (ctypes.c_uint8 * len(value)).from_buffer_copy(value)
-                status = connection._lib.slk_connection_ssap_write(
+                status = getattr(connection._lib, write_method)(
                     connection._handle, handle, minimum, data, len(data), output,
                     len(output), ctypes.byref(count), deadline_ns)
             _result(status)
@@ -440,6 +445,9 @@ class RemoteSsap:
         or multi-item operation. Failure may follow partial admission. The
         same original deadline and five-second ceiling apply as for write.
         """
+        return self._command(handle, value, minimum, deadline_ns, "slk_connection_ssap_write_command")
+
+    def _command(self, handle, value, minimum, deadline_ns, method):
         value = self._value_bytes(value)
         deadline_ns = self._value_scope(handle, minimum, deadline_ns)
         data = (ctypes.c_uint8 * len(value)).from_buffer_copy(value)
@@ -447,5 +455,26 @@ class RemoteSsap:
         connection._live()
         with connection._lock:
             connection._live()
-            _result(connection._lib.slk_connection_ssap_write_command(
+            _result(getattr(connection._lib, method)(
                 connection._handle, handle, minimum, data, len(data), deadline_ns))
+
+    def call_method(self, handle, arguments, *, deadline_ns, minimum=0):
+        """Return independent peer result bytes; no retry of uncertain effects.
+
+        Requester only: current slkd does not provide local method callbacks.
+        """
+        return self._call(handle, minimum, deadline_ns, self._method_arguments(arguments),
+            write_method="slk_connection_ssap_call_method")
+
+    @classmethod
+    def _method_arguments(cls, arguments):
+        value = cls._value_bytes(arguments)
+        if len(value) > 2043:
+            import errno
+            raise OSError(errno.EMSGSIZE, os.strerror(errno.EMSGSIZE))
+        return value
+
+    def call_method_without_response(self, handle, arguments, *, deadline_ns, minimum=0):
+        """None means software admission, not peer processing; never retries."""
+        return self._command(handle, self._method_arguments(arguments), minimum,
+            deadline_ns, "slk_connection_ssap_call_method_command")

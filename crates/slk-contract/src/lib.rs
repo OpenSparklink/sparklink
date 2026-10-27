@@ -177,6 +177,8 @@ pub mod ssap {
     /// Empty return means all command fragments were admitted to the software
     /// socket path, not controller completion or peer receipt/processing.
     pub const WRITE_COMMAND: &str = "WriteSsapCommand";
+    pub const CALL_METHOD: &str = "CallSsapMethod";
+    pub const CALL_METHOD_COMMAND: &str = "CallSsapMethodCommand";
     pub const EXCHANGE_INFO: &str = "GetSsapInfo";
     pub type Entry = (u8, u16, u16, Vec<u8>, u32, Vec<u8>, u8);
     pub type Discovery = (Vec<Entry>, Vec<(Vec<u8>, Vec<u8>)>);

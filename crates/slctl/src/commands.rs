@@ -230,7 +230,12 @@ impl Context {
                 );
                 Ok(())
             }
-            "ssap-read" | "ssap-read-description" | "ssap-write" | "ssap-write-command" => {
+            "ssap-read"
+            | "ssap-read-description"
+            | "ssap-write"
+            | "ssap-write-command"
+            | "ssap-call-method"
+            | "ssap-call-method-command" => {
                 let original = libsparklink::Deadline::after(std::time::Duration::from_secs(5))?;
                 let reading = matches!(args[0], "ssap-read" | "ssap-read-description");
                 if (reading && !(3..=4).contains(&args.len()))
@@ -243,22 +248,42 @@ impl Context {
                 let link = self.application_connection(args[1]).await?;
                 let object = link.ssap();
                 let handle: u16 = args[2].parse()?;
-                if args[0] == "ssap-write-command" {
-                    object
-                        .write_without_response(
-                            handle,
-                            parse_hex_bytes(args[3])?,
-                            args.get(4).map_or(Ok(0u32), |v| v.parse())?,
-                            original,
-                        )
-                        .await?;
+                if matches!(args[0], "ssap-write-command" | "ssap-call-method-command") {
+                    if args[0] == "ssap-call-method-command" {
+                        object
+                            .call_method_without_response(
+                                handle,
+                                parse_hex_bytes(args[3])?,
+                                args.get(4).map_or(Ok(0u32), |v| v.parse())?,
+                                original,
+                            )
+                            .await?;
+                    } else {
+                        object
+                            .write_without_response(
+                                handle,
+                                parse_hex_bytes(args[3])?,
+                                args.get(4).map_or(Ok(0u32), |v| v.parse())?,
+                                original,
+                            )
+                            .await?;
+                    }
                     println!(
                         "SsapCommandAdmission: path={} handle={} stage=software_socket_admission peer_delivery=unconfirmed",
                         args[1], handle
                     );
                     return Ok(());
                 }
-                let value = if args[0] == "ssap-read-description" {
+                let value = if args[0] == "ssap-call-method" {
+                    object
+                        .call_method(
+                            handle,
+                            parse_hex_bytes(args[3])?,
+                            args.get(4).map_or(Ok(0u32), |v| v.parse())?,
+                            original,
+                        )
+                        .await?
+                } else if args[0] == "ssap-read-description" {
                     object
                         .read_description(
                             handle,

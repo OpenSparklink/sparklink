@@ -674,6 +674,41 @@ int slk_connection_ssap_write_command(const struct SlkConnection *connection,
                                       uint64_t deadline_ns);
 
 /**
+ * Invoke a remote method through the existing SSAP actor. Arguments<=2043;
+ * result<=2045 with independently negotiated per-datagram MTU/fragment support.
+ * Output contains the peer result, never argument echo. No implicit retry;
+ * timeout or insufficient output capacity can follow an executed remote effect.
+ * Local daemon method Providers are not yet supported.
+ * # Safety
+ * Same live connection, immutable input and exclusive output contract as
+ * slk_connection_ssap_write. NULL input only when empty; no output aliasing.
+ */
+int slk_connection_ssap_call_method(const struct SlkConnection *connection,
+                                    uint16_t handle,
+                                    uint32_t minimum,
+                                    const uint8_t *arguments,
+                                    uintptr_t arguments_length,
+                                    uint8_t *buffer,
+                                    uintptr_t capacity,
+                                    uintptr_t *length,
+                                    uint64_t deadline_ns);
+
+/**
+ * Submit a method command;0 means all-fragment software admission only.
+ * No wire reply, remote-delivery guarantee or implicit retry. Arguments<=2043;
+ * negotiated MTU/fragment support can impose a smaller limit.
+ * # Safety
+ * Same live connection and readable input contract as
+ * slk_connection_ssap_write_command; NULL input only when empty.
+ */
+int slk_connection_ssap_call_method_command(const struct SlkConnection *connection,
+                                            uint16_t handle,
+                                            uint32_t minimum,
+                                            const uint8_t *arguments,
+                                            uintptr_t arguments_length,
+                                            uint64_t deadline_ns);
+
+/**
  * Receive one property update through the existing Rust CPCD transaction.
  * modes1/2/3=notification/indication/either. Original absolute deadline includes
  * queueing and is capped at10s before admission. No pre-existing configuration

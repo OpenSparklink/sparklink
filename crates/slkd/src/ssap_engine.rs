@@ -547,6 +547,54 @@ impl Observer {
         )
         .await
     }
+    /// The existing physical actor owns the method transaction and fragments.
+    /// Result bytes come only from its correlated peer response, never input echo.
+    pub(crate) async fn call_method(
+        self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        deadline: Instant,
+    ) -> Result<Vec<u8>, String> {
+        if handle == 0 || minimum > 2 || arguments.len() > usize::from(fragments::LOGICAL_MTU) - 4 {
+            return Err("invalid method handle/security/argument budget".into());
+        }
+        self.value_request(
+            ValuePdu::CallMethod {
+                handle,
+                arguments: &arguments,
+            },
+            minimum,
+            deadline,
+        )
+        .await
+    }
+    /// All-fragment software admission only; no peer response exists.
+    pub(crate) async fn call_method_command(
+        self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        deadline: Instant,
+    ) -> Result<(), String> {
+        if handle == 0 || minimum > 2 || arguments.len() > usize::from(fragments::LOGICAL_MTU) - 4 {
+            return Err("invalid method handle/security/argument budget".into());
+        }
+        let admitted = self
+            .value_request(
+                ValuePdu::CallMethodCommand {
+                    handle,
+                    arguments: &arguments,
+                },
+                minimum,
+                deadline,
+            )
+            .await?;
+        if !admitted.is_empty() {
+            return Err("unexpected method command admission result".into());
+        }
+        Ok(())
+    }
     async fn value_request(
         self,
         pdu: ValuePdu<'_>,
@@ -880,6 +928,15 @@ fn client_value_response(
     let parsed =
         ValuePdu::decode(budget, raw).map_err(|_| io::Error::other("invalid value response"))?;
     Ok(match (request, parsed) {
+        (ValuePdu::CallMethod { .. }, ValuePdu::MethodResult(value)) => Ok(value.to_vec()),
+        (
+            ValuePdu::CallMethod { handle, .. },
+            ValuePdu::Error {
+                request: 19,
+                handle: failed,
+                error,
+            },
+        ) if handle == failed => Err(format!("peer method protocol error {error}").into()),
         (ValuePdu::Read { .. }, ValuePdu::ReadValue(value)) => Ok(value.to_vec()),
         (ValuePdu::Read { .. }, ValuePdu::ReadError(error)) => {
             Err(format!("peer read error {error}").into())
@@ -943,8 +1000,8 @@ impl ClientRequest {
         receipt: Option<slk_protocol::SleMessageSecurity>,
         now: Instant,
     ) -> io::Result<()> {
-        if self.bytes.first() == Some(&12) {
-            return Err(io::Error::other("Write Command cannot own a peer reply"));
+        if matches!(self.bytes.first(), Some(12 | 18)) {
+            return Err(io::Error::other("SSAP command cannot own a peer reply"));
         }
         if let Some(epoch) = self.epoch {
             let m = receipt.ok_or_else(|| io::Error::other("missing reply receipt"))?;
@@ -1025,7 +1082,7 @@ fn retire_client_wait(
 fn finish_admitted_command(client: &mut Option<ClientRequest>, now: Instant) {
     if !client
         .as_ref()
-        .is_some_and(|c| c.bytes.first() == Some(&12) && c.admitted && c.submitted_all)
+        .is_some_and(|c| matches!(c.bytes.first(), Some(12 | 18)) && c.admitted && c.submitted_all)
     {
         return;
     }
@@ -2247,7 +2304,7 @@ async fn exchange_loop(
                         slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
                         next_server_id=next_server_id.checked_add(1).ok_or_else(||io::Error::other("SSAP original request namespace exhausted"))?;
                         server_queue.push_back(ServerPacket {bytes:raw.to_vec(),deadline:reply_deadline,constraint,mtu:if matches!(raw[0],8|10|12|13) && ExchangeInfo::decode(capabilities.mtu,&peer_request).is_ok_and(|p|sequenced(&p)){fragments::LOGICAL_MTU}else{negotiated},level:receipt.map_or(0,|m|m.security),request_id:next_server_id});
-                    } else if matches!(raw[0],1|5|7|9|11|14) {
+                    } else if matches!(raw[0],1|5|7|9|11|14|20) {
                         let Some(current)=client.take() else {return Err(io::Error::other("unsolicited SSAP value reply"));};
                         current.validate_reply(receipt,Instant::now())?;
                         let ClientRequest{bytes:request,deadline,reply,..}=current;
@@ -2292,6 +2349,12 @@ async fn exchange_loop(
                             pending.push_back(Pending {sent: 0, bytes: response.clone(), purpose: Purpose::Response,constraint,
                                 deadline: if initial_done { Instant::now() + Duration::from_secs(5) } else { original_deadline } });
                         }
+                    } else if raw[0] == 19 {
+                        if pending.len() >= 8 { return Err(io::Error::other("SSAP error queue full")); }
+                        // No local method Provider yet: return real Unsupported,
+                        // preserving the request handle. Never echo arguments.
+                        let error=unsupported_method_response(raw);
+                        pending.push_back(Pending {sent:0,bytes:error,purpose:Purpose::Error,constraint,deadline:reply_deadline});
                     } else if matches!(raw[0] & 0x7f, 4 | 6 | 8 | 10 | 13 | 19) {
                         if pending.len() >= 8 { return Err(io::Error::other("SSAP error queue full")); }
                         // T/XS20001 table50: complete ErrorRsp including RFU MCC.
@@ -2306,10 +2369,123 @@ async fn exchange_loop(
     }
 }
 
+fn unsupported_method_response(raw: &[u8]) -> Vec<u8> {
+    let handle = if raw.len() >= 4 {
+        u16::from_le_bytes([raw[2], raw[3]])
+    } else {
+        0
+    };
+    let error = if matches!(
+        ValuePdu::decode(fragments::LOGICAL_MTU, raw),
+        Ok(ValuePdu::CallMethod { .. })
+    ) {
+        2
+    } else {
+        1
+    };
+    vec![1, 0, 19, handle as u8, (handle >> 8) as u8, error]
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    #[test]
+    fn method_result_is_not_echo_and_errors_are_correlated() {
+        let request = [19, 3, 0x34, 0x12, 0xaa];
+        assert_eq!(
+            client_value_response(249, &request, &[20, 3, 0x98, 0x76])
+                .unwrap()
+                .unwrap(),
+            [0x98, 0x76]
+        );
+        assert_eq!(
+            client_value_response(249, &request, &[20, 3])
+                .unwrap()
+                .unwrap(),
+            []
+        );
+        for bad in [
+            &[14, 3][..],
+            &[9, 3, 0xaa][..],
+            &[1, 0, 19, 0x35, 0x12, 2][..],
+            &[1, 0, 13, 0x34, 0x12, 2][..],
+        ] {
+            assert!(client_value_response(249, &request, bad).is_err());
+        }
+        let unsupported = unsupported_method_response(&request);
+        assert_eq!(unsupported, [1, 0, 19, 0x34, 0x12, 2]);
+        assert!(
+            client_value_response(249, &request, &unsupported)
+                .unwrap()
+                .is_err()
+        );
+        assert_eq!(
+            unsupported_method_response(&[19, 7, 0x34, 0x12]),
+            [1, 0, 19, 0x34, 0x12, 1]
+        );
+    }
+    #[tokio::test]
+    async fn method_requester_reuses_queue_and_preserves_original_deadline() {
+        // Actual Observer encoder/admission; metadata and queue consumer are
+        // explicit fixtures, not a peer, Native implementation or hardware.
+        for command in [false, true] {
+            let info: Info = (0, 7, 13, 1, 249, 249, vec![], vec![], vec![], vec![]);
+            let (_status, state) = watch::channel(Status::Negotiated(info.clone()));
+            let (queries, mut incoming) = mpsc::channel(8);
+            let observer = Observer { state, queries };
+            let original = Instant::now() + Duration::from_secs(1);
+            let task = tokio::spawn(async move {
+                if command {
+                    observer
+                        .call_method_command(0x1234, vec![0xaa], 2, original)
+                        .await
+                        .map(|_| vec![])
+                } else {
+                    observer.call_method(0x1234, vec![0xaa], 2, original).await
+                }
+            });
+            let Some(Query::Info(reply)) = incoming.recv().await else {
+                panic!("info required")
+            };
+            reply.send(Ok(info)).unwrap();
+            let Some(Query::Value {
+                bytes,
+                deadline,
+                minimum,
+                reply,
+            }) = incoming.recv().await
+            else {
+                panic!("shared value queue required")
+            };
+            assert_eq!(bytes, [if command { 18 } else { 19 }, 3, 0x34, 0x12, 0xaa]);
+            assert_eq!(deadline, original);
+            assert_eq!(minimum, 2);
+            reply
+                .send(Err("explicit dependency refusal".into()))
+                .unwrap();
+            assert_eq!(
+                task.await.unwrap().unwrap_err(),
+                "explicit dependency refusal"
+            );
+        }
+        for command in [false, true] {
+            let (_status, state) = watch::channel(Status::Starting);
+            let (queries, mut incoming) = mpsc::channel(8);
+            let observer = Observer { state, queries };
+            let original = Instant::now() + Duration::from_millis(20);
+            let result = if command {
+                observer
+                    .call_method_command(1, vec![], 0, original)
+                    .await
+                    .map(|_| vec![])
+            } else {
+                observer.call_method(1, vec![], 0, original).await
+            };
+            assert!(result.unwrap_err().contains("original deadline"));
+            assert!(incoming.try_recv().is_err());
+        }
+    }
     #[tokio::test]
     async fn description_uses_existing_value_queue_and_original_request_scope() {
         // Negotiation metadata and the queue consumer are explicit fixtures.
@@ -2614,38 +2790,40 @@ mod tests {
 
     #[test]
     fn command_completion_is_local_all_fragment_admission_without_peer_reply() {
-        for expire in [false, true] {
-            let now = Instant::now();
-            let (send, mut receive) = oneshot::channel();
-            let mut client = Some(ClientRequest {
-                minimum: 0,
-                epoch: None,
-                bytes: vec![12, 3, 17, 0, 0, 9],
-                deadline: now + Duration::from_secs(1),
-                admitted: false,
-                submitted_all: false,
-                cleanup_deadline: None,
-                reply: Some(send),
-            });
-            finish_admitted_command(&mut client, now);
-            assert!(client.is_some());
-            client.as_mut().unwrap().admit_part(now, false);
-            finish_admitted_command(&mut client, now);
-            assert!(client.is_some());
-            assert!(matches!(
-                receive.try_recv(),
-                Err(oneshot::error::TryRecvError::Empty)
-            ));
-            assert!(client.as_ref().unwrap().validate_reply(None, now).is_err());
-            let original = client.as_ref().unwrap().deadline;
-            client.as_mut().unwrap().admit_part(now, true);
-            finish_admitted_command(&mut client, if expire { original } else { now });
-            assert!(client.is_none());
-            let result = receive.try_recv().unwrap();
-            if expire {
-                assert!(result.is_err());
-            } else {
-                assert_eq!(result.unwrap(), Vec::<u8>::new());
+        for opcode in [12, 18] {
+            for expire in [false, true] {
+                let now = Instant::now();
+                let (send, mut receive) = oneshot::channel();
+                let mut client = Some(ClientRequest {
+                    minimum: 0,
+                    epoch: None,
+                    bytes: vec![opcode, 3, 17, 0, 0, 9],
+                    deadline: now + Duration::from_secs(1),
+                    admitted: false,
+                    submitted_all: false,
+                    cleanup_deadline: None,
+                    reply: Some(send),
+                });
+                finish_admitted_command(&mut client, now);
+                assert!(client.is_some());
+                client.as_mut().unwrap().admit_part(now, false);
+                finish_admitted_command(&mut client, now);
+                assert!(client.is_some());
+                assert!(matches!(
+                    receive.try_recv(),
+                    Err(oneshot::error::TryRecvError::Empty)
+                ));
+                assert!(client.as_ref().unwrap().validate_reply(None, now).is_err());
+                let original = client.as_ref().unwrap().deadline;
+                client.as_mut().unwrap().admit_part(now, true);
+                finish_admitted_command(&mut client, if expire { original } else { now });
+                assert!(client.is_none());
+                let result = receive.try_recv().unwrap();
+                if expire {
+                    assert!(result.is_err());
+                } else {
+                    assert_eq!(result.unwrap(), Vec::<u8>::new());
+                }
             }
         }
     }

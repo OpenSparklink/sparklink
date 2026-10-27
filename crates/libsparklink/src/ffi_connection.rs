@@ -241,6 +241,42 @@ pub unsafe extern "C" fn slk_connection_ssap_write(
     length: *mut usize,
     deadline_ns: u64,
 ) -> c_int {
+    unsafe {
+        effect_request(
+            connection,
+            handle,
+            minimum,
+            value,
+            value_length,
+            buffer,
+            capacity,
+            length,
+            deadline_ns,
+            SsapEffect::Write,
+        )
+    }
+}
+#[derive(Clone, Copy)]
+enum SsapEffect {
+    Write,
+    Method,
+}
+#[allow(clippy::too_many_arguments)]
+unsafe fn effect_request(
+    connection: *const SlkConnection,
+    handle: u16,
+    minimum: u32,
+    value: *const u8,
+    value_length: usize,
+    buffer: *mut u8,
+    capacity: usize,
+    length: *mut usize,
+    deadline_ns: u64,
+    effect: SsapEffect,
+) -> c_int {
+    if matches!(effect, SsapEffect::Method) && value_length > 2043 {
+        return -nix::libc::EMSGSIZE;
+    }
     if connection.is_null()
         || handle == 0
         || minimum > 2
@@ -257,7 +293,14 @@ pub unsafe extern "C" fn slk_connection_ssap_write(
     let view = unsafe { &*connection };
     let link = view.link.clone();
     let result = view.inner.call(deadline, move |_| async move {
-        link.ssap().write(handle, value, minimum, original).await
+        match effect {
+            SsapEffect::Write => link.ssap().write(handle, value, minimum, original).await,
+            SsapEffect::Method => {
+                link.ssap()
+                    .call_method(handle, value, minimum, original)
+                    .await
+            }
+        }
     });
     unsafe { copy_result(result, buffer, capacity, length) }
 }
@@ -281,6 +324,30 @@ pub unsafe extern "C" fn slk_connection_ssap_write_command(
     value_length: usize,
     deadline_ns: u64,
 ) -> c_int {
+    unsafe {
+        effect_command(
+            connection,
+            handle,
+            minimum,
+            value,
+            value_length,
+            deadline_ns,
+            SsapEffect::Write,
+        )
+    }
+}
+unsafe fn effect_command(
+    connection: *const SlkConnection,
+    handle: u16,
+    minimum: u32,
+    value: *const u8,
+    value_length: usize,
+    deadline_ns: u64,
+    effect: SsapEffect,
+) -> c_int {
+    if matches!(effect, SsapEffect::Method) && value_length > 2043 {
+        return -nix::libc::EMSGSIZE;
+    }
     if connection.is_null() || handle == 0 || minimum > 2 {
         return -nix::libc::EINVAL;
     }
@@ -292,12 +359,84 @@ pub unsafe extern "C" fn slk_connection_ssap_write_command(
     let view = unsafe { &*connection };
     let link = view.link.clone();
     match view.inner.call(deadline, move |_| async move {
-        link.ssap()
-            .write_without_response(handle, value, minimum, original)
-            .await
+        match effect {
+            SsapEffect::Write => {
+                link.ssap()
+                    .write_without_response(handle, value, minimum, original)
+                    .await
+            }
+            SsapEffect::Method => {
+                link.ssap()
+                    .call_method_without_response(handle, value, minimum, original)
+                    .await
+            }
+        }
     }) {
         Ok(()) => 0,
         Err(error) => -error,
+    }
+}
+
+/// Invoke a remote method through the existing SSAP actor. Arguments<=2043;
+/// result<=2045 with independently negotiated per-datagram MTU/fragment support.
+/// Output contains the peer result, never argument echo. No implicit retry;
+/// timeout or insufficient output capacity can follow an executed remote effect.
+/// Local daemon method Providers are not yet supported.
+/// # Safety
+/// Same live connection, immutable input and exclusive output contract as
+/// slk_connection_ssap_write. NULL input only when empty; no output aliasing.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_ssap_call_method(
+    connection: *const SlkConnection,
+    handle: u16,
+    minimum: u32,
+    arguments: *const u8,
+    arguments_length: usize,
+    buffer: *mut u8,
+    capacity: usize,
+    length: *mut usize,
+    deadline_ns: u64,
+) -> c_int {
+    unsafe {
+        effect_request(
+            connection,
+            handle,
+            minimum,
+            arguments,
+            arguments_length,
+            buffer,
+            capacity,
+            length,
+            deadline_ns,
+            SsapEffect::Method,
+        )
+    }
+}
+/// Submit a method command;0 means all-fragment software admission only.
+/// No wire reply, remote-delivery guarantee or implicit retry. Arguments<=2043;
+/// negotiated MTU/fragment support can impose a smaller limit.
+/// # Safety
+/// Same live connection and readable input contract as
+/// slk_connection_ssap_write_command; NULL input only when empty.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_ssap_call_method_command(
+    connection: *const SlkConnection,
+    handle: u16,
+    minimum: u32,
+    arguments: *const u8,
+    arguments_length: usize,
+    deadline_ns: u64,
+) -> c_int {
+    unsafe {
+        effect_command(
+            connection,
+            handle,
+            minimum,
+            arguments,
+            arguments_length,
+            deadline_ns,
+            SsapEffect::Method,
+        )
     }
 }
 

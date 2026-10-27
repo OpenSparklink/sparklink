@@ -1613,6 +1613,65 @@ impl ConnectionIface {
         )
         .await
     }
+    /// Invoke a remote method on this original physical Session. No local
+    /// method database, echo or implicit retry is created by this requester.
+    async fn call_ssap_method(
+        &self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+        #[zbus(connection)] connection: &zbus::Connection,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        if handle == 0 || minimum > 2 || arguments.len() > 2043 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "nonzero method handle, minimum0..2 and arguments<=2043 required".into(),
+            ));
+        }
+        self.scoped_ssap_call(
+            deadline,
+            slk_channel::deadline::PROTOCOL_WAIT,
+            header,
+            connection,
+            |observer, _caller, original| async move {
+                observer
+                    .call_method(handle, arguments, minimum, original)
+                    .await
+                    .map_err(zbus::fdo::Error::Failed)
+            },
+        )
+        .await
+    }
+    /// Software admission only; the peer must not send a method response.
+    async fn call_ssap_method_command(
+        &self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+        #[zbus(connection)] connection: &zbus::Connection,
+    ) -> zbus::fdo::Result<()> {
+        if handle == 0 || minimum > 2 || arguments.len() > 2043 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "nonzero method handle, minimum0..2 and arguments<=2043 required".into(),
+            ));
+        }
+        self.scoped_ssap_call(
+            deadline,
+            slk_channel::deadline::PROTOCOL_WAIT,
+            header,
+            connection,
+            |observer, _caller, original| async move {
+                observer
+                    .call_method_command(handle, arguments, minimum, original)
+                    .await
+                    .map_err(zbus::fdo::Error::Failed)
+            },
+        )
+        .await
+    }
     /// A stage1 receipt is software admission; stage2 is peer queue ACK only.
     /// The actual unique caller must still own the property at submission.
     async fn send_owned_ssap_update(
@@ -2731,6 +2790,16 @@ mod grant_tests {
                 vec!["ay"],
             ),
             ("WriteSsapCommand", vec!["q", "ay", "u", "(ttttt)"], vec![]),
+            (
+                "CallSsapMethod",
+                vec!["q", "ay", "u", "(ttttt)"],
+                vec!["ay"],
+            ),
+            (
+                "CallSsapMethodCommand",
+                vec!["q", "ay", "u", "(ttttt)"],
+                vec![],
+            ),
             (
                 "DiscoverSsap",
                 vec!["ay", "y"],

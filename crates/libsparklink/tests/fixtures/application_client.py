@@ -133,6 +133,12 @@ with connection:
     assert ssap.write(17,b"",deadline_ns=deadline()) == b"\x91"
     error(errno.EINVAL, lambda: ssap.write(17,b"\x56\x12",deadline_ns=deadline()))
     error(errno.EMSGSIZE, lambda: ssap.write(17,b"x"*65536,deadline_ns=deadline()))
+    assert ssap.call_method(17,b"\x56\x12",minimum=1,deadline_ns=deadline())==b"\x90\x78\x34"
+    assert ssap.call_method_without_response(17,b"\x56\x12",minimum=1,deadline_ns=deadline()) is None
+    error(errno.EOPNOTSUPP,lambda:ssap.call_method(18,b"",deadline_ns=deadline()))
+    error(errno.EMSGSIZE,lambda:ssap.call_method(17,b"x"*2044,deadline_ns=deadline()))
+    error(errno.EMSGSIZE,lambda:ssap.call_method_without_response(17,b"x"*2044,deadline_ns=deadline()))
+    error(errno.ETIMEDOUT,lambda:ssap.call_method_without_response(17,b"",deadline_ns=1))
     assert ssap.write_without_response(17,b"\x56\x12",minimum=1,deadline_ns=deadline()) is None
     assert ssap.write_without_response(17,b"",deadline_ns=deadline()) is None
     error(errno.EINVAL, lambda: ssap.write_without_response(17,b"\x56\x12",deadline_ns=deadline()))

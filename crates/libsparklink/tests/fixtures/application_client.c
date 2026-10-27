@@ -178,6 +178,17 @@ int main(void) {
     memset(output,0xa5,sizeof output);length=99;
     assert(slk_connection_ssap_write(link,17,0,value,sizeof value,output,sizeof output,&length,deadline()) == -EINVAL);
     assert(slk_connection_ssap_write(link,17,0,oversized,sizeof oversized,output,sizeof output,&length,deadline()) == -EMSGSIZE);
+    assert(slk_connection_ssap_call_method(link,17,1,value,sizeof value,output,sizeof output,&length,deadline())==0 && length==3 && !memcmp(output,"\x90\x78\x34",3));
+    memset(output,0xa5,sizeof output);length=99;
+    assert(slk_connection_ssap_call_method(link,17,1,value,sizeof value,output,1,&length,deadline())==-ENOBUFS && length==3);
+    assert(!memcmp(output,original,sizeof output));
+    assert(slk_connection_ssap_call_method(link,18,1,value,sizeof value,output,sizeof output,&length,deadline())==-EOPNOTSUPP);
+    assert(slk_connection_ssap_call_method_command(link,17,1,value,sizeof value,deadline())==0);
+    assert(slk_connection_ssap_call_method(link,17,1,oversized,2044,output,sizeof output,&length,deadline())==-EMSGSIZE);
+    assert(slk_connection_ssap_call_method_command(link,17,1,oversized,2044,deadline())==-EMSGSIZE);
+    assert(slk_connection_ssap_call_method_command(link,17,1,NULL,1,deadline())==-EINVAL);
+    assert(slk_connection_ssap_call_method_command(link,17,1,value,sizeof value,0)==-ETIMEDOUT);
+    memset(output,0xa5,sizeof output);length=99;
     /* Commands return no fake remote bytes:0 is software admission only. */
     assert(slk_connection_ssap_write_command(link,17,1,value,sizeof value,deadline()) == 0);
     assert(slk_connection_ssap_write_command(link,17,0,NULL,0,deadline()) == 0);

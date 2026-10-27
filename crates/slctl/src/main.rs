@@ -158,6 +158,8 @@ Commands:
   ssap-read-description <path> <handle> [minimum]      Read public static type1 description
   ssap-write <path> <handle> <value-hex> [minimum]      Write with peer verification and reply
   ssap-write-command <path> <handle> <value-hex> [minimum] Software admission only; no peer delivery confirmation
+  ssap-call-method <path> <handle> <arguments-hex> [minimum] Remote method result; requester only
+  ssap-call-method-command <path> <handle> <arguments-hex> [minimum] Software admission only
   transport-status <path>                    Read current Session queues/debt/state (not drain/reuse proof)
   ssap-info <path>                           Read peer-validated SMTC ExchangeInfo (not services)
   disconnect <address> [type]    Disconnect an unambiguous current peer

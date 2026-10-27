@@ -2,8 +2,13 @@
 
 ## Issue 状态与验证边界
 
-本批完整维护核对35项：U#1、U#21按各自原条件关闭，18项有限收尾、3个已拆分父项、
-12项长期跟踪。既有七个子项及父项原范围保留，不新增重复跟踪。本轮已读回35项并收敛U#3/U#22的方法入口描述；method请求/发现及daemon方法Provider已提交，Rust/C/Python方法收件箱已由5b0056e接通，CLI方法入口由89d74d5接通，实际C/Python VM请求工具由42c944b接通；VM场景和双端真实方法交付仍缺。原失败及资格不变，不新增实机或形式化结论。当前剩余条件见[逐项处置](issue-maintenance-20261026.json)和[唯一计划](implementation-plan.md)。
+本批维护核对35项：U#1、U#21维持按自身原条件关闭；18项有限收尾、3个已拆分父项、
+12项长期跟踪。七个既有子项关系保留，本轮没有新增关闭或重复拆分。
+U#3/U#22/K#19已在线收敛正文并精确读回，原验收不变。方法请求／发现、daemon、
+Rust/C/Python/CLI服务端与实际VM请求工具均已接通；5c06c49进一步接通方法VM场景及
+双端判定，相关105项有限离线检查和严格HTML已核对。准确新产物的真实方法交付仍需
+验收，不能把fixture或已构建工具当作实机通过。本轮未重跑模型或硬件，没有新增资格。
+逐项处置见[维护记录](issue-maintenance-20261026.json)，随后恢复[唯一计划](implementation-plan.md)中的原主线。
 
 U#1已按原六条事件循环条件独立关闭；suite v2及取消门禁沿同一Native循环，
 原期限与历史负对照保留。具体准确产物审计留在授权本地索引；关闭决定不授予
@@ -82,51 +87,57 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-METHOD-VM-REQUESTER-v1",
-  "state": "METHOD_VM_REQUESTER_OFFLINE_PASS_SCENARIO_AND_HARDWARE_PENDING",
+  "id": "ISSUE-MAINTENANCE-CURRENT-READBACK-v5",
+  "state": "BOUNDED_MAINTENANCE_COMPLETE_NO_NEW_QUALIFICATION",
   "implementation_sources": {
-    "public": "42c944b0d93a6a9214f8208d5080efb7180080d7"
+    "public": "5c06c49e2e4e4eb9416059a35e3b40e2aa133124",
+    "kernel": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
   },
-  "production_behavior": "Existing C/Python VM request tools call production SDK method request through the same one-shot supervisor. Independent arguments/results and exact errno; original five-second call/start barrier. Method arguments2043/results2045, property limit2042 unchanged. No Engine or new receive loop.",
-  "offline_checks": {
-    "actual_c_python_vm_consumers": "PASS",
-    "existing_application_ffi_suite": "PASS",
-    "related_python_checks_passed": 58,
-    "strict_libsparklink_clippy": "PASS",
-    "strict_html": "PASS",
-    "original_5s_unreleased_barrier": "PASS_BOTH_LANGUAGES"
-  },
-  "offline_scope": "Actual C/Python VM requester executables and production SDK against existing private D-Bus finite metadata/result fixture; exact independent/empty/bounded results, errors, input rejection, original start barrier. 20 additional actual method RPCs, no submissions after invalid input or unreleased barrier. 58 supervisor/verifier checks. Not Engine/kernel concurrency, VM, radio, deployed bus policy or new formal proof.",
-  "retained_failure": "First actual FFI run failed the unreleased-barrier elapsed assertion: Child.wait closed stdin, causing EOF. Fixed by moving write-end ownership out of Child until wait ends; original timing assertion retained. Raw first failure and INCOMPLETE fixture directory retained. Initial Rust test harness ELF was not separately archived before rebuild; no claim of replayable initial harness binary. Current tested ELF and SDK/tool artifacts are archived.",
-  "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "No VM/hardware run or new qualification in this batch. Prior artifact failures retained in authorized local index; old PASS never transfers.",
+  "production_behavior": "No production change. Current issue scope reconciled against source, retained qualification and offline reports; do not reimplement the existing method VM scenario.",
+  "offline_scope": "Reviewed 35 current issues, seven existing child relations and exact source/offline materials. Scenario source has 105 finite Python checks and strict HTML success; I/O/capture fixtures are not kernel concurrency or hardware qualification.",
   "issue_sync": {
-    "observed_at": "2026-10-27T18:21:05.131845+00:00",
+    "observed_at": "2026-10-27T18:41:29.796789+00:00",
     "updates": [
       {
         "repository": "sparklink",
         "number": 3,
         "state": "open",
-        "body_sha256": "52568a9f439d2621f9179662502439fe59e409acccbd8d9f2406c774c539ce48",
+        "body_sha256": "0caf9270312edb67c692c71fb272600662f8fc2de786d8e411f476cf813e63e7",
         "source_offline_only": true
       },
       {
         "repository": "sparklink",
         "number": 22,
         "state": "open",
-        "body_sha256": "ac5aed261b97ec59b9dd1f925c09445d62e8932ba29093223fa904e7e2862af7",
+        "body_sha256": "af5c94dced67548d7a39e50fc2565ec43a66879ec29fe5258fdba44a44f11944",
+        "source_offline_only": true
+      },
+      {
+        "repository": "linux",
+        "number": 19,
+        "state": "open",
+        "body_sha256": "825e250f97ad1149843fb324cdc13cf70fa49adaaac459fad82f58b9b12d5504",
         "source_offline_only": true
       }
     ],
-    "scope": "Source/offline only; original conditions unchanged, both issues OPEN."
+    "retained_closed": [
+      "U#1",
+      "U#21"
+    ],
+    "newly_closed": [],
+    "new_children": []
   },
+  "formal_status": "NO_NEW_PROOF; existing source mappings, assumptions, bounded results and counterexamples unchanged",
+  "hardware_status": "NO_NEW_HARDWARE_QUALIFICATION; original failures and private execution details retained locally. No current HEAD qualification inferred.",
   "exit_conditions": [
-    "Actual C/Python VM request tools consume existing SDK without echo/fallback",
-    "Separate argument/result budgets and exact failure receipts; original start barrier/deadline",
-    "External consumer and shared supervisor negative checks; old property/Provider paths retained",
-    "Next VM method scenario and paired USB closure still required before real delivery qualification"
+    "All 35 issues classified with per-issue basis",
+    "U1/U21 original closure scopes retained; U10 natural recovery still open",
+    "U3/U22/K19 bodies updated online and exact readback; original acceptance unchanged",
+    "Existing seven child relations retained; no duplicate issue or goal",
+    "Canonical plan, capability and goal views agree; maintenance is not a new functional prerequisite"
   ],
-  "next": "Use the existing publisher/session runner with random arguments and an independently prepared result, verify actual Provider callback identity and parameters, correlate both USB legs, then accurate VM artifact real method delivery and preserved paths. Request/command distinctions and remaining U22 scope retained."
+  "next": "Resume the existing method VM gate at source 5c06c49 with an exact new artifact and paired evidence, then original data/security/SSAP mainline. Scenario and verifier already exist; actual method delivery, original preservation and remaining operation/lifetime gates still require qualification. No new all-control-plane prerequisite.",
+  "verification_limits": "69 qualification/document checks per worktree and generated-view/unchanged-record assertions passed. Supplemental full-history source-map scan was stopped as outside this metadata-edit batch: NOT COMPLETED, not a proof or new qualification. Original running builds/regressions untouched."
 }
 ```
 

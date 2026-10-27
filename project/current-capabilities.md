@@ -2,13 +2,12 @@
 
 ## 本批实现与验证边界
 
-现有QEMU观测工具新增无定时器请求模式，记录分配身份、submit/cancel返回、
-包括detached packet在内的callback入口和释放入口；原USB操作、CLOSE和期限不变。
-26项观测相关及9项原生命周期离线检查通过；完整派生源码独立编译链接、无设备VM
-启动及未指定范围的拒绝检查通过。首次缺BIOS路径的失败保留，明确资源路径后通过。
-日志helper的struct/时钟/输出均为明确fixture。未释放、未回调和提交报错保持可见；
-日志齐全不代表物理drain、固件消费或对端交付。尚未运行本模式的实机诊断，没有
-新增实机或形式化资格。现有method v2及SDK工具资格保持各自准确身份。
+诊断QEMU已沿原runner准备链接入；更换二进制时，原门禁拒绝复用旧scratch-root
+启动证明。新二进制与同一签名内核/模块重新通过无USB的启动检查，之后准备通过。
+旧证明拒绝及modinfo文件名输入失败保留；修正的是准确输入，没有放宽门禁。
+生产driver/daemon/SDK、CLOSE、原期限及有限重试未改。具体执行身份和实机材料
+只保留于授权本地索引，当前不授予新的硬件或method交付资格。原观测及method
+离线检查保留其准确源码身份，不将本批准备结果升级为真实业务或恢复通过。
 
 ## Issue 状态与验证边界
 
@@ -98,45 +97,52 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP03-USB-REQUEST-OBSERVATION-v1",
-  "state": "DIAGNOSTIC_BUILT_OFFLINE_CHECKED_NO_HARDWARE_QUALIFICATION",
+  "id": "WP03-USB-REQUEST-STARTUP-DIAGNOSTIC-v1",
+  "state": "PREPARATION_IDENTITY_RECHECKED_REAL_METHOD_DELIVERY_UNQUALIFIED",
   "implementation_sources": {
-    "public": "f8b7975a0b455d15a69ec1bca1ed1db04c51d7b3",
-    "method_gate": "349aa4e37bbe9d5ac4db5b7bd4edc2a38a2f5f5d",
+    "public_observer": "f8b7975a0b455d15a69ec1bca1ed1db04c51d7b3",
+    "public_method_gate": "349aa4e37bbe9d5ac4db5b7bd4edc2a38a2f5f5d",
     "production_kernel_unchanged": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
   },
-  "production_behavior": "Existing observer gains separate timerless pinned-source profile; records original libusb submit/cancel returns, callback entry including detached requests and release entry with process-unique identity and finite output. No production driver/daemon/SDK change, new I/O, retry or deadline extension.",
+  "production_behavior": "Existing runner and per-device Native path retained. Separate observer selected through exact preparation inputs; new QEMU requires matching scratch-root kernel/signed-module proof. No runtime code, deadline, CLOSE behavior, retry budget, model selection or authorization changes.",
   "offline_checks": {
-    "observer_related_tests": 26,
-    "original_lifecycle_tests": 9,
-    "strict_html_and_document_checks": "PASS",
-    "complete_source_compile_link": "PASS",
-    "no_device_vm_and_unsafe_selection_rejection": "PASS",
-    "initial_smoke_missing_bios_path": "FAIL_RETAINED_EXPLICIT_RESOURCE_PATH_RETEST_PASSED"
+    "original_observer_and_method_checks": "Retain their original batch/source identity, not rerun or upgraded",
+    "scratch_root_no_usb": "PASS_NEW_QEMU_SAME_SIGNED_KERNEL_MODULE",
+    "preparation": "PASS_NEW_ARTIFACT_ORIGINAL_IDENTITY_GATES",
+    "initial_prepare": "FAIL_RETAINED_OLD_QEMU_BOOT_PROOF_REJECTED",
+    "initial_root_smoke": "FAIL_RETAINED_MODINFO_FILENAME_INPUT_FIXED_BY_MATCHING_ORIGINAL_MODULE",
+    "metadata_and_strict_docs": "PASS"
   },
-  "offline_scope": "Actual generated C logging helper uses explicit plain structs/clock/sink fixtures. Full diagnostic binary compiles original source/object closure and no-device QEMU starts. No real libusb callback, BQL, USB drain, kernel concurrency, firmware, performance or peer-delivery qualification.",
+  "offline_scope": "Scratch-root VM has no physical USB devices. Preparation verifies artifacts; it is not controller Ready, HCC/model, peer delivery, recovery, formal proof or current-head whole qualification.",
   "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "NO_REAL_DEVICE_ATTEMPT_OR_NEW_QUALIFICATION; original failures retained in authorized local index.",
+  "hardware_status": "LOCAL_AUTHORIZED_EVIDENCE_ONLY; no new public hardware or business qualification. Accurate identities, failures and raw material remain in private index.",
   "issue_sync": {
-    "observed_at": "2026-10-27T20:04:41.243408+00:00",
+    "observed_at": "2026-10-27T20:15:46.688400+00:00",
     "updates": [
       {
         "repository": "linux",
         "number": 15,
         "state": "open",
-        "body_sha256": "8df6f3cf3645065a9af2f79b9dec41a3b0002c2c88965ad9677f226dfefbd079",
+        "body_sha256": "2b0ddce8b5afcc6bc022edcef0e32bbe9b6f30e0c4f1db242d44c28fd2907a94",
+        "source_offline_only": true
+      },
+      {
+        "repository": "sparklink",
+        "number": 22,
+        "state": "open",
+        "body_sha256": "d69c739ff4407c30715caeaf07afbfbb9faffd3b2ac6dbbd21c4cd496b3150dc",
         "source_offline_only": true
       }
     ],
-    "scope": "Bounded QEMU request observer source/offline summary only; original acceptance unchanged, no hardware/formal qualification or closure."
+    "scope": "Public source/preparation boundaries only; all private execution identities and hardware details retained locally; no acceptance changed or issue closed."
   },
   "exit_conditions": [
-    "Pinned complete source and original I/O/deadlines preserved",
-    "Stable process IDs, finite metadata, pending obligations and errors explicit",
-    "Source/parser negative controls and actual helper checks",
-    "Separate binary compile/link, no-device smoke and unsafe-selection rejection"
+    "Existing prepared QEMU/kernel/module identity gates preserved",
+    "Old preparation and filename-input failures retained; new accurate proof acquired",
+    "Private raw results audited and signed, no hardware details published",
+    "Existing issues and canonical state remain open and scope-consistent"
   ],
-  "next": "Bind separate diagnostic binary and its source/object/capture identity to existing VM runner and explicit owned leaves; retain no-injection and per-device firmware/address contracts. Observe original startup submit/cancel/callback/free before attributing cause. Then method v2 true peer delivery and preservation; discovery/long results/lifecycle continue without all-recovery or all-control-plane prerequisites."
+  "next": "Continue fixed SDK notification/power-state/bootstrap call-chain and matching SDK110 firmware audit without speculative wake, CLOSE bypass or unchanged retry. In parallel connect method discovery SDK callers and original long-result/lifecycle gates through the unique Engine; exact-artifact method v2 paired delivery remains required. No full recovery/control-plane prerequisite."
 }
 ```
 

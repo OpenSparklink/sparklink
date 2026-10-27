@@ -387,7 +387,7 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "5a7dfa10adcc83366155cdb0916186bac1c055c0041f24dec3491d4cc8fc7d6d",
+      "body_sha256": "d69c739ff4407c30715caeaf07afbfbb9faffd3b2ac6dbbd21c4cd496b3150dc",
       "classification": "有限收尾",
       "closure_basis": "Existing dynamic WRITE command Provider v3 source/offline gate added; original six SSAP conditions OPEN. Exact actual qualification in authorized local index."
     },
@@ -8263,6 +8263,29 @@
         }
       ],
       "scope": "Bounded QEMU request observer source/offline summary only; original acceptance unchanged, no hardware/formal qualification or closure."
+    },
+    {
+      "sources": {
+        "public": "f8b7975a0b455d15a69ec1bca1ed1db04c51d7b3"
+      },
+      "observed_at": "2026-10-27T20:15:46.688400+00:00",
+      "updates": [
+        {
+          "repository": "linux",
+          "number": 15,
+          "state": "open",
+          "body_sha256": "2b0ddce8b5afcc6bc022edcef0e32bbe9b6f30e0c4f1db242d44c28fd2907a94",
+          "source_offline_only": true
+        },
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "state": "open",
+          "body_sha256": "d69c739ff4407c30715caeaf07afbfbb9faffd3b2ac6dbbd21c4cd496b3150dc",
+          "source_offline_only": true
+        }
+      ],
+      "scope": "Public source/preparation boundaries only; all private execution identities and hardware details retained locally; no acceptance changed or issue closed."
     }
   ],
   "current_disposition": {

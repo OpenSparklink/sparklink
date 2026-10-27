@@ -15,7 +15,7 @@ import re
 import secrets
 import time
 
-from ws73_capture import CaptureError
+from ws73_capture import CaptureError, packet_interval
 from ws73_ssap_value import physical_packets, wire_interval as interval
 from ws73_ssap_read_provider import _cleanup, _wire
 import ws73_ssap_sdk_read_provider as shared
@@ -231,7 +231,14 @@ def _case(row,item,matched):
     exchanges.append((removed,b'\x09\x0b\x04\0',None));pdus.append(b'\x08\x03'+h.to_bytes(2,'little')+b'\0')
     wire,credit=_wire(row,item,matched,exchanges,requests=pdus,write_version=version)
     for i in range(0,len(wire),2):
-        request,response=wire[i:i+2];need(all(interval(p['tx'])[1]<=interval(p['rx'])[0]for p in (request,response))and interval(request['rx'])[1]<=interval(response['tx'])[0],'two-end WRITE causal order required')
+        request,response=wire[i:i+2]
+        # SSAP fragments can pipeline: the first RX need not wait for the last
+        # TX of a different complete SMTC packet. Each paired packet is causal;
+        # the whole request must still arrive before the first response.
+        need(all(packet_interval(tx)[1]<=packet_interval(rx)[0]
+                 for leg in (request,response)
+                 for tx,rx in zip(physical_packets(leg['tx']),physical_packets(leg['rx']),strict=True))
+             and interval(request['rx'])[1]<=interval(response['tx'])[0],'two-end WRITE causal order required')
         if i<6:
             offset,origin,upper,observed,answered=limits[i//2]
             need(all(packet_mono(p,offset)[0]>=origin and packet_mono(p,offset)[1]<observed for p in (request['tx'],request['rx'])),'paired WRITE request must follow peer call and precede callback')

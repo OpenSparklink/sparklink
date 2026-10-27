@@ -260,6 +260,20 @@ class WriteLengthsEvidence(unittest.TestCase):
                 else:step['value']=step['value'][:-2]
                 with self.assertRaises((CaptureError,KeyError)):gate.corroborate(row,match)
 
+    def test_valid_ssap_fragment_pipeline_is_not_mistaken_for_time_reversal(self):
+        row,match,packets=fixture(0,2)
+        # Independently captured first RX may precede the second TX. Keep each
+        # physical packet causal and the complete request before app callback.
+        for packet in packets:
+            if bytes.fromhex(packet['data'])[4:6]in(b'\x8d\x22',b'\x8e\x02'):
+                packet['wall_ns']+=200_000
+                for fragment in packet['fragments']:fragment['wall_ns']+=200_000
+        proof,_=gate.corroborate(row,match)
+        self.assertFalse(packets)
+        for leg in proof[0]['wire'][4:6]:
+            tx,rx=leg['tx']['ssap_fragments'],leg['rx']['ssap_fragments']
+            self.assertLess(gate.interval(rx[0])[1],gate.interval(tx[1])[0])
+
     def test_invalid_versions_cannot_enable_long_capture_or_upgrade_old_proof(self):
         for version in (True,0,3,None,'2'):
             with self.assertRaises(CaptureError):gate.scenarios(version)

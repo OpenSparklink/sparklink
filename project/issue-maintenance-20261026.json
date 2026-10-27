@@ -7,7 +7,7 @@
     "sparklink": "3f39f2510933666be27a0d595beebe7181798100",
     "linux": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
   },
-  "online_readback_utc": "2026-10-27T08:33:49.467975+00:00",
+  "online_readback_utc": "2026-10-27T09:28:53.608247+00:00",
   "counts": {
     "originals_reviewed": 28,
     "bodies_updated": 28,
@@ -472,31 +472,39 @@
   "non_manual_recovery_qualified": false,
   "whole_goal_complete": false,
   "followup_readback": {
-    "observed_at": "2026-10-27T08:33:49.467975+00:00",
+    "observed_at": "2026-10-27T09:28:53.608247+00:00",
     "originals_verified": 28,
     "children_verified": 7,
-    "readback_scope": "All 35 live issues reviewed; seven existing native child relations verified. U3 method/long-value implementation boundary and K19 submitted-source/CI status corrected. Original acceptance byte-identical. No new closures, issues or feature qualification.",
+    "readback_scope": "All 35 issues and seven native child relations read back. U3/U22 implementation boundary and K19 historical run detail consolidated. Original acceptance unchanged; no new closures or duplicate children. Existing U1/U21 closures retained.",
     "source_review": {
-      "sparklink_public": "8f92274c0d3288983eeb912a181aab2e6e40caf0",
+      "sparklink_public": "2a7386343af377e76b2d13032885d23081e11b29",
       "linux": "52ae7f08f2eafc3d79920fe5a14892970ecdd284",
-      "uncommitted_scope": "Active private/public worktrees and kernel clean at readback; original checkout ten dirty files untouched."
+      "uncommitted_scope": "Method Provider work in progress is preserved and excluded from submitted/qualified scope; original checkout ten dirty files preserved. Kernel and public worktree clean at readback."
     },
     "updates": [
       {
         "repository": "sparklink",
         "number": 3,
         "state": "open",
-        "prior_body_sha256": "e9a7089e4af808521e719bfe448da27a13d46995a24f37c9c4fecdb08ec8cf25",
-        "body_sha256": "7686477eecd860a40d37b1f4e5ce9bf4e2bccc149767c50001f07e7f08a86954",
-        "scope": "Correct obsolete method/long-value and CI descriptions; original acceptance tails unchanged; public source/offline only."
+        "prior_body_sha256": "454edce44903974d1d9758d8c99d5b0fd71dbe1fad650968fa377d373dee99ee",
+        "body_sha256": "7ac94b652230da6836c94691a2eaa7b22420986e9b728d54a14c5141b15a6644",
+        "scope": "Current submitted source versus unfinished Provider distinguished; repeated run detail consolidated into existing historical index. Original acceptance unchanged; public source/offline only."
+      },
+      {
+        "repository": "sparklink",
+        "number": 22,
+        "state": "open",
+        "prior_body_sha256": "1e9388f69de16e3601d52878100e9cfb21c7e31ffc0d29ac608982b4474c1ad5",
+        "body_sha256": "7f1fe82091e288b23dda7e3ac6a6382e36e410b753639593ab44f8be2e914ce6",
+        "scope": "Current submitted source versus unfinished Provider distinguished; repeated run detail consolidated into existing historical index. Original acceptance unchanged; public source/offline only."
       },
       {
         "repository": "linux",
         "number": 19,
         "state": "open",
-        "prior_body_sha256": "a5a26b91aa03e587fadda6dc7c020d16680ebabe214ca8bf3bbca28c7f9053c5",
-        "body_sha256": "5fd1cbe59b18842cc24704f2a36b628b52c36ca4496a9106b4f64d0f8f50ed84",
-        "scope": "Correct obsolete method/long-value and CI descriptions; original acceptance tails unchanged; public source/offline only."
+        "prior_body_sha256": "5fd1cbe59b18842cc24704f2a36b628b52c36ca4496a9106b4f64d0f8f50ed84",
+        "body_sha256": "0e6d0ae2852abde2093667524c203b3e342ef6ddfd77448e7c405f65bb45a898",
+        "scope": "Current submitted source versus unfinished Provider distinguished; repeated run detail consolidated into existing historical index. Original acceptance unchanged; public source/offline only."
       }
     ],
     "verified_issue_states": [
@@ -667,8 +675,8 @@
         "number": 19,
         "state": "open",
         "classification": "需要拆分",
-        "action": "source_offline_body_updated",
-        "body_sha256": "5fd1cbe59b18842cc24704f2a36b628b52c36ca4496a9106b4f64d0f8f50ed84",
+        "action": "body_consolidated",
+        "body_sha256": "0e6d0ae2852abde2093667524c203b3e342ef6ddfd77448e7c405f65bb45a898",
         "basis": "K#23 资格/判定器闭包；K#24 生产 fuzz/调试 VM；跨后端、真实门禁、部署/发布边界仍属父项五条原要求。"
       },
       {
@@ -694,8 +702,8 @@
         "number": 3,
         "state": "open",
         "classification": "需要拆分",
-        "action": "source_offline_body_updated",
-        "body_sha256": "7686477eecd860a40d37b1f4e5ce9bf4e2bccc149767c50001f07e7f08a86954",
+        "action": "body_consolidated",
+        "body_sha256": "7ac94b652230da6836c94691a2eaa7b22420986e9b728d54a14c5141b15a6644",
         "basis": "U#21 SDK READ Provider 生命周期、U#22 剩余 SSAP 操作/长值/更新事务、U#23 真实 Profile；父项原完整验收保留。"
       },
       {
@@ -766,9 +774,9 @@
         "number": 22,
         "state": "open",
         "classification": "有限收尾",
-        "action": "reviewed_retained",
-        "body_sha256": "b00b822668a3d14ce5379faddb5930d8faf85854b5315407b3598082d531182e",
-        "basis": "Existing dynamic WRITE command Provider v3 source/offline gate added; original six SSAP conditions OPEN. Exact actual qualification in authorized local index."
+        "action": "body_consolidated",
+        "body_sha256": "7f1fe82091e288b23dda7e3ac6a6382e36e410b753639593ab44f8be2e914ce6",
+        "basis": "Method requester/discovery submitted; local method registration/Provider work remains uncommitted and unqualified. Complete SSAP operation, long-value, update and lifecycle conditions remain open."
       },
       {
         "repository": "sparklink",
@@ -842,50 +850,46 @@
     "new_closures": 0,
     "source_offline_only": true,
     "ci_observation": {
-      "source": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+      "source": "2a7386343af377e76b2d13032885d23081e11b29",
+      "observed_at": "2026-10-27T09:28:53.608247+00:00",
       "runs": [
         {
+          "id": 40478646083,
+          "name": "Documentation",
+          "status": "completed",
           "conclusion": "success",
-          "databaseId": 40469434846,
-          "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40478646083"
+        },
+        {
+          "id": 40478646102,
           "name": "Production codec bounded fuzz",
           "status": "completed",
-          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434846"
+          "conclusion": "success",
+          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40478646102"
         },
         {
-          "conclusion": "success",
-          "databaseId": 40469434838,
-          "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
-          "name": "Documentation",
-          "status": "completed",
-          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434838"
-        },
-        {
-          "conclusion": "success",
-          "databaseId": 40469434831,
-          "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+          "id": 40478646048,
           "name": "Qualification integrity",
           "status": "completed",
-          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434831"
+          "conclusion": "success",
+          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40478646048"
         },
         {
-          "conclusion": "success",
-          "databaseId": 40469434843,
-          "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+          "id": 40478646107,
           "name": "Offline tools and application SDK",
           "status": "completed",
-          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434843"
+          "conclusion": "success",
+          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40478646107"
         },
         {
-          "conclusion": "success",
-          "databaseId": 40469429406,
-          "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+          "id": 40478633021,
           "name": "Documentation",
           "status": "completed",
-          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469429406"
+          "conclusion": "success",
+          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40478633021"
         }
       ],
-      "limits": "Named workflow status only; no artifact requalification, new hardware/formal result, branch-protection or release verification. Historical failures retained."
+      "limits": "Read-only workflow status observation; no new execution, artifact requalification, hardware/formal result, branch-protection or release verification. Original failures remain."
     }
   },
   "followup_readback_history": [
@@ -5682,6 +5686,12 @@
         ],
         "limits": "Workflow status only; no new hardware/formal proof, no verification of branch protection or complete release gates. Historical c83 formatting failure and b154 timeout preserved."
       }
+    },
+    {
+      "observed_at": "2026-10-27T08:33:49.467975+00:00",
+      "immutable_public_snapshot": "https://github.com/OpenSparklink/sparklink/blob/2a7386343af377e76b2d13032885d23081e11b29/project/issue-maintenance-20261026.json",
+      "json_pointer": "/followup_readback",
+      "scope": "Previous source/offline readback retained verbatim at its exact commit; original local snapshot also preserved. Referenced rather than duplicated into the current record."
     }
   ],
   "later_dispositions": [

@@ -1,21 +1,21 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前批次：有界 issue 状态清理完成，恢复原功能主线
+## 当前批次：动态 WRITE Command Provider v3
 
-35 项及7个原生父子关系已在线读回：U#1/U#21按自身条件保持关闭，18项有限收尾、
-3个已拆分父项、12项长期跟踪保持开放。本次更新U#22源码/离线摘要及K#19的准确
-CI状态，没有重复建单或新增关闭。逐项依据见[当前处置记录](issue-maintenance-20261026.json)
-的 `followup_readback`；较早处置表与原正文保留历史身份，不能继续当作当前结论。
+WP08/U#22复用已有无回复命令API、共享Dispatcher、唯一Engine和原Session数据路径。
+v3先由真实应用拒绝32字节命令，再校验并接受另一随机32字节命令，最后完成独立的
+verified Write Request。命令返回仍只表示软件准入；对端应用记录与完整双端捕获
+必须分别证明副作用及没有协议响应。C/Python与连接角色交换，原期限不变。
 
-U#22门禁现要求显式negotiable-t，并按双端ACB字节前缀检查流式因果；保留完整请求
-早于回调/响应、原期限、身份、序号和清理。111项相关离线检查不是整套CI资格。
-公开c83e164的SDK CI在格式检查失败，后续ABI/私有总线未执行；模块排序已修正，
-固定工具链本地格式检查通过，新CI结果单独核对。原失败和反例不覆盖。
+原v1短值和v2的2037/2042字节范围独立保留，restart门禁仍使用原v1。121项相关
+离线检查通过，覆盖伪成功/错误/晚到响应、身份/载荷拒绝及历史门禁；严格HTML通过。
+这些fixture不构成内核并发或形式化证明。固定NearLink Host的WRITE_CMD不回复约定
+已对照，跨进程Owner及取消仍使用现有项目契约，不把参考实现当作标准裁判。
 
-本维护批次已退出。下一批复用唯一用户态Engine推进剩余操作/值类型/更新事务及适用
-生命周期门禁，数据与安全并行；不再将已存在入口列为未实现，不以历史失败否定后续
-准确限定结果。公开实机状态仍只经授权本地索引核对，不发布私有执行身份或详情。
-完整S0–S6/19WP/10FV/12DG、VM-only、原验收及UserHost低优先级保持。
+公开只保留源码/离线摘要，精确编译、执行、报告和原始材料留在授权本地索引。
+本批退出后继续剩余method/描述符Provider、更新及长事务的纵向链路，优先核对
+既有调用者、标准和固定参考，再接通生产行为；数据与安全并行，不追加控制面全集
+前置。U#22和父项保持开放；完整S0–S6/19WP/10FV/12DG、VM-only及UserHost低优先级不变。
 
 ## 有界 issue 清理结果与主线恢复
 
@@ -496,46 +496,68 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "issue-maintenance-current-reconciliation",
-  "state": "BOUNDED_MAINTENANCE_COMPLETE",
-  "production_behavior": "Issue bodies, classifications, parent relations and canonical summaries reconciled. Test module formatting only; no production behavior change.",
+  "id": "WP08-SDK-WRITE-COMMAND-Provider-v3",
+  "state": "SOURCE_OFFLINE_PASS_PRIVATE_REAL_RESULTS_SEPARATE",
+  "production_behavior": "Existing operation12 SDK/Provider path is now exercised by version3 actual command executor: application error then full payload acceptance with no protocol response, followed by verified request. No new Host/Engine or production protocol implementation.",
   "implementation_sources": {
-    "public": "552de28d8cf3fb02d5d04120c57d0554df2b3779",
-    "previous_tool_gate": "c83e164e38e58f1085ca509e5d513450cac3d9a0"
+    "public": "2be80c3000a05052e4d257997108b56850c14f69"
   },
   "offline_checks": {
-    "format": "Rust 1.96.1 cargo fmt --all -- --check PASS",
-    "source_gate": "111 scoped prior tool tests; not a full suite or formal proof",
-    "ci": "c83e164 WS73 offline workflow: tooling/input jobs PASS, SDK job formatting FAIL; subsequent checks unexecuted. Formatting-only correction does not grant full CI PASS.",
-    "maintenance_regressions": "69 qualification/docs integrity tests PASS",
-    "documentation": "121-document inventory PASS; locked Sphinx nitpicky warnings-as-errors HTML PASS; no new browser or external-link qualification",
-    "generated_views": "Plan/capabilities/existing goal association agree with structured records; previous qualification records and selected artifact unchanged"
+    "related_regressions": "121 scoped tool checks PASS; includes retained v1/v2 and restart/lifecycle tests",
+    "negative_scope": "synthetic transcript/capture and explicit coordinator fixtures; no new formal proof",
+    "documentation": "locked strict nitpicky warnings-as-errors HTML PASS",
+    "metadata_regressions": "69 qualification/docs integrity tests PASS;121-document inventory PASS",
+    "ci": {
+      "source": "2be80c3000a05052e4d257997108b56850c14f69",
+      "result": "Five observed workflow runs completed successfully; status observation only, not new hardware/formal qualification",
+      "runs": [
+        {
+          "id": 40464051562,
+          "workflow": "Production codec bounded fuzz"
+        },
+        {
+          "id": 40464051712,
+          "workflow": "Qualification integrity"
+        },
+        {
+          "id": 40464051507,
+          "workflow": "Documentation"
+        },
+        {
+          "id": 40464051563,
+          "workflow": "WS73 offline tools"
+        },
+        {
+          "id": 40464045069,
+          "workflow": "Documentation"
+        }
+      ],
+      "history": "c83e164 SDK formatting failure retained; subsequent success does not rewrite it"
+    }
   },
   "issue_sync": {
-    "source": "project/issue-maintenance-20261026.json",
-    "counts": {
-      "reviewed": 35,
-      "closed": 2,
-      "finite": 18,
-      "split_parents": 3,
-      "long_term": 12
-    },
-    "new_issues": 0,
-    "new_closures": 0,
-    "public_source_offline_only": true
+    "repository": "sparklink",
+    "number": 22,
+    "state": "open",
+    "observed_at": "2026-10-27T07:02:28Z",
+    "public_source": "2be80c3000a05052e4d257997108b56850c14f69",
+    "body_sha256": "1cd92db76a34bdfb9bd7d0b6b43182fb0db5fd21917e8b0553a4e3e9fea60ec7",
+    "source_offline_only": true,
+    "scope": "Dynamic SDK command Provider v3: source and121 scoped offline checks only. Original six acceptance unchanged; exact hardware results local."
   },
-  "hardware_status": "Exact prior execution results and private identities remain only in authorized local evidence; maintenance adds no real-device qualification.",
+  "hardware_status": "Exact compiled/tool/kernel identities and all real outcomes remain in authorized local evidence. Public summary grants no hardware qualification.",
   "formal_status": "NO_NEW_PROOF",
   "exit_conditions": [
-    "35 issue bodies/states and seven parent relations read back",
-    "Original acceptance preserved; completed U1/U21 kept closed, remaining 33 kept open",
-    "Public source/offline summaries separated from private hardware evidence",
-    "Canonical plan/capabilities/goal views consistent; resume original work"
+    "Both actual ordinary C/Python command senders and Provider roles",
+    "Command policy approval distinct from application rejection/acceptance; no generated protocol response",
+    "Actual peer callback identity/value/original deadline and full capture absence check",
+    "Following verified random request and original ordinary/Owned gates preserved",
+    "Report rejects wrong source/model/phase/deadline/value and spurious command responses"
   ],
   "next": [
-    "Resume U22 remaining operation/value/transaction and applicable lifecycle gates using the existing Engine",
-    "Continue data/security work without new all-control-plane prerequisites",
-    "Keep full S0-S6/19WP/10FV/12DG; natural root cause/nonmanual recovery and original parent acceptance open"
+    "Continue unique Engine remaining method/descriptor Provider and update/long transaction matrix, with source/reference audit before new APIs",
+    "Preserve v1 short-value, v2 long-value and lifecycle qualifications under their original artifacts; do not replace them with v3",
+    "Continue data/security and full S0-S6/19WP/10FV/12DG; natural root cause/nonmanual recovery and original issues remain open"
   ]
 }
 ```

@@ -387,9 +387,9 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "a4753e983c910e4091729511de058f1061ff54d00132563cca0bfc6c019c3c26",
+      "body_sha256": "1cd92db76a34bdfb9bd7d0b6b43182fb0db5fd21917e8b0553a4e3e9fea60ec7",
       "classification": "有限收尾",
-      "closure_basis": "Synchronous SDK owner-loss and VM coordinator/source finalization updated; exact qualification private, original six SSAP conditions remain OPEN."
+      "closure_basis": "Existing dynamic WRITE command Provider v3 source/offline gate added; original six SSAP conditions OPEN. Exact actual qualification in authorized local index."
     },
     {
       "repository": "sparklink",
@@ -770,8 +770,9 @@
         "state": "open",
         "classification": "有限收尾",
         "action": "body_updated",
-        "body_sha256": "a4753e983c910e4091729511de058f1061ff54d00132563cca0bfc6c019c3c26",
-        "basis": "唯一 Engine 剩余操作、长值及更新事务；新增显式连接模式和流式字节前缀离线门禁。原六项全部保留，准确实机范围仅由授权本地索引维护。"
+        "body_sha256": "1cd92db76a34bdfb9bd7d0b6b43182fb0db5fd21917e8b0553a4e3e9fea60ec7",
+        "basis": "Dynamic command Provider source/offline gate; remaining operations/values/update/lifecycle matrix; original six conditions remain OPEN.",
+        "source_followup_observed_at": "2026-10-27T07:02:28Z"
       },
       {
         "repository": "sparklink",
@@ -5089,6 +5090,16 @@
       "prior_body_sha256": "aabc17a668586212a862cc90aaf4139f95a05c6248de3f9960d75474311ad12d",
       "body_sha256": "7901b88124045c6ba95f67ebc6c4c799c1c4e56366b3f0fbe5b29c66d3f25d9b",
       "scope": "Current source/offline scope consolidated; original acceptance and failure history retained; no hardware details published."
+    },
+    {
+      "repository": "sparklink",
+      "number": 22,
+      "state": "open",
+      "observed_at": "2026-10-27T07:02:28Z",
+      "public_source": "2be80c3000a05052e4d257997108b56850c14f69",
+      "body_sha256": "1cd92db76a34bdfb9bd7d0b6b43182fb0db5fd21917e8b0553a4e3e9fea60ec7",
+      "source_offline_only": true,
+      "scope": "Dynamic SDK command Provider v3: source and121 scoped offline checks only. Original six acceptance unchanged; exact hardware results local."
     }
   ],
   "current_disposition": {

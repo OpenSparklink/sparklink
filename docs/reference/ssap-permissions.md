@@ -559,6 +559,8 @@ scope 标为失效；原 owner 仍在时保留 NoReply，不凭错误名称推�
 VM 的 root 监督器在启动普通用户 CLI Provider 时，仅将新建的测试 stdin 管道交给
 该用户所有；复用 service-only 门禁的管道规则并记录 uid/gid/权限。CLI 仍独立重开
 非阻塞输入，不修改继承的共享文件状态。管道准备失败不得继续启动或伪造注册成功。
+daemon 专用门禁与普通门禁共用每设备 HCC／输入 profile 汇总，匹配端口、generation、
+设备及地址后仍经过原最终检查。guest 业务通过不豁免缺失材料，也不证明执行镜像认证。
 实际 C 导出/private D-Bus 回归覆盖原 parent Client 关闭、owner 切换、旧请求 ESTALE、
 新 sender 向旧端点的 AccessDenied，以及新 lifetime 只接受自己的答复。Adapter/服务
 元数据为显式 fixture；这不是 slkd SIGKILL、内核清理或真实业务恢复资格。

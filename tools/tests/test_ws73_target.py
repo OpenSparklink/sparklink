@@ -23,6 +23,26 @@ import ws73_target_guest as guest
 
 
 class TargetEnvironment(unittest.TestCase):
+    def test_dedicated_and_ordinary_hcc_receipts_bind_exact_gate_registration(self):
+        from ws73_lab_resources import hcc_profile_checks
+        rows=[dict(port=f'1-{n+1}',index=n,generation=n+7,bus=1,device=n+2,address=str(n),
+                   hcc_chip=dict(raw=f'source=HCC_GET_CHIP_TYPE model=WS73{model} model_id={0 if model=="U" else 2} bus=USB bus_id=0'),
+                   input_profile={'fixture':'input-plan-independent-final-gate'})for n,model in enumerate(['U','E'])]
+        ports=['1-1.1.1','1-2.1.1'];models=['U','E']
+        checks=hcc_profile_checks(ports,models,rows,rows)
+        self.assertEqual([v['model']for v in checks],models)
+        self.assertEqual([v['host_port']for v in checks],ports)
+        for key in ['port','index','generation','bus','device','address']:
+            changed=copy.deepcopy(rows);changed[0][key]='wrong'
+            with self.subTest(key=key),self.assertRaisesRegex(ValueError,'gate identity'):
+                hcc_profile_checks(ports,models,changed,rows)
+        with self.assertRaisesRegex(ValueError,'one HCC'):
+            hcc_profile_checks(ports,models,rows[:1],rows)
+        with self.assertRaisesRegex(ValueError,'model/bus'):
+            hcc_profile_checks(ports,['E','E'],rows,rows)
+        changed=copy.deepcopy(rows);del changed[0]['input_profile']
+        with self.assertRaises(KeyError):hcc_profile_checks(ports,models,changed,rows)
+
     def test_runtime_owner_uses_live_port_not_pre_upload_address(self):
         row=dict(path='1-2.1.4',bus=1,address=124,node='/dev/bus/usb/001/124',writable=True,
                  interfaces=[dict(name='1-2.1.4:1.0',endpoints=5,driver=None)])

@@ -2056,6 +2056,9 @@ def _run(args):
                     write_tools(record['pending_write_restart']['tools'],args.prepared/'root',package['guest_files'])
                     for row in record['successor_business']['channel_socket']:
                         write_tools(row['ssap_sdk_write_provider_tools'],args.prepared/'root',package['guest_files'])
+                    observed=[json.loads((share/f'ready-{slot}.json').read_text()) for slot in range(len(args.ports))]
+                    m['physical_resource_allocation']['hcc_checks']=resources.hcc_profile_checks(
+                        args.ports,physical_boundary.models,observed,identities)
                     m['channel_daemon_corroboration']=death_corroborate(record,capture)
                     if file_record(HERE/'ws73_ssap_daemon_restart.py')!=m['channel_daemon_write_verifier']:raise ValueError('WRITE restart verifier changed during run')
                     m['capture_packets']=packets;m['guest_identities']=identities
@@ -2082,21 +2085,9 @@ def _run(args):
                         identities+=sibling_identities(probe)
                         hcc_rows+=probe['sibling_business']['hcc_observations']
                     if physical_boundary:
-                        checks=[]
-                        if channel_grant and len(hcc_rows)!=len(identities):
-                            raise ValueError('one HCC observation per actual Native controller required')
-                        for slot,model in enumerate(physical_boundary.models):
-                            if channel_grant:
-                                observed=hcc_rows[slot]
-                                wanted=dict(identities[slot],port=f'1-{slot+1}')
-                                if any(observed[k]!=wanted[k] for k in ('port','index','generation','bus','device','address')):
-                                    raise ValueError('standalone HCC observation differs from actual Native gate identity')
-                            else:
-                                observed=json.loads((share/f'ready-{slot}.json').read_text())
-                            chip=resources.check_hcc(observed['hcc_chip']['raw'],model)
-                            checks.append(dict(host_port=args.ports[slot],guest_port=observed['port'],
-                                               generation=observed['generation'],input_profile=observed['input_profile'],**chip))
-                        m['physical_resource_allocation']['hcc_checks']=checks
+                        observed=hcc_rows if channel_grant else identities
+                        m['physical_resource_allocation']['hcc_checks']=resources.hcc_profile_checks(
+                            args.ports,physical_boundary.models,observed,identities)
                     if getattr(args,'hotplug',False) or passthrough:
                         if hotplug_phase!=2:raise ValueError('both synthetic hotplug phases required')
                         pattern=r'^WS73_TARGET_PASSTHROUGH_(REMOVE|READD)_READY$' if passthrough else r'^WS73_TARGET_CONTROL_(REMOVE|READD)_READY$'

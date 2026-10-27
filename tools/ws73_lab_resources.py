@@ -517,6 +517,26 @@ def check_hcc(raw, expected):
     return dict(source='HCC_GET_CHIP_TYPE', model=expected, bus='USB', raw=raw)
 
 
+def hcc_profile_checks(ports,models,observations,identities):
+    """Shared finalization from actual guest receipts, never default chip data.
+
+    Dedicated daemon gates use the same input contract as ordinary runs. Bind
+    each ready/HCC receipt to that gate's actual registration before the common
+    firmware-profile verdict independently validates the selected input plan.
+    """
+    if not ports or not len(ports)==len(models)==len(observations)==len(identities):
+        raise ValueError('one HCC observation per selected actual controller required')
+    checks=[]
+    for slot,(port,model,observed,identity) in enumerate(zip(ports,models,observations,identities),1):
+        wanted=dict(identity,port=f'1-{slot}')
+        if any(observed[k]!=wanted[k] for k in ('port','index','generation','bus','device','address')):
+            raise ValueError('HCC observation differs from actual gate identity')
+        chip=check_hcc(observed['hcc_chip']['raw'],model)
+        checks.append(dict(host_port=port,guest_port=observed['port'],generation=observed['generation'],
+                           input_profile=observed['input_profile'],**chip))
+    return checks
+
+
 def observe_guest_hcc(identity, expected, sysfs=Path('/sys/bus/usb/devices')):
     """Bind existing driver HCC metadata to a live registration, without slkd.
 

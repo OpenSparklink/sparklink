@@ -1,29 +1,29 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前批次：method 发现与服务端接线
+## 当前批次：method 服务端与 SDK 调用链
 
-WP08/U#22的公开源码da4b55e接通方法发现kind4、类别3/11及服务成员bit4，复用原
-codec/Observer、SDK和CLI。层次发现共用原5秒、96页、80条总预算；方法查询错误
-或重复handle使整次失败，不把部分结果发布为完整缓存。未知模式明确拒绝。
+WP08/U#22的公开源码686483d已接通Owned方法条目、唯一Engine义务队列和类型化
+D-Bus应用回调。沿用原权限、owner、上下文及绝对期限，结果独立于参数；命令
+不生成线上回复。现有属性调用者已迁移未发布登记签名，不保留另一条协议路径。
 
-584项workspace Rust检查通过，另2项VM专用ignored不计通过；严格Clippy和HTML
-通过。独立字节向量、实际Observer队列和私有D-Bus SDK回归不代表Native并发、
-固件或新增形式化证明。首次测试计数遗漏、Clippy测试写法和缺参数启动拒绝保留。
-准确新artifact的原路径保持结果留在授权本地索引，不授method实机资格。
+源码及限定离线检查通过：workspace 590项、最终daemon 227项、权限14项，
+另2项VM专用ignored不计通过；严格Clippy和HTML通过。五项实际私有D-Bus方法
+回归仍使用明确的Wire身份fixture，不证明Native并发、固件或形式化性质。
+早期编译、签名断言及lint失败保留原身份；详细范围以结构化batch为准。
 
-方法请求端18/19/20已存在；本地方法登记和Provider仍缺。下一笔继续独立方法条目、
-Owned登记和共享Provider Dispatcher回调，保留参数、独立结果、无响应命令和授权
-的不同语义。不得用属性WRITE、存储值或参数echo代替方法。随后真实双设备应用
-校验及独立回复，并行推进原数据/安全/SSAP；不追加完整控制面前置。
+SDK共享Dispatcher的方法收件箱、Rust/C/Python及CLI服务端调用者仍缺，下一批
+沿此唯一生产链路接通。随后用准确新artifact取得原路径保持及真实双设备参数
+校验、独立应用结果、角色交换和适用生命周期门禁；不继承此前实机资格。
+具体运行尝试和失败只在授权本地索引核对，不把源码或离线通过写成实机通过。
 完整S0–S6/19WP/10FV/12DG、VM-only、UserHost低优先级及自然恢复原条件不变。
 
 ## 有界 issue 清理结果与主线恢复
 
 已复核35项：2项按自身条件关闭（U#1、U#21），18项有限收尾、3个已拆分父项、12项长期跟踪。
-本次重新读回35项及七个原生父子关系；直接收敛U#3/U#22的已提交方法发现与
-未提交Provider边界，以及K#19的历史运行描述，原验收条款不变。已有U#1/U#21
-关闭决定保留；本次没有新增关闭或重复拆分。公开2a73863的五次具名workflow
-成功只表示对应CI状态，未新增实机或形式化资格。旧失败及反例留在历史索引。
+本批重新读回35项；U#1/U#21既有关闭维持，七个既有子项不重复创建。
+U#3/U#22已记录方法daemon源码686483d，本次修正K#19残留的“Provider未提交”描述；
+原验收条款不变。SDK方法收件箱与真实方法交付仍缺，源码不转授实机资格。
+本次没有新增关闭或拆分。历史CI、失败及反例保留原身份，不冒充最新HEAD的检查。
 [逐项处置与历史读回](issue-maintenance-20261026.json)保留原范围、快照和失败。
 
 U#1原六条事件循环条件已逐项核对，关闭只结算该范围。Native receiver、retry取消、
@@ -74,7 +74,7 @@ S0–S6/19WP/10FV/12DG、VM-only和UserHost低优先级规划不变。
 | 已有子项 | 当前处置 | 独立退出范围 |
 | --- | --- | --- |
 | [U#21](https://github.com/OpenSparklink/sparklink/issues/21) | 可关闭，已独立关闭；本次复核保留 | 原六项 READ SDK Provider 生命周期；后续代码不继承旧资格 |
-| [U#22](https://github.com/OpenSparklink/sparklink/issues/22) | 有限分批收尾，开放 | 唯一 Engine 剩余操作/长值/更新；Down/晚答、daemon restart v2、长值 v2 及 command Provider v3 门禁已接通；method请求端已接通；method/描述符 Provider 与完整原操作矩阵仍需收尾，准确产物资格按授权本地记录核对 |
+| [U#22](https://github.com/OpenSparklink/sparklink/issues/22) | 有限分批收尾，开放 | 唯一 Engine 剩余操作/长值/更新；Down/晚答、daemon restart v2、长值 v2 及 command Provider v3 门禁已接通；method请求/发现与daemon方法Provider已接通；SDK方法收件箱、描述符Provider及完整原操作矩阵仍需收尾，准确产物资格按授权本地记录核对 |
 | [U#23](https://github.com/OpenSparklink/sparklink/issues/23) | 长期跟踪，开放 | Battery/DeviceInfo/HID 的真实调用、启用/卸载及隔离 |
 | [K#21](https://github.com/OpenSparklink/linux/issues/21) | 有限分批收尾，开放 | credit/Ticket/撤权/断链/原期限/复用组合及硬件假设 |
 | [K#22](https://github.com/OpenSparklink/linux/issues/22) | 有限分批收尾，开放 | 动态通道背压、公平性、多设备业务及关闭隔离 |
@@ -497,54 +497,67 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-METHOD-DISCOVERY-v1",
-  "state": "DISCOVERY_SOURCE_OFFLINE_PASS_PROVIDER_MISSING",
-  "production_behavior": "Method find kind4 and category3/11 use the shared codec/Observer, typed daemon, Rust SDK and CLI. Hierarchical primary discovery follows advertised method member bit4 under the same5s deadline,96pages/80entries; method errors and duplicate handles fail the complete discovery. No local method registration or Provider execution yet.",
+  "id": "WP08-METHOD-SERVER-v1",
+  "state": "DAEMON_SOURCE_OFFLINE_PASS_SDK_PROVIDER_PENDING",
+  "production_behavior": "Owned method entries, shared server obligation, original policy/context/deadline and owner callback; independent results, command no wire response",
   "implementation_sources": {
-    "public": "da4b55e97a82bd4caeaa9d5e276b682812781e9c"
+    "public": "686483d726f5fd7d32a5de895f53da20382d0a3b"
   },
   "offline_checks": {
-    "rust": "584 workspace tests passed;2 VM-only ignored not counted. Explicit metadata/queue/private D-Bus/Unix fixtures, no hardware inference. Final committed codec targeted rerun passed after test-only clone idiom correction.",
-    "strict": "Rust1.96.1 offline/locked workspace all-target Clippy -D warnings and strict nitpicky HTML PASS; shared build lock,8jobs,fixed incremental directory.",
+    "workspace_passed": 590,
+    "workspace_vm_only_ignored": 2,
+    "final_daemon_passed": 227,
+    "final_daemon_vm_only_ignored": 2,
+    "method_actual_dbus_cases": 5,
+    "policy_python_passed": 14,
+    "strict_clippy": "PASS",
+    "strict_html": "PASS",
+    "scope": "Actual private D-Bus and production owner/database/render functions; explicit Wire identity fixture. No Native/USB/RF/formal refinement claim. SDK method inboxes and positive method gate remain.",
     "retained_failures": [
-      "Added method discovery RPC made10calls; first test final stale-identity assertion still expected9. Exact count updated; no extra-call rejection preserved.",
-      "Clippy clone-to-slice test idiom corrected without lint suppression.",
-      "Length runner invocation missing required full source argument rejected before preflight/hardware."
+      "initial test compile/type errors",
+      "independent literal registration signature needed methods field migration; exact assertion preserved",
+      "Clippy precedence fixed; scoped expect for five flat wire fields plus injected connection/header/self documented"
     ]
   },
+  "formal_status": "NO_NEW_PROOF",
+  "hardware_status": "No new hardware qualification assigned. Exact attempts, failures and artifacts remain in the authorized local index; previous qualifications do not transfer.",
   "issue_sync": {
-    "observed_at": "2026-10-27T09:06:20.984096+00:00",
+    "observed_at": "2026-10-27T17:12:18.750074+00:00",
     "updates": [
-      {
-        "repository": "sparklink",
-        "number": 22,
-        "state": "open",
-        "body_sha256": "1e9388f69de16e3601d52878100e9cfb21c7e31ffc0d29ac608982b4474c1ad5",
-        "source_offline_only": true
-      },
       {
         "repository": "sparklink",
         "number": 3,
         "state": "open",
-        "body_sha256": "454edce44903974d1d9758d8c99d5b0fd71dbe1fad650968fa377d373dee99ee",
+        "body_sha256": "a16ef988ba15a832cfbc17460e78aa4d68b1e2cc0603547100c9db010f28f5e5",
+        "source_offline_only": true
+      },
+      {
+        "repository": "sparklink",
+        "number": 22,
+        "state": "open",
+        "body_sha256": "f51e428b304d964ab5ef59ba83687209d638936661394b568e7d9f269a691e0b",
+        "source_offline_only": true
+      },
+      {
+        "repository": "linux",
+        "number": 19,
+        "state": "open",
+        "body_sha256": "8499d4f3afd648b26b871679c376b940c2aef953db90bb398d27a2e3d28cdfd4",
         "source_offline_only": true
       }
     ],
-    "scope": "Public source/offline only; original acceptance unchanged, both issues OPEN."
+    "scope": "Public source/offline only; original acceptance unchanged; all three issues remain OPEN."
   },
-  "hardware_status": "Exact new-artifact preservation evidence is private. No real method discovery/provider positive-delivery qualification or transfer from previous artifacts.",
-  "formal_status": "NO_NEW_PROOF; golden/fixture tests are not formal verification or implementation refinement.",
   "exit_conditions": [
-    "Distinct method request and entry categories, bounded shared codec",
-    "Same actor/queue/deadline and whole-discovery failure on method error or duplicate handle",
-    "Existing SDK/CLI callers and reference documentation updated",
-    "Accurate new artifact independently checks original real paths; no method qualification inferred"
+    "Owned method registration and typed daemon callback use the existing server obligation, policy and original deadline",
+    "Independent result; command never generates a wire response; owner and context rechecked",
+    "Property callers, exact D-Bus signature, policy and interface documentation migrated",
+    "SDK method inbox, real application callers and positive peer delivery still required"
   ],
   "next": [
-    "Owned method entries and registration, reusing original owner/deadline and shared Provider Dispatcher",
-    "Actual argument/context-bound application callback and independent method result; command must never produce protocol response",
-    "Original authorization, security epoch, cancellation/owner/Down/deadline, queue and cleanup gates",
-    "Real dual-device method validation/reply and direction exchange; preserve data/security/SSAP scope and original recovery conditions"
+    "Reuse the existing shared Provider Dispatcher for Rust/C/Python method inboxes and actual CLI callers",
+    "Acquire new-artifact preservation and genuine dual-device method result validation; do not substitute fixture or USB success",
+    "Continue original data, security and SSAP scope without a control-plane-combinations prerequisite; natural root cause and non-manual recovery remain open"
   ]
 }
 ```

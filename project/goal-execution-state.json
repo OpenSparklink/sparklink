@@ -2012,54 +2012,67 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP08-METHOD-DISCOVERY-v1",
-      "state": "DISCOVERY_SOURCE_OFFLINE_PASS_PROVIDER_MISSING",
-      "production_behavior": "Method find kind4 and category3/11 use the shared codec/Observer, typed daemon, Rust SDK and CLI. Hierarchical primary discovery follows advertised method member bit4 under the same5s deadline,96pages/80entries; method errors and duplicate handles fail the complete discovery. No local method registration or Provider execution yet.",
+      "id": "WP08-METHOD-SERVER-v1",
+      "state": "DAEMON_SOURCE_OFFLINE_PASS_SDK_PROVIDER_PENDING",
+      "production_behavior": "Owned method entries, shared server obligation, original policy/context/deadline and owner callback; independent results, command no wire response",
       "implementation_sources": {
-        "public": "da4b55e97a82bd4caeaa9d5e276b682812781e9c"
+        "public": "686483d726f5fd7d32a5de895f53da20382d0a3b"
       },
       "offline_checks": {
-        "rust": "584 workspace tests passed;2 VM-only ignored not counted. Explicit metadata/queue/private D-Bus/Unix fixtures, no hardware inference. Final committed codec targeted rerun passed after test-only clone idiom correction.",
-        "strict": "Rust1.96.1 offline/locked workspace all-target Clippy -D warnings and strict nitpicky HTML PASS; shared build lock,8jobs,fixed incremental directory.",
+        "workspace_passed": 590,
+        "workspace_vm_only_ignored": 2,
+        "final_daemon_passed": 227,
+        "final_daemon_vm_only_ignored": 2,
+        "method_actual_dbus_cases": 5,
+        "policy_python_passed": 14,
+        "strict_clippy": "PASS",
+        "strict_html": "PASS",
+        "scope": "Actual private D-Bus and production owner/database/render functions; explicit Wire identity fixture. No Native/USB/RF/formal refinement claim. SDK method inboxes and positive method gate remain.",
         "retained_failures": [
-          "Added method discovery RPC made10calls; first test final stale-identity assertion still expected9. Exact count updated; no extra-call rejection preserved.",
-          "Clippy clone-to-slice test idiom corrected without lint suppression.",
-          "Length runner invocation missing required full source argument rejected before preflight/hardware."
+          "initial test compile/type errors",
+          "independent literal registration signature needed methods field migration; exact assertion preserved",
+          "Clippy precedence fixed; scoped expect for five flat wire fields plus injected connection/header/self documented"
         ]
       },
+      "formal_status": "NO_NEW_PROOF",
+      "hardware_status": "No new hardware qualification assigned. Exact attempts, failures and artifacts remain in the authorized local index; previous qualifications do not transfer.",
       "issue_sync": {
-        "observed_at": "2026-10-27T09:06:20.984096+00:00",
+        "observed_at": "2026-10-27T17:12:18.750074+00:00",
         "updates": [
-          {
-            "repository": "sparklink",
-            "number": 22,
-            "state": "open",
-            "body_sha256": "1e9388f69de16e3601d52878100e9cfb21c7e31ffc0d29ac608982b4474c1ad5",
-            "source_offline_only": true
-          },
           {
             "repository": "sparklink",
             "number": 3,
             "state": "open",
-            "body_sha256": "454edce44903974d1d9758d8c99d5b0fd71dbe1fad650968fa377d373dee99ee",
+            "body_sha256": "a16ef988ba15a832cfbc17460e78aa4d68b1e2cc0603547100c9db010f28f5e5",
+            "source_offline_only": true
+          },
+          {
+            "repository": "sparklink",
+            "number": 22,
+            "state": "open",
+            "body_sha256": "f51e428b304d964ab5ef59ba83687209d638936661394b568e7d9f269a691e0b",
+            "source_offline_only": true
+          },
+          {
+            "repository": "linux",
+            "number": 19,
+            "state": "open",
+            "body_sha256": "8499d4f3afd648b26b871679c376b940c2aef953db90bb398d27a2e3d28cdfd4",
             "source_offline_only": true
           }
         ],
-        "scope": "Public source/offline only; original acceptance unchanged, both issues OPEN."
+        "scope": "Public source/offline only; original acceptance unchanged; all three issues remain OPEN."
       },
-      "hardware_status": "Exact new-artifact preservation evidence is private. No real method discovery/provider positive-delivery qualification or transfer from previous artifacts.",
-      "formal_status": "NO_NEW_PROOF; golden/fixture tests are not formal verification or implementation refinement.",
       "exit_conditions": [
-        "Distinct method request and entry categories, bounded shared codec",
-        "Same actor/queue/deadline and whole-discovery failure on method error or duplicate handle",
-        "Existing SDK/CLI callers and reference documentation updated",
-        "Accurate new artifact independently checks original real paths; no method qualification inferred"
+        "Owned method registration and typed daemon callback use the existing server obligation, policy and original deadline",
+        "Independent result; command never generates a wire response; owner and context rechecked",
+        "Property callers, exact D-Bus signature, policy and interface documentation migrated",
+        "SDK method inbox, real application callers and positive peer delivery still required"
       ],
       "next": [
-        "Owned method entries and registration, reusing original owner/deadline and shared Provider Dispatcher",
-        "Actual argument/context-bound application callback and independent method result; command must never produce protocol response",
-        "Original authorization, security epoch, cancellation/owner/Down/deadline, queue and cleanup gates",
-        "Real dual-device method validation/reply and direction exchange; preserve data/security/SSAP scope and original recovery conditions"
+        "Reuse the existing shared Provider Dispatcher for Rust/C/Python method inboxes and actual CLI callers",
+        "Acquire new-artifact preservation and genuine dual-device method result validation; do not substitute fixture or USB success",
+        "Continue original data, security and SSAP scope without a control-plane-combinations prerequisite; natural root cause and non-manual recovery remain open"
       ]
     },
     "selected_qualification": {
@@ -5137,13 +5150,15 @@
     "state": "BOUNDED_MAINTENANCE_COMPLETE_U1_U21_CLOSED",
     "execution_dependency": "Bounded issue refresh complete. Resume existing method requester/Provider and data/security/SSAP vertical work; original scope and failures retained. Maintenance is not a new prerequisite.",
     "followup_readback": "project/issue-maintenance-20261026.json#/followup_readback",
-    "latest_readback_at": "2026-10-27T09:28:53.608247+00:00",
+    "latest_readback_at": "2026-10-27T17:12:18.750074+00:00",
     "latest_actions": {
       "reviewed": 35,
       "updated": [
-        "U#3",
-        "U#22",
         "K#19"
+      ],
+      "source_followups_verified": [
+        "U#3",
+        "U#22"
       ],
       "newly_closed": [],
       "new_children": [],
@@ -5151,7 +5166,7 @@
         "U#1",
         "U#21"
       ],
-      "note": "Bounded readback complete; seven existing child relations and original acceptance retained. Resume unfinished method Provider and existing functional work; no new prerequisite."
+      "note": "Bounded maintenance complete; original scope retained. Resume shared SDK method Provider and existing mainline; no new prerequisite."
     },
     "source_followup": {
       "issue": "sparklink#1",
@@ -5254,8 +5269,12 @@
     "hardware_details": "authorized local evidence only"
   },
   "method_discovery_execution": {
+    "authority": "project/qualification-records.json:batch_history",
+    "status": "Historical discovery slice; superseded for current execution by method_server_execution"
+  },
+  "method_server_execution": {
     "authority": "project/qualification-records.json:batch",
-    "next": "Distinct Owned method entries and shared Provider callback; existing Engine only",
-    "hardware_details": "Authorized local evidence only; method positive delivery not qualified"
+    "next": "Reuse shared SDK Dispatcher and actual callers, then accurate artifact and true peer method delivery; no parallel Engine",
+    "hardware_details": "Authorized local evidence only; no new method qualification"
   }
 }

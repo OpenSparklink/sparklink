@@ -387,9 +387,9 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "ab33070bff4af73d4cd43569b11bad7f057fb432d5ca500e9f02cac8fc7ccef8",
+      "body_sha256": "bf13f7f89b15bf3ea130b49e6dc1ccdb287c07b4f77914ebad9aa922ef7f3a4e",
       "classification": "有限收尾",
-      "closure_basis": "唯一Engine的WRITE生产stop回归有16项限定离线及abort负对照；完整Native Down/restart、长值与原操作/更新矩阵继续开放。"
+      "closure_basis": "Pending WRITE Down gate wired with original SDK/connection/paired evidence and canonical DLI command schema. Accurate hardware scope stays local; late reply/restart and full operation/value/update conditions remain open."
     },
     {
       "repository": "sparklink",
@@ -3779,6 +3779,16 @@
       "observed_at": "2026-10-27T01:23:08.064841+00:00",
       "source": "b5622f0c2edd5c1b97fcddb678d1f7acff6f0f0c",
       "source_offline_only": true
+    },
+    {
+      "repository": "sparklink",
+      "number": 22,
+      "state": "open",
+      "prior_body_sha256": "06437ad73da6799e5929e0d8f38fb15f92adda914cfbdbf82007c0bd33d2cfdb",
+      "body_sha256": "bf13f7f89b15bf3ea130b49e6dc1ccdb287c07b4f77914ebad9aa922ef7f3a4e",
+      "source_offline_only": true,
+      "observed_at": "2026-10-27T02:22:09.730294+00:00",
+      "scope": "Canonical DLI command shape, separate replay/terminal contract and20 scoped offline regressions; original six conditions unchanged"
     }
   ]
 }

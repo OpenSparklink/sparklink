@@ -686,7 +686,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-27T01:23:08.064841+00:00",
+  "updated_at_utc": "2026-10-27T02:22:09.730294+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -823,7 +823,7 @@
   "current_goal_turn_classification": {
     "classification": "PROGRESS",
     "goal_complete": false,
-    "reason": "Production stop/callback lifecycle regression and effective negative control completed; native Down/restart remains explicit next work."
+    "reason": "Pending WRITE Down gate implemented and canonical receipt validator corrected. Source/offline summary public; exact private execution audit retained separately. Full original scope active."
   },
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
@@ -2019,56 +2019,53 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP08-pending-WRITE-Engine-stop-regression",
-      "state": "OFFLINE_STOP_SLICE_COMPLETE_NATIVE_DOWN_RESTART_PENDING",
-      "production_behavior": "No runtime change or new Engine. Direct regression of production Engine::stop abort/join with pending real private-D-Bus WRITE callback, original OS socket closure, independent callback and old-result/new-lifetime isolation.",
+      "id": "WP08-pending-WRITE-physical-Down",
+      "state": "GATE_IMPLEMENTED_FINAL_ORACLE_SCHEMA_CORRECTED",
+      "production_behavior": "No runtime Engine change. Existing SDK callback barrier precedes original typed Disconnect; same Session/lifetime and original requester/Provider deadlines. Publisher survives connection Down and explicitly cleans up Owned service afterward.",
       "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
       "work_packages": [
-        "WP08"
+        "WP08",
+        "WP16"
       ],
       "records": [],
       "implementation_sources": {
-        "public_source": "b5622f0c2edd5c1b97fcddb678d1f7acff6f0f0c",
+        "public_gate": "120d1458f10cc8114c51429b6eb895bb1a9b8897",
+        "public_verifier": "ee7ac3212ab50b8c558310ceb6258a9a75ace839",
         "kernel": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
       },
-      "predecessor_archive": {
-        "history": "batch_history",
-        "id": "WP16-bounded-issue-maintenance-closeout",
-        "canonical_sha256": "98ef2049e11bfded6d8ced67d209a698d672aaccabe55c2171c11f4deb363460"
-      },
       "offline_checks": {
-        "Provider": "16 READ/WRITE tests passed with actual private D-Bus; fixed Rust1.96.1, locked/offline Cargo, shared build lock and8jobs.",
-        "negative": "Omitting production abort caused old decision survival assertion; original runtime source restored, final positive regression passed.",
-        "strict": "all-target slkd Clippy -D warnings and rustfmt passed.",
-        "limits": "Existing task fixture has no graceful-stop receiver. No successful Native query, exchange-loop, Down, USB drain, process restart or radio is simulated."
+        "initial_gate": "186 selected Python tests; literal SDK/USB fixtures, actual host/guest parser",
+        "final_receipt_shape": "20 selected Down/connection tests",
+        "docs": "strict Sphinx HTML public/private + inventory and15 integrity checks"
       },
       "offline_status": "SCOPED_OFFLINE_PASS",
-      "hardware_status": "NO_NEW_EXECUTION_OR_QUALIFICATION; original failed complete preservation remains FAIL, historical exact-artifact scope unchanged.",
+      "hardware_status": "Exact-artifact results and failed attempts retained in authorized local evidence; no public hardware verdict or private identities published. Existing selected qualification unchanged.",
       "formal_status": "NO_NEW_PROOF",
       "issue_sync": {
         "repository": "sparklink",
         "number": 22,
         "state": "open",
-        "body_sha256": "ab33070bff4af73d4cd43569b11bad7f057fb432d5ca500e9f02cac8fc7ccef8",
-        "prior_body_sha256": "4520b08b8b6a73f9d3910fb32730ab96590c1adf846d7aafb8924bea5f7ff12a",
-        "observed_at": "2026-10-27T01:23:08.064841+00:00",
-        "source": "b5622f0c2edd5c1b97fcddb678d1f7acff6f0f0c",
-        "source_offline_only": true
+        "prior_body_sha256": "06437ad73da6799e5929e0d8f38fb15f92adda914cfbdbf82007c0bd33d2cfdb",
+        "body_sha256": "bf13f7f89b15bf3ea130b49e6dc1ccdb287c07b4f77914ebad9aa922ef7f3a4e",
+        "source_offline_only": true,
+        "observed_at": "2026-10-27T02:22:09.730294+00:00",
+        "scope": "Canonical DLI command shape, separate replay/terminal contract and20 scoped offline regressions; original six conditions unchanged"
       },
       "exit_conditions": [
-        "Actual production stop fallback, OS fd release, late decision isolation and independent callback are tested with explicit fixtures and an effective negative control.",
-        "Source/doc and existing U22 current scope synchronized; original full acceptance remains open."
+        "Opt-in gate uses actual existing caller/connection/USB path; preserved ordinary/Owned baseline and original five-second Down.",
+        "Original command schema represented accurately; negative controls reject missing/old/mismatched evidence without changing failed terminal status.",
+        "Exact source, compiled payload, execution tools and report identities are distinct; no partial issue closure."
       ],
       "remaining_conditions": [
-        "Wire the pending WRITE callback barrier into actual existing VM connection Down/restart scenario; do not replace it with the offline task fixture.",
-        "Keep original5s Down failures, applicable business/length preservation and independent-owner/controller checks; no deadline widening or artificial recovery qualification.",
-        "Remaining WRITE/method/long-value/update/Profile scope and natural root cause/nonmanual recovery."
+        "Enroll exact artifacts and gate/material bindings in existing qualification registry; do not transfer historical broad length qualification.",
+        "Late Provider reply and daemon restart; full WRITE/method/long-value/update/Profile requirements.",
+        "Natural faults/nonmanual recovery and original S0-S6/19WP/10FV/12DG."
       ],
       "next": [
-        "Implement the pending-WRITE Down VM scenario using existing callback/connection lifecycle hooks and exact SDK error/paired-wire evidence.",
-        "Then acquire accurate-artifact real-device results with preserved original business gates; runtime data/security/SSAP continue in parallel."
+        "Enroll the exact new gate audit and required material bindings in the existing qualification registry; preserve first failed attempt.",
+        "Extend pending WRITE to late Provider reply and daemon restart using existing lifecycle hooks; continue original data/security/SSAP delivery."
       ],
-      "qualification_boundary": "No record/material/selected qualification changed; test-source identity and reviewed signed source kept separate from historical compiled hardware identities."
+      "qualification_boundary": "No records/materials/selected qualification changed in this synchronization. Source/offline scope and private scoped hardware audit are distinct."
     },
     "selected_qualification": {
       "version": 1,

@@ -78,6 +78,34 @@ def wire_interval(packet):
     return min(p[0] for p in spans),max(p[1] for p in spans)
 
 
+def stream_causal(tx,rx):
+    """Check byte-prefix causality across different ACB fragment boundaries.
+
+    Endpoints, original window, PB and record order are checked by
+    command_packet/validate_paired_leg before this predicate. RX may overlap TX
+    but no received prefix may extend past bytes already captured on TX.
+    """
+    try:
+        sent,received=tx['fragments'],rx['fragments']
+        if not sent or not received or tx['data']!=rx['data']:return False
+        data=bytes.fromhex(tx['data'])
+        if not data:return False
+        for parts in (sent,received):
+            if any(not bytes.fromhex(p['data'])for p in parts):return False
+            if b''.join(bytes.fromhex(p['data'])for p in parts)!=data:return False
+            stamps=[packet_interval(p)[0]for p in parts]
+            if stamps!=sorted(stamps):return False
+        cursor=0;available=0;consumed=0
+        for packet in received:
+            consumed+=len(bytes.fromhex(packet['data']))
+            when=packet_interval(packet)[0]
+            while available<consumed:
+                if cursor==len(sent) or packet_interval(sent[cursor])[1]>when:return False
+                available+=len(bytes.fromhex(sent[cursor]['data']));cursor+=1
+        return consumed==available==len(data) and cursor==len(sent)
+    except (KeyError,TypeError,ValueError):return False
+
+
 def physical_sends(packet):
     if 'ssap_fragments' in packet:return sum(physical_sends(p) for p in packet['ssap_fragments'])
     return len(packet.get('fragments',[packet]))

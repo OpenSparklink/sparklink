@@ -273,6 +273,24 @@ class WriteLengthsEvidence(unittest.TestCase):
             tx,rx=leg['tx']['ssap_fragments'],leg['rx']['ssap_fragments']
             self.assertLess(gate.interval(rx[0])[1],gate.interval(tx[1])[0])
 
+    def test_acb_byte_prefix_pipeline_accepts_overlap_but_rejects_unsent_bytes(self):
+        from ws73_ssap_value import stream_causal
+        def packet(parts,times):
+            return dict(data=b''.join(parts).hex(),fragments=[dict(data=p.hex(),wall_ns=t)for p,t in zip(parts,times)])
+        tx=packet([b'abcd',b'efgh',b'ijkl'],[1000,3000,5000])
+        rx=packet([b'ab',b'cd',b'efghij',b'kl'],[2000,2500,6000,7000])
+        self.assertTrue(stream_causal(tx,rx))
+        for change in ('unsent-middle','unsent-tail','wrong-bytes','missing-tail','backward-clock','empty'):
+            with self.subTest(change=change):
+                bad=copy.deepcopy(rx)
+                if change=='unsent-middle':bad['fragments'][2]['wall_ns']=4000
+                elif change=='unsent-tail':bad['fragments'][-1]['wall_ns']=4500
+                elif change=='wrong-bytes':bad['fragments'][0]['data']='ffff'
+                elif change=='missing-tail':bad['fragments'].pop()
+                elif change=='backward-clock':bad['fragments'][1]['wall_ns']=1500
+                else:bad['fragments'][0]['data']=''
+                self.assertFalse(stream_causal(tx,bad))
+
     def test_invalid_versions_cannot_enable_long_capture_or_upgrade_old_proof(self):
         for version in (True,0,3,None,'2'):
             with self.assertRaises(CaptureError):gate.scenarios(version)

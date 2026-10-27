@@ -16,7 +16,7 @@ import secrets
 import time
 
 from ws73_capture import CaptureError, packet_interval
-from ws73_ssap_value import physical_packets, wire_interval as interval
+from ws73_ssap_value import physical_packets, wire_interval as interval, stream_causal
 from ws73_ssap_read_provider import _cleanup, _wire
 import ws73_ssap_sdk_read_provider as shared
 from ws73_ssap_provider_owner_exit import CLOCK_CONTRACT, _clock_sample
@@ -236,9 +236,10 @@ def _case(row,item,matched):
     for i in range(0,len(wire),2):
         request,response=wire[i:i+2]
         # SSAP fragments can pipeline: the first RX need not wait for the last
-        # TX of a different complete SMTC packet. Each paired packet is causal;
+        # TX of a different complete SMTC packet; ACB fragments can also stream.
+        # Version2 checks the actual byte prefix frontier. Each pair is causal;
         # the whole request must still arrive before the first response.
-        need(all(packet_interval(tx)[1]<=packet_interval(rx)[0]
+        need(all((stream_causal(tx,rx) if version==2 else packet_interval(tx)[1]<=packet_interval(rx)[0])
                  for leg in (request,response)
                  for tx,rx in zip(physical_packets(leg['tx']),physical_packets(leg['rx']),strict=True))
              and interval(request['rx'])[1]<=interval(response['tx'])[0],'two-end WRITE causal order required')

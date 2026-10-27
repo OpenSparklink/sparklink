@@ -3,10 +3,10 @@
 //! successful Native channel, daemon SSAP Engine, wire or hardware qualification.
 #[path = "application_ffi/authorization.rs"]
 mod authorization;
-#[path = "application_ffi/read_provider.rs"]
-mod read_provider;
 #[path = "application_ffi/pending_owner.rs"]
 mod pending_owner;
+#[path = "application_ffi/read_provider.rs"]
+mod read_provider;
 #[path = "application_ffi/subscription.rs"]
 mod subscription;
 mod support;

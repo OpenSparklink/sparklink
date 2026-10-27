@@ -1091,3 +1091,38 @@ def benchmark_application_reports(source, peer):
                 messages=count,application_bytes=size,source_rtt=ranks(rtts),
                 remaining=['artifact/source/tool/config/firmware closure','actual ordinary credentials and kernel ownership',
                            'independent both-end captures/drop checks','resource and trace-overhead measurements'])
+
+
+def valid_boundary_summary(record):
+    """Saved boundary-gate shape only; raw capture must still be replayed.
+
+    Keep the original 8 rejected syscall cases per connection role. Do not
+    accept a PASS label/count with missing roles, payload scope or USB legs.
+    Other channel scenarios retain their own validators.
+    """
+    requested=record.get('channel_socket_boundaries_requested',False)
+    if type(requested)is not bool:return False
+    tokens=[v for arg in record.get('qemu_args',[]) if isinstance(arg,str)
+            for v in arg.split() if v.startswith('ws73.channel_boundaries=')]
+    if not requested:return not tokens
+    if tokens!=['ws73.channel_boundaries=1'] or record.get('channel_socket_verification_requested')is not True:return False
+    length=record.get('channel_socket_bytes_requested');rounds=record.get('channel_socket_rounds_requested')
+    proof=record.get('channel_socket_corroboration')
+    if (type(length)is not int or not 29<=length<=2042 or type(rounds)is not int or not 1<=rounds<=20
+        or not isinstance(proof,dict) or proof.get('status')!='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED'):return False
+    for key,expected in [('round_trips',rounds*2),('application_message_bytes',length),('dtap_pdu_bytes',length+5),('application_boundary_rejections',16)]:
+        if type(proof.get(key))is not int or proof[key]!=expected:return False
+    phases=proof.get('proofs')
+    if not isinstance(phases,list)or len(phases)!=2:return False
+    for n,phase in enumerate(phases):
+        if not isinstance(phase,dict)or type(phase.get('phase'))is not int or phase['phase']!=n:return False
+        legs=phase.get('legs')
+        if not isinstance(legs,list)or len(legs)!=rounds*2:return False
+        for i,leg in enumerate(legs):
+            if not isinstance(leg,dict)or type(leg.get('sequence'))is not int or leg['sequence']!=i//2:return False
+            for direction in ('tx','rx'):
+                packet=leg.get(direction)
+                if not isinstance(packet,dict)or not packet:return False
+                fragments=packet.get('fragments')
+                if not isinstance(fragments,list)or not fragments or any(not isinstance(f,dict)or not f for f in fragments):return False
+    return True

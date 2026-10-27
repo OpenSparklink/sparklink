@@ -3177,6 +3177,8 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
                 or type(rounds) is not int or rounds<=0
                 or type(proof.get('round_trips')) is not int or proof['round_trips']!=(0 if prefix else rounds*2)):
             return 1
+    from ws73_channel_socket import valid_boundary_summary
+    if not valid_boundary_summary(record):return 1
     if prefix:
         proof=record.get('channel_socket_corroboration',{})
         phases=proof.get('proofs',[]) if isinstance(proof,dict) else []

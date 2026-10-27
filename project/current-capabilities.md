@@ -2,12 +2,13 @@
 
 ## 本批实现与验证边界
 
-现有方法VM场景已扩展为v2：保留原错误/空值/独立结果和退出拒绝，增加两次method
-command的真实Provider拒绝/接受步骤、原期限、实际SDK准入及双端数据判定。
-完整command窗口清单与预期包一致才可通过；通用残留检查补齐method opcode。
-141项相关离线回归、严格文档构建通过；执行器I/O和报文均为明确的有限fixture。
-v1按原请求范围保留，不能升级成v2；旧失败不改判。当前尚无新增实机或形式化资格。
-当前执行范围及准确源码由下方同一结构化batch维护。
+现有QEMU观测工具新增无定时器请求模式，记录分配身份、submit/cancel返回、
+包括detached packet在内的callback入口和释放入口；原USB操作、CLOSE和期限不变。
+26项观测相关及9项原生命周期离线检查通过；完整派生源码独立编译链接、无设备VM
+启动及未指定范围的拒绝检查通过。首次缺BIOS路径的失败保留，明确资源路径后通过。
+日志helper的struct/时钟/输出均为明确fixture。未释放、未回调和提交报错保持可见；
+日志齐全不代表物理drain、固件消费或对端交付。尚未运行本模式的实机诊断，没有
+新增实机或形式化资格。现有method v2及SDK工具资格保持各自准确身份。
 
 ## Issue 状态与验证边界
 
@@ -97,45 +98,45 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-METHOD-COMMAND-GATE-v2",
-  "state": "SOURCE_OFFLINE_PROGRESS_REAL_METHOD_DELIVERY_UNQUALIFIED",
+  "id": "WP03-USB-REQUEST-OBSERVATION-v1",
+  "state": "DIAGNOSTIC_BUILT_OFFLINE_CHECKED_NO_HARDWARE_QUALIFICATION",
   "implementation_sources": {
-    "public": "349aa4e37bbe9d5ac4db5b7bd4edc2a38a2f5f5d",
-    "sdk_tools": "76707d01919711ca44304bcc56b21f9955aa1613",
+    "public": "f8b7975a0b455d15a69ec1bca1ed1db04c51d7b3",
+    "method_gate": "349aa4e37bbe9d5ac4db5b7bd4edc2a38a2f5f5d",
     "production_kernel_unchanged": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
   },
-  "production_behavior": "Existing method VM scenario v2 retains request/error/result/withdrawal and adds command Provider rejection/acceptance, typed actual SDK admission, original deadlines, paired command wire and complete bounded SDU inventory. Unattributed method opcodes rejected. No daemon/SDK/kernel runtime change.",
+  "production_behavior": "Existing observer gains separate timerless pinned-source profile; records original libusb submit/cancel returns, callback entry including detached requests and release entry with process-unique identity and finite output. No production driver/daemon/SDK change, new I/O, retry or deadline extension.",
   "offline_checks": {
-    "related_python_tests": 141,
-    "private_and_public_source_checks": "PASS",
+    "observer_related_tests": 26,
+    "original_lifecycle_tests": 9,
     "strict_html_and_document_checks": "PASS",
-    "v1_scope_preserved_no_v2_upgrade": true,
-    "command_peer_processing_and_inventory_negative_controls": "PASS",
-    "initial_v1_and_missing_window_fixture_failures": "RETAINED"
+    "complete_source_compile_link": "PASS",
+    "no_device_vm_and_unsafe_selection_rejection": "PASS",
+    "initial_smoke_missing_bios_path": "FAIL_RETAINED_EXPLICIT_RESOURCE_PATH_RETEST_PASSED"
   },
-  "offline_scope": "Production executor/corroborator with explicit finite process/I/O and independently authored packet fixtures. Not real peer delivery, kernel concurrency, deployment permission, firmware behavior or proof of perpetual response absence. Prior actual SDK/private-bus result retains its original source identity.",
+  "offline_scope": "Actual generated C logging helper uses explicit plain structs/clock/sink fixtures. Full diagnostic binary compiles original source/object closure and no-device QEMU starts. No real libusb callback, BQL, USB drain, kernel concurrency, firmware, performance or peer-delivery qualification.",
   "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "NO_NEW_HARDWARE_ATTEMPT_OR_QUALIFICATION; original failures and accurate identities retained in authorized local evidence.",
+  "hardware_status": "NO_REAL_DEVICE_ATTEMPT_OR_NEW_QUALIFICATION; original failures retained in authorized local index.",
   "issue_sync": {
-    "observed_at": "2026-10-27T19:53:10.533906+00:00",
+    "observed_at": "2026-10-27T20:04:41.243408+00:00",
     "updates": [
       {
-        "repository": "sparklink",
-        "number": 22,
+        "repository": "linux",
+        "number": 15,
         "state": "open",
-        "body_sha256": "5a7dfa10adcc83366155cdb0916186bac1c055c0041f24dec3491d4cc8fc7d6d",
+        "body_sha256": "8df6f3cf3645065a9af2f79b9dec41a3b0002c2c88965ad9677f226dfefbd079",
         "source_offline_only": true
       }
     ],
-    "scope": "Method gate v2 source/offline summary only; original acceptance unchanged, no new hardware/formal qualification or closure."
+    "scope": "Bounded QEMU request observer source/offline summary only; original acceptance unchanged, no hardware/formal qualification or closure."
   },
   "exit_conditions": [
-    "Same Engine/Provider and VM runner; original request/withdrawal baseline retained",
-    "Actual command admission separated from peer callback processing and USB pair",
-    "Complete command-window inventory and residual opcode rejection; original deadline and transmit accounting",
-    "v1/v2 identity separation and fail-closed missing/mutated material regressions"
+    "Pinned complete source and original I/O/deadlines preserved",
+    "Stable process IDs, finite metadata, pending obligations and errors explicit",
+    "Source/parser negative controls and actual helper checks",
+    "Separate binary compile/link, no-device smoke and unsafe-selection rejection"
   ],
-  "next": "Add bounded startup diagnostic submission/cancellation/callback/free observations before another hardware attempt; then exact-artifact v2 paired method delivery and preservation. Continue discovery, long results and lifecycle gates; no CLOSE bypass, unchanged startup retry or all-control-plane prerequisite."
+  "next": "Bind separate diagnostic binary and its source/object/capture identity to existing VM runner and explicit owned leaves; retain no-injection and per-device firmware/address contracts. Observe original startup submit/cancel/callback/free before attributing cause. Then method v2 true peer delivery and preservation; discovery/long results/lifecycle continue without all-recovery or all-control-plane prerequisites."
 }
 ```
 

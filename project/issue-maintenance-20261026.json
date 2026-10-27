@@ -8247,6 +8247,22 @@
         }
       ],
       "scope": "Method gate v2 source/offline summary only; original acceptance unchanged, no new hardware/formal qualification or closure."
+    },
+    {
+      "sources": {
+        "public": "f8b7975a0b455d15a69ec1bca1ed1db04c51d7b3"
+      },
+      "observed_at": "2026-10-27T20:04:41.243408+00:00",
+      "updates": [
+        {
+          "repository": "linux",
+          "number": 15,
+          "state": "open",
+          "body_sha256": "8df6f3cf3645065a9af2f79b9dec41a3b0002c2c88965ad9677f226dfefbd079",
+          "source_offline_only": true
+        }
+      ],
+      "scope": "Bounded QEMU request observer source/offline summary only; original acceptance unchanged, no hardware/formal qualification or closure."
     }
   ],
   "current_disposition": {

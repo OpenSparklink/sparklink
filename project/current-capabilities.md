@@ -2,21 +2,22 @@
 
 ## 本批实现与验证边界
 
-真实方法交付尚未取得新资格；准确尝试、原失败和材料仅留授权本地索引。
-56415d7新增生产BSLE配置发送失败矩阵，严格C构建及selftest通过，忽略首笔错误的
-变异版本被拒绝。仅验证有限fixture下保留错误、停止发送／OPEN及不回滚序号；
-不授予USB drain、固件恢复或真实同行隔离资格。运行代码和原资格记录保持不变。
-当前执行范围从下方同一结构化batch读取。
+已提交实际C/Python `ssap-method-command`，复用现有SDK、command执行器、启动屏障
+和五秒原期限。0/短值/2043字节、真实RPC种类/参数/期限、错误及未释放屏障回归通过；
+24项工具判定检查、严格Clippy和文档构建通过。WRITE原收据及2042字节限制保持。
+准入只表示软件接收，不证明对端处理。服务端为有限私有D-Bus fixture，尚无新增
+真实method command、内核并发、部署权限或形式化资格；历史失败与旧资格不改判。
+当前源码与范围由下方结构化batch维护。
 
 ## Issue 状态与验证边界
 
 重新读回35项及七个现有子项关系：2项既有关闭（U#1、U#21）、18项有限收尾、
-3个已拆分父项、12项长期跟踪。本批收敛U#3的重复方法/离线进度，明确K#17/#19是
+3个已拆分父项、12项长期跟踪。该维护批次收敛U#3的重复方法/离线进度，明确K#17/#19是
 已建立子项的父跟踪；三项在线正文精确读回，原验收逐字保留。
 没有新增关闭或重复拆分。U#1的原六条关闭依据及对应材料/源码映射已复核；
 U#10仍保留自然恢复要求，不能以其他业务通过替代。旧失败和反例不改判。
 未改生产代码、未重跑实机或形式化工具，也未新增资格。当前逐项处置以
-[维护记录](issue-maintenance-20261026.json)为准；本批结束后继续原功能主线，
+[维护记录](issue-maintenance-20261026.json)为准；维护结束后继续原功能主线，
 不增加数据面、安全或SSAP的长期前置条件。
 
 U#1已按原六条事件循环条件独立关闭；suite v2及取消门禁沿同一Native循环，
@@ -96,46 +97,45 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-METHOD-CONFIG-SEND-BOUNDARY-v1",
+  "id": "WP08-METHOD-COMMAND-TOOLS-v1",
   "state": "SOURCE_OFFLINE_PROGRESS_REAL_METHOD_DELIVERY_UNQUALIFIED",
   "implementation_sources": {
-    "method_tools": "5c06c49e2e4e4eb9416059a35e3b40e2aa133124",
-    "kernel_selftest": "56415d7272ec790c585eaa9e99e5d38e7217d2a3",
+    "public": "76707d01919711ca44304bcc56b21f9955aa1613",
     "production_kernel_unchanged": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
   },
-  "production_behavior": "Existing method Engine/SDK/runner unchanged; production BSLE selftest adds all six configuration-send failures after CLOSE acknowledgement. No driver runtime change.",
+  "production_behavior": "Actual C/Python application helpers invoke the existing method command API through the shared command executor/barrier and original deadline. No new Engine, daemon or kernel runtime change.",
   "offline_checks": {
-    "strict_c_build": "PASS",
-    "bsle_suite_checks": 7482,
-    "configuration_send_timeout_positions": 6,
-    "error_retained_no_continuation_open_retry_or_sequence_rollback": true,
-    "independent_fixture_unchanged": true,
-    "ignore_first_send_failure_mutant": "REJECTED_BY_FOUR_ASSERTIONS",
-    "existing_address_and_method_tool_tests": 27
+    "actual_c_python_sdk_private_bus": "PASS",
+    "actual_command_rpc_scope_and_original_deadline": "PASS",
+    "empty_short_2043_arguments_and_errors": "PASS",
+    "overlimit_invalid_input_and_unreleased_barrier_no_rpc": "PASS",
+    "tool_verdict_tests": 24,
+    "strict_clippy": "PASS",
+    "strict_html_and_document_checks": "PASS"
   },
-  "offline_scope": "Direct production bsle.c/wire.c; I/O/time/peer are finite fixtures. Not actual USB drain, kernel concurrency, firmware recovery or formal proof. Existing tool fixtures do not establish real delivery.",
+  "offline_scope": "Actual external C/Python programs and compiled SDK; service/connection results are finite private D-Bus fixtures. Typed receipt verdicts use authored finite fixtures. Not daemon Engine, real kernel concurrency, deployment permissions, RF or peer delivery.",
   "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "NO_NEW_METHOD_QUALIFICATION; accurate attempts and failures only in authorized local evidence. No historic qualification transfer.",
+  "hardware_status": "NO_NEW_METHOD_QUALIFICATION; historical startup failures and exact hardware identities remain in authorized local evidence.",
   "issue_sync": {
-    "observed_at": "2026-10-27T19:22:13.027976+00:00",
+    "observed_at": "2026-10-27T19:40:24.419792+00:00",
     "updates": [
       {
-        "repository": "linux",
-        "number": 15,
+        "repository": "sparklink",
+        "number": 22,
         "state": "open",
-        "body_sha256": "3100ad65f00a562245250f6e585b465942813d768ed803ae98add80bb9f770ee",
+        "body_sha256": "f29296425d300695a80abf04fa26f2ee01ad5d13bc1ad101ab5f7d259c7d7441",
         "source_offline_only": true
       }
     ],
-    "scope": "Public source/offline only, OPEN and original acceptance unchanged."
+    "scope": "Actual method command helper source/offline only; original acceptance unchanged, no hardware qualification or closure."
   },
   "exit_conditions": [
-    "Exact-artifact method attempt retained under existing VM/resource boundaries",
-    "All six configuration failures terminate without further sends, OPEN or sequence rollback",
-    "Independent fixture and ignored-failure negative control checked",
-    "No new delivery or recovery qualification inferred"
+    "Reuse existing command executor and SDK API without duplicate Engine",
+    "Distinguish command RPC, original arguments/deadline and admission-only receipt",
+    "Actual C/Python empty/boundary/error/unreleased-barrier regression and verdict negative controls",
+    "Preserve WRITE receipt schema, historical qualification and original issue acceptance"
   ],
-  "next": "Diagnose original warm-bootstrap and post-CLOSE transport state from captured timing and fixed SDK/libws73/NearLink references; no ACK bypass or unchanged retry. Continue remaining method command/discovery/long-result and lifecycle paths in parallel. Real paired method delivery and preservation still require startup and exact artifacts, not all recovery/control-plane completion."
+  "next": "Extend the existing method VM scenario for command peer processing and paired USB evidence, then discovery/long result/lifecycle gates. Diagnose startup with bounded submit/cancel/callback ownership observations; no CLOSE bypass, unchanged retry or all-control-plane prerequisite."
 }
 ```
 

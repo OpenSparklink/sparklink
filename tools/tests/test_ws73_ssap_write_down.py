@@ -22,6 +22,7 @@ def fixture(phase=0):
     row[gate.PREFIX+'_tools'] = {n:dict(sha256='1'*64, bytes=10) for n in (*TOOLS,*gate.EXTRA_TOOLS)}
     row.update(post_application_disconnect=True)
     row[gate.PREFIX+'_status'] = gate.PENDING
+    row[gate.PREFIX+'_version'] = gate.VERSION
     item = row[gate.PREFIX+'_cases'][0]
     item['pending_stdout'] = item['stdout']
     item['down_before_wall_ns'] = item['kill_before_wall_ns']
@@ -35,7 +36,15 @@ def fixture(phase=0):
     for key in ('down_completed_wall_ns','provider_alive_after_down_wall_ns','quit_wall_ns','owner_exit_wall_ns'):
         item[key] += phase*1_000_000_000_000
     for key in ('start_wall_ns','end_wall_ns'):item['cleanup'][key] += phase*1_000_000_000_000
-    item['stdout'] += f'SdkOwnedRemoved: api={item["publisher_api"]} start={item["start"]}\n'
+    prompt = item['callback']['prompt']; start = item['provider_alive_after_down_wall_ns']+1
+    item['late_input'] = dict(text=f'provide p{prompt["token"]} {item["proposed"]}',wall_ns=start,monotonic_ns=start)
+    item['late_reply'] = dict(api=prompt['api'],token=prompt['token'],current_token=prompt['token'],api_called=True,
+        status=0,value=item['proposed'],deadline_ns=prompt['deadline_ns'],started_ns=start+1,returned_ns=start+2,
+        result=0,local_acceptance_only=True,matched_value=True,accepted_value=item['proposed'])
+    item['application_value'] = dict(api=prompt['api'],property=prompt['property'],value=item['proposed'],application_memory_only=True)
+    item['late_completed_monotonic_ns']=start+3;item['late_completed_wall_ns']=start+3
+    item['late_stdout'] = item['pending_stdout']+'SdkWriteProviderReply: '+json.dumps(item['late_reply'])+'\nSdkWriteProviderValue: '+json.dumps(item['application_value'])+'\n'
+    item['stdout'] = item['late_stdout']+f'SdkOwnedRemoved: api={item["publisher_api"]} start={item["start"]}\n'
     item['captured_bytes']['stdout'] = len(item['stdout'].encode())
     packets[:] = packets[:2]  # only the literal WRITE TX/RX, no response
     return row, matched, packets
@@ -70,6 +79,37 @@ class WriteDown(unittest.TestCase):
             elif mutation=='killed':case['exit']=-9
             elif mutation=='cleanup':case['cleanup']['stdout']='SsapLocalServices: [[16]]\n'
             elif mutation=='prompt':case['pending_stdout']=case['pending_stdout'].replace('"verify": true','"verify": false')
+            with self.subTest(mutation=mutation):self.assertFalse(gate.valid_summary(p))
+
+    def test_late_reply_has_distinct_local_and_wire_semantics(self):
+        import errno
+        for result in (0, -errno.ESTALE, -errno.ESHUTDOWN):
+            row,matched,packets=fixture();item=row[gate.PREFIX+'_cases'][0]
+            item['late_reply']['result']=result
+            accepted=item['proposed'] if result==0 else None
+            item['late_reply']['accepted_value']=accepted;item['application_value']['value']=accepted
+            item['late_stdout']=item['pending_stdout']+'SdkWriteProviderReply: '+json.dumps(item['late_reply'])+'\nSdkWriteProviderValue: '+json.dumps(item['application_value'])+'\n'
+            item['stdout']=item['late_stdout']+f'SdkOwnedRemoved: api={item["publisher_api"]} start={item["start"]}\n'
+            item['captured_bytes']['stdout']=len(item['stdout'].encode())
+            with self.subTest(result=result):gate.corroborate(row,matched,packets)
+
+    def test_late_reply_negative_controls(self):
+        for mutation in ('missing','no_api','token','deadline','timeout','value','early','rollback','wrong_result','old_version'):
+            p=proof();i=p['proofs'][0][gate.PREFIX][0];item=i['case']
+            if mutation=='missing':del item['late_reply']
+            elif mutation=='no_api':item['late_reply']['api_called']=False
+            elif mutation=='token':item['late_reply']['current_token']+=1
+            elif mutation=='deadline':item['late_completed_monotonic_ns']=item['callback']['exit_deadline_ns']
+            elif mutation=='timeout':item['late_reply']['result']=-110
+            elif mutation=='value':item['late_reply']['value']='00'
+            elif mutation=='early':item['late_input']['wall_ns']=item['down_before_wall_ns']
+            elif mutation=='rollback':item['application_value']['value']=None
+            elif mutation=='wrong_result':item['late_reply']['result']=-5
+            elif mutation=='old_version':i['context'][gate.PREFIX+'_version']=1
+            if mutation not in ('missing','old_version'):
+                item['late_stdout']=item['pending_stdout']+'SdkWriteProviderReply: '+json.dumps(item['late_reply'])+'\nSdkWriteProviderValue: '+json.dumps(item['application_value'])+'\n'
+                item['stdout']=item['late_stdout']+f'SdkOwnedRemoved: api={item["publisher_api"]} start={item["start"]}\n'
+            item['captured_bytes']['stdout']=len(item['stdout'].encode())
             with self.subTest(mutation=mutation):self.assertFalse(gate.valid_summary(p))
 
     def test_same_down_command_is_required(self):
@@ -116,7 +156,7 @@ class WriteDown(unittest.TestCase):
         record=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,ssap_owned_acceptance=True,
                     ordinary_channel_socket_acceptance=True,channel_socket_corroboration=p,
                     connection_corroboration=connections,qemu_args=['ws73.ssap_owned=1 ws73.ssap_write_provider_down=1'],
-                    **{gate.PREFIX+'_requested':True,gate.PREFIX+'_acceptance':True,gate.PREFIX+'_version':1,
+                    **{gate.PREFIX+'_requested':True,gate.PREFIX+'_acceptance':True,gate.PREFIX+'_version':gate.VERSION,
                        gate.PREFIX+'_verifier':dict(path='ws73_ssap_write_down.py',sha256='1'*64,bytes=10)})
         self.assertTrue(gate.valid_manifest(record))
         for change in ('missing','wrong_handle','early','wrong_owner','wrong_command','one_role','tool','exit'):

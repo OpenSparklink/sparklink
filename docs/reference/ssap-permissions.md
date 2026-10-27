@@ -710,6 +710,8 @@ request/epoch/property、完整 32 字节随机值及原期限后才终止 Provi
 
 `--ssap-write-provider-down-verify` 沿同一回调屏障、原 typed Disconnect 和普通
 用户 SDK 检查这一边界：先真实收到待决 WRITE，再断链；Provider 保持存活，
-原请求在原期限内失败，之后显式清理服务。没有发送 Provider 答复，因而此切片
-不证明迟到答复的最终归属或 daemon restart 收敛。完整范围仍由 U#22 追踪。
+原请求在原期限内失败。v2 门禁随后在同一原期限内调用实际 SDK 的晚到答复，
+分别记录本地接收或 stale/shutdown 拒绝与测试应用值；本地成功不代表远端成功。
+双端完整捕获不得出现旧连接响应，最后显式清理服务。v1 历史资格没有执行这一步，
+不能授予 v2 资格；daemon restart、应用副作用回滚及完整范围仍由 U#22 追踪。
 测试参数与证据要求见 [VM 门禁输入](vm-gate-inputs.md#待决-write-的连接-down-门禁)。

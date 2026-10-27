@@ -1489,7 +1489,9 @@ v2 每设备分别执行两个 exact ignored 测试：原 retry 监督期限10�
 `--ssap-write-provider-down-verify` 使用原 `--connection-verify`、
 `--channel-socket-verify` 和 `--ssap-owned-verify`，限定普通 61 字节、每角色 4 轮，
 与其他 READ/WRITE Provider 生命周期场景互斥。它在普通业务完成后等待真实
-C/Python WRITE Provider 回调，再调用原 typed Disconnect；不生成 Provider 答复。
+C/Python WRITE Provider 回调，再调用原 typed Disconnect。v2 在原请求 EIO、两端 Down
+后且原期限前，使用原 SDK token 尝试晚到答复；准确记录本地结果和应用值。
+本地接收成功或 stale/shutdown 拒绝均不代表远端成功；ETIMEDOUT 不能代替此门禁。
 
 Provider 进程保持存活至两端原连接 Down，随后显式退出和注销服务。原 SDK 请求
 必须在原期限内返回 EIO；ETIMEDOUT 不算本场景通过。原共享 5 秒 Down 观察窗口、
@@ -1500,5 +1502,6 @@ Provider 进程保持存活至两端原连接 Down，随后显式退出和注销
 检查拒绝。新参数、工具和 SDK artifact 单独记录准确身份。离线 fixture 只能检验
 编排和判定器，不能授予无线资格；此入口接通不表示实机门禁已通过。
 
-本场景不验证 daemon restart、迟到 Provider 答复、应用副作用回滚、物理 drain
+v1 历史结果不包含 v2 晚到答复步骤；新 artifact 须单独实机验证。
+本场景不验证 daemon restart、应用副作用回滚、物理 drain
 或自然恢复，也不把连接 Down 描述为 controller 所属 Owned 服务自动注销。

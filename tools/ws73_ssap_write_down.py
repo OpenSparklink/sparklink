@@ -2,9 +2,9 @@
 """Pending SDK WRITE -> existing typed Disconnect; no second protocol engine.
 
 Down retires a connection, not the controller's Owned service. The publisher
-stays alive until both original links are Down. No provider answer is issued.
-This gate does not claim daemon restart, remote application rollback, natural
-recovery or late-provider-reply isolation. Those remain separate requirements.
+stays alive through both original Down events and one late local SDK answer.
+The answer is not remote success: the original requester already failed.
+Daemon restart, application rollback and natural recovery remain separate.
 """
 import copy
 import errno
@@ -20,7 +20,7 @@ import ws73_ssap_sdk_write_provider as write
 import ws73_ssap_provider_owner_exit as shared
 
 PREFIX = 'ssap_write_provider_down'
-VERSION = 1
+VERSION = 2
 PENDING = 'SDK_WRITE_PROVIDER_DOWN_PENDING_PAIRED_USB'
 STATUS = 'SDK_WRITE_PROVIDER_DOWN_APPLICATION_PAIRED_USB'
 EXTRA_TOOLS = write.EXTRA_TOOLS + tuple('/usr/share/sparklink/tools/'+name for name in (
@@ -104,6 +104,24 @@ def execute(run, row, phase, finish_connection):
         item['read'] = ssap_error_command(run, row, source,
             ['ssap-write', source['object']['path'], str(item['handle']), item['proposed']],
             errno.EIO, api=('c', 'python')[row['phase']], after_start=disconnect)
+        # Exercise the existing SDK reply path only AFTER the original caller
+        # returned EIO. D-Bus cancellation does not promise remote callback
+        # cancellation: local acceptance and wire delivery are distinct.
+        prompt = item['callback']['prompt']
+        original = item['callback']['exit_deadline_ns']
+        need(time.monotonic_ns() < original, 'late Down reply must precede original deadline')
+        item['late_input'] = dict(text=f'provide p{prompt["token"]} {item["proposed"]}',
+            wall_ns=time.time_ns(), monotonic_ns=time.monotonic_ns())
+        process.stdin.write(item['late_input']['text']+'\n'); process.stdin.flush()
+        item['late_reply'] = _wait_json(process, item, 'SdkWriteProviderReply', write.REPLY, 1, original)
+        process.stdin.write('value\n'); process.stdin.flush()
+        item['application_value'] = _wait_json(process, item, 'SdkWriteProviderValue', write.VALUE, 1, original)
+        item['late_stdout'] = Path(item['output_files'][0]).read_text()
+        item['late_completed_monotonic_ns'] = time.monotonic_ns()
+        item['late_completed_wall_ns'] = time.time_ns()
+        validate_late_reply(row, item)
+        need(process.poll() is None, 'Provider must survive late local reply before explicit cleanup')
+        run.save()
         # Explicit unregister is cleanup AFTER the Down experiment, not evidence
         # that physical Down automatically removes controller-owned services.
         item['quit_wall_ns'] = time.time_ns()
@@ -126,10 +144,50 @@ def validate_phases(run):
              and item['down_completed_wall_ns'] == phase['disconnect_completed_wall_ns']
              and item['callback']['observed_wall_ns'] <= item['down_before_wall_ns'] <= command['start_wall_ns']
              and command['end_wall_ns'] <= phase['down_property_observation']['end_wall_ns']
-             <= item['down_completed_wall_ns'] <= item['provider_alive_after_down_wall_ns'] < item['quit_wall_ns'],
+             <= item['down_completed_wall_ns'] <= item['provider_alive_after_down_wall_ns']
+         <= item['late_input']['wall_ns'] <= item['late_completed_wall_ns'] < item['quit_wall_ns'],
              'same callback -> original typed Disconnect -> bounded two-end Down -> live publisher required')
         need(max(a['end_wall_ns'] for a in row['applications']) <= item['read']['start_wall_ns'],
              'ordinary application replies must finish before the pending WRITE Down experiment')
+
+
+
+def validate_late_reply(row, item):
+    """Original SDK invocation after Down, not a synthetic stale-token parse error.
+
+    A live application callback may accept its local result, or observe stale /
+    shutdown cancellation. Both are separated from the original remote EIO;
+    ETIMEDOUT is rejected here so expiry cannot stand in for physical Down.
+    """
+    from ws73_ssap_sdk_read_provider import json_rows
+    from ws73_application_client import ssap_error_receipt
+    data = shared._sdk_pending(row, item, item['pending_stdout'], writing=True)
+    text = item['late_stdout']; lines = text.splitlines()
+    need(len(lines) == 7 and '\n'.join(lines[:5])+'\n' == item['pending_stdout']
+         and lines[5].startswith('SdkWriteProviderReply: ')
+         and lines[6].startswith('SdkWriteProviderValue: '), 'exact original pending transcript and one actual late reply required')
+    reply, = json_rows(text, 'SdkWriteProviderReply', write.REPLY, 1)
+    value, = json_rows(text, 'SdkWriteProviderValue', write.VALUE, 1)
+    receipt = ssap_error_receipt(item['read'], row['owners'][0], expected_errno=errno.EIO)
+    need(reply == item['late_reply'] and value == item['application_value']
+         and reply['api'] == data['api'] and reply['token'] == reply['current_token'] == data['token']
+         and reply['api_called'] is True and type(reply['status']) is int and reply['status'] == 0
+         and reply['value'] == item['proposed'] and reply['matched_value'] is True
+         and type(reply['result']) is int and reply['result'] in (0, -errno.ESTALE, -errno.ESHUTDOWN)
+         and reply['local_acceptance_only'] is True and reply['deadline_ns'] == data['deadline_ns']
+         and item['late_input']['text'] == f'provide p{data["token"]} {item["proposed"]}',
+         'same original SDK token/value; only local acceptance or actual stale/shutdown refusal before expiry')
+    times = [receipt['returned_ns'], item['late_input']['monotonic_ns'], reply['started_ns'],
+             reply['returned_ns'], item['late_completed_monotonic_ns'], item['callback']['exit_deadline_ns']]
+    need(all(integer(t) for t in times) and times == sorted(times) and times[-2] < times[-1]
+         and all(integer(reply[k]) for k in ('token','current_token','deadline_ns'))
+         and item['provider_alive_after_down_wall_ns'] <= item['late_input']['wall_ns'] <= item['late_completed_wall_ns'],
+         'late answer after remote EIO and both Down, within unchanged original deadlines required')
+    accepted = item['proposed'] if reply['result'] == 0 else None
+    need(reply['accepted_value'] == accepted and value == dict(api=data['api'],property=data['property'],
+         value=accepted,application_memory_only=True) and type(value['property']) is int
+         and value['application_memory_only'] is True, 'local application result must be recorded honestly; no rollback claim')
+    return reply
 
 
 def _case(row, item, matched):
@@ -158,13 +216,15 @@ def _case(row, item, matched):
     need(app['ssap_operation'] == 'ssap-write' and app['ssap_proposed'] == item['proposed']
          and app['ssap_handle'] == item['handle'] and app['api'] == ('c', 'python')[row['phase']],
          'actual ordinary SDK WRITE caller and exact proposed random value required')
-    need(item['stdout'] == item['pending_stdout']+f'SdkOwnedRemoved: api={item["publisher_api"]} start={item["start"]}\n'
+    validate_late_reply(row, item)
+    need(item['stdout'] == item['late_stdout']+f'SdkOwnedRemoved: api={item["publisher_api"]} start={item["start"]}\n'
          and type(item['exit']) is int and item['exit'] == 0
          and app['start_wall_ns'] <= cb['observed_wall_ns'] <= item['down_before_wall_ns']
-         <= item['down_completed_wall_ns'] <= item['provider_alive_after_down_wall_ns'] < item['quit_wall_ns']
+         <= item['down_completed_wall_ns'] <= item['provider_alive_after_down_wall_ns']
+         <= item['late_input']['wall_ns'] <= item['late_completed_wall_ns'] < item['quit_wall_ns']
          <= item['owner_exit_wall_ns'] <= item['end_wall_ns']
          and not any(k in item for k in ('reply_command', 'kill_before_wall_ns', 'steps')),
-         'no provider reply or owner kill; explicit successful cleanup only after Down')
+         'one late SDK answer, no owner kill; explicit successful cleanup only after Down')
     cleanup = item['cleanup']; lists = re.findall(r'^SsapLocalServices: (.+)$', cleanup['stdout'], re.M)
     need(type(cleanup['exit']) is int and cleanup['exit'] == 0 and not cleanup['stderr'] and len(lists) == 1
          and cleanup['args'] == [row['ssap_receipts'][0]['args'][0], '--adapter', row['owners'][1]['owner']['path'], 'ssap-list']
@@ -179,7 +239,7 @@ def _case(row, item, matched):
          'actual paired WRITE must causally precede callback and Disconnect')
     context = {k: copy.deepcopy(row[k]) for k in ('phase', 'owners', 'ssap_receipts', PREFIX+'_version', PREFIX+'_tools')}
     return dict(status=STATUS, version=VERSION, context=context, case=copy.deepcopy(item),
-                wire=[leg], result='ORIGINAL_PENDING_WRITE_EIO_NO_PROVIDER_ANSWER'), {0:physical_sends(leg['tx']), 1:0}
+                wire=[leg], result='ORIGINAL_WRITE_EIO_LATE_LOCAL_REPLY_NO_WIRE_RESPONSE'), {0:physical_sends(leg['tx']), 1:0}
 
 
 def corroborate(row, matched, packets):

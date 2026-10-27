@@ -387,9 +387,9 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "c6c46d052261e148272870450023868ddcb1abad8c110b1a9f97b0fa2f2302d5",
+      "body_sha256": "a8e8002064b6ab94c90dabb97367f93b941dd0878b99866e314af0704957e5e6",
       "classification": "有限收尾",
-      "closure_basis": "WRITE Down/晚到本地答复门禁及 SDK owner 接任的源码/限定离线检查已经接通；真实 daemon SIGKILL/接任、新连接业务、长值及完整原操作/更新矩阵继续开放。准确实机范围只查授权本地记录。"
+      "closure_basis": "External C/Python SDK owner-loss observation tested offline; actual VM daemon death/successor and full original SSAP operations remain open."
     },
     {
       "repository": "sparklink",
@@ -4224,6 +4224,17 @@
       "observed_at": "2026-10-27T03:34:13Z",
       "source_offline_only": true,
       "scope": "Consolidate current scope and evidence links; preserve all original acceptance, failures, and private evidence boundaries."
+    },
+    {
+      "repository": "sparklink",
+      "number": 22,
+      "state": "open",
+      "source_offline_only": true,
+      "observed_at": "2026-10-27T03:59:03Z",
+      "source": "6a1468ba182f7a1862c3532738ec096dd01f0781",
+      "prior_body_sha256": "c6c46d052261e148272870450023868ddcb1abad8c110b1a9f97b0fa2f2302d5",
+      "body_sha256": "a8e8002064b6ab94c90dabb97367f93b941dd0878b99866e314af0704957e5e6",
+      "scope": "External C/Python old WRITE views retained across owner loss/takeover, original deadline and live-owner negatives; source/offline only, six original conditions unchanged."
     }
   ]
 }

@@ -2019,9 +2019,9 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP08-SDK-WRITE-daemon-owner-takeover",
+      "id": "WP08-SDK-WRITE-external-owner-loss-observer",
       "state": "SCOPED_OFFLINE_PASS_VM_RESTART_PENDING",
-      "production_behavior": "No runtime behavior change. New actual C/private-bus regression checks old pending WRITE/fd/registration remain bound to original daemon unique owner; fresh registration completes only its own callback. Existing metadata fixture helpers shared.",
+      "production_behavior": "No protocol/daemon Engine change. Existing external C/Python consumers retain real pending WRITE/fd while observing loss of the original owner. Root VM supervisor drops publisher to ordinary UID1000, matching existing SDK callers.",
       "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
       "work_packages": [
         "WP08",
@@ -2029,14 +2029,16 @@
       ],
       "records": [],
       "implementation_sources": {
-        "public_source": "38bbb12fbe10d3d0fab4330d241879c19780a03b"
+        "public_source": "6a1468ba182f7a1862c3532738ec096dd01f0781"
       },
       "offline_status": "SCOPED_OFFLINE_PASS",
       "offline_checks": {
-        "library": "70 libsparklink lib tests, including exact new owner takeover",
+        "external_ffi": "actual C/Python integration suite; exact frozen executable rerun",
+        "python": "42 targeted checks including root supervisor credential arguments",
+        "negative": "live owner cannot pass owner-loss observation; original intermediate NoReply assertion failure retained",
         "clippy": "libsparklink all-targets -D warnings",
-        "negative": "Missing production Client owner-loss publication rejects notification wake; original restored",
-        "docs": "strict HTML private/public and document inventories passed"
+        "C": "strict C11 syntax/header check",
+        "docs": "strict public HTML and inventories; private HTML checked separately"
       },
       "hardware_status": "NO_NEW_HARDWARE_RUN; retained v1/v2 physical Down evidence remains source-bound locally, not transferred to this test commit.",
       "formal_status": "NO_NEW_PROOF",
@@ -2044,25 +2046,26 @@
         "repository": "sparklink",
         "number": 22,
         "state": "open",
-        "prior_body_sha256": "bc88b2d4277e2f7bb637276ddedec2e28a6d7eabfa21adf61ad4528c1879d29d",
-        "body_sha256": "411b27d2a27da8dcab2245a962bb747ffa99c125832b7a999140e939ad8f024d",
         "source_offline_only": true,
-        "observed_at": "2026-10-27T03:21:22.738419+00:00",
-        "scope": "SDK WRITE owner takeover actual C/private-bus test,70lib tests,strict Clippy/docs; missing owner-watch publication negative rejected. No hardware/formal upgrade; original six conditions unchanged."
+        "observed_at": "2026-10-27T03:59:03Z",
+        "source": "6a1468ba182f7a1862c3532738ec096dd01f0781",
+        "prior_body_sha256": "c6c46d052261e148272870450023868ddcb1abad8c110b1a9f97b0fa2f2302d5",
+        "body_sha256": "a8e8002064b6ab94c90dabb97367f93b941dd0878b99866e314af0704957e5e6",
+        "scope": "External C/Python old WRITE views retained across owner loss/takeover, original deadline and live-owner negatives; source/offline only, six original conditions unchanged."
       },
       "exit_conditions": [
-        "Old pending request and surviving notification fd lose authority on actual original owner loss before expiry.",
-        "New unique owner is refused at old endpoint; new registration/lifetime finishes only with its own actual C reply.",
-        "Negative control rejects missing owner notification, original restored, exact frozen test artifact passes; production semantics unchanged."
+        "Actual external C/Python old WRITE request and fd stay inspectable; next/authorization/reply return ESTALE before original deadline.",
+        "New daemon unique owner does not restore authority even after the original deadline; immutable request/value and live fd remain distinct from authority.",
+        "Live owner negative controls fail; local view cleanup is never described as successful remote unregister."
       ],
       "remaining_conditions": [
         "Actual slkd SIGKILL/reap, per-controller cleanup before successor, retained SDK old-owner refusal and fresh wire business in VM",
         "Full original U22 operation/value/lifecycle scope; natural fault/nonmanual recovery remain open"
       ],
       "next": [
-        "Extend existing VM init SIGKILL/reap/successor supervision to a real pending SSAP WRITE, without a second Host or Engine.",
-        "Observe both controllers Free/empty before new daemon, old SDK authority stays stale, then fresh connections and ordinary/SSAP peer replies under successor.",
-        "Keep original data/security/SSAP work parallel; do not gate it on all control-plane combinations."
+        "Use existing VM channel-daemon-crash supervisor and the same external SDK observer; no extra Engine or independent protocol loop.",
+        "Arm real pending WRITE before init SIGKILL/reap; observe original request terminal before deadline, both controllers Free/empty, then actual successor and old-view refusal.",
+        "Fresh connection and ordinary/SSAP business must be verified by actual peer under new daemon; preserve all original fd, capture and lifecycle assertions."
       ],
       "qualification_boundary": "Source/offline and retained hardware identities separate; no change to selected qualification or existing records/materials."
     },

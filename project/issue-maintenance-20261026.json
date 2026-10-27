@@ -286,7 +286,7 @@
       "action": "body_replaced_and_scope_split",
       "state": "open",
       "closure_basis": "U#21 SDK READ Provider 生命周期、U#22 剩余 SSAP 操作/长值/更新事务、U#23 真实 Profile；父项原完整验收保留。",
-      "body_sha256": "aa4697e83c895b63dde43a8037bb3b038b54d16b5ab65e4e1795dd926e26e54f",
+      "body_sha256": "e9a7089e4af808521e719bfe448da27a13d46995a24f37c9c4fecdb08ec8cf25",
       "children": [
         21,
         22,
@@ -387,7 +387,7 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "1cd92db76a34bdfb9bd7d0b6b43182fb0db5fd21917e8b0553a4e3e9fea60ec7",
+      "body_sha256": "b00b822668a3d14ce5379faddb5930d8faf85854b5315407b3598082d531182e",
       "classification": "有限收尾",
       "closure_basis": "Existing dynamic WRITE command Provider v3 source/offline gate added; original six SSAP conditions OPEN. Exact actual qualification in authorized local index."
     },
@@ -435,7 +435,7 @@
       "parent": 19,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "eb0ca80df84dacafd5dc2bab0ab99987c07ceb87021487e0001f99ccb3a855a4",
+      "body_sha256": "c2b25db9c0076fa46de96b175498008d06e1536b366dec7e40f650326ec5b3c7",
       "classification": "有限收尾",
       "closure_basis": "资格身份、原材料、判定器闭包及缺失/篡改/过期负对照。"
     },
@@ -5517,6 +5517,37 @@
       "body_sha256": "1cd92db76a34bdfb9bd7d0b6b43182fb0db5fd21917e8b0553a4e3e9fea60ec7",
       "source_offline_only": true,
       "scope": "Dynamic SDK command Provider v3: source and121 scoped offline checks only. Original six acceptance unchanged; exact hardware results local."
+    },
+    {
+      "observed_at": "2026-10-27T08:19:50.067636+00:00",
+      "sources": {
+        "public": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+        "boundary_verifier_public": "38273c5458542e19be2627c62ad186eb2178dbed"
+      },
+      "updates": [
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "state": "open",
+          "body_sha256": "b00b822668a3d14ce5379faddb5930d8faf85854b5315407b3598082d531182e",
+          "source_offline_only": true
+        },
+        {
+          "repository": "sparklink",
+          "number": 3,
+          "state": "open",
+          "body_sha256": "e9a7089e4af808521e719bfe448da27a13d46995a24f37c9c4fecdb08ec8cf25",
+          "source_offline_only": true
+        },
+        {
+          "repository": "linux",
+          "number": 23,
+          "state": "open",
+          "body_sha256": "c2b25db9c0076fa46de96b175498008d06e1536b366dec7e40f650326ec5b3c7",
+          "source_offline_only": true
+        }
+      ],
+      "scope": "Method requester and boundary saved-report structural validator; all issues remain open, original conditions unchanged."
     }
   ],
   "current_disposition": {

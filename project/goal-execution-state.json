@@ -820,11 +820,7 @@
     "classification": "PROGRESS",
     "reason": "Bounded issue maintenance updated authoritative GitHub bodies and canonical execution state."
   },
-  "current_goal_turn_classification": {
-    "classification": "PROGRESS",
-    "goal_complete": false,
-    "reason": "Actual SDK pending WRITE across owner takeover regression and missing-notification negative added; full related lib/Clippy passed and exact test artifact frozen. VM process restart remains next; original full goal active."
-  },
+  "current_goal_turn_classification": "progress",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
   "issue_sync_receipt_previous": ".dev/architecture-r6a-issue-receipts-v1.json",
@@ -2019,68 +2015,104 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP08-SDK-WRITE-COMMAND-Provider-v3",
-      "state": "SOURCE_OFFLINE_PASS_PRIVATE_REAL_RESULTS_SEPARATE",
-      "production_behavior": "Existing operation12 SDK/Provider path is now exercised by version3 actual command executor: application error then full payload acceptance with no protocol response, followed by verified request. No new Host/Engine or production protocol implementation.",
+      "id": "WP08-METHOD-REQUESTER-v1",
+      "state": "SOURCE_OFFLINE_PASS_PROVIDER_MISSING",
+      "production_behavior": "Method request19/result20 and command18 reuse the unique SSAP actor, fragment lanes, command admission, original deadline and Session/Grant/credit/Ticket. Rust/C/Python/CLI and typed D-Bus callers expose independent peer results; local method Provider remains unsupported with original-handle error, no echo.",
       "implementation_sources": {
-        "public": "2be80c3000a05052e4d257997108b56850c14f69"
+        "public": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+        "boundary_verifier_public": "38273c5458542e19be2627c62ad186eb2178dbed"
       },
       "offline_checks": {
-        "related_regressions": "121 scoped tool checks PASS; includes retained v1/v2 and restart/lifecycle tests",
-        "negative_scope": "synthetic transcript/capture and explicit coordinator fixtures; no new formal proof",
-        "documentation": "locked strict nitpicky warnings-as-errors HTML PASS",
-        "metadata_regressions": "69 qualification/docs integrity tests PASS;121-document inventory PASS",
+        "rust": "449 passed;2 VM-only ignored, not counted as passed. Explicit private D-Bus/metadata/queue/Unix fixtures; actual external C/Python/CLI consumers.",
+        "strict": "Locked/offline Rust1.96.1 workspace all-target Clippy -D warnings PASS; shared build lock/max8/fixed incremental directory",
+        "python": "77 policy/metadata/docs checks, then145 boundary/target/initialization/Provider regressions PASS",
+        "docs": "Locked strict nitpicky HTML PASS; generated C header uses cbindgen0.29.4",
+        "retained_failures": [
+          "Initial missing private-bus executable and sandbox bind rejection",
+          "Report regression initial kernel-path environment missing",
+          "Saved boundary report accepted absent proofs; fixed structural validator retains negative case"
+        ],
         "ci": {
-          "source": "2be80c3000a05052e4d257997108b56850c14f69",
-          "result": "Five observed workflow runs completed successfully; status observation only, not new hardware/formal qualification",
+          "source": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
           "runs": [
             {
-              "id": 40464051562,
-              "workflow": "Production codec bounded fuzz"
+              "conclusion": "success",
+              "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+              "name": "Production codec bounded fuzz",
+              "status": "completed",
+              "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434846"
             },
             {
-              "id": 40464051712,
-              "workflow": "Qualification integrity"
+              "conclusion": "success",
+              "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+              "name": "Documentation",
+              "status": "completed",
+              "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434838"
             },
             {
-              "id": 40464051507,
-              "workflow": "Documentation"
+              "conclusion": "success",
+              "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+              "name": "Qualification integrity",
+              "status": "completed",
+              "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434831"
             },
             {
-              "id": 40464051563,
-              "workflow": "WS73 offline tools"
+              "conclusion": "success",
+              "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+              "name": "Offline tools and application SDK",
+              "status": "completed",
+              "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434843"
             },
             {
-              "id": 40464045069,
-              "workflow": "Documentation"
+              "conclusion": "success",
+              "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+              "name": "Documentation",
+              "status": "completed",
+              "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469429406"
             }
           ],
-          "history": "c83e164 SDK formatting failure retained; subsequent success does not rewrite it"
+          "scope": "Observed workflow outcomes only; no new hardware/proof qualification."
         }
       },
       "issue_sync": {
-        "repository": "sparklink",
-        "number": 22,
-        "state": "open",
-        "observed_at": "2026-10-27T07:02:28Z",
-        "public_source": "2be80c3000a05052e4d257997108b56850c14f69",
-        "body_sha256": "1cd92db76a34bdfb9bd7d0b6b43182fb0db5fd21917e8b0553a4e3e9fea60ec7",
-        "source_offline_only": true,
-        "scope": "Dynamic SDK command Provider v3: source and121 scoped offline checks only. Original six acceptance unchanged; exact hardware results local."
+        "observed_at": "2026-10-27T08:19:50.067636+00:00",
+        "updates": [
+          {
+            "repository": "sparklink",
+            "number": 22,
+            "state": "open",
+            "body_sha256": "b00b822668a3d14ce5379faddb5930d8faf85854b5315407b3598082d531182e",
+            "source_offline_only": true
+          },
+          {
+            "repository": "sparklink",
+            "number": 3,
+            "state": "open",
+            "body_sha256": "e9a7089e4af808521e719bfe448da27a13d46995a24f37c9c4fecdb08ec8cf25",
+            "source_offline_only": true
+          },
+          {
+            "repository": "linux",
+            "number": 23,
+            "state": "open",
+            "body_sha256": "c2b25db9c0076fa46de96b175498008d06e1536b366dec7e40f650326ec5b3c7",
+            "source_offline_only": true
+          }
+        ],
+        "scope": "Source/offline only; original six SSAP and four integrity conditions unchanged"
       },
-      "hardware_status": "Exact compiled/tool/kernel identities and all real outcomes remain in authorized local evidence. Public summary grants no hardware qualification.",
-      "formal_status": "NO_NEW_PROOF",
+      "hardware_status": "New requester has no positive method Provider/remote application qualification. Exact preservation artifacts and results remain in authorized local index; no transfer from old artifacts.",
+      "formal_status": "NO_NEW_PROOF; prior bounded fragment/codec models do not prove new method or full runtime/refinement.",
       "exit_conditions": [
-        "Both actual ordinary C/Python command senders and Provider roles",
-        "Command policy approval distinct from application rejection/acceptance; no generated protocol response",
-        "Actual peer callback identity/value/original deadline and full capture absence check",
-        "Following verified random request and original ordinary/Owned gates preserved",
-        "Report rejects wrong source/model/phase/deadline/value and spurious command responses"
+        "Production requester uses existing queues/identity/security/original deadlines, no second Engine",
+        "Independent result versus command admission in Rust/C/Python/CLI and wire signatures",
+        "Invalid length/control/error handle and deadline/identity refusals covered offline",
+        "Exact-artifact original real paths checked separately; does not substitute method positive delivery"
       ],
       "next": [
-        "Continue unique Engine remaining method/descriptor Provider and update/long transaction matrix, with source/reference audit before new APIs",
-        "Preserve v1 short-value, v2 long-value and lifecycle qualifications under their original artifacts; do not replace them with v3",
-        "Continue data/security and full S0-S6/19WP/10FV/12DG; natural root cause/nonmanual recovery and original issues remain open"
+        "Implement distinct method entries and Owned registration via existing Provider Dispatcher and sole Engine; do not reuse property WRITE echo",
+        "Then real opposite application argument validation and independent method result/command processing, both roles, original cancellation/owner/Down/deadline gates",
+        "Continue descriptor/update/long transactions and data/security work; full S0-S6/19WP/10FV/12DG, VM-only, original recovery and UserHost P4 scope unchanged"
       ]
     },
     "selected_qualification": {
@@ -5117,37 +5149,7 @@
     }
   ],
   "source_issue_sync_receipt": {
-    "source_only": true,
-    "comments": [
-      {
-        "repo": "sparklink",
-        "issue": 3,
-        "id": 6398991554,
-        "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6398991554",
-        "body_verified": true
-      },
-      {
-        "repo": "sparklink",
-        "issue": 8,
-        "id": 6398995318,
-        "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6398995318",
-        "body_verified": true
-      },
-      {
-        "repo": "linux",
-        "issue": 17,
-        "id": 6398997462,
-        "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6398997462",
-        "body_verified": true
-      },
-      {
-        "repo": "linux",
-        "issue": 19,
-        "id": 6399034236,
-        "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6399034236",
-        "body_verified": true
-      }
-    ]
+    "authority": "project/qualification-records.json:batch.issue_sync"
   },
   "source_offline_sync_history": [
     {
@@ -5265,7 +5267,15 @@
     "private_hardware_published": false
   },
   "next_batch_contract": {
-    "authority": "project/qualification-records.json:batch.next"
+    "work_package": "WP08/U#22",
+    "production_behavior": "Implement distinct method entries and Owned registration via existing Provider Dispatcher and sole Engine; do not reuse property WRITE echo",
+    "exit_conditions": [
+      "Original owned method handle/operation/arguments/security/deadline reach same shared Provider Dispatcher",
+      "Method request returns independently produced application result; command has no protocol reply",
+      "Wrong owner/handle, expiry, cancellation, owner exit and bounded queues have definite failure; no implicit effect retry",
+      "Accurate signed source gets real dual-device new-behavior and original preservation gates"
+    ],
+    "not_prerequisite": "Full unrelated control-plane matrix, UserHost, Bond/release or complete recovery"
   },
   "validation_reference_history": [
     {
@@ -5284,5 +5294,15 @@
   "current_validation_ref": {
     "authority": "project/qualification-records.json:batch.offline_checks",
     "scope": "Only named current offline checks; exact retained artifact qualification remains qualification_view.selected_qualification."
+  },
+  "next_batch_contract_history": [
+    {
+      "authority": "project/qualification-records.json:batch.next"
+    }
+  ],
+  "method_requester_execution": {
+    "authority": "project/qualification-records.json:batch",
+    "next": "Existing unique method Provider vertical slice; no new Engine",
+    "hardware_details": "authorized local evidence only"
   }
 }

@@ -23,6 +23,7 @@ mod ssap_authorization;
 mod ssap_database;
 mod ssap_engine;
 mod ssap_engine_config;
+mod ssap_method_provider;
 mod ssap_read_provider;
 mod ssap_receive_transaction;
 mod ssap_subscription;

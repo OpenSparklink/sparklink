@@ -55,9 +55,53 @@ impl SsapAccess {
         }
     }
 }
+/// Invocation requirements, not a property's read/write operation bits.
+/// Reuses the verified encryption/authentication/authorization predicate; a
+/// method's declared requirements must cover every effect implemented by it.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct MethodAccess(SsapAccess);
+impl MethodAccess {
+    pub fn from_bits(bits: u32) -> Result<Self, &'static str> {
+        if bits & !7 != 0 {
+            return Err("reserved method access bits");
+        }
+        SsapAccess::from_bits(bits).map(Self)
+    }
+    pub fn bits(self) -> u32 {
+        self.0.bits()
+    }
+    pub fn needs_local_authorization(self) -> bool {
+        self.0.needs_local_authorization()
+    }
+    pub fn check(self, level: u32, authorized: bool) -> Result<(), u8> {
+        self.0.check_authorization_result(level, true, authorized)
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn method_requirements_reuse_permission_semantics_and_reject_read_bits() {
+        for bits in 0..=255 {
+            let parsed = MethodAccess::from_bits(bits);
+            if bits > 7 {
+                assert!(parsed.is_err());
+                continue;
+            }
+            let method = parsed.unwrap();
+            assert_eq!(method.bits(), bits);
+            for level in 0..=3 {
+                for approved in [false, true] {
+                    assert_eq!(
+                        method.check(level, approved),
+                        SsapAccess::from_bits(bits)
+                            .unwrap()
+                            .check_authorization_result(level, true, approved)
+                    );
+                }
+            }
+        }
+    }
     #[test]
     fn independent_read_write_requirements_and_fail_closed_authorization() {
         for bits in 0..=255 {

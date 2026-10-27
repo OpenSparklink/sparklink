@@ -3,7 +3,7 @@
 //! Reply codecs receive a bounded logical-PDU budget; the sole Engine enforces
 //! each physical datagram MTU and negotiated fragment support before sending.
 use crate::ssap_authorization::{Approval, Owner, Target};
-use slk_protocol::ssap::access::SsapAccess;
+use slk_protocol::ssap::access::{MethodAccess, SsapAccess};
 use slk_protocol::ssap::discovery::{Entry, FindKind, FindRequest, encode_page};
 use slk_protocol::{SsapOperations, ssap::value::ValuePdu};
 use std::collections::BTreeMap;
@@ -18,7 +18,9 @@ pub(crate) enum LocalValueError {
     Unsupported,
 }
 
-pub(crate) use slk_contract::ssap::local::{PropertyDefinition, ServiceRecord as LocalService};
+pub(crate) use slk_contract::ssap::local::{
+    MethodDefinition, PropertyDefinition, ServiceRecord as LocalService,
+};
 enum ValueSource {
     Stored(Vec<u8>),
     Provider(Arc<crate::ssap_read_provider::Binding>),
@@ -44,10 +46,16 @@ struct Property {
     // not authorize or restrict it. No separate handle or callback is created.
     description: Option<Vec<u8>>,
 }
+struct Method {
+    uuid: Vec<u8>,
+    access: MethodAccess,
+    binding: Option<Arc<crate::ssap_method_provider::Binding>>,
+}
 struct Service {
     end: u16,
     uuid: Vec<u8>,
     properties: BTreeMap<u16, Property>,
+    methods: BTreeMap<u16, Method>,
     owner: Option<Arc<Owner>>,
 }
 pub(crate) struct Database {
@@ -85,7 +93,7 @@ impl Database {
         uuid: Vec<u8>,
         definitions: Vec<PropertyDefinition>,
     ) -> Result<(u16, u16, Vec<u16>), String> {
-        self.register_inner(uuid, definitions, None)
+        self.register_inner(uuid, definitions, vec![], None)
     }
     pub(crate) fn register_owned(
         &mut self,
@@ -96,23 +104,50 @@ impl Database {
         if !owner.current() {
             return Err("service owner retired".into());
         }
-        self.register_inner(uuid, definitions, Some(owner))
+        self.register_inner(uuid, definitions, vec![], Some(owner))
+    }
+    pub(crate) fn register_owned_entries(
+        &mut self,
+        uuid: Vec<u8>,
+        properties: Vec<PropertyDefinition>,
+        methods: Vec<MethodDefinition>,
+        owner: Arc<Owner>,
+    ) -> Result<(u16, u16, Vec<u16>), String> {
+        if methods.is_empty() {
+            return self.register_owned(uuid, properties, owner);
+        }
+        self.register_inner(uuid, properties, methods, Some(owner))
     }
     fn register_inner(
         &mut self,
         uuid: Vec<u8>,
         definitions: Vec<PropertyDefinition>,
+        methods: Vec<MethodDefinition>,
         owner: Option<Arc<Owner>>,
     ) -> Result<(u16, u16, Vec<u16>), String> {
         fn uuid_valid(v: &[u8]) -> bool {
             matches!(v.len(), 2 | 16) && v.iter().any(|b| *b != 0)
         }
-        if !uuid_valid(&uuid) || definitions.is_empty() {
+        if !uuid_valid(&uuid) || definitions.is_empty() && methods.is_empty() {
             return Err("invalid UUID or empty service".into());
         }
-        let count: usize = self.services.values().map(|s| s.properties.len()).sum();
-        if self.services.len() >= 16 || count + definitions.len() > 64 {
+        let count: usize = self
+            .services
+            .values()
+            .map(|s| s.properties.len() + s.methods.len())
+            .sum();
+        if self.services.len() >= 16 || count + definitions.len() + methods.len() > 64 {
             return Err("local database capacity".into());
+        }
+        for (uuid, bits) in &methods {
+            let access = MethodAccess::from_bits(*bits)?;
+            if !uuid_valid(uuid)
+                || owner.is_none()
+                || access.needs_local_authorization()
+                    && owner.as_ref().is_none_or(|o| !o.supports_authorization())
+            {
+                return Err("invalid method UUID/owner/authorization".into());
+            }
         }
         let mut added = 0;
         for (uuid, ops, access, value) in &definitions {
@@ -142,7 +177,8 @@ impl Database {
         if self.bytes + added > 8192 {
             return Err("local database byte budget".into());
         }
-        let end = self.next + definitions.len() as u32;
+        let property_count = definitions.len();
+        let end = self.next + (property_count + methods.len()) as u32;
         if end > u32::from(u16::MAX) {
             return Err("local handle namespace exhausted".into());
         }
@@ -164,7 +200,21 @@ impl Database {
                 )
             })
             .collect::<BTreeMap<_, _>>();
-        let handles = properties.keys().copied().collect();
+        let methods = methods
+            .into_iter()
+            .enumerate()
+            .map(|(i, (uuid, bits))| {
+                (
+                    (self.next + 1 + property_count as u32 + i as u32) as u16,
+                    Method {
+                        uuid,
+                        access: MethodAccess::from_bits(bits).expect("validated"),
+                        binding: None,
+                    },
+                )
+            })
+            .collect::<BTreeMap<_, _>>();
+        let handles = properties.keys().chain(methods.keys()).copied().collect();
         // Final owned-registration admission, after validation/allocation and
         // under the same DB lock as removal/value admission. No await follows.
         if owner.as_ref().is_some_and(|o| !o.can_register()) {
@@ -176,6 +226,7 @@ impl Database {
                 end,
                 uuid,
                 properties,
+                methods,
                 owner,
             },
         );
@@ -234,6 +285,125 @@ impl Database {
             return Err("service is not owned by caller".into());
         }
         self.remove(start)
+    }
+    pub(crate) fn bind_owned_method_provider(
+        &mut self,
+        handle: u16,
+        caller: &str,
+        path: zbus::zvariant::OwnedObjectPath,
+    ) -> Result<(), LocalValueError> {
+        if path.as_str() == "/" || path.as_str().len() > 255 {
+            return Err(LocalValueError::Length);
+        }
+        let service = self
+            .services
+            .values_mut()
+            .find(|s| {
+                s.methods.contains_key(&handle)
+                    && s.owner
+                        .as_ref()
+                        .is_some_and(|o| o.current() && o.name == caller)
+            })
+            .ok_or(LocalValueError::Owner)?;
+        let method = service.methods.get_mut(&handle).expect("owned method");
+        if method.binding.is_some() {
+            return Err(LocalValueError::Unsupported);
+        }
+        method.binding = Some(Arc::new(crate::ssap_method_provider::Binding {
+            owner: service.owner.as_ref().expect("owned").clone(),
+            path,
+        }));
+        Ok(())
+    }
+    fn method_access(
+        &self,
+        handle: u16,
+        level: u32,
+        approvals: &[Approval],
+    ) -> Result<&Method, u8> {
+        let method = self
+            .services
+            .values()
+            .find_map(|s| s.methods.get(&handle))
+            .ok_or_else(|| {
+                if self.services.contains_key(&handle) || self.property(handle).is_some() {
+                    12u8
+                } else {
+                    4u8
+                }
+            })?;
+        method.access.check(
+            level,
+            self.locally_authorized(handle, slk_contract::ssap::METHOD_TARGET, true, approvals),
+        )?;
+        Ok(method)
+    }
+    pub(crate) fn method_provider_target(
+        &self,
+        request: ValuePdu<'_>,
+        level: u32,
+        approvals: &[Approval],
+    ) -> Option<crate::ssap_method_provider::Target> {
+        let (handle, args) = match request {
+            ValuePdu::CallMethod { handle, arguments }
+            | ValuePdu::CallMethodCommand { handle, arguments } => (handle, arguments),
+            _ => return None,
+        };
+        if args.len() > slk_contract::ssap::MAX_METHOD_ARGUMENT_BYTES {
+            return None;
+        }
+        let binding = self
+            .method_access(handle, level, approvals)
+            .ok()?
+            .binding
+            .as_ref()?;
+        binding
+            .owner
+            .current()
+            .then(|| crate::ssap_method_provider::Target {
+                handle,
+                binding: binding.clone(),
+            })
+    }
+    pub(crate) fn method_result<'a>(
+        &self,
+        request: ValuePdu<'_>,
+        level: u32,
+        approvals: &[Approval],
+        result: Option<&'a crate::ssap_method_provider::MethodResult>,
+    ) -> Result<&'a [u8], u8> {
+        let (handle, arguments, opcode) = match request {
+            ValuePdu::CallMethod { handle, arguments } => (handle, arguments, 19),
+            ValuePdu::CallMethodCommand { handle, arguments } => (handle, arguments, 18),
+            _ => return Err(2),
+        };
+        let binding = self
+            .method_access(handle, level, approvals)?
+            .binding
+            .as_ref()
+            .ok_or(0xafu8)?;
+        if !binding.owner.current() {
+            return Err(4);
+        }
+        let r = result
+            .filter(|r| {
+                r.target.handle == handle
+                    && Arc::ptr_eq(&r.target.binding, binding)
+                    && r.request.method == handle
+                    && r.request.operation == opcode
+                    && r.request.arguments == arguments
+            })
+            .ok_or(0xafu8)?;
+        match &r.result {
+            Ok(bytes)
+                if bytes.len() <= usize::from(r.request.maximum_result_bytes)
+                    && (opcode == 19 || bytes.is_empty()) =>
+            {
+                Ok(bytes)
+            }
+            Err(error) if (0xaf..=0xff).contains(error) => Err(*error),
+            _ => Err(0xaf),
+        }
     }
     pub(crate) fn local_read_owned(
         &self,
@@ -431,6 +601,28 @@ impl Database {
         })
     }
     pub(crate) fn value_targets(&self, request: ValuePdu<'_>, level: u32) -> Vec<Target> {
+        if let ValuePdu::CallMethod { handle, .. } | ValuePdu::CallMethodCommand { handle, .. } =
+            request
+        {
+            return self
+                .services
+                .values()
+                .find_map(|service| {
+                    let method = service.methods.get(&handle)?;
+                    let owner = service.owner.as_ref()?;
+                    (owner.current()
+                        && owner.supports_authorization()
+                        && method.access.check(level, false) == Err(9)
+                        && method.access.check(level, true).is_ok())
+                    .then(|| Target {
+                        handle,
+                        data_type: slk_contract::ssap::METHOD_TARGET,
+                        owner: owner.clone(),
+                    })
+                })
+                .into_iter()
+                .collect();
+        }
         if let ValuePdu::WriteCommand {
             handle,
             data_type: 0,
@@ -504,7 +696,7 @@ impl Database {
     ) -> bool {
         self.services
             .values()
-            .find(|s| s.properties.contains_key(&handle))
+            .find(|s| s.properties.contains_key(&handle) || s.methods.contains_key(&handle))
             .and_then(|s| s.owner.as_ref())
             .is_some_and(|o| {
                 o.current()
@@ -533,7 +725,8 @@ impl Database {
                     uuid: service.uuid.clone(),
                     operations: 0,
                     descriptors: vec![],
-                    members: 2,
+                    members: (u8::from(!service.properties.is_empty()) * 2)
+                        | (u8::from(!service.methods.is_empty()) * 4),
                 });
             }
             if matches!(request.kind, FindKind::Properties | FindKind::Structure) {
@@ -564,6 +757,28 @@ impl Database {
                                 }
                                 types
                             },
+                            members: 0,
+                        });
+                    }
+                }
+            }
+            if matches!(request.kind, FindKind::Methods | FindKind::Structure) {
+                for (handle, method) in &service.methods {
+                    let included = matched
+                        || request.kind == FindKind::Methods
+                            && request.uuid.is_some_and(|u| u == method.uuid);
+                    if included
+                        && *handle >= request.start
+                        && *handle <= request.end
+                        && request.accepts(&method.uuid)
+                    {
+                        entries.push(Entry {
+                            category: if method.uuid.len() == 16 { 11 } else { 3 },
+                            handle: *handle,
+                            end: *handle,
+                            uuid: method.uuid.clone(),
+                            operations: 0,
+                            descriptors: vec![],
                             members: 0,
                         });
                     }

@@ -353,11 +353,13 @@ impl OwnedServices {
         &self,
         uuid: Vec<u8>,
         properties: Vec<slk_contract::ssap::local::PropertyDefinition>,
+        methods: Vec<slk_contract::ssap::local::MethodDefinition>,
         authorizer: zbus::zvariant::OwnedObjectPath,
         stamp: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> (u16, u16, Vec<u16>) {
         slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(stamp)).unwrap();
+        assert!(methods.is_empty());
         assert_eq!(uuid, [1, 0]);
         let access = properties[0].2;
         assert!(matches!(access, 0 | 36));

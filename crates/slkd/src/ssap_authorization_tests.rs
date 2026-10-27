@@ -323,6 +323,7 @@ async fn register_operations(owner: &Connection, access: u32, operations: u32) -
             &(
                 vec![1u8, 0],
                 vec![(vec![2u8, 0], operations, access, vec![7u8])],
+                Vec::<slk_contract::ssap::local::MethodDefinition>::new(),
                 OwnedObjectPath::try_from("/authorizer").unwrap(),
                 owned_deadline(),
             ),
@@ -592,6 +593,7 @@ async fn original_deadline_and_native_recheck_precede_value_mutation() {
     let decision = ServerDecision {
         values: vec![],
         write: None,
+        method: None,
         admission_error: None,
         packet: packet(
             ValuePdu::Write {
@@ -1154,6 +1156,7 @@ async fn expired_owned_rpc_and_old_shapes_never_register_read_or_remove() {
             &(
                 vec![1u8, 0],
                 properties.clone(),
+                Vec::<slk_contract::ssap::local::MethodDefinition>::new(),
                 authorizer.clone(),
                 expired,
             ),
@@ -1173,7 +1176,7 @@ async fn expired_owned_rpc_and_old_shapes_never_register_read_or_remove() {
         .unwrap_err();
     assert!(
         matches!(error,zbus::Error::MethodError(ref name,Some(ref text),_) if
-            name.as_str()=="org.freedesktop.zbus.Error" && text == "Signature mismatch: got `(aya(ayuuay)o)`, expected `(aya(ayuuay)o(ttttt))`"),
+            name.as_str()=="org.freedesktop.zbus.Error" && text == "Signature mismatch: got `(aya(ayuuay)o)`, expected `(aya(ayuuay)a(ayu)o(ttttt))`"),
         "{error:?}"
     );
     let (start, handle) = register(&owner, 0).await;
@@ -1232,6 +1235,7 @@ async fn original_owned_rpc_deadline_covers_state_lock_and_cannot_resume_late() 
     let body = (
         vec![1u8, 0],
         vec![(vec![2u8, 0], 5u32, 0u32, vec![7u8])],
+        Vec::<slk_contract::ssap::local::MethodDefinition>::new(),
         OwnedObjectPath::try_from("/").unwrap(),
         slk_contract::deadline_wire(deadline.stamp()),
     );
@@ -1333,6 +1337,7 @@ async fn actual_owned_replacement_preserves_peer_permissions_budget_and_owner() 
             &(
                 vec![1u8, 0],
                 vec![(vec![2u8, 0], 1u32, 0u32, vec![7u8])],
+                Vec::<slk_contract::ssap::local::MethodDefinition>::new(),
                 OwnedObjectPath::try_from("/").unwrap(),
                 owned_deadline(),
             ),
@@ -1819,3 +1824,6 @@ async fn actual_update_wait_cancellation_keeps_admitted_identity_and_original_dr
 
 #[path = "ssap_read_provider_tests.rs"]
 mod read_provider_tests;
+
+#[path = "ssap_method_provider_tests.rs"]
+mod method_provider_tests;

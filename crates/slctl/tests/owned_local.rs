@@ -32,11 +32,13 @@ impl Services {
         &self,
         uuid: Vec<u8>,
         properties: Vec<(Vec<u8>, u32, u32, Vec<u8>)>,
+        methods: Vec<slk_contract::ssap::local::MethodDefinition>,
         authorizer: zbus::zvariant::OwnedObjectPath,
         deadline: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> (u16, u16, Vec<u16>) {
         libsparklink::Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).unwrap();
+        assert!(methods.is_empty());
         assert_eq!(uuid, [1, 0]);
         assert_eq!(properties, [(vec![2, 0], 5, 36, vec![0xab])]);
         assert_eq!(authorizer.as_str(), "/org/sparklink/slctl/ssap_authorizer");

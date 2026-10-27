@@ -616,8 +616,8 @@ WRITE_NO_RSP、descriptor、notify/indicate等声明明确NotSupported；共享�
 服务成员位分别查询属性和方法，共用原5秒期限、96页及80条总预算；方法查询失败
 或跨类别重复handle使整次发现失败，不发布部分结果为完整缓存。
 `slctl ssap-discover CONNECTION method UUID_HEX` 使用同一SDK/daemon发现入口。
-本地method登记/Provider仍未接通，当前本地方法查询返回真实未找到条目；发现对端
-方法不表示调用成功、授权或安全资格。完整服务数据库快照、事件/引用发现及
+本地method登记与D-Bus Provider已接入同一数据库/Engine；SDK方法收件箱仍待接通。
+发现方法不表示调用成功、授权或安全资格。完整服务数据库快照、事件/引用发现及
 ServiceChanged一致性尚无承诺。C/Python现有method调用入口保留，本批未新增其发现封装。
 普通服务从handle16分配，保留旧流量证据但不转授旧范围为标准合格。
 
@@ -1096,7 +1096,15 @@ WRITE Provider 新入口仍为未发布、限量支持的源码契约；不能�
 策略批准不产生应用成功，超时/撤权不能回滚已发生的应用副作用。完整权限、预算、
 期限与拒绝条件见[SSAP WRITE Provider 契约](ssap-permissions.md)。Rust/C/Python WRITE
 收件箱共用原前端及容量/释放；C 的 bind/fd/next/info/value/reply/free 和 Python 对应视图
-见上述契约。method/长写仍未接通，新 artifact 的 VM 实机验收仍需单独取得。
+见上述契约。method服务端D-Bus接线见下表，SDK方法收件箱仍待接通；长值按已协商
+分片及各自准确资格开放，新artifact的VM实机验收仍需单独取得。
+
+| 方法服务端接口 | 签名 | 范围 |
+|---|---|---|
+| `ServiceManager.BindOwnedMethodProvider` | `(handle:q, provider:o, deadline:(ttttt))->()` | 原登记owner、方法条目、一次绑定，无存储值回退 |
+| `org.sparklink.SsapMethodProvider.CallMethod` | `(request:(t(qttqtuyyy)qtyayq))->(yay)` | 原id/identity/handle/期限、opcode、参数、结果上限；独立结果，command无线上响应 |
+
+完整登记、权限、预算及未接通SDK范围见[方法服务端契约](ssap-permissions.md#owned-method-服务端)。
 
 ## 安装布局与卸载边界
 

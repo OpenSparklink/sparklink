@@ -97,6 +97,7 @@ impl LocalServices {
                     &(
                         uuid,
                         properties,
+                        Vec::<wire::MethodDefinition>::new(),
                         authorizer,
                         slk_contract::deadline_wire(original.stamp()),
                     ),

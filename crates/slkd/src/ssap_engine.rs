@@ -1183,6 +1183,7 @@ struct ServerDecision {
     approvals: Vec<crate::ssap_authorization::Approval>,
     values: Vec<crate::ssap_read_provider::ReadValue>,
     write: Option<crate::ssap_write_provider::WriteResult>,
+    method: Option<crate::ssap_method_provider::MethodResult>,
     admission_error: Option<io::Error>,
 }
 type ServerTask = std::pin::Pin<Box<dyn std::future::Future<Output = ServerDecision> + Send>>;
@@ -1213,11 +1214,15 @@ async fn authorize_server(packet: ServerPacket, database: Store) -> ServerDecisi
     };
     let mut approvals = Vec::new();
     if let Some(c) = packet.constraint {
-        let write = matches!(packet.bytes[0], 12 | 13);
+        let write = matches!(packet.bytes[0], 12 | 13 | 18 | 19);
         let value = match ValuePdu::decode(packet.mtu, &packet.bytes) {
             Ok(ValuePdu::Write { value, .. } | ValuePdu::WriteCommand { value, .. }) => {
                 value.to_vec()
             }
+            Ok(
+                ValuePdu::CallMethod { arguments, .. }
+                | ValuePdu::CallMethodCommand { arguments, .. },
+            ) => arguments.to_vec(),
             _ => vec![],
         };
         for target in targets {
@@ -1313,6 +1318,7 @@ async fn authorize_server(packet: ServerPacket, database: Store) -> ServerDecisi
         approvals,
         values,
         write: None,
+        method: None,
         admission_error: None,
     }
 }
@@ -1322,6 +1328,66 @@ async fn authorize_server(packet: ServerPacket, database: Store) -> ServerDecisi
 /// effect; a later revocation can stop the response but cannot undo that effect.
 async fn resolve_server(packet: ServerPacket, database: Store, wire: Wire) -> ServerDecision {
     let mut decision = authorize_server(packet, database.clone()).await;
+    if matches!(decision.packet.bytes[0], 18 | 19) {
+        let Some(c) = decision.packet.constraint else {
+            return decision;
+        };
+        let Ok(pdu) = ValuePdu::decode(decision.packet.mtu, &decision.packet.bytes) else {
+            return decision;
+        };
+        let target = database.lock().ok().and_then(|db| {
+            db.method_provider_target(pdu, decision.packet.level, &decision.approvals)
+        });
+        let Some(target) = target else {
+            return decision;
+        };
+        if let Err(error) = recheck_server_context(&wire, &decision.packet) {
+            decision.admission_error = Some(error);
+            return decision;
+        }
+        let arguments = match pdu {
+            ValuePdu::CallMethod { arguments, .. }
+            | ValuePdu::CallMethodCommand { arguments, .. } => arguments,
+            _ => return decision,
+        };
+        let request = slk_contract::ssap::MethodProviderRequest {
+            request_id: decision.packet.request_id,
+            identity: (
+                c.controller,
+                c.generation,
+                c.lifetime,
+                c.handle,
+                c.security_epoch,
+                decision.packet.level,
+                c.local_tcid,
+                c.remote_tcid,
+                c.pi,
+            ),
+            method: target.handle,
+            deadline_ns: c.deadline_monotonic_ns,
+            operation: decision.packet.bytes[0],
+            arguments: arguments.to_vec(),
+            maximum_result_bytes: if decision.packet.bytes[0] == 18 {
+                0
+            } else {
+                decision
+                    .packet
+                    .mtu
+                    .saturating_sub(2)
+                    .min(slk_contract::ssap::MAX_METHOD_RESULT_BYTES as u16)
+            },
+        };
+        let result = target
+            .binding
+            .invoke(&request, decision.packet.deadline)
+            .await;
+        decision.method = Some(crate::ssap_method_provider::MethodResult {
+            target,
+            request,
+            result,
+        });
+        return decision;
+    }
     if !matches!(decision.packet.bytes[0], 12 | 13) {
         return decision;
     }
@@ -1387,7 +1453,7 @@ fn server_response(
     approvals: &[crate::ssap_authorization::Approval],
     configurations: &mut crate::ssap_engine_config::ClientConfigurations,
 ) -> io::Result<Vec<u8>> {
-    server_response_resolved(packet, database, approvals, &[], None, configurations)
+    server_response_resolved(packet, database, approvals, &[], None, None, configurations)
 }
 fn server_response_resolved(
     packet: &ServerPacket,
@@ -1395,6 +1461,7 @@ fn server_response_resolved(
     approvals: &[crate::ssap_authorization::Approval],
     values: &[crate::ssap_read_provider::ReadValue],
     write: Option<&crate::ssap_write_provider::WriteResult>,
+    method: Option<&crate::ssap_method_provider::MethodResult>,
     configurations: &mut crate::ssap_engine_config::ClientConfigurations,
 ) -> io::Result<Vec<u8>> {
     let raw = &packet.bytes;
@@ -1469,6 +1536,23 @@ fn server_response_resolved(
             let mut database = database
                 .lock()
                 .map_err(|_| io::Error::other("database poisoned"))?;
+            if let ValuePdu::CallMethod { handle, .. } = request {
+                let answer = match database.method_result(request, packet.level, approvals, method)
+                {
+                    Ok(result) => ValuePdu::MethodResult(result),
+                    Err(error) => ValuePdu::Error {
+                        request: 19,
+                        handle,
+                        error,
+                    },
+                };
+                let mut out = vec![0; usize::from(negotiated)];
+                let n = answer
+                    .encode(negotiated, &mut out)
+                    .map_err(|_| io::Error::other("method response exceeds MTU"))?;
+                out.truncate(n);
+                return Ok(out);
+            }
             if matches!(
                 request,
                 ValuePdu::Read { data_type: 2, .. } | ValuePdu::Write { data_type: 2, .. }
@@ -1506,7 +1590,11 @@ fn server_response_resolved(
             let mut out = vec![0; 6];
             ValuePdu::Error {
                 request: raw[0],
-                handle: 0,
+                handle: if raw[0] == 19 && raw.len() >= 4 {
+                    u16::from_le_bytes([raw[2], raw[3]])
+                } else {
+                    0
+                },
                 error: if raw.get(1).is_some_and(|v| v & 3 != 3) {
                     16
                 } else if matches!(e, slk_protocol::ssap::value::ValueError::Unsupported) {
@@ -1531,6 +1619,21 @@ fn complete_server(
         return Err(error);
     }
     recheck_server_context(wire, &decision.packet)?;
+    if decision.packet.bytes[0] == 18 {
+        // Method command has no response, including application rejection.
+        if let Ok(request) = ValuePdu::decode(decision.packet.mtu, &decision.packet.bytes) {
+            let db = database
+                .lock()
+                .map_err(|_| io::Error::other("database poisoned"))?;
+            let _ = db.method_result(
+                request,
+                decision.packet.level,
+                &decision.approvals,
+                decision.method.as_ref(),
+            );
+        }
+        return Ok(None);
+    }
     if decision.packet.bytes[0] == 12 {
         // A command never manufactures a normal or error response.
         if let Ok(request) = ValuePdu::decode(decision.packet.mtu, &decision.packet.bytes) {
@@ -1562,6 +1665,7 @@ fn complete_server(
         &decision.approvals,
         &decision.values,
         decision.write.as_ref(),
+        decision.method.as_ref(),
         configurations,
     )?;
     Ok(Some(Pending {
@@ -2300,13 +2404,13 @@ async fn exchange_loop(
                                 else {Err("peer indication receive queue refused update".into())};
                             let _=reply.send(result);
                         }
-                    } else if matches!(raw[0],4|6|8|10|12|13) {
+                    } else if matches!(raw[0],4|6|8|10|12|13|18|19) {
                         if !initial_done {return Err(io::Error::other("SSAP value/discovery before ExchangeInfo completion"));}
                         if pending.len()+server_load>=8 {return Err(io::Error::other("SSAP response obligation queue full"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
                         slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
                         next_server_id=next_server_id.checked_add(1).ok_or_else(||io::Error::other("SSAP original request namespace exhausted"))?;
-                        server_queue.push_back(ServerPacket {bytes:raw.to_vec(),deadline:reply_deadline,constraint,mtu:if matches!(raw[0],8|10|12|13) && ExchangeInfo::decode(capabilities.mtu,&peer_request).is_ok_and(|p|sequenced(&p)){fragments::LOGICAL_MTU}else{negotiated},level:receipt.map_or(0,|m|m.security),request_id:next_server_id});
+                        server_queue.push_back(ServerPacket {bytes:raw.to_vec(),deadline:reply_deadline,constraint,mtu:if matches!(raw[0],8|10|12|13|18|19) && ExchangeInfo::decode(capabilities.mtu,&peer_request).is_ok_and(|p|sequenced(&p)){fragments::LOGICAL_MTU}else{negotiated},level:receipt.map_or(0,|m|m.security),request_id:next_server_id});
                     } else if matches!(raw[0],1|5|7|9|11|14|20) {
                         let Some(current)=client.take() else {return Err(io::Error::other("unsolicited SSAP value reply"));};
                         current.validate_reply(receipt,Instant::now())?;
@@ -2352,41 +2456,18 @@ async fn exchange_loop(
                             pending.push_back(Pending {sent: 0, bytes: response.clone(), purpose: Purpose::Response,constraint,
                                 deadline: if initial_done { Instant::now() + Duration::from_secs(5) } else { original_deadline } });
                         }
-                    } else if raw[0] == 19 {
-                        if pending.len() >= 8 { return Err(io::Error::other("SSAP error queue full")); }
-                        // No local method Provider yet: return real Unsupported,
-                        // preserving the request handle. Never echo arguments.
-                        let error=unsupported_method_response(raw);
-                        pending.push_back(Pending {sent:0,bytes:error,purpose:Purpose::Error,constraint,deadline:reply_deadline});
                     } else if matches!(raw[0] & 0x7f, 4 | 6 | 8 | 10 | 13 | 19) {
                         if pending.len() >= 8 { return Err(io::Error::other("SSAP error queue full")); }
                         // T/XS20001 table50: complete ErrorRsp including RFU MCC.
                         pending.push_back(Pending {sent: 0, bytes: vec![1,0,raw[0],0,0,2], purpose: Purpose::Error,constraint,
                             deadline: Instant::now() + Duration::from_secs(5) });
-                    } else if raw[0] & 0x7f == 12 || raw[0] == 18 {
+                    } else if raw[0] & 0x7f == 12 || raw[0] & 0x7f == 18 {
                         // Unsupported extended commands/notifications carry no response obligation.
                     } else { return Err(io::Error::other("unsupported or unmatched SSAP response")); }
                 }
             }
         }
     }
-}
-
-fn unsupported_method_response(raw: &[u8]) -> Vec<u8> {
-    let handle = if raw.len() >= 4 {
-        u16::from_le_bytes([raw[2], raw[3]])
-    } else {
-        0
-    };
-    let error = if matches!(
-        ValuePdu::decode(fragments::LOGICAL_MTU, raw),
-        Ok(ValuePdu::CallMethod { .. })
-    ) {
-        2
-    } else {
-        1
-    };
-    vec![1, 0, 19, handle as u8, (handle >> 8) as u8, error]
 }
 
 #[cfg(test)]
@@ -2416,17 +2497,14 @@ mod tests {
         ] {
             assert!(client_value_response(249, &request, bad).is_err());
         }
-        let unsupported = unsupported_method_response(&request);
+        let unsupported = vec![1, 0, 19, 0x34, 0x12, 2];
         assert_eq!(unsupported, [1, 0, 19, 0x34, 0x12, 2]);
         assert!(
             client_value_response(249, &request, &unsupported)
                 .unwrap()
                 .is_err()
         );
-        assert_eq!(
-            unsupported_method_response(&[19, 7, 0x34, 0x12]),
-            [1, 0, 19, 0x34, 0x12, 1]
-        );
+        assert!(ValuePdu::decode(249, &[19, 7, 0x34, 0x12]).is_err());
     }
     #[tokio::test]
     async fn discovery_follows_methods_in_one_bounded_original_transaction() {
@@ -2969,6 +3047,7 @@ mod tests {
         let decision = |bytes: Vec<u8>, deadline| ServerDecision {
             values: vec![],
             write: None,
+            method: None,
             admission_error: None,
             packet: ServerPacket {
                 bytes,

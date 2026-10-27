@@ -102,11 +102,13 @@ impl Services {
         &self,
         uuid: Vec<u8>,
         properties: Vec<slk_contract::ssap::local::PropertyDefinition>,
+        methods: Vec<slk_contract::ssap::local::MethodDefinition>,
         authorizer: zbus::zvariant::OwnedObjectPath,
         deadline: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> zbus::fdo::Result<(u16, u16, Vec<u16>)> {
         self.0.registrations.fetch_add(1, Ordering::SeqCst);
+        assert!(methods.is_empty());
         assert_eq!(uuid, [1, 0]);
         let access = properties[0].2;
         assert!(matches!(access, 0 | 36));

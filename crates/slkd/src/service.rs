@@ -86,10 +86,15 @@ impl SsapManagerIface {
     /// Caller-owned local service. '/' disables the authorizer, not access
     /// checks; authorization bits then remain unsupported. The bus policy
     /// separately controls who may register services, not controller rights.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "Five D-Bus wire fields plus injected connection/header and self; keep the independently checked flat wire contract"
+    )]
     async fn register_owned_local_service(
         &self,
         uuid: Vec<u8>,
         properties: Vec<crate::ssap_database::PropertyDefinition>,
+        methods: Vec<slk_contract::ssap::local::MethodDefinition>,
         authorizer: zbus::zvariant::OwnedObjectPath,
         deadline: slk_contract::Deadline,
         #[zbus(connection)] connection: &zbus::Connection,
@@ -99,8 +104,8 @@ impl SsapManagerIface {
             Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).map_err(deadline_error)?;
         owned_request(original, async {
             // Bounded validation precedes watches and allocation of a service.
-            if properties.is_empty()
-                || properties.len() > 64
+            if properties.is_empty() && methods.is_empty()
+                || properties.len() + methods.len() > 64
                 || !matches!(uuid.len(), 2 | 16)
                 || !uuid.iter().any(|b| *b != 0)
             {
@@ -128,6 +133,18 @@ impl SsapManagerIface {
                 {
                     return Err(zbus::fdo::Error::InvalidArgs(
                         "invalid property UUID/value length".into(),
+                    ));
+                }
+            }
+            for (uuid, bits) in &methods {
+                let access = slk_protocol::ssap::access::MethodAccess::from_bits(*bits)
+                    .map_err(|e| zbus::fdo::Error::InvalidArgs(e.into()))?;
+                if !matches!(uuid.len(), 2 | 16) || !uuid.iter().any(|b| *b != 0) {
+                    return Err(zbus::fdo::Error::InvalidArgs("invalid method UUID".into()));
+                }
+                if access.needs_local_authorization() && authorizer.as_str() == "/" {
+                    return Err(zbus::fdo::Error::NotSupported(
+                        "method authorizer required".into(),
                     ));
                 }
             }
@@ -184,7 +201,7 @@ impl SsapManagerIface {
                 .map_err(|_| zbus::fdo::Error::Failed("database poisoned".into()))?;
             original.remaining().map_err(deadline_error)?;
             database
-                .register_owned(uuid, properties, owner)
+                .register_owned_entries(uuid, properties, methods, owner)
                 .map_err(zbus::fdo::Error::InvalidArgs)
         })
         .await
@@ -299,6 +316,26 @@ impl SsapManagerIface {
         }
         self.commit_owned_local(original, header, move |database, caller| {
             database.bind_owned_write_provider(handle, caller, provider)
+        })
+        .await
+    }
+    /// Bind this caller's method once; no stored value or fallback is created.
+    async fn bind_owned_method_provider(
+        &self,
+        handle: u16,
+        provider: zbus::zvariant::OwnedObjectPath,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<()> {
+        let original =
+            Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).map_err(deadline_error)?;
+        if handle == 0 || provider.as_str() == "/" || provider.as_str().len() > 255 {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "invalid method provider handle/path".into(),
+            ));
+        }
+        self.commit_owned_local(original, header, move |database, caller| {
+            database.bind_owned_method_provider(handle, caller, provider)
         })
         .await
     }
@@ -475,12 +512,13 @@ mod validation_tests {
         for (name, expected) in [
             (
                 "RegisterOwnedLocalService",
-                vec!["ay", "a(ayuuay)", "o", "(ttttt)"],
+                vec!["ay", "a(ayuuay)", "a(ayu)", "o", "(ttttt)"],
             ),
             ("ReadOwnedLocalValue", vec!["q", "(ttttt)"]),
             ("ReplaceOwnedLocalValue", vec!["q", "ay", "(ttttt)"]),
             ("BindOwnedReadProvider", vec!["q", "o", "(ttttt)"]),
             ("BindOwnedWriteProvider", vec!["q", "o", "(ttttt)"]),
+            ("BindOwnedMethodProvider", vec!["q", "o", "(ttttt)"]),
             ("SetOwnedLocalDescription", vec!["q", "s", "(ttttt)"]),
             ("UnregisterOwnedLocalService", vec!["q", "(ttttt)"]),
         ] {

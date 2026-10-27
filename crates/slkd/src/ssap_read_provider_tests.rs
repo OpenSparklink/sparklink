@@ -193,6 +193,7 @@ fn resolved(decision: &ServerDecision, db: &Store) -> Vec<u8> {
         &decision.approvals,
         &decision.values,
         decision.write.as_ref(),
+        decision.method.as_ref(),
         &mut crate::ssap_engine_config::ClientConfigurations::default(),
     )
     .unwrap()

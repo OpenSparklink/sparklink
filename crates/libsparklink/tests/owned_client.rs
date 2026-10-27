@@ -45,12 +45,14 @@ impl Services {
         &self,
         uuid: Vec<u8>,
         properties: Vec<(Vec<u8>, u32, u32, Vec<u8>)>,
+        methods: Vec<slk_contract::ssap::local::MethodDefinition>,
         authorizer: OwnedObjectPath,
         deadline: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> zbus::fdo::Result<(u16, u16, Vec<u16>)> {
         slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
             .unwrap();
+        assert!(methods.is_empty());
         assert_eq!(uuid, [1, 0]);
         let (operations, access) = if self.0.read_only_property.load(Ordering::SeqCst) {
             (1, 32)

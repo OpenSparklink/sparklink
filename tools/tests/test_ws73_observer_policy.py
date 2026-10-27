@@ -131,7 +131,7 @@ class ObserverPolicyTests(unittest.TestCase):
         root=ET.parse(Path(__file__).resolve().parents[2]/'data/dbus/sparklink.conf').getroot()
         def allows(policy):
             return {(r.get('send_interface'),r.get('send_member')) for r in policy.findall('allow')}
-        for method in ('BindOwnedReadProvider', 'BindOwnedWriteProvider'):
+        for method in ('BindOwnedReadProvider', 'BindOwnedWriteProvider', 'BindOwnedMethodProvider'):
             binding=('org.sparklink.ServiceManager',method)
             self.assertIn(binding,allows(root.find("policy[@group='sparklink-services']")))
             self.assertNotIn(binding,allows(root.find("policy[@group='sparklink-apps']")))

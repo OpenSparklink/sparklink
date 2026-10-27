@@ -77,7 +77,7 @@ pub mod ssap {
     /// Request ID, original context, local property, write?, original monotonic
     /// deadline, proposed write value (empty for reads). Reads disclose no value
     /// to the authorizer before its decision. The final byte is the original
-    /// SSAP data type (property value0 or client configuration2); it is part of the policy
+    /// target kind (property value0, client configuration2, method3; method3 is not a wire data type); it is part of the policy
     /// scope, not inferred from the handle or granted by a local decision.
     pub type SsapAuthorizationPrompt =
         (u64, SsapAuthorizationIdentity, u16, bool, u64, Vec<u8>, u8);
@@ -124,6 +124,25 @@ pub mod ssap {
     pub const WRITE_PROVIDER_INTERFACE: &str = "org.sparklink.SsapWriteProvider";
     pub const WRITE_PROVIDER_METHOD: &str = "WriteValue";
 
+    /// Invocation, separate from a property value or policy approval. Command18
+    /// has no wire response; request19 returns independent application bytes.
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type)]
+    pub struct MethodProviderRequest {
+        pub request_id: u64,
+        pub identity: SsapAuthorizationIdentity,
+        pub method: u16,
+        pub deadline_ns: u64,
+        pub operation: u8,
+        pub arguments: Vec<u8>,
+        pub maximum_result_bytes: u16,
+    }
+    pub const METHOD_PROVIDER_INTERFACE: &str = "org.sparklink.SsapMethodProvider";
+    pub const METHOD_PROVIDER_METHOD: &str = "CallMethod";
+    pub const METHOD_TARGET: u8 = 3;
+    pub const MAX_METHOD_ARGUMENT_BYTES: usize = 2043;
+    pub const MAX_METHOD_RESULT_BYTES: usize = 2045;
+    pub type MethodProviderReply = (u8, Vec<u8>);
+
     /// Local manager staging and caller-owned registration are distinct roles.
     pub mod local {
         pub const MANAGER: &str = "org.sparklink.ServiceManager";
@@ -138,15 +157,19 @@ pub mod ssap {
         pub const SET_DESCRIPTION_OWNED: &str = "SetOwnedLocalDescription";
         pub const BIND_READ_PROVIDER_OWNED: &str = "BindOwnedReadProvider";
         pub const BIND_WRITE_PROVIDER_OWNED: &str = "BindOwnedWriteProvider";
+        pub const BIND_METHOD_PROVIDER_OWNED: &str = "BindOwnedMethodProvider";
         /// Implementation bound in UTF-8 bytes, not a standard maximum.
         pub const MAX_DESCRIPTION_BYTES: usize = 244;
         pub type PropertyDefinition = (Vec<u8>, u32, u32, Vec<u8>);
+        /// UUID and invocation access bits0..2; no stored argument or result.
+        pub type MethodDefinition = (Vec<u8>, u32);
         pub type PropertyRecord = (u16, Vec<u8>, u32, u32);
         pub type ServiceRecord = (u16, u16, Vec<u8>, Vec<PropertyRecord>);
         pub type Registration = (u16, u16, Vec<u16>);
         pub type OwnedRegistrationRequest = (
             Vec<u8>,
             Vec<PropertyDefinition>,
+            Vec<MethodDefinition>,
             zvariant::OwnedObjectPath,
             crate::Deadline,
         );
@@ -604,7 +627,7 @@ mod owned_deadline_contract {
     fn owned_requests_have_one_original_stamp_and_no_legacy_shape() {
         assert_eq!(
             super::ssap::local::OwnedRegistrationRequest::SIGNATURE.to_string(),
-            "(aya(ayuuay)o(ttttt))"
+            "(aya(ayuuay)a(ayu)o(ttttt))"
         );
         assert_eq!(
             super::ssap::local::OwnedHandleRequest::SIGNATURE.to_string(),

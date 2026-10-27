@@ -154,7 +154,7 @@ Grant 或安全资格。它仅接受原 unique daemon、当前 controller/genera
 CLI 退出时先停止本地审批准入，再异步撤回登记；撤回失败不重新开放审批。
 这不表示远端清理已经完成，也不自动接通 C/Python callback、provider 或通知。
 
-`RegisterOwnedLocalService(uuid:ay, properties:a(ayuuay), authorizer:o, deadline:(ttttt))` 的 properties
+`RegisterOwnedLocalService(uuid:ay, properties:a(ayuuay), methods:a(ayu), authorizer:o, deadline:(ttttt))` 的 properties
 沿用上述四字段（实际 D-Bus 签名 `a(ayuuay)`），返回 `(start:q,end:q,handles:aq)`。
 登记者来自真实消息 sender 的 unique name，不能指定其他 owner。`authorizer=/`
 表示不提供审批；带授权位的登记此时返回 NotSupported。服务登记仍只表示本地配置。
@@ -162,10 +162,10 @@ CLI 退出时先停止本地审批准入，再异步撤回登记；撤回失败�
 `ReadOwnedLocalValue(handle:q, deadline:(ttttt))->ay`、
 `ReplaceOwnedLocalValue(handle:q,value:ay,deadline:(ttttt))` 只允许
 原 owner；管理组的显式全局移除/本地读权限仍独立。`sparklink-services` 策略只允许
-这四个 Owned 方法，不授 controller 管理或普通通道权限；[cd35/0568的guest最小角色门禁](../evidence/architecture-retirement-r1-20261017.json)
+Owned登记/读写/撤回、Provider绑定及说明配置，不授controller管理或普通通道权限；[cd35/0568的guest最小角色门禁](../evidence/architecture-retirement-r1-20261017.json)
 已核对实际system bus、组/凭据及设备权限，不代表service-only远端RF或完整发行版部署。
 
-四个 Owned 方法均携带现有 clock-domain 身份和绝对原期限；客户端检查、D-Bus、
+这些Owned管理方法均携带现有 clock-domain 身份和绝对原期限；客户端检查、D-Bus、
 状态锁等待、owner 监听安装及数据库最终准入共用该期限。过期返回 Timeout，
 不重置相对预算。监听安装另有两秒上限，只能缩短该请求。当前 zbus 在进入方法前
 以 `org.freedesktop.zbus.Error` 拒绝旧签名（Signature mismatch）；不兼容回退。
@@ -756,3 +756,34 @@ request/epoch/property、完整 32 字节随机值及原期限后才终止 Provi
 双端完整捕获不得出现旧连接响应，最后显式清理服务。v1 历史资格没有执行这一步，
 不能授予 v2 资格；daemon restart、应用副作用回滚及完整范围仍由 U#22 追踪。
 测试参数与证据要求见 [VM 门禁输入](vm-gate-inputs.md#待决-write-的连接-down-门禁)。
+
+
+## Owned method 服务端
+
+方法与属性使用同一个 Owned 服务登记和撤回生命周期，但方法不是存储值或 WRITE。
+`RegisterOwnedLocalService` 的 `methods:a(ayu)` 每项为 UUID 与调用权限位；现有只登记
+属性的 SDK 调用传空 methods。receipt 的 handles 先按属性输入顺序、再按方法顺序返回。
+服务总数上限16，属性加方法共享64项上限；handle在同一数据库生命周期内不复用。
+`ListLocalServices` 仍是本地属性 staging 视图，不是完整方法目录；远端发现使用同一
+Engine 的 kind4、类别3/11和服务成员bit4。方法不接受本地属性读写或描述符绑定。
+
+调用权限采用现有加密、认证、授权谓词，方法位分别为1、2、4，拒绝其他位。
+应用应声明覆盖方法全部副作用的要求；批准不替代真实加密或认证。
+授权 prompt 最后字段是目标种类：0属性、2客户端配置描述符、3方法；3不是 wire
+value data_type。方法 prompt 携带原参数且 effect/write=true，不能拿属性批准替代。
+
+`ServiceManager.BindOwnedMethodProvider(handle:q, provider:o, deadline:(ttttt))->()`
+仅允许同一服务 owner 绑定一次，复用原登记、原期限和 owner 监视。回调接口
+`org.sparklink.SsapMethodProvider.CallMethod` 接收一个类型化结构：request id、原
+controller/generation/connection/security/TCID上下文、method handle、原单调期限、
+opcode、arguments及maximum_result_bytes；返回 `(status:y, result:ay)`。
+成功 status0 返回应用独立结果；0xaf–0xff 错误必须空结果，其他值/签名/超限拒绝。
+请求19允许结果上限为协商逻辑MTU减2，最多2045字节；命令18结果必须空，且任何
+成功、拒绝或错误均无线上回复。参数最多2043字节，沿既有分片预算，不截断。
+
+调用与返回均复核原上下文、权限及期限。撤回后旧绑定不能完成新登记；应用已经
+开始的副作用不可因取消回滚，超时结果不确定，调用者不得隐式重试。
+当前接线是 daemon/类型化 D-Bus 服务端；Rust/C/Python共享 Dispatcher 的方法收件箱
+和CLI服务端调用者仍待接通，不能把已有属性 Provider 收件箱描述为方法入口。
+私有总线/生产函数 fixture 不验证 Native锁、USB、固件或真实对端交付；准确新产物的
+双设备方法业务和原路径保持仍需VM-only验收。

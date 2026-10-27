@@ -1,20 +1,22 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前批次：有界 issue 复核已完成，恢复既有功能主线
+## 当前批次：方法门禁与 CLOSE 原期限回归
 
-35项现有issue和七个子项关系已在线读回；U#1/U#21按自身原条件关闭的结论保留，
-本轮没有新增关闭或重复拆分。U#3/U#22/K#19正文收敛为当前源码、剩余条件、依赖及
-证据入口，原验收条款逐字保留。自然根因和非人工恢复继续开放；完整安全、Bond或
-发布不作为无关小项的关闭前置。具体处置以现有issue维护记录为准。
+方法VM场景及双端判定已由5c06c49接通，复用唯一Engine、实际SDK和原runner；
+准确编译／执行身份及尝试结果只在授权本地索引维护，没有新增真实方法资格。
+本批不重复实现收发循环，也不把USB完成或工具存在当作业务交付。
 
-公开源码5c06c49已接通方法VM场景和双端判定，复用实际C/Python SDK请求工具、
-CLI Provider、唯一Engine和现有runner。相关105项离线检查及严格HTML已核对，
-I/O与捕获fixture不授予实机或形式化资格；旧环境错误、屏障失败和原始反例保留。
+内核测试源码20608ef直接链接生产bsle.c/wire.c，新增CLOSE传输回调成功、但随后
+持续超时／空读取的两种情况：原10秒期限必须终结，不能配置、OPEN或推进发送序号；
+另一独立fixture实例保持可启动。严格C构建及原selftest通过；忽略CLOSE错误的临时
+生产源码变异版本被断言拒绝。传输、时钟及同行均为fixture，不证明真实固件恢复、
+USB drain或并发隔离。生产内核保持52ae7f08不变，测试分支单独供review。
 
-下一步直接用准确新artifact运行现有方法门禁：两连接角色、两业务方向，随机参数、
-独立结果、错误／空结果和注销后拒绝，核对双端材料及原路径保持。随后继续方法命令、
-发现、长结果、原生命周期及数据／安全／SSAP主线，不再重复实现已存在的场景。
-本轮仅维护状态，没有新增功能资格；完整S0–S6/19WP/10FV/12DG、VM-only和UserHost P4不变。
+继续核对既有warm bootstrap与CLOSE屏障，不通过跳过确认或重复相同尝试取得表面成功。
+方法Engine/SDK及其剩余操作／生命周期工作并行；具备启动条件后继续准确artifact的
+真实双端方法及原路径保持门禁，不等待恢复全集或全部控制面竞争完成。
+K#10/#15只更新源码／离线范围，原自然根因和非人工恢复条件继续开放。
+完整S0–S6/19WP/10FV/12DG、VM-only及UserHost P4保持；issue维护已完成，不再作前置。
 
 ## 有界 issue 清理结果与主线恢复
 
@@ -496,57 +498,51 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "ISSUE-MAINTENANCE-CURRENT-READBACK-v5",
-  "state": "BOUNDED_MAINTENANCE_COMPLETE_NO_NEW_QUALIFICATION",
+  "id": "WP08-METHOD-VM-CLOSE-WAIT-v1",
+  "state": "SOURCE_OFFLINE_PROGRESS_REAL_METHOD_DELIVERY_UNQUALIFIED",
   "implementation_sources": {
-    "public": "5c06c49e2e4e4eb9416059a35e3b40e2aa133124",
-    "kernel": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
+    "method_tools": "5c06c49e2e4e4eb9416059a35e3b40e2aa133124",
+    "kernel_selftest": "20608ef7099528925c38fd44d90d783b18f2e05d",
+    "production_kernel_unchanged": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
   },
-  "production_behavior": "No production change. Current issue scope reconciled against source, retained qualification and offline reports; do not reimplement the existing method VM scenario.",
-  "offline_scope": "Reviewed 35 current issues, seven existing child relations and exact source/offline materials. Scenario source has 105 finite Python checks and strict HTML success; I/O/capture fixtures are not kernel concurrency or hardware qualification.",
+  "production_behavior": "Method VM scenario and two-end verifier reuse existing SDK/Engine/runner. This batch extends the production BSLE selftest only; no runtime driver behavior change.",
+  "offline_checks": {
+    "strict_c_build": "PASS",
+    "existing_bsle_suite": "PASS",
+    "successful_close_but_silent_or_empty_receive": "ORIGINAL_10S_TIMEOUT_NO_CONFIGURE_OPEN_OR_TX_ADVANCE",
+    "independent_fixture_instance": "UNCHANGED_AND_CAN_START",
+    "temporary_missing_ack_bypass_mutant": "REJECTED"
+  },
+  "offline_scope": "Actual bsle.c/wire.c linked directly; I/O, time and second instance are finite fixtures. No USB drain, kernel concurrency or firmware recovery proof. First wrapper/mutator preparation errors retained; only actual compiled executions counted.",
+  "formal_status": "NO_NEW_PROOF",
+  "hardware_status": "NO_NEW_METHOD_QUALIFICATION; exact attempt identity, raw materials, failures and audit remain only in authorized local index. Old qualifications never transfer.",
   "issue_sync": {
-    "observed_at": "2026-10-27T18:41:29.796789+00:00",
+    "observed_at": "2026-10-27T19:00:49.544112+00:00",
     "updates": [
       {
-        "repository": "sparklink",
-        "number": 3,
+        "repository": "linux",
+        "number": 10,
         "state": "open",
-        "body_sha256": "0caf9270312edb67c692c71fb272600662f8fc2de786d8e411f476cf813e63e7",
-        "source_offline_only": true
-      },
-      {
-        "repository": "sparklink",
-        "number": 22,
-        "state": "open",
-        "body_sha256": "af5c94dced67548d7a39e50fc2565ec43a66879ec29fe5258fdba44a44f11944",
+        "body_sha256": "b6a9df76d2e4c28247e27e2575cb2af9b17eaf91fe9063d3ccd1411560ea4370",
         "source_offline_only": true
       },
       {
         "repository": "linux",
-        "number": 19,
+        "number": 15,
         "state": "open",
-        "body_sha256": "825e250f97ad1149843fb324cdc13cf70fa49adaaac459fad82f58b9b12d5504",
+        "body_sha256": "fdb37e122214e4a77afc4bfb78ff464d60b09688bb2d05faf44aa57770802bc0",
         "source_offline_only": true
       }
     ],
-    "retained_closed": [
-      "U#1",
-      "U#21"
-    ],
-    "newly_closed": [],
-    "new_children": []
+    "scope": "Public source/offline only; original acceptance and open states retained."
   },
-  "formal_status": "NO_NEW_PROOF; existing source mappings, assumptions, bounded results and counterexamples unchanged",
-  "hardware_status": "NO_NEW_HARDWARE_QUALIFICATION; original failures and private execution details retained locally. No current HEAD qualification inferred.",
   "exit_conditions": [
-    "All 35 issues classified with per-issue basis",
-    "U1/U21 original closure scopes retained; U10 natural recovery still open",
-    "U3/U22/K19 bodies updated online and exact readback; original acceptance unchanged",
-    "Existing seven child relations retained; no duplicate issue or goal",
-    "Canonical plan, capability and goal views agree; maintenance is not a new functional prerequisite"
+    "Existing method scenario attempted only through assigned VM resources and exact artifact checks; outcome retained privately",
+    "Missing/empty CLOSE reply cannot become OPEN or renew original deadline in production sequencer test",
+    "Independent fixture instance and missing-ACK bypass negative control checked",
+    "No hardware or natural-recovery qualification inferred; no issue closed"
   ],
-  "next": "Resume the existing method VM gate at source 5c06c49 with an exact new artifact and paired evidence, then original data/security/SSAP mainline. Scenario and verifier already exist; actual method delivery, original preservation and remaining operation/lifetime gates still require qualification. No new all-control-plane prerequisite.",
-  "verification_limits": "69 qualification/document checks per worktree and generated-view/unchanged-record assertions passed. Supplemental full-history source-map scan was stopped as outside this metadata-edit batch: NOT COMPLETED, not a proof or new qualification. Original running builds/regressions untouched."
+  "next": "Continue source/firmware warm-bootstrap and CLOSE barrier diagnosis without bypassing acknowledgements or repeating an unchanged attempt. In parallel continue the existing method Engine/SDK path and remaining operation/lifetime gates. Resume real paired method delivery with accurate artifacts when startup prerequisites hold; do not require all recovery or control-plane work first."
 }
 ```
 

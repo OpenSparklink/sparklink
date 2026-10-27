@@ -13,57 +13,51 @@
     "replay": "每份记录按自身源码映射、编译artifact、冻结执行/校验工具和原manifest命令重放；只在授权VM中执行驱动/实机。历史575等工具仅适用于各自原记录，不是全registry的统一重放入口。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "ISSUE-MAINTENANCE-CURRENT-READBACK-v5",
-    "state": "BOUNDED_MAINTENANCE_COMPLETE_NO_NEW_QUALIFICATION",
+    "id": "WP08-METHOD-VM-CLOSE-WAIT-v1",
+    "state": "SOURCE_OFFLINE_PROGRESS_REAL_METHOD_DELIVERY_UNQUALIFIED",
     "implementation_sources": {
-      "public": "5c06c49e2e4e4eb9416059a35e3b40e2aa133124",
-      "kernel": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
+      "method_tools": "5c06c49e2e4e4eb9416059a35e3b40e2aa133124",
+      "kernel_selftest": "20608ef7099528925c38fd44d90d783b18f2e05d",
+      "production_kernel_unchanged": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
     },
-    "production_behavior": "No production change. Current issue scope reconciled against source, retained qualification and offline reports; do not reimplement the existing method VM scenario.",
-    "offline_scope": "Reviewed 35 current issues, seven existing child relations and exact source/offline materials. Scenario source has 105 finite Python checks and strict HTML success; I/O/capture fixtures are not kernel concurrency or hardware qualification.",
+    "production_behavior": "Method VM scenario and two-end verifier reuse existing SDK/Engine/runner. This batch extends the production BSLE selftest only; no runtime driver behavior change.",
+    "offline_checks": {
+      "strict_c_build": "PASS",
+      "existing_bsle_suite": "PASS",
+      "successful_close_but_silent_or_empty_receive": "ORIGINAL_10S_TIMEOUT_NO_CONFIGURE_OPEN_OR_TX_ADVANCE",
+      "independent_fixture_instance": "UNCHANGED_AND_CAN_START",
+      "temporary_missing_ack_bypass_mutant": "REJECTED"
+    },
+    "offline_scope": "Actual bsle.c/wire.c linked directly; I/O, time and second instance are finite fixtures. No USB drain, kernel concurrency or firmware recovery proof. First wrapper/mutator preparation errors retained; only actual compiled executions counted.",
+    "formal_status": "NO_NEW_PROOF",
+    "hardware_status": "NO_NEW_METHOD_QUALIFICATION; exact attempt identity, raw materials, failures and audit remain only in authorized local index. Old qualifications never transfer.",
     "issue_sync": {
-      "observed_at": "2026-10-27T18:41:29.796789+00:00",
+      "observed_at": "2026-10-27T19:00:49.544112+00:00",
       "updates": [
         {
-          "repository": "sparklink",
-          "number": 3,
+          "repository": "linux",
+          "number": 10,
           "state": "open",
-          "body_sha256": "0caf9270312edb67c692c71fb272600662f8fc2de786d8e411f476cf813e63e7",
-          "source_offline_only": true
-        },
-        {
-          "repository": "sparklink",
-          "number": 22,
-          "state": "open",
-          "body_sha256": "af5c94dced67548d7a39e50fc2565ec43a66879ec29fe5258fdba44a44f11944",
+          "body_sha256": "b6a9df76d2e4c28247e27e2575cb2af9b17eaf91fe9063d3ccd1411560ea4370",
           "source_offline_only": true
         },
         {
           "repository": "linux",
-          "number": 19,
+          "number": 15,
           "state": "open",
-          "body_sha256": "825e250f97ad1149843fb324cdc13cf70fa49adaaac459fad82f58b9b12d5504",
+          "body_sha256": "fdb37e122214e4a77afc4bfb78ff464d60b09688bb2d05faf44aa57770802bc0",
           "source_offline_only": true
         }
       ],
-      "retained_closed": [
-        "U#1",
-        "U#21"
-      ],
-      "newly_closed": [],
-      "new_children": []
+      "scope": "Public source/offline only; original acceptance and open states retained."
     },
-    "formal_status": "NO_NEW_PROOF; existing source mappings, assumptions, bounded results and counterexamples unchanged",
-    "hardware_status": "NO_NEW_HARDWARE_QUALIFICATION; original failures and private execution details retained locally. No current HEAD qualification inferred.",
     "exit_conditions": [
-      "All 35 issues classified with per-issue basis",
-      "U1/U21 original closure scopes retained; U10 natural recovery still open",
-      "U3/U22/K19 bodies updated online and exact readback; original acceptance unchanged",
-      "Existing seven child relations retained; no duplicate issue or goal",
-      "Canonical plan, capability and goal views agree; maintenance is not a new functional prerequisite"
+      "Existing method scenario attempted only through assigned VM resources and exact artifact checks; outcome retained privately",
+      "Missing/empty CLOSE reply cannot become OPEN or renew original deadline in production sequencer test",
+      "Independent fixture instance and missing-ACK bypass negative control checked",
+      "No hardware or natural-recovery qualification inferred; no issue closed"
     ],
-    "next": "Resume the existing method VM gate at source 5c06c49 with an exact new artifact and paired evidence, then original data/security/SSAP mainline. Scenario and verifier already exist; actual method delivery, original preservation and remaining operation/lifetime gates still require qualification. No new all-control-plane prerequisite.",
-    "verification_limits": "69 qualification/document checks per worktree and generated-view/unchanged-record assertions passed. Supplemental full-history source-map scan was stopped as outside this metadata-edit batch: NOT COMPLETED, not a proof or new qualification. Original running builds/regressions untouched."
+    "next": "Continue source/firmware warm-bootstrap and CLOSE barrier diagnosis without bypassing acknowledgements or repeating an unchanged attempt. In parallel continue the existing method Engine/SDK path and remaining operation/lifetime gates. Resume real paired method delivery with accurate artifacts when startup prerequisites hold; do not require all recovery or control-plane work first."
   },
   "overall_required_records": [
     "deadline-real21",
@@ -527406,6 +527400,59 @@
         "Next VM method scenario and paired USB closure still required before real delivery qualification"
       ],
       "next": "Use the existing publisher/session runner with random arguments and an independently prepared result, verify actual Provider callback identity and parameters, correlate both USB legs, then accurate VM artifact real method delivery and preserved paths. Request/command distinctions and remaining U22 scope retained."
+    },
+    {
+      "id": "ISSUE-MAINTENANCE-CURRENT-READBACK-v5",
+      "state": "BOUNDED_MAINTENANCE_COMPLETE_NO_NEW_QUALIFICATION",
+      "implementation_sources": {
+        "public": "5c06c49e2e4e4eb9416059a35e3b40e2aa133124",
+        "kernel": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
+      },
+      "production_behavior": "No production change. Current issue scope reconciled against source, retained qualification and offline reports; do not reimplement the existing method VM scenario.",
+      "offline_scope": "Reviewed 35 current issues, seven existing child relations and exact source/offline materials. Scenario source has 105 finite Python checks and strict HTML success; I/O/capture fixtures are not kernel concurrency or hardware qualification.",
+      "issue_sync": {
+        "observed_at": "2026-10-27T18:41:29.796789+00:00",
+        "updates": [
+          {
+            "repository": "sparklink",
+            "number": 3,
+            "state": "open",
+            "body_sha256": "0caf9270312edb67c692c71fb272600662f8fc2de786d8e411f476cf813e63e7",
+            "source_offline_only": true
+          },
+          {
+            "repository": "sparklink",
+            "number": 22,
+            "state": "open",
+            "body_sha256": "af5c94dced67548d7a39e50fc2565ec43a66879ec29fe5258fdba44a44f11944",
+            "source_offline_only": true
+          },
+          {
+            "repository": "linux",
+            "number": 19,
+            "state": "open",
+            "body_sha256": "825e250f97ad1149843fb324cdc13cf70fa49adaaac459fad82f58b9b12d5504",
+            "source_offline_only": true
+          }
+        ],
+        "retained_closed": [
+          "U#1",
+          "U#21"
+        ],
+        "newly_closed": [],
+        "new_children": []
+      },
+      "formal_status": "NO_NEW_PROOF; existing source mappings, assumptions, bounded results and counterexamples unchanged",
+      "hardware_status": "NO_NEW_HARDWARE_QUALIFICATION; original failures and private execution details retained locally. No current HEAD qualification inferred.",
+      "exit_conditions": [
+        "All 35 issues classified with per-issue basis",
+        "U1/U21 original closure scopes retained; U10 natural recovery still open",
+        "U3/U22/K19 bodies updated online and exact readback; original acceptance unchanged",
+        "Existing seven child relations retained; no duplicate issue or goal",
+        "Canonical plan, capability and goal views agree; maintenance is not a new functional prerequisite"
+      ],
+      "next": "Resume the existing method VM gate at source 5c06c49 with an exact new artifact and paired evidence, then original data/security/SSAP mainline. Scenario and verifier already exist; actual method delivery, original preservation and remaining operation/lifetime gates still require qualification. No new all-control-plane prerequisite.",
+      "verification_limits": "69 qualification/document checks per worktree and generated-view/unchanged-record assertions passed. Supplemental full-history source-map scan was stopped as outside this metadata-edit batch: NOT COMPLETED, not a proof or new qualification. Original running builds/regressions untouched."
     }
   ]
 }

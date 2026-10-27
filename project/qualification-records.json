@@ -13,104 +13,54 @@
     "replay": "每份记录按自身源码映射、编译artifact、冻结执行/校验工具和原manifest命令重放；只在授权VM中执行驱动/实机。历史575等工具仅适用于各自原记录，不是全registry的统一重放入口。完整性核对不执行或替代重放。"
   },
   "batch": {
-    "id": "WP08-METHOD-REQUESTER-v1",
-    "state": "SOURCE_OFFLINE_PASS_PROVIDER_MISSING",
-    "production_behavior": "Method request19/result20 and command18 reuse the unique SSAP actor, fragment lanes, command admission, original deadline and Session/Grant/credit/Ticket. Rust/C/Python/CLI and typed D-Bus callers expose independent peer results; local method Provider remains unsupported with original-handle error, no echo.",
+    "id": "WP08-METHOD-DISCOVERY-v1",
+    "state": "DISCOVERY_SOURCE_OFFLINE_PASS_PROVIDER_MISSING",
+    "production_behavior": "Method find kind4 and category3/11 use the shared codec/Observer, typed daemon, Rust SDK and CLI. Hierarchical primary discovery follows advertised method member bit4 under the same5s deadline,96pages/80entries; method errors and duplicate handles fail the complete discovery. No local method registration or Provider execution yet.",
     "implementation_sources": {
-      "public": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
-      "boundary_verifier_public": "38273c5458542e19be2627c62ad186eb2178dbed"
+      "public": "da4b55e97a82bd4caeaa9d5e276b682812781e9c"
     },
     "offline_checks": {
-      "rust": "449 passed;2 VM-only ignored, not counted as passed. Explicit private D-Bus/metadata/queue/Unix fixtures; actual external C/Python/CLI consumers.",
-      "strict": "Locked/offline Rust1.96.1 workspace all-target Clippy -D warnings PASS; shared build lock/max8/fixed incremental directory",
-      "python": "77 policy/metadata/docs checks, then145 boundary/target/initialization/Provider regressions PASS",
-      "docs": "Locked strict nitpicky HTML PASS; generated C header uses cbindgen0.29.4",
+      "rust": "584 workspace tests passed;2 VM-only ignored not counted. Explicit metadata/queue/private D-Bus/Unix fixtures, no hardware inference. Final committed codec targeted rerun passed after test-only clone idiom correction.",
+      "strict": "Rust1.96.1 offline/locked workspace all-target Clippy -D warnings and strict nitpicky HTML PASS; shared build lock,8jobs,fixed incremental directory.",
       "retained_failures": [
-        "Initial missing private-bus executable and sandbox bind rejection",
-        "Report regression initial kernel-path environment missing",
-        "Saved boundary report accepted absent proofs; fixed structural validator retains negative case"
-      ],
-      "ci": {
-        "source": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
-        "runs": [
-          {
-            "conclusion": "success",
-            "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
-            "name": "Production codec bounded fuzz",
-            "status": "completed",
-            "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434846"
-          },
-          {
-            "conclusion": "success",
-            "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
-            "name": "Documentation",
-            "status": "completed",
-            "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434838"
-          },
-          {
-            "conclusion": "success",
-            "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
-            "name": "Qualification integrity",
-            "status": "completed",
-            "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434831"
-          },
-          {
-            "conclusion": "success",
-            "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
-            "name": "Offline tools and application SDK",
-            "status": "completed",
-            "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434843"
-          },
-          {
-            "conclusion": "success",
-            "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
-            "name": "Documentation",
-            "status": "completed",
-            "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469429406"
-          }
-        ],
-        "scope": "Observed workflow outcomes only; no new hardware/proof qualification."
-      }
+        "Added method discovery RPC made10calls; first test final stale-identity assertion still expected9. Exact count updated; no extra-call rejection preserved.",
+        "Clippy clone-to-slice test idiom corrected without lint suppression.",
+        "Length runner invocation missing required full source argument rejected before preflight/hardware."
+      ]
     },
     "issue_sync": {
-      "observed_at": "2026-10-27T08:19:50.067636+00:00",
+      "observed_at": "2026-10-27T09:06:20.984096+00:00",
       "updates": [
         {
           "repository": "sparklink",
           "number": 22,
           "state": "open",
-          "body_sha256": "b00b822668a3d14ce5379faddb5930d8faf85854b5315407b3598082d531182e",
+          "body_sha256": "1e9388f69de16e3601d52878100e9cfb21c7e31ffc0d29ac608982b4474c1ad5",
           "source_offline_only": true
         },
         {
           "repository": "sparklink",
           "number": 3,
           "state": "open",
-          "body_sha256": "e9a7089e4af808521e719bfe448da27a13d46995a24f37c9c4fecdb08ec8cf25",
-          "source_offline_only": true
-        },
-        {
-          "repository": "linux",
-          "number": 23,
-          "state": "open",
-          "body_sha256": "c2b25db9c0076fa46de96b175498008d06e1536b366dec7e40f650326ec5b3c7",
+          "body_sha256": "454edce44903974d1d9758d8c99d5b0fd71dbe1fad650968fa377d373dee99ee",
           "source_offline_only": true
         }
       ],
-      "scope": "Source/offline only; original six SSAP and four integrity conditions unchanged"
+      "scope": "Public source/offline only; original acceptance unchanged, both issues OPEN."
     },
-    "hardware_status": "New requester has no positive method Provider/remote application qualification. Exact preservation artifacts and results remain in authorized local index; no transfer from old artifacts.",
-    "formal_status": "NO_NEW_PROOF; prior bounded fragment/codec models do not prove new method or full runtime/refinement.",
+    "hardware_status": "Exact new-artifact preservation evidence is private. No real method discovery/provider positive-delivery qualification or transfer from previous artifacts.",
+    "formal_status": "NO_NEW_PROOF; golden/fixture tests are not formal verification or implementation refinement.",
     "exit_conditions": [
-      "Production requester uses existing queues/identity/security/original deadlines, no second Engine",
-      "Independent result versus command admission in Rust/C/Python/CLI and wire signatures",
-      "Invalid length/control/error handle and deadline/identity refusals covered offline",
-      "Exact-artifact original real paths checked separately; does not substitute method positive delivery"
+      "Distinct method request and entry categories, bounded shared codec",
+      "Same actor/queue/deadline and whole-discovery failure on method error or duplicate handle",
+      "Existing SDK/CLI callers and reference documentation updated",
+      "Accurate new artifact independently checks original real paths; no method qualification inferred"
     ],
     "next": [
-      "Implement distinct method entries and Owned registration via existing Provider Dispatcher and sole Engine; do not reuse property WRITE echo",
-      "Then real opposite application argument validation and independent method result/command processing, both roles, original cancellation/owner/Down/deadline gates",
-      "Continue descriptor/update/long transactions and data/security work; full S0-S6/19WP/10FV/12DG, VM-only, original recovery and UserHost P4 scope unchanged"
+      "Owned method entries and registration, reusing original owner/deadline and shared Provider Dispatcher",
+      "Actual argument/context-bound application callback and independent method result; command must never produce protocol response",
+      "Original authorization, security epoch, cancellation/owner/Down/deadline, queue and cleanup gates",
+      "Real dual-device method validation/reply and direction exchange; preserve data/security/SSAP scope and original recovery conditions"
     ]
   },
   "overall_required_records": [
@@ -526975,6 +526925,107 @@
         "Continue unique Engine remaining method/descriptor Provider and update/long transaction matrix, with source/reference audit before new APIs",
         "Preserve v1 short-value, v2 long-value and lifecycle qualifications under their original artifacts; do not replace them with v3",
         "Continue data/security and full S0-S6/19WP/10FV/12DG; natural root cause/nonmanual recovery and original issues remain open"
+      ]
+    },
+    {
+      "id": "WP08-METHOD-REQUESTER-v1",
+      "state": "SOURCE_OFFLINE_PASS_PROVIDER_MISSING",
+      "production_behavior": "Method request19/result20 and command18 reuse the unique SSAP actor, fragment lanes, command admission, original deadline and Session/Grant/credit/Ticket. Rust/C/Python/CLI and typed D-Bus callers expose independent peer results; local method Provider remains unsupported with original-handle error, no echo.",
+      "implementation_sources": {
+        "public": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+        "boundary_verifier_public": "38273c5458542e19be2627c62ad186eb2178dbed"
+      },
+      "offline_checks": {
+        "rust": "449 passed;2 VM-only ignored, not counted as passed. Explicit private D-Bus/metadata/queue/Unix fixtures; actual external C/Python/CLI consumers.",
+        "strict": "Locked/offline Rust1.96.1 workspace all-target Clippy -D warnings PASS; shared build lock/max8/fixed incremental directory",
+        "python": "77 policy/metadata/docs checks, then145 boundary/target/initialization/Provider regressions PASS",
+        "docs": "Locked strict nitpicky HTML PASS; generated C header uses cbindgen0.29.4",
+        "retained_failures": [
+          "Initial missing private-bus executable and sandbox bind rejection",
+          "Report regression initial kernel-path environment missing",
+          "Saved boundary report accepted absent proofs; fixed structural validator retains negative case"
+        ],
+        "ci": {
+          "source": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+          "runs": [
+            {
+              "conclusion": "success",
+              "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+              "name": "Production codec bounded fuzz",
+              "status": "completed",
+              "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434846"
+            },
+            {
+              "conclusion": "success",
+              "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+              "name": "Documentation",
+              "status": "completed",
+              "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434838"
+            },
+            {
+              "conclusion": "success",
+              "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+              "name": "Qualification integrity",
+              "status": "completed",
+              "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434831"
+            },
+            {
+              "conclusion": "success",
+              "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+              "name": "Offline tools and application SDK",
+              "status": "completed",
+              "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434843"
+            },
+            {
+              "conclusion": "success",
+              "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
+              "name": "Documentation",
+              "status": "completed",
+              "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469429406"
+            }
+          ],
+          "scope": "Observed workflow outcomes only; no new hardware/proof qualification."
+        }
+      },
+      "issue_sync": {
+        "observed_at": "2026-10-27T08:19:50.067636+00:00",
+        "updates": [
+          {
+            "repository": "sparklink",
+            "number": 22,
+            "state": "open",
+            "body_sha256": "b00b822668a3d14ce5379faddb5930d8faf85854b5315407b3598082d531182e",
+            "source_offline_only": true
+          },
+          {
+            "repository": "sparklink",
+            "number": 3,
+            "state": "open",
+            "body_sha256": "e9a7089e4af808521e719bfe448da27a13d46995a24f37c9c4fecdb08ec8cf25",
+            "source_offline_only": true
+          },
+          {
+            "repository": "linux",
+            "number": 23,
+            "state": "open",
+            "body_sha256": "c2b25db9c0076fa46de96b175498008d06e1536b366dec7e40f650326ec5b3c7",
+            "source_offline_only": true
+          }
+        ],
+        "scope": "Source/offline only; original six SSAP and four integrity conditions unchanged"
+      },
+      "hardware_status": "New requester has no positive method Provider/remote application qualification. Exact preservation artifacts and results remain in authorized local index; no transfer from old artifacts.",
+      "formal_status": "NO_NEW_PROOF; prior bounded fragment/codec models do not prove new method or full runtime/refinement.",
+      "exit_conditions": [
+        "Production requester uses existing queues/identity/security/original deadlines, no second Engine",
+        "Independent result versus command admission in Rust/C/Python/CLI and wire signatures",
+        "Invalid length/control/error handle and deadline/identity refusals covered offline",
+        "Exact-artifact original real paths checked separately; does not substitute method positive delivery"
+      ],
+      "next": [
+        "Implement distinct method entries and Owned registration via existing Provider Dispatcher and sole Engine; do not reuse property WRITE echo",
+        "Then real opposite application argument validation and independent method result/command processing, both roles, original cancellation/owner/Down/deadline gates",
+        "Continue descriptor/update/long transactions and data/security work; full S0-S6/19WP/10FV/12DG, VM-only, original recovery and UserHost P4 scope unchanged"
       ]
     }
   ]

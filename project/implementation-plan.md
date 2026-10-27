@@ -1,21 +1,21 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前批次：method 请求端与原路径保持
+## 当前批次：method 发现与服务端接线
 
-WP08/U#22已接通method请求19/结果20及无回复命令18，复用唯一Engine、分片队列、
-原期限、Session/Grant/credit/Ticket。Rust/C/Python、slctl及类型化D-Bus入口一致；
-结果来自独立对端响应，命令仅报告软件准入。本地method登记/Provider尚未接通，
-请求明确返回关联原handle的Unsupported，不能把属性WRITE或参数echo伪装成方法。
+WP08/U#22的公开源码da4b55e接通方法发现kind4、类别3/11及服务成员bit4，复用原
+codec/Observer、SDK和CLI。层次发现共用原5秒、96页、80条总预算；方法查询错误
+或重复handle使整次失败，不把部分结果发布为完整缓存。未知模式明确拒绝。
 
-公开源码9f81e96的449项Rust测试通过，另2项VM专用ignored不计通过；真实外部
-C/Python/CLI与私有总线fixture、严格workspace Clippy及77项Python检查通过。
-边界保存报告的缺proof反例促成38273c5修复，145项相关回归通过；完整捕获仍须重放。
-编译/执行/修正判定器身份分别保存，环境失败及原反例不被新通过覆盖。
+584项workspace Rust检查通过，另2项VM专用ignored不计通过；严格Clippy和HTML
+通过。独立字节向量、实际Observer队列和私有D-Bus SDK回归不代表Native并发、
+固件或新增形式化证明。首次测试计数遗漏、Clippy测试写法和缺参数启动拒绝保留。
+准确新artifact的原路径保持结果留在授权本地索引，不授method实机资格。
 
-准确新产物的实机保持结果仅在授权本地索引；本批不宣称真实method正向交付或新增
-形式化证明。下一条链路是方法条目、Owned登记及共享Provider Dispatcher中的回调，
-随后真实参数校验和独立应用结果。原数据/安全并行，不把控制面全集设为前置。
-完整S0–S6/19WP/10FV/12DG、VM-only和UserHost低优先级不变。
+方法请求端18/19/20已存在；本地方法登记和Provider仍缺。下一笔继续独立方法条目、
+Owned登记和共享Provider Dispatcher回调，保留参数、独立结果、无响应命令和授权
+的不同语义。不得用属性WRITE、存储值或参数echo代替方法。随后真实双设备应用
+校验及独立回复，并行推进原数据/安全/SSAP；不追加完整控制面前置。
+完整S0–S6/19WP/10FV/12DG、VM-only、UserHost低优先级及自然恢复原条件不变。
 
 ## 有界 issue 清理结果与主线恢复
 
@@ -497,104 +497,54 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-METHOD-REQUESTER-v1",
-  "state": "SOURCE_OFFLINE_PASS_PROVIDER_MISSING",
-  "production_behavior": "Method request19/result20 and command18 reuse the unique SSAP actor, fragment lanes, command admission, original deadline and Session/Grant/credit/Ticket. Rust/C/Python/CLI and typed D-Bus callers expose independent peer results; local method Provider remains unsupported with original-handle error, no echo.",
+  "id": "WP08-METHOD-DISCOVERY-v1",
+  "state": "DISCOVERY_SOURCE_OFFLINE_PASS_PROVIDER_MISSING",
+  "production_behavior": "Method find kind4 and category3/11 use the shared codec/Observer, typed daemon, Rust SDK and CLI. Hierarchical primary discovery follows advertised method member bit4 under the same5s deadline,96pages/80entries; method errors and duplicate handles fail the complete discovery. No local method registration or Provider execution yet.",
   "implementation_sources": {
-    "public": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
-    "boundary_verifier_public": "38273c5458542e19be2627c62ad186eb2178dbed"
+    "public": "da4b55e97a82bd4caeaa9d5e276b682812781e9c"
   },
   "offline_checks": {
-    "rust": "449 passed;2 VM-only ignored, not counted as passed. Explicit private D-Bus/metadata/queue/Unix fixtures; actual external C/Python/CLI consumers.",
-    "strict": "Locked/offline Rust1.96.1 workspace all-target Clippy -D warnings PASS; shared build lock/max8/fixed incremental directory",
-    "python": "77 policy/metadata/docs checks, then145 boundary/target/initialization/Provider regressions PASS",
-    "docs": "Locked strict nitpicky HTML PASS; generated C header uses cbindgen0.29.4",
+    "rust": "584 workspace tests passed;2 VM-only ignored not counted. Explicit metadata/queue/private D-Bus/Unix fixtures, no hardware inference. Final committed codec targeted rerun passed after test-only clone idiom correction.",
+    "strict": "Rust1.96.1 offline/locked workspace all-target Clippy -D warnings and strict nitpicky HTML PASS; shared build lock,8jobs,fixed incremental directory.",
     "retained_failures": [
-      "Initial missing private-bus executable and sandbox bind rejection",
-      "Report regression initial kernel-path environment missing",
-      "Saved boundary report accepted absent proofs; fixed structural validator retains negative case"
-    ],
-    "ci": {
-      "source": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
-      "runs": [
-        {
-          "conclusion": "success",
-          "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
-          "name": "Production codec bounded fuzz",
-          "status": "completed",
-          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434846"
-        },
-        {
-          "conclusion": "success",
-          "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
-          "name": "Documentation",
-          "status": "completed",
-          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434838"
-        },
-        {
-          "conclusion": "success",
-          "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
-          "name": "Qualification integrity",
-          "status": "completed",
-          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434831"
-        },
-        {
-          "conclusion": "success",
-          "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
-          "name": "Offline tools and application SDK",
-          "status": "completed",
-          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469434843"
-        },
-        {
-          "conclusion": "success",
-          "headSha": "9f81e96298981c9dfa103238374c05d17cc9d2e6",
-          "name": "Documentation",
-          "status": "completed",
-          "url": "https://github.com/OpenSparklink/sparklink/actions/runs/40469429406"
-        }
-      ],
-      "scope": "Observed workflow outcomes only; no new hardware/proof qualification."
-    }
+      "Added method discovery RPC made10calls; first test final stale-identity assertion still expected9. Exact count updated; no extra-call rejection preserved.",
+      "Clippy clone-to-slice test idiom corrected without lint suppression.",
+      "Length runner invocation missing required full source argument rejected before preflight/hardware."
+    ]
   },
   "issue_sync": {
-    "observed_at": "2026-10-27T08:19:50.067636+00:00",
+    "observed_at": "2026-10-27T09:06:20.984096+00:00",
     "updates": [
       {
         "repository": "sparklink",
         "number": 22,
         "state": "open",
-        "body_sha256": "b00b822668a3d14ce5379faddb5930d8faf85854b5315407b3598082d531182e",
+        "body_sha256": "1e9388f69de16e3601d52878100e9cfb21c7e31ffc0d29ac608982b4474c1ad5",
         "source_offline_only": true
       },
       {
         "repository": "sparklink",
         "number": 3,
         "state": "open",
-        "body_sha256": "e9a7089e4af808521e719bfe448da27a13d46995a24f37c9c4fecdb08ec8cf25",
-        "source_offline_only": true
-      },
-      {
-        "repository": "linux",
-        "number": 23,
-        "state": "open",
-        "body_sha256": "c2b25db9c0076fa46de96b175498008d06e1536b366dec7e40f650326ec5b3c7",
+        "body_sha256": "454edce44903974d1d9758d8c99d5b0fd71dbe1fad650968fa377d373dee99ee",
         "source_offline_only": true
       }
     ],
-    "scope": "Source/offline only; original six SSAP and four integrity conditions unchanged"
+    "scope": "Public source/offline only; original acceptance unchanged, both issues OPEN."
   },
-  "hardware_status": "New requester has no positive method Provider/remote application qualification. Exact preservation artifacts and results remain in authorized local index; no transfer from old artifacts.",
-  "formal_status": "NO_NEW_PROOF; prior bounded fragment/codec models do not prove new method or full runtime/refinement.",
+  "hardware_status": "Exact new-artifact preservation evidence is private. No real method discovery/provider positive-delivery qualification or transfer from previous artifacts.",
+  "formal_status": "NO_NEW_PROOF; golden/fixture tests are not formal verification or implementation refinement.",
   "exit_conditions": [
-    "Production requester uses existing queues/identity/security/original deadlines, no second Engine",
-    "Independent result versus command admission in Rust/C/Python/CLI and wire signatures",
-    "Invalid length/control/error handle and deadline/identity refusals covered offline",
-    "Exact-artifact original real paths checked separately; does not substitute method positive delivery"
+    "Distinct method request and entry categories, bounded shared codec",
+    "Same actor/queue/deadline and whole-discovery failure on method error or duplicate handle",
+    "Existing SDK/CLI callers and reference documentation updated",
+    "Accurate new artifact independently checks original real paths; no method qualification inferred"
   ],
   "next": [
-    "Implement distinct method entries and Owned registration via existing Provider Dispatcher and sole Engine; do not reuse property WRITE echo",
-    "Then real opposite application argument validation and independent method result/command processing, both roles, original cancellation/owner/Down/deadline gates",
-    "Continue descriptor/update/long transactions and data/security work; full S0-S6/19WP/10FV/12DG, VM-only, original recovery and UserHost P4 scope unchanged"
+    "Owned method entries and registration, reusing original owner/deadline and shared Provider Dispatcher",
+    "Actual argument/context-bound application callback and independent method result; command must never produce protocol response",
+    "Original authorization, security epoch, cancellation/owner/Down/deadline, queue and cleanup gates",
+    "Real dual-device method validation/reply and direction exchange; preserve data/security/SSAP scope and original recovery conditions"
   ]
 }
 ```

@@ -387,9 +387,9 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "4520b08b8b6a73f9d3910fb32730ab96590c1adf846d7aafb8924bea5f7ff12a",
+      "body_sha256": "ab33070bff4af73d4cd43569b11bad7f057fb432d5ca500e9f02cac8fc7ccef8",
       "classification": "有限收尾",
-      "closure_basis": "WRITE 显式注销、原期限与 owner 退出 gate 已接通；Down/restart、长值及原操作/更新矩阵继续开放。源码、离线与准确产物资格分别记录。"
+      "closure_basis": "唯一Engine的WRITE生产stop回归有16项限定离线及abort负对照；完整Native Down/restart、长值与原操作/更新矩阵继续开放。"
     },
     {
       "repository": "sparklink",
@@ -3765,6 +3765,16 @@
       "body_sha256": "ecc07115be580e800b74a6f584a098b1cf8f5f41f3c37ccf0f8fe87018b48d69",
       "prior_body_sha256": "41bc81632768461e0c066bac32bd161943eb6f13b447653cba9fcd0f610717d4",
       "observed_at": "2026-10-27T01:00:09.814565+00:00",
+      "source_offline_only": true
+    },
+    {
+      "repository": "sparklink",
+      "number": 22,
+      "state": "open",
+      "body_sha256": "ab33070bff4af73d4cd43569b11bad7f057fb432d5ca500e9f02cac8fc7ccef8",
+      "prior_body_sha256": "4520b08b8b6a73f9d3910fb32730ab96590c1adf846d7aafb8924bea5f7ff12a",
+      "observed_at": "2026-10-27T01:23:08.064841+00:00",
+      "source": "b5622f0c2edd5c1b97fcddb678d1f7acff6f0f0c",
       "source_offline_only": true
     }
   ]

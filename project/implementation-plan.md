@@ -1,5 +1,16 @@
 # SparkLink / Linux 联合实施方案
 
+## 当前批次：待决 WRITE 的停止回归
+
+WP08 / U#22 已补生产 `Engine::stop()` 的 abort/join 限定回归：实际私有 D-Bus
+Provider 待决回调、OS socket关闭、独立回调及旧结果/新lifetime隔离。16项READ/WRITE
+回归、严格Clippy及缺少abort的负对照已核对；生产运行逻辑没有改动。
+
+源码 `b5622f0c2edd5c1b97fcddb678d1f7acff6f0f0c`。task fixture 不带 graceful-stop receiver，不能代表完整
+Engine接收循环、Native Down、USB drain、daemon restart或无线资格。下一步沿现有
+callback/connection runner接通真实Down场景，再取得准确产物业务保持；原5秒断链失败
+和所有原期限保留。U#22及完整SSAP范围仍开放，不将所有控制面竞争设为前置。
+
 ## 有界 issue 清理结果与主线恢复
 
 已复核35项：2项按自身条件关闭（U#1、U#21），18项有限收尾、3个已拆分父项、12项长期跟踪。
@@ -477,60 +488,56 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP16-bounded-issue-maintenance-closeout",
-  "state": "MAINTENANCE_COMPLETE_U1_CLOSED_ORIGINAL_SCOPE_OPEN",
-  "production_behavior": "No production change. Reconcile 35 issues and their original contracts; close U1 independently, retain U21 closure, correct K24 exact-source offline status; no duplicated children.",
+  "id": "WP08-pending-WRITE-Engine-stop-regression",
+  "state": "OFFLINE_STOP_SLICE_COMPLETE_NATIVE_DOWN_RESTART_PENDING",
+  "production_behavior": "No runtime change or new Engine. Direct regression of production Engine::stop abort/join with pending real private-D-Bus WRITE callback, original OS socket closure, independent callback and old-result/new-lifetime isolation.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
-    "WP16"
+    "WP08"
   ],
   "records": [],
-  "predecessor_archive": {
-    "history": "batch_history",
-    "id": "WP16-U1-native-quiet30-and-original-preservation",
-    "canonical_sha256": "0b3dfe09796afcd46870146d6efbbccfb43132d4d115186402d738afb00100d3"
-  },
   "implementation_sources": {
-    "public_source": "bac12d127cd4d32874949b61b0088baa0c0fe9e8",
+    "public_source": "b5622f0c2edd5c1b97fcddb678d1f7acff6f0f0c",
     "kernel": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
   },
-  "issue_sync": [
-    {
-      "repository": "sparklink",
-      "number": 1,
-      "state": "closed",
-      "state_reason": "completed",
-      "body_sha256": "ea00e821b693bf9f2cf912fc2a5011f438f928312ae8dc8eed5e8416a1d4c977",
-      "prior_body_sha256": "ea2662fbd8c09c3bea7886ddfcaf123209b73c12b9da01b01ab267c147c20ec3",
-      "observed_at": "2026-10-27T01:00:07.151247+00:00",
-      "source_offline_only": true
-    },
-    {
-      "repository": "linux",
-      "number": 24,
-      "state": "open",
-      "state_reason": null,
-      "body_sha256": "ecc07115be580e800b74a6f584a098b1cf8f5f41f3c37ccf0f8fe87018b48d69",
-      "prior_body_sha256": "41bc81632768461e0c066bac32bd161943eb6f13b447653cba9fcd0f610717d4",
-      "observed_at": "2026-10-27T01:00:09.814565+00:00",
-      "source_offline_only": true
-    }
-  ],
+  "predecessor_archive": {
+    "history": "batch_history",
+    "id": "WP16-bounded-issue-maintenance-closeout",
+    "canonical_sha256": "98ef2049e11bfded6d8ced67d209a698d672aaccabe55c2171c11f4deb363460"
+  },
+  "offline_checks": {
+    "Provider": "16 READ/WRITE tests passed with actual private D-Bus; fixed Rust1.96.1, locked/offline Cargo, shared build lock and8jobs.",
+    "negative": "Omitting production abort caused old decision survival assertion; original runtime source restored, final positive regression passed.",
+    "strict": "all-target slkd Clippy -D warnings and rustfmt passed.",
+    "limits": "Existing task fixture has no graceful-stop receiver. No successful Native query, exchange-loop, Down, USB drain, process restart or radio is simulated."
+  },
+  "offline_status": "SCOPED_OFFLINE_PASS",
+  "hardware_status": "NO_NEW_EXECUTION_OR_QUALIFICATION; original failed complete preservation remains FAIL, historical exact-artifact scope unchanged.",
+  "formal_status": "NO_NEW_PROOF",
+  "issue_sync": {
+    "repository": "sparklink",
+    "number": 22,
+    "state": "open",
+    "body_sha256": "ab33070bff4af73d4cd43569b11bad7f057fb432d5ca500e9f02cac8fc7ccef8",
+    "prior_body_sha256": "4520b08b8b6a73f9d3910fb32730ab96590c1adf846d7aafb8924bea5f7ff12a",
+    "observed_at": "2026-10-27T01:23:08.064841+00:00",
+    "source": "b5622f0c2edd5c1b97fcddb678d1f7acff6f0f0c",
+    "source_offline_only": true
+  },
   "exit_conditions": [
-    "35 issues classified; original six U1 criteria audited; parent scopes preserved; canonical views and online state consistent."
+    "Actual production stop fallback, OS fd release, late decision isolation and independent callback are tested with explicit fixtures and an effective negative control.",
+    "Source/doc and existing U22 current scope synchronized; original full acceptance remains open."
   ],
   "remaining_conditions": [
-    "Original complete preservation failure remains FAIL; no new whole-head qualification or natural fault root cause.",
-    "U10 natural recovery; K17/K19 original parents and child gates; U3/U22/U23 remaining SSAP/Profile."
+    "Wire the pending WRITE callback barrier into actual existing VM connection Down/restart scenario; do not replace it with the offline task fixture.",
+    "Keep original5s Down failures, applicable business/length preservation and independent-owner/controller checks; no deadline widening or artificial recovery qualification.",
+    "Remaining WRITE/method/long-value/update/Profile scope and natural root cause/nonmanual recovery."
   ],
   "next": [
-    "Resume existing WRITE Down/restart and data/security/SSAP vertical work with original artifact-bound preservation gates.",
-    "Keep natural root causes/nonmanual recovery open; no full-control-plane prerequisite."
+    "Implement the pending-WRITE Down VM scenario using existing callback/connection lifecycle hooks and exact SDK error/paired-wire evidence.",
+    "Then acquire accurate-artifact real-device results with preserved original business gates; runtime data/security/SSAP continue in parallel."
   ],
-  "hardware_status": "No new hardware execution. Detailed existing artifact records remain in authorized local index; no hardware details published.",
-  "formal_status": "NO_NEW_PROOF",
-  "offline_status": "SOURCE_AND_RETAINED_EVIDENCE_AUDIT_ONLY",
-  "qualification_boundary": "No PASS record added or transferred; records/materials/selected qualification unchanged."
+  "qualification_boundary": "No record/material/selected qualification changed; test-source identity and reviewed signed source kept separate from historical compiled hardware identities."
 }
 ```
 

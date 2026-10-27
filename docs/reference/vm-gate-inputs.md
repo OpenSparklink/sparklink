@@ -11,6 +11,29 @@ Managed 连接清理门禁当前逐字节要求 SLE 主动断链原因 `0x10`，
 
 ## 方法请求的实际 SDK 消费者
 
+`--ssap-method-provider-verify` 是独立、显式启用的短方法场景，要求既有
+`--passthrough --connection-verify --channel-socket-verify --ssap-owned-verify`，
+普通通道基线保持 61 字节／4 轮；不能与其他 SSAP 场景混用。
+启动 token 为 `ws73.ssap_method_provider=1`，缺失、重复、错误值或缺少 Owned
+依赖均拒绝。准备载体必须包含准确的场景、共享监督器、CLI 与 C/Python 工具身份。
+
+两种连接角色各验证两个业务方向。每方向使用一个显式授权的 CLI 方法 Provider，
+依次返回应用错误 FF、空结果、32 字节独立随机结果；每次参数为新的 32 字节，
+前 8 字节作为随机请求标识，其余为载荷。监督器在答复前逐字节核对实际 Provider
+参数、controller/generation/lifetime/handle、通道、权限观察和原期限；请求端
+实际 C/Python SDK 比较完整结果。随后退出发布者、确认登记移除并从对端调用旧方法，
+要求真实 InvalidHandle 响应。原 Owned 允许／拒绝和普通通道门禁不减少。
+
+执行器只产生 `METHOD_PROVIDER_PENDING_PAIRED_USB`。最终通过还需每次请求和响应的
+双端 USB 数据、实际应用结果、完整输出和原时间顺序一致。NOCP 只按实际 TX 计账，
+不能代替对端处理；缺失／重复／跨设备包、错误参数、回显、旧身份、过期或未完成
+场景都拒绝完整结果。保存的摘要重新执行同一判定，不信任孤立的 PASS 字段。
+
+此入口的离线 fixture 检查不代表真实方法交付已通过。该版只覆盖短 request／result、
+应用错误后继续服务及撤回；方法 command、方法发现、长结果／分片、完整生命周期
+和权限部署仍须各自验收。真实设备执行保持 VM-only、明确端口白名单和每设备 SDK110
+镜像选择，不从已有 READ／WRITE 或旧 artifact 继承资格。
+
 现有 `ws73-application-client-c` 与 `ws73-application-client.py` 共用以下有限请求格式：
 
 ```text

@@ -457,6 +457,8 @@ def verify_passthrough():
     owned_requested='ws73.ssap_owned=1' in Path('/proc/cmdline').read_text().split()
     from ws73_ssap_description import boot_requested as description_boot,validate_rows as description_rows
     description_rows(run.get('channel_socket',[]),description_boot(Path('/proc/cmdline').read_text().split()))
+    from ws73_ssap_method_provider import boot_requested as method_provider_boot,validate_rows as method_provider_rows
+    method_provider_rows(run.get('channel_socket',[]),method_provider_boot(Path('/proc/cmdline').read_text().split()))
     from ws73_ssap_read_provider import boot_requested as provider_boot,validate_rows as provider_rows
     provider_rows(run.get('channel_socket',[]),provider_boot(Path('/proc/cmdline').read_text().split()))
     from ws73_ssap_sdk_read_provider import boot_requested as sdk_provider_boot,validate_rows as sdk_provider_rows

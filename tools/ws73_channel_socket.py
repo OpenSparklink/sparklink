@@ -281,6 +281,9 @@ def execute(run, phase, after_application=None):
         if getattr(run.args,'ssap_owned_verify',False):
             from ws73_ssap_owned import execute as owned_execute
             owned_execute(run,row)
+        if getattr(run.args,'ssap_method_provider_verify',False):
+            from ws73_ssap_method_provider import execute as method_provider_execute
+            method_provider_execute(run,row)
         if getattr(run.args,'ssap_read_provider_verify',False):
             from ws73_ssap_read_provider import execute as provider_execute
             provider_execute(run,row)
@@ -771,6 +774,9 @@ def corroborate(run,capture):
                 from ws73_ssap_owned import corroborate as owned_corroborate
                 ssap_owned,owned_credit=owned_corroborate(row,value_matched)
                 for key in ssap_credit:ssap_credit[key]+=owned_credit[key]
+            from ws73_ssap_method_provider import corroborate as method_provider_corroborate
+            ssap_method_providers,method_provider_credit=method_provider_corroborate(row,value_matched)
+            for key in ssap_credit:ssap_credit[key]+=method_provider_credit[key]
             ssap_read_providers=[]
             if row.get('ssap_read_provider_required',False):
                 from ws73_ssap_read_provider import corroborate as provider_corroborate
@@ -944,6 +950,7 @@ def corroborate(run,capture):
         if row.get("ssap_update_local_rejection_required",False): entry["ssap_local_update_rejection"] = row["unsupported_incoming"]
         if row.get("ssap_discovery_required",False): entry["ssap_discovery"] = ssap_discovery
         if row.get('ssap_owned_required',False):entry['ssap_owned']=ssap_owned
+        if row.get('ssap_method_provider_required',False):entry['ssap_method_providers']=ssap_method_providers
         if row.get('ssap_read_provider_required',False):entry['ssap_read_providers']=ssap_read_providers
         if row.get('ssap_sdk_read_provider_required',False):entry['ssap_sdk_read_providers']=ssap_sdk_read_providers
         if row.get('ssap_sdk_write_provider_required',False):entry['ssap_sdk_write_providers']=ssap_sdk_write_providers

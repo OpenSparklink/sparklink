@@ -128,7 +128,11 @@ def wait_text(process, path, pattern, deadline, min_count=1, *, max_count=16, co
 
 
 @contextmanager
-def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api=None,read_only=False,updates=False,application_uid=1000,operations=5,read_provider=False,write_provider=False):
+def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api=None,read_only=False,updates=False,application_uid=1000,operations=5,read_provider=False,write_provider=False,method_access=None):
+    if method_access is not None and (type(method_access)is not int or method_access!=4
+            or sdk_api is not None or read_only or updates or read_provider or write_provider
+            or operations!=5 or application_uid!=1000):
+        raise CaptureError('explicit standalone CLI authorized method publisher required')
     if (type(read_provider)is not bool or type(write_provider)is not bool
             or (read_provider and (write_provider or sdk_api not in ('c','python') or read_only is not True or operations!=1 or updates))
             or (write_provider and (sdk_api not in ('c','python') or read_only is not False or operations!=6 or updates))):
@@ -145,6 +149,8 @@ def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api
     prefix=run.output/f'ssap-owned-{row["phase"]}-{sender}-{label or policy}'
     out=Path(str(prefix)+'.stdout');err=Path(str(prefix)+'.stderr')
     args=[str(run.args.slctl),'--adapter',target['owner']['path'],'ssap-serve',service,uuid,str(operations),'36',secret,policy]
+    if method_access is not None:
+        args=[str(run.args.slctl),'--adapter',target['owner']['path'],'ssap-serve-method',service,uuid,str(method_access),policy]
     environment=None
     if sdk_api is not None:
         from ws73_application_client import application_environment,owned_arguments
@@ -153,6 +159,7 @@ def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api
         environment=application_environment()
     item=dict(sender=sender,target=1-sender,policy=policy,secret=secret,value=value,uuid=uuid,service=service,args=args,start_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
     if operations!=5:item['operations']=operations
+    if method_access is not None:item.update(entry_kind='method',method_access=method_access)
     if sdk_api is not None:item.update(publisher_api=sdk_api,environment=environment)
     if read_provider:item['sdk_read_provider_contract_version']=1
     if write_provider:item['sdk_write_provider_contract_version']=1
@@ -164,7 +171,9 @@ def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api
                 item['credentials'],item['process_status']=process_identity(process.pid,1005)
             else:item['credentials']=credentials(process.pid)
             item.update(pid=process.pid);run.save()
-            matches,_=wait_text(process,out,r'^SsapOwnedService: start=(\d+) end=(\d+) property=(\d+); local registration only$',time.monotonic()+5)
+            registration=(r'^SsapOwnedMethod: start=(\d+) end=(\d+) method=(\d+); local registration only$' if method_access is not None
+                          else r'^SsapOwnedService: start=(\d+) end=(\d+) property=(\d+); local registration only$')
+            matches,_=wait_text(process,out,registration,time.monotonic()+5)
             if len(matches)!=1:raise CaptureError('one actual owned registration required')
             if sdk_api is not None and output_text(process,out).splitlines()[0]!=f'SdkOwnedAPI: api={sdk_api} client_closed=true':
                 raise CaptureError('actual SDK original caller and parent-close barrier required')

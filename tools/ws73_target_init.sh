@@ -568,6 +568,8 @@ elif grep -q 'ws73.passthrough=1' /proc/cmdline; then
             connection_arg="$connection_arg $description_arg"
             provider_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys;from ws73_ssap_read_provider import boot_requested;print("--ssap-read-provider-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail provider-selector
             connection_arg="$connection_arg $provider_arg"
+            method_provider_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys;from ws73_ssap_method_provider import boot_requested;print("--ssap-method-provider-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail method-provider-selector
+            connection_arg="$connection_arg $method_provider_arg"
             sdk_provider_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys;from ws73_ssap_sdk_read_provider import boot_requested;print("--ssap-sdk-read-provider-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail sdk-provider-selector
             connection_arg="$connection_arg $sdk_provider_arg"
             sdk_write_provider_arg=$(PYTHONPATH=/usr/share/sparklink/tools /bin/python3 -c 'import sys;from ws73_ssap_sdk_write_provider import boot_requested;print("--ssap-sdk-write-provider-verify" if boot_requested(sys.argv[1:]) else "")' $(cat /proc/cmdline)) || fail sdk-provider-selector

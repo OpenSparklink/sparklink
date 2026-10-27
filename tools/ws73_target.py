@@ -350,7 +350,7 @@ def prepare_locked(args, build_fd):
                   HERE/'ws73_vm_native_root.py',HERE/'ws73_application_client.py',HERE/'ws73_application_role.py',HERE/'ws73_role_snapshot.py',HERE/'ws73_application_discovery.py',
                   HERE/'ws73_discovery_policy_capture.py', HERE/'ws73_runtime_address.py', HERE/'ws73_firmware_profile.py',
                   HERE/'ws73_managed_queue_support.py',HERE/'ws73_model_hold.py',
-                  HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',HERE/'ws73_credit_observation.py',
+                  HERE/'ws73_channel_daemon_crash.py',HERE/'ws73_ssap_daemon_restart.py',HERE/'ws73_daemon_channel_fd.py',HERE/'ws73_target_guest.py',HERE/'ws73_north_star.py',HERE/'ws73_capture.py',HERE/'ws73_rf_rounds.py',HERE/'ws73_parallel.py',HERE/'ws73_parallel_data.py',HERE/'ws73_credit_observation.py',
                   HERE/'ws73_security_install_hold.py',HERE/'ws73_security_agent.py',HERE/'ws73_security_cli.py',HERE/'ws73_target_control.py',HERE/'ws73_connection_control.py',HERE/'ws73_connection_objects.py',HERE/'ws73_link_measurement.py',HERE/'ws73_link_payload.py',HERE/'ws73_link_resync.py',HERE/'ws73_acb_transport_probe.py',HERE/'ws73_channel_socket.py',HERE/'ws73_benchmark.py',HERE/'ws73_socket_benchmark.py',HERE/'ws73_benchmark_ssap.py',HERE/'ws73_benchmark_timeline.py',HERE/'ws73_benchmark_resources.py',HERE/'ws73_dynamic_channels.py',HERE/'ws73_session_drain.py',HERE/'ws73_transport_watch.py',HERE/'ws73_hcc_memory.py',HERE/'ws73_channel_fairness.py',HERE/'ws73_ssap_value.py',HERE/'ws73_ssap_command.py',HERE/'ws73_ssap_command_policy.py',HERE/'ws73_ssap_command_deadline.py',HERE/'ws73_ssap_discovery.py',HERE/'ws73_ssap_access.py',HERE/'ws73_ssap_owned.py',HERE/'ws73_ssap_description.py',HERE/'ws73_ssap_read_provider.py',HERE/'ws73_ssap_sdk_read_provider.py',HERE/'ws73_ssap_sdk_write_provider.py',HERE/'ws73_ssap_write_unregister.py',HERE/'ws73_ssap_write_owner_exit.py',HERE/'ws73_ssap_write_down.py',HERE/'ws73_native_event_retry.py',HERE/'ws73_ssap_write_deadline.py',HERE/'ws73_ssap_provider_owner_exit.py',HERE/'ws73_ssap_provider_unregister.py',HERE/'ws73_ssap_provider_deadline.py',HERE/'ws73_ssap_owned_update.py',HERE/'ws73_ssap_update_delivery.py',HERE/'ws73_ssap_subscription.py',HERE/'ws73_ssap_shared.py',HERE/'ws73_ssap_receive_lifecycle.py',HERE/'ws73_ssap_sender_deadline.py',HERE/'ws73_ssap_owner_lifecycle.py',HERE/'ws73_ssap_requester_lifecycle.py',HERE/'ws73_ssap_initialization.py',HERE/'ws73_ssap_service_policy.py',HERE/'ws73_initialization_lifecycle.py',HERE/'ws73_observer_policy.py',HERE/'ws73_daemon_crash.py',
                   HERE/'ws73_target_recovery.py',HERE/'ws73_early_fault.py',
                   HERE/'ws73_event_copy_probe.py',
@@ -546,7 +546,7 @@ def prepare_locked(args, build_fd):
         share = root/'usr/share/sparklink/tools';share.mkdir(parents=True)
         for name in ['ws73_lab_resources.py', 'build_resources.py', 'ws73_native_return.py', 'ws73_native_controller_return.py', 'ws73_controller_directory.py', 'ws73_firmware_profile.py', 'ws73_firmware.py']:
             shutil.copy2(HERE/name, share/name)
-        for name in ['ws73_runtime_address.py','ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_measurement.py','ws73_link_payload.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_ssap.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_transport_watch.py','ws73_hcc_memory.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_command.py','ws73_ssap_command_policy.py','ws73_ssap_command_deadline.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_description.py','ws73_ssap_read_provider.py','ws73_ssap_sdk_read_provider.py','ws73_ssap_sdk_write_provider.py','ws73_ssap_write_unregister.py','ws73_ssap_write_owner_exit.py','ws73_ssap_write_down.py','ws73_native_event_retry.py','ws73_ssap_write_deadline.py','ws73_ssap_provider_owner_exit.py','ws73_ssap_provider_unregister.py','ws73_ssap_provider_deadline.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_sender_deadline.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_channel_sibling.py','ws73_native_pair.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
+        for name in ['ws73_runtime_address.py','ws73_role_snapshot.py','ws73_application_discovery.py','ws73_security_install_hold.py','ws73_security_agent.py','ws73_security_cli.py','ws73_north_star.py','ws73_capture.py','ws73_rf_rounds.py','ws73_parallel.py','ws73_parallel_data.py','ws73_credit_observation.py','ws73_discovery_policy_capture.py','ws73_target_guest.py','ws73_target_control.py','ws73_connection_control.py','ws73_connection_objects.py','ws73_link_measurement.py','ws73_link_payload.py','ws73_link_resync.py','ws73_acb_transport_probe.py','ws73_channel_socket.py','ws73_benchmark.py','ws73_socket_benchmark.py','ws73_benchmark_ssap.py','ws73_benchmark_timeline.py','ws73_benchmark_resources.py','ws73_dynamic_channels.py','ws73_session_drain.py','ws73_transport_watch.py','ws73_hcc_memory.py','ws73_channel_fairness.py','ws73_ssap_value.py','ws73_ssap_command.py','ws73_ssap_command_policy.py','ws73_ssap_command_deadline.py','ws73_ssap_discovery.py','ws73_ssap_access.py','ws73_ssap_owned.py','ws73_ssap_description.py','ws73_ssap_read_provider.py','ws73_ssap_sdk_read_provider.py','ws73_ssap_sdk_write_provider.py','ws73_ssap_write_unregister.py','ws73_ssap_write_owner_exit.py','ws73_ssap_write_down.py','ws73_native_event_retry.py','ws73_ssap_write_deadline.py','ws73_ssap_provider_owner_exit.py','ws73_ssap_provider_unregister.py','ws73_ssap_provider_deadline.py','ws73_ssap_owned_update.py','ws73_ssap_update_delivery.py','ws73_ssap_subscription.py','ws73_ssap_shared.py','ws73_ssap_receive_lifecycle.py','ws73_ssap_sender_deadline.py','ws73_ssap_owner_lifecycle.py','ws73_ssap_requester_lifecycle.py','ws73_ssap_initialization.py','ws73_ssap_service_policy.py','ws73_initialization_lifecycle.py','ws73_observer_policy.py','ws73_daemon_crash.py','ws73_target_recovery.py','ws73_early_fault.py','ws73_bindings_probe.py','ws73_registry_metadata.py','ws73_event_copy_probe.py','ws73_diagnostic_probe.py','ws73_diagnostic_cancel.py','ws73_diagnostic_hold.py','ws73_diagnostic_deadline.py','ws73_diagnostic_autonomous.py','ws73_active_deadline.py','ws73_management_setup.py','ws73_management_queued.py','ws73_management_queue_ready_peer.py','ws73_connection_queued.py','ws73_management_partial.py','ws73_resource_file_gate.py','ws73_connected_file_gate.py','ws73_session_idle.py','ws73_session_service.py','ws73_trace_layout.py','ws73_channel_grant.py','ws73_channel_sibling.py','ws73_native_pair.py','ws73_revoke_prefix.py','ws73_channel_prefix_hold.py','ws73_channel_link_down.py','ws73_channel_deadline.py','ws73_security_capabilities.py','ws73_security_numeric.py','ws73_security_cancel.py','ws73_key_agreement.py','ws73_protected_grant.py','ws73_channel_daemon_crash.py','ws73_ssap_daemon_restart.py','ws73_daemon_channel_fd.py','ws73_management_ready_peer.py','ws73_host_later_hold.py','ws73_management_eviction.py','ws73_daemon_hold.py','ws73_daemon_removal.py','ws73_model_hold.py','ws73_vm_register_reset.py','ws73_rom_chip.py']:
             shutil.copy2(HERE/name,share/name)
         shutil.copy2(LINUX/'tools/testing/selftests/sparklink/daemon_radio_guest.sh',root/'bin/test-radio')
         shutil.copy2(HERE/'ws73_register_reset_init.sh',root/'bin/rebootstrap-init');(root/'bin/rebootstrap-init').chmod(0o755)
@@ -1334,7 +1334,10 @@ def _run(args):
     m['connection_advertising_requested']=connection_advertising if connection_verify else None
     m['channel_daemon_crash_requested']=channel_death
     m['channel_daemon_index']=channel_death_index
-    if channel_death:m['channel_daemon_verifier']=file_record(HERE/'ws73_channel_daemon_crash.py')
+    if channel_death:
+        m['channel_daemon_verifier']=file_record(HERE/'ws73_channel_daemon_crash.py')
+        m['channel_daemon_restart_version']=2
+        m['channel_daemon_write_verifier']=file_record(HERE/'ws73_ssap_daemon_restart.py')
     m['daemon_crash_requested']=daemon_crash
     if daemon_crash:m['daemon_crash_verifier']=file_record(HERE/'ws73_daemon_crash.py')
     m['observer_policy_requested']=observer_policy
@@ -1474,6 +1477,9 @@ def _run(args):
             validate_partial_rx(package)
         from ws73_ssap_initialization import exchange_contract
         m['ssap_exchange_contract_version']=exchange_contract(package)
+        if channel_death:
+            from ws73_ssap_daemon_restart import validate_inputs as restart_inputs
+            restart_inputs(package)
         from ws73_ssap_update_delivery import contract_version as delivery_contract
         m['ssap_update_delivery_contract_version']=delivery_contract(package)
         if directory_events:
@@ -2045,7 +2051,13 @@ def _run(args):
                     capture=read_capture(share/'ws73.pcap',[(r['bus'],r['device']) for r in identities])
                     if packets!=capture['packet_count']:raise ValueError('sealed capture count mismatch')
                     if record['fd_probe']['sha256']!=package['native_channel_fd_probe']['sha256']:raise ValueError('actual fd probe differs from staged client')
+                    if record.get('daemon_restart_version')!=2:raise ValueError('pending WRITE restart version 2 required')
+                    from ws73_ssap_sdk_write_provider import validate_tools as write_tools
+                    write_tools(record['pending_write_restart']['tools'],args.prepared/'root',package['guest_files'])
+                    for row in record['successor_business']['channel_socket']:
+                        write_tools(row['ssap_sdk_write_provider_tools'],args.prepared/'root',package['guest_files'])
                     m['channel_daemon_corroboration']=death_corroborate(record,capture)
+                    if file_record(HERE/'ws73_ssap_daemon_restart.py')!=m['channel_daemon_write_verifier']:raise ValueError('WRITE restart verifier changed during run')
                     m['capture_packets']=packets;m['guest_identities']=identities
                     if file_record(HERE/'ws73_channel_daemon_crash.py')!=m['channel_daemon_verifier']:raise ValueError('daemon verifier changed during run')
                     m['status']='REAL_DAEMON_CHANNEL_DEATH_PASS'
@@ -3156,6 +3168,12 @@ def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=No
             and isinstance(proof.get('physical_down_before_wake'),list)
             and len(proof['physical_down_before_wake'])==(1 if proof.get('first_blocked_errno')==errno.ESTALE else 0)
             and all(isinstance(p,dict)and p for p in proof['physical_down_before_wake']))
+        version=record.get('channel_daemon_restart_version',1)
+        if type(version)is not int or version not in (1,2):return 1
+        if proof.get('daemon_restart_version',1)!=version:return 1
+        if version==2:
+            from ws73_ssap_daemon_restart import summary_valid
+            valid=valid and summary_valid(proof)
         return 0 if valid else 1
     if connection:
         for key in ['connection_corroboration','connection_object_corroboration']:

@@ -2,6 +2,7 @@
 """Two ordinary applications; independent two-end USB/CMTC/NOCP proof."""
 from contextlib import ExitStack
 from pathlib import Path
+import os
 import re
 import subprocess
 import time
@@ -125,7 +126,7 @@ def run_applications(run,row,processes,files,original_deadline=None):
         stdout=run.output/f'channel-{row["phase"]}-{role}.stdout'
         stderr=run.output/f'channel-{row["phase"]}-{role}.stderr'
         app['output_files']=[str(stdout),str(stderr)]
-        proc=subprocess.Popen(args,stdout=files.enter_context(stdout.open('xb')),stderr=files.enter_context(stderr.open('xb')))
+        proc=subprocess.Popen(args,stdout=files.enter_context(stdout.open('xb')),stderr=files.enter_context(stderr.open('xb')), **({'user':1000,'group':1000,'extra_groups':[]} if os.geteuid()==0 else {}))
         processes.append((proc,app));app['pid']=proc.pid
         app['credentials']=credentials(proc.pid);run.save()
     deadline=time.monotonic()+row['rounds']*10+5

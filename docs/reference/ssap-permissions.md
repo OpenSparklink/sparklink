@@ -551,7 +551,14 @@ ESHUTDOWN、失去原 daemon 或旧请求 ESTALE；没有静默截断、重试�
 测试观察命令：保留实际 WRITE 请求、值和通知 fd，暂停测试 UI 的自动取件；
 原期限内核对撤权，随后新 owner 接任及期限过后仍要求 ESTALE。观察不续期、不授予
 权限，也不执行管理停止。退出仅释放本地旧视图，明确不报告服务注销成功。
-真实 VM 的 daemon 退出、物理清理与新连接业务仍需独立门禁。
+真实 VM 使用独立的 `--channel-daemon-crash` v2 门禁：先实际观察待决 verified
+WRITE，再由原 init 监督 SIGKILL/reap；原 requester 必须在自己的期限内返回 ESTALE，
+存活 Provider 的 next/authorization/reply 也必须撤权。两 controller 均清理为 Free、
+物理表为空后才能接任；旧 fd 和旧请求仍拒绝，新连接通过原普通用户 socket 与
+SDK WRITE 门禁。它们共用 daemon，不声称一个进程退出只影响一只设备。
+该路径已接入测试工具，源码／离线检查不等于实机通过；v1 保留原资格，不可升级为
+待决 WRITE／新连接资格。新产物仍须独立双端捕获与对端应用校验。
+第二次 SDK 观察沿用原消费者的有限进程预算，不延长原请求的答复期限。
 
 返回0只表示本地接收了应用答复，若此后立即关闭最后 owner/bus，真实回调可能被丢弃。
 测试若要求观察远端 callback，应通过实际接收屏障保持原 owner，不能用本地0或固定

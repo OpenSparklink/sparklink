@@ -4,6 +4,7 @@ Init alone kills/reaps its daemon and launches the successor. Both controllers
 share that daemon, so both leases must withdraw; no independent-owner claim.
 """
 import argparse
+import copy
 import errno
 import json
 import os
@@ -34,6 +35,8 @@ def wait_file(path, seconds=45):
 
 class ControlRun(Run):
     def command(self, command, timeout, **kwargs):
+        if kwargs.get('child_credentials') is not None:
+            return super().command(command, timeout, **kwargs)
         wrapped=['/bin/su','ws73','-s','/bin/sh','-c','exec '+shlex.join(command)]
         row=super().command(wrapped,timeout,**kwargs)
         row['execution_args']=row['args'];row['args']=command;self.save();return row
@@ -81,40 +84,66 @@ class ControlRun(Run):
                 gate.row['workers'].append(ready)
                 gate.row['transfers'].append(dict(client=receipt,client_exit=proc.returncode,client_reaped_wall_ns=time.time_ns(),before=before,broker_closed=True,controller=entry['owner']['index']))
                 self.save()
-            gate.exchange('before');gate.arm()
-            self.data['armed_wall_ns']=time.time_ns();self.save()
-            (FOLDER/'armed.json').write_text(json.dumps(dict(pid=self.args.slkd_pid,wall_ns=self.data['armed_wall_ns']))+'\n')
-            death=wait_file(FOLDER/'death.json')
-            if death['pid']!=self.args.slkd_pid or death['status']!=137 or Path(f'/proc/{death["pid"]}').exists():raise ValueError('original daemon must be killed/reaped')
-            self.data['death']=death;self.save()
-            from sparklink.native import NativeAdapter
-            deadline=time.monotonic()+7;observations=[]
-            while True:
-                rows=[]
-                for entry in entries:
-                    o=entry['owner']
-                    with NativeAdapter(o['index'],o['generation']) as observer:
-                        snapshot=observer.snapshot();management=observer.management_status();links=observer.link_snapshot()
-                        rows.append(dict(index=o['index'],generation=snapshot.generation,flags=snapshot.flags,error=snapshot.error,snapshot=bytes(snapshot).hex(),management=bytes(management).hex(),links=bytes(links).hex(),state=management.state,management_flags=management.flags,link_flags=links.flags,link_count=links.count,wall_ns=time.time_ns()))
-                observations.append(rows);self.data['cleanup_observations']=observations;self.save()
-                if all(v['flags']==1 and not v['error'] and v['state']==0 and not v['management_flags'] and v['link_flags']==1 and not v['link_count'] for v in rows):break
-                if time.monotonic()>deadline:raise TimeoutError('daemon-owned cleanup did not become Free')
-                time.sleep(.02)
-            blocked=receive(gate.parents[gate.index]);gate.row['blocked_result']=blocked;self.save()
-            if blocked['stage']!='blocked_denied' or blocked['errno'] not in [errno.EACCES,errno.ESTALE]:raise ValueError('actual withdrawal or ended physical lifetime required')
-            gate.denied('after_withdrawal')
-            other=1-gate.index;send(gate.parents[other],dict(kind='deny',marker=(b'GRNTDENY'+secrets.token_bytes(32)).hex()))
-            gate.row['other_after_death']=receive(gate.parents[other]);self.save()
-            (FOLDER/'free.json').write_text(json.dumps(dict(pid=death['pid'],wall_ns=time.time_ns()))+'\n')
-            successor=wait_file(FOLDER/'successor.json',90)
-            self.args.slkd_pid=successor['pid'];self.pid=daemon_identity(self.args.slkd_pid)
-            self.data['successor']=successor;self.data['daemon_after']=self.pid;self.data['bus_after']=self.bus_identity()
-            self.data['after_ready']=[self.ready(o['owner']['port']) for o in entries];self.save()
-            gate.denied('after_successor')
-            send(gate.parents[other],dict(kind='deny',marker=(b'GRNTDENY'+secrets.token_bytes(32)).hex()))
-            gate.row['other_after_successor']=receive(gate.parents[other]);self.save()
+            gate.exchange('before')
+            from ws73_ssap_daemon_restart import pending_write
+            def die(deadline):
+                gate.arm()
+                if time.monotonic_ns() >= deadline:raise TimeoutError('original WRITE deadline before death arm')
+                self.data['armed_wall_ns']=time.time_ns();self.save()
+                (FOLDER/'armed.json').write_text(json.dumps(dict(pid=self.args.slkd_pid,wall_ns=self.data['armed_wall_ns']))+'\n')
+                death=wait_file(FOLDER/'death.json',max(0,(deadline-time.monotonic_ns())/1e9))
+                if time.monotonic_ns() >= deadline or death['pid']!=self.args.slkd_pid or death['status']!=137 or Path(f'/proc/{death["pid"]}').exists():raise ValueError('original daemon must be killed/reaped within WRITE deadline')
+                self.data['death']=death;self.save()
+            with pending_write(self, phase, die) as observe_successor:
+                death=self.data['death']
+                from sparklink.native import NativeAdapter
+                deadline=time.monotonic()+7;observations=[]
+                while True:
+                    rows=[]
+                    for entry in entries:
+                        o=entry['owner']
+                        with NativeAdapter(o['index'],o['generation']) as observer:
+                            snapshot=observer.snapshot();management=observer.management_status();links=observer.link_snapshot()
+                            rows.append(dict(index=o['index'],generation=snapshot.generation,flags=snapshot.flags,error=snapshot.error,snapshot=bytes(snapshot).hex(),management=bytes(management).hex(),links=bytes(links).hex(),state=management.state,management_flags=management.flags,link_flags=links.flags,link_count=links.count,wall_ns=time.time_ns()))
+                    observations.append(rows);self.data['cleanup_observations']=observations;self.save()
+                    if all(v['flags']==1 and not v['error'] and v['state']==0 and not v['management_flags'] and v['link_flags']==1 and not v['link_count'] for v in rows):break
+                    if time.monotonic()>deadline:raise TimeoutError('daemon-owned cleanup did not become Free')
+                    time.sleep(.02)
+                blocked=receive(gate.parents[gate.index]);gate.row['blocked_result']=blocked;self.save()
+                if blocked['stage']!='blocked_denied' or blocked['errno'] not in [errno.EACCES,errno.ESTALE]:raise ValueError('actual withdrawal or ended physical lifetime required')
+                gate.denied('after_withdrawal')
+                other=1-gate.index;send(gate.parents[other],dict(kind='deny',marker=(b'GRNTDENY'+secrets.token_bytes(32)).hex()))
+                gate.row['other_after_death']=receive(gate.parents[other]);self.save()
+                (FOLDER/'free.json').write_text(json.dumps(dict(pid=death['pid'],wall_ns=time.time_ns()))+'\n')
+                successor=wait_file(FOLDER/'successor.json',90)
+                self.args.slkd_pid=successor['pid'];self.pid=daemon_identity(self.args.slkd_pid)
+                self.data['successor']=successor;self.data['daemon_after']=self.pid;self.data['bus_after']=self.bus_identity()
+                self.data['after_ready']=[self.ready(o['owner']['port']) for o in entries];self.save()
+                gate.denied('after_successor')
+                send(gate.parents[other],dict(kind='deny',marker=(b'GRNTDENY'+secrets.token_bytes(32)).hex()))
+                gate.row['other_after_successor']=receive(gate.parents[other]);self.save()
+                observe_successor()
+            self.successor_business(phase)
             gate.row.update(status='DAEMON_CHANNEL_GATE_PASS',end_wall_ns=time.time_ns());self.save()
         finally:gate.close()
+
+    def successor_business(self, old_phase):
+        args=copy.copy(self.args)
+        args.output=FOLDER/'successor-business'
+        args.channel_daemon_crash=False;args.channel_socket_verify=True
+        args.ssap_owned_verify=True;args.ssap_sdk_write_provider_verify=True
+        successor=ControlRun(args)
+        successor.pid=self.pid
+        successor.data.update(daemon_before=self.pid,slctl=file_record('/bin/slctl'))
+        successor.data['initial']=self.data['after_ready']
+        def barrier(stage, phase):
+            if stage!='linked':return
+            from ws73_connection_objects import reject_old
+            phase['predecessor_object_rejections']=[reject_old(successor,x,'daemon-predecessor') for x in old_phase['typed_objects']]
+        successor.connection_barrier=barrier
+        self.data['successor_business']=successor.data
+        try:execute(successor,*self.data['after_ready'])
+        finally:self.save()
 
 
 def run(args):
@@ -123,7 +152,7 @@ def run(args):
     FOLDER.mkdir(exist_ok=False)
     args.output=FOLDER/'control';args.slctl=Path('/bin/slctl');args.artifact=[];args.connection_advertising='negotiable-t';args.channel_daemon_crash=True
     control=ControlRun(args)
-    control.data.update(scope='actual common slkd owner death with ordinary retained business fds',daemon_before=daemon_identity(args.slkd_pid),slctl=file_record('/bin/slctl'),fd_probe=file_record('/bin/ws73-channel-fd-probe'),automatic_recovery_acceptance=False,physical_acceptance=False,independent_owner_isolation=False)
+    control.data.update(daemon_restart_version=2,scope='actual common slkd owner death with ordinary retained business fds',daemon_before=daemon_identity(args.slkd_pid),slctl=file_record('/bin/slctl'),fd_probe=file_record('/bin/ws73-channel-fd-probe'),automatic_recovery_acceptance=False,physical_acceptance=False,independent_owner_isolation=False)
     control.pid=control.data['daemon_before'];control.data['bus_before']=control.bus_identity()
     try:
         owners=[control.ready(f'1-{n+1}') for n in range(2)];control.data['initial']=owners
@@ -167,6 +196,22 @@ def verify(record):
         if b['label']!='before' or b['end_wall_ns']>record['armed_wall_ns']:raise CaptureError('business must finish before death')
         for n,a in enumerate(b['applications']):
             validate(bytes.fromhex(a['sent']),bytes.fromhex(b['payload']),n!=b['initiator']);validate(bytes.fromhex(a['received']),bytes.fromhex(b['payload']),n==b['initiator'])
+    version=record.get('daemon_restart_version',1)
+    if type(version)is not int or version not in (1,2):raise CaptureError('supported daemon gate version required')
+    if version==2:
+        from ws73_ssap_daemon_restart import verify as write_verify
+        write_verify(record)
+        fresh=record['successor_business']
+        if fresh['connection_control']['status']!='CONNECTION_CONTROL_EVIDENCE_PENDING' or len(fresh['channel_socket'])!=2:raise CaptureError('two real fresh connection business phases required')
+        old={x['object']['path'] for x in g['owners']}
+        for phase in fresh['connection_control']['phases']:
+            if len(phase.get('predecessor_object_rejections',[]))!=2 or old & {x['object']['path']for x in phase['typed_objects']}:raise CaptureError('old lifetime must not revive on successor')
+            from ws73_connection_objects import refusal
+            for old_entry, rejection in zip(record['connection_control']['phases'][0]['typed_objects'],phase['predecessor_object_rejections']):
+                if rejection['object']!=old_entry['object'] or rejection['owner']!=old_entry['owner'] or not rejection['info_commands']:raise CaptureError('same predecessor object refusal required')
+                for command in rejection['info_commands']+[rejection['disconnect_command']]:
+                    receipt=fresh['commands'][command];refusal(receipt)
+                    if receipt['args'][-1]!=old_entry['object']['path'] or receipt['start_wall_ns']<record['successor']['wall_ns']:raise CaptureError('actual successor refusal of old object required')
     return record
 
 
@@ -196,7 +241,19 @@ def corroborate(record,capture):
         owner=g['owners'][g['index']]['owner'];handle=g['owners'][g['index']]['object']['handle']
         down=[e for e in capture['native_events'] if e['event'] in [5,0x1405] and (e['bus'],e['device'])==(owner['bus'],owner['device']) and record['death']['before_wall_ns']<=e['wall_ns']<=g['blocked_result']['end_wall_ns'] and len(bytes.fromhex(e['params']))>=4 and bytes.fromhex(e['params'])[0]==0 and int.from_bytes(bytes.fromhex(e['params'])[1:3],'little')==handle]
         if len(down)!=1:raise CaptureError('ESTALE wake requires actual matching physical Down before wake')
-    return dict(status='REAL_DAEMON_CHANNEL_DEATH_USB_CORROBORATED',first_blocked_errno=g['blocked_result']['errno'],physical_down_before_wake=down,business_round_trips=2,legs=legs,original_up=up,actual_daemon_death=True,successor_does_not_renew_old_fd=True,common_owner_both_leases_withdrawn=True,independent_device_business_isolation=False,physical_acceptance=False,automatic_recovery_acceptance=False,full_grant_complete=False)
+    proof=dict(status='REAL_DAEMON_CHANNEL_DEATH_USB_CORROBORATED',first_blocked_errno=g['blocked_result']['errno'],physical_down_before_wake=down,business_round_trips=2,legs=legs,original_up=up,actual_daemon_death=True,successor_does_not_renew_old_fd=True,common_owner_both_leases_withdrawn=True,independent_device_business_isolation=False,physical_acceptance=False,automatic_recovery_acceptance=False,full_grant_complete=False)
+    if record.get('daemon_restart_version',1)==2:
+        from ws73_ssap_daemon_restart import corroborate as write_corroborate
+        from ws73_connection_control import corroborate as connection_corroborate
+        from ws73_connection_objects import corroborate as objects_corroborate
+        from ws73_channel_socket import corroborate as channel_corroborate
+        fresh=record['successor_business']
+        links=connection_corroborate(fresh,capture)
+        proof.update(daemon_restart_version=2,pending_write=write_corroborate(record,capture),
+            successor_connections=links,successor_objects=objects_corroborate(fresh,capture,links),
+            successor_data=channel_corroborate(fresh,capture))
+    return proof
+
 
 
 if __name__=='__main__':

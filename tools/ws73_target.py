@@ -4046,7 +4046,7 @@ def main():
             cmd.add_argument('--ssap-description-verify',action='store_true',help='with --ssap-owned-verify: actual public read-only UTF-8 description discovery and C/Python read')
             cmd.add_argument('--ssap-read-provider-verify',action='store_true',help='with --ssap-owned-verify: actual Owned dynamic READ callbacks and C/Python peer value comparison')
             cmd.add_argument('--ssap-sdk-read-provider-verify',action='store_true',help='with --ssap-read-provider-verify: actual C/Python Provider values and opposite-language peer verification')
-            cmd.add_argument('--ssap-sdk-write-provider-verify',action='store_true',help='with --ssap-owned-verify: actual C/Python WRITE Provider rejection and short verified values, paired USB evidence')
+            cmd.add_argument('--ssap-sdk-write-provider-verify',action='store_true',help='with --ssap-owned-verify: actual C/Python WRITE Provider rejection and2037/2042-byte verified values, paired USB evidence')
             cmd.add_argument('--ssap-write-provider-unregister-verify',action='store_true',help='dedicated Owned/ordinary gate: pending C/Python WRITE unregister, original deadline, paired peer refusal and independent guard')
             cmd.add_argument('--ssap-write-provider-owner-exit-verify',action='store_true',help='dedicated Owned/ordinary gate: pending C/Python WRITE owner death, original deadline, paired peer refusal and independent guard')
             cmd.add_argument('--ssap-write-provider-down-verify',action='store_true',help='dedicated Owned/ordinary gate: actual pending WRITE callback before typed Disconnect and two-end Down')

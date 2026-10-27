@@ -99,6 +99,8 @@ def validate_inputs(package):
     shared.validate_inputs(package)
     path=Path(__file__).resolve();found=[p for p in package.get('inputs',[])if Path(p['path']).resolve()==path]
     need(len(found)==1 and found[0]['sha256']==hashlib.sha256(path.read_bytes()).hexdigest(),'fresh WRITE verifier input required')
+    path=path.with_name('ws73_ssap_initialization.py');found=[p for p in package.get('inputs',[])if Path(p['path']).resolve()==path]
+    need(len(found)==1 and found[0]['sha256']==hashlib.sha256(path.read_bytes()).hexdigest(),'fresh WRITE beacon setup input required')
 
 
 def validate_rows(rows,selected):

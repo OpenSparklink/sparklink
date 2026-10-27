@@ -97,6 +97,15 @@ class ConnectionControlRun(PassthroughControlRun):
             if getattr(self.args,'application_discovery_verify',False):
                 from ws73_application_discovery import execute as application_discovery
                 application_discovery(self,a,b)
+            if getattr(self.args,'ssap_sdk_write_provider_verify',False):
+                # The shared connection gate requires an actual stopped beacon
+                # before recreating a connectable set. Never assume firmware
+                # state from a previous VM, and never relax that assertion.
+                from ws73_ssap_initialization import restore_beacons
+                setup=dict(caller=a,peer=b)
+                self.data['write_provider_beacon_setup']=setup
+                self.save()
+                restore_beacons(self,setup)
             from ws73_connection_control import execute
             execute(self, a, b)
             from ws73_registry_metadata import execute as registry_metadata

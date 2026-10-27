@@ -178,7 +178,7 @@ class WriteEvidence(unittest.TestCase):
         inputs=[file_record(p)for p in here.iterdir()if p.is_file()]
         package=dict(inputs=inputs,application_client_tools=dict(sources=[file_record(here/'testing/application_client'/name)for name in ('client.c','client.py')]))
         gate.validate_inputs(package)
-        for name in ('ws73_ssap_sdk_write_provider.py','ws73_ssap_read_provider.py','ws73_ssap_sdk_read_provider.py','ws73_target_control.py','ws73_target_init.sh'):
+        for name in ('ws73_ssap_sdk_write_provider.py','ws73_ssap_read_provider.py','ws73_ssap_sdk_read_provider.py','ws73_target_control.py','ws73_target_init.sh','ws73_ssap_initialization.py'):
             bad=copy.deepcopy(package);bad['inputs']=[x for x in bad['inputs']if Path(x['path']).name!=name]
             with self.subTest(missing=name),self.assertRaises(ValueError):gate.validate_inputs(bad)
         bad=copy.deepcopy(package);bad['application_client_tools']['sources'][0]['sha256']='0'*64
@@ -264,3 +264,28 @@ class WriteLengthsEvidence(unittest.TestCase):
         for version in (True,0,3,None,'2'):
             with self.assertRaises(CaptureError):gate.scenarios(version)
             self.assertFalse(gate.valid_summary(summary(),version=version))
+
+
+class WriteSetup(unittest.TestCase):
+    def test_stopped_beacon_setup_precedes_connection_and_failures_stop_the_gate(self):
+        # Coordinator dependencies are explicit fixtures; this checks ordering,
+        # not controller Complete, real connection or RF delivery.
+        from unittest.mock import patch
+        from ws73_target_control import ConnectionControlRun,PassthroughControlRun
+        for failed in (False,True):
+            run=object.__new__(ConnectionControlRun)
+            run.args=SimpleNamespace(ssap_sdk_write_provider_verify=True)
+            run.native_controller_return=None;run.data={};run.save=lambda:None
+            a,b={'index':0},{'index':1};seen=[]
+            def setup(r,phase):
+                self.assertIs(r,run);self.assertEqual(phase,dict(caller=a,peer=b))
+                seen.append('setup')
+                if failed:raise CaptureError('setup failed')
+            with patch('ws73_ssap_initialization.restore_beacons',side_effect=setup), \
+                 patch('ws73_connection_control.execute',side_effect=lambda *a:seen.append('connect')), \
+                 patch('ws73_registry_metadata.execute',side_effect=lambda *a:seen.append('metadata')), \
+                 patch.object(PassthroughControlRun,'phase',side_effect=lambda *a:seen.append('baseline')):
+                if failed:
+                    with self.assertRaisesRegex(CaptureError,'setup failed'):run.phase(a,b,4,'initial')
+                else:run.phase(a,b,4,'initial')
+            self.assertEqual(seen,['setup']if failed else['setup','connect','metadata','baseline'])

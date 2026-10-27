@@ -5,6 +5,8 @@ No protocol Engine. Expected wire bytes are the independent existing oracle.
 Local acceptance, app memory and peer reply are all required, none substitutes
 for the other. Version1 retains short WriteReq evidence; version2 covers complete/fragmented
 2037/2042-byte type0 verified values through the same actual SDK callbacks.
+Version3 covers no-response commands (application rejection/acceptance) followed
+by a verified request, without transferring either earlier version qualification.
 """
 import copy
 import errno
@@ -23,8 +25,8 @@ from ws73_ssap_provider_owner_exit import CLOCK_CONTRACT, _clock_sample
 
 PREFIX='ssap_sdk_write_provider'
 TOKEN='ws73.'+PREFIX+'=1'
-VERSION=2
-VERSIONS=(1,2)
+VERSION=3
+VERSIONS=(1,2,3)
 STATUS='SDK_WRITE_PROVIDER_APPLICATION_PAIRED_USB'
 PENDING='SDK_WRITE_PROVIDER_PENDING_PAIRED_USB'
 COLLECTION=PREFIX+'_cases'
@@ -33,6 +35,7 @@ MODES=('application-error-ff','value31','value32')
 
 def scenarios(version):
     need(type(version)is int and version in VERSIONS,'explicit supported WRITE evidence version required')
+    if version==3:return (('command-error-ff',32),('command-value32',32),('value32-after-command',32))
     return tuple(zip(MODES,(32,31,32))) if version==1 else (('application-error-ff',32),('value2037',2037),('value2042',2042))
 
 def packet_mono(packet,offset):
@@ -150,7 +153,15 @@ def execute(run,row,*,version=VERSION):
                 c.update(replied_monotonic_ns=time.monotonic_ns(),replied_wall_ns=time.time_ns())
                 step['reply']=shared._wait_json(process,item,'SdkWriteProviderReply',REPLY,ordinal,min(d['deadline_ns'],supervisor));run.save()
             args=['ssap-write',source['object']['path'],str(item['handle']),value.hex()]
-            step['call']=(ssap_error_command(run,row,source,args,errno.EIO,api=peer_api,after_start=answer)if ordinal==1 else
+            if version==3 and ordinal<3:
+                from ws73_ssap_command import execute_command
+                step.update(api=peer_api,handle=item['handle'],sequence=ordinal)
+                execute_command(run,row,step,source)
+                step['call']=step['command']
+                # Admission can finish before the remote callback. It is not delivery.
+                answer(step['call'],step['call']['release_monotonic_ns']+7_000_000_000)
+            else:
+                step['call']=(ssap_error_command(run,row,source,args,errno.EIO,api=peer_api,after_start=answer)if ordinal==1 else
                           ssap_commands(run,row,[(source,args,value)],api=peer_api,expected_size=len(value),after_start=answer)[0])
             step['clock_after']=_clock_sample()
             step['value_before_ns']=time.monotonic_ns();step['value_before_wall_ns']=time.time_ns()
@@ -172,7 +183,7 @@ def _case(row,item,matched):
     from ws73_ssap_update_delivery import TOOLS
     from ws73_ssap_access import value_operations
     version=row.get(PREFIX+'_version',1);matrix=scenarios(version)
-    if version==2:
+    if version in (2,3):
         from ws73_ssap_command import negotiated
         negotiated(row)
     verify_output(item);_ssap_process_receipt(item,1000)
@@ -197,59 +208,97 @@ def _case(row,item,matched):
         and bound['notification_ready']is True and bound['local_binding_only']is True and all(integer(bound[k])for k in ('started_ns','deadline_ns','returned_ns'))
         and item['bind_before_monotonic_ns']<=bound['started_ns']<=bound['returned_ns']<bound['deadline_ns']and 0<bound['deadline_ns']-bound['started_ns']<=5_000_000_000,'original successful bounded WRITE bind required')
     need(type(item['steps'])is list and [s['mode']for s in item['steps']]==[m for m,_ in matrix],'complete ordered WRITE scenarios required')
-    need(row['ssap_language_clients']==[s['call']for s in item['steps']]and len({a['pid']for a in row['ssap_language_clients']})==3,'exact three actual peer processes required')
+    expected_calls=[s['call']for s in item['steps']if version!=3 or not s['mode'].startswith('command-')]
+    need(row['ssap_language_clients']==expected_calls and len({s['call']['pid']for s in item['steps']})==3,'exact three actual peer processes required')
     stamps=[item[k]for k in ('start_wall_ns','prepared_wall_ns','bind_before_wall_ns','bound_wall_ns')];exchanges=[];pdus=[];limits=[];seen={item['secret']};outcomes=[]
     for ordinal,(s,d,r,a,v)in enumerate(zip(item['steps'],requests,replies,approvals,values,strict=True)):
+        command_mode=version==3 and ordinal<2
         payload=s['value'];need(type(payload)is str and re.fullmatch('[0-9a-f]+',payload)and len(payload)==2*matrix[ordinal][1]and payload not in seen,'fresh full random WRITE payload required');seen.add(payload)
-        c,app=s['callback'],s['call'];need(d['api']==api and all(integer(d[k],zero=True)for k in REQUEST-{'api','verify','value'})and d['verify']is True and d['value']==payload
+        c,app=s['callback'],s['call'];need(d['api']==api and all(integer(d[k],zero=True)for k in REQUEST-{'api','verify','value'})and d['verify']is (not command_mode) and d['value']==payload
             and all(d[k]for k in ('token','request_id','lifetime','epoch','deadline_ns','property','observed_ns','observed_wall_ns'))
             and tuple(d[k]for k in ('index','generation','lifetime','handle','property'))==(identities[1]['index'],identities[1]['generation'],identities[1]['lifetime'],identities[1]['handle'],h)
-            and(d['level'],d['local_tcid'],d['remote_tcid'],d['pi'],d['operation'],d['data_type'],d['offset'],d['value_length'])==(0,10,10,0,13,0,0,len(payload)//2)
+            and(d['level'],d['local_tcid'],d['remote_tcid'],d['pi'],d['operation'],d['data_type'],d['offset'],d['value_length'])==(0,10,10,0,12 if command_mode else 13,0,0,len(payload)//2)
             and c['prompt']==d and c['publisher_pid']==item['pid'],'original WRITE context/value/operation required')
         authorization_context({k:a[k]for k in AUTHORIZATION_CONTEXT_FIELDS},api)
         need(a['allow']is True and a['write']is True and a['data_type']==0 and a['value']==payload and all(integer(a[k])for k in ('decision_ns','decision_wall_ns'))
             and all(a[k]==d[k]for k in ('index','generation','request_id','lifetime','handle','epoch','level','deadline_ns','property','local_tcid','remote_tcid','pi'))
             and a['decision_ns']<=d['observed_ns']and a['decision_wall_ns']<=d['observed_wall_ns'],'independent original WRITE policy approval required')
         if ordinal:need(all(d[k]>requests[ordinal-1][k]for k in ('token','request_id'))and all(d[k]==requests[0][k]for k in ('index','generation','lifetime','handle','epoch','level','property','local_tcid','remote_tcid','pi')),'new request/token within unchanged lifetime required')
-        accepted=None if ordinal==0 else payload;response=''if ordinal==0 else payload;status=255 if ordinal==0 else 0
+        accepted=None if ordinal==0 else payload;response=''if ordinal==0 or command_mode else payload;status=255 if ordinal==0 else 0
         command=f'provider-error p{d["token"]} FF'if ordinal==0 else f'provide p{d["token"]} {payload}'
         need(r==s['reply']and r['api']==api and r['token']==r['current_token']==d['token']and r['api_called']is True and r['matched_value']is True and r['local_acceptance_only']is True
             and type(r['result'])is int and r['result']==0 and type(r['status'])is int and r['status']==status and r['value']==response and r['accepted_value']==accepted
             and r['deadline_ns']==d['deadline_ns']and all(integer(r[k])for k in ('token','current_token','deadline_ns','started_ns','returned_ns'))and s['reply_command']==command,'actual local WRITE reply must match original request')
         need(v==s['application_value']and v==dict(api=api,property=h,value=accepted,application_memory_only=True)and type(v['property'])is int,'actual application memory must match accepted/rejected WRITE')
-        need(app['api']==peer_api and app['ssap_operation']=='ssap-write'and app['ssap_handle']==h,'opposite language real WRITE requester required')
-        if ordinal==0:
+        need(app['api']==peer_api,'opposite language real WRITE requester required')
+        if command_mode:
+            from ws73_ssap_command import admission
+            call=admission(app,source,h,payload);origin,upper=call['call_ns'],d['deadline_ns']
+            need(s['command']==app and c['supervisor_deadline_ns']==app['release_monotonic_ns']+7_000_000_000,'original command supervisor required')
+        elif ordinal==0:
             call=ssap_error_receipt(app,source,expected_errno=errno.EIO);origin,upper=call['call_ns'],min(call['returned_ns'],d['deadline_ns']);need(app['ssap_proposed']==payload and c['supervisor_deadline_ns']==app['ssap_supervisor_deadline_ns'],'exact failed WRITE payload/deadline required')
         else:
+            need(app['ssap_operation']=='ssap-write'and app['ssap_handle']==h,'actual verified request required')
             ssap_receipt(app,source,expected_size=len(payload)//2);need(app['ssap_expected']==payload,'peer must validate accepted bytes');origin,upper=app['ssap_release_monotonic_ns'],d['deadline_ns'];need(c['supervisor_deadline_ns']==origin+7_000_000_000,'original positive peer supervisor required')
         times=[origin,a['decision_ns'],d['observed_ns'],c['observed_monotonic_ns'],c['reply_before_monotonic_ns'],r['started_ns'],r['returned_ns'],d['deadline_ns']]
         need(all(integer(t)for t in times)and times==sorted(times)and r['returned_ns']<d['deadline_ns']and c['reply_before_monotonic_ns']<=c['replied_monotonic_ns']<d['deadline_ns']<=c['supervisor_deadline_ns']and 0<d['deadline_ns']-d['observed_ns']<=5_000_000_000,'original WRITE deadline and actual callback order required')
         need(all(integer(s[k])for k in ('value_before_ns','value_after_ns'))and s['clock_after']['monotonic_after_ns']<=s['value_before_ns']<=s['value_after_ns']<=s['value_before_ns']+2_000_000_000,'bounded application memory observation after actual peer result required')
-        stamps += [app['start_wall_ns'],c['observed_wall_ns'],c['reply_before_wall_ns'],c['replied_wall_ns'],app['end_wall_ns'],s['value_before_wall_ns'],s['value_after_wall_ns']]
+        if command_mode:
+            stamps += [app['start_wall_ns'],app['end_wall_ns'],c['observed_wall_ns'],c['reply_before_wall_ns'],c['replied_wall_ns'],s['value_before_wall_ns'],s['value_after_wall_ns']]
+        else:
+            stamps += [app['start_wall_ns'],c['observed_wall_ns'],c['reply_before_wall_ns'],c['replied_wall_ns'],app['end_wall_ns'],s['value_before_wall_ns'],s['value_after_wall_ns']]
         _,request,reply=value_operations(h,b'',b'',bytes.fromhex(payload),status)[2]
-        exchanges.append((app,reply,c));pdus.append(request);limits.append((shared._clocks(s,operation_key='call'),origin,upper,d['observed_ns'],r['started_ns']))
-        outcomes.append(dict(mode=s['mode'],application_bytes=len(payload)//2,accepted=accepted,peer_validated=ordinal!=0,sdk_errno=errno.EIO if ordinal==0 else 0))
+        if command_mode:
+            request=b'\x0c\x03'+h.to_bytes(2,'little')+b'\0'+bytes.fromhex(payload);reply=None
+            window=dict(start_wall_ns=app['start_wall_ns'],end_wall_ns=s['value_after_wall_ns'])
+        else:window=app
+        exchanges.append((window,reply,c));pdus.append(request);limits.append((shared._clocks(s,operation_key='call'),origin,upper,d['observed_ns'],r['started_ns']))
+        outcomes.append(dict(mode=s['mode'],application_bytes=len(payload)//2,accepted=accepted,peer_validated=ordinal!=0,**({'command_admission_only':True,'protocol_response_expected':False,'application_accepted':ordinal!=0}if command_mode else{}),sdk_errno=errno.EIO if ordinal==0 and not command_mode else 0))
     _cleanup(row,item);removed=item['retired_read'];stamps += [item['quit_wall_ns'],item['owner_exit_wall_ns'],item['cleanup']['start_wall_ns'],item['cleanup']['end_wall_ns'],removed['start_wall_ns'],removed['end_wall_ns'],item['end_wall_ns']]
     need(all(integer(t)for t in stamps)and stamps==sorted(stamps),'original WRITE owner/call/cleanup chronology required')
     exchanges.append((removed,b'\x09\x0b\x04\0',None));pdus.append(b'\x08\x03'+h.to_bytes(2,'little')+b'\0')
     wire,credit=_wire(row,item,matched,exchanges,requests=pdus,write_version=version)
-    for i in range(0,len(wire),2):
-        request,response=wire[i:i+2]
-        # SSAP fragments can pipeline: the first RX need not wait for the last
-        # TX of a different complete SMTC packet; ACB fragments can also stream.
-        # Version2 checks the actual byte prefix frontier. Each pair is causal;
-        # the whole request must still arrive before the first response.
-        need(all((stream_causal(tx,rx) if version==2 else packet_interval(tx)[1]<=packet_interval(rx)[0])
-                 for leg in (request,response)
-                 for tx,rx in zip(physical_packets(leg['tx']),physical_packets(leg['rx']),strict=True))
-             and interval(request['rx'])[1]<=interval(response['tx'])[0],'two-end WRITE causal order required')
-        if i<6:
-            offset,origin,upper,observed,answered=limits[i//2]
+    cursor=0
+    for i,(_,reply,_)in enumerate(exchanges):
+        legs=wire[cursor:cursor+(1 if reply is None else 2)];cursor+=len(legs)
+        request=legs[0]
+        need(all((stream_causal(tx,rx) if version in (2,3) else packet_interval(tx)[1]<=packet_interval(rx)[0])
+                 for leg in legs for tx,rx in zip(physical_packets(leg['tx']),physical_packets(leg['rx']),strict=True)),
+             'two-end WRITE causal order required')
+        if reply is not None:need(interval(request['rx'])[1]<=interval(legs[1]['tx'])[0],'request must precede response')
+        if i<3:
+            offset,origin,upper,observed,answered=limits[i]
             need(all(packet_mono(p,offset)[0]>=origin and packet_mono(p,offset)[1]<observed for p in (request['tx'],request['rx'])),'paired WRITE request must follow peer call and precede callback')
-            need(all(packet_mono(p,offset)[0]>=answered and packet_mono(p,offset)[1]<upper for p in (response['tx'],response['rx'])),'paired WRITE response must follow app answer within original completion')
+            if reply is not None:
+                need(all(packet_mono(p,offset)[0]>=answered and packet_mono(p,offset)[1]<upper for p in (legs[1]['tx'],legs[1]['rx'])),'paired WRITE response must follow app answer within original completion')
+    need(cursor==len(wire),'complete WRITE wire sequence required')
     context=copy.deepcopy({k:row[k]for k in ('phase','owners','ssap_receipts','ssap_language_clients')})
-    if version==2:context.update({PREFIX+'_version':version,'ssap_exchange_contract':row['ssap_exchange_contract']})
+    if version in (2,3):context.update({PREFIX+'_version':version,'ssap_exchange_contract':row['ssap_exchange_contract']})
     return dict(status=STATUS,version=version,sender=0,target=1,provider_api=api,peer_api=peer_api,outcomes=outcomes,wire=wire,tools=copy.deepcopy(records),context=context,case=copy.deepcopy(item)),credit
+
+
+def audit_command_responses(row, packets):
+    """Full lifetime capture check, before matched SDUs are consumed.
+
+    A retained positive pair alone cannot prove absence. The encompassing
+    capture supervisor must additionally establish complete capture/logs.
+    """
+    if row.get(PREFIX+'_version')!=3:return
+    need(row.get(PREFIX+'_required')is True and len(row.get(COLLECTION,[]))==1,'explicit command Provider scope required')
+    item=row[COLLECTION][0];steps=item['steps'];need(len(steps)==3,'complete command/followup scope required')
+    first,last=steps[0]['call'],steps[2]['call'];h=item['handle']
+    expected=b'\x0a\0'+(5+len(bytes.fromhex(steps[2]['value']))).to_bytes(2,'little')+b'\x0e\x03'+h.to_bytes(2,'little')+b'\0'+bytes.fromhex(steps[2]['value'])
+    identities={(e['owner']['bus'],e['owner']['device'],e['object']['handle'])for e in row['owners']}
+    responses=[]
+    for packet in packets:
+        if (packet['bus'],packet['device'],packet['handle'])not in identities:continue
+        if not first['start_wall_ns']<=packet['wall_ns']<=item['end_wall_ns']:continue
+        data=bytes.fromhex(packet['data'])
+        if len(data)<5 or data[:2]!=b'\x0a\0' or data[4]&0x7f not in (5,14):continue
+        need(data==expected and last['start_wall_ns']<=packet['wall_ns']<=last['end_wall_ns'],
+             'Write Command must not produce success/error response, including late or extended response')
+        responses.append(packet)
+    need(len(responses)==2,'exact two endpoint records for the following request; no additional command response')
 
 
 def corroborate(row,matched):
@@ -265,7 +314,7 @@ def valid_summary(proof, *, version=1):
         need(type(version)is int and version in VERSIONS and len(proof['proofs'])==2,'two WRITE phase proofs required');receivers=set();values=set()
         for phase,row in enumerate(proof['proofs']):
             items=row[SUMMARY_KEY];need(type(row['phase'])is int and row['phase']==phase and len(items)==1,'exact WRITE phase proof required');item=items[0];context=copy.deepcopy(item['context'])
-            need(type(item['version'])is int and item['version']==version and context['phase']==phase and context['owners']==row['owners']and len(item['wire'])==8,'WRITE proof context mismatch')
+            need(type(item['version'])is int and item['version']==version and context['phase']==phase and context['owners']==row['owners']and len(item['wire'])==(6 if version==3 else 8),'WRITE proof context mismatch')
             packets=[copy.deepcopy(p)for leg in item['wire']for side in ('tx','rx') for p in physical_packets(leg[side])]
             def matched(owner,direction,frame,window):
                 key=(owner['owner']['bus'],owner['owner']['device'],owner['object']['handle'],direction,frame.hex())

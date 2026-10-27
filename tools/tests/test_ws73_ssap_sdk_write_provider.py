@@ -41,7 +41,7 @@ def fixture(phase=0,version=1):
         if key.startswith(('ssap_sdk_read_provider','ssap_read_provider')):del row[key]
     records[gate.EXTRA_TOOLS[-1]]=dict(sha256=hashlib.sha256(gate.EXTRA_TOOLS[-1].encode()).hexdigest(),bytes=100)
     row.update({gate.PREFIX+'_required':True,gate.PREFIX+'_version':version,gate.PREFIX+'_tools':records,gate.COLLECTION:[item]})
-    if version==2:
+    if version in (2,3):
         row['ssap_exchange_contract']=2
         row['ssap_receipts']=[copy.deepcopy(row['ssap_receipts'][0]) for _ in row['owners']]
         for owner,receipt in zip(row['owners'],row['ssap_receipts']):
@@ -70,12 +70,27 @@ def fixture(phase=0,version=1):
             value_before_wall_ns=after+1000,value_after_wall_ns=after+2000)
         request=b'\x0d\x23'+h.to_bytes(2,'little')+b'\0'+bytes.fromhex(value)
         response=b'\x0e\x07\x01'+h.to_bytes(2,'little')+b'\xff'if n==0 else b'\x0e\x03'+h.to_bytes(2,'little')+b'\0'+bytes.fromhex(value)
-        wire.append((app,request,response))
-    row['ssap_language_clients']=[s['call']for s in item['steps']]
+        if version==3 and n<2:
+            from ws73_ssap_command import command_arguments
+            start=app['start_wall_ns'];app.update(start_monotonic_ns=start,barrier_wall_ns=start+1000,
+                barrier_monotonic_ns=start+1000,release_wall_ns=start+2000,release_monotonic_ns=start+2000,
+                end_wall_ns=start+1_500_000,end_monotonic_ns=start+1_500_000,exit=0,stderr='')
+            app['args']=command_arguments(app['api'],source,h,value)
+            end=start+5_000_000_000
+            app['stdout']=json.dumps(dict(stage='ssap_command_start_barrier',api=app['api'],deadline_ns=end,client_closed=True))+'\nSSAP_COMMAND_ADMITTED: '+json.dumps(dict(api=app['api'],handle=h,value=value,minimum=0,admission_only=True,peer_delivery_confirmed=False,deadline_ns=end,call_ns=start+3000,returned_ns=start+1_400_000))+'\n'
+            from test_ws73_ssap_command import output
+            output(app)
+            d.update(operation=12,verify=False);s['reply']['value']='';s['command']=app
+            s['callback']['supervisor_deadline_ns']=app['release_monotonic_ns']+7_000_000_000
+            request=b'\x0c\x03'+h.to_bytes(2,'little')+b'\0'+bytes.fromhex(value);response=None
+            window=dict(start_wall_ns=start,end_wall_ns=s['value_after_wall_ns'])
+        else:window=app
+        wire.append((window,request,response))
+    row['ssap_language_clients']=[s['call']for s in item['steps']if version!=3 or not s['mode'].startswith('command-')]
     wire.append((item['retired_read'],b'\x08\x03'+h.to_bytes(2,'little')+b'\0',b'\x09\x0b\x04\0'))
     transcript(item);capture=dict(acb_packets=[],native_events=[])
     for window,request,response in wire:
-        for sender,target_no,pdu in [(0,1,request),(1,0,response)]:
+        for sender,target_no,pdu in ([(0,1,request)] if response is None else [(0,1,request),(1,0,response)]):
             from ws73_ssap_value import fragment_parts
             fragments=fragment_parts(pdu)if len(pdu)>2042 else[pdu]
             for sequence,fragment in enumerate(fragments):
@@ -292,7 +307,7 @@ class WriteLengthsEvidence(unittest.TestCase):
                 self.assertFalse(stream_causal(tx,bad))
 
     def test_invalid_versions_cannot_enable_long_capture_or_upgrade_old_proof(self):
-        for version in (True,0,3,None,'2'):
+        for version in (True,0,4,None,'2'):
             with self.assertRaises(CaptureError):gate.scenarios(version)
             self.assertFalse(gate.valid_summary(summary(),version=version))
 
@@ -323,3 +338,35 @@ class WriteSetup(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
+
+class CommandProviderEvidence(unittest.TestCase):
+    def test_command_error_acceptance_and_verified_followup_both_languages(self):
+        proofs=[]
+        for phase in (0,1):
+            row,match,packets=fixture(phase,3)
+            gate.audit_command_responses(row,copy.deepcopy(packets))
+            proof,credit=gate.corroborate(row,match)
+            self.assertFalse(packets)
+            self.assertEqual(credit,{0:4,1:2})
+            self.assertEqual([x['sdk_errno']for x in proof[0]['outcomes']],[0,0,0])
+            self.assertFalse(proof[0]['outcomes'][0]['application_accepted'])
+            self.assertTrue(proof[0]['outcomes'][1]['application_accepted'])
+            proofs.append(dict(phase=phase,owners=row['owners'],**{gate.SUMMARY_KEY:proof}))
+        self.assertTrue(gate.valid_summary(dict(proofs=proofs),version=3))
+        self.assertFalse(gate.valid_summary(dict(proofs=proofs),version=2))
+
+    def test_command_does_not_invent_peer_ack_or_application_success(self):
+        for part,key,value in [('prompt','operation',13),('prompt','verify',True),
+            ('reply','value','aa'),('reply','accepted_value','aa'),('application_value','value','aa')]:
+            row,match,_=fixture(0,3);item=row[gate.COLLECTION][0];s=item['steps'][1]
+            target=s['callback']['prompt']if part=='prompt'else s[part];target[key]=value
+            transcript(item)
+            with self.subTest(part=part,key=key),self.assertRaises(CaptureError):gate.corroborate(row,match)
+
+    def test_spurious_success_error_or_late_response_is_rejected(self):
+        for opcode in (14,5,0x8e):
+            row,_,packets=fixture(0,3);item=row[gate.COLLECTION][0]
+            packet=copy.deepcopy(packets[1]);packet['data']='0a000400'+bytes([opcode,3,0,0]).hex()
+            packet['wall_ns']=item['steps'][1]['callback']['replied_wall_ns']+1000
+            with self.subTest(opcode=opcode),self.assertRaises(CaptureError):gate.audit_command_responses(row,packets+[packet])

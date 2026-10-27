@@ -322,7 +322,7 @@ def validate_paired_leg(row,sender,receiver,frame,window,leg):
 
 def _wire(row, item, matched, exchanges, *, requests=None, write_version=1):
     from ws73_ssap_value import physical_sends
-    if type(write_version)is not int or write_version not in (1,2):raise CaptureError('explicit WRITE capture version required')
+    if type(write_version)is not int or write_version not in (1,2,3):raise CaptureError('explicit WRITE capture version required')
     s, t, h = item['sender'], item['target'], item['handle']
     wire = []; credit = {0: 0, 1: 0}
     request = b'\x08\x03'+h.to_bytes(2, 'little')+b'\0'
@@ -330,7 +330,10 @@ def _wire(row, item, matched, exchanges, *, requests=None, write_version=1):
         raise CaptureError('explicit expected request for every provider exchange required')
     for ordinal, (window, response, callback) in enumerate(exchanges):
         if requests is not None:request=requests[ordinal]
-        for sender, receiver, pdu in [(s, t, request), (t, s, response)]:
+        if response is None and not(write_version==3 and request[:2]==b'\x0c\x03'):
+            raise CaptureError('only explicit version3 Write Command has no response')
+        legs=[(s,t,request)] if response is None else [(s,t,request),(t,s,response)]
+        for sender, receiver, pdu in legs:
             frame = b'\x0a\0'+len(pdu).to_bytes(2, 'little')+pdu
             if write_version==2:
                 from ws73_ssap_value import pair_wire,fragment_parts

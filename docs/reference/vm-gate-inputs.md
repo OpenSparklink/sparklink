@@ -1523,3 +1523,21 @@ Provider 进程保持存活至两端原连接 Down，随后显式退出和注销
 v1 历史结果不包含 v2 晚到答复步骤；新 artifact 须单独实机验证。
 本场景不验证 daemon restart、应用副作用回滚、物理 drain
 或自然恢复，也不把连接 Down 描述为 controller 所属 Owned 服务自动注销。
+
+
+### 动态 WRITE Provider 的无回复命令门禁（v3）
+
+`--ssap-sdk-write-provider-verify` 当前工具使用 v3：同一真实 SDK Provider 先接收
+32字节命令并由应用返回 FF，再接收新的32字节命令并实际校验/接受，最后接收新的
+verified Write Request并校验回复。C/Python Provider与发起端交换角色。
+复用原 SDK、普通用户身份、启动屏障及有界输出，不新增协议实现。
+
+命令调用返回只表示软件准入。对端回调必须保留原 operation=12、verify=false、
+完整载荷、身份和原期限；应用内存观察分别证明拒绝未接受与实际接受。
+两种命令均不得产生 Write Response 或 Unsupported Response。
+判定器在消费匹配报文前检查完整期间的两端捕获，并只允许最后有回复请求的准确响应；
+晚到、重复、扩展或错误响应同样拒绝。保留完整捕获是该否定结论的前提，单独保留
+正向报文对或本地ADMITTED收据不足以证明没有响应。
+
+原v1短值、v2的2037/2042字节范围继续独立重放；daemon restart v2仍显式使用原v1。
+v3不继承其长值资格，不表示method、完整长写、描述符Provider或自然恢复已完成。

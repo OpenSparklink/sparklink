@@ -723,6 +723,8 @@ def corroborate(run,capture):
         protected=protected_ssap_wire(row,capture,sdus)
         from ws73_ssap_access import audit_rejections as access_audit
         access_audit(row,sdus)
+        from ws73_ssap_sdk_write_provider import audit_command_responses
+        audit_command_responses(row,sdus)
         prefix=None
         if row.get('close_prefix',False):sent,replies,prefix=prefix_application_frames(row)
         else:sent,replies=application_frames(row)

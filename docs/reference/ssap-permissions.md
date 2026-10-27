@@ -687,3 +687,17 @@ request/epoch/property、完整 32 字节随机值及原期限后才终止 Provi
 该选择器与其他 WRITE/READ 生命周期场景互斥；READ 历史 schema 1/2 保持不变。
 源码/离线 gate 的存在不表示新产物实机通过；Down/restart、长值和完整 SSAP
 生命周期仍按各自门禁验收。这里不提供新形式化或自然恢复资格。
+
+### Engine 停止期间的待决 WRITE
+
+连接所有者负责停止并 join 原 Engine；不能仅删除对象引用就宣布回调和 fd 已释放。
+生产 `Engine::stop()` 的有界等待到期后会 abort 并 join 原任务。已退出的等待者不再
+接收该任务的决策，新 lifetime 即使复用 request id 也不能接收旧回调结果。
+远端 D-Bus 方法仍可能完成其副作用；停止等待和关闭 fd 不承诺撤销应用写入。
+
+`engine_stop_drains_pending_write_without_reviving_it_or_stopping_another_callback`
+直接检查该生产 stop 路径、实际私有 D-Bus Provider 回调和 OS fd 引用；同时检查独立
+回调仍能返回、新 lifetime 的结果必须来自自己的答复、动态属性不退回 staging。
+测试故意使用没有 graceful-stop receiver 的既有 task fixture，以覆盖 abort/join，
+不会新增第二个 Engine 或把 Unix socket 当作 Native 通道。它不覆盖完整接收循环、
+内核 Down、USB drain、daemon restart 或无线交付；这些条件继续由 VM 门禁验收。

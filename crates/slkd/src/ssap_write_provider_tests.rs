@@ -272,6 +272,122 @@ async fn write_native_recheck_precedes_callback_and_callback_task_retains_only_i
 }
 
 #[tokio::test]
+async fn engine_stop_drains_pending_write_without_reviving_it_or_stopping_another_callback() {
+    // Exercise the production Engine::stop fallback against a real D-Bus
+    // callback and OS fd. The task fixture deliberately has no graceful stop
+    // receiver: this covers abort/join, not exchange_loop, Native Down, USB
+    // drain, or daemon restart. Native queries on this Unix fd still fail.
+    let mut f = Fixture::new().await;
+    let (_, h) = register_operations(&f.owner, 0, 4).await;
+    bind_writer(&f.owner, h, "/writer").await.unwrap();
+    let db = store(&f.state).await;
+    let (old_socket, old_peer) = std::os::unix::net::UnixDatagram::pair().unwrap();
+    old_socket.set_nonblocking(true).unwrap();
+    let old_wire = Wire::fixture(AsyncFd::new(old_socket.into()).unwrap());
+    let old_fd = Arc::downgrade(&old_wire.fd);
+    let (decision, old_result) = oneshot::channel();
+    let old_task = tokio::spawn({
+        let db = db.clone();
+        async move {
+            let resolved = resolve_server(write(h, false, true, 1), db, old_wire).await;
+            let _ = decision.send(resolved);
+        }
+    });
+    let old_call = next(&mut f).await;
+    assert_eq!(old_call.request.identity.2, 13);
+    let original_deadline = old_call.request.deadline_ns;
+    let mut engine = Engine::task_fixture(old_task);
+    let stopping = engine.stop();
+    tokio::pin!(stopping);
+    assert!(
+        tokio::time::timeout(Duration::from_millis(30), &mut stopping)
+            .await
+            .is_err(),
+        "the pending provider must keep the actual task inside stop/join"
+    );
+    assert!(old_fd.upgrade().is_some());
+    assert_eq!(old_peer.send(&[0x73]).unwrap(), 1);
+
+    // Same database and application owner, independent lifetime/transport.
+    // The callback must finish while the original stop waiter is outstanding.
+    let other_wire = wire();
+    let mut other_packet = write(h, false, true, 1);
+    other_packet.constraint.as_mut().unwrap().lifetime = 29;
+    let other = tokio::spawn(resolve_server(other_packet, db.clone(), other_wire.clone()));
+    let other_call = next(&mut f).await;
+    assert_eq!(other_call.request.identity.2, 29);
+    assert_eq!(other_call.request.request_id, old_call.request.request_id);
+    other_call.reply.send((0, vec![0x93, 0x17])).unwrap();
+    let response = finish(&other_wire, other.await.unwrap(), &db)
+        .unwrap()
+        .unwrap();
+    assert_eq!(response.constraint.unwrap().lifetime, 29);
+    assert_eq!(
+        response.bytes,
+        [14, 3, h as u8, (h >> 8) as u8, 0, 0x93, 0x17]
+    );
+
+    tokio::time::timeout(Duration::from_secs(2), &mut stopping)
+        .await
+        .expect("production one-second fallback must abort and join");
+    assert!(
+        old_result.await.is_err(),
+        "no old decision survived actual join"
+    );
+    assert!(
+        old_fd.upgrade().is_none(),
+        "the stopped callback retained its fd"
+    );
+    assert_eq!(
+        old_peer.send(&[0x73]).unwrap_err().kind(),
+        io::ErrorKind::ConnectionRefused,
+        "the original OS socket is still open after join"
+    );
+    assert_eq!(old_call.request.deadline_ns, original_deadline);
+
+    // A fresh call can reuse its request number without acquiring an old
+    // callback's response. Deliver the old provider result while it is pending.
+    let mut fresh = packet(
+        ValuePdu::Write {
+            handle: h,
+            data_type: 0,
+            value: &[0x5a, 0xc3],
+            verify: true,
+        },
+        1,
+        0,
+        Duration::from_secs(2),
+    );
+    fresh.constraint.as_mut().unwrap().lifetime = 47;
+    let mut next_task = tokio::spawn(resolve_server(fresh, db.clone(), other_wire.clone()));
+    let current_call = next(&mut f).await;
+    assert_eq!(current_call.request.identity.2, 47);
+    assert_eq!(current_call.request.request_id, old_call.request.request_id);
+    // D-Bus does not promise remote effects were cancelled or rolled back.
+    // Whether the remote method can still send is deliberately not an oracle.
+    let _ = old_call.reply.send((0, vec![0x93, 0x17]));
+    assert!(
+        tokio::time::timeout(Duration::from_millis(30), &mut next_task)
+            .await
+            .is_err(),
+        "old result completed a fresh lifetime's pending callback"
+    );
+    current_call.reply.send((0, vec![0x5a, 0xc3])).unwrap();
+    let response = finish(&other_wire, next_task.await.unwrap(), &db)
+        .unwrap()
+        .unwrap();
+    assert_eq!(response.constraint.unwrap().lifetime, 47);
+    assert_eq!(
+        response.bytes,
+        [14, 3, h as u8, (h >> 8) as u8, 0, 0x5a, 0xc3]
+    );
+    assert_eq!(
+        db.lock().unwrap().local_read(h),
+        Err(crate::ssap_database::LocalValueError::Unsupported)
+    );
+}
+
+#[tokio::test]
 async fn write_binding_rejects_foreign_mixed_and_rebind_without_consuming_staging() {
     let f = Fixture::new().await;
     let db = store(&f.state).await;

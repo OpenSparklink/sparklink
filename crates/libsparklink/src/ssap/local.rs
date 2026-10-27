@@ -176,6 +176,14 @@ pub(crate) enum EntryRequirements {
     Property(SsapOperations, SsapAccess),
     Method(MethodAccess),
 }
+impl EntryRequirements {
+    pub(crate) fn needs_local_authorization(self) -> bool {
+        match self {
+            Self::Property(_, access) => access.needs_local_authorization(),
+            Self::Method(access) => access.needs_local_authorization(),
+        }
+    }
+}
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum RegistrationState {

@@ -468,7 +468,7 @@ SSAP stdin 管道单行上限4160字节，含换行。终端输入须少于4096�
 这一路径复用唯一 Engine、原 Owned 登记和同一连接的有界服务端义务队列。
 它与审批回调分开：审批 `true` 不执行应用写入，也不能生成写成功。
 当前提供 daemon 类型化 D-Bus 入口、Rust 低层绑定和共用 Dispatcher 的 Rust/C/Python
-WRITE 收件箱；method 的 daemon/Rust 回调已接通，C/Python/CLI服务端及完整长写事务仍缺失。READ Provider 的既有资格不转授这条新路径。
+WRITE 收件箱；method 的 daemon/Rust 回调已接通，Rust/C/Python方法收件箱已接通，CLI方法服务端及完整长写事务仍缺失。READ Provider 的既有资格不转授这条新路径。
 
 `ServiceManager.BindOwnedWriteProvider(handle:q, provider:o, deadline:(ttttt))->()`
 仅允许原登记的 unique caller，经 `sparklink-services` 权限调用。属性须为 type0
@@ -784,7 +784,7 @@ opcode、arguments及maximum_result_bytes；返回 `(status:y, result:ay)`。
 调用与返回均复核原上下文、权限及期限。撤回后旧绑定不能完成新登记；应用已经
 开始的副作用不可因取消回滚，超时结果不确定，调用者不得隐式重试。
 当前接线包含 daemon/类型化 D-Bus 服务端和 Rust 共享 Dispatcher 方法收件箱。
-C/Python方法收件箱和CLI服务端调用者仍待迁移，不从属性Provider接口推导支持。
+C/Python方法收件箱复用同一Dispatcher；CLI方法服务端仍待迁移，真实方法交付未验收。
 
 Rust `LocalServices::register_entries(uuid, properties, methods, authorizer, Deadline)`
 复用原登记和清理流程；`register_service`继续只登记属性。方法使用`MethodAccess`，
@@ -805,3 +805,32 @@ Rust `LocalServices::register_entries(uuid, properties, methods, authorizer, Dea
 遗留接口关闭准入并随原总线释放，不制造成功绑定。
 私有总线/生产函数 fixture 不验证 Native锁、USB、固件或真实对端交付；准确新产物的
 双设备方法业务和原路径保持仍需VM-only验收。
+
+
+### C/Python 方法 Provider
+
+C `slk_client_register_local_entries` 与 Python `Client.register_local_entries` 接受
+独立的属性和方法数组，总数1–64。`SlkServiceMethod`/`LocalMethod` 使用方法权限，
+不能把属性操作位当作权限；需要本地批准却未开启请求收件箱时返回不支持。
+原仅属性登记入口继续复用相同实现。receipt明确property_count/method_count；
+handles依次为属性和方法，Python另提供property_handles/method_handles。
+
+`slk_local_service_bind_method_provider`/`LocalService.bind_method_provider` 返回
+原owner的方法收件箱。C的fd/next/info/arguments/reply/free及Python的
+notification_fd/next_request/arguments/reply/close共享Rust队列和生命周期，
+没有外语callback执行器或第二套请求循环。readiness fd仅用于poll，复制fd不延续答复权。
+参数快照最多2043字节；C短缓冲返回ENOSPC和完整所需长度，保持缓冲区不变。
+独立结果最多2045字节，且受原请求结果预算约束；超限EMSGSIZE不截断、不消费答复权。
+command18只能返回空结果，本地拒绝也不会生成线上ACK。
+
+未发布C ABI保持receipt总长152及handle偏移24，但原reserved字段改为method_count；
+授权快照总长2120、value偏移72保持，value数组扩至2043，尾部保留字节减为5。
+调用者须同步当前头文件和绑定；属性授权仍最多2042，方法kind3不能接受属性handle。
+授权快照的data_type字段表示授权目标种类（0属性、2CPCD、3方法），不是wire类型。
+审批结果不等于方法执行或业务成功。
+
+每个请求只接受一次答复；重复ESTALE，原期限ETIMEDOUT，撤回/本地停止ESHUTDOWN，
+原daemon丢失ESTALE。request和inbox均须释放，已发生的副作用不可因取消回滚。
+外部C/Python离线消费者实际链接共享库，经私有D-Bus校验2043参数、2045独立结果、
+command零结果、错误输入和待决撤回；manager身份/登记为fixture，不授真实内核、
+协议Engine、固件或对端交付资格。CLI及真实双设备方法门禁继续开放。

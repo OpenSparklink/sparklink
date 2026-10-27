@@ -398,7 +398,7 @@ async fn actual_owned_ffi_retains_caller_short_buffer_and_explicit_withdrawal() 
     );
     assert_eq!(receipt.handles[0], 17);
     assert!(receipt.handles[1..].iter().all(|h| *h == 0));
-    assert_eq!(receipt.reserved, [0; 2]);
+    assert_eq!(receipt.method_count, 0);
     let mut buffer = [0xaa; 8];
     let mut length = 99;
     assert_eq!(
@@ -526,10 +526,30 @@ async fn actual_rust_owned_registration_bounds_metadata_before_broker_call() {
         assert!(matches!(
             result,
             Err(crate::ApplicationError::Invalid(
-                "owned-service property count"
+                "owned-service entry count"
             ))
         ));
         assert_eq!(script.registrations.load(Ordering::SeqCst), 0);
+    }
+    // The limit is on combined entries, not each array independently.
+    for (properties, methods) in [(64, 1), (1, 64), (0, 65)] {
+        let result = services
+            .register_entries(
+                vec![1, 0],
+                vec![property.clone(); properties],
+                vec![(vec![3, 0], 0); methods],
+                zbus::zvariant::OwnedObjectPath::try_from("/").unwrap(),
+                Deadline::after(Duration::from_secs(2)).unwrap(),
+            )
+            .await;
+        assert!(matches!(
+            result,
+            Err(crate::ApplicationError::Invalid(
+                "owned-service entry count"
+            ))
+        ));
+        assert_eq!(script.registrations.load(Ordering::SeqCst), 0);
+        assert!(script.stamps.lock().unwrap().is_empty());
     }
     // The second case also proves expiry precedes parsing the new requirements.
     for operations in [5, u32::MAX] {

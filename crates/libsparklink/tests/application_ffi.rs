@@ -3,6 +3,8 @@
 //! successful Native channel, daemon SSAP Engine, wire or hardware qualification.
 #[path = "application_ffi/authorization.rs"]
 mod authorization;
+#[path = "application_ffi/method_provider.rs"]
+mod method_provider;
 #[path = "application_ffi/pending_owner.rs"]
 mod pending_owner;
 #[path = "application_ffi/read_provider.rs"]
@@ -20,7 +22,7 @@ use std::{
     process::{Command, Stdio},
     sync::{
         Arc, Mutex,
-        atomic::{AtomicU64, AtomicUsize, Ordering},
+        atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering},
     },
 };
 const BASE: &str = "/org/sparklink/slk2_g7";
@@ -334,6 +336,7 @@ impl Link {
 // Finite metadata and callback sender fixture,not a DB,wire or Native Engine.
 #[derive(Default)]
 struct OwnedMetadata {
+    method_entry: AtomicBool,
     owner: Mutex<String>,
     authorizer: Mutex<String>,
     provider: Mutex<String>,
@@ -359,6 +362,17 @@ impl OwnedServices {
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> (u16, u16, Vec<u16>) {
         slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(stamp)).unwrap();
+        self.0.method_entry.store(uuid == [4, 0], Ordering::SeqCst);
+        if uuid == [4, 0] {
+            assert!(properties.is_empty());
+            assert_eq!(methods, [(vec![3, 0], 4)]);
+            assert_eq!(authorizer.as_str(), "/org/sparklink/sdk/ssap_authorizer");
+            *self.0.authorizer.lock().unwrap() = authorizer.to_string();
+            *self.0.owner.lock().unwrap() = h.sender().unwrap().to_string();
+            self.0.provider.lock().unwrap().clear();
+            self.0.registered.fetch_add(1, Ordering::SeqCst);
+            return (16, 17, vec![17]);
+        }
         assert!(methods.is_empty());
         assert_eq!(uuid, [1, 0]);
         let access = properties[0].2;
@@ -385,6 +399,24 @@ impl OwnedServices {
         *self.0.owner.lock().unwrap() = h.sender().unwrap().to_string();
         self.0.registered.fetch_add(1, Ordering::SeqCst);
         (16, 17, vec![17])
+    }
+    fn bind_owned_method_provider(
+        &self,
+        handle: u16,
+        provider: zbus::zvariant::OwnedObjectPath,
+        original: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        assert!(self.0.method_entry.load(Ordering::SeqCst));
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        assert_eq!(handle, 17);
+        assert_eq!(provider.as_str(), "/org/sparklink/sdk/ssap_read_provider");
+        let mut current = self.0.provider.lock().unwrap();
+        assert!(current.is_empty(), "one bind per original registration");
+        *current = provider.to_string();
+        self.0.provider_binds.fetch_add(1, Ordering::SeqCst);
     }
     fn bind_owned_read_provider(
         &self,
@@ -568,6 +600,21 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         "actual SDK consumer compile: {}",
         String::from_utf8_lossy(&compiled.stderr)
     );
+    let method_probe = directory.join("method-provider");
+    let compiled = Command::new(&compiler)
+        .args(["-std=c11", "-Wall", "-Wextra", "-Werror"])
+        .arg(root.join("crates/libsparklink/tests/fixtures/method_provider.c"))
+        .arg("-I")
+        .arg(root.join("crates/libsparklink/include"))
+        .arg(&library)
+        .arg("-o")
+        .arg(&method_probe)
+        .output()?;
+    anyhow::ensure!(
+        compiled.status.success(),
+        "method consumer compile: {}",
+        String::from_utf8_lossy(&compiled.stderr)
+    );
     // Explicit qualification retention keeps the actual executable and outputs;
     // recompiling a consumer later cannot reconstruct its execution identity.
     let identities = Command::new("sha256sum")
@@ -575,6 +622,11 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         .arg(&runtime_library)
         .arg(&c)
         .arg(&sdk_probe)
+        .arg(&method_probe)
+        .arg(root.join("crates/libsparklink/tests/fixtures/method_provider.c"))
+        .arg(root.join("crates/libsparklink/tests/fixtures/method_provider.py"))
+        .arg(root.join("crates/libsparklink/tests/application_ffi/method_provider.rs"))
+        .arg(root.join("crates/libsparklink/src/ffi_service_method_provider.rs"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/write_provider.rs"))
         .arg(root.join("crates/libsparklink/src/ffi_service_write_provider.rs"))
         .arg(root.join("crates/libsparklink/src/ssap/provider/request.rs"))
@@ -1463,6 +1515,16 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     write_provider::exercise(
         &root,
         &sdk_probe,
+        &runtime_library,
+        &directory,
+        &bus.address,
+        &server,
+        &owned,
+    )
+    .await?;
+    method_provider::exercise(
+        &root,
+        &method_probe,
         &runtime_library,
         &directory,
         &bus.address,

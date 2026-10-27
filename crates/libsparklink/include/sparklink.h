@@ -79,6 +79,18 @@ typedef struct SlkLocalService SlkLocalService;
  * Local inbox only. Does not retain a caller/registration. Free stops its
  * callback admission, not remote binding, service, connection or controller.
  */
+typedef struct SlkMethodProvider SlkMethodProvider;
+
+/**
+ * One original callback. No caller/registration reference. Release and actual
+ * callback drain are separate; an unanswered release becomes unavailable.
+ */
+typedef struct SlkMethodProviderRequest SlkMethodProviderRequest;
+
+/**
+ * Local inbox only. Does not retain a caller/registration. Free stops its
+ * callback admission, not remote binding, service, connection or controller.
+ */
 typedef struct SlkReadProvider SlkReadProvider;
 
 /**
@@ -290,15 +302,27 @@ typedef struct SlkServiceProperty {
 } SlkServiceProperty;
 
 /**
+ * A distinct method definition; access bits1/2/4 mean encryption,
+ * authentication and explicit local approval. No property operation mask.
+ * Initialize the entire object; reserved bytes must be zero.
+ */
+typedef struct SlkServiceMethod {
+    uint32_t access;
+    uint8_t uuid_length;
+    uint8_t reserved[3];
+    uint8_t uuid[16];
+} SlkServiceMethod;
+
+/**
  * Immutable local receipt, not remote publication, Ready or authorization.
- * Only handles[0..property_count] are meaningful; all remaining bytes are zero.
+ * Handles are properties first, then methods; only their combined count is meaningful.
  */
 typedef struct SlkServiceReceipt {
     struct SlkControllerId controller;
     uint16_t start;
     uint16_t end;
     uint16_t property_count;
-    uint8_t reserved[2];
+    uint16_t method_count;
     uint16_t handles[64];
 } SlkServiceReceipt;
 
@@ -323,13 +347,37 @@ typedef struct SlkAuthorizationRequestInfo {
     uint8_t remote_tcid;
     uint8_t pi;
     /**
-     * Original SSAP data type: value0 or authenticated client configuration2.
+     * Authorization target kind: property0, authenticated CPCD2, method3.
+     * Kind3 is not an SSAP wire data_type.
      */
     uint8_t data_type;
     uint8_t reserved[1];
-    uint8_t value[2042];
-    uint8_t tail[6];
+    uint8_t value[2043];
+    uint8_t tail[5];
 } SlkAuthorizationRequestInfo;
+
+/**
+ * Immutable original context, not current authorization or peer identity.
+ * All reserved bytes zero. Proposed bytes are available through the bounded value copy.
+ */
+typedef struct SlkMethodProviderRequestInfo {
+    struct SlkControllerId controller;
+    uint64_t token;
+    uint64_t request_id;
+    uint64_t connection_lifetime;
+    uint64_t security_epoch;
+    uint64_t deadline_ns;
+    uint32_t security_level;
+    uint16_t connection_handle;
+    uint16_t method;
+    uint16_t maximum_result_bytes;
+    uint16_t argument_length;
+    uint8_t local_tcid;
+    uint8_t remote_tcid;
+    uint8_t pi;
+    uint8_t operation;
+    uint8_t reserved[8];
+} SlkMethodProviderRequestInfo;
 
 /**
  * Immutable original context, not current authorization or peer identity.
@@ -903,6 +951,27 @@ int slk_client_register_local_service(const struct SlkClient *client,
                                       struct SlkLocalService **output);
 
 /**
+ * Register properties and/or distinct methods through the same owner and
+ * absolute deadline. Combined count1..64; receipt orders properties then methods.
+ * Authorization rules and uncertainty are identical to property registration.
+ * Method access is0..7; approval requirements cannot be disabled.0/-errno.
+ * # Safety
+ * Same as slk_client_register_local_service. Each nonempty input array is live,
+ * initialized and aligned for its count; NULL is allowed only for an empty array.
+ */
+int slk_client_register_local_entries(const struct SlkClient *client,
+                                      const struct SlkControllerId *controller,
+                                      const uint8_t *uuid,
+                                      uintptr_t uuid_length,
+                                      const struct SlkServiceProperty *properties,
+                                      uintptr_t count,
+                                      const struct SlkServiceMethod *methods,
+                                      uintptr_t method_count,
+                                      uint32_t authorization,
+                                      uint64_t deadline_ns,
+                                      struct SlkLocalService **output);
+
+/**
  * Copy the immutable local receipt, even after unregister. This never checks
  * current owner/Ready or mints permission; it performs no RPC.
  * # Safety
@@ -1023,6 +1092,91 @@ int slk_authorization_request_reply(const struct SlkAuthorizationRequest *reques
  * One live owned pointer,freed once;no concurrent calls/later use/fork copies.
  */
 void slk_authorization_request_free(struct SlkAuthorizationRequest *request);
+
+/**
+ * Bind an original method once on the owner's existing executor/dispatcher.
+ * No property value, rebind, implicit retry or fallback. Original absolute
+ * CLOCK_MONOTONIC deadline includes queue admission. Success is local binding
+ * only.0/-errno; output unchanged on error. Free inbox even after service close.
+ * # Safety
+ * Live original service; output aligned/exclusive/nonaliasing; no concurrent
+ * service free or use of inherited objects after fork.
+ */
+int slk_local_service_bind_method_provider(struct SlkLocalService *service,
+                                           uint16_t method,
+                                           uint64_t deadline_ns,
+                                           struct SlkMethodProvider **output);
+
+/**
+ * Duplicate CLOEXEC notification fd, caller closes it. Poll only: never read
+ * or write its counter. Try next before waiting and again after readiness.
+ * It carries no reply authority and does not retain the caller.0/-errno.
+ * # Safety
+ * Provider live immutable, output aligned exclusive; no concurrent free.
+ */
+int slk_method_provider_fd(const struct SlkMethodProvider *provider, int *output);
+
+/**
+ * Nonblocking next. EAGAIN empty, ESHUTDOWN local stopped, ESTALE original
+ * daemon lost, ETIMEDOUT expired undelivered entry. Output unchanged on error.
+ * One consuming application; this never queues an RPC or executes user code.
+ * # Safety
+ * Provider live, output exclusive/aligned/nonaliasing, no concurrent free.
+ */
+int slk_method_provider_next(const struct SlkMethodProvider *provider,
+                             struct SlkMethodProviderRequest **output);
+
+/**
+ * Free local inbox,NULL allowed. Does not withdraw or roll back application effects.
+ * # Safety
+ * One owned live pointer freed once; no concurrent call, fork copy or later use.
+ */
+void slk_method_provider_free(struct SlkMethodProvider *provider);
+
+/**
+ * Copy original immutable snapshot even after expiry/close. No current grant.
+ * # Safety
+ * Request live; output aligned/exclusive/writable/nonaliasing; no concurrent free.
+ */
+int slk_method_provider_request_info(const struct SlkMethodProviderRequest *request,
+                                     struct SlkMethodProviderRequestInfo *output);
+
+/**
+ * Return one independent application result: status0 within the original
+ * result budget, or AF..FF with zero bytes. Command18 permits no result bytes.
+ * No argument echo, effect rollback, truncation, retry or new deadline.
+ * Local acceptance is not wire/peer delivery. Invalid input leaves authority
+ * unconsumed; stale, stopped or expired requests remain refused.0/-errno.
+ * # Safety
+ * Request live, no concurrent free/fork use. NULL value allowed only length0;
+ * otherwise value denotes a live immutable length-byte region. Invalid non-NULL
+ * pointers are caller UB, not supported kernel-style EFAULT inputs.
+ */
+int slk_method_provider_request_reply(const struct SlkMethodProviderRequest *request,
+                                      uint16_t status,
+                                      const uint8_t *value,
+                                      uintptr_t length);
+
+/**
+ * Release request,NULL allowed. Unanswered release is unavailable; this does
+ * not prove callback drain, remote cleanup or any physical completion.
+ * # Safety
+ * One live owned pointer freed once, no concurrent calls/fork copies/later use.
+ */
+void slk_method_provider_request_free(struct SlkMethodProviderRequest *request);
+
+/**
+ * Copy the original arguments, including after expiry/close, without
+ * consuming reply authority. Output length is always the full required size;
+ * ENOSPC leaves buffer unchanged. NULL buffer is permitted for capacity0.
+ * # Safety
+ * Live request, exclusive aligned length output, buffer writable for capacity
+ * bytes without aliasing outputs/request; no concurrent free or fork copy use.
+ */
+int slk_method_provider_request_arguments(const struct SlkMethodProviderRequest *request,
+                                          uint8_t *buffer,
+                                          uintptr_t capacity,
+                                          uintptr_t *length);
 
 /**
  * Bind the original service's exactly READ type0 property once. Stored bytes

@@ -15,8 +15,8 @@ class _Info(ctypes.Structure):
                 ('property', ctypes.c_uint16), ('value_length', ctypes.c_uint16),
                 ('write', ctypes.c_uint8), ('local_tcid', ctypes.c_uint8),
                 ('remote_tcid', ctypes.c_uint8), ('pi', ctypes.c_uint8),
-                ('data_type', ctypes.c_uint8), ('reserved', ctypes.c_uint8 * 1), ('value', ctypes.c_uint8 * 2042),
-                ('tail', ctypes.c_uint8 * 6)]
+                ('data_type', ctypes.c_uint8), ('reserved', ctypes.c_uint8 * 1), ('value', ctypes.c_uint8 * 2043),
+                ('tail', ctypes.c_uint8 * 5)]
 
 
 @dataclass(frozen=True)
@@ -74,12 +74,14 @@ class AuthorizationRequest:
             _result(lib.slk_authorization_request_info(handle, ctypes.byref(raw)))
             controller = ControllerId(raw.controller.index, raw.controller.generation)
             if (controller != receipt.controller or any(raw.controller.reserved)
-                    or any(raw.reserved) or any(raw.tail) or raw.write not in (0, 1) or raw.data_type not in (0, 2)
+                    or any(raw.reserved) or any(raw.tail) or raw.write not in (0, 1) or raw.data_type not in (0, 2, 3)
                     or raw.data_type == 2 and (raw.write != 1 or raw.security_level != 2
                         or raw.value_length != 2 or raw.value[1] != 0 or raw.value[0] & ~3)
                     or not raw.token or not raw.request_id or not raw.connection_lifetime
                     or not raw.security_epoch or not raw.deadline_ns or raw.security_level > 2
-                    or raw.property not in receipt.handles or raw.value_length > 2042
+                    or raw.property not in (receipt.method_handles if raw.data_type == 3 else receipt.property_handles)
+                    or raw.data_type == 3 and raw.write != 1
+                    or raw.value_length > (2043 if raw.data_type == 3 else 2042)
                     or any(raw.value[raw.value_length:])
                     or (raw.local_tcid, raw.remote_tcid, raw.pi) != (10, 10, 0)
                     or not raw.write and raw.value_length):

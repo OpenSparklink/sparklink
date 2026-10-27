@@ -1,11 +1,14 @@
 //! Language-frontend policy inbox. Not an SSAP Engine/database or Native grant.
 //! Registry lock is released before Queue lock; no lock spans an await. A slot
 //! remains charged through callback drain and the delivered request's release.
-use super::{AuthorizationContext, admit, await_decision, check_sender};
+use super::{
+    AuthorizationContext, MethodAuthorizationContext, admit, admit_method, await_decision,
+    check_sender,
+};
+use crate::ssap::local::EntryRequirements;
 use crate::{ApplicationError, Client};
 use slk_contract::ControllerId;
 use slk_contract::ssap::SsapAuthorizationPrompt as Prompt;
-use slk_protocol::{SsapOperations, ssap::access::SsapAccess};
 use std::{
     os::fd::{AsRawFd, FromRawFd, OwnedFd},
     sync::{Arc, Mutex, Weak},
@@ -106,9 +109,9 @@ impl Dispatcher {
     pub(crate) fn reserve(
         &self,
         controller: ControllerId,
-        properties: &[(SsapOperations, SsapAccess)],
+        entries: &[EntryRequirements],
     ) -> Result<Arc<Queue>> {
-        if !(1..=64).contains(&properties.len()) {
+        if !(1..=64).contains(&entries.len()) {
             return Err(nix::libc::EINVAL);
         }
         let permit = self
@@ -127,7 +130,7 @@ impl Dispatcher {
             controller,
             daemon: self.daemon.clone(),
             lost: self.lost.clone(),
-            properties: properties.to_vec(),
+            entries: entries.to_vec(),
             event: unsafe { OwnedFd::from_raw_fd(fd) },
             _permit: permit,
             state: Mutex::new(State {
@@ -205,7 +208,7 @@ pub(crate) struct Queue {
     controller: ControllerId,
     daemon: String,
     lost: watch::Receiver<bool>,
-    properties: Vec<(SsapOperations, SsapAccess)>,
+    entries: Vec<EntryRequirements>,
     event: OwnedFd,
     _permit: OwnedSemaphorePermit,
     state: Mutex<State>,
@@ -213,26 +216,51 @@ pub(crate) struct Queue {
 impl Queue {
     pub(crate) fn bind(&self, handles: &[u16]) -> Result<()> {
         let mut s = self.state.lock().map_err(|_| nix::libc::EIO)?;
-        if !matches!(s.binding, Binding::Pending) || handles.len() != self.properties.len() {
+        if !matches!(s.binding, Binding::Pending) || handles.len() != self.entries.len() {
             return Err(nix::libc::ESTALE);
         }
         s.binding = Binding::Bound(handles.to_vec());
         Ok(())
     }
-    fn context<'a>(&'a self, s: &State, p: &Prompt) -> Option<AuthorizationContext<'a>> {
+    fn admit(
+        &self,
+        s: &State,
+        p: &Prompt,
+        sender: Option<&str>,
+    ) -> zbus::fdo::Result<Option<Instant>> {
         let position = match &s.binding {
             Binding::Bound(h) => h.iter().position(|v| *v == p.2),
             _ => None,
         };
-        let (operations, access) = self.properties[position?];
-        Some(AuthorizationContext {
-            daemon_owner: &self.daemon,
-            owner_lost: *self.lost.borrow() || self.lost.has_changed().is_err(),
-            controller: self.controller,
-            property: Some(p.2),
-            operations,
-            access,
-        })
+        let Some(position) = position else {
+            return Ok(None);
+        };
+        let owner_lost = *self.lost.borrow() || self.lost.has_changed().is_err();
+        match self.entries[position] {
+            EntryRequirements::Property(operations, access) => admit(
+                &AuthorizationContext {
+                    daemon_owner: &self.daemon,
+                    owner_lost,
+                    controller: self.controller,
+                    property: Some(p.2),
+                    operations,
+                    access,
+                },
+                sender,
+                p,
+            ),
+            EntryRequirements::Method(access) => admit_method(
+                &MethodAuthorizationContext {
+                    daemon_owner: &self.daemon,
+                    owner_lost,
+                    controller: self.controller,
+                    method: Some(p.2),
+                    access,
+                },
+                sender,
+                p,
+            ),
+        }
     }
     fn matches(&self, p: &Prompt) -> bool {
         if (p.1.0, p.1.1) != (self.controller.index, self.controller.generation) {
@@ -292,10 +320,7 @@ impl Queue {
                 .state
                 .lock()
                 .map_err(|_| zbus::fdo::Error::Failed("policy inbox poisoned".into()))?;
-            let Some(context) = self.context(&s, &prompt) else {
-                return Ok(false);
-            };
-            let Some(original) = admit(&context, sender, &prompt)? else {
+            let Some(original) = self.admit(&s, &prompt, sender)? else {
                 return Ok(false);
             };
             if s.pending.is_some() {
@@ -336,10 +361,7 @@ impl Queue {
             .state
             .lock()
             .map_err(|_| zbus::fdo::Error::Failed("policy inbox poisoned".into()))?;
-        let Some(context) = self.context(&s, &data.prompt) else {
-            return Ok(false);
-        };
-        Ok(approved && admit(&context, sender, &data.prompt)?.is_some())
+        Ok(approved && self.admit(&s, &data.prompt, sender)?.is_some())
     }
     pub(crate) fn next(self: &Arc<Self>) -> Result<Request> {
         let mut s = self.state.lock().map_err(|_| nix::libc::EIO)?;
@@ -429,11 +451,9 @@ impl Request {
         if self.data.original <= Instant::now() {
             return Err(nix::libc::ETIMEDOUT);
         }
-        let context = self
+        if self
             .queue
-            .context(&s, &self.data.prompt)
-            .ok_or(nix::libc::ESTALE)?;
-        if admit(&context, Some(&self.queue.daemon), &self.data.prompt)
+            .admit(&s, &self.data.prompt, Some(&self.queue.daemon))
             .ok()
             .flatten()
             .is_none()

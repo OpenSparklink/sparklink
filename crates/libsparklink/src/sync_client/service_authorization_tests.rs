@@ -429,11 +429,23 @@ async fn retiring_request_keeps_actual_sixteen_slot_budget_until_release_and_dra
     };
     let mut reservations = Vec::new();
     for i in 0..15 {
-        let q = dispatcher.reserve(id, &properties).unwrap();
+        let q = dispatcher
+            .reserve(
+                id,
+                &properties
+                    .iter()
+                    .map(|(ops, access)| {
+                        crate::ssap::local::EntryRequirements::Property(*ops, *access)
+                    })
+                    .collect::<Vec<_>>(),
+            )
+            .unwrap();
         q.bind(&[18 + i]).unwrap();
         reservations.push(q);
     }
-    assert!(matches!(dispatcher.reserve(id,&properties),Err(e)if e==nix::libc::EAGAIN));
+    assert!(
+        matches!(dispatcher.reserve(id,&properties.iter().map(|(ops,access)| crate::ssap::local::EntryRequirements::Property(*ops,*access)).collect::<Vec<_>>()),Err(e)if e==nix::libc::EAGAIN)
+    );
     let fd = unsafe { notify_fd(v) };
     let message = callback(&server, &s, approval_prompt(ns()));
     wait_ready(&fd).await;
@@ -441,11 +453,19 @@ async fn retiring_request_keeps_actual_sixteen_slot_budget_until_release_and_dra
     unsafe { slk_local_service_free(v) };
     assert!(!message.await.unwrap());
     assert!(
-        matches!(dispatcher.reserve(id,&properties),Err(e)if e==nix::libc::EAGAIN),
+        matches!(dispatcher.reserve(id,&properties.iter().map(|(ops,access)| crate::ssap::local::EntryRequirements::Property(*ops,*access)).collect::<Vec<_>>()),Err(e)if e==nix::libc::EAGAIN),
         "retained request is not drained capacity"
     );
     unsafe { slk_authorization_request_free(request) };
-    let extra = dispatcher.reserve(id, &properties).unwrap();
+    let extra = dispatcher
+        .reserve(
+            id,
+            &properties
+                .iter()
+                .map(|(ops, access)| crate::ssap::local::EntryRequirements::Property(*ops, *access))
+                .collect::<Vec<_>>(),
+        )
+        .unwrap();
     drop(extra);
     drop(reservations);
     unsafe { slk_client_close(c) };

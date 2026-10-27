@@ -1,4 +1,4 @@
-"""Typed READ/WRITE Provider requests over the sole Rust application frontend.
+"""Typed READ/WRITE/method Provider requests over the sole Rust application frontend.
 
 This module transports values and ownership only; it implements no D-Bus
 endpoint, SSAP codec or Engine. Authorization remains a separate decision.
@@ -170,6 +170,7 @@ class _ProviderInbox:
 
 
 class _ProviderRequest:
+    _target_field = 'property'
     """One original callback view; its immutable info is not reply authority.
 
     No Client, service or inbox reference is retained. reply accepts one local
@@ -194,7 +195,7 @@ class _ProviderRequest:
             if (identity != controller or any(raw.controller.reserved) or any(raw.reserved)
                     or not raw.token or not raw.request_id or not raw.connection_lifetime
                     or not raw.security_epoch or not raw.deadline_ns or raw.security_level > 2
-                    or raw.property != property or raw.connection_handle > 0x0fff
+                    or getattr(raw, cls._target_field) != property or raw.connection_handle > 0x0fff
                     or (raw.local_tcid, raw.remote_tcid, raw.pi) != (10, 10, 0)):
                 raise OSError(errno.EPROTO, 'invalid provider context ABI')
             self._info = cls._decode_info(identity, raw)
@@ -385,3 +386,97 @@ class WriteProvider(_ProviderInbox):
     """
     _prefix = 'slk_write_provider'
     _request_type = WriteProviderRequest
+
+
+class _MethodInfo(ctypes.Structure):
+    _fields_ = [('controller', _ControllerId), ('token', ctypes.c_uint64),
+                ('request_id', ctypes.c_uint64), ('connection_lifetime', ctypes.c_uint64),
+                ('security_epoch', ctypes.c_uint64), ('deadline_ns', ctypes.c_uint64),
+                ('security_level', ctypes.c_uint32), ('connection_handle', ctypes.c_uint16),
+                ('method', ctypes.c_uint16), ('maximum_result_bytes', ctypes.c_uint16),
+                ('argument_length', ctypes.c_uint16), ('local_tcid', ctypes.c_uint8),
+                ('remote_tcid', ctypes.c_uint8), ('pi', ctypes.c_uint8),
+                ('operation', ctypes.c_uint8), ('reserved', ctypes.c_uint8 * 8)]
+
+
+@dataclass(frozen=True)
+class MethodProviderInfo:
+    controller: ControllerId
+    token: int
+    request_id: int
+    connection_lifetime: int
+    connection_handle: int
+    security_epoch: int
+    security_level: int
+    deadline_ns: int
+    method: int
+    maximum_result_bytes: int
+    argument_length: int
+    local_tcid: int
+    remote_tcid: int
+    pi: int
+    operation: int
+
+
+def _configure_method(lib):
+    functions = {
+        'slk_local_service_bind_method_provider': [ctypes.c_void_p, ctypes.c_uint16,
+            ctypes.c_uint64, ctypes.POINTER(ctypes.c_void_p)],
+        'slk_method_provider_fd': [ctypes.c_void_p, ctypes.POINTER(ctypes.c_int)],
+        'slk_method_provider_next': [ctypes.c_void_p, ctypes.POINTER(ctypes.c_void_p)],
+        'slk_method_provider_free': [ctypes.c_void_p],
+        'slk_method_provider_request_info': [ctypes.c_void_p, ctypes.POINTER(_MethodInfo)],
+        'slk_method_provider_request_arguments': [ctypes.c_void_p, ctypes.c_void_p,
+            ctypes.c_size_t, ctypes.POINTER(ctypes.c_size_t)],
+        'slk_method_provider_request_reply': [ctypes.c_void_p, ctypes.c_uint16,
+            ctypes.c_void_p, ctypes.c_size_t],
+        'slk_method_provider_request_free': [ctypes.c_void_p],
+    }
+    for name, args in functions.items():
+        function = getattr(lib, name)
+        function.argtypes = args
+        function.restype = None if name.endswith('_free') else ctypes.c_int
+
+
+class MethodProviderRequest(_ProviderRequest):
+    """Original invocation and independent local result, not wire delivery.
+
+    Command18 has no result bytes; local success/error never creates a wire ACK.
+    Expiry or withdrawal cannot roll back an already performed application effect.
+    """
+    _prefix = 'slk_method_provider'
+    _raw_type = _MethodInfo
+    _target_field = 'method'
+
+    @staticmethod
+    def _decode_info(identity, raw):
+        if (raw.argument_length > 2043 or raw.maximum_result_bytes > 2045
+                or raw.operation not in (18, 19)
+                or raw.operation == 18 and raw.maximum_result_bytes != 0):
+            raise OSError(errno.EPROTO, 'invalid method invocation context')
+        return MethodProviderInfo(identity, raw.token, raw.request_id,
+            raw.connection_lifetime, raw.connection_handle, raw.security_epoch,
+            raw.security_level, raw.deadline_ns, raw.method, raw.maximum_result_bytes,
+            raw.argument_length, raw.local_tcid, raw.remote_tcid, raw.pi, raw.operation)
+
+    def _snapshot(self):
+        buffer = ctypes.create_string_buffer(max(1, self._info.argument_length))
+        length = ctypes.c_size_t()
+        _result(self._lib.slk_method_provider_request_arguments(
+            self._handle, buffer, self._info.argument_length, ctypes.byref(length)))
+        if length.value != self._info.argument_length:
+            raise OSError(errno.EPROTO, 'method argument length changed')
+        self._arguments = buffer.raw[:length.value]
+
+    @property
+    def arguments(self):
+        return self._arguments
+
+    def _reply_capacity(self):
+        return self._info.maximum_result_bytes
+
+
+class MethodProvider(_ProviderInbox):
+    """Method adapter over the original Rust Dispatcher; no new execution loop."""
+    _prefix = 'slk_method_provider'
+    _request_type = MethodProviderRequest

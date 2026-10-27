@@ -300,11 +300,16 @@ def _cleanup(row, item):
 
 def paired_leg(row, sender, receiver, frame, window, matched):
     """One real paired frame, shared by complete exchanges and pending Down."""
-    from ws73_ssap_command import _identity
-    from ws73_ssap_value import command_packet
-    identities = [_identity(o) for o in row['owners']]
     leg = dict(tx=matched(row['owners'][sender], 'out', frame, window),
                rx=matched(row['owners'][receiver], 'in', frame, window))
+    validate_paired_leg(row,sender,receiver,frame,window,leg)
+    return leg
+
+
+def validate_paired_leg(row,sender,receiver,frame,window,leg):
+    from ws73_ssap_command import _identity
+    from ws73_ssap_value import command_packet
+    identities=[_identity(o) for o in row['owners']]
     for side, endpoint, direction in [('tx', sender, 'out'), ('rx', receiver, 'in')]:
         packet = leg[side]; command_packet(packet, frame, window)
         for fragment in [packet, *packet['fragments']]:
@@ -315,8 +320,9 @@ def paired_leg(row, sender, receiver, frame, window, matched):
     return leg
 
 
-def _wire(row, item, matched, exchanges, *, requests=None):
+def _wire(row, item, matched, exchanges, *, requests=None, write_version=1):
     from ws73_ssap_value import physical_sends
+    if type(write_version)is not int or write_version not in (1,2):raise CaptureError('explicit WRITE capture version required')
     s, t, h = item['sender'], item['target'], item['handle']
     wire = []; credit = {0: 0, 1: 0}
     request = b'\x08\x03'+h.to_bytes(2, 'little')+b'\0'
@@ -326,11 +332,21 @@ def _wire(row, item, matched, exchanges, *, requests=None):
         if requests is not None:request=requests[ordinal]
         for sender, receiver, pdu in [(s, t, request), (t, s, response)]:
             frame = b'\x0a\0'+len(pdu).to_bytes(2, 'little')+pdu
-            leg = paired_leg(row, sender, receiver, frame, window, matched)
+            if write_version==2:
+                from ws73_ssap_value import pair_wire,fragment_parts
+                from ws73_ssap_value import physical_packets,wire_interval as interval
+                leg=pair_wire(row,matched,row['owners'][sender],row['owners'][receiver],pdu,window)
+                parts=fragment_parts(pdu) if len(pdu)>2042 else [pdu]
+                for n,part in enumerate(parts):
+                    physical={side:physical_packets(leg[side])[n] for side in ('tx','rx')}
+                    validate_paired_leg(row,sender,receiver,b'\x0a\0'+len(part).to_bytes(2,'little')+part,window,physical)
+            else:
+                leg = paired_leg(row, sender, receiver, frame, window, matched)
+                interval=packet_interval
             if callback is not None:
-                if sender == s and packet_interval(leg['rx'])[1] > callback['observed_wall_ns']:
+                if sender == s and interval(leg['rx'])[1] > callback['observed_wall_ns']:
                     raise CaptureError('original peer request must precede the observed provider callback')
-                if sender == t and packet_interval(leg['tx'])[0] < callback['reply_before_wall_ns']:
+                if sender == t and interval(leg['tx'])[0] < callback['reply_before_wall_ns']:
                     raise CaptureError('dynamic response cannot precede the original provider answer')
             wire.append(leg); credit[sender] += physical_sends(leg['tx'])
     return wire, credit

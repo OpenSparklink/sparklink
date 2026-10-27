@@ -123,7 +123,7 @@ class Restart(unittest.TestCase):
             def execute(run,a,b):
                 self.assertEqual(calls,['setup']);self.assertEqual([a,b],owners)
                 calls.append('business')
-            with patch('ws73_channel_daemon_crash.ControlRun',return_value=successor), \
+            with patch('ws73_channel_daemon_crash.ControlRun',return_value=successor) as constructor, \
                  patch('ws73_channel_daemon_crash.file_record',return_value={}), \
                  patch('ws73_ssap_initialization.restore_beacons',side_effect=setup), \
                  patch('ws73_channel_daemon_crash.execute',side_effect=execute):
@@ -131,6 +131,7 @@ class Restart(unittest.TestCase):
                     with self.assertRaisesRegex(gate.CaptureError,'beacon transaction'):
                         ControlRun.successor_business(obj,{'typed_objects':[]})
                 else:ControlRun.successor_business(obj,{'typed_objects':[]})
+            self.assertEqual(constructor.call_args.args[0].ssap_sdk_write_provider_version,1)
             self.assertEqual(calls,['setup'] if failed else ['setup','business'])
             self.assertEqual(saved,[True])
             self.assertIs(obj.data['successor_business'],successor.data)

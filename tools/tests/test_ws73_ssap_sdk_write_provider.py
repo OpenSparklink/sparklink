@@ -34,20 +34,25 @@ def transcript(item):
     item['stdout']='\n'.join(lines)+'\n';item['captured_bytes']={'stdout':len(item['stdout'].encode()),'stderr':0}
 
 
-def fixture(phase=0):
+def fixture(phase=0,version=1):
     row,_,_,_=read_fixture(phase);item=row['ssap_sdk_read_provider_cases'][0]
     records=row['ssap_sdk_read_provider_tools']
     for key in list(row):
         if key.startswith(('ssap_sdk_read_provider','ssap_read_provider')):del row[key]
     records[gate.EXTRA_TOOLS[-1]]=dict(sha256=hashlib.sha256(gate.EXTRA_TOOLS[-1].encode()).hexdigest(),bytes=100)
-    row.update({gate.PREFIX+'_required':True,gate.PREFIX+'_version':1,gate.PREFIX+'_tools':records,gate.COLLECTION:[item]})
+    row.update({gate.PREFIX+'_required':True,gate.PREFIX+'_version':version,gate.PREFIX+'_tools':records,gate.COLLECTION:[item]})
+    if version==2:
+        row['ssap_exchange_contract']=2
+        row['ssap_receipts']=[copy.deepcopy(row['ssap_receipts'][0]) for _ in row['owners']]
+        for owner,receipt in zip(row['owners'],row['ssap_receipts']):
+            receipt.update(exit=0,stdout=f"SsapExchangeInfo: index={owner['owner']['index']} generation={owner['owner']['generation']} lifetime={owner['object']['lifetime']} handle={owner['object']['handle']} local_mtu=2042 negotiated_mtu=2042 request=0207fa07010204000000 peer_reply=0307fa07010204000000 peer_request=0207fa07010204000000 response=0307fa07010204000000\n")
     del item['sdk_read_provider_contract_version'];item.update(sdk_write_provider_contract_version=1,operations=6)
     source,target=row['owners'];api=item['publisher_api'];h=item['handle'];path=source['object']['path']
     item['args']=owned_arguments(api,target,item['service'],item['uuid'],item['secret'],'allow',write_provider=True)
     wire=[]
     for n,s in enumerate(item['steps']):
-        app=s.pop('read');s['call']=app;s['mode']=gate.MODES[n]
-        value=hashlib.sha256(f'write/{phase}/{n}'.encode()).hexdigest()[:62 if n==1 else 64];s['value']=value
+        app=s.pop('read');s['call']=app;s['mode']=gate.scenarios(version)[n][0]
+        value=hashlib.shake_256(f'write/{phase}/{n}'.encode()).hexdigest(gate.scenarios(version)[n][1]);s['value']=value
         app['ssap_operation']='ssap-write'
         prefix=app['args'][:1] if app['api']=='c'else app['args'][:2]
         base=prefix+['ssap-error'if n==0 else'ssap',str(source['owner']['index']),str(source['owner']['generation']),path,'ssap-write',str(h)]
@@ -71,13 +76,20 @@ def fixture(phase=0):
     transcript(item);capture=dict(acb_packets=[],native_events=[])
     for window,request,response in wire:
         for sender,target_no,pdu in [(0,1,request),(1,0,response)]:
-            frame=b'\x0a\0'+len(pdu).to_bytes(2,'little')+pdu
-            for endpoint,direction in [(sender,'out'),(target_no,'in')]:
-                owner=row['owners'][endpoint];at=window['start_wall_ns']+(1_200_000 if sender==0 else 5_000_000)+(100_000 if direction=='in'else 0)
-                parts=[(1,frame[:29]),(3,frame[29:])]if direction=='in'and len(frame)>29 else[(0,frame)]
-                for part,(boundary,payload)in enumerate(parts):
-                    capture['acb_packets'].append(dict(bus=owner['owner']['bus'],device=owner['owner']['device'],handle=owner['object']['handle'],
-                        direction=direction,data=payload.hex(),boundary=boundary,record=len(capture['acb_packets'])+1,wall_ns=at+part*1000))
+            from ws73_ssap_value import fragment_parts
+            fragments=fragment_parts(pdu)if len(pdu)>2042 else[pdu]
+            for sequence,fragment in enumerate(fragments):
+                frame=b'\x0a\0'+len(fragment).to_bytes(2,'little')+fragment
+                for endpoint,direction in [(sender,'out'),(target_no,'in')]:
+                    owner=row['owners'][endpoint];at=window['start_wall_ns']+(1_200_000 if sender==0 else 5_000_000)+(100_000 if direction=='in'else 0)+sequence*20000
+                    chunk=223 if direction=='out'else 191
+                    if version==1:parts=[(1,frame[:29]),(3,frame[29:])]if direction=='in'and len(frame)>29 else[(0,frame)]
+                    else:
+                        payloads=[frame[i:i+chunk]for i in range(0,len(frame),chunk)]
+                        parts=[(0 if len(payloads)==1 else 1 if i==0 else 3 if i==len(payloads)-1 else 2,p)for i,p in enumerate(payloads)]
+                    for part,(boundary,payload)in enumerate(parts):
+                        capture['acb_packets'].append(dict(bus=owner['owner']['bus'],device=owner['owner']['device'],handle=owner['object']['handle'],
+                            direction=direction,data=payload.hex(),boundary=boundary,record=len(capture['acb_packets'])+1,wall_ns=at+part*1000))
     packets=reassemble_acb(capture)
     return row,matcher(packets),packets
 
@@ -202,3 +214,53 @@ class WriteEvidence(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
+
+class WriteLengthsEvidence(unittest.TestCase):
+    def test_actual_sdk_long_value_receipts_and_two_fragment_capture_replay(self):
+        phases=[]
+        for phase in (0,1):
+            row,match,packets=fixture(phase,2)
+            proof,credit=gate.corroborate(row,match)
+            self.assertFalse(packets)
+            self.assertEqual(credit,{0:23,1:23})
+            self.assertEqual([v['application_bytes']for v in proof[0]['outcomes']],[32,2037,2042])
+            self.assertEqual([len(gate.physical_packets(leg['tx']))for leg in proof[0]['wire']],[1,1,1,1,2,2,1,1])
+            phases.append(dict(phase=phase,owners=row['owners'],**{gate.SUMMARY_KEY:proof}))
+        result=dict(proofs=phases)
+        self.assertTrue(gate.valid_summary(result,version=2))
+        self.assertFalse(gate.valid_summary(result,version=1))
+        record=manifest();record['channel_socket_corroboration']=result;record[gate.PREFIX+'_version']=2
+        self.assertTrue(gate.valid_manifest(record))
+        record[gate.PREFIX+'_version']=1;self.assertFalse(gate.valid_manifest(record))
+        gate.validate_rows([fixture(p,2)[0]for p in (0,1)],True)
+        old=summary();self.assertFalse(gate.valid_summary(old,version=2))
+
+    def test_long_value_capture_receipt_and_negotiation_negative_controls(self):
+        for change in ('missing-last','wrong-sequence','wrong-operation','wrong-order','wrong-endpoint',
+                       'wrong-lifetime','late-request','early-response','different-accepted',
+                       'different-peer-value','missing-capability','wrong-mtu','short-value'):
+            with self.subTest(change=change):
+                row,match,packets=fixture(0,2);item=row[gate.COLLECTION][0];step=item['steps'][2]
+                long=[p for p in packets if bytes.fromhex(p['data'])[4:5]in(b'\x8d',b'\x8e')]
+                if change=='missing-last':packets.remove(long[-1])
+                elif change=='wrong-sequence':long[0]['data']=long[0]['data'][:12]+'0300'+long[0]['data'][16:]
+                elif change=='wrong-operation':long[0]['data']=long[0]['data'][:10]+'20'+long[0]['data'][12:]
+                elif change=='wrong-order':long[2]['fragments'][0]['record']=1
+                elif change=='wrong-endpoint':long[0]['fragments'][0]['device']+=1
+                elif change=='wrong-lifetime':step['callback']['prompt']['lifetime']+=1;transcript(item)
+                elif change=='late-request':
+                    for f in long[2]['fragments']:f['wall_ns']=step['callback']['prompt']['observed_wall_ns']+1000
+                elif change=='early-response':
+                    for f in long[4]['fragments']:f['wall_ns']=step['callback']['reply_before_wall_ns']-1000
+                elif change=='different-accepted':step['application_value']['value']='00';transcript(item)
+                elif change=='different-peer-value':step['call']['ssap_expected']='00'
+                elif change=='missing-capability':row['ssap_receipts'][0]['stdout']=row['ssap_receipts'][0]['stdout'].replace('010204000000','010200000000')
+                elif change=='wrong-mtu':row['ssap_receipts'][0]['stdout']=row['ssap_receipts'][0]['stdout'].replace('negotiated_mtu=2042','negotiated_mtu=2041')
+                else:step['value']=step['value'][:-2]
+                with self.assertRaises((CaptureError,KeyError)):gate.corroborate(row,match)
+
+    def test_invalid_versions_cannot_enable_long_capture_or_upgrade_old_proof(self):
+        for version in (True,0,3,None,'2'):
+            with self.assertRaises(CaptureError):gate.scenarios(version)
+            self.assertFalse(gate.valid_summary(summary(),version=version))

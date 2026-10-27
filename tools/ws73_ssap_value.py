@@ -66,6 +66,18 @@ def execute_update_rejections(run, row, local):
     validate_update_rejections(row, expected_version=UPDATE_REJECTION_VERSION)
 
 
+def physical_packets(packet):
+    """Retained complete SMTC packets under one logical SSAP value."""
+    packets=packet['ssap_fragments'] if 'ssap_fragments' in packet else [packet]
+    if type(packets)is not list or not packets:raise CaptureError('nonempty physical SSAP capture required')
+    return packets
+
+
+def wire_interval(packet):
+    spans=[packet_interval(p) for p in physical_packets(packet)]
+    return min(p[0] for p in spans),max(p[1] for p in spans)
+
+
 def physical_sends(packet):
     if 'ssap_fragments' in packet:return sum(physical_sends(p) for p in packet['ssap_fragments'])
     return len(packet.get('fragments',[packet]))
@@ -164,9 +176,10 @@ def pair_wire(row,matched,source,destination,pdu,window):
         if command and not valid_wire(result):raise CaptureError('complete paired command/read capture evidence required')
         return result
     versioned_value=row.get('ssap_value_lengths_version',1)==4 and pdu[0] in (9,11,13,14)
+    versioned_provider=type(row.get('ssap_sdk_write_provider_version')) is int and row['ssap_sdk_write_provider_version']==2 and pdu[0] in (13,14)
     versioned_update=row.get('ssap_update_delivery_version',1)==2 and pdu[0] in (9,11,13,14,15,16)
     limit=2048 if pdu[0] in (15,16) else 2047
-    if not(versioned_value or versioned_update or command) or not 2042<len(pdu)<=limit or pdu[1]&3!=3:raise CaptureError('bounded actual negotiated sequence fragment contract required')
+    if not(versioned_value or versioned_update or versioned_provider or command) or not 2042<len(pdu)<=limit or pdu[1]&3!=3:raise CaptureError('bounded actual negotiated sequence fragment contract required')
     parts=fragment_parts(pdu,ssap_write_command_contract=1 if command else None)
     result=dict(tx=dict(ssap_fragments=[]),rx=dict(ssap_fragments=[]),logical_pdu=pdu.hex(),**extra)
     for part in parts:

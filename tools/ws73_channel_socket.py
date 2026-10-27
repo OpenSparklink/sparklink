@@ -288,8 +288,8 @@ def execute(run, phase, after_application=None):
             from ws73_ssap_sdk_read_provider import execute as sdk_provider_execute
             sdk_provider_execute(run,row)
         if getattr(run.args,'ssap_sdk_write_provider_verify',False):
-            from ws73_ssap_sdk_write_provider import execute as sdk_write_provider_execute
-            sdk_write_provider_execute(run,row)
+            from ws73_ssap_sdk_write_provider import execute as sdk_write_provider_execute, VERSION as sdk_write_provider_version
+            sdk_write_provider_execute(run,row,version=getattr(run.args,'ssap_sdk_write_provider_version',sdk_write_provider_version))
         if getattr(run.args,'ssap_write_provider_unregister_verify',False):
             from ws73_ssap_write_unregister import execute as write_unregister_execute
             write_unregister_execute(run,row)

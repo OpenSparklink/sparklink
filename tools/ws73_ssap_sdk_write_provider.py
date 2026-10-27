@@ -3,7 +3,8 @@
 
 No protocol Engine. Expected wire bytes are the independent existing oracle.
 Local acceptance, app memory and peer reply are all required, none substitutes
-for the other. This first gate is type0 verified short WriteReq only.
+for the other. Version1 retains short WriteReq evidence; version2 covers complete/fragmented
+2037/2042-byte type0 verified values through the same actual SDK callbacks.
 """
 import copy
 import errno
@@ -14,19 +15,30 @@ import re
 import secrets
 import time
 
-from ws73_capture import CaptureError, packet_interval
+from ws73_capture import CaptureError
+from ws73_ssap_value import physical_packets, wire_interval as interval
 from ws73_ssap_read_provider import _cleanup, _wire
 import ws73_ssap_sdk_read_provider as shared
 from ws73_ssap_provider_owner_exit import CLOCK_CONTRACT, _clock_sample
 
 PREFIX='ssap_sdk_write_provider'
 TOKEN='ws73.'+PREFIX+'=1'
-VERSION=1
+VERSION=2
+VERSIONS=(1,2)
 STATUS='SDK_WRITE_PROVIDER_APPLICATION_PAIRED_USB'
 PENDING='SDK_WRITE_PROVIDER_PENDING_PAIRED_USB'
 COLLECTION=PREFIX+'_cases'
 SUMMARY_KEY=PREFIX+'s'
 MODES=('application-error-ff','value31','value32')
+
+def scenarios(version):
+    need(type(version)is int and version in VERSIONS,'explicit supported WRITE evidence version required')
+    return tuple(zip(MODES,(32,31,32))) if version==1 else (('application-error-ff',32),('value2037',2037),('value2042',2042))
+
+def packet_mono(packet,offset):
+    spans=[shared._packet_mono(p,offset) for p in physical_packets(packet)]
+    need(bool(spans),'nonempty physical WRITE clock evidence required')
+    return min(p[0] for p in spans),max(p[1] for p in spans)
 EXTRA_TOOLS=shared.EXTRA_TOOLS+('/usr/share/sparklink/tools/ws73_ssap_sdk_write_provider.py',)
 REQUEST=shared.REQUEST-{'maximum_bytes'}|{'operation','data_type','offset','value_length','verify','value'}
 REPLY=shared.REPLY|{'matched_value','accepted_value'}
@@ -97,15 +109,16 @@ def validate_rows(rows,selected):
             need(not any(k.startswith(PREFIX)and k!=PREFIX+'_required'for k in row),'unrequested WRITE evidence');continue
         need(type(row['phase'])is int and row['phase']==phase and row.get('ssap_owned_required')is True
              and len(row.get('ssap_owned',[]))==4 and type(row.get(PREFIX+'_version'))is int
-             and row[PREFIX+'_version']==VERSION and len(row.get(COLLECTION,[]))==1,'complete original Owned and one WRITE owner per role required')
+             and row[PREFIX+'_version'] in VERSIONS and len(row.get(COLLECTION,[]))==1,'complete original Owned and one WRITE owner per role required')
     if selected:need(len(rows)==2 and len({(r['owners'][1]['owner']['index'],r['owners'][1]['owner']['generation'])for r in rows})==2,'two physical WRITE receivers required')
 
 
-def execute(run,row):
+def execute(run,row,*,version=VERSION):
     from ws73_application_client import ssap_commands,ssap_error_command
     from ws73_ssap_owned import publisher,wait_output,await_removed
     need(row.get('ssap_owned_required')is True and len(row.get('ssap_owned',[]))==4,'original Owned baseline must finish first')
-    row.update({PREFIX+'_required':True,PREFIX+'_version':VERSION,PREFIX+'_tools':tool_records(),COLLECTION:[]})
+    scenarios(version)
+    row.update({PREFIX+'_required':True,PREFIX+'_version':version,PREFIX+'_tools':tool_records(),COLLECTION:[]})
     source,target=row['owners'];api='c'if row['phase']==0 else'python';peer_api='python'if api=='c'else'c'
     with publisher(run,row,0,'allow',collection=COLLECTION,label='sdk-write-provider',sdk_api=api,operations=6,write_provider=True)as(process,item):
         item.update(steps=[],prepared_wall_ns=time.time_ns())
@@ -113,8 +126,8 @@ def execute(run,row):
         process.stdin.write('provider\n');process.stdin.flush()
         item['bound']=shared._wait_json(process,item,'SdkWriteProviderBound',shared.BOUND,1,item['bind_before_monotonic_ns']+5_000_000_000)
         item['bound_wall_ns']=time.time_ns();run.save()
-        for ordinal,mode in enumerate(MODES,1):
-            value=secrets.token_bytes(31 if ordinal==2 else 32)
+        for ordinal,(mode,size) in enumerate(scenarios(version),1):
+            value=secrets.token_bytes(size)
             need(value.hex()!=item['secret'],'fresh proposed WRITE value required')
             step=dict(mode=mode,value=value.hex(),clock_contract=copy.deepcopy(CLOCK_CONTRACT),clock_before=_clock_sample())
             item['steps'].append(step);run.save()
@@ -153,6 +166,10 @@ def _case(row,item,matched):
     from ws73_ssap_command import _identity
     from ws73_ssap_update_delivery import TOOLS
     from ws73_ssap_access import value_operations
+    version=row.get(PREFIX+'_version',1);matrix=scenarios(version)
+    if version==2:
+        from ws73_ssap_command import negotiated
+        negotiated(row)
     verify_output(item);_ssap_process_receipt(item,1000)
     need(type(row['phase'])is int and row['phase']in(0,1),'two ordered physical WRITE roles required')
     api='c'if row['phase']==0 else'python';peer_api='python'if api=='c'else'c';source,target=row['owners'];identities=[_identity(x)for x in row['owners']]
@@ -174,11 +191,11 @@ def _case(row,item,matched):
         and all(type(bound[k])is int for k in ('index','generation','property','result','notification_result'))and bound['result']==bound['notification_result']==0
         and bound['notification_ready']is True and bound['local_binding_only']is True and all(integer(bound[k])for k in ('started_ns','deadline_ns','returned_ns'))
         and item['bind_before_monotonic_ns']<=bound['started_ns']<=bound['returned_ns']<bound['deadline_ns']and 0<bound['deadline_ns']-bound['started_ns']<=5_000_000_000,'original successful bounded WRITE bind required')
-    need(type(item['steps'])is list and [s['mode']for s in item['steps']]==list(MODES),'complete ordered WRITE scenarios required')
+    need(type(item['steps'])is list and [s['mode']for s in item['steps']]==[m for m,_ in matrix],'complete ordered WRITE scenarios required')
     need(row['ssap_language_clients']==[s['call']for s in item['steps']]and len({a['pid']for a in row['ssap_language_clients']})==3,'exact three actual peer processes required')
     stamps=[item[k]for k in ('start_wall_ns','prepared_wall_ns','bind_before_wall_ns','bound_wall_ns')];exchanges=[];pdus=[];limits=[];seen={item['secret']};outcomes=[]
     for ordinal,(s,d,r,a,v)in enumerate(zip(item['steps'],requests,replies,approvals,values,strict=True)):
-        payload=s['value'];need(type(payload)is str and re.fullmatch('[0-9a-f]+',payload)and len(payload)==(62 if ordinal==1 else 64)and payload not in seen,'fresh full random WRITE payload required');seen.add(payload)
+        payload=s['value'];need(type(payload)is str and re.fullmatch('[0-9a-f]+',payload)and len(payload)==2*matrix[ordinal][1]and payload not in seen,'fresh full random WRITE payload required');seen.add(payload)
         c,app=s['callback'],s['call'];need(d['api']==api and all(integer(d[k],zero=True)for k in REQUEST-{'api','verify','value'})and d['verify']is True and d['value']==payload
             and all(d[k]for k in ('token','request_id','lifetime','epoch','deadline_ns','property','observed_ns','observed_wall_ns'))
             and tuple(d[k]for k in ('index','generation','lifetime','handle','property'))==(identities[1]['index'],identities[1]['generation'],identities[1]['lifetime'],identities[1]['handle'],h)
@@ -210,32 +227,33 @@ def _case(row,item,matched):
     _cleanup(row,item);removed=item['retired_read'];stamps += [item['quit_wall_ns'],item['owner_exit_wall_ns'],item['cleanup']['start_wall_ns'],item['cleanup']['end_wall_ns'],removed['start_wall_ns'],removed['end_wall_ns'],item['end_wall_ns']]
     need(all(integer(t)for t in stamps)and stamps==sorted(stamps),'original WRITE owner/call/cleanup chronology required')
     exchanges.append((removed,b'\x09\x0b\x04\0',None));pdus.append(b'\x08\x03'+h.to_bytes(2,'little')+b'\0')
-    wire,credit=_wire(row,item,matched,exchanges,requests=pdus)
+    wire,credit=_wire(row,item,matched,exchanges,requests=pdus,write_version=version)
     for i in range(0,len(wire),2):
-        request,response=wire[i:i+2];need(all(packet_interval(p['tx'])[1]<=packet_interval(p['rx'])[0]for p in (request,response))and packet_interval(request['rx'])[1]<=packet_interval(response['tx'])[0],'two-end WRITE causal order required')
+        request,response=wire[i:i+2];need(all(interval(p['tx'])[1]<=interval(p['rx'])[0]for p in (request,response))and interval(request['rx'])[1]<=interval(response['tx'])[0],'two-end WRITE causal order required')
         if i<6:
             offset,origin,upper,observed,answered=limits[i//2]
-            need(all(shared._packet_mono(p,offset)[0]>=origin and shared._packet_mono(p,offset)[1]<observed for p in request.values()),'paired WRITE request must follow peer call and precede callback')
-            need(all(shared._packet_mono(p,offset)[0]>=answered and shared._packet_mono(p,offset)[1]<upper for p in response.values()),'paired WRITE response must follow app answer within original completion')
+            need(all(packet_mono(p,offset)[0]>=origin and packet_mono(p,offset)[1]<observed for p in (request['tx'],request['rx'])),'paired WRITE request must follow peer call and precede callback')
+            need(all(packet_mono(p,offset)[0]>=answered and packet_mono(p,offset)[1]<upper for p in (response['tx'],response['rx'])),'paired WRITE response must follow app answer within original completion')
     context=copy.deepcopy({k:row[k]for k in ('phase','owners','ssap_receipts','ssap_language_clients')})
-    return dict(status=STATUS,version=VERSION,sender=0,target=1,provider_api=api,peer_api=peer_api,outcomes=outcomes,wire=wire,tools=copy.deepcopy(records),context=context,case=copy.deepcopy(item)),credit
+    if version==2:context.update({PREFIX+'_version':version,'ssap_exchange_contract':row['ssap_exchange_contract']})
+    return dict(status=STATUS,version=version,sender=0,target=1,provider_api=api,peer_api=peer_api,outcomes=outcomes,wire=wire,tools=copy.deepcopy(records),context=context,case=copy.deepcopy(item)),credit
 
 
 def corroborate(row,matched):
     selected=row.get(PREFIX+'_required',False);need(type(selected)is bool,'explicit WRITE request required')
     if not selected:
         need(not any(k.startswith(PREFIX)and k!=PREFIX+'_required'for k in row),'unrequested WRITE evidence');return [],{0:0,1:0}
-    need(type(row.get(PREFIX+'_version'))is int and row[PREFIX+'_version']==VERSION and len(row.get(COLLECTION,[]))==1,'one original WRITE case required')
+    need(type(row.get(PREFIX+'_version'))is int and row[PREFIX+'_version'] in VERSIONS and len(row.get(COLLECTION,[]))==1,'one original WRITE case required')
     item,credit=_case(row,row[COLLECTION][0],matched);return [item],credit
 
 
-def valid_summary(proof, *, version=VERSION):
+def valid_summary(proof, *, version=1):
     try:
-        need(type(version)is int and version==VERSION and len(proof['proofs'])==2,'two WRITE phase proofs required');receivers=set();values=set()
+        need(type(version)is int and version in VERSIONS and len(proof['proofs'])==2,'two WRITE phase proofs required');receivers=set();values=set()
         for phase,row in enumerate(proof['proofs']):
             items=row[SUMMARY_KEY];need(type(row['phase'])is int and row['phase']==phase and len(items)==1,'exact WRITE phase proof required');item=items[0];context=copy.deepcopy(item['context'])
-            need(type(item['version'])is int and item['version']==VERSION and context['phase']==phase and context['owners']==row['owners']and len(item['wire'])==8,'WRITE proof context mismatch')
-            packets=[copy.deepcopy(leg[side])for leg in item['wire']for side in ('tx','rx')]
+            need(type(item['version'])is int and item['version']==version and context['phase']==phase and context['owners']==row['owners']and len(item['wire'])==8,'WRITE proof context mismatch')
+            packets=[copy.deepcopy(p)for leg in item['wire']for side in ('tx','rx') for p in physical_packets(leg[side])]
             def matched(owner,direction,frame,window):
                 key=(owner['owner']['bus'],owner['owner']['device'],owner['object']['handle'],direction,frame.hex())
                 found=[p for p in packets if tuple(p[k]for k in ('bus','device','handle','direction','data'))==key and window['start_wall_ns']<=p['wall_ns']<=window['end_wall_ns']]
@@ -257,5 +275,5 @@ def valid_manifest(record):
             for item in row.get(SUMMARY_KEY,[]):need(item['tools'][EXTRA_TOOLS[-1]]=={k:v[k]for k in ('sha256','bytes')},'WRITE verifier differs from guest tool')
         return (record.get('status')=='PASSTHROUGH_SUPPORT_PASS' and type(record.get('qemu_exit'))is int and record['qemu_exit']==0
                 and record.get('ssap_owned_acceptance')is True and record.get('ordinary_channel_socket_acceptance')is True
-                and type(record.get(PREFIX+'_version'))is int and record[PREFIX+'_version']==VERSION and record.get(PREFIX+'_acceptance')is True and valid_summary(proof))
+                and type(record.get(PREFIX+'_version'))is int and record[PREFIX+'_version'] in VERSIONS and record.get(PREFIX+'_acceptance')is True and valid_summary(proof,version=record[PREFIX+'_version']))
     except (KeyError,AttributeError,IndexError,TypeError,ValueError):return False

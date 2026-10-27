@@ -139,6 +139,7 @@ class ControlRun(Run):
         args.output=FOLDER/'successor-business'
         args.channel_daemon_crash=False;args.channel_socket_verify=True
         args.ssap_owned_verify=True;args.ssap_sdk_write_provider_verify=True
+        args.ssap_sdk_write_provider_version=1  # Retain the original restart-v2 short-value gate.
         successor=ControlRun(args)
         successor.pid=self.pid
         successor.data.update(daemon_before=self.pid,slctl=file_record('/bin/slctl'))

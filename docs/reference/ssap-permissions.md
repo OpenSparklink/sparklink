@@ -617,7 +617,12 @@ JSON 观察分别记录原请求、实际 SDK 调用与结果、接受值和应�
 停止准入、释放请求/fd、撤回服务；监督器必须先观察对端结果再结束 owner。
 现有 publisher 可显式选择 `write_provider=True, operations=6`；与 READ/updates
 组合明确拒绝。现有 runner 已提供独立 `--ssap-sdk-write-provider-verify` 选择器及
-双端 USB/SSAP 判定，范围是应用拒绝和31/32字节 verified WriteReq；见
+双端 USB/SSAP 判定。保留 v1 的应用拒绝及31/32字节 verified WriteReq；独立
+v2 门禁覆盖应用拒绝、2037与2042字节值，仍交换 C/Python 角色。2037字节值加5字节
+WRITE 头构成完整2042字节PDU；2042字节值需要协商有序号分片。逐片核对两端
+原始USB身份、顺序、原期限、完整应用校验及回复，不能以局部片段或本地答复替代。
+旧 daemon-restart v2 仍显式执行原 v1 短值范围，不因工具升级继承长值资格。
+这些是门禁支持范围，实机结果须按准确新artifact单列；见
 [门禁契约](vm-gate-inputs.md#sdk-write-provider-的结果门禁)。源码/离线通过不等于
 准确新产物实机通过；command、长写及待决生命周期的完整门禁仍缺，旧 READ 资格不转授。
 

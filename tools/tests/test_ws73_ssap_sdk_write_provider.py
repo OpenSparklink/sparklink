@@ -213,7 +213,6 @@ class WriteEvidence(unittest.TestCase):
         with self.assertRaises(CaptureError):_wire(row,row[gate.COLLECTION][0],match,[(None,None,None)],requests=[])
 
 
-if __name__=='__main__':unittest.main()
 
 
 class WriteLengthsEvidence(unittest.TestCase):
@@ -303,3 +302,6 @@ class WriteSetup(unittest.TestCase):
                     with self.assertRaisesRegex(CaptureError,'setup failed'):run.phase(a,b,4,'initial')
                 else:run.phase(a,b,4,'initial')
             self.assertEqual(seen,['setup']if failed else['setup','connect','metadata','baseline'])
+
+
+if __name__=='__main__':unittest.main()

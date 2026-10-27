@@ -387,7 +387,7 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "814816af10cb56ae422867fda3bb3a20fae87f51846bc547f270234a989e1139",
+      "body_sha256": "998d2a30af9a7aa103a5cc4c95ab9c119d52fc7c9453d7592183b5b3ef259f71",
       "classification": "有限收尾",
       "closure_basis": "Synchronous SDK owner-loss and VM coordinator/source finalization updated; exact qualification private, original six SSAP conditions remain OPEN."
     },
@@ -760,9 +760,9 @@
         "state": "open",
         "classification": "有限收尾",
         "action": "body_consolidated",
-        "body_sha256": "814816af10cb56ae422867fda3bb3a20fae87f51846bc547f270234a989e1139",
-        "basis": "Current source/offline summary synchronized; whole original operation/value/lifecycle scope remains open. Exact VM qualification available only via authorized local index.",
-        "source_followup_observed_at": "2026-10-27T05:26:33.400145+00:00"
+        "body_sha256": "998d2a30af9a7aa103a5cc4c95ab9c119d52fc7c9453d7592183b5b3ef259f71",
+        "basis": "WRITE v2 complete/fragmented value and pipeline source/offline gates; original six conditions remain OPEN. Exact real scope only in authorized local index.",
+        "source_followup_observed_at": "2026-10-27T05:57:16Z"
       },
       {
         "repository": "sparklink",
@@ -4657,6 +4657,16 @@
       "public_source": "fad8f3fd9369dd66f2bb73fde1599d11bfb1a451",
       "body_sha256": "814816af10cb56ae422867fda3bb3a20fae87f51846bc547f270234a989e1139",
       "scope": "Source/offline only. Original six conditions unchanged, OPEN. No private execution identity, hardware detail or private hash."
+    },
+    {
+      "repository": "sparklink",
+      "number": 22,
+      "state": "open",
+      "observed_at": "2026-10-27T05:57:16Z",
+      "public_source": "c94806d63d2b2135f006443b5752771baf146a6c",
+      "body_sha256": "998d2a30af9a7aa103a5cc4c95ab9c119d52fc7c9453d7592183b5b3ef259f71",
+      "source_offline_only": true,
+      "scope": "Consolidated WRITE length and pipeline source/offline summary; original six exit conditions unchanged; private hardware details withheld."
     }
   ]
 }

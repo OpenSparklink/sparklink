@@ -1,19 +1,23 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前批次：同步 SDK owner-loss 与 WRITE 接任门禁收尾
+## 当前批次：SDK WRITE 完整值与分片值门禁
 
-WP08 / U#22 的普通 C/Python 调用现已接入现有 Client owner-loss/NoReply 处理，
-保留入队时的原绝对期限、不重试、不跟随新 owner；不新增 Host、Engine 或 credit 状态。
-真实私有总线及实际外部 SDK 套件覆盖释放服务名、总线断开和存活 owner 的 NoReply，
-72项库回归及严格 Clippy 通过；原超时负对照保留。协调器另复用已停止 beacon、
-普通用户管道所有权及每设备 HCC 输入汇总，原重建和最终验收断言没有放宽。
+WP08/U#22 复用唯一 Engine、SDK/Owned 执行循环和原双端字节预期，独立 v2 门禁
+检查应用错误 FF 后的2037／2042字节 verified WRITE。前者加5字节头为完整2042字节
+PDU，后者需要实际协商有序号分片；C/Python Provider 与 requester 交换角色。
+每个完整SMTC包的发送／接收必须因果有序，允许不同SSAP片流水重叠；完整请求仍须
+先于应用回调及响应。旧v1、daemon-restart原短值范围与历史证据身份保持。
 
-公开材料只描述源码和限定离线结果。准确编译产物、执行工具、双端原件、失败及实机
-范围继续由授权本地索引维护；fixture、源码和工具安装不授予当前 HEAD 整体资格。
+109项旧/新相关离线检查后又补合法流水反例，共110项当前回归通过；该数字是
+同一相关套件，不累加前轮次数。严格HTML、文档清单与示例静态检查通过。
+测试使用显式协调fixture和合成捕获／应用记录，不是新实机或形式化资格。
+固定NearLink Host分片WRITE操作位与本项目协商序号封装区别已核对，未复制另一套Engine。
+公开只保留源码／离线摘要，准确执行产物、所有失败和实机细节由授权本地索引维护。
 
-本纵向批次后继续剩余 SSAP 操作/长值/更新和既有数据、安全主线，不追加控制面全集
-前置。U#22六项原验收、完整S0–S6/19WP/10FV/12DG、VM-only、UserHost低优先级及
-自然故障根因/非人工恢复条件不变，未关闭任何整项。生成摘要是当前批次唯一状态。
+本批退出仍需准确新artifact双角色真实完整验值和回复、逐片USB证据、原期限、
+清理及普通业务保持。先从既有原始时间线定位阻挡长值运行的建链问题，并行继续
+剩余SSAP／数据／安全；不追加控制面全集前置。U#22保持开放，完整S0–S6、19WP、
+10FV、12DG、VM-only、UserHost低优先级及自然恢复原要求不变。
 
 ## 有界 issue 清理结果与主线恢复
 
@@ -494,38 +498,42 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-SDK-WRITE-sync-owner-and-restart-v2",
+  "id": "WP08-SDK-WRITE-complete-fragmented-values-v2",
   "state": "SOURCE_OFFLINE_PASS_PRIVATE_VM_RECORDS_SEPARATE",
-  "production_behavior": "Synchronous SDK calls reuse the original Client owner-loss/NoReply handler and exact queued deadline. VM coordination reuses stopped beacon setup, child-owned stdin and common per-device HCC input checks. No new Engine, retry, credit or protocol path.",
+  "production_behavior": "No production protocol change. Existing actual SDK/Owned runner gains2037/2042-byte verified WRITE evidence, explicit stopped beacon setup and per-packet pipeline causality. Existing Engine, Session, credit, Grant, Ticket and original deadlines unchanged.",
   "implementation_sources": {
-    "sdk": "e9ac4f21eea85f53483b4acecbfe8738d224fd5d",
-    "latest_tools": "fad8f3fd9369dd66f2bb73fde1599d11bfb1a451"
+    "value_gate": "d595725ef9fac4c05a291dbe7e3f93c39e96afd2",
+    "beacon_setup": "373837534ee2da1e4f1d546fdbdf80faf59ab739",
+    "latest_tools": "c94806d63d2b2135f006443b5752771baf146a6c"
   },
   "offline_checks": {
-    "library": "72 PASS",
-    "external": "Full actual C/Python private-bus suite PASS; six new pending WRITE cases",
-    "coordinator_groups": "70,63,69 PASS in overlapping suites, not summed",
-    "formal": "No new formal proof"
+    "related_regressions": "110 PASS; synthetic capture/transcript and explicit coordinator fixtures, not actual RF or new external SDK execution",
+    "docs": "strict Sphinx HTML and inventory/example checks PASS",
+    "formal": "NO_NEW_PROOF",
+    "counterexample": "Old new-v2 oracle rejected valid fragment pipeline; retained fixed regression. Historical v1 unchanged."
   },
   "issue_sync": {
     "repository": "sparklink",
     "number": 22,
-    "observed_at": "2026-10-27T05:26:33.400145+00:00",
-    "public_source": "fad8f3fd9369dd66f2bb73fde1599d11bfb1a451",
-    "body_sha256": "814816af10cb56ae422867fda3bb3a20fae87f51846bc547f270234a989e1139",
-    "scope": "Source/offline only. Original six conditions unchanged, OPEN. No private execution identity, hardware detail or private hash."
+    "state": "open",
+    "observed_at": "2026-10-27T05:57:16Z",
+    "public_source": "c94806d63d2b2135f006443b5752771baf146a6c",
+    "body_sha256": "998d2a30af9a7aa103a5cc4c95ab9c119d52fc7c9453d7592183b5b3ef259f71",
+    "source_offline_only": true,
+    "scope": "Consolidated WRITE length and pipeline source/offline summary; original six exit conditions unchanged; private hardware details withheld."
   },
-  "hardware_status": "Public scope is source/offline only; exact VM identities and results are available through the authorized local evidence index, not inherited by current HEAD.",
+  "hardware_status": "Exact compiled/execution identities, failures and hardware scope remain in authorized local evidence. Public source/offline results grant no real-device qualification.",
   "formal_status": "NO_NEW_PROOF",
   "exit_conditions": [
-    "Actual external C/Python entry: owner release/disconnect ESTALE within original deadline; live-owner NoReply preserved.",
-    "Same existing VM gate: pending callback before kill/reap, both Free/empty, old views/fds/objects denied, successor new physical lifetimes and peer-validated ordinary/SDK WRITE.",
-    "Missing input/capture, stale identity/deadline and incomplete supervisor stay fail-closed; preserve every original failure."
+    "Both physical connection and C/Python Provider/requester roles, original ordinary/Owned gates preserved",
+    "Application FF rejection then exact2037/2042-byte acceptance and actual peer verification",
+    "Negotiated sequence capability, both USB legs for every fragment, original identity/deadline and cleanup",
+    "Failures retained; incomplete capture, wrong payload/sequence/order/identity/deadline cannot PASS"
   ],
   "next": [
-    "Resume remaining unique SSAP Engine operation/value/update gates and existing data/security work.",
-    "Expand only the next vertical behavior with its relevant invariants; no full control-plane concurrency prerequisite.",
-    "Keep natural root cause/nonmanual recovery, physical drain and complete original S0-S6/19WP/10FV/12DG scope open."
+    "Complete accurate-artifact WRITE length real gate; investigate connection failure through existing DLI/raw evidence before further controlled attempts",
+    "Continue remaining SSAP/data/security work in parallel; no all-control or all-recovery prerequisite",
+    "Keep full S0-S6/19WP/10FV/12DG, natural root/nonmanual recovery and original issue conditions open"
   ]
 }
 ```

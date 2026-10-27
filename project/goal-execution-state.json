@@ -2019,38 +2019,42 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP08-SDK-WRITE-sync-owner-and-restart-v2",
+      "id": "WP08-SDK-WRITE-complete-fragmented-values-v2",
       "state": "SOURCE_OFFLINE_PASS_PRIVATE_VM_RECORDS_SEPARATE",
-      "production_behavior": "Synchronous SDK calls reuse the original Client owner-loss/NoReply handler and exact queued deadline. VM coordination reuses stopped beacon setup, child-owned stdin and common per-device HCC input checks. No new Engine, retry, credit or protocol path.",
+      "production_behavior": "No production protocol change. Existing actual SDK/Owned runner gains2037/2042-byte verified WRITE evidence, explicit stopped beacon setup and per-packet pipeline causality. Existing Engine, Session, credit, Grant, Ticket and original deadlines unchanged.",
       "implementation_sources": {
-        "sdk": "e9ac4f21eea85f53483b4acecbfe8738d224fd5d",
-        "latest_tools": "fad8f3fd9369dd66f2bb73fde1599d11bfb1a451"
+        "value_gate": "d595725ef9fac4c05a291dbe7e3f93c39e96afd2",
+        "beacon_setup": "373837534ee2da1e4f1d546fdbdf80faf59ab739",
+        "latest_tools": "c94806d63d2b2135f006443b5752771baf146a6c"
       },
       "offline_checks": {
-        "library": "72 PASS",
-        "external": "Full actual C/Python private-bus suite PASS; six new pending WRITE cases",
-        "coordinator_groups": "70,63,69 PASS in overlapping suites, not summed",
-        "formal": "No new formal proof"
+        "related_regressions": "110 PASS; synthetic capture/transcript and explicit coordinator fixtures, not actual RF or new external SDK execution",
+        "docs": "strict Sphinx HTML and inventory/example checks PASS",
+        "formal": "NO_NEW_PROOF",
+        "counterexample": "Old new-v2 oracle rejected valid fragment pipeline; retained fixed regression. Historical v1 unchanged."
       },
       "issue_sync": {
         "repository": "sparklink",
         "number": 22,
-        "observed_at": "2026-10-27T05:26:33.400145+00:00",
-        "public_source": "fad8f3fd9369dd66f2bb73fde1599d11bfb1a451",
-        "body_sha256": "814816af10cb56ae422867fda3bb3a20fae87f51846bc547f270234a989e1139",
-        "scope": "Source/offline only. Original six conditions unchanged, OPEN. No private execution identity, hardware detail or private hash."
+        "state": "open",
+        "observed_at": "2026-10-27T05:57:16Z",
+        "public_source": "c94806d63d2b2135f006443b5752771baf146a6c",
+        "body_sha256": "998d2a30af9a7aa103a5cc4c95ab9c119d52fc7c9453d7592183b5b3ef259f71",
+        "source_offline_only": true,
+        "scope": "Consolidated WRITE length and pipeline source/offline summary; original six exit conditions unchanged; private hardware details withheld."
       },
-      "hardware_status": "Public scope is source/offline only; exact VM identities and results are available through the authorized local evidence index, not inherited by current HEAD.",
+      "hardware_status": "Exact compiled/execution identities, failures and hardware scope remain in authorized local evidence. Public source/offline results grant no real-device qualification.",
       "formal_status": "NO_NEW_PROOF",
       "exit_conditions": [
-        "Actual external C/Python entry: owner release/disconnect ESTALE within original deadline; live-owner NoReply preserved.",
-        "Same existing VM gate: pending callback before kill/reap, both Free/empty, old views/fds/objects denied, successor new physical lifetimes and peer-validated ordinary/SDK WRITE.",
-        "Missing input/capture, stale identity/deadline and incomplete supervisor stay fail-closed; preserve every original failure."
+        "Both physical connection and C/Python Provider/requester roles, original ordinary/Owned gates preserved",
+        "Application FF rejection then exact2037/2042-byte acceptance and actual peer verification",
+        "Negotiated sequence capability, both USB legs for every fragment, original identity/deadline and cleanup",
+        "Failures retained; incomplete capture, wrong payload/sequence/order/identity/deadline cannot PASS"
       ],
       "next": [
-        "Resume remaining unique SSAP Engine operation/value/update gates and existing data/security work.",
-        "Expand only the next vertical behavior with its relevant invariants; no full control-plane concurrency prerequisite.",
-        "Keep natural root cause/nonmanual recovery, physical drain and complete original S0-S6/19WP/10FV/12DG scope open."
+        "Complete accurate-artifact WRITE length real gate; investigate connection failure through existing DLI/raw evidence before further controlled attempts",
+        "Continue remaining SSAP/data/security work in parallel; no all-control or all-recovery prerequisite",
+        "Keep full S0-S6/19WP/10FV/12DG, natural root/nonmanual recovery and original issue conditions open"
       ]
     },
     "selected_qualification": {

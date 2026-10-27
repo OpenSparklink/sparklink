@@ -261,8 +261,8 @@
       "classification": "有限收尾",
       "action": "body_replaced",
       "state": "open",
-      "closure_basis": "Native 取消修复与实际订阅门禁已经接通；准确产物结果在授权本地索引。原静默30秒用例仍走测试专用 EventSource，须补同一实际 Native 循环的现行 D-Bus handler 验证，再按原六项条件关闭。",
-      "body_sha256": "56dbd9ea414d7fbcf3eca8ad7ce43f402879a44e59d83ff522b2d41cee916a13",
+      "closure_basis": "suite v2 已沿同一实际 Native 循环接通，28项离线事件与79项runner回归、严格Clippy通过；原六项及适用保持门禁继续核对，准确产物结果与原失败留本地。不得从局部结果或未公开材料推断整项通过。",
+      "body_sha256": "ea2662fbd8c09c3bea7886ddfcaf123209b73c12b9da01b01ab267c147c20ec3",
       "children": []
     },
     {
@@ -467,7 +467,7 @@
     "environment": "Rust 1.96.1, locked/offline; shared fixed Cargo directory and global build lock; 8 jobs; real private D-Bus 1.16.2, controlled EventSource and /dev/null.",
     "limits": "No real kernel/USB/RF, system-bus deployment, formal proof or full Native shutdown qualification. Native retry-lock cancellation remains U#1."
   },
-  "resume": "Bounded maintenance complete. Finish original U1 Native quiet30 coverage; existing production data/security/SSAP and WRITE Down/restart remain the mainline; natural recovery open.",
+  "resume": "Bounded maintenance complete; U1 original closure audit, applicable preservation, and existing data/security/SSAP mainline. No full-control-plane prerequisite.",
   "natural_root_cause_closed": false,
   "non_manual_recovery_qualified": false,
   "whole_goal_complete": false,
@@ -3373,6 +3373,17 @@
       "source_offline_only": true,
       "observed_at": "2026-10-27T00:06:14.442354+00:00",
       "scope": "Clarify legacy-only quiet30 coverage; real Native artifact details remain private. Six original requirements unchanged."
+    },
+    {
+      "repository": "sparklink",
+      "number": 1,
+      "prior_body_sha256": "d1d8bb776f4a27df75239d39b4b60f6ec9fc16142c9384fde424a2484f46e351",
+      "body_sha256": "ea2662fbd8c09c3bea7886ddfcaf123209b73c12b9da01b01ab267c147c20ec3",
+      "source": "bac12d127cd4d32874949b61b0088baa0c0fe9e8",
+      "state": "open",
+      "source_offline_only": true,
+      "observed_at": "2026-10-27T00:44:13.688749+00:00",
+      "scope": "Actual quiet30 suite v2 implementation and scoped offline validation; private execution evidence withheld."
     }
   ]
 }

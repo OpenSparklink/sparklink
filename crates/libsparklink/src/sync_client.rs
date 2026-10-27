@@ -206,10 +206,19 @@ impl SyncClient {
                     let _ = reply.try_send(Err(nix::libc::ETIMEDOUT));
                     return;
                 }
+                // The language boundary shares the Client's owner-loss and
+                // reply-first handling, including operations whose async API
+                // only checks identity before/after the RPC. Preserve the exact
+                // queued deadline; never follow a successor or retry the call.
+                let scope = client.clone();
                 let result =
-                    match tokio::time::timeout_at(deadline.0.into(), operation(client)).await {
-                        Ok(value) if deadline.remaining().is_ok() => value.map_err(errno),
-                        _ => Err(nix::libc::ETIMEDOUT),
+                    match slk_channel::deadline::Deadline::at(deadline.0) {
+                        Ok(original) => crate::client::bounded(&scope, original, async move {
+                            operation(client).await
+                        })
+                        .await
+                        .map_err(errno),
+                        Err(error) => Err(error.raw_os_error().unwrap_or(nix::libc::EIO)),
                     };
                 // A timed-out caller cannot leave an unclaimed fd/response alive.
                 let _ = reply.try_send(result);

@@ -5,6 +5,8 @@
 mod authorization;
 #[path = "application_ffi/read_provider.rs"]
 mod read_provider;
+#[path = "application_ffi/pending_owner.rs"]
+mod pending_owner;
 #[path = "application_ffi/subscription.rs"]
 mod subscription;
 mod support;
@@ -1439,6 +1441,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         unchanged.status.success(),
         "executed artifact changed during test"
     );
+    pending_owner::check(&root, &directory, &runtime_library, &sdk_probe).await?;
     std::fs::write(
         directory.join("COMPLETE"),
         b"CURRENT_APPLICATION_CLIENT_NEGATIVE_BUS_PASS\n",

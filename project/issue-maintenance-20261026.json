@@ -472,34 +472,24 @@
   "non_manual_recovery_qualified": false,
   "whole_goal_complete": false,
   "followup_readback": {
-    "observed_at": "2026-10-27T01:01:48.727620+00:00",
+    "observed_at": "2026-10-27T01:38:48.682701+00:00",
     "originals_verified": 28,
     "children_verified": 7,
-    "readback_scope": "35 current issue bodies/states and existing three parent relations. U1 closed against unchanged six criteria; historical failures retained. Public source/offline only.",
+    "readback_scope": "All 35 issue bodies/states reread after bounded maintenance; dispositions unchanged. U22 subsequent Engine stop offline slice retained; no new hardware or formal qualification.",
     "source_review": {
-      "sparklink_public": "bac12d127cd4d32874949b61b0088baa0c0fe9e8",
+      "sparklink_public": "1875c95c5df410f3e7f4e3c788a1275da5ae981c",
       "linux": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
     },
     "updates": [
       {
         "repository": "sparklink",
-        "number": 1,
-        "state": "closed",
-        "state_reason": "completed",
-        "body_sha256": "ea00e821b693bf9f2cf912fc2a5011f438f928312ae8dc8eed5e8416a1d4c977",
-        "prior_body_sha256": "ea2662fbd8c09c3bea7886ddfcaf123209b73c12b9da01b01ab267c147c20ec3",
-        "observed_at": "2026-10-27T01:00:07.151247+00:00",
-        "source_offline_only": true
-      },
-      {
-        "repository": "linux",
-        "number": 24,
+        "number": 8,
         "state": "open",
-        "state_reason": null,
-        "body_sha256": "ecc07115be580e800b74a6f584a098b1cf8f5f41f3c37ccf0f8fe87018b48d69",
-        "prior_body_sha256": "41bc81632768461e0c066bac32bd161943eb6f13b447653cba9fcd0f610717d4",
-        "observed_at": "2026-10-27T01:00:09.814565+00:00",
-        "source_offline_only": true
+        "prior_body_sha256": "bfbd4df72deb2b8b9bc59c57fb1da7eb1ab6c66ea6c625abec1ce41ecd39bf60",
+        "body_sha256": "52f39cc93cbe2d13c5eef3989f2e5491366f59fb9735745cdd741bfd97611d30",
+        "observed_at": "2026-10-27T01:42:01Z",
+        "source_offline_only": true,
+        "scope": "Replace stale U1 open-gap/28-issue table with current disposition and canonical mapping; all original scope retained."
       }
     ],
     "verified_issue_states": [
@@ -679,7 +669,7 @@
         "number": 1,
         "state": "closed",
         "classification": "可关闭",
-        "action": "original_six_acceptance_closed",
+        "action": "reviewed_retained",
         "body_sha256": "ea00e821b693bf9f2cf912fc2a5011f438f928312ae8dc8eed5e8416a1d4c977",
         "basis": "原六条事件循环条件逐项审计完成，按自身范围关闭；源码/离线与授权本地准确材料分开。原业务保持失败和剩余门禁不改判，未授当前HEAD整体资格。"
       },
@@ -742,8 +732,8 @@
         "number": 8,
         "state": "open",
         "classification": "长期跟踪",
-        "action": "reviewed_retained",
-        "body_sha256": "bfbd4df72deb2b8b9bc59c57fb1da7eb1ab6c66ea6c625abec1ce41ecd39bf60",
+        "action": "body_replaced",
+        "body_sha256": "52f39cc93cbe2d13c5eef3989f2e5491366f59fb9735745cdd741bfd97611d30",
         "basis": "完整 S0–S6、19WP、10FV、12DG 及原验收全部保留；按每个生产行为的小项独立收尾/关闭，父跟踪只维护范围映射。自然故障根因、非人工恢复、剩余数据/安全/SSAP/Profile、部署/发布继续开放；UserHost 低优先级且非当前前置。"
       },
       {
@@ -770,8 +760,8 @@
         "state": "open",
         "classification": "有限收尾",
         "action": "reviewed_retained",
-        "body_sha256": "4520b08b8b6a73f9d3910fb32730ab96590c1adf846d7aafb8924bea5f7ff12a",
-        "basis": "WRITE 显式注销、原期限与 owner 退出 gate 已接通；Down/restart、长值及原操作/更新矩阵继续开放。源码、离线与准确产物资格分别记录。"
+        "body_sha256": "ab33070bff4af73d4cd43569b11bad7f057fb432d5ca500e9f02cac8fc7ccef8",
+        "basis": "WRITE 注销、原期限与 owner 退出 gate 已接通；Engine stop 的 abort/join 离线切片通过，缺少 abort 的负对照检出失败。Native Down/restart、长值及原操作/更新矩阵仍开放；不升级实机资格。"
       },
       {
         "repository": "sparklink",
@@ -814,7 +804,7 @@
         "number": 24,
         "state": "open",
         "classification": "长期跟踪",
-        "action": "source_offline_status_updated",
+        "action": "reviewed_retained",
         "body_sha256": "ecc07115be580e800b74a6f584a098b1cf8f5f41f3c37ccf0f8fe87018b48d69",
         "basis": "准确bac12d1 CI的WS73/CMTC固定语料及有界探索完成；旧b154来源检查超时保留且根因未证实修复。生产有状态/syscall、调试VM覆盖与原退出条件仍开放。"
       }
@@ -825,7 +815,13 @@
       "split_parents": 3,
       "long_term": 12
     },
-    "new_children": []
+    "new_children": [],
+    "body_changes_since_previous_readback": [
+      [
+        "sparklink",
+        22
+      ]
+    ]
   },
   "followup_readback_history": [
     {
@@ -3654,6 +3650,13 @@
         "long_term": 12,
         "closed": 1
       }
+    },
+    {
+      "observed_at": "2026-10-27T01:01:48.727620+00:00",
+      "archive_commit": "1875c95c5df410f3e7f4e3c788a1275da5ae981c",
+      "archive_path": "project/issue-maintenance-20261026.json",
+      "archive_pointer": "/followup_readback",
+      "scope": "Prior complete readback retained at exact source commit; no evidence or failure removed."
     }
   ],
   "later_dispositions": [

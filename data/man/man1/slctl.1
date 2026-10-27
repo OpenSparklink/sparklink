@@ -59,6 +59,15 @@ would reach that boundary. Send replies after reading the actual prompt; input
 queued before a new prompt is discarded. Complete C/Python Provider inboxes and
 real-device qualification remain separate.
 .TP
+.B ssap-serve-method SERVICE_HEX METHOD_HEX ACCESS [ask|allow|deny]
+Own one foreground method using the shared SDK Provider dispatcher. ACCESS uses
+method requirement bits 1/2/4. Enter provider to bind, then answer the actual
+method prompt with provide pTOKEN HEX (or - for empty), or provider-error pTOKEN
+AF..FF. Arguments and results are independent; command invocations accept an
+empty result only. Approval is local policy, not authentication or peer delivery.
+Quit stops new replies before explicit withdrawal. Real method device delivery
+requires its own qualification; this command does not confer it.
+.TP
 .B ssap-read-description CONNECTION HANDLE [MINIMUM]
 Read a type1 description over the original Connection and sole SSAP Engine.
 MINIMUM constrains channel security (0..2); it does not certify the description.

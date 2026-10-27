@@ -1,19 +1,25 @@
 //! Foreground application-owned SSAP service, not a second protocol Engine.
 use crate::security_agent::{Input, remaining};
 use anyhow::{bail, ensure};
-use libsparklink::ssap::authorization::{self, AuthorizationContext};
-use libsparklink::ssap::provider::frontend::{Dispatcher, Inbox, Request};
-use slk_contract::ssap::{
-    self as wire, ReadProviderReply, ReadProviderRequest, SsapAuthorizationPrompt as Prompt,
+use libsparklink::ssap::authorization::{self, AuthorizationContext, MethodAuthorizationContext};
+use libsparklink::ssap::provider::frontend::{
+    Dispatcher, Inbox, MethodInbox, MethodRequest, Request,
 };
-use slk_protocol::{SsapOperations, ssap::access::SsapAccess};
+use slk_contract::ssap::{
+    self as wire, MethodProviderReply, MethodProviderRequest, ReadProviderReply,
+    ReadProviderRequest, SsapAuthorizationPrompt as Prompt,
+};
+use slk_protocol::{
+    SsapOperations,
+    ssap::access::{MethodAccess, SsapAccess},
+};
 use std::sync::{Arc, Mutex};
 use tokio::sync::{Semaphore, mpsc, oneshot, watch};
 use zbus::Connection;
 
 const PATH: &str = "/org/sparklink/slctl/ssap_authorizer";
 const PROVIDER_PATH: &str = "/org/sparklink/slctl/ssap_read_provider";
-// A full 2042-byte value plus command and the maximum local token length.
+// A full 2045-byte method result plus command and the maximum local token length.
 const INPUT_LIMIT: usize = 4160;
 // Both frontend kinds share a process-wide namespace, including successive
 // ssap-serve runs in an interactive slctl process. Wire IDs may be reused.
@@ -38,10 +44,110 @@ struct Pending {
     prompt: Prompt,
     reply: oneshot::Sender<bool>,
 }
+pub(crate) enum Definition {
+    Property((Vec<u8>, u32, u32, Vec<u8>)),
+    Method(Vec<u8>, u32),
+}
+#[derive(Clone, Copy)]
+enum Requirements {
+    Property(SsapOperations, SsapAccess),
+    Method(MethodAccess),
+}
 struct PendingValue {
     token: u64,
-    request: Request,
+    request: ApplicationRequest,
 }
+enum ApplicationRequest {
+    Read(Request),
+    Method(MethodRequest),
+}
+impl ApplicationRequest {
+    fn active(&self) -> bool {
+        match self {
+            Self::Read(r) => r.is_active(),
+            Self::Method(r) => r.is_active(),
+        }
+    }
+    fn deadline(&self) -> u64 {
+        match self {
+            Self::Read(r) => r.request().deadline_ns,
+            Self::Method(r) => r.request().deadline_ns,
+        }
+    }
+    fn maximum(&self) -> u16 {
+        match self {
+            Self::Read(r) => r.request().maximum_bytes,
+            Self::Method(r) => r.request().maximum_result_bytes,
+        }
+    }
+    fn ceiling(&self) -> usize {
+        match self {
+            Self::Read(_) => wire::MAX_PROVIDER_VALUE_BYTES,
+            Self::Method(_) => wire::MAX_METHOD_RESULT_BYTES,
+        }
+    }
+    fn reply(&self, status: u16, value: &[u8]) -> std::io::Result<()> {
+        match self {
+            Self::Read(r) => r.reply(status, value),
+            Self::Method(r) => r.reply(status, value),
+        }
+    }
+    fn print_prompt(&self, token: u64) {
+        match self {
+            Self::Read(request) => {
+                let r = request.request();
+                println!(
+                    "SsapReadProviderPrompt: token=p{} request={} index={} generation={} lifetime={} handle={} epoch={} security={} local_tcid={} remote_tcid={} pi={} property={} deadline_ns={} maximum_bytes={}; answer 'provide p{} HEX' ('-' for empty) or 'provider-error p{} AF..FF'",
+                    token,
+                    r.request_id,
+                    r.identity.0,
+                    r.identity.1,
+                    r.identity.2,
+                    r.identity.3,
+                    r.identity.4,
+                    r.identity.5,
+                    r.identity.6,
+                    r.identity.7,
+                    r.identity.8,
+                    r.property,
+                    r.deadline_ns,
+                    r.maximum_bytes,
+                    token,
+                    token
+                );
+            }
+            Self::Method(request) => {
+                let r = request.request();
+                println!(
+                    "SsapMethodProviderPrompt: token=p{} request={} index={} generation={} lifetime={} handle={} epoch={} security={} local_tcid={} remote_tcid={} pi={} method={} deadline_ns={} operation={} arguments={} maximum_result_bytes={}; answer 'provide p{} HEX' ('-' for empty) or 'provider-error p{} AF..FF'",
+                    token,
+                    r.request_id,
+                    r.identity.0,
+                    r.identity.1,
+                    r.identity.2,
+                    r.identity.3,
+                    r.identity.4,
+                    r.identity.5,
+                    r.identity.6,
+                    r.identity.7,
+                    r.identity.8,
+                    r.method,
+                    r.deadline_ns,
+                    r.operation,
+                    crate::commands::hex_bytes(&r.arguments),
+                    r.maximum_result_bytes,
+                    token,
+                    token
+                );
+            }
+        }
+    }
+}
+enum ApplicationInbox {
+    Read(Inbox),
+    Method(MethodInbox),
+}
+
 #[derive(Clone)]
 struct FrontendScope {
     daemon: String,
@@ -49,26 +155,48 @@ struct FrontendScope {
     generation: u64,
     index: u16,
     property: Arc<Mutex<Option<u16>>>,
-    operations: SsapOperations,
-    access: SsapAccess,
+    requirements: Requirements,
 }
 impl FrontendScope {
-    fn snapshot(&self) -> zbus::fdo::Result<AuthorizationContext<'_>> {
-        let property = *self
+    fn admit(
+        &self,
+        prompt: &Prompt,
+        sender: Option<&str>,
+    ) -> zbus::fdo::Result<Option<std::time::Instant>> {
+        let handle = *self
             .property
             .lock()
             .map_err(|_| zbus::fdo::Error::Failed("owner state poisoned".into()))?;
-        Ok(AuthorizationContext {
-            daemon_owner: &self.daemon,
-            owner_lost: *self.lost.borrow() || self.lost.has_changed().is_err(),
-            controller: slk_contract::ControllerId {
-                index: self.index,
-                generation: self.generation,
-            },
-            property,
-            operations: self.operations,
-            access: self.access,
-        })
+        let controller = slk_contract::ControllerId {
+            index: self.index,
+            generation: self.generation,
+        };
+        let owner_lost = *self.lost.borrow() || self.lost.has_changed().is_err();
+        match self.requirements {
+            Requirements::Property(operations, access) => authorization::admit(
+                &AuthorizationContext {
+                    daemon_owner: &self.daemon,
+                    owner_lost,
+                    controller,
+                    property: handle,
+                    operations,
+                    access,
+                },
+                sender,
+                prompt,
+            ),
+            Requirements::Method(access) => authorization::admit_method(
+                &MethodAuthorizationContext {
+                    daemon_owner: &self.daemon,
+                    owner_lost,
+                    controller,
+                    method: handle,
+                    access,
+                },
+                sender,
+                prompt,
+            ),
+        }
     }
 }
 struct Authorizer {
@@ -83,7 +211,7 @@ impl Authorizer {
         prompt: &Prompt,
         sender: Option<&str>,
     ) -> zbus::fdo::Result<Option<std::time::Instant>> {
-        authorization::admit(&self.scope.snapshot()?, sender, prompt)
+        self.scope.admit(prompt, sender)
     }
 }
 #[zbus::interface(name = "org.sparklink.SsapAuthorizer")]
@@ -160,6 +288,54 @@ impl ReadProvider {
     }
 }
 
+struct MethodProvider {
+    dispatcher: Arc<Dispatcher>,
+}
+#[zbus::interface(name = "org.sparklink.SsapMethodProvider")]
+impl MethodProvider {
+    async fn call_method(
+        &self,
+        request: MethodProviderRequest,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<MethodProviderReply> {
+        let id = request.request_id;
+        let method = request.method;
+        let outcome = self
+            .dispatcher
+            .dispatch_method(request, header.sender().map(|n| n.as_str()))
+            .await?;
+        if outcome.reportable() {
+            let response = outcome.reply();
+            println!(
+                "SsapMethodProviderResult: request={} method={} status={} bytes={}; application response only",
+                id,
+                method,
+                response.0,
+                response.1.len()
+            );
+        }
+        let (status, value) = outcome.into_reply();
+        let status = u8::try_from(status).map_err(|_| {
+            zbus::fdo::Error::Failed("invalid method status from shared dispatcher".into())
+        })?;
+        Ok((status, value))
+    }
+}
+async fn remove_provider(conn: &Connection, requirements: Requirements) -> zbus::Result<bool> {
+    match requirements {
+        Requirements::Property(..) => {
+            conn.object_server()
+                .remove::<ReadProvider, _>(PROVIDER_PATH)
+                .await
+        }
+        Requirements::Method(..) => {
+            conn.object_server()
+                .remove::<MethodProvider, _>(PROVIDER_PATH)
+                .await
+        }
+    }
+}
+
 fn input_decision(line: &str, token: u64) -> Option<bool> {
     if token == 0 {
         return None;
@@ -174,7 +350,15 @@ fn input_decision(line: &str, token: u64) -> Option<bool> {
 }
 
 fn input_value(line: &str, token: u64, maximum_bytes: u16) -> Option<ReadProviderReply> {
-    if token == 0 || usize::from(maximum_bytes) > wire::MAX_PROVIDER_VALUE_BYTES {
+    input_result(line, token, maximum_bytes, wire::MAX_PROVIDER_VALUE_BYTES)
+}
+fn input_result(
+    line: &str,
+    token: u64,
+    maximum_bytes: u16,
+    ceiling: usize,
+) -> Option<ReadProviderReply> {
+    if token == 0 || usize::from(maximum_bytes) > ceiling {
         return None;
     }
     if let Some(value) = line.strip_prefix(&format!("provide p{token} ")) {
@@ -207,12 +391,19 @@ fn reply_value(current: &mut Option<PendingValue>, line: &str) -> bool {
     let Some(pending) = current.as_ref() else {
         return false;
     };
-    if !pending.request.is_active() || remaining(pending.request.request().deadline_ns).is_err() {
+    if !pending.request.active() || remaining(pending.request.deadline()).is_err() {
         current.take();
         return false;
     }
-    let Some(value) = input_value(line, pending.token, pending.request.request().maximum_bytes)
-    else {
+    let Some(value) = (match &pending.request {
+        ApplicationRequest::Read(_) => input_value(line, pending.token, pending.request.maximum()),
+        ApplicationRequest::Method(_) => input_result(
+            line,
+            pending.token,
+            pending.request.maximum(),
+            pending.request.ceiling(),
+        ),
+    }) else {
         return false;
     };
     current
@@ -235,15 +426,19 @@ fn stop_admission(
     stopped
 }
 
-fn stop_provider(inbox: &mut Option<Inbox>) {
+fn stop_provider(inbox: &mut Option<ApplicationInbox>) {
     if let Some(inbox) = inbox.take() {
-        inbox.close();
+        match inbox {
+            ApplicationInbox::Read(i) => i.close(),
+            ApplicationInbox::Method(i) => i.close(),
+        };
     }
 }
 
-async fn next_value(inbox: &Option<Inbox>) -> std::io::Result<Request> {
+async fn next_value(inbox: &Option<ApplicationInbox>) -> std::io::Result<ApplicationRequest> {
     match inbox {
-        Some(inbox) => inbox.next().await,
+        Some(ApplicationInbox::Read(i)) => i.next().await.map(ApplicationRequest::Read),
+        Some(ApplicationInbox::Method(i)) => i.next().await.map(ApplicationRequest::Method),
         None => std::future::pending().await,
     }
 }
@@ -253,22 +448,35 @@ pub(crate) async fn serve(
     client: &libsparklink::Client,
     controller: &str,
     service: Vec<u8>,
-    definition: (Vec<u8>, u32, u32, Vec<u8>),
+    definition: Definition,
     policy: &str,
 ) -> anyhow::Result<()> {
-    let (property, ops, access, value) = definition;
     let policy = match policy {
         "ask" => Policy::Ask,
         "allow" => Policy::Allow,
         "deny" => Policy::Deny,
         _ => bail!("policy must be ask, allow or deny"),
     };
-    let access_policy = SsapAccess::from_bits(access).map_err(anyhow::Error::msg)?;
-    let operations = SsapOperations::from_bits(ops)?;
-    ensure!(
-        slk_protocol::ssap::client_config::supported_owned(operations, true) && value.len() <= 2042,
-        "unsupported operations or missing CPCD for updates"
-    );
+    let (properties, methods, requirements) = match definition {
+        Definition::Property((uuid, ops, access, value)) => {
+            let operations = SsapOperations::from_bits(ops)?;
+            let access_policy = SsapAccess::from_bits(access).map_err(anyhow::Error::msg)?;
+            ensure!(
+                slk_protocol::ssap::client_config::supported_owned(operations, true)
+                    && value.len() <= 2042,
+                "unsupported operations or missing CPCD for updates"
+            );
+            (
+                vec![(uuid, ops, access, value)],
+                vec![],
+                Requirements::Property(operations, access_policy),
+            )
+        }
+        Definition::Method(uuid, bits) => {
+            let access = MethodAccess::from_bits(bits).map_err(anyhow::Error::msg)?;
+            (vec![], vec![(uuid, bits)], Requirements::Method(access))
+        }
+    };
     let view = client.controller(controller).await?;
     let mut lost = client.owner_loss();
     let handle = Arc::new(Mutex::new(None));
@@ -278,14 +486,13 @@ pub(crate) async fn serve(
         generation: view.id().generation,
         index: view.id().index,
         property: handle.clone(),
-        operations,
-        access: access_policy,
+        requirements,
     };
     let authorizer_path = zbus::zvariant::OwnedObjectPath::try_from(PATH)?;
     let provider_path = zbus::zvariant::OwnedObjectPath::try_from(PROVIDER_PATH)?;
     let registration_deadline = libsparklink::Deadline::after(std::time::Duration::from_secs(5))?;
     let (prompts, mut requests) = mpsc::channel(1);
-    let mut value_requests: Option<Inbox> = None;
+    let mut value_requests: Option<ApplicationInbox> = None;
     let dispatcher = Dispatcher::new(client, provider_path.clone())?;
     let _provider_watch = dispatcher.watch();
     let authorizer = Authorizer {
@@ -294,14 +501,33 @@ pub(crate) async fn serve(
         prompts,
         slot: Arc::new(Semaphore::new(1)),
     };
-    let read_provider = ReadProvider {
-        dispatcher: dispatcher.clone(),
-    };
     ensure!(
         conn.object_server().at(PATH, authorizer).await?,
         "authorizer path already registered"
     );
-    match conn.object_server().at(PROVIDER_PATH, read_provider).await {
+    let installed = match requirements {
+        Requirements::Property(..) => {
+            conn.object_server()
+                .at(
+                    PROVIDER_PATH,
+                    ReadProvider {
+                        dispatcher: dispatcher.clone(),
+                    },
+                )
+                .await
+        }
+        Requirements::Method(..) => {
+            conn.object_server()
+                .at(
+                    PROVIDER_PATH,
+                    MethodProvider {
+                        dispatcher: dispatcher.clone(),
+                    },
+                )
+                .await
+        }
+    };
+    match installed {
         Ok(true) => (),
         result => {
             // Only our authorizer was installed. An existing provider belongs
@@ -313,9 +539,10 @@ pub(crate) async fn serve(
     }
     let result = view
         .local_services()
-        .register_service(
+        .register_entries(
             service,
-            vec![(property, ops, access, value)],
+            properties,
+            methods,
             authorizer_path,
             registration_deadline,
         )
@@ -326,18 +553,18 @@ pub(crate) async fn serve(
             let _ = stop_admission(&handle, &mut requests);
             stop_provider(&mut value_requests);
             let _ = conn.object_server().remove::<Authorizer, _>(PATH).await;
-            let _ = conn
-                .object_server()
-                .remove::<ReadProvider, _>(PROVIDER_PATH)
-                .await;
+            let _ = remove_provider(conn, requirements).await;
             return Err(e.into());
         }
     };
     let registered = registration.receipt().clone();
     let result = async {
-        ensure!(registered.2.len() == 1, "one property required");
+        ensure!(registered.2.len() == 1, "one entry required");
         *handle.lock().map_err(|_| anyhow::anyhow!("owner state poisoned"))? = Some(registered.2[0]);
-        println!("SsapOwnedService: start={} end={} property={}; local registration only", registered.0, registered.1, registered.2[0]);
+        match requirements {
+            Requirements::Property(..) => println!("SsapOwnedService: start={} end={} property={}; local registration only", registered.0, registered.1, registered.2[0]),
+            Requirements::Method(..) => println!("SsapOwnedMethod: start={} end={} method={}; local registration only", registered.0, registered.1, registered.2[0]),
+        }
         let mut input = Input::stdin_with_limit(INPUT_LIMIT)?;
         let mut current: Option<Pending> = None;
         let mut current_value: Option<PendingValue> = None;
@@ -345,11 +572,11 @@ pub(crate) async fn serve(
             if current.as_ref().is_some_and(|p| p.reply.is_closed() || remaining(p.prompt.4).is_err()) {
                 current.take();
             }
-            if current_value.as_ref().is_some_and(|p| !p.request.is_active() || remaining(p.request.request().deadline_ns).is_err()) {
+            if current_value.as_ref().is_some_and(|p| !p.request.active() || remaining(p.request.deadline()).is_err()) {
                 current_value.take();
             }
             let budget = current.as_ref().map(|p| remaining(p.prompt.4).unwrap_or_default()).unwrap_or(std::time::Duration::from_secs(3600));
-            let value_budget = current_value.as_ref().map(|p| remaining(p.request.request().deadline_ns).unwrap_or_default()).unwrap_or(std::time::Duration::from_secs(3600));
+            let value_budget = current_value.as_ref().map(|p| remaining(p.request.deadline()).unwrap_or_default()).unwrap_or(std::time::Duration::from_secs(3600));
             tokio::select! {biased;
                 _ = lost.changed() => bail!("original daemon lost"),
                 result = tokio::signal::ctrl_c() => { result?; return Ok(()); },
@@ -365,26 +592,36 @@ pub(crate) async fn serve(
                 },
                 next = next_value(&value_requests) => {
                     let request = next?;
-                    if !request.is_active() || remaining(request.request().deadline_ns).is_err() { continue; }
+                    if !request.active() || remaining(request.deadline()).is_err() { continue; }
                     let next = PendingValue { token: next_token()?, request };
                     input.discard_before_prompt()?;
-                    let r = next.request.request();
-                    println!("SsapReadProviderPrompt: token=p{} request={} index={} generation={} lifetime={} handle={} epoch={} security={} local_tcid={} remote_tcid={} pi={} property={} deadline_ns={} maximum_bytes={}; answer 'provide p{} HEX' ('-' for empty) or 'provider-error p{} AF..FF'", next.token, r.request_id, r.identity.0, r.identity.1, r.identity.2, r.identity.3, r.identity.4, r.identity.5, r.identity.6, r.identity.7, r.identity.8, r.property, r.deadline_ns, r.maximum_bytes, next.token, next.token);
+                    next.request.print_prompt(next.token);
                     current_value = Some(next);
                 },
                 line = input.line() => {
                     let Some(line) = line? else { return Ok(()); };
                     if line == "quit" { return Ok(()); }
                     if line == "provider" {
-                        ensure!(operations == SsapOperations::READ, "provider requires exactly READ operations (1)");
-                        value_requests = Some(dispatcher.bind(&mut registration, registered.2[0],
-                            libsparklink::Deadline::after(std::time::Duration::from_secs(5))?).await?);
-                        println!("SsapReadProviderBound: handle={}; stored value discarded, no rebind or fallback", registered.2[0]);
+                        let deadline = libsparklink::Deadline::after(std::time::Duration::from_secs(5))?;
+                        value_requests = Some(match requirements {
+                            Requirements::Property(operations, _) => {
+                                ensure!(operations == SsapOperations::READ, "provider requires exactly READ operations (1)");
+                                let inbox = dispatcher.bind(&mut registration, registered.2[0], deadline).await?;
+                                println!("SsapReadProviderBound: handle={}; stored value discarded, no rebind or fallback", registered.2[0]);
+                                ApplicationInbox::Read(inbox)
+                            }
+                            Requirements::Method(_) => {
+                                let inbox = dispatcher.bind_method(&mut registration, registered.2[0], deadline).await?;
+                                println!("SsapMethodProviderBound: handle={}; independent application result, no rebind or fallback", registered.2[0]);
+                                ApplicationInbox::Method(inbox)
+                            }
+                        });
                         continue;
                     }
                     if line.starts_with("provide ") || line.starts_with("provider-error ") {
                         if !reply_value(&mut current_value, &line) {
-                            println!("SsapReadProviderInput: rejected stale token, expired request or invalid value/status");
+                            println!("{}: rejected stale token, expired request or invalid value/status",
+                                match requirements { Requirements::Property(..) => "SsapReadProviderInput", Requirements::Method(..) => "SsapMethodProviderInput" });
                         }
                         continue;
                     }
@@ -446,10 +683,7 @@ pub(crate) async fn serve(
         Err(error) => Err(error.into()),
     };
     let authorizer_removed = conn.object_server().remove::<Authorizer, _>(PATH).await;
-    let provider_removed = conn
-        .object_server()
-        .remove::<ReadProvider, _>(PROVIDER_PATH)
-        .await;
+    let provider_removed = remove_provider(conn, requirements).await;
     result?;
     stopped?;
     removed?;
@@ -472,8 +706,10 @@ mod tests {
                     generation: 7,
                     index: 0,
                     property: Arc::new(Mutex::new(Some(17))),
-                    operations: SsapOperations::from_bits(5).unwrap(),
-                    access: SsapAccess::from_bits(36).unwrap(),
+                    requirements: Requirements::Property(
+                        SsapOperations::from_bits(5).unwrap(),
+                        SsapAccess::from_bits(36).unwrap(),
+                    ),
                 },
                 policy,
                 prompts,
@@ -570,6 +806,81 @@ mod tests {
     }
 
     #[test]
+    fn method_input_budget_does_not_expand_read_or_command_contracts() {
+        let full = format!("provide p1 {}", "a6".repeat(2045));
+        assert!(full.len() < INPUT_LIMIT);
+        assert_eq!(
+            input_result(&full, 1, 2045, wire::MAX_METHOD_RESULT_BYTES),
+            Some((0, vec![0xa6; 2045]))
+        );
+        assert_eq!(input_value(&full, 1, 2042), None);
+        assert_eq!(
+            input_result("provide p1 00", 1, 0, wire::MAX_METHOD_RESULT_BYTES),
+            None
+        );
+        assert_eq!(
+            input_result("provide p1 -", 1, 0, wire::MAX_METHOD_RESULT_BYTES),
+            Some((0, vec![]))
+        );
+        assert_eq!(
+            input_result("provide p1 -", 1, 2046, wire::MAX_METHOD_RESULT_BYTES),
+            None
+        );
+    }
+
+    #[tokio::test]
+    async fn method_policy_checks_kind_arguments_security_and_original_context() {
+        for (policy, allowed) in [(Policy::Allow, true), (Policy::Deny, false)] {
+            let (mut owner, alive, mut requests) = setup(policy);
+            owner.scope.requirements = Requirements::Method(MethodAccess::from_bits(4).unwrap());
+            let mut valid = prompt();
+            valid.3 = true;
+            valid.6 = 3;
+            valid.5 = vec![0x31; 2043];
+            assert_eq!(
+                owner
+                    .authorize_value(valid.clone(), message(":1.10").header())
+                    .await
+                    .unwrap(),
+                allowed
+            );
+            for kind in 0..5 {
+                let mut p = valid.clone();
+                match kind {
+                    0 => p.6 = 0,
+                    1 => p.3 = false,
+                    2 => p.5.push(0),
+                    3 => p.1.1 += 1,
+                    _ => p.4 = 1,
+                }
+                assert!(
+                    !owner
+                        .authorize_value(p, message(":1.10").header())
+                        .await
+                        .unwrap()
+                );
+            }
+            owner.scope.requirements = Requirements::Method(MethodAccess::from_bits(1).unwrap());
+            assert!(
+                !owner
+                    .authorize_value(valid.clone(), message(":1.10").header())
+                    .await
+                    .unwrap()
+            );
+            owner.scope.requirements = Requirements::Method(MethodAccess::from_bits(4).unwrap());
+            alive.send_replace(true);
+            assert!(
+                !owner
+                    .authorize_value(valid, message(":1.10").header())
+                    .await
+                    .unwrap()
+            );
+            assert!(requests.try_recv().is_err());
+            assert_eq!(owner.slot.available_permits(), 1);
+        }
+    }
+
+    #[test]
     fn human_tokens_do_not_alias_engine_request_ids_or_expired_prompts() {
         assert_eq!(input_decision("yes 1", 1), Some(true));
         assert_eq!(input_decision("no 2", 2), Some(false));
@@ -620,7 +931,10 @@ mod tests {
             assert!(!owner.authorize_value(p, original.header()).await.unwrap());
         }
         let (mut encrypted, _encrypted_alive, _) = setup(Policy::Allow);
-        encrypted.scope.access = SsapAccess::from_bits(45).unwrap();
+        encrypted.scope.requirements = Requirements::Property(
+            SsapOperations::from_bits(5).unwrap(),
+            SsapAccess::from_bits(45).unwrap(),
+        );
         assert!(
             !encrypted
                 .authorize_value(prompt(), original.header())
@@ -635,7 +949,10 @@ mod tests {
         // context fixtures; not a Native receipt or peer-delivery test.
         for (policy, allowed) in [(Policy::Allow, true), (Policy::Deny, false)] {
             let (mut owner, _alive, mut requests) = setup(policy);
-            owner.scope.operations = SsapOperations::from_bits(3).unwrap();
+            owner.scope.requirements = Requirements::Property(
+                SsapOperations::from_bits(3).unwrap(),
+                SsapAccess::from_bits(36).unwrap(),
+            );
             for length in [0, 32, 2042, 2043] {
                 let mut p = prompt();
                 p.3 = true;
@@ -664,7 +981,10 @@ mod tests {
     async fn command_only_property_cli_ask_preserves_original_deadline_and_owner() {
         for case in 0..4 {
             let (mut authorizer, owner, mut requests) = setup(Policy::Ask);
-            authorizer.scope.operations = SsapOperations::from_bits(3).unwrap();
+            authorizer.scope.requirements = Requirements::Property(
+                SsapOperations::from_bits(3).unwrap(),
+                SsapAccess::from_bits(36).unwrap(),
+            );
             let authorizer = Arc::new(authorizer);
             let caller = authorizer.clone();
             let mut p = prompt();

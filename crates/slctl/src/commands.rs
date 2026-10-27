@@ -117,13 +117,27 @@ impl Context {
                     self.application().await?,
                     &self.selected_path().await?,
                     parse_hex_bytes(args[1])?,
-                    (
+                    crate::ssap_server::Definition::Property((
                         parse_hex_bytes(args[2])?,
                         args[3].parse()?,
                         args[4].parse()?,
                         parse_hex_bytes(args[5])?,
-                    ),
+                    )),
                     args.get(6).copied().unwrap_or("ask"),
+                )
+                .await
+            }
+            "ssap-serve-method" if matches!(args.len(), 4 | 5) => {
+                crate::ssap_server::serve(
+                    &self.conn,
+                    self.application().await?,
+                    &self.selected_path().await?,
+                    parse_hex_bytes(args[1])?,
+                    crate::ssap_server::Definition::Method(
+                        parse_hex_bytes(args[2])?,
+                        args[3].parse()?,
+                    ),
+                    args.get(4).copied().unwrap_or("ask"),
                 )
                 .await
             }

@@ -1,5 +1,7 @@
 //! Actual migrated CLI with local registration/permission fixtures. No remote
 //! publication, authorization decision, wire Engine or hardware is simulated.
+#[path = "owned_local/method.rs"]
+mod method;
 mod support;
 use std::sync::{Arc, Mutex};
 use tokio::{io::AsyncWriteExt, process::Command};
@@ -21,6 +23,8 @@ impl Adapter {
 }
 #[derive(Default)]
 struct State {
+    authorizer: String,
+    provider: String,
     owner: String,
     removed: bool,
     reads: usize,
@@ -38,12 +42,36 @@ impl Services {
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> (u16, u16, Vec<u16>) {
         libsparklink::Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).unwrap();
+        if uuid == [4, 0] {
+            assert!(properties.is_empty());
+            assert_eq!(methods, [(vec![3, 0], 4)]);
+            assert_eq!(authorizer.as_str(), "/org/sparklink/slctl/ssap_authorizer");
+            let mut state = self.0.lock().unwrap();
+            state.owner = h.sender().unwrap().to_string();
+            state.authorizer = authorizer.to_string();
+            return (16, 17, vec![17]);
+        }
         assert!(methods.is_empty());
         assert_eq!(uuid, [1, 0]);
         assert_eq!(properties, [(vec![2, 0], 5, 36, vec![0xab])]);
         assert_eq!(authorizer.as_str(), "/org/sparklink/slctl/ssap_authorizer");
         self.0.lock().unwrap().owner = h.sender().unwrap().to_string();
         (16, 17, vec![17])
+    }
+    fn bind_owned_method_provider(
+        &self,
+        handle: u16,
+        provider: zbus::zvariant::OwnedObjectPath,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) {
+        libsparklink::Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).unwrap();
+        let mut state = self.0.lock().unwrap();
+        assert_eq!(state.owner, h.sender().unwrap().as_str());
+        assert_eq!(handle, 17);
+        assert_eq!(provider.as_str(), "/org/sparklink/slctl/ssap_read_provider");
+        assert!(state.provider.is_empty());
+        state.provider = provider.to_string();
     }
     fn read_owned_local_value(
         &self,

@@ -147,6 +147,7 @@ Commands:
   ssap-list                            Inspect local service metadata only
   ssap-register <service-hex> <property-hex> <ops> <access> <value-hex> Configure local database only
   ssap-serve <service-hex> <property-hex> <ops> <access> <value-hex> [ask|allow|deny] Own a foreground local service; policy decision is not peer receipt
+  ssap-serve-method <service-hex> <method-hex> <access> [ask|allow|deny] Own a foreground method; explicit independent result, no automatic echo
     stdin: value, description TEXT, replace HEX, provider (READ-only), configuration/notify/indicate CONNECTION, quit
     provider replies: provide pTOKEN HEX|- or provider-error pTOKEN AF..FF (hex); original request deadline applies
   ssap-remove <start-handle>                 Remove local service (handles not reused)

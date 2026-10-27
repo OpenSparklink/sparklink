@@ -193,6 +193,26 @@ fd 由调用者关闭，只用于 poll；不得读写它的计数器。fd、inbo
 4096字节（含换行）；超出时使用管道，在读到实际提示后发送答复，单行不超过4160
 字节。工具拒绝触及截断边界的终端行，不会以截短值冒充成功。
 
+## 在前台处理方法调用
+
+当前方法CLI已接通并经过实际进程/私有总线检查，真实双设备方法交付仍待验收。
+在已有授权的controller上使用 `ssap-serve-method SERVICE_HEX METHOD_HEX ACCESS [ask|allow|deny]`；
+例如需要逐次本地批准时ACCESS为4、策略为ask。方法权限1/2/4分别要求加密、认证和
+本地批准，不能套用属性操作位。正式安全机制不满足时，allow不能绕过它。
+
+1. 等待 `SsapOwnedMethod` 本地登记回执，再输入 `provider` 并检查 `SsapMethodProviderBound`。
+2. 收到授权提示后，按原token答 `yes TOKEN` 或 `no TOKEN`。批准不执行方法。
+3. 对实际 `SsapMethodProviderPrompt` 检查方法handle、原连接/安全身份、期限、opcode、
+   arguments和maximum_result_bytes。应用处理参数后，明确输入独立结果
+   `provide pTOKEN HEX`；空结果用 `-`，应用拒绝用 `provider-error pTOKEN AF`。
+4. command18的结果预算是0，即使本地接受也无线上响应；request19才有对端协议响应。
+   结果不自动复制参数。过期/错误token或超限输入被拒绝，原请求不会因此续期。
+5. 输入 `quit` 停止新答复并撤回登记；已发生的应用副作用不能回滚，对端仍需校验实际结果。
+
+方法参数最多2043字节，结果最多2045且不得超过提示预算；完整hex行使用管道并
+遵循上面的4160字节界限。方法没有存储值、description或通知入口，属性操作不得
+假装成功。CLI打印的是本地登记/处理阶段，不能作为真实交付或生产资格。
+
 ## 处理失败和退出
 
 EACCES 时核对服务组及实际 system-bus 策略；EOPNOTSUPP 时核对操作位、审批模式和

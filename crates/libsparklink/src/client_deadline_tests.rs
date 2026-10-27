@@ -138,3 +138,115 @@ async fn real_owner_loss_before_deadline_still_refuses_work() -> anyhow::Result<
     assert_eq!(calls.load(Ordering::SeqCst), 0);
     Ok(())
 }
+
+/// The method and disconnect use a real private bus. Only delivery of the
+/// Client's ownership watch is held back, to force the RPC-error-first order.
+/// This does not stand in for a real slkd, kernel, transport or hardware test.
+struct PendingCall {
+    entered: std::sync::Arc<tokio::sync::Notify>,
+}
+#[zbus::interface(name = "org.sparklink.TestPending")]
+impl PendingCall {
+    async fn wait(&self) -> u8 {
+        self.entered.notify_one();
+        std::future::pending().await
+    }
+    fn no_reply(&self) -> zbus::fdo::Result<u8> {
+        Err(zbus::fdo::Error::NoReply(
+            "explicit live-owner fixture error".into(),
+        ))
+    }
+}
+
+#[tokio::test]
+async fn actual_no_reply_before_owner_watch_is_stale_without_renewing_deadline()
+-> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let entered = std::sync::Arc::new(tokio::sync::Notify::new());
+    let server = zbus::connection::Builder::address(bus.address.as_str())?
+        .name("org.sparklink")?
+        .serve_at(
+            "/test",
+            PendingCall {
+                entered: entered.clone(),
+            },
+        )?
+        .build()
+        .await?;
+    let connection = zbus::connection::Builder::address(bus.address.as_str())?
+        .build()
+        .await?;
+    let mut client = Client::from_connection(connection).await?;
+    // Explicit watch-delivery fixture: the bus still supplies authoritative
+    // ownership, and the pending method really loses its peer connection.
+    let (terminal, lost) = tokio::sync::watch::channel(false);
+    let scope = std::sync::Arc::get_mut(&mut client.scope).expect("unshared fixture client");
+    scope.terminal = terminal;
+    scope.lost = lost;
+    let original = Deadline::after(Duration::from_secs(2))?;
+    let call = bounded(&client, original, async {
+        Ok(client
+            .original_proxy("/test", "org.sparklink.TestPending")
+            .await?
+            .call::<_, _, u8>("Wait", &())
+            .await?)
+    });
+    let disconnect = async {
+        entered.notified().await;
+        server.close().await
+    };
+    let (result, closed) = tokio::time::timeout(Duration::from_secs(3), async {
+        tokio::join!(call, disconnect)
+    })
+    .await?;
+    closed?;
+    assert!(
+        original.remaining().is_ok(),
+        "owner loss must not consume original deadline"
+    );
+    assert!(
+        matches!(result, Err(ApplicationError::Identity(_))),
+        "actual reply-first result: {result:?}"
+    );
+    assert!(
+        client.daemon_lost(),
+        "authoritative missing owner is terminal for this scope"
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn actual_live_owner_no_reply_is_not_invented_owner_loss() -> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let server = zbus::connection::Builder::address(bus.address.as_str())?
+        .name("org.sparklink")?
+        .serve_at(
+            "/test",
+            PendingCall {
+                entered: Default::default(),
+            },
+        )?
+        .build()
+        .await?;
+    let connection = zbus::connection::Builder::address(bus.address.as_str())?
+        .build()
+        .await?;
+    let client = Client::from_connection(connection).await?;
+    let original = Deadline::after(Duration::from_secs(2))?;
+    let result = bounded(&client, original, async {
+        Ok(client
+            .original_proxy("/test", "org.sparklink.TestPending")
+            .await?
+            .call::<_, _, u8>("NoReply", &())
+            .await?)
+    })
+    .await;
+    assert!(
+        matches!(result, Err(ApplicationError::Bus(zbus::Error::MethodError(ref name, _, _)))
+        if name.as_str() == "org.freedesktop.DBus.Error.NoReply")
+    );
+    assert!(!client.daemon_lost());
+    assert!(original.remaining().is_ok());
+    server.close().await?;
+    Ok(())
+}

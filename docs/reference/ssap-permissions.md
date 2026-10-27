@@ -544,6 +544,11 @@ ESHUTDOWN、失去原 daemon 或旧请求 ESTALE；没有静默截断、重试�
 同名 daemon 接任不更新既有 Client/Provider 的 owner：旧请求、注册及通知 fd 继续
 绑定原 unique owner；新客户端须重新取得注册，旧请求号或相同 controller 元数据
 不能恢复旧答复权。通知 fd 可因 owner 丢失而唤醒，其最后引用存活不代表权限存活。
+待决 D-Bus 调用可能先收到 NoReply，随后 SDK 才观察到 owner-loss 通知。SDK 在
+原调用期限内向总线核对原 unique owner：已消失或被替换时返回 ESTALE，并将原
+scope 标为失效；原 owner 仍在时保留 NoReply，不凭错误名称推断撤权。查询不续期、
+不跟随新 owner、不重发业务。期限已经耗尽时仍返回 ETIMEDOUT；这些本地终态都不
+证明远端操作回滚或物理义务排空。
 实际 C 导出/private D-Bus 回归覆盖原 parent Client 关闭、owner 切换、旧请求 ESTALE、
 新 sender 向旧端点的 AccessDenied，以及新 lifetime 只接受自己的答复。Adapter/服务
 元数据为显式 fixture；这不是 slkd SIGKILL、内核清理或真实业务恢复资格。

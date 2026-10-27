@@ -125,7 +125,14 @@ class ControlRun(Run):
                 observe_successor()
             self.successor_business(phase)
             gate.row.update(status='DAEMON_CHANNEL_GATE_PASS',end_wall_ns=time.time_ns());self.save()
-        finally:gate.close()
+        finally:
+            primary=sys.exception()
+            try:gate.close()
+            except BaseException as cleanup:
+                self.data['daemon_worker_cleanup_error']=dict(type=type(cleanup).__name__,error=str(cleanup),unreaped=list(gate.children))
+                self.save()
+                if primary is None:raise
+                primary.add_note('worker cleanup also failed: '+str(cleanup))
 
     def successor_business(self, old_phase):
         args=copy.copy(self.args)

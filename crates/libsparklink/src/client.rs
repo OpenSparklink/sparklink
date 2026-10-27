@@ -39,6 +39,41 @@ pub(crate) async fn bounded<T>(
     // A ready inner result can win the timeout poll after the original clock
     // expires. Apply the same terminal deadline check to success and errors.
     deadline.remaining()?;
+    let no_reply = matches!(&result,
+        Err(ApplicationError::Bus(zbus::Error::MethodError(name, _, _)))
+            if name.as_str() == "org.freedesktop.DBus.Error.NoReply")
+        || matches!(&result, Err(ApplicationError::Bus(zbus::Error::FDO(error)))
+            if matches!(**error, zbus::fdo::Error::NoReply(_)));
+    if no_reply {
+        // The bus can finish a pending RPC before our NameOwnerChanged task
+        // publishes loss. NoReply alone does not prove a timeout or owner loss:
+        // resolve the immutable owner against the bus, within the SAME deadline.
+        let ownership = async {
+            let manager = zbus::fdo::DBusProxy::new(client.bus()).await?;
+            match manager
+                .get_name_owner(contract::SERVICE.try_into().expect("constant service name"))
+                .await
+            {
+                Ok(owner) => Ok(owner.as_str() != client.daemon_owner()),
+                Err(zbus::fdo::Error::NameHasNoOwner(_)) => Ok(true),
+                Err(error) => Err(ApplicationError::Bus(error.into())),
+            }
+        };
+        let gone = tokio::select! {
+            biased;
+            _ = lost.changed() => true,
+            snapshot = tokio::time::timeout_at(deadline.instant().into(), ownership) => {
+                snapshot.map_err(|_| std::io::Error::from_raw_os_error(nix::libc::ETIMEDOUT))??
+            },
+        };
+        deadline.remaining()?;
+        if gone {
+            // Authoritative absence/replacement is terminal even if the watch
+            // has not yet run. Never follow a successor or retry the operation.
+            client.scope.terminal.send_replace(true);
+            return Err(ApplicationError::Identity("daemon owner replaced"));
+        }
+    }
     result
 }
 

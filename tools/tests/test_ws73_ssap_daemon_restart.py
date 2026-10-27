@@ -85,6 +85,18 @@ class Restart(unittest.TestCase):
             data=(b'\x0a\0'+len(reply).to_bytes(2,'little')+reply).hex());c['acb_packets'].append(p)
         with self.assertRaises(ValueError):gate.corroborate(r,c)
 
+    def test_failed_worker_does_not_skip_other_owned_child_reap(self):
+        from ws73_channel_grant import Gate
+        item=object.__new__(Gate);item.children=[101,102];item.parents=[]
+        with patch('ws73_channel_grant.os.waitpid',side_effect=[(101,256),(102,0)])as wait:
+            with self.assertRaisesRegex(RuntimeError,'101 exit status 256'):item.close()
+            self.assertEqual(wait.call_count,2)
+            self.assertEqual(item.children,[])
+        item.children=[201,202]
+        with patch('ws73_channel_grant.os.waitpid',side_effect=[OSError('denied'),(202,0)]):
+            with self.assertRaisesRegex(RuntimeError,'201 reap error'):item.close()
+            self.assertEqual(item.children,[201])
+
     def test_plain_su_and_explicit_sdk_credentials_do_not_double_drop(self):
         from ws73_channel_daemon_crash import ControlRun
         obj=object.__new__(ControlRun);obj.save=lambda:None

@@ -476,22 +476,33 @@ class Gate:
         self.row['successor']['end_wall_ns']=time.time_ns();self.row['status']='GRANT_GATE_PASS';self.row['end_wall_ns']=time.time_ns();self.save()
 
     def close(self):
-        for n,parent in enumerate(self.parents):
+        failures=[]
+        for parent in self.parents:
             try:
                 send(parent,dict(kind='stop'));receive(parent)
             except (OSError,RuntimeError):pass
             finally:parent.close()
-        for pid in self.children:
-            deadline=time.monotonic()+1
-            while True:
-                actual,status=os.waitpid(pid,os.WNOHANG)
-                if actual:
-                    if status:raise RuntimeError('ordinary worker failed: '+str(status))
-                    break
-                if time.monotonic()>deadline:
-                    os.kill(pid,signal.SIGKILL);os.waitpid(pid,0);raise TimeoutError('worker termination')
-                time.sleep(.01)
-        self.children=[];self.parents=[]
+        self.parents=[]
+        # A failed worker must not prevent reaping the other owned children.
+        # Keep the unreaped set on errors so a caller never mistakes it for drain.
+        for pid in list(self.children):
+            try:
+                deadline=time.monotonic()+1
+                while True:
+                    actual,status=os.waitpid(pid,os.WNOHANG)
+                    if actual:
+                        self.children.remove(pid)
+                        if status:failures.append(f'worker {pid} exit status {status}')
+                        break
+                    if time.monotonic()>deadline:
+                        os.kill(pid,signal.SIGKILL);os.waitpid(pid,0)
+                        self.children.remove(pid)
+                        failures.append(f'worker {pid} termination deadline')
+                        break
+                    time.sleep(.01)
+            except OSError as error:
+                failures.append(f'worker {pid} reap error: {error}')
+        if failures:raise RuntimeError('ordinary worker cleanup failed: '+'; '.join(failures))
 
 
 def verify_owner(owner,controller,lease,directions,security):

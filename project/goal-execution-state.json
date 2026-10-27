@@ -5131,14 +5131,13 @@
   "issue_maintenance": {
     "record": "project/issue-maintenance-20261026.json",
     "state": "BOUNDED_MAINTENANCE_COMPLETE_U1_U21_CLOSED",
-    "execution_dependency": "Resume the existing method VM gate at source 5c06c49 with an exact new artifact and paired evidence, then original data/security/SSAP mainline. Scenario and verifier already exist; actual method delivery, original preservation and remaining operation/lifetime gates still require qualification. No new all-control-plane prerequisite.",
+    "execution_dependency": "Bounded issue maintenance complete. Resume existing method delivery and data/security/SSAP work using exact artifacts; retain startup failure and CLOSE barrier, do not bypass ACK or repeat unchanged attempts. Natural recovery and complete control-plane combinations are not a new prerequisite for independent work.",
     "followup_readback": "project/issue-maintenance-20261026.json#/followup_readback",
-    "latest_readback_at": "2026-10-27T18:41:29.796789+00:00",
+    "latest_readback_at": "2026-10-27T19:12:12.881685+00:00",
     "latest_actions": {
       "reviewed": 35,
       "updated": [
         "U#3",
-        "U#22",
         "K#19"
       ],
       "newly_closed": [],
@@ -5147,7 +5146,7 @@
         "U#1",
         "U#21"
       ],
-      "note": "Bounded maintenance completed; original scope and failures retained."
+      "note": "Contradictory historical missing-scenario text and duplicate business chronology removed; all original acceptance retained."
     },
     "source_followup": {
       "issue": "sparklink#1",

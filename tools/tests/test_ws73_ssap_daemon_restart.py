@@ -106,6 +106,53 @@ class Restart(unittest.TestCase):
             self.assertEqual(call.call_args.args,(['/bin/example'],1))
             self.assertEqual(call.call_args.kwargs['child_credentials'],credentials)
 
+    def test_successor_requires_existing_beacon_setup_before_shared_business(self):
+        from ws73_channel_daemon_crash import ControlRun
+        # Explicit process/command coordinator fixture: checks ordering and
+        # failure propagation, not advertising Complete or real connection.
+        for failed in (False,True):
+            obj=object.__new__(ControlRun);obj.args=SimpleNamespace();obj.pid={'pid':123}
+            owners=[{'index':0},{'index':1}];obj.data={'after_ready':owners}
+            saved=[];obj.save=lambda:saved.append(True)
+            successor=SimpleNamespace(data={});calls=[]
+            def setup(run,phase):
+                self.assertIs(run,successor)
+                self.assertEqual(phase,dict(caller=owners[0],peer=owners[1]))
+                calls.append('setup')
+                if failed:raise gate.CaptureError('actual beacon transaction failure fixture')
+            def execute(run,a,b):
+                self.assertEqual(calls,['setup']);self.assertEqual([a,b],owners)
+                calls.append('business')
+            with patch('ws73_channel_daemon_crash.ControlRun',return_value=successor), \
+                 patch('ws73_channel_daemon_crash.file_record',return_value={}), \
+                 patch('ws73_ssap_initialization.restore_beacons',side_effect=setup), \
+                 patch('ws73_channel_daemon_crash.execute',side_effect=execute):
+                if failed:
+                    with self.assertRaisesRegex(gate.CaptureError,'beacon transaction'):
+                        ControlRun.successor_business(obj,{'typed_objects':[]})
+                else:ControlRun.successor_business(obj,{'typed_objects':[]})
+            self.assertEqual(calls,['setup'] if failed else ['setup','business'])
+            self.assertEqual(saved,[True])
+            self.assertIs(obj.data['successor_business'],successor.data)
+
+    def test_successor_setup_source_is_required_before_attachment(self):
+        import hashlib
+        names=('ws73_ssap_daemon_restart.py','ws73_channel_daemon_crash.py',
+               'ws73_channel_socket.py','ws73_ssap_initialization.py')
+        rows=[]
+        for name in names:
+            path=Path(gate.__file__).with_name(name)
+            rows.append(dict(path=str(path),sha256=hashlib.sha256(path.read_bytes()).hexdigest()))
+        # Only the additional restart source closure is under test here;
+        # shared SDK/firmware/ELF validation remains covered by its own suite.
+        with patch('ws73_ssap_sdk_write_provider.validate_inputs'):
+            gate.validate_inputs({'inputs':rows})
+            with self.assertRaisesRegex(gate.CaptureError,'exact new pending'):
+                gate.validate_inputs({'inputs':rows[:-1]})
+            rows[-1]['sha256']='0'*64
+            with self.assertRaisesRegex(gate.CaptureError,'exact new pending'):
+                gate.validate_inputs({'inputs':rows})
+
     def test_root_supervised_slktest_drops_privileges(self):
         from ws73_channel_socket import run_applications
         record,_=fixture();row=dict(applications=[],owners=record['pending_write_restart']['owners'],

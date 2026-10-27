@@ -553,6 +553,9 @@ scope 标为失效；原 owner 仍在时保留 NoReply，不凭错误名称推�
 队列等待和执行使用同一原始期限。私有总线回归通过实际 C/Python WRITE 入口检查
 释放服务名、断开总线和存活 owner 的 NoReply 负对照；这些是 SDK 边界检查，
 不代替真实 daemon 退出、内核清理及新连接业务验收。
+接任后的连接门禁复用既有 beacon 配置及停止流程，先建立真实停止态 beacon，
+再要求删除／重建 connectable 集。该准备不替代随机发现或业务验收；失败立即保留，
+不接受首次直接建集来绕过原重建断言。
 实际 C 导出/private D-Bus 回归覆盖原 parent Client 关闭、owner 切换、旧请求 ESTALE、
 新 sender 向旧端点的 AccessDenied，以及新 lifetime 只接受自己的答复。Adapter/服务
 元数据为显式 fixture；这不是 slkd SIGKILL、内核清理或真实业务恢复资格。

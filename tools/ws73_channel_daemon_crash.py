@@ -149,7 +149,15 @@ class ControlRun(Run):
             phase['predecessor_object_rejections']=[reject_old(successor,x,'daemon-predecessor') for x in old_phase['typed_objects']]
         successor.connection_barrier=barrier
         self.data['successor_business']=successor.data
-        try:execute(successor,*self.data['after_ready'])
+        try:
+            # A new daemon has no advertising set. Establish the same real
+            # stopped beacon precondition required by the shared connection
+            # gate; do not weaken its remove/recreate or capture assertions.
+            from ws73_ssap_initialization import restore_beacons
+            setup=dict(caller=self.data['after_ready'][0],peer=self.data['after_ready'][1])
+            successor.data['beacon_setup']=setup
+            restore_beacons(successor,setup)
+            execute(successor,*self.data['after_ready'])
         finally:self.save()
 
 

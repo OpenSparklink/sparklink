@@ -203,7 +203,8 @@ def summary_valid(proof):
 def validate_inputs(package):
     from ws73_ssap_sdk_write_provider import validate_inputs as write_inputs
     write_inputs(package)
-    for name in ('ws73_ssap_daemon_restart.py','ws73_channel_daemon_crash.py','ws73_channel_socket.py'):
+    for name in ('ws73_ssap_daemon_restart.py','ws73_channel_daemon_crash.py','ws73_channel_socket.py',
+                 'ws73_ssap_initialization.py'):
         path=Path(__file__).resolve().with_name(name)
         matches=[r for r in package.get('inputs',[]) if Path(r['path']).resolve()==path]
         need(len(matches)==1 and matches[0]['sha256']==hashlib.sha256(path.read_bytes()).hexdigest(),

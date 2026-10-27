@@ -120,6 +120,47 @@ def fixture():
 
 
 class ApplicationClientEvidence(unittest.TestCase):
+    def test_method_result_and_arguments_have_separate_bounds_and_receipts(self):
+        entry,template,_,_=error_fixture();row=dict(phase=0,owners=[entry])
+        for api in ('c','python'):
+            for arguments,expected in [(b'',b''),(b'\x31'*32,b'\xa6'*17),(b'\x31'*2043,b'\xa6'*2045)]:
+                args=['ssap-call-method',entry['object']['path'],'2',arguments.hex()]
+                _,command,_,environment,_,_=ssap_call(None,row,entry,args,expected,api=api,expected_size=len(expected),application_uid=1000)
+                self.assertEqual(command[-2:],[expected.hex(),arguments.hex()])
+                app=dict(api=api,args=command,environment=environment,ssap_operation=args[0],ssap_path=args[1],
+                    ssap_handle=2,ssap_arguments=arguments.hex(),ssap_expected=expected.hex(),exit=0,stderr='',
+                    credentials=template['credentials'],stdout=json.dumps(dict(stage='ssap_start_barrier',api=api,client_closed=True))+'\n'+
+                    f'SsapPeerValue: operation={args[0]} path={args[1]} handle=2 value={expected.hex()}\n')
+                ssap_receipt(app,entry,expected_size=len(expected))
+                for field,value in [('ssap_arguments','00'),('args',command[:-1]+['00']),('ssap_handle',3),('exit',1),('stderr','truncated')]:
+                    bad=copy.deepcopy(app);bad[field]=value
+                    with self.subTest(api=api,field=field),self.assertRaises(CaptureError):
+                        ssap_receipt(bad,entry,expected_size=len(expected))
+                if arguments!=expected:
+                    bad=copy.deepcopy(app);bad['stdout']=bad['stdout'].replace('value='+expected.hex(),'value='+arguments.hex())
+                    with self.assertRaises(CaptureError):ssap_receipt(bad,entry,expected_size=len(expected))
+        for value in ('aa'*2044,'AA','0','a g',None):
+            args=['ssap-call-method',entry['object']['path'],'2',value]
+            with self.subTest(value_type=type(value)),self.assertRaises(CaptureError):
+                ssap_call(None,row,entry,args,b'a',api='c',expected_size=1,application_uid=1000)
+            with self.assertRaises(CaptureError):ssap_error_arguments('c',entry,args,errno.EIO)
+        for size in (2046,-1,True):
+            with self.subTest(size=size),self.assertRaises(CaptureError):
+                ssap_call(None,row,entry,['ssap-call-method',entry['object']['path'],'2',''],
+                          b'a'*max(int(size),0),api='c',expected_size=size,application_uid=1000)
+
+    def test_method_error_receipt_preserves_arguments_errno_and_original_deadline(self):
+        for api in ('c','python'):
+            entry,app,_,_=error_fixture(api)
+            args=['ssap-call-method',entry['object']['path'],'2','31'*2043]
+            app.update(ssap_operation=args[0],ssap_proposed=args[3],ssap_arguments=args[3],
+                       args=ssap_error_arguments(api,entry,args,errno.EIO))
+            ssap_error_receipt(app,entry,expected_errno=errno.EIO)
+            for field,value in [('ssap_arguments',''),('ssap_proposed',''),('ssap_expected_errno',errno.EACCES)]:
+                bad=copy.deepcopy(app);bad[field]=value
+                with self.subTest(api=api,field=field),self.assertRaises(CaptureError):
+                    ssap_error_receipt(bad,entry,expected_errno=errno.EIO)
+
     def test_only_type0_read_can_expect_zero_bytes_and_actual_result_stays_exact(self):
         entry,_,_,_=error_fixture();row=dict(phase=0,owners=[entry])
         for api in ('c','python'):
@@ -232,7 +273,7 @@ class ApplicationClientEvidence(unittest.TestCase):
                 self.assertTrue(children[-1].stdin.closed)
                 self.assertEqual(Path(app['output_files'][0]).read_text(),app['stdout'])
 
-    def test_shared_success_supervisor_still_releases_original_empty_read_barrier(self):
+    def test_shared_success_supervisor_releases_read_and_method_original_barrier(self):
         entry,template,_,_=error_fixture();children=[];test=self
         class Child:
             def __init__(self,command,**kwargs):
@@ -245,22 +286,26 @@ class ApplicationClientEvidence(unittest.TestCase):
             def wait(self,timeout=None):
                 if self.returncode is None:
                     test.assertEqual(self.stdin.getvalue(),b'start\n')
-                    test.assertEqual(self.command[-1],'')
-                    self.stdout.write(f'SsapPeerValue: operation=ssap-read path={entry["object"]["path"]} handle=2 value=\n'.encode())
+                    operation=self.command[5];expected=self.command[7]
+                    if operation=='ssap-call-method':test.assertEqual(self.command[8],'31')
+                    else:test.assertEqual(expected,'')
+                    self.stdout.write(f'SsapPeerValue: operation={operation} path={entry["object"]["path"]} handle=2 value={expected}\n'.encode())
                     self.stdout.flush();self.returncode=0
                 return self.returncode
-        with tempfile.TemporaryDirectory() as directory:
-            row=dict(phase=0,owners=[entry]);run=SimpleNamespace(output=Path(directory),data={},save=lambda:None)
-            def callback(app,deadline):
-                self.assertEqual(children[0].stdin.getvalue(),b'start\n')
-                self.assertEqual(deadline,app['ssap_release_monotonic_ns']+7_000_000_000)
-                self.assertNotIn('ssap_expected_errno',app)
-            with patch('ws73_application_client.subprocess.Popen',side_effect=Child),\
-                 patch('ws73_application_client.process_identity',return_value=(template['credentials'],'original process status')):
-                app=ssap_commands(run,row,[(entry,['ssap-read',entry['object']['path'],'2'],b'')],
-                                  api='c',expected_size=0,after_start=callback)[0]
-            ssap_receipt(app,entry,expected_size=0)
-            self.assertEqual(app['exit'],0);self.assertTrue(children[0].stdin.closed)
+        for operation,expected,extra in [('ssap-read',b'',[]),('ssap-call-method',b'\xa6',['31'])]:
+            with self.subTest(operation=operation),tempfile.TemporaryDirectory() as directory:
+                row=dict(phase=0,owners=[entry]);run=SimpleNamespace(output=Path(directory),data={},save=lambda:None)
+                def callback(app,deadline):
+                    self.assertEqual(children[-1].stdin.getvalue(),b'start\n')
+                    self.assertEqual(deadline,app['ssap_release_monotonic_ns']+7_000_000_000)
+                    self.assertNotIn('ssap_expected_errno',app)
+                    if extra:self.assertEqual(app['ssap_arguments'],extra[0])
+                with patch('ws73_application_client.subprocess.Popen',side_effect=Child),\
+                     patch('ws73_application_client.process_identity',return_value=(template['credentials'],'original process status')):
+                    app=ssap_commands(run,row,[(entry,[operation,entry['object']['path'],'2']+extra,expected)],
+                                      api='c',expected_size=len(expected),after_start=callback)[0]
+                ssap_receipt(app,entry,expected_size=len(expected))
+                self.assertEqual(app['exit'],0);self.assertTrue(children[-1].stdin.closed)
 
     def test_policy_decisions_must_match_original_lifetime_proposal_and_window(self):
         cases=['missing','duplicate','deny','lifetime','generation','index-bool','handle','epoch',

@@ -60,7 +60,16 @@ def _ssap_process_receipt(app,expected_uid):
 
 
 def _ssap_size(operation,size):
+    if operation=='ssap-call-method':return type(size)is int and 0<=size<=2045
     return type(size)is int and (0 if operation=='ssap-read' else 1)<=size<=2042
+
+
+def _ssap_method_arguments(value):
+    try:decoded=bytes.fromhex(value)
+    except (ValueError,TypeError) as error:raise CaptureError('bounded original method arguments required') from error
+    if len(decoded)>2043 or value!=decoded.hex():
+        raise CaptureError('bounded original method arguments required')
+    return value
 
 
 def ssap_receipt(app,entry,*,expected_size=32,expected_uid=1000):
@@ -69,13 +78,14 @@ def ssap_receipt(app,entry,*,expected_size=32,expected_uid=1000):
     if len(lines)!=2 or json.loads(lines[0])!=dict(stage='ssap_start_barrier',api=app['api'],client_closed=True):
         raise CaptureError('original retained-caller start barrier required')
     operation,path,handle,expected=app['ssap_operation'],app['ssap_path'],app['ssap_handle'],app['ssap_expected']
-    if operation not in ('ssap-read','ssap-read-description','ssap-write') or path!=entry['object']['path'] or type(handle)is not int or not 1<=handle<=65535 or not _ssap_size(operation,expected_size) or len(bytes.fromhex(expected))!=expected_size:
+    if operation not in ('ssap-read','ssap-read-description','ssap-write','ssap-call-method') or path!=entry['object']['path'] or type(handle)is not int or not 1<=handle<=65535 or not _ssap_size(operation,expected_size) or len(bytes.fromhex(expected))!=expected_size:
         raise CaptureError('original exact SSAP caller identity and bounded value required')
     if lines[1]!=f'SsapPeerValue: operation={operation} path={path} handle={handle} value={expected}':
         raise CaptureError('actual SDK must validate the complete peer result')
     prefix=['/bin/ws73-application-client-c'] if app['api']=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
     args=prefix+['ssap',str(entry['owner']['index']),str(entry['owner']['generation']),path,operation,str(handle),expected]
     if operation=='ssap-write':args.append(expected)
+    if operation=='ssap-call-method':args.append(_ssap_method_arguments(app.get('ssap_arguments')))
     if app['api']not in ('c','python') or app['args']!=args:
         raise CaptureError('exact actual SSAP executable and arguments required')
 
@@ -103,8 +113,8 @@ def ssap_error_command(run,row,entry,args,expected_errno,*,api,after_start=None,
 def ssap_error_arguments(api,entry,args,expected_errno):
     if api not in ('c','python') or type(expected_errno)is not int or not 1<=expected_errno<=4095:
         raise CaptureError('explicit SDK language and nonzero expected errno required')
-    if (type(args)is not list or not args or args[0]not in ('ssap-read','ssap-read-description','ssap-write')
-            or len(args)!=(4 if args[0]=='ssap-write'else 3) or args[1]!=entry['object']['path']
+    if (type(args)is not list or not args or args[0]not in ('ssap-read','ssap-read-description','ssap-write','ssap-call-method')
+            or len(args)!=(4 if args[0]in ('ssap-write','ssap-call-method')else 3) or args[1]!=entry['object']['path']
             or type(args[2])is not str or not args[2].isascii() or not args[2].isdecimal()
             or not 1<=int(args[2])<=65535 or args[2]!=str(int(args[2]))):
         raise CaptureError('exact same-lifetime SDK error call required')
@@ -113,6 +123,7 @@ def ssap_error_arguments(api,entry,args,expected_errno):
         except (ValueError,TypeError) as error:raise CaptureError('bounded original write bytes required') from error
         if not 1<=len(value)<=2042 or args[3]!=value.hex():
             raise CaptureError('bounded original write bytes required')
+    if args[0]=='ssap-call-method':_ssap_method_arguments(args[3])
     prefix=['/bin/ws73-application-client-c'] if api=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
     return prefix+['ssap-error',str(entry['owner']['index']),str(entry['owner']['generation']),
                    args[1],args[0],args[2],str(expected_errno)]+args[3:]
@@ -135,7 +146,9 @@ def ssap_error_receipt(app,entry,*,expected_errno,expected_uid=1000):
     operation,path,handle=app['ssap_operation'],app['ssap_path'],app['ssap_handle']
     if type(handle)is not int or not 1<=handle<=65535:
         raise CaptureError('original error handle required')
-    args=[operation,path,str(handle)]+([app['ssap_proposed']]if operation=='ssap-write'else[])
+    args=[operation,path,str(handle)]+([app['ssap_proposed']]if operation in ('ssap-write','ssap-call-method')else[])
+    if operation=='ssap-call-method' and app.get('ssap_arguments')!=app['ssap_proposed']:
+        raise CaptureError('original method error arguments required')
     if (app['args']!=ssap_error_arguments(app['api'],entry,args,expected_errno)
             or type(app['ssap_expected_errno'])is not int or app['ssap_expected_errno']!=expected_errno):
         raise CaptureError('exact original negative-scenario SDK executable and arguments required')
@@ -210,9 +223,10 @@ def _ssap_commands(run,row,calls,*,api=None,expected_size=32,application_uid=100
                 app=dict(api=language,args=command,position=row['owners'].index(entry),environment=environment,ssap_operation=args[0],ssap_path=args[1],ssap_handle=int(args[2]),start_wall_ns=time.time_ns(),output_files=[str(stdout),str(stderr)])
                 if error_mode:
                     start=time.monotonic_ns()
-                    app.update(ssap_expected_errno=expected_errno,ssap_proposed=args[3]if args[0]=='ssap-write'else'',
+                    app.update(ssap_expected_errno=expected_errno,ssap_proposed=args[3]if args[0]in ('ssap-write','ssap-call-method')else'',
                                start_monotonic_ns=start,ssap_supervisor_deadline_ns=start+7_000_000_000)
                 else:app['ssap_expected']=expected.hex()
+                if args[0]=='ssap-call-method':app['ssap_arguments']=args[3]
                 if group is not None:app['ssap_batch_index']=group['index']
                 items.append(app);result.append(app);run.data.setdefault('ssap_values',[]).append(app);run.save()
                 proc=subprocess.Popen(command,env=dict(os.environ,**environment),stdin=subprocess.PIPE,
@@ -270,16 +284,17 @@ def ssap_call(run,row,entry,args,expected,*,api,expected_size,application_uid):
     if not isinstance(expected,bytes) or len(expected)!=expected_size:raise CaptureError('original bounded expected SSAP value required')
     if application_uid not in (1000,1004):raise CaptureError('explicit SSAP test role required')
     if application_uid==1004 and os.geteuid()!=0:raise CaptureError('apps-only SSAP requires existing VM root role supervisor')
-    if (type(args)is not list or not args or args[0]not in ('ssap-read','ssap-read-description','ssap-write')
-        or len(args)!=(4 if args[0]=='ssap-write'else 3)or args[1]!=entry['object']['path']
+    if (type(args)is not list or not args or args[0]not in ('ssap-read','ssap-read-description','ssap-write','ssap-call-method')
+        or len(args)!=(4 if args[0]in ('ssap-write','ssap-call-method')else 3)or args[1]!=entry['object']['path']
         or not 1<=int(args[2])<=65535 or args[0]=='ssap-write'and args[3]!=expected.hex()):
         raise CaptureError('exact same-lifetime SDK value call required')
+    if args[0]=='ssap-call-method':_ssap_method_arguments(args[3])
     if not _ssap_size(args[0],expected_size):raise CaptureError('original bounded expected SSAP value required')
     position=row['owners'].index(entry)
     if api is None:api='c' if position==row['phase'] else 'python'
     if api not in ('c','python'):raise CaptureError('explicit SDK consumer required')
     command=(['/bin/ws73-application-client-c'] if api=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py'])+['ssap',str(entry['owner']['index']),str(entry['owner']['generation']),args[1],args[0],args[2],expected.hex()]
-    if args[0]=='ssap-write':command.append(args[3])
+    if args[0]in ('ssap-write','ssap-call-method'):command.append(args[3])
     return entry,command,api,application_environment(),args,expected
 
 

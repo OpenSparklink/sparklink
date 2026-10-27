@@ -90,16 +90,18 @@ static void hex_print(const uint8_t *p,size_t n) {
 static int ssap_mode(int argc,char **argv) {
     if ((argc!=8 && argc!=9) || !*argv[4] || strlen(argv[4])>256) return 2;
     int writing=!strcmp(argv[5],"ssap-write");
+    int method=!strcmp(argv[5],"ssap-call-method");
     int description=!strcmp(argv[5],"ssap-read-description");
-    if ((!writing && !description && strcmp(argv[5],"ssap-read")) || argc!=(writing?9:8)) return 2;
+    if ((!writing && !method && !description && strcmp(argv[5],"ssap-read")) || argc!=((writing||method)?9:8)) return 2;
     uint64_t index=number(argv[2]),generation=number(argv[3]),handle=number(argv[6]);
     if (index>UINT16_MAX || !generation || !handle || handle>UINT16_MAX) return 2;
     int error_mode=!strcmp(argv[1],"ssap-error");
     uint64_t expected_errno=error_mode?number(argv[7]):0;
     if (error_mode && (!expected_errno || expected_errno>4095)) return 2;
-    uint8_t expected[2042],value[2042],received[2042];
-    size_t expected_n=(error_mode || (!writing && !description && !*argv[7]))?0:bytes(argv[7],expected);
-    size_t value_n=writing?bytes(argv[8],value):0;
+    uint8_t expected[2045],value[2043],received[2045];
+    size_t capacity=method?2045:2042;
+    size_t expected_n=(error_mode || (!writing && !description && !*argv[7]))?0:bytes_bounded(argv[7],expected,capacity);
+    size_t value_n=method?(*argv[8]?bytes_bounded(argv[8],value,2043):0):(writing?bytes(argv[8],value):0);
     const uint64_t deadline=now_ns()+5000000000ULL;
     struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};
     struct SlkClient *client=NULL;struct SlkConnection *link=NULL;int status=1;
@@ -116,9 +118,10 @@ static int ssap_mode(int argc,char **argv) {
         if (wait_fd(STDIN_FILENO,POLLIN,deadline) || read(STDIN_FILENO,start,sizeof start)!=(ssize_t)sizeof start || memcmp(start,"start\n",sizeof start)) { errno=EPROTO;goto done; }
     }
     uintptr_t length=0;
-    if (writing) error=slk_connection_ssap_write(link,(uint16_t)handle,0,value,value_n,received,sizeof received,&length,deadline);
-    else if (description) error=slk_connection_ssap_read_description(link,(uint16_t)handle,0,received,sizeof received,&length,deadline);
-    else error=slk_connection_ssap_read(link,(uint16_t)handle,0,received,sizeof received,&length,deadline);
+    if (method) error=slk_connection_ssap_call_method(link,(uint16_t)handle,0,value,value_n,received,capacity,&length,deadline);
+    else if (writing) error=slk_connection_ssap_write(link,(uint16_t)handle,0,value,value_n,received,capacity,&length,deadline);
+    else if (description) error=slk_connection_ssap_read_description(link,(uint16_t)handle,0,received,capacity,&length,deadline);
+    else error=slk_connection_ssap_read(link,(uint16_t)handle,0,received,capacity,&length,deadline);
     if (error_mode) {
         printf("{\"stage\":\"ssap_error\",\"api\":\"c\",\"errno\":%d,\"operation_success\":%s,\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",-error,error==0?"true":"false",deadline,now_ns());fflush(stdout);
         if (error!=-(int)expected_errno) { errno=EPROTO;goto done; }

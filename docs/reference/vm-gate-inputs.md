@@ -9,6 +9,32 @@ Managed 连接清理门禁当前逐字节要求 SLE 主动断链原因 `0x10`，
 构建提交；准备工具的当前 HEAD 单独记录。复用入口仍要求明确编译身份，缺失时拒绝，
 不能用文档或工具提交给既有 ELF 重新标记身份。
 
+## 方法请求的实际 SDK 消费者
+
+现有 `ws73-application-client-c` 与 `ws73-application-client.py` 共用以下有限请求格式：
+
+```text
+ssap INDEX GENERATION CONNECTION ssap-call-method HANDLE EXPECTED_HEX ARGUMENTS_HEX
+ssap-error INDEX GENERATION CONNECTION ssap-call-method HANDLE EXPECTED_ERRNO ARGUMENTS_HEX
+```
+
+这是专用 VM runner 的内部调用者，不是新的公开 CLI 或独立协议 Engine。
+它们调用现有 C/Python `call_method`，参数最多 2043 字节、独立结果最多 2045 字节；
+两者都可为空，协商 MTU/分片能力仍可施加更小限制。原 read/write 的 2042 字节上限
+不变。成功调用者在关闭 Client 后保留 Connection，等到原 `start` 屏障才提交；
+申请、等待和方法调用共用从启动起的五秒绝对期限，不在释放屏障时续期。
+
+`ssap-error` 沿用原错误场景的即时调用和对端 callback 到达屏障；预期 errno 必须
+精确匹配，实际成功不能当作预期失败。共享监督器记录原参数和独立预期结果，
+核对完整输出、退出码、stderr、普通用户凭据及准确执行工具；参数回显、截断结果、
+错误的参数/身份或缺失收据均不能通过。工具不会重试不确定的远端副作用。
+
+实际 C/Python 程序的私有 D-Bus 回归覆盖空值、短值、参数/结果上界、错误结果、
+错误 errno、超限输入和未释放启动屏障；元数据与服务结果仍是有限 fixture。
+即时返回 Timeout 只验证错误映射，不能替代原期限真实经过的门禁。
+这些工具检查不是方法的双设备交付资格；VM 方法场景还须核对实际 Provider 参数、
+独立结果、双端 USB 请求/响应和准确 artifact，不能从 SDK stdout 单独判 PASS。
+
 ## 显式链路发送载荷偏好
 
 可选 `--link-payload-preference reported-acb-maximum` 仅用于独立的双设备 Native

@@ -726,7 +726,8 @@ int slk_connection_ssap_write_command(const struct SlkConnection *connection,
  * result<=2045 with independently negotiated per-datagram MTU/fragment support.
  * Output contains the peer result, never argument echo. No implicit retry;
  * timeout or insufficient output capacity can follow an executed remote effect.
- * Local daemon method Providers are not yet supported.
+ * Local method Providers use Owned registration and the shared SDK Dispatcher;
+ * this requester neither registers a Provider nor fabricates its result.
  * # Safety
  * Same live connection, immutable input and exclusive output contract as
  * slk_connection_ssap_write. NULL input only when empty; no output aliasing.

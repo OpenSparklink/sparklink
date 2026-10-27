@@ -5,6 +5,8 @@
 mod authorization;
 #[path = "application_ffi/method_provider.rs"]
 mod method_provider;
+#[path = "application_ffi/method_requester.rs"]
+mod method_requester;
 #[path = "application_ffi/pending_owner.rs"]
 mod pending_owner;
 #[path = "application_ffi/read_provider.rs"]
@@ -260,6 +262,15 @@ impl Link {
     ) -> zbus::fdo::Result<Vec<u8>> {
         libsparklink::Deadline::from_stamp(slk_contract::deadline_stamp(original)).unwrap();
         self.6.fetch_add(1, Ordering::SeqCst);
+        // Actual VM consumers use public minimum=0; finite private-bus cases,
+        // not a peer Engine or evidence of successful radio delivery.
+        match (handle, minimum) {
+            (64, 0) if arguments == [0x56, 0x12] => return Ok(vec![0x90, 0x78, 0x34]),
+            (65, 0) if arguments.is_empty() => return Ok(vec![]),
+            (66, 0) if arguments == vec![0x31; 2043] => return Ok(vec![0xa6; 2045]),
+            (68, 0) => return Err(zbus::fdo::Error::Timeout("finite immediate error".into())),
+            _ => {}
+        }
         if (handle, minimum, arguments) != (17, 1, vec![0x56, 0x12]) {
             return Err(zbus::fdo::Error::NotSupported(
                 "finite method fixture".into(),
@@ -626,6 +637,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         .arg(root.join("crates/libsparklink/tests/fixtures/method_provider.c"))
         .arg(root.join("crates/libsparklink/tests/fixtures/method_provider.py"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/method_provider.rs"))
+        .arg(root.join("crates/libsparklink/tests/application_ffi/method_requester.rs"))
         .arg(root.join("crates/libsparklink/src/ffi_service_method_provider.rs"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/write_provider.rs"))
         .arg(root.join("crates/libsparklink/src/ffi_service_write_provider.rs"))
@@ -1532,6 +1544,18 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         &owned,
     )
     .await?;
+    method_requester::exercise(
+        &root,
+        &sdk_probe,
+        &runtime_library,
+        &directory,
+        &bus.address,
+    )?;
+    assert_eq!(
+        method_calls.load(Ordering::SeqCst),
+        27,
+        "twenty additional actual method calls; invalid inputs and unreleased barriers never submit"
+    );
     let unchanged = Command::new("sha256sum")
         .arg("--check")
         .arg(directory.join("materials.sha256"))

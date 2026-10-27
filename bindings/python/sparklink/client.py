@@ -467,7 +467,8 @@ class RemoteSsap:
     def call_method(self, handle, arguments, *, deadline_ns, minimum=0):
         """Return independent peer result bytes; no retry of uncertain effects.
 
-        Requester only: current slkd does not provide local method callbacks.
+        Local method Providers use Owned registration and the shared Dispatcher;
+        this request does not register a Provider or fabricate its result.
         """
         return self._call(handle, minimum, deadline_ns, self._method_arguments(arguments),
             write_method="slk_connection_ssap_call_method")

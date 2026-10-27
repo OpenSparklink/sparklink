@@ -337,7 +337,8 @@ impl<'a> RemoteSsap<'a> {
     }
     /// Invoke a remote method, returning its independent application result.
     /// No retry or input echo. A timeout may follow an executed remote effect.
-    /// Current local daemon method providers are not yet supported.
+    /// Local Providers use Owned registration and the shared SDK Dispatcher;
+    /// this request does not create a Provider or a second protocol Engine.
     pub async fn call_method(
         &self,
         handle: u16,

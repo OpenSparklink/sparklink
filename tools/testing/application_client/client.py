@@ -74,14 +74,16 @@ def ssap_mode():
     if len(sys.argv) not in (8,9):raise ValueError('ssap index generation path operation handle expected [value]')
     index,generation=int(sys.argv[2]),int(sys.argv[3]);path,operation=sys.argv[4:6];handle=int(sys.argv[6])
     writing=operation=='ssap-write'
-    if operation not in ('ssap-read','ssap-read-description','ssap-write') or len(sys.argv)!=(9 if writing else 8):raise ValueError('one exact read/short write required')
+    method=operation=='ssap-call-method'
+    if operation not in ('ssap-read','ssap-read-description','ssap-write','ssap-call-method') or len(sys.argv)!=(9 if writing or method else 8):raise ValueError('one exact read/write/method request required')
     error_mode=sys.argv[1]=='ssap-error'
-    empty_read=not error_mode and operation=='ssap-read' and sys.argv[7]==''
-    if not (empty_read or 1<=len(sys.argv[7])<=4084) or writing and not 1<=len(sys.argv[8])<=4084:raise ValueError('bounded test value required')
+    empty_read=not error_mode and operation in ('ssap-read','ssap-call-method') and sys.argv[7]==''
+    maximum=2045 if method else 2042
+    if not (empty_read or 1<=len(sys.argv[7])<=2*maximum) or writing and not 1<=len(sys.argv[8])<=4084 or method and len(sys.argv[8])>4086:raise ValueError('bounded test value required')
     expected_errno=int(sys.argv[7]) if error_mode else None
     if error_mode and not 1<=expected_errno<=4095:raise ValueError('nonzero expected errno required')
-    expected=None if error_mode else bytes.fromhex(sys.argv[7]);value=bytes.fromhex(sys.argv[8]) if writing else None
-    if not error_mode and not (empty_read or 1<=len(expected)<=2042) or writing and not 1<=len(value)<=2042:raise ValueError('bounded nonempty test value required')
+    expected=None if error_mode else bytes.fromhex(sys.argv[7]);value=bytes.fromhex(sys.argv[8]) if writing or method else None
+    if not error_mode and not (empty_read or 1<=len(expected)<=maximum) or writing and not 1<=len(value)<=2042 or method and not 0<=len(value)<=2043:raise ValueError('bounded test value required')
     deadline=time.monotonic_ns()+5_000_000_000
     with Client(deadline_ns=deadline) as client:
         link=client.connection(ControllerId(index,generation),path,deadline_ns=deadline)
@@ -95,7 +97,8 @@ def ssap_mode():
             if os.read(0,6)!=b'start\n':raise ValueError('explicit original start barrier required')
         remote=link.ssap()
         try:
-            if writing:actual=remote.write(handle,value,deadline_ns=deadline)
+            if method:actual=remote.call_method(handle,value,deadline_ns=deadline)
+            elif writing:actual=remote.write(handle,value,deadline_ns=deadline)
             elif operation=='ssap-read-description':actual=remote.read_description(handle,deadline_ns=deadline)
             else:actual=remote.read(handle,deadline_ns=deadline)
         except OSError as error:

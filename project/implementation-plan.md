@@ -1,17 +1,16 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前批次：待决 WRITE 的连接 Down
+## 当前批次：连接 Down 后的晚到 WRITE 答复
 
-WP08 / U#22 已接通独立 `--ssap-write-provider-down-verify`：实际 SDK 回调先到达，
-再通过原 typed Disconnect 与同一 Session/lifetime 观察两端 Down。原请求/Provider
-期限、原共享5秒 Down、普通业务与 Owned 基线保留；Provider 在 Down 后才显式退出。
-连接退出不等于服务注销、应用副作用回滚或物理 drain。
+WP08 / U#22 v2 复用原 `--ssap-write-provider-down-verify`：实际 SDK 回调、原
+Disconnect、双端 Down 和原请求 EIO 后，在原 requester/Provider 期限内调用同一
+SDK token 答复。记录本地接收或 stale/shutdown、测试应用值及双端完整捕获；
+本地接收不代表旧连接响应、远端业务成功或副作用回滚。最后显式退出 Owned 服务。
 
-186项相关Python回归及严格HTML通过；DLI命令记录的OUT归属来自既有配对解码，
-不虚构direction字段，最终字段契约20项相关回归通过。生产Engine未改。
-源码、离线、编译产物、执行工具和报告身份分开；准确实机资料仅授权本地。
-后续先将准确材料按既有资格schema登记，再推进迟到Provider答复与daemon restart；
-本批不关闭U#22，不扩展成全控制面前置，原失败、完整数据/安全/SSAP和自然恢复要求保留。
+104项相关离线检查及私有/公开严格HTML通过。没有修改生产Engine或创建旁路。
+v1记录与失败保留原身份，不授予v2资格；准确产物、材料和结果仅在授权本地维护。
+下一批沿原Engine停止/SDK所有权推进daemon restart和新lifetime，不追加全控制面前置。
+完整S0–S6/19WP/10FV/12DG、长值/更新/Profile及自然恢复原要求不变，U#22仍开放。
 
 ## 有界 issue 清理结果与主线恢复
 
@@ -490,9 +489,9 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-pending-WRITE-physical-Down",
-  "state": "GATE_IMPLEMENTED_FINAL_ORACLE_SCHEMA_CORRECTED",
-  "production_behavior": "No runtime Engine change. Existing SDK callback barrier precedes original typed Disconnect; same Session/lifetime and original requester/Provider deadlines. Publisher survives connection Down and explicitly cleans up Owned service afterward.",
+  "id": "WP08-pending-WRITE-Down-late-local-reply",
+  "state": "LATE_REPLY_GATE_IMPLEMENTED_OFFLINE_CHECKED",
+  "production_behavior": "No production Engine change. Same actual SDK callback and typed Disconnect; original requester EIO and both Down precede same-token SDK reply attempt before original deadline. Local acceptance or stale/shutdown refusal is distinct from old wire response; application effect recorded honestly. Explicit service cleanup afterward.",
   "scope": "Full S0-S6,19WP,10FV,12DG and original acceptance unchanged; drivers/net/slkd,unique Session/Grant/credit/Ticket,VM-only,SDK110 explicit model,shared build lock and12/VM8 budget retained. UserHost remains low-priority planning.",
   "work_packages": [
     "WP08",
@@ -500,43 +499,40 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
   ],
   "records": [],
   "implementation_sources": {
-    "public_gate": "120d1458f10cc8114c51429b6eb895bb1a9b8897",
-    "public_verifier": "ee7ac3212ab50b8c558310ceb6258a9a75ace839",
-    "kernel": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
+    "public_gate": "734d326efec35acff6661ebec3fca3a6ef77b9f9"
   },
   "offline_checks": {
-    "initial_gate": "186 selected Python tests; literal SDK/USB fixtures, actual host/guest parser",
-    "final_receipt_shape": "20 selected Down/connection tests",
-    "docs": "strict Sphinx HTML public/private + inventory and15 integrity checks"
+    "related_tests": "104 selected Python tests; explicit paired USB/SDK fixtures and actual CLI parser",
+    "documentation": "private/public strict HTML and document inventories passed",
+    "qualification_checker": "Six new-record missing/stale/corrupt/scope/gate negative controls rejected in local validation; no full-project or new formal proof"
   },
   "offline_status": "SCOPED_OFFLINE_PASS",
-  "hardware_status": "Exact-artifact results and failed attempts retained in authorized local evidence; no public hardware verdict or private identities published. Existing selected qualification unchanged.",
+  "hardware_status": "Accurate artifact results, attempts and scope remain in authorized local records; no hardware verdict or private identities published here.",
   "formal_status": "NO_NEW_PROOF",
   "issue_sync": {
     "repository": "sparklink",
     "number": 22,
     "state": "open",
-    "prior_body_sha256": "06437ad73da6799e5929e0d8f38fb15f92adda914cfbdbf82007c0bd33d2cfdb",
-    "body_sha256": "bf13f7f89b15bf3ea130b49e6dc1ccdb287c07b4f77914ebad9aa922ef7f3a4e",
+    "prior_body_sha256": "bf13f7f89b15bf3ea130b49e6dc1ccdb287c07b4f77914ebad9aa922ef7f3a4e",
+    "body_sha256": "bc88b2d4277e2f7bb637276ddedec2e28a6d7eabfa21adf61ad4528c1879d29d",
     "source_offline_only": true,
-    "observed_at": "2026-10-27T02:22:09.730294+00:00",
-    "scope": "Canonical DLI command shape, separate replay/terminal contract and20 scoped offline regressions; original six conditions unchanged"
+    "observed_at": "2026-10-27T02:56:36.711387+00:00",
+    "scope": "v2 actual late SDK reply gate and104 scoped offline checks; no private identities/hardware verdict; original six exit conditions unchanged"
   },
   "exit_conditions": [
-    "Opt-in gate uses actual existing caller/connection/USB path; preserved ordinary/Owned baseline and original five-second Down.",
-    "Original command schema represented accurately; negative controls reject missing/old/mismatched evidence without changing failed terminal status.",
-    "Exact source, compiled payload, execution tools and report identities are distinct; no partial issue closure."
+    "Original callback, typed Disconnect, both Down and requester EIO retain original deadlines and existing application/Owned baseline.",
+    "Original SDK token reply is attempted after Down/EIO before expiry; local acceptance/refusal and application value are recorded; no old wire response in complete paired capture.",
+    "Exact v1/v2 artifacts, execution tools and reports remain distinct; missing/stale/scope/gate negatives reject invalid qualification; first failed terminal retained."
   ],
   "remaining_conditions": [
-    "Enroll exact artifacts and gate/material bindings in existing qualification registry; do not transfer historical broad length qualification.",
-    "Late Provider reply and daemon restart; full WRITE/method/long-value/update/Profile requirements.",
-    "Natural faults/nonmanual recovery and original S0-S6/19WP/10FV/12DG."
+    "Daemon restart and new lifetime reuse after late reply; full WRITE/method/long-value/update/Profile scope.",
+    "Natural roots/nonmanual recovery and original S0-S6/19WP/10FV/12DG."
   ],
   "next": [
-    "Enroll the exact new gate audit and required material bindings in the existing qualification registry; preserve first failed attempt.",
-    "Extend pending WRITE to late Provider reply and daemon restart using existing lifecycle hooks; continue original data/security/SSAP delivery."
+    "Add daemon restart/owner takeover gate using existing Engine stop and SDK ownership, preserving original requests and failure evidence.",
+    "Continue original data/security/SSAP delivery; this bounded lifecycle batch is not a full control-plane prerequisite."
   ],
-  "qualification_boundary": "No records/materials/selected qualification changed in this synchronization. Source/offline scope and private scoped hardware audit are distinct."
+  "qualification_boundary": "v1 historical runs do not qualify v2. Compiled payload, execution tools and reports remain distinct; selected qualification unchanged. Local reply acceptance is not remote delivery or rollback."
 }
 ```
 

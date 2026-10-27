@@ -387,9 +387,9 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "bf13f7f89b15bf3ea130b49e6dc1ccdb287c07b4f77914ebad9aa922ef7f3a4e",
+      "body_sha256": "bc88b2d4277e2f7bb637276ddedec2e28a6d7eabfa21adf61ad4528c1879d29d",
       "classification": "有限收尾",
-      "closure_basis": "Pending WRITE Down gate wired with original SDK/connection/paired evidence and canonical DLI command schema. Accurate hardware scope stays local; late reply/restart and full operation/value/update conditions remain open."
+      "closure_basis": "v2 late local SDK reply gate,104 related offline checks, accurate hardware scope retained locally. Original six exit conditions, restart/new-lifetime and full operation/value/update remain open."
     },
     {
       "repository": "sparklink",
@@ -3789,6 +3789,16 @@
       "source_offline_only": true,
       "observed_at": "2026-10-27T02:22:09.730294+00:00",
       "scope": "Canonical DLI command shape, separate replay/terminal contract and20 scoped offline regressions; original six conditions unchanged"
+    },
+    {
+      "repository": "sparklink",
+      "number": 22,
+      "state": "open",
+      "prior_body_sha256": "bf13f7f89b15bf3ea130b49e6dc1ccdb287c07b4f77914ebad9aa922ef7f3a4e",
+      "body_sha256": "bc88b2d4277e2f7bb637276ddedec2e28a6d7eabfa21adf61ad4528c1879d29d",
+      "source_offline_only": true,
+      "observed_at": "2026-10-27T02:56:36.711387+00:00",
+      "scope": "v2 actual late SDK reply gate and104 scoped offline checks; no private identities/hardware verdict; original six exit conditions unchanged"
     }
   ]
 }

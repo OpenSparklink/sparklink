@@ -5186,13 +5186,14 @@
   "issue_maintenance": {
     "record": "project/issue-maintenance-20261026.json",
     "state": "BOUNDED_MAINTENANCE_COMPLETE_U1_U21_CLOSED",
-    "execution_dependency": "Bounded maintenance complete; U1 independently closed. Resume existing WRITE Down/restart, data/security/SSAP and applicable preservation; retain all original failures. No full-control-plane prerequisite.",
+    "execution_dependency": "Bounded issue refresh complete. Resume existing method requester/Provider and data/security/SSAP vertical work; original scope and failures retained. Maintenance is not a new prerequisite.",
     "followup_readback": "project/issue-maintenance-20261026.json#/followup_readback",
-    "latest_readback_at": "2026-10-27T04:13:03.964798+00:00",
+    "latest_readback_at": "2026-10-27T07:29:13.176198+00:00",
     "latest_actions": {
       "reviewed": 35,
       "updated": [
-        "U#22"
+        "K#19",
+        "U#3"
       ],
       "newly_closed": [],
       "new_children": [],
@@ -5200,7 +5201,7 @@
         "U#1",
         "U#21"
       ],
-      "note": "Live bodies and seven native relationships verified; U22 evidence chronology consolidated, original scope and qualification unchanged. Bounded maintenance complete."
+      "note": "Seven native relations verified. Prior acceptance unchanged; bounded maintenance complete; no new qualification."
     },
     "source_followup": {
       "issue": "sparklink#1",
@@ -5229,7 +5230,8 @@
       "physical_acceptance": false,
       "old_timeout_root_cause": "UNPROVEN",
       "issue": "linux#24"
-    }
+    },
+    "latest_ci_observation_ref": "project/issue-maintenance-20261026.json#/followup_readback/ci_observation"
   },
   "historical_goal_turn_audits": [
     {

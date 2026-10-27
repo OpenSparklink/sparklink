@@ -20,9 +20,9 @@ verified Write Request。命令返回仍只表示软件准入；对端应用记�
 ## 有界 issue 清理结果与主线恢复
 
 已复核35项：2项按自身条件关闭（U#1、U#21），18项有限收尾、3个已拆分父项、12项长期跟踪。
-前轮按原条件关闭U#1并更新K#24；再次在线核对35项及原生父子关系，U#3范围保持一致，
-U#22逐轮离线记录收敛至现有历史入口，六条原验收逐字保留。
-既有7个子项复核保留，本次没有新增关闭或重复创建。
+本次在线复核35项及七个原生父子关系；更新K#19的过时CI结论和U#3的
+实现/验收分界，原验收正文逐字保留。公开源码1a5266b的五次具名workflow成功，
+只结算其离线执行范围；旧c83格式失败和b154超时保留。无新增关闭或重复拆分。
 [逐项处置与历史读回](issue-maintenance-20261026.json)保留原范围、快照和失败。
 
 U#1原六条事件循环条件已逐项核对，关闭只结算该范围。Native receiver、retry取消、
@@ -35,8 +35,8 @@ U#1原六条事件循环条件已逐项核对，关闭只结算该范围。Nativ
 新成功不证明旧超时根因已修复；K#24的调试VM及完整覆盖继续开放。
 
 U#10自然根因/非人工恢复保持原条件。U#3→U#21/#22/#23，K#17→K#21/#22，
-K#19→K#23/#24；父项原验收不因拆分而减少。维护批次已完成，随后恢复WRITE
-Down/restart、适用保持门禁及原数据/安全/SSAP主线，不追加无关完整控制面前置。
+K#19→K#23/#24；父项原验收不因拆分而减少。维护批次已完成，随后恢复既有method请求端及Provider、适用保持门禁
+和原数据/安全/SSAP主线，不追加无关完整控制面前置。
 S0–S6/19WP/10FV/12DG、VM-only和UserHost低优先级规划不变。
 
 | 原 issue | 分类 | 本批动作与剩余责任 |
@@ -73,7 +73,7 @@ S0–S6/19WP/10FV/12DG、VM-only和UserHost低优先级规划不变。
 | 已有子项 | 当前处置 | 独立退出范围 |
 | --- | --- | --- |
 | [U#21](https://github.com/OpenSparklink/sparklink/issues/21) | 可关闭，已独立关闭；本次复核保留 | 原六项 READ SDK Provider 生命周期；后续代码不继承旧资格 |
-| [U#22](https://github.com/OpenSparklink/sparklink/issues/22) | 有限分批收尾，开放 | 唯一 Engine 剩余操作/长值/更新；Down/晚答门禁及 SDK owner 接任限定离线检查已接通；真实 daemon 接任及完整原操作门禁仍开放，准确资格按授权本地记录核对 |
+| [U#22](https://github.com/OpenSparklink/sparklink/issues/22) | 有限分批收尾，开放 | 唯一 Engine 剩余操作/长值/更新；Down/晚答、daemon restart v2、长值 v2 及 command Provider v3 门禁已接通；method/描述符 Provider 与完整原操作矩阵仍需收尾，准确产物资格按授权本地记录核对 |
 | [U#23](https://github.com/OpenSparklink/sparklink/issues/23) | 长期跟踪，开放 | Battery/DeviceInfo/HID 的真实调用、启用/卸载及隔离 |
 | [K#21](https://github.com/OpenSparklink/linux/issues/21) | 有限分批收尾，开放 | credit/Ticket/撤权/断链/原期限/复用组合及硬件假设 |
 | [K#22](https://github.com/OpenSparklink/linux/issues/22) | 有限分批收尾，开放 | 动态通道背压、公平性、多设备业务及关闭隔离 |

@@ -547,6 +547,11 @@ ESHUTDOWN、失去原 daemon 或旧请求 ESTALE；没有静默截断、重试�
 实际 C 导出/private D-Bus 回归覆盖原 parent Client 关闭、owner 切换、旧请求 ESTALE、
 新 sender 向旧端点的 AccessDenied，以及新 lifetime 只接受自己的答复。Adapter/服务
 元数据为显式 fixture；这不是 slkd SIGKILL、内核清理或真实业务恢复资格。
+同一 C/Python 外部消费者提供有限的 `hold-owner-loss` / `observe-owner-loss`
+测试观察命令：保留实际 WRITE 请求、值和通知 fd，暂停测试 UI 的自动取件；
+原期限内核对撤权，随后新 owner 接任及期限过后仍要求 ESTALE。观察不续期、不授予
+权限，也不执行管理停止。退出仅释放本地旧视图，明确不报告服务注销成功。
+真实 VM 的 daemon 退出、物理清理与新连接业务仍需独立门禁。
 
 返回0只表示本地接收了应用答复，若此后立即关闭最后 owner/bus，真实回调可能被丢弃。
 测试若要求观察远端 callback，应通过实际接收屏障保持原 owner，不能用本地0或固定

@@ -30,6 +30,33 @@ pub(super) async fn exercise(
     server: &zbus::Connection,
     metadata: &OwnedMetadata,
 ) -> anyhow::Result<()> {
+    exercise_mode(
+        root, executable, library, directory, address, server, metadata, 0,
+    )
+    .await?;
+    exercise_mode(
+        root, executable, library, directory, address, server, metadata, 1,
+    )
+    .await?;
+    exercise_mode(
+        root, executable, library, directory, address, server, metadata, 2,
+    )
+    .await
+}
+
+#[allow(clippy::too_many_arguments)] // Same external-consumer fixture, including a live-owner negative control.
+async fn exercise_mode(
+    root: &std::path::Path,
+    executable: &std::path::Path,
+    library: &std::path::Path,
+    directory: &std::path::Path,
+    address: &str,
+    server: &zbus::Connection,
+    metadata: &OwnedMetadata,
+    mode: u8,
+) -> anyhow::Result<()> {
+    let owner_loss = mode != 0;
+    let live_owner_negative = mode == 2;
     for language in ["c", "python"] {
         let mut command = Command::new("timeout");
         command.arg("20s");
@@ -76,7 +103,7 @@ pub(super) async fn exercise(
         assert_eq!(bound["notification_ready"], true);
         let mut applied: Option<String> = None;
         let mut previous_token = 0;
-        for n in 1..=7 {
+        for n in 1..=if owner_loss { 1 } else { 7 } {
             let mut value = vec![
                 0;
                 match n {
@@ -171,6 +198,167 @@ pub(super) async fn exercise(
             let token = observed["token"].as_u64().unwrap();
             assert!(token > previous_token);
             previous_token = token;
+            if owner_loss {
+                assert!(
+                    !task.is_finished(),
+                    "actual pending SDK callback before owner release"
+                );
+                send(&mut child, "hold-owner-loss\n")?;
+                let armed = json_line(
+                    &mut reader,
+                    &mut transcript,
+                    "SdkWriteProviderOwnerLossArmed: ",
+                )?;
+                assert_eq!(armed["token"], token);
+                assert_eq!(armed["deadline_ns"], deadline);
+                assert_eq!(armed["api"], language);
+                assert!(armed["armed_ns"].as_u64().unwrap() < deadline);
+                if live_owner_negative {
+                    // A live SDK request/fd must not be reported as revoked.
+                    // Keep the actual daemon owner and require the observer to
+                    // fail, rather than accepting fd readiness as owner loss.
+                    send(&mut child, "observe-owner-loss\n")?;
+                    reader.read_to_string(&mut transcript)?;
+                    let status = child.wait()?;
+                    let mut stderr = Vec::new();
+                    child.stderr.as_mut().unwrap().read_to_end(&mut stderr)?;
+                    anyhow::ensure!(
+                        !status.success() && status.code() != Some(124),
+                        "live owner cannot produce a successful retirement observation"
+                    );
+                    assert!(!transcript.contains("SdkOwnedRetiredExit:"));
+                    for line in transcript
+                        .lines()
+                        .filter_map(|line| line.strip_prefix("SdkWriteProviderOwnerLoss: "))
+                    {
+                        let receipt: serde_json::Value = serde_json::from_str(line)?;
+                        assert!(
+                            ["next_result", "authorization_result", "reply_result"]
+                                .iter()
+                                .any(|key| receipt[*key] != -nix::libc::ESTALE)
+                        );
+                    }
+                    std::fs::write(
+                        directory.join(format!(
+                            "{language}-write-provider-live-owner-negative.stdout"
+                        )),
+                        &transcript,
+                    )?;
+                    std::fs::write(
+                        directory.join(format!(
+                            "{language}-write-provider-live-owner-negative.stderr"
+                        )),
+                        &stderr,
+                    )?;
+                    // The deliberately failing external consumer may disappear
+                    // before its cleanup callback is delivered. Preserve either
+                    // actual local rejection or the exact bus disconnect error;
+                    // neither is a successful owner-loss observation.
+                    match task.await? {
+                        Ok(reply) => assert_eq!(reply, (0xaf, vec![])),
+                        Err(zbus::Error::MethodError(name, _, _)) => {
+                            assert_eq!(name.as_str(), "org.freedesktop.DBus.Error.NoReply")
+                        }
+                        Err(error) => return Err(error.into()),
+                    }
+                    break;
+                }
+                let removals = metadata.removed.load(Ordering::SeqCst);
+                server.release_name("org.sparklink").await?;
+                let mut callback = Some(task);
+                for ordinal in 1..=2 {
+                    if ordinal == 2 {
+                        // Later inspection is not a renewed request: it must
+                        // still be ESTALE after the original callback expired.
+                        while let Ok(left) = original.remaining() {
+                            tokio::time::sleep(left).await;
+                        }
+                    }
+                    let replacement = if ordinal == 2 {
+                        Some(
+                            zbus::connection::Builder::address(address)?
+                                .name("org.sparklink")?
+                                .build()
+                                .await?,
+                        )
+                    } else {
+                        None
+                    };
+                    if let Some(replacement) = &replacement {
+                        assert_ne!(replacement.unique_name(), server.unique_name());
+                    }
+                    send(&mut child, "observe-owner-loss\n")?;
+                    let observed =
+                        json_line(&mut reader, &mut transcript, "SdkWriteProviderOwnerLoss: ")?;
+                    assert_eq!(observed["api"], language);
+                    assert_eq!(observed["ordinal"], ordinal);
+                    assert_eq!(observed["token"], token);
+                    assert_eq!(observed["deadline_ns"], deadline);
+                    for key in ["next_result", "authorization_result", "reply_result"] {
+                        assert_eq!(observed[key], -nix::libc::ESTALE, "{key}");
+                    }
+                    for key in [
+                        "info_preserved",
+                        "value_preserved",
+                        "notification_fd_alive",
+                        "local_observation_only",
+                    ] {
+                        assert_eq!(observed[key], true, "{key}");
+                    }
+                    assert_eq!(observed["notification_events"], nix::libc::POLLIN);
+                    assert!(
+                        observed["started_ns"].as_u64().unwrap()
+                            >= armed["armed_ns"].as_u64().unwrap()
+                    );
+                    assert!(
+                        observed["returned_ns"].as_u64().unwrap()
+                            >= observed["started_ns"].as_u64().unwrap()
+                    );
+                    if ordinal == 1 {
+                        assert!(
+                            observed["returned_ns"].as_u64().unwrap() < deadline,
+                            "owner loss is not callback expiry"
+                        );
+                        assert_eq!(observed["observation_deadline_ns"], deadline);
+                        let reply =
+                            tokio::time::timeout(original.remaining()?, callback.take().unwrap())
+                                .await???;
+                        assert_eq!(
+                            reply,
+                            (0xaf, vec![]),
+                            "local stopped callback, not a wire outcome"
+                        );
+                    } else {
+                        assert!(observed["started_ns"].as_u64().unwrap() >= deadline);
+                    }
+                    assert!(
+                        observed["returned_ns"].as_u64().unwrap()
+                            < observed["observation_deadline_ns"].as_u64().unwrap()
+                    );
+                    assert!(
+                        child.try_wait()?.is_none(),
+                        "old SDK caller must remain alive"
+                    );
+                    // Explicitly release successor name before restoring the fixture.
+                    if let Some(replacement) = replacement {
+                        replacement.release_name("org.sparklink").await?;
+                    }
+                }
+
+                send(&mut child, "value\n")?;
+                let actual = json_line(&mut reader, &mut transcript, "SdkWriteProviderValue: ")?;
+                assert_eq!(
+                    actual,
+                    serde_json::json!({"api":language,"property":17,"value":null,"application_memory_only":true})
+                );
+                assert_eq!(
+                    metadata.removed.load(Ordering::SeqCst),
+                    removals,
+                    "local stale views must not manufacture a remote unregister"
+                );
+                server.request_name("org.sparklink").await?;
+                continue;
+            }
             if n == 7 {
                 // Same live consumer and actual SDK request, after successful
                 // writes. Withdrawal must not overwrite the previous app value.
@@ -352,18 +540,31 @@ pub(super) async fn exercise(
                 serde_json::json!({"api":language,"property":17,"value":applied,"application_memory_only":true})
             );
         }
+        if live_owner_negative {
+            continue;
+        }
         send(&mut child, "quit\n")?;
         assert_eq!(
             read_provider::line(&mut reader, &mut transcript)?,
-            format!("SdkOwnedClosedExit: api={language} start=16\n")
+            if owner_loss {
+                format!("SdkOwnedRetiredExit: api={language} start=16; local release only\n")
+            } else {
+                format!("SdkOwnedClosedExit: api={language} start=16\n")
+            }
         );
         let output = child.wait_with_output()?;
         std::fs::write(
-            directory.join(format!("{language}-write-provider.stdout")),
+            directory.join(format!(
+                "{language}-write-provider{}.stdout",
+                if owner_loss { "-owner-loss" } else { "" }
+            )),
             transcript,
         )?;
         std::fs::write(
-            directory.join(format!("{language}-write-provider.stderr")),
+            directory.join(format!(
+                "{language}-write-provider{}.stderr",
+                if owner_loss { "-owner-loss" } else { "" }
+            )),
             &output.stderr,
         )?;
         anyhow::ensure!(

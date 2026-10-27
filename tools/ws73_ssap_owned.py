@@ -135,7 +135,7 @@ def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api
     if write_provider:item['sdk_write_provider_contract_version']=1
     row.setdefault(collection,[]).append(item);run.save();process=None
     try:
-        with observed_process(args,item,out,err,env=dict(os.environ,**environment)if environment else None,stdin=subprocess.PIPE,text=True,**({'user':1005,'group':1005,'extra_groups':[]}if application_uid==1005 else {}))as process:
+        with observed_process(args,item,out,err,env=dict(os.environ,**environment)if environment else None,stdin=subprocess.PIPE,text=True,**({'user':application_uid,'group':application_uid,'extra_groups':[]}if os.geteuid()==0 else {}))as process:
             if application_uid==1005:
                 from ws73_application_client import process_identity
                 item['credentials'],item['process_status']=process_identity(process.pid,1005)

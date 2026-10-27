@@ -268,6 +268,7 @@ def owned_mode():
             pending=None;closed=False
             provider=None;provider_fd=None;provider_pending=None
             provider_attempted=False;provider_polling=False
+            owner_loss_hold=False;owner_loss_observations=0
             def stop_provider():
                 nonlocal provider,provider_fd,provider_pending,provider_polling
                 # Stop admission before releasing the request or notification fd.
@@ -278,7 +279,7 @@ def owned_mode():
                     os.close(provider_fd);provider_fd=None
             try:
                 while True:
-                    if policy and not closed and pending is None:
+                    if policy and not closed and pending is None and not owner_loss_hold:
                         try:pending=view.next_authorization()
                         except OSError as error:
                             if error.errno!=errno.EAGAIN:raise
@@ -300,7 +301,7 @@ def owned_mode():
                                             info.token,info.request_id,decision,returned)
                                     pending.close();pending=None
                                 print('SdkAuthorizationDecision: '+json.dumps(dict(owned_info(info),allow=policy=='allow',decision_ns=decision,decision_wall_ns=wall)),flush=True)
-                    if provider is not None and not closed and provider_pending is None:
+                    if provider is not None and not closed and provider_pending is None and not owner_loss_hold:
                         if time.monotonic_ns()>=end:raise TimeoutError(errno.ETIMEDOUT,'original publisher deadline')
                         try:provider_pending=provider.next_request()
                         except OSError as error:
@@ -383,6 +384,46 @@ def owned_mode():
                             provider_pending.close();provider_pending=None
                             if not closed:
                                 poller.register(provider_fd,select.POLLIN);provider_polling=True
+                    elif writing and line==b'hold-owner-loss\n':
+                        if closed or owner_loss_hold or provider_pending is None or pending is not None:
+                            raise ValueError('one actual pending WRITE before owner-loss observation required')
+                        owner_loss_hold=True
+                        # Keep real SDK views/fds, but stop the test UI's automatic
+                        # next()/approval loop. No daemon action or SDK state change.
+                        if fd is not None:poller.unregister(fd)
+                        if provider_polling:poller.unregister(provider_fd);provider_polling=False
+                        info=provider_pending.info
+                        print('SdkWriteProviderOwnerLossArmed: '+json.dumps(dict(api='python',token=info.token,
+                            deadline_ns=info.deadline_ns,armed_ns=time.monotonic_ns())),flush=True)
+                    elif writing and line==b'observe-owner-loss\n':
+                        if not owner_loss_hold or provider_pending is None or closed:
+                            raise ValueError('original retained pending WRITE required')
+                        info=provider_pending.info;proposed=provider_pending.value;started=time.monotonic_ns()
+                        observe=select.poll();observe.register(provider_fd,select.POLLIN)
+                        observation_deadline=min(info.deadline_ns,end) if owner_loss_observations==0 else end
+                        left=observation_deadline-started
+                        if left<=0:raise TimeoutError(errno.ETIMEDOUT,'original WRITE observation deadline')
+                        events=dict(observe.poll((left+999999)//1000000))
+                        notified=events.get(provider_fd,0)
+                        if not notified&select.POLLIN or notified&(select.POLLERR|select.POLLHUP|select.POLLNVAL):
+                            raise OSError(errno.EIO,'actual provider notification required')
+                        results=[]
+                        for operation in (provider.next_request, view.next_authorization):
+                            try:
+                                unexpected=operation();unexpected.close();result=0
+                            except OSError as error:result=-error.errno
+                            results.append(result)
+                        try:provider_pending.reply(proposed if info.verify else b'');rejected=0
+                        except OSError as error:rejected=-error.errno
+                        same=provider_pending.info==info;value_preserved=provider_pending.value==proposed
+                        returned=time.monotonic_ns();owner_loss_observations+=1
+                        print('SdkWriteProviderOwnerLoss: '+json.dumps(dict(api='python',ordinal=owner_loss_observations,
+                            token=info.token,deadline_ns=info.deadline_ns,observation_deadline_ns=observation_deadline,started_ns=started,returned_ns=returned,
+                            notification_events=notified,next_result=results[0],authorization_result=results[1],
+                            reply_result=rejected,info_preserved=same,value_preserved=value_preserved,
+                            notification_fd_alive=os.fstat(provider_fd) is not None,local_observation_only=True)),flush=True)
+                        if results!=[-errno.ESTALE]*2 or rejected!=-errno.ESTALE or not same or not value_preserved or returned>=observation_deadline:
+                            raise ValueError('owner-loss must invalidate real SDK calls before original deadline')
                     elif provider_mode and line==b'provider-unregister\n':
                         if closed or provider is None or provider_pending is None:
                             raise ValueError('live service and delivered Provider request required')
@@ -480,6 +521,11 @@ def owned_mode():
                             reply_result=result,closed_ns=time.monotonic_ns())),flush=True)
                         pending.close();pending=None
                     elif line==b'quit\n':
+                        if owner_loss_hold:
+                            if not owner_loss_observations:raise ValueError('owner-loss observation missing')
+                            stop_provider();view.close();closed=True
+                            print(f'SdkOwnedRetiredExit: api=python start={receipt.start}; local release only',flush=True)
+                            return
                         stop_provider()
                         if closed:
                             print(f'SdkOwnedClosedExit: api=python start={receipt.start}',flush=True)

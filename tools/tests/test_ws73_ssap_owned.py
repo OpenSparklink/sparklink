@@ -39,6 +39,30 @@ def fixture():
     return row,matched,wire
 
 
+class OwnedPublisherIdentity(unittest.TestCase):
+    def test_root_supervisor_drops_child_identity_but_ordinary_runner_keeps_its_identity(self):
+        # Exercise the actual publisher's Popen options, with process creation
+        # stopped at the boundary. This is not a deployed permission test.
+        from types import SimpleNamespace
+        from unittest.mock import Mock, patch
+        from ws73_ssap_owned import publisher
+        run=SimpleNamespace(output=Path('/unused'),args=SimpleNamespace(slctl='slctl'),save=Mock())
+        owners=[dict(owner=dict(path=f'/adapter{i}'),object=dict(path=f'/link{i}')) for i in (0,1)]
+        for supervisor in (0,1000):
+            row=dict(phase=0,owners=owners)
+            with patch('ws73_ssap_owned.os.geteuid',return_value=supervisor), \
+                 patch('ws73_ssap_owned.observed_process',side_effect=RuntimeError('spawn boundary')) as spawn:
+                with self.assertRaisesRegex(RuntimeError,'spawn boundary'):
+                    with publisher(run,row,0,'allow'):
+                        self.fail('no process should run')
+            options=spawn.call_args.kwargs
+            if supervisor==0:
+                self.assertEqual({k:options[k] for k in ('user','group','extra_groups')},
+                                 dict(user=1000,group=1000,extra_groups=[]))
+            else:
+                self.assertFalse(set(options)&{'user','group','extra_groups'})
+
+
 class OwnedEvidence(unittest.TestCase):
     def test_all_four_cases_consume_every_endpoint_and_account_only_actual_sends(self):
         row,match,wire=fixture();proof,credit=corroborate(row,match)

@@ -454,7 +454,7 @@ static int owned_mode(int argc,char **argv) {
     struct SlkConnection *link=NULL;
     int status=1,error,approval_fd=-1,observing=0;uint64_t created=0,end=0;
     struct SlkReadProvider *provider=NULL;struct SlkWriteProvider *writer=NULL;struct OwnedProviderPending provider_pending={0};
-    int provider_fd=-1,provider_attempted=0;
+    int provider_fd=-1,provider_attempted=0,owner_loss_hold=0,owner_loss_observations=0;
     struct OwnedPending pending={0};const uint64_t original=now_ns()+5000000000ULL;
     error=slk_client_open_system(original,&client);if (error) {errno=-error;goto done;}
     error=slk_client_register_local_service(client,&id,service,service_n,&property,1,requests?SLK_SERVICE_AUTHORIZATION_REQUESTS:SLK_SERVICE_AUTHORIZATION_NONE,original,&view);if (error) {errno=-error;goto done;}
@@ -470,12 +470,12 @@ static int owned_mode(int argc,char **argv) {
     created=now_ns();end=created+30000000000ULL;char line[2*2042+64];size_t used=0;
     for (;;) {
         /* Try next before sleeping;the duplicated eventfd is poll-only. */
-        if (requests && view) {error=owned_receive(view,&receipt,&pending,ask,allow,observing?created:0,end);if (error) {errno=-error;goto done;}}
+        if (requests && view && !owner_loss_hold) {error=owned_receive(view,&receipt,&pending,ask,allow,observing?created:0,end);if (error) {errno=-error;goto done;}}
         uint64_t now=now_ns();if (now>=end) {errno=ETIMEDOUT;goto done;}
-        if ((provider || writer) && view) {error=writing?owned_write_provider_receive(writer,&receipt,&provider_pending):owned_provider_receive(provider,&receipt,&provider_pending);if (error) {errno=-error;goto done;}}
+        if ((provider || writer) && view && !owner_loss_hold) {error=writing?owned_write_provider_receive(writer,&receipt,&provider_pending):owned_provider_receive(provider,&receipt,&provider_pending);if (error) {errno=-error;goto done;}}
         now=now_ns();if (now>=end) {errno=ETIMEDOUT;goto done;}
-        struct pollfd fds[3]={{.fd=STDIN_FILENO,.events=POLLIN},{.fd=view?approval_fd:-1,.events=POLLIN},
-            {.fd=view && (provider || writer) && !provider_pending.request && !provider_pending.write_request?provider_fd:-1,.events=POLLIN}};
+        struct pollfd fds[3]={{.fd=STDIN_FILENO,.events=POLLIN},{.fd=view && !owner_loss_hold?approval_fd:-1,.events=POLLIN},
+            {.fd=view && !owner_loss_hold && (provider || writer) && !provider_pending.request && !provider_pending.write_request?provider_fd:-1,.events=POLLIN}};
         int count=poll(fds,3,(int)((end-now+999999)/1000000));
         if (count<0 && errno==EINTR) continue;
         if (count<=0) {if (!count) errno=ETIMEDOUT;goto done;}
@@ -512,6 +512,35 @@ static int owned_mode(int argc,char **argv) {
             if (error) {errno=-error;goto done;}
             error=owned_provider_answer(&provider_pending,token,reply_status,value,length,end,writing);
             if (error) {errno=-error;goto done;}
+        } else if (!strcmp(line,"hold-owner-loss\n")) {
+            if (!writing || !view || !writer || !provider_pending.write_request || pending.request || owner_loss_hold) {errno=EINVAL;goto done;}
+            owner_loss_hold=1;
+            /* Test UI observation only: retain the actual SDK request and fd. */
+            printf("SdkWriteProviderOwnerLossArmed: {\"api\":\"c\",\"token\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"armed_ns\":%"PRIu64"}\n",
+                provider_pending.write_info.token,provider_pending.write_info.deadline_ns,now_ns());fflush(stdout);
+        } else if (!strcmp(line,"observe-owner-loss\n")) {
+            if (!owner_loss_hold || !view || !writer || !provider_pending.write_request) {errno=EINVAL;goto done;}
+            const struct SlkWriteProviderRequestInfo original_info=provider_pending.write_info;
+            const uint64_t started=now_ns();
+            const uint64_t observation_deadline=owner_loss_observations?end:(original_info.deadline_ns<end?original_info.deadline_ns:end);
+            if (wait_fd(provider_fd,POLLIN,observation_deadline)) goto done;
+            struct pollfd notice={.fd=provider_fd,.events=POLLIN};
+            if (poll(&notice,1,0)!=1 || !(notice.revents&POLLIN) || notice.revents&(POLLERR|POLLHUP|POLLNVAL)) {errno=EIO;goto done;}
+            struct SlkWriteProviderRequest *next=NULL;struct SlkAuthorizationRequest *approval=NULL;
+            const int next_result=slk_write_provider_next(writer,&next);
+            const int authorization_result=slk_local_service_next_authorization(view,&approval);
+            slk_write_provider_request_free(next);slk_authorization_request_free(approval);
+            const int rejected=slk_write_provider_request_reply(provider_pending.write_request,0,
+                provider_pending.proposed,original_info.verify?original_info.value_length:0);
+            struct SlkWriteProviderRequestInfo after={0};uint8_t value[2042];uintptr_t length=0;
+            const int same=!slk_write_provider_request_info(provider_pending.write_request,&after) && !memcmp(&after,&original_info,sizeof after);
+            const int value_preserved=!slk_write_provider_request_value(provider_pending.write_request,value,sizeof value,&length)
+                && length==original_info.value_length && !memcmp(value,provider_pending.proposed,length);
+            const int alive=fcntl(provider_fd,F_GETFD)>=0;const uint64_t returned=now_ns();owner_loss_observations++;
+            printf("SdkWriteProviderOwnerLoss: {\"api\":\"c\",\"ordinal\":%d,\"token\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"observation_deadline_ns\":%"PRIu64",\"started_ns\":%"PRIu64",\"returned_ns\":%"PRIu64",\"notification_events\":%d,\"next_result\":%d,\"authorization_result\":%d,\"reply_result\":%d,\"info_preserved\":%s,\"value_preserved\":%s,\"notification_fd_alive\":%s,\"local_observation_only\":true}\n",
+                owner_loss_observations,original_info.token,original_info.deadline_ns,observation_deadline,started,returned,notice.revents,
+                next_result,authorization_result,rejected,same?"true":"false",value_preserved?"true":"false",alive?"true":"false");fflush(stdout);
+            if (next_result!=-ESTALE || authorization_result!=-ESTALE || rejected!=-ESTALE || !same || !value_preserved || !alive || returned>=observation_deadline) {errno=EPROTO;goto done;}
         } else if (!strcmp(line,"provider-unregister\n")) {
             if (!view || (writing?(!writer || !provider_pending.write_request):
                     (strcmp(argv[1],"owned-readonly") || !provider || !provider_pending.request))) {errno=EINVAL;goto done;}
@@ -621,6 +650,10 @@ static int owned_mode(int argc,char **argv) {
             owned_clear(&pending);
             if (!same || !notification_alive || rejected!=-ESTALE) {errno=EPROTO;goto done;}
         } else if (!strcmp(line,"quit\n")) {
+            if (owner_loss_hold) {
+                if (!owner_loss_observations) {errno=EPROTO;goto done;}
+                printf("SdkOwnedRetiredExit: api=c start=%u; local release only\n",receipt.start);fflush(stdout);status=0;break;
+            }
             if (!view) {printf("SdkOwnedClosedExit: api=c start=%u\n",receipt.start);fflush(stdout);status=0;break;}
             error=owned_provider_close(&provider_pending,&provider,&writer,&provider_fd);if (error) {errno=-error;goto done;}
             uint64_t cleanup_deadline=now_ns()+5000000000ULL;

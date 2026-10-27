@@ -184,12 +184,107 @@ def transform(original):
     return text.encode()
 
 
+# Separate timerless profile for the original immutable hold-capable binary.
+# Selection does not enable the hold/error fixtures. Their independent QMP
+# no-injection contract must still be checked for every actual experiment.
+REQUEST_BASE_SHA256 = '4443a20194d4b2584cd234306c43deedb5a3f77d396c44f79370054e495955ed'
+REQUEST_FIELDS = '''    uint64_t                         observe_id;
+    int                              observe_bus, observe_device, observe_ep;
+'''
+REQUEST_HELPER = '''/* Test-only, existing BQL/main-loop call sites. Global identities never reset
+ * on reenumeration/object recreation. Pointer reuse is not identity. No packet
+ * bytes, second event pump, timer, completion, cancellation or retry is added.
+ * Logging perturbs scheduling and cannot qualify performance. */
+static uint64_t observe_request_id, observe_request_events;
+
+static void usb_host_observe_request(USBHostRequest *r, const char *phase,
+                                     int result)
+{
+    bool callback = !strcmp(phase, "callback");
+
+    if (observe_request_events >= 4096) {
+        if (observe_request_events == 4096) {
+            observe_request_events++;
+            error_report("WS73_USB_REQUEST_BUDGET_V1 events=4096");
+        }
+        return;
+    }
+    observe_request_events++;
+    error_report("WS73_USB_REQUEST_V1 ordinal=%" PRIu64
+                 " id=%" PRIu64 " bus=%d device=%d ep=%d phase=%s"
+                 " mono_ns=%" PRId64 " live=%d result=%d"
+                 " requested=%d actual=%d status=%d",
+                 observe_request_events, r->observe_id, r->observe_bus,
+                 r->observe_device, r->observe_ep, phase,
+                 (int64_t)g_get_monotonic_time() * 1000, r->p != NULL,
+                 result, r->xfer->length,
+                 callback ? r->xfer->actual_length : -1,
+                 callback ? (int)r->xfer->status : -1);
+}
+
+'''
+
+
+def transform_requests(original):
+    """Metadata at existing request transitions; preserve all original I/O."""
+    if hashlib.sha256(original).hexdigest() != REQUEST_BASE_SHA256:
+        raise ValueError('exact complete request-observer baseline required')
+    text = original.decode()
+    replacements = [
+        ('    USBPacket                        *p;\n',
+         '    USBPacket                        *p;\n' + REQUEST_FIELDS, 1),
+        ('static USBHostRequest *usb_host_req_alloc(',
+         REQUEST_HELPER + 'static USBHostRequest *usb_host_req_alloc(', 1),
+        ('    QTAILQ_INSERT_TAIL(&s->requests, r, next);',
+         '''    /* Saturation is observable and rejected, never wrap to an old id. */
+    if (observe_request_id != UINT64_MAX) {
+        observe_request_id++;
+    }
+    r->observe_id = observe_request_id;
+    r->observe_bus = s->bus_num;
+    r->observe_device = s->addr;
+    r->observe_ep = p->ep->nr | (p->ep->nr && in ? USB_DIR_IN : 0);
+    usb_host_observe_request(r, "alloc", 0);
+    QTAILQ_INSERT_TAIL(&s->requests, r, next);''', 1),
+        ('    QTAILQ_REMOVE(&r->host->requests, r, next);',
+         '    usb_host_observe_request(r, "free", 0);\n'
+         '    QTAILQ_REMOVE(&r->host->requests, r, next);', 1),
+        ('    rc = libusb_submit_transfer(r->xfer);',
+         '    rc = libusb_submit_transfer(r->xfer);\n'
+         '    usb_host_observe_request(r, "submit", rc);', 2),
+        ('            libusb_cancel_transfer(r->xfer);',
+         '''            int cancel_rc = libusb_cancel_transfer(r->xfer);
+            usb_host_observe_request(r, "cancel", cancel_rc);''', 2),
+        ('    if (s->test_enum_reset_once && !usb_host_enum_reset_mode_valid(s)) {',
+         '''    if (!usb_host_enum_reset_mode_valid(s) || s->hostdevice ||
+        s->test_enum_reset_once) {
+        error_setg(errp, "request observer requires explicit WS73 leaf and all reset/detach opt-outs");
+        return;
+    }
+    if (s->test_enum_reset_once && !usb_host_enum_reset_mode_valid(s)) {''', 1),
+    ]
+    for name in ('ctrl', 'data'):
+        start = f'static void LIBUSB_CALL usb_host_req_complete_{name}(struct libusb_transfer *xfer)\n{{'
+        if text.count(start) != 1:
+            raise ValueError('exact request callback required')
+        a = text.index(start)
+        point = text.index('    if (r->p == NULL) {', a)
+        text = text[:point] + '    usb_host_observe_request(r, "callback", 0);\n\n' + text[point:]
+    for before, after, count in replacements:
+        if text.count(before) != count:
+            raise ValueError('exact request observer location required: ' + before[:70])
+        text = text.replace(before, after)
+    return text.encode()
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--mode', choices=('heartbeat', 'requests'), default='heartbeat')
     args = parser.parse_args()
-    data = transform(args.source.read_bytes())
+    convert = transform_requests if args.mode == 'requests' else transform
+    data = convert(args.source.read_bytes())
     with args.output.open('xb') as stream:
         stream.write(data)
     print('TEST_ONLY_BOUNDED_USB_OBSERVER_SOURCE', hashlib.sha256(data).hexdigest())

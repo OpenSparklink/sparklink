@@ -35,6 +35,107 @@ POLL_MARKER = 'WS73_USB_POLL_V1 '
 POLL_KEYS = set('bus device sample before_ns after_ns wall_ns count result errno error fds'.split())
 
 
+REQUEST_MARKER = 'WS73_USB_REQUEST_V1 '
+REQUEST_KEYS = set('ordinal id bus device ep phase mono_ns live result requested actual status'.split())
+
+
+def parse_requests(text, targets):
+    """Finite observed prefix, never a terminal/drain or delivery verdict.
+
+    Saved bus/address identify the allocation, not the current device number or
+    Native generation. Caller must bind targets and logs to an exact VM manifest.
+    Cancellation return is not completion. Free means entry before deallocation.
+    """
+    if (not targets or len(text.encode()) > BYTE_LIMIT or not text.endswith('\n')
+            or len(text.splitlines()) > LINE_LIMIT):
+        raise CaptureError('bounded complete request log and explicit targets required')
+    requests = {}; events = []; last_ns = 0
+    for line in text.splitlines():
+        if 'WS73_TEST_' in line or 'WS73_USB_REQUEST_BUDGET' in line:
+            raise CaptureError('injection or exhausted observation budget')
+        if 'WS73_USB_REQUEST' not in line:
+            continue
+        if line.count(REQUEST_MARKER) != 1 or len(line) > 1024:
+            raise CaptureError('complete bounded request marker required')
+        row = {}
+        for token in line.split(REQUEST_MARKER, 1)[1].split():
+            if token.count('=') != 1:
+                raise CaptureError('typed request metadata required')
+            key, value = token.split('=')
+            if key not in REQUEST_KEYS or key in row:
+                raise CaptureError('duplicate/unknown request field')
+            if key != 'phase':
+                if not re.fullmatch(r'0|-?[1-9][0-9]{0,19}', value):
+                    raise CaptureError('bounded request integer required')
+                value = int(value)
+            row[key] = value
+        if set(row) != REQUEST_KEYS:
+            raise CaptureError('all request fields required')
+        phase = row['phase']; ident = row['id']
+        if (phase not in ('alloc', 'submit', 'cancel', 'callback', 'free')
+                or row['ordinal'] != len(events) + 1 or row['ordinal'] > 4096
+                or not 0 < ident < 2**64 - 1
+                or (row['bus'], row['device']) not in targets
+                or not (0 <= row['ep'] <= 15 or 129 <= row['ep'] <= 143)
+                or row['live'] not in (0, 1)
+                or not last_ns <= row['mono_ns'] < 2**63 or row['mono_ns'] <= 0
+                or not 0 <= row['requested'] < 2**31):
+            raise CaptureError('request identity/order/clock/budget required')
+        if phase == 'alloc':
+            if ident != len(requests) + 1 or row['live'] != 1 or row['requested'] != 0:
+                raise CaptureError('fresh contiguous allocation identity required')
+            requests[ident] = dict(allocation=row, events=[], submit=None,
+                                   callback=False, released=False, detached=False)
+        if ident not in requests:
+            raise CaptureError('request transition without allocation')
+        state = requests[ident]; origin = state['allocation']
+        if (state['released'] or any(row[k] != origin[k] for k in ('bus','device','ep'))
+                or state['detached'] and row['live']):
+            raise CaptureError('retired/detached request or identity changed')
+        if phase in ('submit', 'cancel'):
+            if row['result'] not in (0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -99):
+                raise CaptureError('known libusb return required')
+        elif row['result'] != 0:
+            raise CaptureError('unexpected request result')
+        if phase == 'callback':
+            if (state['submit'] != 0 or state['callback']
+                    or not row['live'] and not state['detached']
+                    or not 0 <= row['status'] <= 6
+                    or not 0 <= row['actual'] < 2**31
+                    or row['status'] == 0 and row['actual'] > row['requested']):
+                raise CaptureError('actual submitted callback required')
+            state['callback'] = True
+        elif row['actual'] != -1 or row['status'] != -1:
+            raise CaptureError('only callback has native status/actual length')
+        if phase == 'submit':
+            if state['submit'] is not None or not row['live'] or len(state['events']) != 1:
+                raise CaptureError('one original submit return required')
+            state['submit'] = row['result']; state['requested'] = row['requested']
+        elif phase in ('callback', 'cancel', 'free') and state['submit'] is not None:
+            if row['requested'] != state['requested']:
+                raise CaptureError('submitted request length changed')
+        if phase == 'cancel':
+            if state['submit'] != 0 or state['callback'] or state['detached'] or row['live']:
+                raise CaptureError('cancel is detached submitted obligation, not callback')
+        if phase == 'free':
+            if state['submit'] == 0 and not state['callback']:
+                raise CaptureError('submitted obligation freed without native callback')
+            state['released'] = True
+        state['detached'] |= not row['live']
+        state['events'].append(row); events.append(row); last_ns = row['mono_ns']
+    if not events or {(s['allocation']['bus'],s['allocation']['device']) for s in requests.values()} != targets:
+        raise CaptureError('each declared allocation must be observed')
+    result = dict(version=1, status='FINITE_REQUEST_OBSERVATIONS_NOT_QUALIFIED',
+        events=events, pending=[i for i,s in requests.items() if not s['released']],
+        pending_callbacks=[i for i,s in requests.items() if s['submit']==0 and not s['callback']],
+        submit_errors=[i for i,s in requests.items() if s['submit'] not in (None,0)],
+        detached_callbacks=[i for i,s in requests.items() if any(e['phase']=='callback' and not e['live'] for e in s['events'])],
+        physical_drain_qualified=False, recovery_qualified=False, business_delivery_qualified=False,
+        scope='Observed process-local IDs and call-site metadata only. Unclosed requests remain explicit. Free records precede deallocation; logs alone cannot prove final drain, host-kernel callback order, firmware consumption, Native generation, RF or peer delivery.')
+    encoded_report(result)
+    return result
+
+
 def parse_native_poll(text, targets):
     return _parse_native_poll(text,targets,terminal_required=True)
 

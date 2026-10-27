@@ -91,3 +91,38 @@ The host's usbfs poll semantics and source identity must be recorded separately
 from the VM kernel; an experiment kernel source is not host-source attestation.
 The additional syscalls also perturb scheduling. No performance, RF root cause,
 physical drain, generation authentication or business delivery is implied.
+
+### Timerless per-request observation
+
+`ws73_qemu_event_observer.py --mode requests` instead derives a separate source
+from the pinned original hold-capable baseline (hash above). The default
+heartbeat profile and its existing hash remain unchanged. The request profile
+adds no timer/event pump or USB operation. It records process-unique allocation
+IDs, saved allocation bus/address/endpoint, monotonic timestamps, submission and
+cancellation **return values**, callback entry (including detached packets), and
+entry to final release before freeing buffers. Pointer reuse or reenumeration
+cannot reuse an ID. IDs are observation identities, not Native generations.
+
+A global budget permits 4096 events followed by one exhaustion marker; a
+budget-exhausted log cannot establish complete coverage. The binary requires
+explicit WS73 leaf selection and all reset/detach opt-outs. The ordinary runner's
+strict port allocation, capture/artifact identity and no-injection QMP contract
+are still required. Never enable held/error callbacks for this diagnosis, and
+do not replace an existing frozen binary or rewrite its qualification.
+
+`ws73_usb_lifecycle.parse_requests(text, explicit_targets)` rejects malformed,
+truncated, out-of-order, identity-inconsistent or injection/budget-contaminated
+records. Unclosed requests and missing callbacks remain explicit pending lists;
+submission errors remain errors. The result is an observed finite prefix, never
+a PASS, successful physical drain, firmware consumption or peer delivery verdict.
+A `free` record precedes deallocation; an empty pending list does not prove all
+USB/kernel references drained. Missing ordinary QEMU completion traces after
+cancellation cannot distinguish absent callbacks from detached callbacks.
+
+Compile the complete transformed source against the original hashed object
+closure, under the shared build lock, into a separate artifact. Source-anchor,
+metadata-parser and actual logging-helper tests use explicit struct/clock/sink
+fixtures; they do not exercise real libusb callbacks, BQL or hardware. A full
+build and no-device VM smoke are separate checks. Controlled hardware execution
+and root-cause attribution remain separate VM-only gates. Logging overhead
+precludes performance qualification; original protocol deadlines are unchanged.

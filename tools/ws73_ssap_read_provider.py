@@ -320,9 +320,11 @@ def validate_paired_leg(row,sender,receiver,frame,window,leg):
     return leg
 
 
-def _wire(row, item, matched, exchanges, *, requests=None, write_version=1):
+def _wire(row, item, matched, exchanges, *, requests=None, write_version=1, one_way_opcode=None):
     from ws73_ssap_value import physical_sends
     if type(write_version)is not int or write_version not in (1,2,3):raise CaptureError('explicit WRITE capture version required')
+    if one_way_opcode is not None and (type(one_way_opcode) is not int or one_way_opcode != 18):
+        raise CaptureError('only explicit method command opcode18 is supported here')
     s, t, h = item['sender'], item['target'], item['handle']
     wire = []; credit = {0: 0, 1: 0}
     request = b'\x08\x03'+h.to_bytes(2, 'little')+b'\0'
@@ -330,8 +332,8 @@ def _wire(row, item, matched, exchanges, *, requests=None, write_version=1):
         raise CaptureError('explicit expected request for every provider exchange required')
     for ordinal, (window, response, callback) in enumerate(exchanges):
         if requests is not None:request=requests[ordinal]
-        if response is None and not(write_version==3 and request[:2]==b'\x0c\x03'):
-            raise CaptureError('only explicit version3 Write Command has no response')
+        if response is None and not(write_version==3 and request[:2]==b'\x0c\x03' or one_way_opcode==18 and request[:2]==b'\x12\x03'):
+            raise CaptureError('only explicitly selected Write/Method Command has no response')
         legs=[(s,t,request)] if response is None else [(s,t,request),(t,s,response)]
         for sender, receiver, pdu in legs:
             frame = b'\x0a\0'+len(pdu).to_bytes(2, 'little')+pdu

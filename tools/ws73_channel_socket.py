@@ -701,6 +701,11 @@ def reject_unattributed_ssap(row, sdus):
             raise CaptureError('explicit supported Write Command capture contract required')
         tracked += (1,12)
         current = True
+    if row.get('ssap_method_provider_required',False):
+        if type(row.get('ssap_method_provider_version')) is not int or row['ssap_method_provider_version'] not in (1,2):
+            raise CaptureError('explicit method capture contract required')
+        tracked += (1,18,19,20)
+        current = True
     if current:
         tracked += (15,16,17)
     for packet in sdus:
@@ -775,7 +780,7 @@ def corroborate(run,capture):
                 ssap_owned,owned_credit=owned_corroborate(row,value_matched)
                 for key in ssap_credit:ssap_credit[key]+=owned_credit[key]
             from ws73_ssap_method_provider import corroborate as method_provider_corroborate
-            ssap_method_providers,method_provider_credit=method_provider_corroborate(row,value_matched)
+            ssap_method_providers,method_provider_credit=method_provider_corroborate(row,value_matched,inventory=list(sdus))
             for key in ssap_credit:ssap_credit[key]+=method_provider_credit[key]
             ssap_read_providers=[]
             if row.get('ssap_read_provider_required',False):

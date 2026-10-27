@@ -13,7 +13,8 @@ Managed 连接清理门禁当前逐字节要求 SLE 主动断链原因 `0x10`，
 
 `--ssap-method-provider-verify` 是独立、显式启用的短方法场景，要求既有
 `--passthrough --connection-verify --channel-socket-verify --ssap-owned-verify`，
-普通通道基线保持 61 字节／4 轮；不能与其他 SSAP 场景混用。
+普通通道基线保持 61 字节／4 轮；不能与其他 SSAP 场景混用。当前门禁契约为 v2，
+v1 只解释其原请求场景，不升级为 command 资格。
 启动 token 为 `ws73.ssap_method_provider=1`，缺失、重复、错误值或缺少 Owned
 依赖均拒绝。准备载体必须包含准确的场景、共享监督器、CLI 与 C/Python 工具身份。
 
@@ -21,16 +22,24 @@ Managed 连接清理门禁当前逐字节要求 SLE 主动断链原因 `0x10`，
 依次返回应用错误 FF、空结果、32 字节独立随机结果；每次参数为新的 32 字节，
 前 8 字节作为随机请求标识，其余为载荷。监督器在答复前逐字节核对实际 Provider
 参数、controller/generation/lifetime/handle、通道、权限观察和原期限；请求端
-实际 C/Python SDK 比较完整结果。随后退出发布者、确认登记移除并从对端调用旧方法，
+实际 C/Python SDK 比较完整结果。v2 随后通过同一 C/Python helper 发送两次独立
+32 字节 method command，对端 Provider 分别明确拒绝 FF 和接受空结果；两者都不
+产生协议响应。监督器核对 operation=18、结果预算为零、完整参数、身份和原期限，
+并等到实际应用结果记录；准入收据独立保留，不当作对端完成。
+随后退出发布者、确认登记移除并从对端调用旧方法，
 要求真实 InvalidHandle 响应。原 Owned 允许／拒绝和普通通道门禁不减少。
 
 执行器只产生 `METHOD_PROVIDER_PENDING_PAIRED_USB`。最终通过还需每次请求和响应的
 双端 USB 数据、实际应用结果、完整输出和原时间顺序一致。NOCP 只按实际 TX 计账，
 不能代替对端处理；缺失／重复／跨设备包、错误参数、回显、旧身份、过期或未完成
-场景都拒绝完整结果。保存的摘要重新执行同一判定，不信任孤立的 PASS 字段。
+场景都拒绝完整结果。v2 从原始完整 SDU 清单核对首个 command 至该发布者退出
+期间的双端 command 及注销后拒绝，额外或缺失的 SSAP 包均失败；剩余方法包也须
+被归属。这个有限窗口的无响应观察不是永久无晚到包的证明。
+保存摘要重建全部请求／command 配对及窗口清单，但不能替代原始捕获完整性、
+准确工具身份和最终 VM 退出检查；v1/v2 不混用，不信任孤立的 PASS 字段。
 
-此入口的离线 fixture 检查不代表真实方法交付已通过。该版只覆盖短 request／result、
-应用错误后继续服务及撤回；方法 command、方法发现、长结果／分片、完整生命周期
+此入口的离线 fixture 检查不代表真实方法交付已通过。v2 覆盖短 request／result、
+两种 command 应用处理、错误后继续服务及撤回；方法发现、长结果／分片、完整生命周期
 和权限部署仍须各自验收。真实设备执行保持 VM-only、明确端口白名单和每设备 SDK110
 镜像选择，不从已有 READ／WRITE 或旧 artifact 继承资格。
 
@@ -77,8 +86,8 @@ ssap-method-command INDEX GENERATION CONNECTION HANDLE ARGUMENTS_HEX [MINIMUM]
 私有总线回归区分 RPC、原参数/期限，覆盖空值、上界、超限、错误和未释放屏障。
 服务端仍为明确的有限 fixture，不证明 daemon Engine、内核并发或真实交付。
 
-该入口尚不是独立的双设备 method command 资格门禁。后续必须通过唯一 Engine
-触发真实对端 Provider，核对原参数、应用处理记录、双端 USB 及准确新 artifact；
+该入口已接入上方 v2 双设备方法场景；准确新 artifact 的实机资格仍须单独取得。
+通过唯一 Engine 触发真实对端 Provider，核对原参数、应用处理记录和双端 USB；
 不能用准入、NOCP、请求方法或 WRITE 的历史通过替代。
 
 ## 显式链路发送载荷偏好

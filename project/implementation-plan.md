@@ -13,6 +13,12 @@
 既有生产函数长结果组合回归保留源码3305b98的限定范围；历史v1–v3不升级为v4。
 原始失败与全部资格身份保留，U#22的六条验收继续开放。
 
+另有[226c31b](https://github.com/OpenSparklink/sparklink/commit/226c31bae2f3f889d664ee795efe55722144de42)的实际actor协商响应背压回归：
+等待本端响应期间保持Starting，覆盖解除背压、原期限和stop；76项Engine回归、
+严格Clippy／HTML通过，提前发布Negotiated的生产负对照被拒绝。这里使用明确的
+AF_UNIX及队列压力依赖，不证明完整method业务、Native权限／credit或实机隔离。
+既有v4编译产物身份不变，不将该测试提交当作新实机资格。
+
 准确v4输入已封存并通过现有准备链校验，无USB隔离VM启动检查通过；这是构建与
 准备范围，尚未取得真实发现／method短长结果和原路径保持的新资格。历史v1–v3
 身份不变。K#15的源码审计确认平台版本查询走BSLE后的queue9 bulk；直接前移可能
@@ -535,7 +541,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
       "repository": "sparklink",
       "number": 22,
       "state": "open",
-      "body_sha256": "dfd70fab7c66c19aa2e3f384ce4cd9fbd8710c0926658fb2eca526df7fd9bd2f",
+      "body_sha256": "54df06121f00b899b30df86478b3d3f0e2ceb73d0166d8e26e08b0e1b3e9ff43",
       "source_offline_only": true,
       "original_acceptance_unchanged": true
     }
@@ -547,7 +553,25 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently."
+  "next": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently.",
+  "actor_obligation_regression": {
+    "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
+    "entry": "ssap_engine::exchange_loop",
+    "scenarios": [
+      "pending response prevents Negotiated despite peer reply",
+      "actual socket pressure drain admits exact response",
+      "original initialization deadline remains terminal",
+      "stop emits no pending response"
+    ],
+    "result": "OFFLINE_SCOPED_PASS",
+    "checks": {
+      "engine_tests": 76,
+      "clippy": "PASS",
+      "strict_html_inventory_examples": "PASS",
+      "premature_ready_mutation": "REJECTED_SOURCE_RESTORED"
+    },
+    "scope": "Real Tokio/UnixDatagram scheduling; explicit AF_UNIX receipt bypass and extra descriptor for bounded queue pressure. No full method business actor, Native Grant/credit, hardware isolation, USB/RF or formal proof. cfg(test) and explanation only; existing compiled artifact not rebuilt or upgraded."
+  }
 }
 ```
 

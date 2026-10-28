@@ -43,7 +43,7 @@
         "repository": "sparklink",
         "number": 22,
         "state": "open",
-        "body_sha256": "dfd70fab7c66c19aa2e3f384ce4cd9fbd8710c0926658fb2eca526df7fd9bd2f",
+        "body_sha256": "54df06121f00b899b30df86478b3d3f0e2ceb73d0166d8e26e08b0e1b3e9ff43",
         "source_offline_only": true,
         "original_acceptance_unchanged": true
       }
@@ -55,7 +55,25 @@
       "Original scope retained for historical v1-v3",
       "Publish source/offline summary only"
     ],
-    "next": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently."
+    "next": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently.",
+    "actor_obligation_regression": {
+      "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
+      "entry": "ssap_engine::exchange_loop",
+      "scenarios": [
+        "pending response prevents Negotiated despite peer reply",
+        "actual socket pressure drain admits exact response",
+        "original initialization deadline remains terminal",
+        "stop emits no pending response"
+      ],
+      "result": "OFFLINE_SCOPED_PASS",
+      "checks": {
+        "engine_tests": 76,
+        "clippy": "PASS",
+        "strict_html_inventory_examples": "PASS",
+        "premature_ready_mutation": "REJECTED_SOURCE_RESTORED"
+      },
+      "scope": "Real Tokio/UnixDatagram scheduling; explicit AF_UNIX receipt bypass and extra descriptor for bounded queue pressure. No full method business actor, Native Grant/credit, hardware isolation, USB/RF or formal proof. cfg(test) and explanation only; existing compiled artifact not rebuilt or upgraded."
+    }
   },
   "overall_required_records": [
     "deadline-real21",

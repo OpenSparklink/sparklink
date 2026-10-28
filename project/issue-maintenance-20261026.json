@@ -8423,6 +8423,22 @@
         }
       ],
       "scope": "Exact v4 preparation/no-USB smoke boundary and source audit of pre-CLOSE version-query constraints; no hardware/formal qualification or closure."
+    },
+    {
+      "updates": [
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "state": "open",
+          "body_sha256": "54df06121f00b899b30df86478b3d3f0e2ceb73d0166d8e26e08b0e1b3e9ff43",
+          "source_offline_only": true,
+          "original_acceptance_unchanged": true
+        }
+      ],
+      "sources": {
+        "public": "226c31bae2f3f889d664ee795efe55722144de42"
+      },
+      "scope": "Actual actor response backpressure, original deadline and stop; local socket/offline only. Original scope and private hardware details preserved."
     }
   ],
   "current_disposition": {

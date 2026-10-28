@@ -17,6 +17,11 @@ class QualificationTests(unittest.TestCase):
         self.repo = Path(self.tmp.name) / 'sparklink'
         self.repo.mkdir()
         subprocess.run(['git', 'init', '-q', str(self.repo)], check=True)
+        # This fixture owns and removes the repository synchronously.  A user's
+        # automatic Git maintenance policy must not leave a child writing packs
+        # after the final commit exits and race TemporaryDirectory cleanup.
+        for key, value in [('gc.auto', '0'), ('maintenance.auto', 'false')]:
+            subprocess.run(['git', '-C', str(self.repo), 'config', key, value], check=True)
         (self.repo / 'production.rs').write_text('production v1\n')
         subprocess.run(['git', '-C', str(self.repo), 'add', '.'], check=True)
         subprocess.run(['git', '-C', str(self.repo), '-c', 'user.name=Fixture', '-c',
@@ -73,6 +78,21 @@ class QualificationTests(unittest.TestCase):
         result = self.run_check(require_current=True)
         self.assertEqual(result['errors'], [])
         self.assertEqual(result['verification'], 'RETAINED_BYTES_VERIFIED_NOT_REPLAYED')
+
+    def test_declared_evidence_level_cannot_be_reclassified_by_the_summary(self):
+        self.report['qualification']=dict(level='offline');self.update_report()
+        self.assertEqual(self.run_check()['errors'],[])
+        record=self.data['records'][0];record['configuration_materials']=['artifact']
+        for level in ('real_device','virtual_integration','formal_bounded','implemented'):
+            record['level']=level
+            with self.subTest(level=level):
+                self.assertIn('one: evidence level/report mismatch',self.run_check()['errors'])
+
+    def test_declared_report_level_is_typed_and_known(self):
+        for level in (None,False,[],{},'hardware_assumed'):
+            self.report['qualification']=dict(level=level);self.update_report()
+            with self.subTest(level=level):
+                self.assertIn('one: evidence level/report mismatch',self.run_check()['errors'])
 
     def typed_material_manifest(self, private=False):
         if private:
@@ -190,6 +210,78 @@ class QualificationTests(unittest.TestCase):
         self.assertFalse(self.run_check()['errors'])  # retained v1 stays v1
         self.assertTrue(self.run_check(require_current=True)['errors'])
 
+    def tracked_source_symlink(self):
+        """Real Git symlink plus separately scoped referent; no protocol fixture."""
+        link = self.repo / 'production-link.rs'
+        link.symlink_to('production.rs')
+        subprocess.run(['git', '-C', str(self.repo), 'add', 'production-link.rs'], check=True)
+        subprocess.run(['git', '-C', str(self.repo), '-c', 'user.name=Fixture', '-c',
+                        'user.email=fixture@example.invalid', '-c', 'commit.gpgsign=false',
+                        'commit', '-qm', 'tracked source link'], check=True)
+        commit = q.git(self.repo, 'rev-parse', 'HEAD').decode().strip()
+        scopes = ['production.rs', 'production-link.rs']
+        self.data['records'][0]['sources']['production'].update(
+            commit=commit, scopes=scopes, files=q.scoped_files(self.repo, commit, scopes))
+        self.report['source'] = commit
+        self.update_report()
+        return link
+
+    def test_clean_tracked_symlink_uses_git_link_identity(self):
+        link = self.tracked_source_symlink()
+        source = self.data['records'][0]['sources']['production']
+        self.assertNotEqual(source['files']['production-link.rs'], q.sha(link))
+        result = self.run_check(require_current=True)
+        self.assertEqual(result['errors'], [])
+        self.assertEqual(result['current'], 'SCOPED_SOURCE_AND_BYTES_MATCH_NOT_REPLAYED')
+
+    def test_tracked_symlink_target_text_replacement_rejected_even_with_same_content(self):
+        link = self.tracked_source_symlink()
+        (self.repo / 'alternative.rs').write_bytes((self.repo / 'production.rs').read_bytes())
+        link.unlink()
+        link.symlink_to('alternative.rs')
+        self.assertTrue(self.run_check(require_current=True)['errors'])
+        self.assertEqual(self.run_check()['errors'], [])  # Original Git identity remains retained.
+
+    def test_symlink_referent_production_scope_detects_changed_header_bytes(self):
+        self.tracked_source_symlink()
+        (self.repo / 'production.rs').write_text('changed referenced implementation\n')
+        result = self.run_check(require_current=True)
+        self.assertTrue(result['errors'])
+        self.assertIn('one/production', result['errors'][-1])
+
+    def test_dangling_source_symlink_rejected_even_without_referent_scope(self):
+        self.tracked_source_symlink()
+        source = self.data['records'][0]['sources']['production']
+        source.update(scopes=['production-link.rs'],
+                      files=q.scoped_files(self.repo, source['commit'], ['production-link.rs']))
+        (self.repo / 'production.rs').unlink()
+        result = self.run_check(require_current=True)
+        self.assertIn('one/production: source symlink target is missing or not a regular file: production-link.rs',
+                      result['errors'])
+
+    def test_symlink_replaced_by_regular_file_with_same_git_blob_rejected(self):
+        link = self.tracked_source_symlink()
+        link.unlink()
+        link.write_text('production.rs')  # Identical bytes to the committed link blob.
+        result = self.run_check(require_current=True)
+        self.assertIn('one/production: source file/link type changed: production-link.rs', result['errors'])
+
+    def test_regular_source_replaced_by_symlink_with_same_blob_bytes_rejected(self):
+        target_name = (self.repo / 'production.rs').read_text()
+        (self.repo / target_name).write_text('referent bytes are not the Git source object')
+        (self.repo / 'production.rs').unlink()
+        (self.repo / 'production.rs').symlink_to(target_name)
+        result = self.run_check(require_current=True)
+        self.assertIn('one/production: source file/link type changed: production.rs', result['errors'])
+
+    def test_source_symlink_to_directory_is_not_current(self):
+        self.tracked_source_symlink()
+        (self.repo / 'production.rs').unlink()
+        (self.repo / 'production.rs').mkdir()
+        result = self.run_check(require_current=True)
+        self.assertIn('one/production: source symlink target is missing or not a regular file: production-link.rs',
+                      result['errors'])
+
     def test_untracked_production_file_not_current(self):
         self.data['records'][0]['sources']['production']['scopes'] = ['production*']
         self.data['records'][0]['sources']['production']['files'] = q.scoped_files(
@@ -235,6 +327,27 @@ class QualificationTests(unittest.TestCase):
         state['current_heads'] = {'stale': 'old'}
         (project / 'goal-execution-state.json').write_text(json.dumps(state))
         self.assertTrue(q.sync_views(self.data, self.repo))
+
+    def test_changed_execution_batch_invalidates_both_reader_summaries_even_with_current_goal(self):
+        self.data['baseline']={'kernel':'k','compiled_userspace':'u','executed_tools':'t'}
+        self.data['batch']={'id':'pending-fixture','state':'NOT_QUALIFIED','next':'first'}
+        self.data['records'][0]['title']='retained fixture'
+        project=self.repo/'project';project.mkdir()
+        for name in ['current-capabilities.md','implementation-plan.md']:
+            (project/name).write_text('<!-- qualification-summary:start -->old<!-- qualification-summary:end -->')
+        (project/'goal-execution-state.json').write_text('{}')
+        self.assertFalse(q.sync_views(self.data,self.repo,write=True))
+        self.data['batch']['next']='new-execution-not-new-qualification'
+        state=json.loads((project/'goal-execution-state.json').read_text())
+        state['qualification_view']=q.summary(self.data)
+        (project/'goal-execution-state.json').write_text(json.dumps(state))
+        self.assertEqual(set(q.sync_views(self.data,self.repo)),{
+            'current-capabilities.md: stale qualification summary',
+            'implementation-plan.md: stale qualification summary'})
+        self.assertFalse(q.sync_views(self.data,self.repo,write=True))
+        text=(project/'implementation-plan.md').read_text()
+        self.assertIn('new-execution-not-new-qualification',text)
+        self.assertIn('NOT_REVALIDATED',text)
 
     def test_architecture_reference_cannot_maintain_independent_source_ids(self):
         self.data['baseline'] = {'kernel': 'a', 'compiled_userspace': 'b', 'executed_tools': 'c'}

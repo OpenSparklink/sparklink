@@ -5,7 +5,11 @@ use crate::ffi_service_authorization::*;
 use std::os::fd::{AsRawFd, FromRawFd, OwnedFd};
 
 unsafe fn authorized(c: *const SlkClient) -> *mut SlkLocalService {
+    unsafe { authorized_operations(c, 5) }
+}
+unsafe fn authorized_operations(c: *const SlkClient, operations: u32) -> *mut SlkLocalService {
     let mut p = property();
+    p.operations = operations;
     p.access = 36;
     let mut out = std::ptr::null_mut();
     assert_eq!(
@@ -88,6 +92,59 @@ fn callback(
             .unwrap()
     })
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn command_only_property_actual_sdk_inbox_preserves_write_value_and_original_deadline() {
+    // Real C registration, D-Bus callback, shared SDK admission and policy inbox;
+    // the fixture supplies metadata only, not a daemon DB or Native transport.
+    let (_bus, server, s, c) = fixture_with_operations(3).await;
+    let v = unsafe { authorized_operations(c, 3) };
+    let fd = unsafe { notify_fd(v) };
+    for length in [0, 32, 2042] {
+        for allowed in [false, true] {
+            let deadline = ns();
+            let mut p = approval_prompt(deadline);
+            p.3 = true;
+            p.5 = vec![0xa5; length];
+            let message = callback(&server, &s, p);
+            wait_ready(&fd).await;
+            let r = unsafe { next(v) };
+            let snapshot = unsafe { info(r) };
+            assert_eq!(snapshot.write, 1);
+            assert_eq!(snapshot.data_type, 0);
+            assert_eq!(usize::from(snapshot.value_length), length);
+            assert_eq!(&snapshot.value[..length], vec![0xa5; length].as_slice());
+            assert_eq!(snapshot.deadline_ns, deadline);
+            assert_eq!(
+                unsafe { slk_authorization_request_reply(r, u32::from(allowed)) },
+                0
+            );
+            assert_eq!(message.await.unwrap(), allowed);
+            unsafe { slk_authorization_request_free(r) };
+            assert!(!ready(&fd));
+        }
+    }
+    for case in 0..3 {
+        let mut p = approval_prompt(ns());
+        p.3 = true;
+        match case {
+            0 => p.5 = vec![0; 2043],
+            1 => p.4 = 1,
+            _ => p.6 = 2, // Command-only property is not a descriptor grant.
+        }
+        assert!(!callback(&server, &s, p).await.unwrap());
+        assert!(
+            !ready(&fd),
+            "invalid command prompt must not enter the inbox"
+        );
+    }
+    assert_eq!(unsafe { slk_local_service_unregister(v, ns()) }, 0);
+    unsafe {
+        slk_local_service_free(v);
+        slk_client_close(c);
+    }
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn actual_inbox_answers_while_same_executor_is_blocked_and_holds_capacity_until_release() {
     let (_bus, server, s, c) = fixture().await;
@@ -135,6 +192,7 @@ async fn actual_inbox_answers_while_same_executor_is_blocked_and_holds_capacity_
         (snapshot.local_tcid, snapshot.remote_tcid, snapshot.pi),
         (10, 10, 0)
     );
+    assert_eq!(snapshot.data_type, 0);
     assert!(!ready(&fd));
     assert_eq!(
         unsafe { slk_authorization_request_reply(r, 2) },
@@ -267,9 +325,80 @@ async fn foreign_sender_and_ambiguous_receipts_never_dispatch_policy() {
         slk_client_close(c)
     };
 }
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn retired_untyped_callback_and_other_data_type_never_enter_the_policy_inbox() {
+    let (_bus, server, s, c) = fixture().await;
+    let view = unsafe { authorized(c) };
+    let fd = unsafe { notify_fd(view) };
+    let original = approval_prompt(ns());
+    let old = (
+        original.0,
+        original.1,
+        original.2,
+        original.3,
+        original.4,
+        original.5.clone(),
+    );
+    let owner = s.owner.lock().unwrap().clone();
+    let path = s.authorizer.lock().unwrap().clone();
+    let error = tokio::time::timeout(
+        Duration::from_secs(2),
+        server.call_method(
+            Some(owner.as_str()),
+            path.as_str(),
+            Some("org.sparklink.SsapAuthorizer"),
+            "AuthorizeValue",
+            &(old,),
+        ),
+    )
+    .await
+    .expect("retired-shape original test deadline")
+    .unwrap_err();
+    assert!(
+        matches!(&error, zbus::Error::MethodError(name,Some(message),_)
+            if name.as_str()=="org.freedesktop.zbus.Error"
+                && message=="Signature mismatch: got `(t(qttqtuyyy)qbtay)`, expected `(t(qttqtuyyy)qbtayy)`"),
+        "unexpected retired-shape error: {error:?}"
+    );
+    assert!(!ready(&fd));
+    for data_type in [1, 2, 3, 255] {
+        let mut p = approval_prompt(ns());
+        p.6 = data_type;
+        assert!(
+            !tokio::time::timeout(Duration::from_secs(2), callback(&server, &s, p))
+                .await
+                .expect("typed refusal original test deadline")
+                .unwrap()
+        );
+        assert!(!ready(&fd));
+    }
+    // The real production endpoint/inbox remains usable after every refusal.
+    // A dead dispatcher is not successful unsupported-target handling.
+    let valid = callback(&server, &s, approval_prompt(ns()));
+    wait_ready(&fd).await;
+    let request = unsafe { next(view) };
+    assert_eq!(unsafe { info(request) }.data_type, 0);
+    assert_eq!(unsafe { slk_authorization_request_reply(request, 1) }, 0);
+    assert!(
+        tokio::time::timeout(Duration::from_secs(2), valid)
+            .await
+            .expect("healthy request original test deadline")
+            .unwrap()
+    );
+    unsafe {
+        slk_authorization_request_free(request);
+        slk_local_service_free(view);
+        slk_client_close(c);
+    }
+}
+
 #[test]
 fn actual_request_info_layout_is_fixed_and_null_outputs_remain_unchanged() {
     assert_eq!(std::mem::size_of::<SlkAuthorizationRequestInfo>(), 2120);
+    assert_eq!(
+        std::mem::offset_of!(SlkAuthorizationRequestInfo, data_type),
+        70
+    );
     assert_eq!(std::mem::offset_of!(SlkAuthorizationRequestInfo, value), 72);
     let mut out = std::ptr::dangling_mut();
     assert_eq!(
@@ -300,11 +429,23 @@ async fn retiring_request_keeps_actual_sixteen_slot_budget_until_release_and_dra
     };
     let mut reservations = Vec::new();
     for i in 0..15 {
-        let q = dispatcher.reserve(id, &properties).unwrap();
+        let q = dispatcher
+            .reserve(
+                id,
+                &properties
+                    .iter()
+                    .map(|(ops, access)| {
+                        crate::ssap::local::EntryRequirements::Property(*ops, *access)
+                    })
+                    .collect::<Vec<_>>(),
+            )
+            .unwrap();
         q.bind(&[18 + i]).unwrap();
         reservations.push(q);
     }
-    assert!(matches!(dispatcher.reserve(id,&properties),Err(e)if e==nix::libc::EAGAIN));
+    assert!(
+        matches!(dispatcher.reserve(id,&properties.iter().map(|(ops,access)| crate::ssap::local::EntryRequirements::Property(*ops,*access)).collect::<Vec<_>>()),Err(e)if e==nix::libc::EAGAIN)
+    );
     let fd = unsafe { notify_fd(v) };
     let message = callback(&server, &s, approval_prompt(ns()));
     wait_ready(&fd).await;
@@ -312,11 +453,19 @@ async fn retiring_request_keeps_actual_sixteen_slot_budget_until_release_and_dra
     unsafe { slk_local_service_free(v) };
     assert!(!message.await.unwrap());
     assert!(
-        matches!(dispatcher.reserve(id,&properties),Err(e)if e==nix::libc::EAGAIN),
+        matches!(dispatcher.reserve(id,&properties.iter().map(|(ops,access)| crate::ssap::local::EntryRequirements::Property(*ops,*access)).collect::<Vec<_>>()),Err(e)if e==nix::libc::EAGAIN),
         "retained request is not drained capacity"
     );
     unsafe { slk_authorization_request_free(request) };
-    let extra = dispatcher.reserve(id, &properties).unwrap();
+    let extra = dispatcher
+        .reserve(
+            id,
+            &properties
+                .iter()
+                .map(|(ops, access)| crate::ssap::local::EntryRequirements::Property(*ops, *access))
+                .collect::<Vec<_>>(),
+        )
+        .unwrap();
     drop(extra);
     drop(reservations);
     unsafe { slk_client_close(c) };

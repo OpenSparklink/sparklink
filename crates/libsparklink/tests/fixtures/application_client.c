@@ -115,6 +115,12 @@ int main(void) {
     assert(slk_client_connection(client, ids, path, sizeof path-1, deadline(), &link) == -ESTALE && !link);
     ids[0].generation = 7;
     assert(slk_client_connection(client, ids, path, sizeof path-1, deadline(), &link) == 0 && link);
+    struct SlkLocalService *description_service=NULL;
+    struct SlkServiceProperty definition={0};
+    definition.operations=5;definition.uuid_length=2;definition.uuid[0]=2;
+    definition.value_length=3;definition.value[0]=7;definition.value[1]=8;definition.value[2]=9;
+    const uint8_t service_uuid[]={1,0};
+    assert(slk_client_register_local_service(client,ids,service_uuid,2,&definition,1,0,deadline(),&description_service)==0);
     slk_client_close(client);
     slk_client_close(NULL);
     /* This observer survives parent close on the SAME caller/executor. */
@@ -125,6 +131,59 @@ int main(void) {
     }
     slk_controller_events_close(observer);slk_controller_events_close(NULL);
     puts("CURRENT_CONTROLLER_DIRECTORY_LANGUAGE_FIXTURE_PASS_NOT_RF");
+
+    _Static_assert(sizeof(struct SlkSsapEntry)==284,"discovery C ABI size");
+    _Static_assert(offsetof(struct SlkSsapEntry,uuid)==12,"discovery C ABI UUID");
+    struct SlkSsapDiscoveryResult *discovered=NULL;
+    const uint8_t find_uuid[]={1,2},bad_uuid[]={3,4},refused_uuid[]={5,6},timeout_uuid[]={7,8};
+    assert(slk_connection_ssap_discover(link,find_uuid,2,4,deadline(),&discovered)==0 && discovered);
+    uintptr_t found=99,pages=99;
+    assert(slk_ssap_discovery_counts(discovered,&found,&pages)==0 && found==1 && pages==1);
+    struct SlkSsapEntry entry,entry_before;
+    assert(slk_ssap_discovery_entry(discovered,0,&entry)==0);
+    assert(entry.category==3 && entry.handle==17 && entry.end==17 && entry.uuid_length==2);
+    assert(!memcmp(entry.uuid,find_uuid,2) && entry.descriptor_length==1 && entry.descriptors[0]==0x80);
+    for(unsigned i=2;i<16;++i) assert(entry.uuid[i]==0);
+    for(unsigned i=1;i<255;++i) assert(entry.descriptors[i]==0);
+    assert(entry.reserved[0]==0);
+    entry_before=entry;
+    assert(slk_ssap_discovery_entry(discovered,1,&entry)==-ENOENT && !memcmp(&entry,&entry_before,sizeof entry));
+    uint8_t trace[2048];memset(trace,0xa5,sizeof trace);uintptr_t trace_length=99;
+    assert(slk_ssap_discovery_trace(discovered,0,0,trace,1,&trace_length)==-ENOBUFS && trace_length==8 && trace[0]==0xa5);
+    assert(slk_ssap_discovery_trace(discovered,0,0,trace,sizeof trace,&trace_length)==0 && trace_length==8);
+    assert(!memcmp(trace,"\x06\x14\x01\x00\xff\xff\x01\x02",8));
+    assert(slk_ssap_discovery_trace(discovered,0,1,trace,sizeof trace,&trace_length)==0 && trace_length==13);
+    trace_length=99;trace[0]=0xa5;
+    assert(slk_ssap_discovery_trace(discovered,1,1,trace,sizeof trace,&trace_length)==-ENOENT && trace_length==99 && trace[0]==0xa5);
+    assert(slk_ssap_discovery_trace(discovered,0,2,trace,sizeof trace,&trace_length)==-EINVAL && trace_length==99);
+    struct SlkSsapDiscoveryResult *failed=(void *)1;
+    assert(slk_connection_ssap_discover(link,bad_uuid,2,4,deadline(),&failed)==-ESTALE && failed==(void *)1);
+    assert(slk_connection_ssap_discover(link,refused_uuid,2,4,deadline(),&failed)==-EOPNOTSUPP && failed==(void *)1);
+    assert(slk_connection_ssap_discover(link,timeout_uuid,2,4,deadline(),&failed)==-ETIMEDOUT && failed==(void *)1);
+    assert(slk_connection_ssap_discover(link,find_uuid,2,4,0,&failed)==-ETIMEDOUT && failed==(void *)1);
+    assert(slk_connection_ssap_discover(link,NULL,2,4,deadline(),&failed)==-EINVAL);
+    assert(slk_connection_ssap_discover(link,find_uuid,2,2,deadline(),&failed)==-EINVAL);
+    assert(slk_connection_ssap_discover(link,find_uuid,1,4,deadline(),&failed)==-EINVAL);
+    assert(slk_connection_ssap_discover(link,find_uuid,2,4,deadline(),NULL)==-EINVAL);
+    assert(slk_ssap_discovery_counts(NULL,&found,&pages)==-EINVAL);
+
+    /* New setter on the actual retained C view; metadata fixture,not a peer. */
+    const uint8_t text[]={0xe6,0x8f,0x8f,0xe8,0xbf,0xb0};
+    uint8_t maximum_description[244],oversized_description[245];
+    memset(maximum_description,'d',sizeof maximum_description);
+    memset(oversized_description,'d',sizeof oversized_description);
+    assert(slk_local_service_set_description(description_service,17,text,sizeof text,deadline())==0);
+    assert(slk_local_service_set_description(description_service,17,maximum_description,sizeof maximum_description,deadline())==0);
+    assert(slk_local_service_set_description(description_service,18,text,sizeof text,deadline())==-EINVAL);
+    assert(slk_local_service_set_description(description_service,17,text,0,deadline())==-EINVAL);
+    assert(slk_local_service_set_description(description_service,17,oversized_description,sizeof oversized_description,deadline())==-EINVAL);
+    const uint8_t invalid_utf8[]={0xff},nul_text[]={'a',0};
+    assert(slk_local_service_set_description(description_service,17,invalid_utf8,1,deadline())==-EINVAL);
+    assert(slk_local_service_set_description(description_service,17,nul_text,2,deadline())==-EINVAL);
+    assert(slk_local_service_set_description(description_service,17,text,sizeof text,0)==-ETIMEDOUT);
+    assert(slk_local_service_unregister(description_service,deadline())==0);
+    assert(slk_local_service_set_description(description_service,17,text,sizeof text,deadline())==-EINVAL);
+    slk_local_service_free(description_service);
 
     /* A derived view retains the same broker caller, not a new client/Engine. */
     uint8_t output[8], original[8], value[] = {0x56,0x12};
@@ -139,19 +198,59 @@ int main(void) {
     assert(!memcmp(output,original,sizeof output));
     assert(slk_connection_ssap_read(link,17,2,output,sizeof output,&length,deadline()) == 0 && length == 2);
     assert(output[0]==0x34 && output[1]==0x78);
+    memset(output,0xa5,sizeof output);length=99;
+    assert(slk_connection_ssap_read_description(link,0,0,output,sizeof output,&length,deadline())==-EINVAL);
+    assert(slk_connection_ssap_read_description(link,17,3,output,sizeof output,&length,deadline())==-EINVAL);
+    assert(slk_connection_ssap_read_description(link,17,0,output,sizeof output,&length,0)==-ETIMEDOUT);
+    assert(length==99 && !memcmp(output,original,sizeof output));
+    assert(slk_connection_ssap_read_description(link,17,2,output,1,&length,deadline())==-ENOBUFS && length==sizeof text);
+    assert(!memcmp(output,original,sizeof output));
+    assert(slk_connection_ssap_read_description(link,17,2,output,sizeof output,&length,deadline())==0 && length==sizeof text);
+    assert(!memcmp(output,text,sizeof text));
+    assert(slk_connection_ssap_read_description(link,18,0,output,sizeof output,&length,deadline())==-EOPNOTSUPP);
     assert(slk_connection_ssap_write(link,17,1,value,sizeof value,output,sizeof output,&length,deadline()) == 0 && length==1 && output[0]==0x90);
     assert(slk_connection_ssap_write(link,17,0,NULL,0,output,sizeof output,&length,deadline()) == 0 && length==1 && output[0]==0x91);
     memset(output,0xa5,sizeof output);length=99;
     assert(slk_connection_ssap_write(link,17,0,value,sizeof value,output,sizeof output,&length,deadline()) == -EINVAL);
     assert(slk_connection_ssap_write(link,17,0,oversized,sizeof oversized,output,sizeof output,&length,deadline()) == -EMSGSIZE);
+    assert(slk_connection_ssap_call_method(link,17,1,value,sizeof value,output,sizeof output,&length,deadline())==0 && length==3 && !memcmp(output,"\x90\x78\x34",3));
+    memset(output,0xa5,sizeof output);length=99;
+    assert(slk_connection_ssap_call_method(link,17,1,value,sizeof value,output,1,&length,deadline())==-ENOBUFS && length==3);
+    assert(!memcmp(output,original,sizeof output));
+    assert(slk_connection_ssap_call_method(link,18,1,value,sizeof value,output,sizeof output,&length,deadline())==-EOPNOTSUPP);
+    assert(slk_connection_ssap_call_method_command(link,17,1,value,sizeof value,deadline())==0);
+    assert(slk_connection_ssap_call_method(link,17,1,oversized,2044,output,sizeof output,&length,deadline())==-EMSGSIZE);
+    assert(slk_connection_ssap_call_method_command(link,17,1,oversized,2044,deadline())==-EMSGSIZE);
+    assert(slk_connection_ssap_call_method_command(link,17,1,NULL,1,deadline())==-EINVAL);
+    assert(slk_connection_ssap_call_method_command(link,17,1,value,sizeof value,0)==-ETIMEDOUT);
+    memset(output,0xa5,sizeof output);length=99;
+    /* Commands return no fake remote bytes:0 is software admission only. */
+    assert(slk_connection_ssap_write_command(link,17,1,value,sizeof value,deadline()) == 0);
+    assert(slk_connection_ssap_write_command(link,17,0,NULL,0,deadline()) == 0);
+    assert(slk_connection_ssap_write_command(link,17,0,value,sizeof value,deadline()) == -EINVAL);
+    assert(slk_connection_ssap_write_command(link,21,0,value,sizeof value,deadline()) == -ETIMEDOUT);
+    /* Explicit daemon fixture rejection, not an FFI limit, negotiated MTU or RF test. */
+    uint8_t fixture_limit[2043];memset(fixture_limit,0xa5,sizeof fixture_limit);
+    assert(slk_connection_ssap_write_command(link,17,0,fixture_limit,sizeof fixture_limit,deadline()) == -EINVAL);
+    assert(slk_connection_ssap_write_command(link,17,0,oversized,sizeof oversized,deadline()) == -EMSGSIZE);
+    assert(slk_connection_ssap_write_command(link,17,0,NULL,1,deadline()) == -EINVAL);
+    assert(slk_connection_ssap_write_command(NULL,17,0,NULL,0,deadline()) == -EINVAL);
+    assert(slk_connection_ssap_write_command(link,0,0,NULL,0,deadline()) == -EINVAL);
+    assert(slk_connection_ssap_write_command(link,17,3,NULL,0,deadline()) == -EINVAL);
+    assert(slk_connection_ssap_write_command(link,17,0,NULL,0,0) == -ETIMEDOUT);
     assert(slk_connection_ssap_read(link,18,0,output,sizeof output,&length,deadline()) == -EOVERFLOW);
     assert(length==99 && !memcmp(output,original,sizeof output));
     assert(slk_connection_ssap_read(link,20,0,output,sizeof output,&length,deadline()-2950000000ULL) == -ETIMEDOUT);
     assert(length==99 && !memcmp(output,original,sizeof output));
     assert(slk_connection_ssap_read(link,19,0,output,sizeof output,&length,deadline()) == -ESTALE);
     assert(slk_connection_ssap_read(link,17,2,output,sizeof output,&length,deadline()) == -ESTALE);
+    assert(slk_connection_ssap_write_command(link,17,0,NULL,0,deadline()) == -ESTALE);
+    assert(slk_connection_ssap_read_description(link,17,0,output,sizeof output,&length,deadline()) == -ESTALE);
     assert(length==99 && !memcmp(output,original,sizeof output));
     slk_connection_close(link);
+    /* Historical result has no executor/connection dependency or new RPC. */
+    assert(slk_ssap_discovery_counts(discovered,&found,&pages)==0 && found==1 && pages==1);
+    slk_ssap_discovery_free(discovered);slk_ssap_discovery_free(NULL);
     slk_connection_close(NULL);
     assert(entries("/proc/self/fd")==fds_before);
     assert(threads_converged(threads_before,250000000ULL));

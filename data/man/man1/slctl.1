@@ -28,6 +28,51 @@ local tokens are not reused within this process. value reads the same owner's
 local value and quit unregisters. Owner exit revokes the registration.
 Explicit allow/deny is local service policy, not security Agent approval,
 authentication, encryption or Bond. Existing channel and Engine limits apply.
+.PP
+The foreground command description TEXT explicitly sets public, remotely
+read-only type1 metadata on that owner's property. It accepts 1..244 UTF-8 bytes
+without NUL and shares the existing database byte budget. Property authorization
+or encryption requirements do not protect this public description. A local
+commit receipt is not remote discovery or delivery.
+.PP
+For a property whose OPS is exactly READ (1), provider binds the same caller's
+ReadValue endpoint once. It discards the stored value; rebind, unbind and cached
+fallback are unavailable, and local value/replace operations return NotSupported.
+Type1 descriptions remain independent. Each actual remote read prints
+SsapReadProviderPrompt with its original identity, deadline, maximum byte count
+and a p-prefixed, never-reused local token. Enter provide pTOKEN HEX, use a single
+dash for an empty successful value, or enter provider-error pTOKEN AF..FF for an
+application error written as two hexadecimal digits. No value is supplied
+automatically. Existing ask/allow/deny authorization remains a separate decision.
+.PP
+Provider values are limited to the displayed budget, at most2042 bytes; a pending
+reply holds one bounded slot independent of authorization. Stale, repeated,
+expired or malformed input cannot complete another request. Quit, EOF or Ctrl-C
+stops local admission before withdrawal and removes both callback endpoints.
+The same request deadline includes authorization and provider waiting. A local
+reply is not peer delivery, and a timeout does not prove remote rollback.
+.PP
+SSAP stdin is limited to4160 bytes per line including newline on a pipe. Terminal
+input must stay below4096 bytes including newline to reject Linux canonical-line
+truncation; use a pipe for a full2042-byte hex value when the command and token
+would reach that boundary. Send replies after reading the actual prompt; input
+queued before a new prompt is discarded. Complete C/Python Provider inboxes and
+real-device qualification remain separate.
+.TP
+.B ssap-serve-method SERVICE_HEX METHOD_HEX ACCESS [ask|allow|deny]
+Own one foreground method using the shared SDK Provider dispatcher. ACCESS uses
+method requirement bits 1/2/4. Enter provider to bind, then answer the actual
+method prompt with provide pTOKEN HEX (or - for empty), or provider-error pTOKEN
+AF..FF. Arguments and results are independent; command invocations accept an
+empty result only. Approval is local policy, not authentication or peer delivery.
+Quit stops new replies before explicit withdrawal. Real method device delivery
+requires its own qualification; this command does not confer it.
+.TP
+.B ssap-read-description CONNECTION HANDLE [MINIMUM]
+Read a type1 description over the original Connection and sole SSAP Engine.
+MINIMUM constrains channel security (0..2); it does not certify the description.
+The peer value is returned as hex after bounded UTF-8 validation. Missing
+descriptors and retired handles fail; there is no fallback to property data.
 .SH OPTIONS
 .TP
 .B \-h, \-\-help
@@ -145,7 +190,36 @@ are removed. Use the distinct ssap-list/register/serve/remove/local-read
 operations for local state and ssap-discover/read/write with an exact
 Connection path for the implemented remote protocol. Local registration
 is not proof of remote delivery; Owned authorization is separate from pairing.
+.TP
+.BI ssap-write-command " connection-path handle value-hex [minimum]"
+Submit one property WRITE_NO_RSP through the ordinary application Client and
+existing daemon actor. Minimum is mechanism0..2. All command fragments must enter
+the software socket path before success; this does not confirm USB/controller
+completion, peer receipt or application handling. Output is SsapCommandAdmission,
+never a fabricated peer value. The original five-second deadline includes caller
+identity checks, queueing and negotiation. Failure may follow partial admission;
+no implicit retry. Descriptor and multi-item commands are not exposed.
+Use ssap-write when the supported operation requires a protocol response.
 .SS Statistics and Diagnostics
+.TP
+.BI ssap-discover " connection-path [structure|service|property|method uuid-hex]"
+Discover peer metadata through the existing application Client. Method discovery
+uses kind4 and standard/custom method categories3/11. Default primary discovery
+follows advertised property and method members within one five-second deadline,
+96-page and80-entry total budgets. A method-query error or duplicate handle
+fails the whole discovery; metadata is not method execution or authorization.
+Local method registration and Providers remain unsupported.
+.TP
+.BI ssap-call-method " connection-path handle arguments-hex [minimum]"
+Invoke a remote method using the original Session and deadline. Prints the
+independent peer result, never an input echo. Current slkd method Providers
+are unsupported. Arguments are bounded by 2043 bytes and negotiated transport
+limits. Timeout may follow an executed remote effect; no implicit retry.
+.TP
+.BI ssap-call-method-command " connection-path handle arguments-hex [minimum]"
+Submit a method command. Success is all-fragment software admission only,
+not peer processing. No protocol reply or automatic retry.
+
 .TP
 .B stats
 Show the native LinkSnapshot summary; not mixed legacy subsystem counters.

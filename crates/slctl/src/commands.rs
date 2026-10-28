@@ -52,7 +52,7 @@ impl Context {
             "ssap-discover" => {
                 if args.len() != 2 && args.len() != 4 {
                     anyhow::bail!(
-                        "ssap-discover requires path [structure|service|property uuid-hex]"
+                        "ssap-discover requires path [structure|service|property|method uuid-hex]"
                     );
                 }
                 let kind = if args.len() == 2 {
@@ -62,6 +62,7 @@ impl Context {
                         "structure" => 0,
                         "service" => 1,
                         "property" => 3,
+                        "method" => 4,
                         _ => anyhow::bail!("unknown discovery kind"),
                     }
                 };
@@ -70,9 +71,14 @@ impl Context {
                 } else {
                     Vec::new()
                 };
-                let link = self.application_connection(args[1]).await?;
+                let original = libsparklink::Deadline::after(std::time::Duration::from_secs(5))?;
+                let link = tokio::time::timeout_at(
+                    original.instant().into(),
+                    self.application_connection(args[1]),
+                )
+                .await??;
                 let object = link.ssap();
-                let (entries, trace) = object.discover(uuid, kind).await?;
+                let (entries, trace) = object.discover_until(uuid, kind, original).await?;
                 for (category, handle, end, uuid, operations, descriptors, members) in &entries {
                     println!(
                         "SsapRemoteEntry: category={category} handle={handle} end={end} uuid={} operations={operations} descriptors={} members={members}",
@@ -81,7 +87,10 @@ impl Context {
                     );
                 }
                 if args.len() == 2 {
-                    let cached = object.cached().await?;
+                    let cached =
+                        tokio::time::timeout_at(original.instant().into(), object.cached())
+                            .await??;
+                    original.remaining()?;
                     if cached != entries {
                         anyhow::bail!("lifetime remote cache differs from actual discovery");
                     }
@@ -116,13 +125,27 @@ impl Context {
                     self.application().await?,
                     &self.selected_path().await?,
                     parse_hex_bytes(args[1])?,
-                    (
+                    crate::ssap_server::Definition::Property((
                         parse_hex_bytes(args[2])?,
                         args[3].parse()?,
                         args[4].parse()?,
                         parse_hex_bytes(args[5])?,
-                    ),
+                    )),
                     args.get(6).copied().unwrap_or("ask"),
+                )
+                .await
+            }
+            "ssap-serve-method" if matches!(args.len(), 4 | 5) => {
+                crate::ssap_server::serve(
+                    &self.conn,
+                    self.application().await?,
+                    &self.selected_path().await?,
+                    parse_hex_bytes(args[1])?,
+                    crate::ssap_server::Definition::Method(
+                        parse_hex_bytes(args[2])?,
+                        args[3].parse()?,
+                    ),
+                    args.get(4).copied().unwrap_or("ask"),
                 )
                 .await
             }
@@ -166,23 +189,18 @@ impl Context {
                 );
                 Ok(())
             }
-            "ssap-observe" => {
+            "ssap-receive" => {
                 if !(3..=5).contains(&args.len()) {
                     anyhow::bail!(
-                        "ssap-observe CONNECTION HANDLE [notify|indicate|both] [WAIT_MS]"
+                        "ssap-receive CONNECTION HANDLE [notify|indicate|both] [WAIT_MS]"
                     );
                 }
                 let link = self.application_connection(args[1]).await?;
                 let object = link.ssap();
                 let handle: u16 = args[2].parse()?;
-                let modes: u8 = match args.get(3).copied().unwrap_or("both") {
-                    "notify" => 1,
-                    "indicate" => 2,
-                    "both" => 3,
-                    _ => anyhow::bail!("invalid local receive mode"),
-                };
+                let modes = crate::ssap_subscription::mode(args.get(3).copied().unwrap_or("both"))?;
                 let wait: u32 = args.get(4).copied().unwrap_or("5000").parse()?;
-                let (indication, raw) = object.observe(vec![handle], modes, wait).await?;
+                let (indication, raw) = object.receive_update(vec![handle], modes, wait).await?;
                 let packet = slk_protocol::ssap::updates::Update::decode(65535, &raw)
                     .map_err(|e| anyhow::anyhow!("incoming codec: {e:?}"))?;
                 if packet.indication != indication {
@@ -199,6 +217,10 @@ impl Context {
                     );
                 }
                 Ok(())
+            }
+            "ssap-subscribe" if args.len() >= 3 => {
+                let link = self.application_connection(args[1]).await?;
+                crate::ssap_subscription::run(&link, &args[2..]).await
             }
             "ssap-read-uuid" => {
                 if !(5..=6).contains(&args.len()) {
@@ -231,10 +253,16 @@ impl Context {
                 );
                 Ok(())
             }
-            "ssap-read" | "ssap-write" => {
+            "ssap-read"
+            | "ssap-read-description"
+            | "ssap-write"
+            | "ssap-write-command"
+            | "ssap-call-method"
+            | "ssap-call-method-command" => {
                 let original = libsparklink::Deadline::after(std::time::Duration::from_secs(5))?;
-                if (args[0] == "ssap-read" && !(3..=4).contains(&args.len()))
-                    || (args[0] == "ssap-write" && !(4..=5).contains(&args.len()))
+                let reading = matches!(args[0], "ssap-read" | "ssap-read-description");
+                if (reading && !(3..=4).contains(&args.len()))
+                    || (!reading && !(4..=5).contains(&args.len()))
                 {
                     anyhow::bail!(
                         "SSAP value requires connection path, handle and write hex value"
@@ -243,7 +271,50 @@ impl Context {
                 let link = self.application_connection(args[1]).await?;
                 let object = link.ssap();
                 let handle: u16 = args[2].parse()?;
-                let value = if args[0] == "ssap-read" {
+                if matches!(args[0], "ssap-write-command" | "ssap-call-method-command") {
+                    if args[0] == "ssap-call-method-command" {
+                        object
+                            .call_method_without_response(
+                                handle,
+                                parse_hex_bytes(args[3])?,
+                                args.get(4).map_or(Ok(0u32), |v| v.parse())?,
+                                original,
+                            )
+                            .await?;
+                    } else {
+                        object
+                            .write_without_response(
+                                handle,
+                                parse_hex_bytes(args[3])?,
+                                args.get(4).map_or(Ok(0u32), |v| v.parse())?,
+                                original,
+                            )
+                            .await?;
+                    }
+                    println!(
+                        "SsapCommandAdmission: path={} handle={} stage=software_socket_admission peer_delivery=unconfirmed",
+                        args[1], handle
+                    );
+                    return Ok(());
+                }
+                let value = if args[0] == "ssap-call-method" {
+                    object
+                        .call_method(
+                            handle,
+                            parse_hex_bytes(args[3])?,
+                            args.get(4).map_or(Ok(0u32), |v| v.parse())?,
+                            original,
+                        )
+                        .await?
+                } else if args[0] == "ssap-read-description" {
+                    object
+                        .read_description(
+                            handle,
+                            args.get(3).map_or(Ok(0u32), |v| v.parse())?,
+                            original,
+                        )
+                        .await?
+                } else if args[0] == "ssap-read" {
                     object
                         .read(
                             handle,
@@ -470,6 +541,56 @@ impl Context {
                     anyhow::bail!("usage: peer-info <typed-peer-path>");
                 }
                 self.cmd_peer_info(args[1]).await
+            }
+            "link-payload-preference" => {
+                if !(3..=4).contains(&args.len()) {
+                    anyhow::bail!(
+                        "usage: link-payload-preference <connection-path> <octets> [timeout-ms]"
+                    );
+                }
+                let requested_octets = args[2].parse::<u16>()?;
+                let timeout_ms = args.get(3).map(|v| v.parse()).transpose()?.unwrap_or(5000);
+                if requested_octets == 0 || !(1..=5000).contains(&timeout_ms) {
+                    anyhow::bail!("nonzero16bit payload preference and1..5000ms required");
+                }
+                let value = self
+                    .controller()
+                    .await?
+                    .management()
+                    .set_link_payload_preference(args[1], requested_octets, timeout_ms)
+                    .await?;
+                println!(
+                    "NativeLinkPayloadAcknowledgment: {}",
+                    serde_json::to_string(&value)?
+                );
+                if value.state != 2 || value.flags != 5 {
+                    anyhow::bail!("no successful current controller acknowledgment");
+                }
+                Ok(())
+            }
+            "link-measurement" => {
+                if !(3..=4).contains(&args.len()) {
+                    anyhow::bail!(
+                        "usage: link-measurement <connection-path> <rssi|phy> [timeout-ms]"
+                    );
+                }
+                let kind = match args[2] {
+                    "rssi" => 1,
+                    "phy" => 2,
+                    _ => anyhow::bail!("kind must be rssi or phy"),
+                };
+                let timeout_ms = args.get(3).map(|v| v.parse()).transpose()?.unwrap_or(5000);
+                let value = self
+                    .controller()
+                    .await?
+                    .management()
+                    .read_link_measurement(args[1], kind, timeout_ms)
+                    .await?;
+                println!("NativeLinkMeasurement: {}", serde_json::to_string(&value)?);
+                if value.state != 2 || value.flags & 7 != 7 {
+                    anyhow::bail!("no successful current valid measurement");
+                }
+                Ok(())
             }
             "connection-info" | "disconnect-object" => {
                 if args.len() != 2 {
@@ -1252,7 +1373,7 @@ fn print_native_result(r: slk_protocol::DiscoveryResultRecord) -> anyhow::Result
     Ok(())
 }
 
-fn parse_hex_bytes(hex: &str) -> anyhow::Result<Vec<u8>> {
+pub(crate) fn parse_hex_bytes(hex: &str) -> anyhow::Result<Vec<u8>> {
     let hex = hex.strip_prefix("0x").unwrap_or(hex);
     if !hex.len().is_multiple_of(2) {
         anyhow::bail!("hex string must have even length");

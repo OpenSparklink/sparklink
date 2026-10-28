@@ -1,7 +1,71 @@
 # 当前能力与资格
 
+## 本批实现与验证边界
+
+长结果双端门禁v4源码为[1462159](https://github.com/OpenSparklink/sparklink/commit/14621593fe911b544634cd7097570a1fb5606d9c)。
+现有method runner保留发现、短结果、无响应命令、注销后拒绝，追加2045字节随机结果。
+实际C/Python消费者完整比较；两端必须有原身份下2042 MTU及双向序号分片协商。
+复用既有独立捕获设施核对两片SSAP、每个ACB片、实际TX计数和完整窗口；不同ACB
+切分的收发允许有依据的字节前缀重叠，不允许接收超前、缺失或重复。原期限不变。
+
+144项相关离线检查及严格HTML／清单／示例通过，包括执行器回调和分片负对照。
+这些进程I/O、协商记录和报文是显式fixture，不是新VM、实机、固件或形式化资格。
+既有生产函数长结果组合回归保留源码3305b98的限定范围；历史v1–v3不升级为v4。
+原始失败与全部资格身份保留，U#22的六条验收继续开放。
+
+[f6c2cf3](https://github.com/OpenSparklink/sparklink/commit/f6c2cf3c88154ba79a865cc55303b5fa464bd62f)补参数链生产函数组合：请求／命令、249／2042物理MTU，
+0至2043字节及相关边界经生产分片／重组后交付真实私有D-Bus Provider，独立字节
+核对handle、参数、身份及原期限；2044字节编码整体拒绝。77项Engine回归及严格
+Clippy通过，参数截断负对照被拒绝。另保留226c31b的实际actor响应背压／期限／stop
+范围；这些结果不能合并成完整method业务、Native权限／credit或实机隔离资格。
+原v4编译和执行身份不变。测试改动不改变公开契约或延后现有真实交付门禁。
+
+准确v4输入已封存并通过现有准备链校验，无USB隔离VM启动检查通过；这是构建与
+准备范围，尚未取得真实发现／method短长结果和原路径保持的新资格。历史v1–v3
+身份不变。K#15的源码审计确认平台版本查询走BSLE后的queue9 bulk；直接前移可能
+消费启动／ACK消息，现有streaming内存观察也不能作启动前旁路。SDK固定文本和
+两类镜像相同版本返回值均不能证明精确驻留镜像。后续须先明确未匹配消息保留、
+原期限、queue／sequence所有权和stop/drain，再作有区别的受控VM诊断。
+静态审计不证明自然根因或非人工恢复；不猜测wake、不绕过CLOSE、不重复未变化
+尝试。生命周期、数据和安全独立推进；
+完整S0–S6/19WP/10FV/12DG、VM-only、UserHost P4和原验收不变。
+
+## Issue 状态与验证边界
+
+重新读回35项及七个现有子项关系：2项既有关闭（U#1、U#21）、18项有限收尾、
+3个已拆分父项、12项长期跟踪。该维护批次收敛U#3的重复方法/离线进度，明确K#17/#19是
+已建立子项的父跟踪；三项在线正文精确读回，原验收逐字保留。
+没有新增关闭或重复拆分。U#1的原六条关闭依据及对应材料/源码映射已复核；
+U#10仍保留自然恢复要求，不能以其他业务通过替代。旧失败和反例不改判。
+未改生产代码、未重跑实机或形式化工具，也未新增资格。当前逐项处置以
+[维护记录](issue-maintenance-20261026.json)为准；维护结束后继续原功能主线，
+不增加数据面、安全或SSAP的长期前置条件。
+
+U#1已按原六条事件循环条件独立关闭；suite v2及取消门禁沿同一Native循环，
+原期限与历史负对照保留。具体准确产物审计留在授权本地索引；关闭决定不授予
+当前HEAD整体资格，也不覆盖原业务保持FAIL、自然故障或未执行门禁。
+旧EventSource只作历史fixture，v1不升级为v2。K#24已核对bac12d1的有限fuzz报告，
+其测试内核pin、边界与开发HEAD分开，旧CI超时不因新成功被覆盖。
+原始失败保留。U#10 自然恢复继续开放；K#24保留公开 CI 的来源检查超时，探索未执行不计通过。
+
 本页是唯一当前资格入口。源码、编译产物、执行工具、校验工具及必需门禁从下方
 结构化记录读取；报告或文档提交不替代编译身份，局部 PASS 不授整个 HEAD 资格。
+
+Owned type1 说明的[新增源码契约](../docs/reference/ssap-permissions.md#显式公开的只读属性说明)
+不能继承旧属性值或 CPCD 的实机资格。登记/构建/离线检查不等于真实发现和读回；
+具体结果仍须绑定结构化记录中的准确产物，公共源码摘要不披露本地实机执行详情。
+
+### 历史批次 R156：Owned type0 动态只读 Provider
+
+当前批次以本页生成摘要为准；下文保留 R156 的源码职责与限定范围，不表示后续产物已验收。
+
+[新增源码契约](../docs/reference/ssap-permissions.md#owned-read-only-provider)已接通，
+严格 Rust 构建、私有 D-Bus 与现有跨语言调用回归通过。
+实际产物身份与门禁结果只由授权的本地结构化记录维护。
+范围仅为原 caller、恰好 READ 的属性和唯一 Engine；
+Rust SDK 提供薄绑定/共享准入等待，CLI 提供显式应用回复；完整 C/Python Provider
+收件箱与动态写入仍缺。旧存储值、审批
+或说明的 PASS 不升级为此路径资格；完整服务、生命周期、自然根因与恢复保持开放。
 
 | 任务 | 对应准确记录 | 必须保留的边界 |
 | --- | --- | --- |
@@ -18,10 +82,10 @@
 | Runtime／Session／Grant／credit／Ticket | [唯一架构](architecture.md)与对应限定报告 | 旧代际、在途义务和未知完成不因关闭或缓存而消失；NOCP真实性、复用屏障及完整竞争组合仍需各自门禁 |
 | 部署、恢复与发布 | [唯一计划](implementation-plan.md)、原部署与分包记录 | 基础部署不等于跨版本升级回滚、发布或新硬件资格；自然故障根因和非人工恢复继续开放 |
 
-本线程硬件范围仅由[资源配置](lab-resource-policy.json)授权：U两口已在上述准确
-VM中由HCC核对；E两口仍仅用户布置及ROM描述、未作新HCC验收。两组其他口属于
-另一线程；同VID/PID或旧端口不证明型号。混合下载、无逐设备固件来源的runtime-only
-接管及冷ROM自动选择仍拒绝或未验收。QMP、拔插和切电不能替代自然恢复。
+本线程硬件范围仅由[资源配置](lab-resource-policy.json)授权；当前逐设备型号、占用和
+实机资格在本地准确记录中核对，公开历史映射不作为当前启动依据。两组其他口属于
+另一线程；同 VID/PID 或旧端口不证明型号。混合下载必须验证每设备固件来源；
+运行期 HCC 不证明冷 ROM 自动选择。QMP、拔插和切电不能替代自然恢复。
 启动前的 live libvirt 占用守卫及限定离线结果见
 [资源边界记录](../docs/evidence/shared-allocation-launch-guard-20261019.json)；
 它不更新上述服务/内核/实机资格，特权 fd 可见性和之后的非协作操作仍有限制。
@@ -37,10 +101,99 @@ VM中由HCC核对；E两口仍仅用户布置及ROM描述、未作新HCC验收�
 及证据/历史入口；以下生成记录保留原PASS、FAIL和UNPROVED及全部required范围。
 本页不再堆叠逐轮进度或另维护“最新资格”计数表。
 
+WP08待决WRITE连接Down门禁已扩展v2晚到本地答复：同一SDK token、原期限及
+完整捕获判定；104项相关离线检查和严格HTML通过。生产Engine未改，离线接通不
+授予实机资格；v1历史结果不转授v2。本地接收结果与远端终态分开，不能宣称回滚。
+daemon restart、新lifetime复用和完整SSAP条件仍开放。
+
+SDK WRITE daemon owner 接任新增实际 C/私有 D-Bus 离线回归：70项库测试及严格
+Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 daemon 接任恢复，
+新注册必须收到自己的回调答复。元数据为fixture，不是新实机或slkd进程重启资格。
+
 ## 选定产物与来源
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
+
+当前实施批次（不是新产物资格，直接读取唯一记录）：
+```json
+{
+  "id": "WP08-SSAP-METHOD-LONG-GATE-v4",
+  "state": "RUNNER_PAIRED_CORROBORATOR_OFFLINE_PASS_FRESH_ARTIFACT_REAL_DELIVERY_PENDING",
+  "implementation_sources": {
+    "public": "14621593fe911b544634cd7097570a1fb5606d9c"
+  },
+  "production_behavior": "Existing method VM runner adds independent 2045-byte result through the same SDK supervisor. Original discovery/short/command/withdrawal retained. Shared physical fragment verifier checks exact two-way sequence negotiation, complete paired data, causal prefixes and actual TX count. No Host or runtime protocol change.",
+  "offline_checks": {
+    "related_regressions": 144,
+    "result": "PASS",
+    "strict_html_inventory_examples": "PASS",
+    "negative_controls": "missing/duplicate/corrupt/foreign/ordered SSAP and ACB evidence, original deadline, stale negotiation, historical version, incomplete saved window; executor callback and valid overlapping causal prefixes"
+  },
+  "offline_scope": "Actual Python executor/verifier with explicit process, negotiation and physical-packet fixtures. No actual VM, hardware, deployment, concurrency, firmware or formal qualification.",
+  "formal_status": "NO_NEW_PROOF",
+  "hardware_status": "NOT_RUN; previous exact qualifications and failures unchanged.",
+  "preparation_status": "V4_EXACT_INPUTS_VALIDATED_NO_USB_VM_SMOKE_PASS; REAL_DELIVERY_PENDING",
+  "source_audit": "SDK GET_VERSION is distinct from chip query; fixed host text/shared static version cannot attest resident image. Native queue9 query runs after BSLE; moving it may consume unmatched boot/ACK messages. Streaming-only EP0 observation is not a pre-start fallback. Safe diagnosis must retain events, original deadlines, queue/sequence ownership and stop/drain. Root cause and natural recovery remain unverified.",
+  "issue_sync": [
+    {
+      "repository": "linux",
+      "number": 15,
+      "state": "open",
+      "body_sha256": "508064c7175a6e17933b6dc2462f2eb2e479f90c2a32e43ffd8b62a70efbb9eb",
+      "source_offline_only": true,
+      "original_acceptance_unchanged": true
+    },
+    {
+      "repository": "sparklink",
+      "number": 22,
+      "state": "open",
+      "body_sha256": "a555e098d79002c3d9d759cabb5bde760f6ba4f37fac59706aff339d518d84a0",
+      "source_offline_only": true,
+      "original_acceptance_unchanged": true
+    }
+  ],
+  "exit_conditions": [
+    "Reuse sole SDK supervisor and original deadline",
+    "Preserve discovery/short/command/withdrawal assertions",
+    "2045-byte independent result linked to both endpoints and all physical fragments",
+    "Original scope retained for historical v1-v3",
+    "Publish source/offline summary only"
+  ],
+  "next": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently.",
+  "actor_obligation_regression": {
+    "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
+    "entry": "ssap_engine::exchange_loop",
+    "scenarios": [
+      "pending response prevents Negotiated despite peer reply",
+      "actual socket pressure drain admits exact response",
+      "original initialization deadline remains terminal",
+      "stop emits no pending response"
+    ],
+    "result": "OFFLINE_SCOPED_PASS",
+    "checks": {
+      "engine_tests": 76,
+      "clippy": "PASS",
+      "strict_html_inventory_examples": "PASS",
+      "premature_ready_mutation": "REJECTED_SOURCE_RESTORED"
+    },
+    "scope": "Real Tokio/UnixDatagram scheduling; explicit AF_UNIX receipt bypass and extra descriptor for bounded queue pressure. No full method business actor, Native Grant/credit, hardware isolation, USB/RF or formal proof. cfg(test) and explanation only; existing compiled artifact not rebuilt or upgraded."
+  },
+  "method_argument_regression": {
+    "source_public": "f6c2cf3c88154ba79a865cc55303b5fa464bd62f",
+    "entry": "ValuePdu encode, Plan/Reassembly, resolve_server, actual private-D-Bus MethodProvider, complete_server/client decoder",
+    "scenarios": "44 request19/command18 cases, physical MTU249/2042, parameter lengths0/245/246/249/250/253/254/255/2038/2039/2043; independent literal headers/handle/payload, full Provider arguments/identity/deadline, independent response or no command reply; two2044-byte encoder refusals before output modification.",
+    "result": "OFFLINE_SCOPED_PASS",
+    "checks": {
+      "engine_tests": 77,
+      "strict_clippy": "PASS",
+      "argument_truncation_mutation": "REJECTED_SOURCE_RESTORED"
+    },
+    "scope": "Actual production functions/private bus. Native identity, negotiation and Wire transport explicit fixtures; not full method actor scheduling, Native credit/USB/peer RF or formal proof. cfg(test) only; original v4 compiled/prepared identities unchanged."
+  }
+}
+```
+
 
 选定保留产物（不是当前工作树整体资格）：**K2fc/Ud9：共享发现显式release及Negotiable-T七尺寸/Owned/C-Python限定实机**。
 仅记录范围：`real_device` / `PASS`。

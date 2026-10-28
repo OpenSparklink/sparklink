@@ -7,8 +7,8 @@ use std::{ffi::c_int, sync::Arc};
 /// Retains its originating caller. Release never disconnects the physical link.
 pub struct SlkConnection {
     // Release the view before the last executor reference is joined.
-    link: Arc<ApplicationConnection>,
-    inner: Arc<crate::sync_client::SyncClient>,
+    pub(crate) link: Arc<ApplicationConnection>,
+    pub(crate) inner: Arc<crate::sync_client::SyncClient>,
 }
 
 /// Bind an existing canonical connection path at its current immutable identity.
@@ -119,6 +119,62 @@ pub unsafe extern "C" fn slk_connection_ssap_read(
     length: *mut usize,
     deadline_ns: u64,
 ) -> c_int {
+    unsafe {
+        read_result(
+            connection,
+            handle,
+            minimum,
+            (buffer, capacity, length),
+            deadline_ns,
+            ReadTarget::Value,
+        )
+    }
+}
+
+/// Read a public static type1 description on the original physical lifetime.
+/// Returns the same decoded value bytes, errors and output contract as ssap_read;
+/// minimum constrains the channel mechanism, not a descriptor authorization.
+/// No property-value fallback, provider callback, retry or implicit truncation.
+/// # Safety
+/// Identical live connection, fork, exclusive buffer and length requirements as
+/// slk_connection_ssap_read. All regions remain live throughout the call.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_ssap_read_description(
+    connection: *const SlkConnection,
+    handle: u16,
+    minimum: u32,
+    buffer: *mut u8,
+    capacity: usize,
+    length: *mut usize,
+    deadline_ns: u64,
+) -> c_int {
+    unsafe {
+        read_result(
+            connection,
+            handle,
+            minimum,
+            (buffer, capacity, length),
+            deadline_ns,
+            ReadTarget::Description,
+        )
+    }
+}
+
+enum ReadTarget {
+    Value,
+    Description,
+}
+
+// Both read targets share one deadline, executor and output-delivery path.
+unsafe fn read_result(
+    connection: *const SlkConnection,
+    handle: u16,
+    minimum: u32,
+    output: (*mut u8, usize, *mut usize),
+    deadline_ns: u64,
+    target: ReadTarget,
+) -> c_int {
+    let (buffer, capacity, length) = output;
     if connection.is_null() || handle == 0 || minimum > 2 || !output_valid(buffer, capacity, length)
     {
         return -nix::libc::EINVAL;
@@ -128,13 +184,42 @@ pub unsafe extern "C" fn slk_connection_ssap_read(
     let result = Deadline::from_monotonic_ns(deadline_ns).and_then(|deadline| {
         let (deadline, original) = deadline.protocol()?;
         view.inner.call(deadline, move |_| async move {
-            link.ssap().read(handle, minimum, original).await
+            match target {
+                ReadTarget::Description => {
+                    link.ssap()
+                        .read_description(handle, minimum, original)
+                        .await
+                }
+                ReadTarget::Value => link.ssap().read(handle, minimum, original).await,
+            }
         })
     });
     unsafe { copy_result(result, buffer, capacity, length) }
 }
 
-/// Execute the existing short-write RPC, returning its exact protocol result
+// One bounded input/deadline path for acknowledged writes and commands.
+// The caller guarantees a live readable region when length is nonzero.
+unsafe fn write_input(
+    value: *const u8,
+    length: usize,
+    deadline_ns: u64,
+) -> Result<(Deadline, crate::Deadline, Vec<u8>), i32> {
+    if value.is_null() && length != 0 {
+        return Err(nix::libc::EINVAL);
+    }
+    if length > MAX_BUFFER {
+        return Err(nix::libc::EMSGSIZE);
+    }
+    let (deadline, original) = Deadline::from_monotonic_ns(deadline_ns)?.protocol()?;
+    let bytes = if length == 0 {
+        Vec::new()
+    } else {
+        unsafe { std::slice::from_raw_parts(value, length) }.to_vec()
+    };
+    Ok((deadline, original, bytes))
+}
+
+/// Execute the existing bounded-write RPC, returning its exact protocol result
 /// bytes. No long-write fallback, truncation, method echo or new Engine. The
 /// daemon's actual negotiated size/security rules remain authoritative.
 /// value_length<=65535 is a language memory budget, not long-write support;
@@ -156,6 +241,42 @@ pub unsafe extern "C" fn slk_connection_ssap_write(
     length: *mut usize,
     deadline_ns: u64,
 ) -> c_int {
+    unsafe {
+        effect_request(
+            connection,
+            handle,
+            minimum,
+            value,
+            value_length,
+            buffer,
+            capacity,
+            length,
+            deadline_ns,
+            SsapEffect::Write,
+        )
+    }
+}
+#[derive(Clone, Copy)]
+enum SsapEffect {
+    Write,
+    Method,
+}
+#[allow(clippy::too_many_arguments)]
+unsafe fn effect_request(
+    connection: *const SlkConnection,
+    handle: u16,
+    minimum: u32,
+    value: *const u8,
+    value_length: usize,
+    buffer: *mut u8,
+    capacity: usize,
+    length: *mut usize,
+    deadline_ns: u64,
+    effect: SsapEffect,
+) -> c_int {
+    if matches!(effect, SsapEffect::Method) && value_length > 2043 {
+        return -nix::libc::EMSGSIZE;
+    }
     if connection.is_null()
         || handle == 0
         || minimum > 2
@@ -164,26 +285,301 @@ pub unsafe extern "C" fn slk_connection_ssap_write(
     {
         return -nix::libc::EINVAL;
     }
-    if value_length > MAX_BUFFER {
-        return -nix::libc::EMSGSIZE;
-    }
-    let deadline = match Deadline::from_monotonic_ns(deadline_ns) {
-        Ok(value) => value,
-        Err(e) => return -e,
-    };
-    let (deadline, original) = match deadline.protocol() {
-        Ok(value) => value,
+    let (deadline, original, value) = match unsafe { write_input(value, value_length, deadline_ns) }
+    {
+        Ok(input) => input,
         Err(error) => return -error,
-    };
-    let value = if value_length == 0 {
-        Vec::new()
-    } else {
-        unsafe { std::slice::from_raw_parts(value, value_length) }.to_vec()
     };
     let view = unsafe { &*connection };
     let link = view.link.clone();
     let result = view.inner.call(deadline, move |_| async move {
-        link.ssap().write(handle, value, minimum, original).await
+        match effect {
+            SsapEffect::Write => link.ssap().write(handle, value, minimum, original).await,
+            SsapEffect::Method => {
+                link.ssap()
+                    .call_method(handle, value, minimum, original)
+                    .await
+            }
+        }
     });
     unsafe { copy_result(result, buffer, capacity, length) }
+}
+
+/// Submit one property WRITE_NO_RSP via the existing Rust client and daemon.
+/// Returns0 only after all command fragments enter software socket queues,
+/// not USB/controller completion, peer receipt or application processing.
+/// No output bytes, implicit retry, descriptor/multi-item operation or new Engine.
+/// The original absolute deadline includes local queueing and the same5s
+/// ceiling as ssap_write. Failure may follow partial admission; remote effects
+/// remain uncertain. value_length<=65535 is a memory budget, not a wire limit.
+/// # Safety
+/// connection remains live without concurrent close (same fork rules as Client).
+/// value is an immutable value_length-byte readable region, NULL only when empty.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_ssap_write_command(
+    connection: *const SlkConnection,
+    handle: u16,
+    minimum: u32,
+    value: *const u8,
+    value_length: usize,
+    deadline_ns: u64,
+) -> c_int {
+    unsafe {
+        effect_command(
+            connection,
+            handle,
+            minimum,
+            value,
+            value_length,
+            deadline_ns,
+            SsapEffect::Write,
+        )
+    }
+}
+unsafe fn effect_command(
+    connection: *const SlkConnection,
+    handle: u16,
+    minimum: u32,
+    value: *const u8,
+    value_length: usize,
+    deadline_ns: u64,
+    effect: SsapEffect,
+) -> c_int {
+    if matches!(effect, SsapEffect::Method) && value_length > 2043 {
+        return -nix::libc::EMSGSIZE;
+    }
+    if connection.is_null() || handle == 0 || minimum > 2 {
+        return -nix::libc::EINVAL;
+    }
+    let (deadline, original, value) = match unsafe { write_input(value, value_length, deadline_ns) }
+    {
+        Ok(input) => input,
+        Err(error) => return -error,
+    };
+    let view = unsafe { &*connection };
+    let link = view.link.clone();
+    match view.inner.call(deadline, move |_| async move {
+        match effect {
+            SsapEffect::Write => {
+                link.ssap()
+                    .write_without_response(handle, value, minimum, original)
+                    .await
+            }
+            SsapEffect::Method => {
+                link.ssap()
+                    .call_method_without_response(handle, value, minimum, original)
+                    .await
+            }
+        }
+    }) {
+        Ok(()) => 0,
+        Err(error) => -error,
+    }
+}
+
+/// Invoke a remote method through the existing SSAP actor. Arguments<=2043;
+/// result<=2045 with independently negotiated per-datagram MTU/fragment support.
+/// Output contains the peer result, never argument echo. No implicit retry;
+/// timeout or insufficient output capacity can follow an executed remote effect.
+/// Local method Providers use Owned registration and the shared SDK Dispatcher;
+/// this requester neither registers a Provider nor fabricates its result.
+/// # Safety
+/// Same live connection, immutable input and exclusive output contract as
+/// slk_connection_ssap_write. NULL input only when empty; no output aliasing.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_ssap_call_method(
+    connection: *const SlkConnection,
+    handle: u16,
+    minimum: u32,
+    arguments: *const u8,
+    arguments_length: usize,
+    buffer: *mut u8,
+    capacity: usize,
+    length: *mut usize,
+    deadline_ns: u64,
+) -> c_int {
+    unsafe {
+        effect_request(
+            connection,
+            handle,
+            minimum,
+            arguments,
+            arguments_length,
+            buffer,
+            capacity,
+            length,
+            deadline_ns,
+            SsapEffect::Method,
+        )
+    }
+}
+/// Submit a method command;0 means all-fragment software admission only.
+/// No wire reply, remote-delivery guarantee or implicit retry. Arguments<=2043;
+/// negotiated MTU/fragment support can impose a smaller limit.
+/// # Safety
+/// Same live connection and readable input contract as
+/// slk_connection_ssap_write_command; NULL input only when empty.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_ssap_call_method_command(
+    connection: *const SlkConnection,
+    handle: u16,
+    minimum: u32,
+    arguments: *const u8,
+    arguments_length: usize,
+    deadline_ns: u64,
+) -> c_int {
+    unsafe {
+        effect_command(
+            connection,
+            handle,
+            minimum,
+            arguments,
+            arguments_length,
+            deadline_ns,
+            SsapEffect::Method,
+        )
+    }
+}
+
+/// One bounded SSAP update receipt,not proof of application processing.
+/// stage1=notification software admission;2=indication peer receive-queue ACK;
+/// 3=received packet and verified remote CPCD disable. Unused bytes are zero.
+#[repr(C)]
+pub struct SlkSsapUpdate {
+    pub stage: u32,
+    pub pdu_length: u16,
+    pub acknowledgement_length: u16,
+    pub pdu: [u8; 2048],
+    pub acknowledgement: [u8; 3],
+    pub reserved: [u8; 5],
+}
+const _: () = assert!(std::mem::size_of::<SlkSsapUpdate>() == 2064);
+const _: () = assert!(std::mem::offset_of!(SlkSsapUpdate, pdu) == 8);
+const _: () = assert!(std::mem::offset_of!(SlkSsapUpdate, acknowledgement) == 2056);
+impl SlkSsapUpdate {
+    fn receipt(stage: u32, pdu: Vec<u8>, ack: Vec<u8>) -> Result<Self, i32> {
+        if pdu.len() > 2048 || ack.len() > 3 {
+            return Err(nix::libc::EOVERFLOW);
+        }
+        let mut result = Self {
+            stage,
+            pdu_length: pdu.len() as u16,
+            acknowledgement_length: ack.len() as u16,
+            pdu: [0; 2048],
+            acknowledgement: [0; 3],
+            reserved: [0; 5],
+        };
+        result.pdu[..pdu.len()].copy_from_slice(&pdu);
+        result.acknowledgement[..ack.len()].copy_from_slice(&ack);
+        Ok(result)
+    }
+}
+/// Receive one property update through the existing Rust CPCD transaction.
+/// modes1/2/3=notification/indication/either. Original absolute deadline includes
+/// queueing and is capped at10s before admission. No pre-existing configuration
+/// is overwritten. Cancellation/timeout can leave bounded cleanup; an unknown
+/// cleanup retires this SSAP actor. Output unchanged on failure. No retries.
+/// # Safety
+/// Same live connection/fork contract as ssap_read; output is exclusive aligned
+/// writable storage for one SlkSsapUpdate,not aliasing the connection.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_ssap_receive(
+    connection: *const SlkConnection,
+    handle: u16,
+    modes: u32,
+    output: *mut SlkSsapUpdate,
+    deadline_ns: u64,
+) -> c_int {
+    if connection.is_null() || handle == 0 || !(1..=3).contains(&modes) || output.is_null() {
+        return -nix::libc::EINVAL;
+    }
+    let view = unsafe { &*connection };
+    let link = view.link.clone();
+    let result = Deadline::from_monotonic_ns(deadline_ns)
+        .and_then(|deadline| {
+            let (deadline, original) = deadline.bounded(std::time::Duration::from_secs(10))?;
+            view.inner.call(deadline, move |_| async move {
+                link.ssap()
+                    .receive_until(vec![handle], modes as u8, original)
+                    .await
+            })
+        })
+        .and_then(|(_, raw)| SlkSsapUpdate::receipt(3, raw, vec![]));
+    match result {
+        Ok(value) => {
+            unsafe { output.write(value) };
+            0
+        }
+        Err(error) => -error,
+    }
+}
+/// Submit this original caller's owned property through the same Engine/Session.
+/// indication0/1 selects notification/indication. Requires current authenticated
+/// Session,CPCD and actual DB ownership. Original <=5s;no downgrade/retry.
+/// Success stage1/2 is not peer application delivery. Timeout can follow an
+/// admitted send;Native retains credit and indication ACK debt is drained.
+/// # Safety
+/// Same connection/output/fork contract as ssap_receive.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_ssap_send_owned(
+    connection: *const SlkConnection,
+    handle: u16,
+    indication: u32,
+    output: *mut SlkSsapUpdate,
+    deadline_ns: u64,
+) -> c_int {
+    if connection.is_null() || handle == 0 || indication > 1 || output.is_null() {
+        return -nix::libc::EINVAL;
+    }
+    let view = unsafe { &*connection };
+    let link = view.link.clone();
+    let result = Deadline::from_monotonic_ns(deadline_ns)
+        .and_then(|deadline| {
+            let (deadline, original) = deadline.protocol()?;
+            view.inner.call(deadline, move |_| async move {
+                link.ssap()
+                    .send_owned_update(handle, indication != 0, original)
+                    .await
+            })
+        })
+        .and_then(|value| {
+            SlkSsapUpdate::receipt(u32::from(value.stage), value.pdu, value.acknowledgement)
+        });
+    match result {
+        Ok(value) => {
+            unsafe { output.write(value) };
+            0
+        }
+        Err(error) => -error,
+    }
+}
+/// Observe only this caller's owned property configuration on the fixed lifetime.
+/// modes0..3 is not a Ready,Grant or application-delivery receipt;no enable/write.
+/// # Safety
+/// Live connection;output is exclusive writable one-byte storage,nonaliasing.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_ssap_owned_configuration(
+    connection: *const SlkConnection,
+    handle: u16,
+    output: *mut u8,
+    deadline_ns: u64,
+) -> c_int {
+    if connection.is_null() || handle == 0 || output.is_null() {
+        return -nix::libc::EINVAL;
+    }
+    let view = unsafe { &*connection };
+    let link = view.link.clone();
+    let result = Deadline::from_monotonic_ns(deadline_ns).and_then(|deadline| {
+        let (deadline, original) = deadline.protocol()?;
+        view.inner.call(deadline, move |_| async move {
+            link.ssap().owned_configuration(handle, original).await
+        })
+    });
+    match result {
+        Ok(value) => {
+            unsafe { output.write(value) };
+            0
+        }
+        Err(error) => -error,
+    }
 }

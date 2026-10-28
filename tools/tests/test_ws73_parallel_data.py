@@ -248,7 +248,7 @@ class BusinessEvidenceTests(unittest.TestCase):
     def test_missing_failed_cross_owner_and_false_scope_never_pass(self):
         for change in ['failure','synthetic','root','caps','samepid','samecontroller','sameusb',
                 'daemon','argv','policy','cleanup','connection-cleanup','rounds','bytes','boundary',
-                'missing-stage','child-stage','future-ack','wrong-live','late','aborted','recovery']:
+                'missing-stage','child-stage','future-ack','wrong-live','late','aborted','recovery','cleanup-error']:
             r=fixture();a,b=[w['run'] for w in r['workers']]
             if change=='failure':r['workers'][1]['exit']=1
             if change=='synthetic':b['initial'][0]['descriptors']['product']='synthetic fixture'
@@ -272,6 +272,7 @@ class BusinessEvidenceTests(unittest.TestCase):
             if change=='late':b['barriers'][1]['ack_wall_ns']+=46_000_000_000
             if change=='aborted':r['failure_shutdown']=[dict(pid=10)]
             if change=='recovery':r['automatic_fault_recovery_acceptance']=True
+            if change=='cleanup-error':r['cleanup_errors']=['extra barrier events']
             with self.subTest(change=change),self.assertRaises((CaptureError,ValueError)):
                 verify_records(r)
 

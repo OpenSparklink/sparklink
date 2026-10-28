@@ -75,6 +75,7 @@ pub(super) async fn exercise(
                 true,
                 deadline,
                 vec![4, 5, 6],
+                0,
             );
             let connection = server.clone();
             let destination = owner.clone();
@@ -186,3 +187,197 @@ pub(super) async fn exercise(
 
 // One existing errno source,not another protocol/authorization implementation.
 use nix::libc as libc_errno;
+
+// Actual frontend timer and API boundaries;the metadata producer is still a
+// fixture,not a daemon database,Native Host or physical cleanup implementation.
+pub(super) async fn lifecycle(
+    root: &std::path::Path,
+    executable: &std::path::Path,
+    library: &std::path::Path,
+    directory: &std::path::Path,
+    address: &str,
+    server: &zbus::Connection,
+    metadata: &OwnedMetadata,
+) -> anyhow::Result<()> {
+    let spawn = |language: &str| -> anyhow::Result<std::process::Child> {
+        let mut command = Command::new("timeout");
+        command.arg("40s"); // Outer supervision,not a replacement for Owned30.
+        if language == "c" {
+            command.arg(executable);
+        } else {
+            command
+                .arg("python3")
+                .arg(root.join("tools/testing/application_client/client.py"));
+        }
+        Ok(command
+            .args(["owned", "2", "7", "0100", "0200", "070809", "allow"])
+            .env("DBUS_SYSTEM_BUS_ADDRESS", address)
+            .env("LIBSPARKLINK_PATH", library)
+            .env("PYTHONPATH", root.join("bindings/python"))
+            .env("LD_LIBRARY_PATH", directory)
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()?)
+    };
+    fn sample(reader: &mut impl BufRead, text: &mut String) -> anyhow::Result<serde_json::Value> {
+        let value = json_line(reader, text, "SdkOwnedLifecycle: ")?;
+        assert_eq!(value["version"], 1);
+        assert_eq!(value["index"], 2);
+        assert_eq!(value["generation"], 7);
+        assert_eq!(value["start"], 16);
+        assert_eq!(value["property"], 17);
+        let created = value["created_ns"].as_u64().unwrap();
+        let end = value["deadline_ns"].as_u64().unwrap();
+        assert!(created > 0);
+        assert_eq!(end - created, 30_000_000_000);
+        assert!(value["sampled_ns"].as_u64().unwrap() >= created);
+        Ok(value)
+    }
+    fn ready(
+        child: &mut std::process::Child,
+        language: &str,
+    ) -> anyhow::Result<(
+        std::io::BufReader<std::process::ChildStdout>,
+        String,
+        serde_json::Value,
+    )> {
+        let mut reader = std::io::BufReader::new(child.stdout.take().unwrap());
+        let mut text = String::new();
+        assert_eq!(
+            line(&mut reader, &mut text)?,
+            format!("SdkOwnedAPI: api={language} client_closed=true\n")
+        );
+        assert_eq!(
+            line(&mut reader, &mut text)?,
+            "SsapOwnedService: start=16 end=17 property=17; local registration only\n"
+        );
+        child.stdin.as_mut().unwrap().write_all(b"lifecycle\n")?;
+        let value = sample(&mut reader, &mut text)?;
+        assert_eq!(value["stage"], "observed");
+        assert_eq!(value["error"], 0);
+        assert_eq!(value["api"], language);
+        assert!(value["sampled_ns"].as_u64().unwrap() < value["deadline_ns"].as_u64().unwrap());
+        Ok((reader, text, value))
+    }
+    fn same_budget(first: &serde_json::Value, later: &serde_json::Value) {
+        for field in [
+            "api",
+            "pid",
+            "index",
+            "generation",
+            "start",
+            "property",
+            "created_ns",
+            "deadline_ns",
+        ] {
+            assert_eq!(first[field], later[field], "original {field}");
+        }
+    }
+    for language in ["c", "python"] {
+        let mut child = spawn(language)?;
+        let (mut reader, mut text, first) = ready(&mut child, language)?;
+        let deadline = slk_channel::deadline::Deadline::after(std::time::Duration::from_secs(2))?
+            .stamp()
+            .monotonic_ns;
+        let prompt: slk_contract::ssap::SsapAuthorizationPrompt = (
+            999,
+            (2, 7, 13, 3, 41, 0, 10, 10, 0),
+            17,
+            false,
+            deadline,
+            vec![],
+            0,
+        );
+        let destination = metadata.owner.lock().unwrap().clone();
+        let path = metadata.authorizer.lock().unwrap().clone();
+        let connection = server.clone();
+        let pending = tokio::spawn(async move {
+            connection
+                .call_method(
+                    Some(destination.as_str()),
+                    path.as_str(),
+                    Some("org.sparklink.SsapAuthorizer"),
+                    "AuthorizeValue",
+                    &(prompt,),
+                )
+                .await
+        });
+        let returned = sample(&mut reader, &mut text)?;
+        same_budget(&first, &returned);
+        assert_eq!(returned["stage"], "approval_return");
+        assert_eq!(returned["error"], 0);
+        assert_eq!(returned["request_id"], 999);
+        assert!(
+            returned["call_returned_ns"].as_u64().unwrap()
+                >= returned["call_started_ns"].as_u64().unwrap()
+        );
+        let decision = json_line(&mut reader, &mut text, "SdkAuthorizationDecision: ")?;
+        assert_eq!(decision["token"], returned["token"]);
+        assert_eq!(decision["decision_ns"], returned["call_started_ns"]);
+        assert!(pending.await??.body().deserialize::<bool>()?);
+        child.stdin.as_mut().unwrap().write_all(b"quit\n")?;
+        assert_eq!(
+            line(&mut reader, &mut text)?,
+            format!("SdkOwnedRemoved: api={language} start=16\n")
+        );
+        for stage in ["cleanup_begin", "cleanup_end"] {
+            let value = sample(&mut reader, &mut text)?;
+            same_budget(&first, &value);
+            assert_eq!(value["stage"], stage);
+            assert_eq!(value["error"], 0);
+        }
+        let output = child.wait_with_output()?;
+        assert!(output.status.success() && output.stderr.is_empty());
+        assert!(line_eof(&mut reader)?);
+        std::fs::write(
+            directory.join(format!("{language}-publisher-lifecycle-normal.stdout")),
+            text,
+        )?;
+    }
+    // Both real frontend budgets expire concurrently. Do not substitute a
+    // shortened timer or a fake clock for the original thirty seconds.
+    let mut expired = Vec::new();
+    for language in ["c", "python"] {
+        let mut child = spawn(language)?;
+        let (reader, text, first) = ready(&mut child, language)?;
+        expired.push((language, child, reader, text, first));
+    }
+    for (language, child, mut reader, mut text, first) in expired {
+        for (stage, error) in [
+            ("cleanup_begin", -(libc_errno::ETIMEDOUT as i64)),
+            ("cleanup_end", 0),
+        ] {
+            let value = sample(&mut reader, &mut text)?;
+            same_budget(&first, &value);
+            assert_eq!(value["stage"], stage);
+            // Python preserves the exception through context-manager exit;
+            // C's void free only reports returning,not cleanup success.
+            if stage == "cleanup_begin" || language == "c" {
+                assert_eq!(value["error"], error);
+            } else {
+                assert_eq!(value["error"], -(libc_errno::ETIMEDOUT as i64));
+            }
+            assert!(
+                value["sampled_ns"].as_u64().unwrap() >= value["deadline_ns"].as_u64().unwrap()
+            );
+        }
+        let output = child.wait_with_output()?;
+        assert!(!output.status.success() && !output.stderr.is_empty());
+        assert!(line_eof(&mut reader)?);
+        std::fs::write(
+            directory.join(format!("{language}-publisher-lifecycle-expired.stdout")),
+            text,
+        )?;
+        std::fs::write(
+            directory.join(format!("{language}-publisher-lifecycle-expired.stderr")),
+            output.stderr,
+        )?;
+    }
+    Ok(())
+}
+
+fn line_eof(reader: &mut impl BufRead) -> anyhow::Result<bool> {
+    let mut text = String::new();
+    Ok(reader.read_line(&mut text)? == 0)
+}

@@ -45,8 +45,39 @@ manifest。记录内核、编译服务、测试工具的完整提交；三者可
 不匹配、缺少原始记录、丢包或来源不明时保留失败，停止传播 PASS；修正后使用新输出目录。
 人工拔插、hub 切电和 QMP 操作记录为干预，不记作自然恢复。
 
+核对四设备报告时，分别检查[对应门禁契约](../reference/four-device-gates.md)。断链场景
+还须以原始USB时间线确认存活组在实际Disconnect前至少两次、双方Down后至少四次
+完整回复；两组都返回了数据并不足以证明隔离。新进展契约还需核对原应用stdout前缀、
+现场pipe事件和建链／Down后的被动检查，不能用旧报告补版本字段。长包与credit观测
+是独立模式，不能覆盖断链失败，也不授完整流控或自然恢复资格。
+
+Owned并行模式还需按同一参考契约核对16个真实publisher、allow／deny及退出后远端
+错误；每条事务都须对应原调用及双端捕获。只看本地注册成功或两组进程存活不能通过。
+检查SSAP线上区间重叠时仍核对各自的物理Up／Down与完整身份，不能把一组的事务归给另一组。
+
 [理解证据边界](../explanation/qualification-boundaries.md)、
 [VM 输入准备](../reference/vm-gate-inputs.md)、[历史数据面规划](../../history/connections/data-socket-vertical-plan-20261012.md)。
+
+## 核对共享 SSAP 慢消费者隔离
+
+先在 manifest、boot 参数和两阶段原请求中确认显式 shared `pressure` 场景及
+pressure contract 1。不能把单订阅者队列压力或旧的共享释放记录换标签。
+
+1. 检查两个独立 C／Python 读取进程的 UID1004、不同 token、各自 Native 安全
+   epoch，以及 UID1005 服务拥有者；同一端点必须保持原 controller／generation／lifetime。
+2. 核对每组前17次发布时，健康端 B 每次都有实际校验和不同载荷回写。慢端 A
+   的 drain 应只含前16包、last=17，以及一次通知丢弃或本地指示拒绝；不得为溢出包
+   补造 A 的应用交付。逐条 cached 校验／回写也须有对端值观察及两端 USB。
+3. 检查第18次发布双端恢复，A 的序号为18且累计丢失没有归零。随后 A 的释放
+   不能停用 B；新 A 必须得到新 token，只有最后 B 释放才产生线上 CPCD disable。
+4. 使用该提交原有 `ws73_ssap_subscription.corroborate`、
+   `verify_supervisor_artifacts` 和 `ws73_ssap_shared.configuration_wire` 重算，
+   再运行该提交 runner 的保存报告终判。整个矩阵应有八组、176次发布、328次实际
+   SSAP 校验回写；普通短通道回复单独计数。缺包、捕获丢失、退出失败或身份不符均失败。
+
+指示 ACK1 只表明至少一个有效队列接受。A 已满而 B 接收时，线上 ACK1 与 A 的
+本地拒绝计数可以同时存在，不能把它写成所有应用已经处理。此核对不授完整公平性、
+控制器 credit 耗尽、撤权、引用排空、性能或自然恢复资格。
 
 
 ## 核对begun PDU最后fd关闭的隔离证据
@@ -177,3 +208,23 @@ USB故障、物理拔插或自然恢复。普通用户与管理者的权限、�
 随后仍运行原独立 USB/CMTC/NOCP 核对，要求真实提交与完成账目和对端应用回复。
 快照不代替这一核对，也不证明 callback 排空或完成事件准确性。不要通过固定睡眠、
 延伸抓包窗口或重跑覆盖失败取得 PASS；历史 v3 的末尾债务失败保留原边界和结果。
+
+## 核对撤权或断链时未开始的排队 PDU
+
+此项面向集成测试维护者，要求新准备的专用 VM、两个明确授权且板型／镜像匹配的
+设备、原 File／Grant 测试支持，以及匹配的真实 IN81 有界 hold fixture。仅在这些
+前置条件核对后，向原 Managed prefix 门禁增加 `--managed-channel-queued-discard`
+和 `--session-service-observe`；release／close／dup、Down 与原期限分别运行并保存
+独立目录，不能把其中一项成功当作全矩阵成功。此操作说明不是新产物的实机资格。
+
+先确认原 2042 字节 PDU 已开始且池满，再核对普通 socket 实际准入的两份随机
+排队 PDU。`channel_grant.armed` 必须保存两个 syscall 的载荷、原期限、身份和
+时间窗；同一次 `pre_block_tx_status` 必须有 queued=2、queue_limit=8、busy=1。
+原前缀、dup 首次关闭后业务、最终撤权、阻塞 RX、旧 fd 拒绝、同行 Ready／lease／
+扫描、双端 USB 与内核日志检查继续执行，不能因新增排队观察而省略。
+
+最后检查 `session_service_observation.queued_discard_lifecycle`：两个独立序号各有
+一次 stage3，均无实际 USB 前缀，原已开始 PDU另有真实提交记录，其他 controller
+没有排队丢弃。缺记录、追踪覆盖、身份或期限不符均保留 FAIL／未证明；不要补造
+事件或裁剪窗口。它只证明本地排队退休，不证明全部物理义务、引用排空、NOCP
+真实性、自然恢复或四设备独立业务隔离；已有业务资格仍按准确产物单独核对。

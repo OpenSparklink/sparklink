@@ -23,10 +23,20 @@ pub(crate) struct PrivateBus {
 
 impl PrivateBus {
     pub(crate) fn start() -> Self {
+        Self::with_config(None)
+    }
+
+    fn with_config(config: Option<&str>) -> Self {
         let executable =
             std::env::var_os("SPARKLINK_TEST_DBUS_DAEMON").unwrap_or_else(|| "dbus-daemon".into());
-        let child = Command::new(executable)
-            .args(["--session", "--nofork", "--print-address=1"])
+        let mut command = Command::new(executable);
+        if let Some(config) = config {
+            command.args(["--config-file", config]);
+        } else {
+            command.arg("--session");
+        }
+        let child = command
+            .args(["--nofork", "--print-address=1"])
             .stdout(Stdio::piped())
             .spawn()
             .expect("dbus-daemon is required for the D-Bus regression");
@@ -205,6 +215,17 @@ async fn silent_30s_dbus_requests_and_event_dispatch_do_not_share_wait_lock() {
     let (source, events, entered, dropped) = source();
     let task = EventTask::start(source, state.clone(), server.clone());
     entered.await.unwrap();
+    // The retired entry remains a negative contract check, not evidence that
+    // the current connection handler acquired SharedState during silence.
+    let retired = timeout(
+        Duration::from_secs(2),
+        proxy.call::<_, _, ()>("ConnectDevice", &("01:02:03:04:05:06",)),
+    )
+    .await
+    .unwrap()
+    .unwrap_err();
+    assert!(matches!(retired, zbus::Error::MethodError(name, _, _)
+        if name.as_str() == "org.freedesktop.DBus.Error.UnknownMethod"));
     let quiet = Instant::now();
     while quiet.elapsed() < Duration::from_secs(30) {
         let name = timeout(Duration::from_secs(2), proxy.get_property::<String>("Name"))
@@ -223,22 +244,30 @@ async fn silent_30s_dbus_requests_and_event_dispatch_do_not_share_wait_lock() {
             ),
             timeout(
                 Duration::from_secs(2),
-                proxy.call::<_, _, ()>("ConnectDevice", &("01:02:03:04:05:06",))
+                proxy.call::<_, _, ()>("ConnectDeviceTyped", &("01:02:03:04:05:06", 0_u8),)
             ),
         );
         // /dev/null is intentionally not a fake successful controller. A real
         // method error proves the handler ran; a timeout or transport error does not.
-        for (result, expected) in [
+        for (result, expected, expected_detail) in [
             (
                 info.map(|r| r.map(|_| ())),
                 "org.freedesktop.DBus.Error.NotSupported",
+                None,
             ),
-            (scan, "org.freedesktop.DBus.Error.NotSupported"),
-            (connect, "org.freedesktop.DBus.Error.UnknownMethod"),
+            (scan, "org.freedesktop.DBus.Error.NotSupported", None),
+            (
+                connect,
+                "org.freedesktop.DBus.Error.Failed",
+                Some("management unavailable"),
+            ),
         ] {
             match result.unwrap().unwrap_err() {
-                zbus::Error::MethodError(name, _, _) => {
-                    assert_eq!(name.as_str(), expected)
+                zbus::Error::MethodError(name, detail, _) => {
+                    assert_eq!(name.as_str(), expected);
+                    if let Some(expected_detail) = expected_detail {
+                        assert_eq!(detail.as_deref(), Some(expected_detail));
+                    }
                 }
                 error => panic!("unexpected D-Bus error: {error}"),
             }
@@ -312,6 +341,84 @@ async fn shutdown_with_business_state_locked() {
         .unwrap();
     dropped.await.unwrap();
     assert!(lock.peers.is_empty());
+}
+
+/// Executes the same lock wait as Native retry, with a real owned socket as the
+/// receiver-resource fixture. This is not a kernel event subscription or RF test.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn native_retry_pending_lock_cancel_joins_and_releases_owned_fd() {
+    use tokio::io::AsyncReadExt;
+
+    let state = state();
+    let lock = state.lock().await;
+    let (receiver_fd, mut peer) = tokio::net::UnixStream::pair().unwrap();
+    let (cancel, mut cancelled) = oneshot::channel();
+    let (entered, pending) = oneshot::channel();
+    let task = tokio::spawn({
+        let state = state.clone();
+        async move {
+            let _receiver_fd = receiver_fd;
+            let mut wait = std::pin::pin!(native_retry_needed(&state, &mut cancelled));
+            let mut entered = Some(entered);
+            // Signal only after the actual production future returned Pending,
+            // while the caller still owns the lock. No timing guess/barrier sleep.
+            let result = std::future::poll_fn(|cx| {
+                let result = wait.as_mut().poll(cx);
+                if result.is_pending()
+                    && let Some(entered) = entered.take()
+                {
+                    entered.send(()).unwrap();
+                }
+                result
+            })
+            .await;
+            assert_eq!(result, None);
+        }
+    });
+    let task = EventTask {
+        cancel: Some(cancel),
+        task: Some(task),
+    };
+    timeout(Duration::from_secs(2), pending)
+        .await
+        .unwrap()
+        .unwrap();
+    timeout(Duration::from_secs(2), task.shutdown())
+        .await
+        .expect("Native retry must cancel without releasing SharedState")
+        .unwrap();
+    assert_eq!(
+        timeout(Duration::from_secs(1), peer.read(&mut [0; 1]))
+            .await
+            .unwrap()
+            .unwrap(),
+        0
+    );
+    assert!(lock.peers.is_empty());
+    assert!(
+        state.try_lock().is_err(),
+        "business lock remains held through join and fd closure"
+    );
+}
+
+#[tokio::test]
+async fn native_retry_cancel_precedes_ready_lock_and_sender_loss_stops() {
+    let state = state();
+    let (cancel, mut cancelled) = oneshot::channel();
+    cancel.send(()).unwrap();
+    assert_eq!(native_retry_needed(&state, &mut cancelled).await, None);
+    let (cancel, mut cancelled) = oneshot::channel();
+    drop(cancel);
+    assert_eq!(native_retry_needed(&state, &mut cancelled).await, None);
+    let (_cancel, mut cancelled) = oneshot::channel();
+    assert_eq!(
+        native_retry_needed(&state, &mut cancelled).await,
+        Some(true)
+    );
+    assert!(
+        state.try_lock().is_ok(),
+        "snapshot releases the lock before refresh"
+    );
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -2126,5 +2233,398 @@ async fn retiring_registration_never_removes_another_resource_owner_at_its_path(
             .await
             .native_connection_objects
             .contains_key(&1)
+    );
+}
+
+/// Per-task test rendezvous only; absent from the default daemon binary.
+/// It changes scheduling before the production wait, never its result or state.
+pub(super) struct NativeRetryProbe {
+    before: oneshot::Sender<()>,
+    resume: oneshot::Receiver<()>,
+    pending: oneshot::Sender<()>,
+}
+
+pub(super) async fn observe_native_retry(
+    wait: impl Future<Output = Option<bool>>,
+    probe: Option<NativeRetryProbe>,
+) -> Option<bool> {
+    let Some(probe) = probe else {
+        return wait.await;
+    };
+    probe
+        .before
+        .send(())
+        .expect("VM test observes actual retry branch");
+    probe
+        .resume
+        .await
+        .expect("VM test releases pre-wait rendezvous");
+    let mut pending = Some(probe.pending);
+    let mut wait = std::pin::pin!(wait);
+    std::future::poll_fn(|cx| {
+        let result = wait.as_mut().poll(cx);
+        if result.is_pending()
+            && let Some(pending) = pending.take()
+        {
+            pending
+                .send(())
+                .expect("VM test observes real pending lock wait");
+        }
+        result
+    })
+    .await
+}
+
+struct NativeVmFixture {
+    victim: (u16, u64),
+    sibling: (u16, u64),
+    control: Arc<Adapter>,
+    sibling_control: Adapter,
+    expected: slk_protocol::SleControllerSnapshot,
+    before_sibling: slk_protocol::SleControllerSnapshot,
+    links: slk_protocol::SleLinkSnapshot,
+    state: SharedState,
+    bus: PrivateBus,
+    server: zbus::Connection,
+}
+
+fn selected_native(identity: (u16, u64)) -> Adapter {
+    let mut fd = Adapter::open("/dev/sparklink").unwrap();
+    fd.select_device(identity.0).unwrap();
+    let s = fd.controller_snapshot(identity.1).unwrap();
+    assert_eq!((s.dev_index, s.generation), identity);
+    assert_eq!(s.flags, slk_protocol::CONTROLLER_READY);
+    fd
+}
+
+async fn native_vm_fixture() -> NativeVmFixture {
+    assert_eq!(
+        std::env::var("SPARKLINK_NATIVE_EVENT_VM").as_deref(),
+        Ok("1")
+    );
+    fn target(name: &str) -> (u16, u64) {
+        let text = std::env::var(name).expect("explicit controller index:generation required");
+        let (index, generation) = text.split_once(':').expect("index:generation");
+        let identity = (index.parse().unwrap(), generation.parse().unwrap());
+        assert_ne!(identity.1, 0);
+        identity
+    }
+    let victim = target("SPARKLINK_NATIVE_EVENT_TARGET");
+    let sibling = target("SPARKLINK_NATIVE_EVENT_SIBLING");
+    assert_ne!(victim.0, sibling.0);
+    let control = Arc::new(selected_native(victim));
+    let sibling_control = selected_native(sibling);
+    let before_sibling = sibling_control.controller_snapshot(sibling.1).unwrap();
+    let expected = control.controller_snapshot(victim.1).unwrap();
+    let links = control.native_link_snapshot(victim.1).unwrap();
+    assert_eq!(links.flags, slk_protocol::LINK_SNAPSHOT_KNOWN);
+    assert_eq!(
+        links.count, 0,
+        "run before physical connections; no competing SSAP owners"
+    );
+    let mut value = AdapterState::new(
+        control.clone(),
+        DaemonConfig::default(),
+        BondingStore::new(&std::env::temp_dir(), "unused-native-event-vm"),
+        ProfileRegistry::new(),
+    );
+    value.controller = expected;
+    value.native_control = Some(control.clone());
+    let state = Arc::new(Mutex::new(value));
+    let bus = PrivateBus::with_config(Some("/usr/share/sparklink/native-event-test-dbus.conf"));
+    let server = server(&bus, state.clone()).await;
+    NativeVmFixture {
+        victim,
+        sibling,
+        control,
+        sibling_control,
+        expected,
+        before_sibling,
+        links,
+        state,
+        bus,
+        server,
+    }
+}
+
+/// Explicit VM-only test: real selected controller, subscription/ioctl and the
+/// whole Native EventTask loop. No management lease or firmware/device writes.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "dedicated VM, exact two controller identities and real Native kernel required"]
+async fn native_retry_real_subscription_vm() {
+    use std::os::fd::AsRawFd;
+    assert_eq!(
+        std::env::var("SPARKLINK_NATIVE_EVENT_VM").as_deref(),
+        Ok("1")
+    );
+    let NativeVmFixture {
+        victim,
+        sibling,
+        control,
+        sibling_control,
+        expected,
+        before_sibling,
+        links,
+        state,
+        bus: _bus,
+        server,
+    } = native_vm_fixture().await;
+    let subscription = selected_native(victim);
+    let raw_fd = subscription.as_fd().as_raw_fd();
+    let receiver = subscription.into_controller_event_receiver().unwrap();
+    let (before, at_retry) = oneshot::channel();
+    let (resume, released) = oneshot::channel();
+    let (pending, at_pending) = oneshot::channel();
+    let task = EventTask::start_native_inner(
+        receiver,
+        state.clone(),
+        server,
+        expected,
+        Some(NativeRetryProbe {
+            before,
+            resume: released,
+            pending,
+        }),
+        None,
+    );
+    timeout(Duration::from_secs(3), at_retry)
+        .await
+        .unwrap()
+        .unwrap();
+    let lock = state.lock().await;
+    assert!(
+        lock.native_links_known(),
+        "actual initial kernel snapshot reconciled before retry"
+    );
+    assert!(lock.native_link_barrier >= links.event_seq);
+    resume.send(()).unwrap();
+    timeout(Duration::from_secs(2), at_pending)
+        .await
+        .unwrap()
+        .unwrap();
+    timeout(Duration::from_secs(2), task.shutdown())
+        .await
+        .expect("actual Native retry cancels while SharedState remains held")
+        .unwrap();
+    assert!(state.try_lock().is_err());
+    assert_eq!(
+        std::fs::read_link(format!("/proc/self/fd/{raw_fd}"))
+            .unwrap_err()
+            .kind(),
+        std::io::ErrorKind::NotFound,
+        "actual subscription fd released at join; no substitute fd"
+    );
+    let after = control.controller_snapshot(victim.1).unwrap();
+    let after_sibling = sibling_control.controller_snapshot(sibling.1).unwrap();
+    assert_eq!(
+        (after.dev_index, after.generation, after.flags),
+        (expected.dev_index, expected.generation, expected.flags)
+    );
+    assert_eq!(
+        (
+            after_sibling.dev_index,
+            after_sibling.generation,
+            after_sibling.flags
+        ),
+        (
+            before_sibling.dev_index,
+            before_sibling.generation,
+            before_sibling.flags
+        )
+    );
+    println!(
+        "NativeRetryVm: {{\"index\":{},\"generation\":{},\"sibling_index\":{},\"sibling_generation\":{},\"initial_kernel_snapshot\":true,\"retry_pending_with_lock_held\":true,\"joined_with_lock_held\":true,\"subscription_fd_closed\":true,\"both_still_ready\":true}}",
+        victim.0, victim.1, sibling.0, sibling.1
+    );
+}
+
+/// Observes polls of the actual receiver future; no event fixture, delay,
+/// replacement wakeup or synthetic completion. Absent from default slkd.
+#[derive(Default)]
+pub(super) struct NativeReceiveProbe {
+    pending: std::sync::atomic::AtomicU64,
+    completed: std::sync::atomic::AtomicU64,
+    entered: tokio::sync::Notify,
+}
+
+pub(super) async fn observe_native_receive<T>(
+    receive: impl Future<Output = T>,
+    probe: Option<&NativeReceiveProbe>,
+) -> T {
+    use std::sync::atomic::Ordering::SeqCst;
+    let mut receive = std::pin::pin!(receive);
+    std::future::poll_fn(|cx| {
+        let result = receive.as_mut().poll(cx);
+        if let Some(probe) = probe {
+            if result.is_pending() {
+                probe.pending.fetch_add(1, SeqCst);
+                probe.entered.notify_one();
+            } else {
+                probe.completed.fetch_add(1, SeqCst);
+            }
+        }
+        result
+    })
+    .await
+}
+
+/// Actual Native loop stays active throughout the quiet window. No management
+/// lease is acquired by this test: scan/connect must be rejected by production
+/// handlers, while the query reads the real kernel. This is not RF success or
+/// system-bus deployment policy qualification.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "dedicated VM and exact two real Native controller identities required"]
+async fn native_quiet_real_subscription_vm() {
+    use std::os::fd::AsRawFd;
+    use std::sync::atomic::Ordering::SeqCst;
+    let NativeVmFixture {
+        victim,
+        sibling,
+        control,
+        sibling_control,
+        expected,
+        before_sibling,
+        links: _,
+        state,
+        bus,
+        server,
+    } = native_vm_fixture().await;
+    let client = client(&bus).await;
+    let proxy = adapter_proxy(&client).await;
+    let controller = zbus::Proxy::new(
+        &client,
+        "org.sparklink",
+        "/org/sparklink/slk0/controller",
+        "org.sparklink.Controller",
+    )
+    .await
+    .unwrap();
+    let subscription = selected_native(victim);
+    let raw_fd = subscription.as_fd().as_raw_fd();
+    let receiver = subscription.into_controller_event_receiver().unwrap();
+    let probe = Arc::new(NativeReceiveProbe::default());
+    let task = EventTask::start_native_inner(
+        receiver,
+        state.clone(),
+        server,
+        expected,
+        None,
+        Some(probe.clone()),
+    );
+    timeout(Duration::from_secs(3), async {
+        loop {
+            let entered = probe.entered.notified();
+            if probe.pending.load(SeqCst) != 0 {
+                break;
+            }
+            entered.await;
+        }
+    })
+    .await
+    .expect("actual Native receive reached Pending");
+    assert!(state.lock().await.native_links_known());
+    let watermark = control.native_link_snapshot(victim.1).unwrap();
+    let completed = probe.completed.load(SeqCst);
+    let pending = probe.pending.load(SeqCst);
+    let quiet = Instant::now();
+    let mut rounds = 0_u64;
+    while quiet.elapsed() < Duration::from_secs(30) {
+        let (name, summary, scan, connect) = tokio::join!(
+            timeout(Duration::from_secs(2), proxy.get_property::<String>("Name")),
+            timeout(
+                Duration::from_secs(2),
+                controller.call::<_, _, (u16, u64, u64, u64, u32)>("GetLinkSummary", &())
+            ),
+            timeout(
+                Duration::from_secs(2),
+                proxy.call::<_, _, ()>("StartControllerScan", &())
+            ),
+            timeout(
+                Duration::from_secs(2),
+                proxy.call::<_, _, ()>("ConnectDeviceTyped", &("01:02:03:04:05:06", 0_u8))
+            ),
+        );
+        assert!(!name.unwrap().unwrap().is_empty());
+        let info = summary.unwrap().unwrap();
+        assert_eq!(
+            info,
+            (
+                victim.0,
+                victim.1,
+                watermark.revision,
+                watermark.event_seq,
+                0
+            )
+        );
+        for result in [scan, connect] {
+            match result
+                .expect("current handler responded within original two seconds")
+                .unwrap_err()
+            {
+                zbus::Error::MethodError(name, detail, _) => {
+                    assert_eq!(name.as_str(), "org.freedesktop.DBus.Error.Failed");
+                    assert_eq!(detail.as_deref(), Some("management unavailable"));
+                }
+                error => panic!("unexpected D-Bus transport/error: {error}"),
+            }
+        }
+        assert_eq!(
+            probe.completed.load(SeqCst),
+            completed,
+            "real receiver completed during declared silence"
+        );
+        rounds += 1;
+        tokio::time::sleep(Duration::from_millis(250)).await;
+    }
+    let quiet_ms = quiet.elapsed().as_millis();
+    assert!(rounds >= 10, "queries span the actual quiet window");
+    assert_eq!(probe.completed.load(SeqCst), completed);
+    let pending_polls = probe.pending.load(SeqCst) - pending;
+    assert!(
+        pending_polls > 0,
+        "Native loop remained live across retry ticks"
+    );
+    let after_links = control.native_link_snapshot(victim.1).unwrap();
+    assert_eq!(
+        (
+            after_links.event_seq,
+            after_links.revision,
+            after_links.count,
+            after_links.flags
+        ),
+        (
+            watermark.event_seq,
+            watermark.revision,
+            0,
+            slk_protocol::LINK_SNAPSHOT_KNOWN
+        )
+    );
+    timeout(Duration::from_secs(2), task.shutdown())
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        std::fs::read_link(format!("/proc/self/fd/{raw_fd}"))
+            .unwrap_err()
+            .kind(),
+        std::io::ErrorKind::NotFound
+    );
+    let after = control.controller_snapshot(victim.1).unwrap();
+    let other = sibling_control.controller_snapshot(sibling.1).unwrap();
+    assert_eq!(
+        (after.dev_index, after.generation, after.flags),
+        (expected.dev_index, expected.generation, expected.flags)
+    );
+    assert_eq!(
+        (other.dev_index, other.generation, other.flags),
+        (
+            before_sibling.dev_index,
+            before_sibling.generation,
+            before_sibling.flags
+        )
+    );
+    println!(
+        "NativeQuietVm: {{\"index\":{},\"generation\":{},\"sibling_index\":{},\"sibling_generation\":{},\"quiet_ms\":{},\"rounds\":{},\"pending_polls\":{},\"receive_completions\":0,\"actual_native_loop\":true,\"kernel_watermark_unchanged\":true,\"query_verified\":true,\"scan_rejected_without_lease\":true,\"connect_rejected_without_lease\":true,\"subscription_fd_closed\":true,\"both_still_ready\":true}}",
+        victim.0, victim.1, sibling.0, sibling.1, quiet_ms, rounds, pending_polls
     );
 }

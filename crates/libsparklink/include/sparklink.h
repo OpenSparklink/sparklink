@@ -28,6 +28,18 @@
 #define SLK_SERVICE_AUTHORIZATION_REQUESTS 1
 
 /**
+ * This lease's routing and configuration ownership are released. Without
+ * REMOTE_RETAINED, the last remote CPCD configuration was verified off.
+ */
+#define SLK_SSAP_SUBSCRIPTION_CLEANUP_CONFIRMED 1
+
+/**
+ * Other same-scope leases retained the remote CPCD at this terminal
+ * observation. Only valid with CLEANUP_CONFIRMED, not a current-state claim.
+ */
+#define SLK_SSAP_SUBSCRIPTION_REMOTE_RETAINED 2
+
+/**
  * One delivered request. Holds no caller/registration/Native fd. Freeing an
  * unanswered request denies it. Its slot is retained until callback drain AND
  * request release; old handles cannot approve a later request.
@@ -62,6 +74,54 @@ typedef struct SlkDiscovery SlkDiscovery;
  * are separate; free does not silently withdraw or disconnect anything.
  */
 typedef struct SlkLocalService SlkLocalService;
+
+/**
+ * Local inbox only. Does not retain a caller/registration. Free stops its
+ * callback admission, not remote binding, service, connection or controller.
+ */
+typedef struct SlkMethodProvider SlkMethodProvider;
+
+/**
+ * One original callback. No caller/registration reference. Release and actual
+ * callback drain are separate; an unanswered release becomes unavailable.
+ */
+typedef struct SlkMethodProviderRequest SlkMethodProviderRequest;
+
+/**
+ * Local inbox only. Does not retain a caller/registration. Free stops its
+ * callback admission, not remote binding, service, connection or controller.
+ */
+typedef struct SlkReadProvider SlkReadProvider;
+
+/**
+ * One original callback. No caller/registration reference. Release and actual
+ * callback drain are separate; an unanswered release becomes unavailable.
+ */
+typedef struct SlkReadProviderRequest SlkReadProviderRequest;
+
+/**
+ * An owned historical observation. Does not retain a Client/Connection or
+ * confer current lifetime, service availability, security or a Grant.
+ */
+typedef struct SlkSsapDiscoveryResult SlkSsapDiscoveryResult;
+
+/**
+ * Retains the originating caller and shared executor,not the parent C view.
+ * This is an opaque lease,not a socket fd with dup/SCM_RIGHTS semantics.
+ */
+typedef struct SlkSsapSubscription SlkSsapSubscription;
+
+/**
+ * Local inbox only. Does not retain a caller/registration. Free stops its
+ * callback admission, not remote binding, service, connection or controller.
+ */
+typedef struct SlkWriteProvider SlkWriteProvider;
+
+/**
+ * One original callback. No caller/registration reference. Release and actual
+ * callback drain are separate; an unanswered release becomes unavailable.
+ */
+typedef struct SlkWriteProviderRequest SlkWriteProviderRequest;
 
 typedef struct SPARKLINK_ALIGN(8) SleChannelInfo {
     uint16_t version;
@@ -175,6 +235,20 @@ typedef struct SlkControllerId {
 } SlkControllerId;
 
 /**
+ * One bounded SSAP update receipt,not proof of application processing.
+ * stage1=notification software admission;2=indication peer receive-queue ACK;
+ * 3=received packet and verified remote CPCD disable. Unused bytes are zero.
+ */
+typedef struct SlkSsapUpdate {
+    uint32_t stage;
+    uint16_t pdu_length;
+    uint16_t acknowledgement_length;
+    uint8_t pdu[2048];
+    uint8_t acknowledgement[3];
+    uint8_t reserved[5];
+} SlkSsapUpdate;
+
+/**
  * A directory observation, not Ready, Down, authorization or a drain barrier.
  * kind:1 Snapshot,2 Published,3 Withdrawn,4 Gap. sequence: snapshot cursor,
  * event sequence or Gap.after. oldest/current are nonzero only for Gap.
@@ -234,15 +308,27 @@ typedef struct SlkServiceProperty {
 } SlkServiceProperty;
 
 /**
+ * A distinct method definition; access bits1/2/4 mean encryption,
+ * authentication and explicit local approval. No property operation mask.
+ * Initialize the entire object; reserved bytes must be zero.
+ */
+typedef struct SlkServiceMethod {
+    uint32_t access;
+    uint8_t uuid_length;
+    uint8_t reserved[3];
+    uint8_t uuid[16];
+} SlkServiceMethod;
+
+/**
  * Immutable local receipt, not remote publication, Ready or authorization.
- * Only handles[0..property_count] are meaningful; all remaining bytes are zero.
+ * Handles are properties first, then methods; only their combined count is meaningful.
  */
 typedef struct SlkServiceReceipt {
     struct SlkControllerId controller;
     uint16_t start;
     uint16_t end;
     uint16_t property_count;
-    uint8_t reserved[2];
+    uint16_t method_count;
     uint16_t handles[64];
 } SlkServiceReceipt;
 
@@ -266,10 +352,159 @@ typedef struct SlkAuthorizationRequestInfo {
     uint8_t local_tcid;
     uint8_t remote_tcid;
     uint8_t pi;
-    uint8_t reserved[2];
-    uint8_t value[2042];
-    uint8_t tail[6];
+    /**
+     * Authorization target kind: property0, authenticated CPCD2, method3.
+     * Kind3 is not an SSAP wire data_type.
+     */
+    uint8_t data_type;
+    uint8_t reserved[1];
+    uint8_t value[2043];
+    uint8_t tail[5];
 } SlkAuthorizationRequestInfo;
+
+/**
+ * Immutable original context, not current authorization or peer identity.
+ * All reserved bytes zero. Proposed bytes are available through the bounded value copy.
+ */
+typedef struct SlkMethodProviderRequestInfo {
+    struct SlkControllerId controller;
+    uint64_t token;
+    uint64_t request_id;
+    uint64_t connection_lifetime;
+    uint64_t security_epoch;
+    uint64_t deadline_ns;
+    uint32_t security_level;
+    uint16_t connection_handle;
+    uint16_t method;
+    uint16_t maximum_result_bytes;
+    uint16_t argument_length;
+    uint8_t local_tcid;
+    uint8_t remote_tcid;
+    uint8_t pi;
+    uint8_t operation;
+    uint8_t reserved[8];
+} SlkMethodProviderRequestInfo;
+
+/**
+ * Immutable original context, not current authorization or peer identity.
+ * All reserved bytes zero; no implicit value database or proposed write.
+ */
+typedef struct SlkReadProviderRequestInfo {
+    struct SlkControllerId controller;
+    uint64_t token;
+    uint64_t request_id;
+    uint64_t connection_lifetime;
+    uint64_t security_epoch;
+    uint64_t deadline_ns;
+    uint32_t security_level;
+    uint16_t connection_handle;
+    uint16_t property;
+    uint16_t maximum_bytes;
+    uint8_t local_tcid;
+    uint8_t remote_tcid;
+    uint8_t pi;
+    uint8_t reserved[11];
+} SlkReadProviderRequestInfo;
+
+/**
+ * Immutable original context, not current authorization or peer identity.
+ * All reserved bytes zero. Proposed bytes are available through the bounded value copy.
+ */
+typedef struct SlkWriteProviderRequestInfo {
+    struct SlkControllerId controller;
+    uint64_t token;
+    uint64_t request_id;
+    uint64_t connection_lifetime;
+    uint64_t security_epoch;
+    uint64_t deadline_ns;
+    uint32_t security_level;
+    uint16_t connection_handle;
+    uint16_t property;
+    uint16_t offset;
+    uint16_t value_length;
+    uint8_t local_tcid;
+    uint8_t remote_tcid;
+    uint8_t pi;
+    uint8_t operation;
+    uint8_t data_type;
+    uint8_t verify;
+    uint8_t reserved[6];
+} SlkWriteProviderRequestInfo;
+
+/**
+ * One bounded observed entry; unused array bytes and reserved bytes are zero.
+ * UUID/descriptor bytes retain wire order. category0..4 or8..12; method3/11.
+ */
+typedef struct SlkSsapEntry {
+    uint32_t operations;
+    uint16_t handle;
+    uint16_t end;
+    uint8_t category;
+    uint8_t members;
+    uint8_t uuid_length;
+    uint8_t descriptor_length;
+    uint8_t uuid[16];
+    uint8_t descriptors[255];
+    uint8_t reserved[1];
+} SlkSsapEntry;
+
+/**
+ * Last validated lease observation; not Ready or future Native authorization.
+ * Handles after handle_count and reserved bytes are zero. State0..3 follows
+ * the Rust lease; token is scoped to the original bus owner/physical lifetime.
+ */
+typedef struct SPARKLINK_ALIGN(8) SlkSsapSubscriptionInfo {
+    uint64_t generation;
+    uint64_t lifetime;
+    uint64_t security_epoch;
+    uint64_t token;
+    uint64_t expires_ns;
+    uint32_t version;
+    uint16_t controller;
+    uint16_t handle;
+    uint16_t capacity;
+    uint16_t handle_count;
+    uint8_t modes;
+    uint8_t state;
+    uint8_t reserved[2];
+    uint16_t handles[32];
+} SlkSsapSubscriptionInfo;
+
+/**
+ * One complete existing PDU with its original validated receipt facts.
+ * Only pdu[0..pdu_length] is meaningful;unused/reserved bytes are zero.
+ */
+typedef struct SPARKLINK_ALIGN(8) SlkSsapSubscriptionPacket {
+    uint64_t sequence;
+    uint64_t security_epoch;
+    uint32_t security_level;
+    uint16_t pdu_length;
+    uint8_t indication;
+    uint8_t reserved[1];
+    uint8_t pdu[2048];
+} SlkSsapSubscriptionPacket;
+
+/**
+ * One bounded destructive-read result. flags bit0 confirms this lease's
+ * routing/configuration ownership release. bit1 means other same-scope leases
+ * retained the remote CPCD at that terminal observation (only valid with bit0).
+ * bit0 without bit1 confirms the last remote CPCD was verified off. Neither
+ * means full callback/Native drain or application processing.
+ * Cumulative counters and sequence gaps are not a lossless-delivery promise.
+ * Only packets[0..count] are meaningful;all unused/reserved bytes are zero.
+ */
+typedef struct SPARKLINK_ALIGN(8) SlkSsapSubscriptionBatch {
+    struct SlkSsapSubscriptionInfo info;
+    uint64_t last_sequence;
+    uint64_t dropped_notifications;
+    uint64_t refused_indications;
+    uint64_t discarded_on_close;
+    uint32_t flags;
+    uint16_t count;
+    uint8_t reason;
+    uint8_t reserved[1];
+    struct SlkSsapSubscriptionPacket packets[16];
+} SlkSsapSubscriptionBatch;
 
 #ifdef __cplusplus
 extern "C" {
@@ -452,7 +687,24 @@ int slk_connection_ssap_read(const struct SlkConnection *connection,
                              uint64_t deadline_ns);
 
 /**
- * Execute the existing short-write RPC, returning its exact protocol result
+ * Read a public static type1 description on the original physical lifetime.
+ * Returns the same decoded value bytes, errors and output contract as ssap_read;
+ * minimum constrains the channel mechanism, not a descriptor authorization.
+ * No property-value fallback, provider callback, retry or implicit truncation.
+ * # Safety
+ * Identical live connection, fork, exclusive buffer and length requirements as
+ * slk_connection_ssap_read. All regions remain live throughout the call.
+ */
+int slk_connection_ssap_read_description(const struct SlkConnection *connection,
+                                         uint16_t handle,
+                                         uint32_t minimum,
+                                         uint8_t *buffer,
+                                         uintptr_t capacity,
+                                         uintptr_t *length,
+                                         uint64_t deadline_ns);
+
+/**
+ * Execute the existing bounded-write RPC, returning its exact protocol result
  * bytes. No long-write fallback, truncation, method echo or new Engine. The
  * daemon's actual negotiated size/security rules remain authoritative.
  * value_length<=65535 is a language memory budget, not long-write support;
@@ -472,6 +724,103 @@ int slk_connection_ssap_write(const struct SlkConnection *connection,
                               uintptr_t capacity,
                               uintptr_t *length,
                               uint64_t deadline_ns);
+
+/**
+ * Submit one property WRITE_NO_RSP via the existing Rust client and daemon.
+ * Returns0 only after all command fragments enter software socket queues,
+ * not USB/controller completion, peer receipt or application processing.
+ * No output bytes, implicit retry, descriptor/multi-item operation or new Engine.
+ * The original absolute deadline includes local queueing and the same5s
+ * ceiling as ssap_write. Failure may follow partial admission; remote effects
+ * remain uncertain. value_length<=65535 is a memory budget, not a wire limit.
+ * # Safety
+ * connection remains live without concurrent close (same fork rules as Client).
+ * value is an immutable value_length-byte readable region, NULL only when empty.
+ */
+int slk_connection_ssap_write_command(const struct SlkConnection *connection,
+                                      uint16_t handle,
+                                      uint32_t minimum,
+                                      const uint8_t *value,
+                                      uintptr_t value_length,
+                                      uint64_t deadline_ns);
+
+/**
+ * Invoke a remote method through the existing SSAP actor. Arguments<=2043;
+ * result<=2045 with independently negotiated per-datagram MTU/fragment support.
+ * Output contains the peer result, never argument echo. No implicit retry;
+ * timeout or insufficient output capacity can follow an executed remote effect.
+ * Local method Providers use Owned registration and the shared SDK Dispatcher;
+ * this requester neither registers a Provider nor fabricates its result.
+ * # Safety
+ * Same live connection, immutable input and exclusive output contract as
+ * slk_connection_ssap_write. NULL input only when empty; no output aliasing.
+ */
+int slk_connection_ssap_call_method(const struct SlkConnection *connection,
+                                    uint16_t handle,
+                                    uint32_t minimum,
+                                    const uint8_t *arguments,
+                                    uintptr_t arguments_length,
+                                    uint8_t *buffer,
+                                    uintptr_t capacity,
+                                    uintptr_t *length,
+                                    uint64_t deadline_ns);
+
+/**
+ * Submit a method command;0 means all-fragment software admission only.
+ * No wire reply, remote-delivery guarantee or implicit retry. Arguments<=2043;
+ * negotiated MTU/fragment support can impose a smaller limit.
+ * # Safety
+ * Same live connection and readable input contract as
+ * slk_connection_ssap_write_command; NULL input only when empty.
+ */
+int slk_connection_ssap_call_method_command(const struct SlkConnection *connection,
+                                            uint16_t handle,
+                                            uint32_t minimum,
+                                            const uint8_t *arguments,
+                                            uintptr_t arguments_length,
+                                            uint64_t deadline_ns);
+
+/**
+ * Receive one property update through the existing Rust CPCD transaction.
+ * modes1/2/3=notification/indication/either. Original absolute deadline includes
+ * queueing and is capped at10s before admission. No pre-existing configuration
+ * is overwritten. Cancellation/timeout can leave bounded cleanup; an unknown
+ * cleanup retires this SSAP actor. Output unchanged on failure. No retries.
+ * # Safety
+ * Same live connection/fork contract as ssap_read; output is exclusive aligned
+ * writable storage for one SlkSsapUpdate,not aliasing the connection.
+ */
+int slk_connection_ssap_receive(const struct SlkConnection *connection,
+                                uint16_t handle,
+                                uint32_t modes,
+                                struct SlkSsapUpdate *output,
+                                uint64_t deadline_ns);
+
+/**
+ * Submit this original caller's owned property through the same Engine/Session.
+ * indication0/1 selects notification/indication. Requires current authenticated
+ * Session,CPCD and actual DB ownership. Original <=5s;no downgrade/retry.
+ * Success stage1/2 is not peer application delivery. Timeout can follow an
+ * admitted send;Native retains credit and indication ACK debt is drained.
+ * # Safety
+ * Same connection/output/fork contract as ssap_receive.
+ */
+int slk_connection_ssap_send_owned(const struct SlkConnection *connection,
+                                   uint16_t handle,
+                                   uint32_t indication,
+                                   struct SlkSsapUpdate *output,
+                                   uint64_t deadline_ns);
+
+/**
+ * Observe only this caller's owned property configuration on the fixed lifetime.
+ * modes0..3 is not a Ready,Grant or application-delivery receipt;no enable/write.
+ * # Safety
+ * Live connection;output is exclusive writable one-byte storage,nonaliasing.
+ */
+int slk_connection_ssap_owned_configuration(const struct SlkConnection *connection,
+                                            uint16_t handle,
+                                            uint8_t *output,
+                                            uint64_t deadline_ns);
 
 /**
  * Open the existing Rust directory stream on this Client's caller/owner scope.
@@ -599,7 +948,10 @@ void slk_discovery_free(struct SlkDiscovery *view);
 /**
  * Register one caller-owned service through the sole Rust LocalServices API.
  * uuid length2/16 with a nonzero byte; properties1..64, values0..2042. Only
- * READ/WRITE_WITH_RSP are supported. authorization=0 has no policy inbox and
+ * READ/WRITE_NO_RSP/WRITE_WITH_RSP and owned NOTIFY/INDICATE+CLIENT_CFG_WR are supported.
+ * Update capabilities require authorization=1; CPCD write also requires a
+ * genuinely authenticated Native Session,not this registration receipt.
+ * authorization=0 has no policy inbox and
  * refuses local authorization bits;1 requires explicit application decisions
  * via the bounded inbox. Unknown modes EOPNOTSUPP;never automatic approval.
  * A local receipt is not remote discovery/publication or peer delivery.
@@ -618,6 +970,27 @@ int slk_client_register_local_service(const struct SlkClient *client,
                                       uintptr_t uuid_length,
                                       const struct SlkServiceProperty *properties,
                                       uintptr_t count,
+                                      uint32_t authorization,
+                                      uint64_t deadline_ns,
+                                      struct SlkLocalService **output);
+
+/**
+ * Register properties and/or distinct methods through the same owner and
+ * absolute deadline. Combined count1..64; receipt orders properties then methods.
+ * Authorization rules and uncertainty are identical to property registration.
+ * Method access is0..7; approval requirements cannot be disabled.0/-errno.
+ * # Safety
+ * Same as slk_client_register_local_service. Each nonempty input array is live,
+ * initialized and aligned for its count; NULL is allowed only for an empty array.
+ */
+int slk_client_register_local_entries(const struct SlkClient *client,
+                                      const struct SlkControllerId *controller,
+                                      const uint8_t *uuid,
+                                      uintptr_t uuid_length,
+                                      const struct SlkServiceProperty *properties,
+                                      uintptr_t count,
+                                      const struct SlkServiceMethod *methods,
+                                      uintptr_t method_count,
                                       uint32_t authorization,
                                       uint64_t deadline_ns,
                                       struct SlkLocalService **output);
@@ -649,7 +1022,7 @@ int slk_local_service_read(const struct SlkLocalService *view,
 
 /**
  * Replace this owner's local property value,0..2042 bytes,without truncation.
- * Success is local commit,not publication/notification/peer delivery.
+ * Success acknowledges local commit only,not publication/notification/delivery.
  * Timeout/lost reply may follow commit;never automatically retry. Peer operation
  * and security permissions are unchanged. Foreign/inactive handles are refused.
  * # Safety
@@ -661,6 +1034,21 @@ int slk_local_service_replace(const struct SlkLocalService *view,
                               const uint8_t *value,
                               uintptr_t length,
                               uint64_t deadline_ns);
+
+/**
+ * Set this original owner's public read-only type1 description (1..244 UTF-8
+ * bytes). Success is local commit only, not peer discovery or delivery. Property
+ * value/permissions stay unchanged; timeout may follow commit, without retries.
+ * Invalid length, invalid UTF-8/NUL, inactive or foreign handle returns EINVAL.
+ * # Safety
+ * view remains live without concurrent free or use across fork. description
+ * is an initialized immutable length-byte region, not null, live for the call.
+ */
+int slk_local_service_set_description(const struct SlkLocalService *view,
+                                      uint16_t handle,
+                                      const uint8_t *description,
+                                      uintptr_t length,
+                                      uint64_t deadline_ns);
 
 /**
  * Explicitly unregister this original owner's registration. No controller stop,
@@ -728,6 +1116,393 @@ int slk_authorization_request_reply(const struct SlkAuthorizationRequest *reques
  * One live owned pointer,freed once;no concurrent calls/later use/fork copies.
  */
 void slk_authorization_request_free(struct SlkAuthorizationRequest *request);
+
+/**
+ * Bind an original method once on the owner's existing executor/dispatcher.
+ * No property value, rebind, implicit retry or fallback. Original absolute
+ * CLOCK_MONOTONIC deadline includes queue admission. Success is local binding
+ * only.0/-errno; output unchanged on error. Free inbox even after service close.
+ * # Safety
+ * Live original service; output aligned/exclusive/nonaliasing; no concurrent
+ * service free or use of inherited objects after fork.
+ */
+int slk_local_service_bind_method_provider(struct SlkLocalService *service,
+                                           uint16_t method,
+                                           uint64_t deadline_ns,
+                                           struct SlkMethodProvider **output);
+
+/**
+ * Duplicate CLOEXEC notification fd, caller closes it. Poll only: never read
+ * or write its counter. Try next before waiting and again after readiness.
+ * It carries no reply authority and does not retain the caller.0/-errno.
+ * # Safety
+ * Provider live immutable, output aligned exclusive; no concurrent free.
+ */
+int slk_method_provider_fd(const struct SlkMethodProvider *provider, int *output);
+
+/**
+ * Nonblocking next. EAGAIN empty, ESHUTDOWN local stopped, ESTALE original
+ * daemon lost, ETIMEDOUT expired undelivered entry. Output unchanged on error.
+ * One consuming application; this never queues an RPC or executes user code.
+ * # Safety
+ * Provider live, output exclusive/aligned/nonaliasing, no concurrent free.
+ */
+int slk_method_provider_next(const struct SlkMethodProvider *provider,
+                             struct SlkMethodProviderRequest **output);
+
+/**
+ * Free local inbox,NULL allowed. Does not withdraw or roll back application effects.
+ * # Safety
+ * One owned live pointer freed once; no concurrent call, fork copy or later use.
+ */
+void slk_method_provider_free(struct SlkMethodProvider *provider);
+
+/**
+ * Copy original immutable snapshot even after expiry/close. No current grant.
+ * # Safety
+ * Request live; output aligned/exclusive/writable/nonaliasing; no concurrent free.
+ */
+int slk_method_provider_request_info(const struct SlkMethodProviderRequest *request,
+                                     struct SlkMethodProviderRequestInfo *output);
+
+/**
+ * Return one independent application result: status0 within the original
+ * result budget, or AF..FF with zero bytes. Command18 permits no result bytes.
+ * No argument echo, effect rollback, truncation, retry or new deadline.
+ * Local acceptance is not wire/peer delivery. Invalid input leaves authority
+ * unconsumed; stale, stopped or expired requests remain refused.0/-errno.
+ * # Safety
+ * Request live, no concurrent free/fork use. NULL value allowed only length0;
+ * otherwise value denotes a live immutable length-byte region. Invalid non-NULL
+ * pointers are caller UB, not supported kernel-style EFAULT inputs.
+ */
+int slk_method_provider_request_reply(const struct SlkMethodProviderRequest *request,
+                                      uint16_t status,
+                                      const uint8_t *value,
+                                      uintptr_t length);
+
+/**
+ * Release request,NULL allowed. Unanswered release is unavailable; this does
+ * not prove callback drain, remote cleanup or any physical completion.
+ * # Safety
+ * One live owned pointer freed once, no concurrent calls/fork copies/later use.
+ */
+void slk_method_provider_request_free(struct SlkMethodProviderRequest *request);
+
+/**
+ * Copy the original arguments, including after expiry/close, without
+ * consuming reply authority. Output length is always the full required size;
+ * ENOSPC leaves buffer unchanged. NULL buffer is permitted for capacity0.
+ * # Safety
+ * Live request, exclusive aligned length output, buffer writable for capacity
+ * bytes without aliasing outputs/request; no concurrent free or fork copy use.
+ */
+int slk_method_provider_request_arguments(const struct SlkMethodProviderRequest *request,
+                                          uint8_t *buffer,
+                                          uintptr_t capacity,
+                                          uintptr_t *length);
+
+/**
+ * Bind the original service's exactly READ type0 property once. Stored bytes
+ * are discarded by the original broker: no rebind/unbind/fallback. A timeout
+ * can follow commit and is not retried. The original absolute CLOCK_MONOTONIC
+ * deadline includes executor admission. Success is local binding only, not RF.
+ * 0/-errno; output unchanged on error. Free this inbox even after service close.
+ * # Safety
+ * Live original service; output aligned/exclusive/nonaliasing; no concurrent
+ * service free or use of inherited objects after fork.
+ */
+int slk_local_service_bind_read_provider(struct SlkLocalService *service,
+                                         uint16_t property,
+                                         uint64_t deadline_ns,
+                                         struct SlkReadProvider **output);
+
+/**
+ * Duplicate CLOEXEC notification fd, caller closes it. Poll only: never read
+ * or write its counter. Try next before waiting and again after readiness.
+ * It carries no reply authority and does not retain the caller.0/-errno.
+ * # Safety
+ * Provider live immutable, output aligned exclusive; no concurrent free.
+ */
+int slk_read_provider_fd(const struct SlkReadProvider *provider, int *output);
+
+/**
+ * Nonblocking next. EAGAIN empty, ESHUTDOWN local stopped, ESTALE original
+ * daemon lost, ETIMEDOUT expired undelivered entry. Output unchanged on error.
+ * One consuming application; this never queues an RPC or executes user code.
+ * # Safety
+ * Provider live, output exclusive/aligned/nonaliasing, no concurrent free.
+ */
+int slk_read_provider_next(const struct SlkReadProvider *provider,
+                           struct SlkReadProviderRequest **output);
+
+/**
+ * Free local inbox,NULL allowed. Does not withdraw/rebind/restore stored bytes.
+ * # Safety
+ * One owned live pointer freed once; no concurrent call, fork copy or later use.
+ */
+void slk_read_provider_free(struct SlkReadProvider *provider);
+
+/**
+ * Copy original immutable snapshot even after expiry/close. No current grant.
+ * # Safety
+ * Request live; output aligned/exclusive/writable/nonaliasing; no concurrent free.
+ */
+int slk_read_provider_request_info(const struct SlkReadProviderRequest *request,
+                                   struct SlkReadProviderRequestInfo *output);
+
+/**
+ * Answer once locally: status0 with 0..maximum bytes (empty is success), or
+ * AF..FF with zero bytes. Invalid/oversized input leaves the request unanswered.
+ * No truncation or new deadline. 0 is local acceptance, never peer delivery.
+ * Duplicate ESTALE, expired ETIMEDOUT, stopped ESHUTDOWN. Reply never queues RPC.
+ * # Safety
+ * Request live, no concurrent free/fork use. NULL value allowed only length0;
+ * otherwise value denotes a live immutable length-byte region. Invalid non-NULL
+ * pointers are caller UB, not supported kernel-style EFAULT inputs.
+ */
+int slk_read_provider_request_reply(const struct SlkReadProviderRequest *request,
+                                    uint16_t status,
+                                    const uint8_t *value,
+                                    uintptr_t length);
+
+/**
+ * Release request,NULL allowed. Unanswered release is unavailable; this does
+ * not prove callback drain, remote cleanup or any physical completion.
+ * # Safety
+ * One live owned pointer freed once, no concurrent calls/fork copies/later use.
+ */
+void slk_read_provider_request_free(struct SlkReadProviderRequest *request);
+
+/**
+ * Bind the original service's write-only type0 property once. Stored bytes
+ * are discarded by the original broker: no rebind/unbind/fallback. A timeout
+ * can follow commit and is not retried. The original absolute CLOCK_MONOTONIC
+ * deadline includes executor admission. Success is local binding only, not RF.
+ * 0/-errno; output unchanged on error. Free this inbox even after service close.
+ * # Safety
+ * Live original service; output aligned/exclusive/nonaliasing; no concurrent
+ * service free or use of inherited objects after fork.
+ */
+int slk_local_service_bind_write_provider(struct SlkLocalService *service,
+                                          uint16_t property,
+                                          uint64_t deadline_ns,
+                                          struct SlkWriteProvider **output);
+
+/**
+ * Duplicate CLOEXEC notification fd, caller closes it. Poll only: never read
+ * or write its counter. Try next before waiting and again after readiness.
+ * It carries no reply authority and does not retain the caller.0/-errno.
+ * # Safety
+ * Provider live immutable, output aligned exclusive; no concurrent free.
+ */
+int slk_write_provider_fd(const struct SlkWriteProvider *provider, int *output);
+
+/**
+ * Nonblocking next. EAGAIN empty, ESHUTDOWN local stopped, ESTALE original
+ * daemon lost, ETIMEDOUT expired undelivered entry. Output unchanged on error.
+ * One consuming application; this never queues an RPC or executes user code.
+ * # Safety
+ * Provider live, output exclusive/aligned/nonaliasing, no concurrent free.
+ */
+int slk_write_provider_next(const struct SlkWriteProvider *provider,
+                            struct SlkWriteProviderRequest **output);
+
+/**
+ * Free local inbox,NULL allowed. Does not withdraw/rebind/restore stored bytes.
+ * # Safety
+ * One owned live pointer freed once; no concurrent call, fork copy or later use.
+ */
+void slk_write_provider_free(struct SlkWriteProvider *provider);
+
+/**
+ * Copy original immutable snapshot even after expiry/close. No current grant.
+ * # Safety
+ * Request live; output aligned/exclusive/writable/nonaliasing; no concurrent free.
+ */
+int slk_write_provider_request_info(const struct SlkWriteProviderRequest *request,
+                                    struct SlkWriteProviderRequestInfo *output);
+
+/**
+ * Answer once locally: status0 with the actual accepted bytes for verify,
+ * otherwise empty; AF..FF with zero bytes. This does not apply/roll back an
+ * application effect. Invalid/mismatched input leaves the request unanswered.
+ * No truncation or new deadline. 0 is local acceptance, never peer delivery.
+ * Duplicate ESTALE, expired ETIMEDOUT, stopped ESHUTDOWN. Reply never queues RPC.
+ * # Safety
+ * Request live, no concurrent free/fork use. NULL value allowed only length0;
+ * otherwise value denotes a live immutable length-byte region. Invalid non-NULL
+ * pointers are caller UB, not supported kernel-style EFAULT inputs.
+ */
+int slk_write_provider_request_reply(const struct SlkWriteProviderRequest *request,
+                                     uint16_t status,
+                                     const uint8_t *value,
+                                     uintptr_t length);
+
+/**
+ * Release request,NULL allowed. Unanswered release is unavailable; this does
+ * not prove callback drain, remote cleanup or any physical completion.
+ * # Safety
+ * One live owned pointer freed once, no concurrent calls/fork copies/later use.
+ */
+void slk_write_provider_request_free(struct SlkWriteProviderRequest *request);
+
+/**
+ * Copy the original proposed bytes, including after expiry/close, without
+ * consuming reply authority. Output length is always the full required size;
+ * ENOSPC leaves buffer unchanged. NULL buffer is permitted for capacity0.
+ * # Safety
+ * Live request, exclusive aligned length output, buffer writable for capacity
+ * bytes without aliasing outputs/request; no concurrent free or fork copy use.
+ */
+int slk_write_provider_request_value(const struct SlkWriteProviderRequest *request,
+                                     uint8_t *buffer,
+                                     uintptr_t capacity,
+                                     uintptr_t *length);
+
+/**
+ * Perform one management-only SSAP discovery via the same SDK/daemon Engine.
+ * kind0 structure,1 primary hierarchy,3 property,4 method; UUID empty/2/16bytes.
+ * Original CLOCK_MONOTONIC deadline covers local queue/identity/daemon/pages;
+ * five-second ceiling captured before queueing. Success returns one immutable
+ * bounded result (80entries/96transactions); failure leaves output unchanged.
+ * No retries or partial result. Timeout cannot undo already submitted work.
+ * # Safety
+ * connection is live without concurrent close; uuid is immutable uuid_length
+ * bytes (NULL allowed only for empty). output is an exclusive aligned pointer
+ * slot, not aliasing inputs. Same no-use-after-fork contract as Connection.
+ * Release successful output exactly once via slk_ssap_discovery_free.
+ */
+int slk_connection_ssap_discover(const struct SlkConnection *connection,
+                                 const uint8_t *uuid,
+                                 uintptr_t uuid_length,
+                                 uint8_t kind,
+                                 uint64_t deadline_ns,
+                                 struct SlkSsapDiscoveryResult **output);
+
+/**
+ * Copy immutable result counts; no RPC or revalidation of current state.
+ * # Safety
+ * result is live; entries/pages are exclusive aligned writable slots, mutually
+ * disjoint and not aliasing result. No concurrent free. Failure changes neither.
+ */
+int slk_ssap_discovery_counts(const struct SlkSsapDiscoveryResult *result,
+                              uintptr_t *entries,
+                              uintptr_t *pages);
+
+/**
+ * Copy an entry by zero-based index; out-of-range ENOENT, output unchanged.
+ * # Safety
+ * result remains live; output is exclusive aligned writable SlkSsapEntry,
+ * disjoint from result. No concurrent free.
+ */
+int slk_ssap_discovery_entry(const struct SlkSsapDiscoveryResult *result,
+                             uintptr_t index,
+                             struct SlkSsapEntry *output);
+
+/**
+ * Copy request(response=0) or reply(response=1) of one zero-based transaction.
+ * Capacity1..2048; ENOBUFS sets required length without changing buffer. Other
+ * failures change neither. This is a local immutable copy, so a larger-buffer
+ * retry never retransmits a request. Raw bytes are not peer-delivery proof.
+ * # Safety
+ * result remains live; buffer has capacity exclusive writable bytes; length
+ * is exclusive aligned storage. All disjoint, no concurrent free.
+ */
+int slk_ssap_discovery_trace(const struct SlkSsapDiscoveryResult *result,
+                             uintptr_t index,
+                             uint8_t response,
+                             uint8_t *buffer,
+                             uintptr_t capacity,
+                             uintptr_t *length);
+
+/**
+ * Free this immutable result; NULL accepted. No RPC, lease or connection action.
+ * # Safety
+ * NULL or one successful owned result, freed once, with no concurrent read or
+ * subsequent use. Result reads never access the originating executor.
+ */
+void slk_ssap_discovery_free(struct SlkSsapDiscoveryResult *result);
+
+/**
+ * Acquire the existing remote SSAP receive lease. Count1..32 unique discovered
+ * handles,modes1..3,duration250..60000ms;scope-compatible leases share the
+ * existing physical actor,subject to bounded admission.
+ * 0/-errno;output unchanged on failure. Original absolute deadline includes
+ * executor queueing and is capped at5s before queueing. Timeout is uncertain;
+ * no automatic retry. Parent Connection/Client close does not release this view.
+ * # Safety
+ * connection/handles are live aligned immutable regions for the call;output
+ * is an exclusive aligned pointer slot,nonaliasing them. No concurrent close,
+ * fork use or invalid pointers. Free a successful owned view exactly once.
+ */
+int slk_connection_ssap_subscribe(const struct SlkConnection *connection,
+                                  const uint16_t *handles,
+                                  uintptr_t count,
+                                  uint32_t modes,
+                                  uint32_t duration_ms,
+                                  uint64_t deadline_ns,
+                                  struct SlkSsapSubscription **output);
+
+/**
+ * Last locally validated observation,without RPC or renewed authority. EAGAIN
+ * if another operation is live;0/-errno,output unchanged on error.
+ * # Safety
+ * view is live,output is an exclusive aligned writable Info,nonaliasing view.
+ * No concurrent free or fork use. This contract applies to all functions below.
+ */
+int slk_ssap_subscription_info(const struct SlkSsapSubscription *view,
+                               struct SlkSsapSubscriptionInfo *output);
+
+/**
+ * Read one full finite batch;wait0/1 only,no peek or size-query retry. Original
+ * deadline<=10s covers queue/RPC;0/-errno,output unchanged on error. A consumed
+ * remote reply can be uncertain after local timeout/cancellation. No truncation
+ * or silent retry;protocol ACK is not application processing. Concurrent calls
+ * return EAGAIN. Output is always a complete33312-byte Batch.
+ * # Safety
+ * Same live view contract as info;output is a full exclusive aligned writable
+ * Batch,nonaliasing view. No concurrent free,invalid pointers or fork use.
+ */
+int slk_ssap_subscription_read(const struct SlkSsapSubscription *view,
+                               uint32_t wait,
+                               struct SlkSsapSubscriptionBatch *output,
+                               uint64_t deadline_ns);
+
+/**
+ * Renew the existing Rust lease only,250..60000ms. Original<=5s,0/-errno;
+ * output unchanged on failure. An uncertain renewal is never automatically
+ * retried and does not renew any packet/read/cleanup deadline.
+ * # Safety
+ * Same live view and exclusive aligned Info output contract as info.
+ */
+int slk_ssap_subscription_renew(const struct SlkSsapSubscription *view,
+                                uint32_t duration_ms,
+                                struct SlkSsapSubscriptionInfo *output,
+                                uint64_t deadline_ns);
+
+/**
+ * Explicit lease-release receipt through the same Rust lease. Original<=5s;
+ * inspect REMOTE_RETAINED: another lease can retain the physical CPCD.
+ * 0/-errno,output unchanged on failure. Failure/timeout is not confirmed cleanup;
+ * local admission may already be closed. Does not free the view or disconnect.
+ * # Safety
+ * Same full exclusive aligned Batch output/live view contract as read.
+ */
+int slk_ssap_subscription_release(const struct SlkSsapSubscription *view,
+                                  struct SlkSsapSubscriptionBatch *output,
+                                  uint64_t deadline_ns);
+
+/**
+ * Free local ownership only,NULL allowed. Not a cleanup receipt. Call release
+ * first to observe lease release (remote off only without REMOTE_RETAINED);
+ * otherwise original owner loss/finite lease
+ * expiry bounds daemon cleanup. Final executor release joins bounded local work.
+ * # Safety
+ * view is NULL or one live owned pointer,freed once;no concurrent calls or later
+ * use. Never use/free an inherited object after fork.
+ */
+void slk_ssap_subscription_free(struct SlkSsapSubscription *view);
 
 #ifdef __cplusplus
 }  // extern "C"

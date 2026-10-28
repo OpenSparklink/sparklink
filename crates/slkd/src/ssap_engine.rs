@@ -1,10 +1,12 @@
-//! Single lifetime-scoped SMTC owner: initial ExchangeInfo and bounded base
+//! Single lifetime-scoped SMTC owner: initial ExchangeInfo and bounded
 //! single-value requests. No synthetic replies, security projection, reliable
-//! mode, fragmentation or complete service-discovery claim.
+//! mode or complete service-discovery claim. Value fragments are bounded and
+//! require negotiated sequence support; a partial-stream error retires the actor.
 use slk_protocol::{
     SleChannelInfo,
     ssap::{
-        exchange::{ExchangeInfo, ExchangeKind},
+        exchange::{ExchangeInfo, ExchangeKind, ExtensionCapabilities},
+        fragments,
         value::ValuePdu,
     },
 };
@@ -35,6 +37,47 @@ enum Status {
     Failed(String),
 }
 enum Query {
+    Subscribe {
+        owner: crate::ssap_subscription::CallerLease,
+        handles: Vec<u16>,
+        modes: u8,
+        duration_ms: u32,
+        deadline: Instant,
+        reply: oneshot::Sender<Result<slk_contract::ssap::subscription::Info, String>>,
+    },
+    SubscriptionRead {
+        caller: String,
+        token: u64,
+        wait: bool,
+        deadline: Instant,
+        reply: oneshot::Sender<Result<slk_contract::ssap::subscription::Batch, String>>,
+    },
+    SubscriptionRenew {
+        caller: String,
+        token: u64,
+        duration_ms: u32,
+        deadline: Instant,
+        reply: oneshot::Sender<Result<slk_contract::ssap::subscription::Info, String>>,
+    },
+    SubscriptionClose {
+        caller: String,
+        token: u64,
+        deadline: Instant,
+        reply: oneshot::Sender<Result<slk_contract::ssap::subscription::Batch, String>>,
+    },
+    Update {
+        caller: String,
+        handle: u16,
+        indication: bool,
+        deadline: Instant,
+        reply: oneshot::Sender<Result<slk_contract::ssap::UpdateReceipt, String>>,
+    },
+    Configuration {
+        caller: String,
+        handle: u16,
+        deadline: Instant,
+        reply: oneshot::Sender<Result<u8, String>>,
+    },
     Info(oneshot::Sender<Result<Info, String>>),
     TransportStatus {
         deadline: Instant,
@@ -50,10 +93,20 @@ enum Query {
         bytes: Vec<u8>,
         deadline: Instant,
         minimum: u32,
-        reply: oneshot::Sender<Result<Vec<u8>, String>>,
+        reply: oneshot::Sender<Result<Vec<u8>, ClientFailure>>,
     },
 }
 type Store = std::sync::Arc<std::sync::Mutex<crate::ssap_database::Database>>;
+/// Bounded owner/token tombstones are observations,not reusable authorities.
+fn remember_subscription(
+    history: &mut VecDeque<crate::ssap_subscription::Closed>,
+    closed: crate::ssap_subscription::Closed,
+) {
+    if history.len() == 16 {
+        history.pop_front();
+    }
+    history.push_back(closed);
+}
 pub(crate) struct Engine {
     state: watch::Receiver<Status>,
     queries: mpsc::Sender<Query>,
@@ -102,6 +155,20 @@ impl Engine {
             )
             .await
             {
+                // One event at the sole lifetime owner, before the terminal
+                // watch update. Pending query senders may already be dropped
+                // by run(); their generic oneshot error is not the cause.
+                // Do not include protocol values, keys or application data.
+                tracing::warn!(
+                    controller = expected.0,
+                    generation = expected.1,
+                    lifetime = expected.2,
+                    handle = expected.3,
+                    kind = ?error.kind(),
+                    raw_os_error = ?error.raw_os_error(),
+                    error = %error,
+                    "SSAP lifetime actor failed"
+                );
                 state_tx.send_replace(Status::Failed(error.to_string()));
             } else {
                 state_tx.send_replace(Status::Failed("SSAP actor stopped".into()));
@@ -142,6 +209,136 @@ pub(crate) struct Observer {
     queries: mpsc::Sender<Query>,
 }
 impl Observer {
+    pub(crate) async fn subscribe(
+        &self,
+        owner: crate::ssap_subscription::CallerLease,
+        handles: Vec<u16>,
+        modes: u8,
+        duration_ms: u32,
+        deadline: Instant,
+    ) -> Result<slk_contract::ssap::subscription::Info, String> {
+        let (reply, result) = oneshot::channel();
+        self.queries
+            .try_send(Query::Subscribe {
+                owner,
+                handles,
+                modes,
+                duration_ms,
+                deadline,
+                reply,
+            })
+            .map_err(|_| "subscription command queue unavailable/full".to_string())?;
+        tokio::time::timeout_at(deadline, result)
+            .await
+            .map_err(|_| "subscription original creation deadline".to_string())?
+            .map_err(|_| "SSAP actor stopped during subscription".to_string())?
+    }
+    pub(crate) async fn subscription_read(
+        &self,
+        caller: String,
+        token: u64,
+        wait: bool,
+        deadline: Instant,
+    ) -> Result<slk_contract::ssap::subscription::Batch, String> {
+        let (reply, result) = oneshot::channel();
+        self.queries
+            .try_send(Query::SubscriptionRead {
+                caller,
+                token,
+                wait,
+                deadline,
+                reply,
+            })
+            .map_err(|_| "subscription read command queue unavailable/full".to_string())?;
+        tokio::time::timeout_at(deadline, result)
+            .await
+            .map_err(|_| "subscription read original deadline".to_string())?
+            .map_err(|_| "SSAP actor stopped during subscription read".to_string())?
+    }
+    pub(crate) async fn subscription_renew(
+        &self,
+        caller: String,
+        token: u64,
+        duration_ms: u32,
+        deadline: Instant,
+    ) -> Result<slk_contract::ssap::subscription::Info, String> {
+        let (reply, result) = oneshot::channel();
+        self.queries
+            .try_send(Query::SubscriptionRenew {
+                caller,
+                token,
+                duration_ms,
+                deadline,
+                reply,
+            })
+            .map_err(|_| "subscription renewal command queue unavailable/full".to_string())?;
+        tokio::time::timeout_at(deadline, result)
+            .await
+            .map_err(|_| "subscription renewal original deadline".to_string())?
+            .map_err(|_| "SSAP actor stopped during subscription renewal".to_string())?
+    }
+    pub(crate) async fn subscription_close(
+        &self,
+        caller: String,
+        token: u64,
+        deadline: Instant,
+    ) -> Result<slk_contract::ssap::subscription::Batch, String> {
+        let (reply, result) = oneshot::channel();
+        self.queries
+            .try_send(Query::SubscriptionClose {
+                caller,
+                token,
+                deadline,
+                reply,
+            })
+            .map_err(|_| "subscription close command queue unavailable/full".to_string())?;
+        tokio::time::timeout_at(deadline, result)
+            .await
+            .map_err(|_| "subscription close original deadline;cleanup may continue".to_string())?
+            .map_err(|_| "SSAP actor stopped during subscription close".to_string())?
+    }
+    pub(crate) async fn update(
+        &self,
+        caller: String,
+        handle: u16,
+        indication: bool,
+        deadline: Instant,
+    ) -> Result<slk_contract::ssap::UpdateReceipt, String> {
+        let (reply, result) = oneshot::channel();
+        self.queries
+            .try_send(Query::Update {
+                caller,
+                handle,
+                indication,
+                deadline,
+                reply,
+            })
+            .map_err(|_| "SSAP update queue unavailable/full".to_string())?;
+        tokio::time::timeout_at(deadline, result)
+            .await
+            .map_err(|_| "SSAP update original deadline".to_string())?
+            .map_err(|_| "SSAP actor stopped during update".to_string())?
+    }
+    pub(crate) async fn configuration(
+        &self,
+        caller: String,
+        handle: u16,
+        deadline: Instant,
+    ) -> Result<u8, String> {
+        let (reply, result) = oneshot::channel();
+        self.queries
+            .try_send(Query::Configuration {
+                caller,
+                handle,
+                deadline,
+                reply,
+            })
+            .map_err(|_| "SSAP configuration observation queue unavailable/full".to_string())?;
+        tokio::time::timeout_at(deadline, result)
+            .await
+            .map_err(|_| "SSAP configuration observation original deadline".to_string())?
+            .map_err(|_| "SSAP actor stopped during observation".to_string())?
+    }
     async fn request(
         &self,
         bytes: Vec<u8>,
@@ -161,27 +358,36 @@ impl Observer {
             .await
             .map_err(|_| "SSAP discovery original deadline".to_string())?
             .map_err(|_| "SSAP actor stopped during discovery".to_string())?
+            .map_err(|error| error.to_string())
     }
     pub(crate) async fn discover(
         self,
         uuid: Option<Vec<u8>>,
         kind: slk_protocol::ssap::discovery::FindKind,
+        deadline: Instant,
     ) -> Result<Discovery, String> {
         use slk_protocol::ssap::discovery::{EntryClass, FindKind, FindRequest, decode_page};
-        let deadline = Instant::now() + Duration::from_secs(5);
-        let info = Observer {
-            state: self.state.clone(),
-            queries: self.queries.clone(),
+        if Instant::now() >= deadline {
+            return Err("SSAP discovery original deadline".into());
         }
-        .info()
-        .await?;
+        let info = tokio::time::timeout_at(
+            deadline,
+            Observer {
+                state: self.state.clone(),
+                queries: self.queries.clone(),
+            }
+            .info(),
+        )
+        .await
+        .map_err(|_| "SSAP discovery original deadline".to_string())??;
         let mut entries = Vec::new();
         let mut trace = Vec::new();
         let mut ranges = vec![(kind, 1u16, 65535u16)];
         let hierarchy = uuid.is_none() && kind == FindKind::Primary;
         while let Some((kind, mut start, end)) = ranges.pop() {
             loop {
-                if Instant::now() >= deadline || trace.len() >= 96 {
+                if Instant::now() >= deadline || trace.len() >= slk_contract::ssap::DISCOVERY_PAGES
+                {
                     return Err("bounded discovery deadline/pages exceeded".into());
                 }
                 let request = FindRequest {
@@ -197,6 +403,11 @@ impl Observer {
                     .map_err(|e| format!("find request: {e:?}"))?;
                 bytes.truncate(n);
                 let raw = self.request(bytes.clone(), deadline, 0).await?;
+                // A ready reply may win timeout_at's poll after expiry. Never
+                // accept that page or publish a complete cache under a new wait.
+                if Instant::now() >= deadline {
+                    return Err("SSAP discovery original deadline".into());
+                }
                 trace.push((bytes, raw.clone()));
                 if let Ok(ValuePdu::Error {
                     request: op,
@@ -214,7 +425,7 @@ impl Observer {
                 }
                 let page = decode_page(request, info.5, &raw)
                     .map_err(|e| format!("find response: {e:?}"))?;
-                if entries.len() + page.len() > 80 {
+                if entries.len() + page.len() > slk_contract::ssap::DISCOVERY_ENTRIES {
                     return Err("remote database entry budget".into());
                 }
                 let next = if kind == FindKind::Primary {
@@ -226,6 +437,9 @@ impl Observer {
                     for service in &page {
                         if service.members & 2 != 0 {
                             ranges.push((FindKind::Properties, service.handle, service.end));
+                        }
+                        if service.members & 4 != 0 {
+                            ranges.push((FindKind::Methods, service.handle, service.end));
                         }
                     }
                 }
@@ -242,20 +456,23 @@ impl Observer {
         }
         Ok((entries, trace))
     }
-    /// One bounded, call-owned receive interest, not a remote CCC subscription.
+    /// One bounded receive transaction: baseline, enable, receive, disable.
     pub(crate) async fn incoming(
         self,
         handles: Vec<u16>,
         modes: u8,
-        wait: Duration,
+        deadline: Instant,
     ) -> Result<Incoming, String> {
-        let deadline = Instant::now() + wait;
-        let _ = Observer {
-            state: self.state.clone(),
-            queries: self.queries.clone(),
-        }
-        .info()
-        .await?;
+        let _ = tokio::time::timeout_at(
+            deadline,
+            Observer {
+                state: self.state.clone(),
+                queries: self.queries.clone(),
+            }
+            .info(),
+        )
+        .await
+        .map_err(|_| "SSAP receive original deadline".to_string())??;
         let (reply, result) = oneshot::channel();
         self.queries
             .try_send(Query::Incoming {
@@ -293,11 +510,11 @@ impl Observer {
         };
         let mut bytes = vec![0; 23];
         let n = request
-            .encode(info.5, &mut bytes)
+            .encode(value_budget(&info), &mut bytes)
             .map_err(|e| format!("read UUID request: {e:?}"))?;
         bytes.truncate(n);
         let raw = self.request(bytes.clone(), deadline, minimum).await?;
-        let entries = slk_protocol::ssap::read_uuid::decode(info.5, &raw)
+        let entries = slk_protocol::ssap::read_uuid::decode(value_budget(&info), &raw)
             .map_err(|e| format!("read UUID response: {e:?}"))?
             .into_iter()
             .map(|item| match item.value {
@@ -314,14 +531,6 @@ impl Observer {
         minimum: u32,
         deadline: Instant,
     ) -> Result<Vec<u8>, String> {
-        if Instant::now() >= deadline {
-            return Err("SSAP value original deadline".into());
-        }
-        let queries = self.queries.clone();
-        let info = tokio::time::timeout_at(deadline, self.info())
-            .await
-            .map_err(|_| "SSAP value original deadline".to_string())??;
-        let mut bytes = vec![0; usize::from(info.5)];
         let pdu = match &value {
             Some(value) => ValuePdu::Write {
                 handle,
@@ -334,8 +543,90 @@ impl Observer {
                 data_type: 0,
             },
         };
+        self.value_request(pdu, minimum, deadline).await
+    }
+    /// Only the public read-only type1 subset is exposed here. No generic
+    /// descriptor writer, callback or second protocol transaction is created.
+    pub(crate) async fn read_description(
+        self,
+        handle: u16,
+        minimum: u32,
+        deadline: Instant,
+    ) -> Result<Vec<u8>, String> {
+        self.value_request(
+            ValuePdu::Read {
+                handle,
+                data_type: 1,
+            },
+            minimum,
+            deadline,
+        )
+        .await
+    }
+    /// The existing physical actor owns the method transaction and fragments.
+    /// Result bytes come only from its correlated peer response, never input echo.
+    pub(crate) async fn call_method(
+        self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        deadline: Instant,
+    ) -> Result<Vec<u8>, String> {
+        if handle == 0 || minimum > 2 || arguments.len() > usize::from(fragments::LOGICAL_MTU) - 4 {
+            return Err("invalid method handle/security/argument budget".into());
+        }
+        self.value_request(
+            ValuePdu::CallMethod {
+                handle,
+                arguments: &arguments,
+            },
+            minimum,
+            deadline,
+        )
+        .await
+    }
+    /// All-fragment software admission only; no peer response exists.
+    pub(crate) async fn call_method_command(
+        self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        deadline: Instant,
+    ) -> Result<(), String> {
+        if handle == 0 || minimum > 2 || arguments.len() > usize::from(fragments::LOGICAL_MTU) - 4 {
+            return Err("invalid method handle/security/argument budget".into());
+        }
+        let admitted = self
+            .value_request(
+                ValuePdu::CallMethodCommand {
+                    handle,
+                    arguments: &arguments,
+                },
+                minimum,
+                deadline,
+            )
+            .await?;
+        if !admitted.is_empty() {
+            return Err("unexpected method command admission result".into());
+        }
+        Ok(())
+    }
+    async fn value_request(
+        self,
+        pdu: ValuePdu<'_>,
+        minimum: u32,
+        deadline: Instant,
+    ) -> Result<Vec<u8>, String> {
+        if Instant::now() >= deadline {
+            return Err("SSAP value original deadline".into());
+        }
+        let queries = self.queries.clone();
+        let info = tokio::time::timeout_at(deadline, self.info())
+            .await
+            .map_err(|_| "SSAP value original deadline".to_string())??;
+        let mut bytes = vec![0; usize::from(value_budget(&info))];
         let len = pdu
-            .encode(info.5, &mut bytes)
+            .encode(value_budget(&info), &mut bytes)
             .map_err(|e| format!("value codec: {e:?}"))?;
         bytes.truncate(len);
         if Instant::now() >= deadline {
@@ -354,6 +645,44 @@ impl Observer {
             .await
             .map_err(|_| "SSAP value original deadline".to_string())?
             .map_err(|_| "SSAP actor stopped during value operation".to_string())?
+            .map_err(|error| error.to_string())
+    }
+    /// Write Command has no peer response. Success is only software admission
+    /// of every fragment; Native retains all TX/credit obligations separately.
+    pub(crate) async fn write_command(
+        self,
+        handle: u16,
+        value: Vec<u8>,
+        minimum: u32,
+        deadline: Instant,
+    ) -> Result<(), String> {
+        if handle == 0 || minimum > 2 || value.len() > usize::from(fragments::LOGICAL_MTU) - 5 {
+            return Err("invalid SSAP command handle/security/value budget".into());
+        }
+        let info = tokio::time::timeout_at(
+            deadline,
+            Observer {
+                state: self.state.clone(),
+                queries: self.queries.clone(),
+            }
+            .info(),
+        )
+        .await
+        .map_err(|_| "SSAP command original deadline".to_string())??;
+        let mut bytes = vec![0; usize::from(value_budget(&info))];
+        let n = ValuePdu::WriteCommand {
+            handle,
+            data_type: 0,
+            value: &value,
+        }
+        .encode(value_budget(&info), &mut bytes)
+        .map_err(|e| format!("write command codec: {e:?}"))?;
+        bytes.truncate(n);
+        let admitted = self.request(bytes, deadline, minimum).await?;
+        if !admitted.is_empty() {
+            return Err("unexpected SSAP command admission result".into());
+        }
+        Ok(())
     }
     /// Native metadata through the existing owned fd; no SSAP request or new
     /// binding. Cancellation/queueing preserve this original metadata deadline.
@@ -414,18 +743,133 @@ enum Purpose {
     Error,
     Client,
     ValueResponse,
+    Update,
 }
-struct IncomingWait {
-    handles: Vec<u16>,
-    modes: u8,
+struct UpdateRequest {
+    submitted_all: bool,
+    handle: u16,
+    owner: std::sync::Arc<crate::ssap_authorization::Owner>,
+    mode: u8,
+    epoch: u64,
     deadline: Instant,
-    reply: oneshot::Sender<Result<Incoming, String>>,
+    drain: Option<Instant>,
+    pdu: Vec<u8>,
+    reply: Option<oneshot::Sender<Result<slk_contract::ssap::UpdateReceipt, String>>>,
+}
+impl UpdateRequest {
+    fn needs_withdrawal_watch(&self) -> bool {
+        self.reply.is_some() || !self.submitted_all
+    }
+    async fn withdrawn(&mut self) {
+        let Some(reply) = self.reply.as_mut() else {
+            // The author is gone, but an unfinished stream still has an
+            // owner. Its later revocation must wake the same actor too.
+            return self.owner.withdrawn().await;
+        };
+        tokio::select! {
+            _ = self.owner.withdrawn() => {},
+            _ = reply.closed() => {},
+        }
+    }
+    fn admit_part(&mut self, now: Instant, last: bool) {
+        self.drain.get_or_insert(now + Duration::from_secs(5));
+        self.submitted_all = last;
+    }
+    fn obligation_deadline(&self) -> Instant {
+        self.drain.map_or(self.deadline, |drain| {
+            if self.reply.as_ref().is_some_and(|r| !r.is_closed()) {
+                drain.min(self.deadline)
+            } else {
+                drain
+            }
+        })
+    }
+}
+fn retire_update_wait(
+    update: &mut Option<UpdateRequest>,
+    pending: &mut VecDeque<Pending>,
+    now: Instant,
+) {
+    let Some(current) = update.as_mut() else {
+        return;
+    };
+    if current.owner.current()
+        && now < current.deadline
+        && current.reply.as_ref().is_some_and(|r| !r.is_closed())
+    {
+        return;
+    }
+    if let Some(reply) = current.reply.take() {
+        let _ = reply.send(Err(
+            "SSAP update owner/caller retired or original deadline".into()
+        ));
+    }
+    if current.drain.is_none() {
+        pending.retain(|p| !matches!(p.purpose, Purpose::Update));
+        *update = None;
+    }
+}
+fn retire_update_event(
+    update: &mut Option<UpdateRequest>,
+    pending: &mut VecDeque<Pending>,
+    now: Instant,
+) -> io::Result<()> {
+    retire_update_wait(update, pending, now);
+    if update
+        .as_ref()
+        .is_some_and(|v| !v.owner.current() && v.drain.is_some() && !v.submitted_all)
+    {
+        return Err(io::Error::other(
+            "partial update owner withdrawn;retire SSAP actor",
+        ));
+    }
+    Ok(())
+}
+pub(super) enum IncomingDelivery {
+    Once(oneshot::Sender<Result<Incoming, String>>),
+    Stream(Vec<crate::ssap_subscription::Sink>),
+}
+impl From<oneshot::Sender<Result<Incoming, String>>> for IncomingDelivery {
+    fn from(value: oneshot::Sender<Result<Incoming, String>>) -> Self {
+        Self::Once(value)
+    }
+}
+impl IncomingDelivery {
+    fn is_closed(&self) -> bool {
+        match self {
+            Self::Once(reply) => reply.is_closed(),
+            Self::Stream(sinks) => sinks.iter().all(|sink| {
+                !*sink.alive.borrow() || sink.queue.lock().map_or(true, |q| q.is_closing())
+            }),
+        }
+    }
+    pub(super) fn send(
+        self,
+        value: Result<Incoming, String>,
+    ) -> Result<(), Result<Incoming, String>> {
+        match self {
+            Self::Once(reply) => reply.send(value),
+            Self::Stream(_) => Err(value),
+        }
+    }
+}
+pub(super) struct IncomingWait {
+    pub(super) handles: Vec<u16>,
+    pub(super) modes: u8,
+    pub(super) deadline: Instant,
+    pub(super) reply: IncomingDelivery,
 }
 /// Actual actor delivery: one complete packet fits the call-owned oneshot slot.
 /// ACK success means accepted into this application queue, not app validation.
-fn incoming_packet(mtu: u16, raw: &[u8], waiter: &mut Option<IncomingWait>) -> io::Result<Vec<u8>> {
+fn incoming_packet(
+    mtu: u16,
+    logical_budget: u16,
+    raw: &[u8],
+    receipt: Option<slk_protocol::SleMessageSecurity>,
+    waiter: &mut Option<IncomingWait>,
+) -> io::Result<Vec<u8>> {
     use slk_protocol::ssap::updates::{Update, ack};
-    let packet = Update::decode(mtu, raw)
+    let packet = Update::decode(logical_budget, raw)
         .map_err(|e| io::Error::other(format!("invalid/unsupported SSAP update: {e:?}")))?;
     let eligible = waiter.as_ref().is_some_and(|w| {
         !w.reply.is_closed()
@@ -438,8 +882,18 @@ fn incoming_packet(mtu: u16, raw: &[u8], waiter: &mut Option<IncomingWait>) -> i
                 .all(|item| w.handles.contains(&item.handle))
     });
     let accepted = if eligible {
-        let w = waiter.take().expect("eligible waiter");
-        w.reply.send(Ok((packet.indication, raw.to_vec()))).is_ok()
+        if let IncomingDelivery::Stream(sinks) = &waiter.as_ref().expect("eligible waiter").reply {
+            let mut accepted = false;
+            for sink in sinks {
+                accepted |= sink
+                    .offer((packet.indication, raw.to_vec()), receipt, Instant::now())
+                    .map_err(io::Error::other)?;
+            }
+            accepted
+        } else {
+            let w = waiter.take().expect("eligible waiter");
+            w.reply.send(Ok((packet.indication, raw.to_vec()))).is_ok()
+        }
     } else {
         false
     };
@@ -453,18 +907,141 @@ fn incoming_packet(mtu: u16, raw: &[u8], waiter: &mut Option<IncomingWait>) -> i
     out.truncate(n);
     Ok(out)
 }
+/// Retain a correlated peer result until its owning transaction handles it.
+/// A diagnostic string,even one resembling a peer error,is not this evidence.
+/// This classification grants no identity,security,credit or native authority.
+#[derive(Debug, PartialEq, Eq)]
+pub(super) enum ClientFailure {
+    Message(String),
+    WriteError { handle: u16, error: u8 },
+}
+impl std::fmt::Display for ClientFailure {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Message(message) => f.write_str(message),
+            Self::WriteError { error, .. } => write!(f, "peer write error {error}"),
+        }
+    }
+}
+impl From<String> for ClientFailure {
+    fn from(value: String) -> Self {
+        Self::Message(value)
+    }
+}
+impl From<&str> for ClientFailure {
+    fn from(value: &str) -> Self {
+        Self::Message(value.into())
+    }
+}
+
+fn client_value_response(
+    budget: u16,
+    request: &[u8],
+    raw: &[u8],
+) -> io::Result<Result<Vec<u8>, ClientFailure>> {
+    let request =
+        ValuePdu::decode(budget, request).map_err(|_| io::Error::other("invalid local request"))?;
+    let parsed =
+        ValuePdu::decode(budget, raw).map_err(|_| io::Error::other("invalid value response"))?;
+    Ok(match (request, parsed) {
+        (ValuePdu::CallMethod { .. }, ValuePdu::MethodResult(value)) => Ok(value.to_vec()),
+        (
+            ValuePdu::CallMethod { handle, .. },
+            ValuePdu::Error {
+                request: 19,
+                handle: failed,
+                error,
+            },
+        ) if handle == failed => Err(format!("peer method protocol error {error}").into()),
+        (ValuePdu::Read { .. }, ValuePdu::ReadValue(value)) => Ok(value.to_vec()),
+        (ValuePdu::Read { .. }, ValuePdu::ReadError(error)) => {
+            Err(format!("peer read error {error}").into())
+        }
+        (
+            ValuePdu::Write {
+                handle,
+                data_type,
+                value,
+                verify: true,
+            },
+            ValuePdu::WrittenValue {
+                handle: h,
+                data_type: t,
+                value: v,
+            },
+        ) if (handle, data_type, value) == (h, t, v) => Ok(v.to_vec()),
+        (ValuePdu::Write { handle, .. }, ValuePdu::WriteError { handle: h, error })
+            if handle == h =>
+        {
+            Err(ClientFailure::WriteError { handle, error })
+        }
+        (
+            ValuePdu::Read { .. },
+            ValuePdu::Error {
+                request: 8, error, ..
+            },
+        )
+        | (
+            ValuePdu::Write { .. },
+            ValuePdu::Error {
+                request: 13, error, ..
+            },
+        ) => Err(format!("peer protocol error {error}").into()),
+        _ => {
+            return Err(io::Error::other(
+                "SSAP response does not match original operation",
+            ));
+        }
+    })
+}
+
 struct ClientRequest {
     minimum: u32,
     epoch: Option<u64>,
     bytes: Vec<u8>,
     deadline: Instant,
     admitted: bool,
+    submitted_all: bool,
     // Starts once at software admission, when physical submission is possible.
     // This is a drain bound, never a renewed author/admission/TX deadline.
     cleanup_deadline: Option<Instant>,
-    reply: Option<oneshot::Sender<Result<Vec<u8>, String>>>,
+    reply: Option<oneshot::Sender<Result<Vec<u8>, ClientFailure>>>,
 }
 impl ClientRequest {
+    /// A response cannot discharge a partially admitted stream or a stale
+    /// physical obligation. Native validates receipt lifetime before this
+    /// actor-level check; this does not authenticate a caller-provided receipt.
+    fn validate_reply(
+        &self,
+        receipt: Option<slk_protocol::SleMessageSecurity>,
+        now: Instant,
+    ) -> io::Result<()> {
+        if matches!(self.bytes.first(), Some(12 | 18)) {
+            return Err(io::Error::other("SSAP command cannot own a peer reply"));
+        }
+        if let Some(epoch) = self.epoch {
+            let m = receipt.ok_or_else(|| io::Error::other("missing reply receipt"))?;
+            if m.security_epoch != epoch || m.security < self.minimum {
+                return Err(io::Error::other(
+                    "SSAP reply differs from original request security intent",
+                ));
+            }
+        }
+        if !self.admitted || !self.submitted_all || self.cleanup_deadline.is_none_or(|at| now >= at)
+        {
+            return Err(io::Error::other(
+                "SSAP reply before admission or after physical drain deadline",
+            ));
+        }
+        Ok(())
+    }
+    fn admit_part(&mut self, now: Instant, last: bool) {
+        if !self.admitted {
+            self.admitted = true;
+            self.cleanup_deadline = Some(now + Duration::from_secs(5));
+        }
+        self.submitted_all = last;
+    }
     fn obligation_deadline(&self) -> Instant {
         if self.admitted {
             let physical = self
@@ -481,8 +1058,8 @@ impl ClientRequest {
     }
 }
 fn finish_client(
-    reply: Option<oneshot::Sender<Result<Vec<u8>, String>>>,
-    result: Result<Vec<u8>, String>,
+    reply: Option<oneshot::Sender<Result<Vec<u8>, ClientFailure>>>,
+    result: Result<Vec<u8>, ClientFailure>,
 ) {
     if let Some(reply) = reply {
         let _ = reply.send(result);
@@ -516,11 +1093,95 @@ fn retire_client_wait(
         );
     }
 }
+/// Discharge only the application's local command admission wait. All
+/// controller/USB debt remains owned by Native, not by this reply sender.
+fn finish_admitted_command(client: &mut Option<ClientRequest>, now: Instant) {
+    if !client
+        .as_ref()
+        .is_some_and(|c| matches!(c.bytes.first(), Some(12 | 18)) && c.admitted && c.submitted_all)
+    {
+        return;
+    }
+    let current = client.take().expect("fully admitted command");
+    let result = if now < current.deadline {
+        Ok(Vec::new())
+    } else {
+        Err("SSAP command original deadline after admission".into())
+    };
+    finish_client(current.reply, result);
+}
 struct Pending {
+    sent: usize,
     bytes: Vec<u8>,
     deadline: Instant,
     purpose: Purpose,
     constraint: Option<slk_protocol::SleSendConstraint>,
+}
+struct ClientAdmission<'a> {
+    wire: &'a Wire,
+    client: &'a mut Option<ClientRequest>,
+    pending: &'a mut VecDeque<Pending>,
+    response_load: usize,
+    ready: bool,
+    mtu: u16,
+}
+impl ClientAdmission<'_> {
+    fn begin(
+        self,
+        bytes: Vec<u8>,
+        deadline: Instant,
+        minimum: u32,
+        reply: oneshot::Sender<Result<Vec<u8>, ClientFailure>>,
+    ) -> bool {
+        let Self {
+            wire,
+            client,
+            pending,
+            response_load: load,
+            ready,
+            mtu,
+        } = self;
+        if reply.is_closed() {
+            return false;
+        }
+        if client.is_some()
+            || pending.len() + load >= 8
+            || !ready
+            || Instant::now() >= deadline
+            || bytes.len() > usize::from(mtu)
+        {
+            let _ = reply.send(Err("SSAP busy/not-ready/expired/oversize".into()));
+            return false;
+        }
+        let prepared = slk_channel::query(wire.fd.get_ref().as_raw_fd())
+            .and_then(|_| wire.prepare(minimum, deadline));
+        let constraint = match prepared {
+            Ok(c) => c,
+            Err(e) => {
+                let _ = reply.send(Err(format!("SSAP send intent refused: {e}").into()));
+                return false;
+            }
+        };
+        let epoch = constraint.map(|c| c.security_epoch);
+        pending.push_back(Pending {
+            sent: 0,
+            bytes: bytes.clone(),
+            deadline,
+            purpose: Purpose::Client,
+            constraint,
+        });
+        *client = Some(ClientRequest {
+            bytes,
+            deadline,
+            minimum,
+            epoch,
+            admitted: false,
+            submitted_all: false,
+            cleanup_deadline: None,
+            reply: Some(reply),
+        });
+        true
+    }
 }
 struct ServerPacket {
     bytes: Vec<u8>,
@@ -533,6 +1194,10 @@ struct ServerPacket {
 struct ServerDecision {
     packet: ServerPacket,
     approvals: Vec<crate::ssap_authorization::Approval>,
+    values: Vec<crate::ssap_read_provider::ReadValue>,
+    write: Option<crate::ssap_write_provider::WriteResult>,
+    method: Option<crate::ssap_method_provider::MethodResult>,
+    admission_error: Option<io::Error>,
 }
 type ServerTask = std::pin::Pin<Box<dyn std::future::Future<Output = ServerDecision> + Send>>;
 
@@ -562,9 +1227,15 @@ async fn authorize_server(packet: ServerPacket, database: Store) -> ServerDecisi
     };
     let mut approvals = Vec::new();
     if let Some(c) = packet.constraint {
-        let write = packet.bytes[0] == 13;
+        let write = matches!(packet.bytes[0], 12 | 13 | 18 | 19);
         let value = match ValuePdu::decode(packet.mtu, &packet.bytes) {
-            Ok(ValuePdu::Write { value, .. }) => value.to_vec(),
+            Ok(ValuePdu::Write { value, .. } | ValuePdu::WriteCommand { value, .. }) => {
+                value.to_vec()
+            }
+            Ok(
+                ValuePdu::CallMethod { arguments, .. }
+                | ValuePdu::CallMethodCommand { arguments, .. },
+            ) => arguments.to_vec(),
             _ => vec![],
         };
         for target in targets {
@@ -588,22 +1259,223 @@ async fn authorize_server(packet: ServerPacket, database: Store) -> ServerDecisi
                 write,
                 c.deadline_monotonic_ns,
                 value.clone(),
+                target.data_type,
             );
             if target.owner.authorize(prompt, packet.deadline).await {
                 approvals.push(crate::ssap_authorization::Approval {
                     handle: target.handle,
+                    data_type: target.data_type,
+                    write,
                     owner: target.owner,
                 });
             }
         }
     }
-    ServerDecision { packet, approvals }
+    let mut values = Vec::new();
+    if let Some(c) = packet.constraint {
+        let targets = database
+            .lock()
+            .map(|db| {
+                if packet.bytes[0] == 10 {
+                    slk_protocol::ssap::read_uuid::Request::decode(packet.mtu, &packet.bytes)
+                        .ok()
+                        .map(|r| db.uuid_read_provider_targets(r, packet.level, &approvals))
+                        .unwrap_or_default()
+                } else {
+                    match ValuePdu::decode(packet.mtu, &packet.bytes) {
+                        Ok(ValuePdu::Read {
+                            handle,
+                            data_type: 0,
+                        }) => db
+                            .read_provider_target(handle, packet.level, &approvals)
+                            .into_iter()
+                            .collect(),
+                        _ => vec![],
+                    }
+                }
+            })
+            .unwrap_or_default();
+        // Maximum 64 targets (the existing DB property budget). All callbacks
+        // share one response obligation, deadline and 2042-byte value budget.
+        let mut remaining = slk_contract::ssap::MAX_PROVIDER_VALUE_BYTES;
+        for target in targets {
+            if Instant::now() >= packet.deadline {
+                break;
+            }
+            let request = slk_contract::ssap::ReadProviderRequest {
+                request_id: packet.request_id,
+                identity: (
+                    c.controller,
+                    c.generation,
+                    c.lifetime,
+                    c.handle,
+                    c.security_epoch,
+                    packet.level,
+                    c.local_tcid,
+                    c.remote_tcid,
+                    c.pi,
+                ),
+                property: target.handle,
+                deadline_ns: c.deadline_monotonic_ns,
+                maximum_bytes: remaining as u16,
+            };
+            let result = target.binding.read(request, packet.deadline).await;
+            if let Ok(value) = &result {
+                remaining -= value.len();
+            }
+            values.push(crate::ssap_read_provider::ReadValue { target, result });
+        }
+    }
+    ServerDecision {
+        packet,
+        approvals,
+        values,
+        write: None,
+        method: None,
+        admission_error: None,
+    }
 }
 
+/// Same front-of-queue obligation and original deadline. Policy approval is
+/// not application success. Recheck Native identity before requesting an
+/// effect; a later revocation can stop the response but cannot undo that effect.
+async fn resolve_server(packet: ServerPacket, database: Store, wire: Wire) -> ServerDecision {
+    let mut decision = authorize_server(packet, database.clone()).await;
+    if matches!(decision.packet.bytes[0], 18 | 19) {
+        let Some(c) = decision.packet.constraint else {
+            return decision;
+        };
+        let Ok(pdu) = ValuePdu::decode(decision.packet.mtu, &decision.packet.bytes) else {
+            return decision;
+        };
+        let target = database.lock().ok().and_then(|db| {
+            db.method_provider_target(pdu, decision.packet.level, &decision.approvals)
+        });
+        let Some(target) = target else {
+            return decision;
+        };
+        if let Err(error) = recheck_server_context(&wire, &decision.packet) {
+            decision.admission_error = Some(error);
+            return decision;
+        }
+        let arguments = match pdu {
+            ValuePdu::CallMethod { arguments, .. }
+            | ValuePdu::CallMethodCommand { arguments, .. } => arguments,
+            _ => return decision,
+        };
+        let request = slk_contract::ssap::MethodProviderRequest {
+            request_id: decision.packet.request_id,
+            identity: (
+                c.controller,
+                c.generation,
+                c.lifetime,
+                c.handle,
+                c.security_epoch,
+                decision.packet.level,
+                c.local_tcid,
+                c.remote_tcid,
+                c.pi,
+            ),
+            method: target.handle,
+            deadline_ns: c.deadline_monotonic_ns,
+            operation: decision.packet.bytes[0],
+            arguments: arguments.to_vec(),
+            maximum_result_bytes: if decision.packet.bytes[0] == 18 {
+                0
+            } else {
+                decision
+                    .packet
+                    .mtu
+                    .saturating_sub(2)
+                    .min(slk_contract::ssap::MAX_METHOD_RESULT_BYTES as u16)
+            },
+        };
+        let result = target
+            .binding
+            .invoke(&request, decision.packet.deadline)
+            .await;
+        decision.method = Some(crate::ssap_method_provider::MethodResult {
+            target,
+            request,
+            result,
+        });
+        return decision;
+    }
+    if !matches!(decision.packet.bytes[0], 12 | 13) {
+        return decision;
+    }
+    let Some(c) = decision.packet.constraint else {
+        return decision;
+    };
+    let Ok(pdu) = ValuePdu::decode(decision.packet.mtu, &decision.packet.bytes) else {
+        return decision;
+    };
+    let target = database
+        .lock()
+        .ok()
+        .and_then(|db| db.write_provider_target(pdu, decision.packet.level, &decision.approvals));
+    let Some(target) = target else {
+        return decision;
+    };
+    if let Err(error) = recheck_server_context(&wire, &decision.packet) {
+        decision.admission_error = Some(error);
+        return decision;
+    }
+    let (value, verify) = match pdu {
+        ValuePdu::Write { value, verify, .. } => (value, verify),
+        ValuePdu::WriteCommand { value, .. } => (value, false),
+        _ => return decision,
+    };
+    let request = slk_contract::ssap::WriteProviderRequest {
+        request_id: decision.packet.request_id,
+        identity: (
+            c.controller,
+            c.generation,
+            c.lifetime,
+            c.handle,
+            c.security_epoch,
+            decision.packet.level,
+            c.local_tcid,
+            c.remote_tcid,
+            c.pi,
+        ),
+        property: target.handle,
+        deadline_ns: c.deadline_monotonic_ns,
+        operation: decision.packet.bytes[0],
+        data_type: 0,
+        offset: 0,
+        value: value.to_vec(),
+        verify,
+    };
+    let result = target
+        .binding
+        .write(&request, decision.packet.deadline)
+        .await;
+    decision.write = Some(crate::ssap_write_provider::WriteResult {
+        target,
+        request,
+        result,
+    });
+    decision
+}
+
+#[cfg(test)]
 fn server_response(
     packet: &ServerPacket,
     database: &Store,
     approvals: &[crate::ssap_authorization::Approval],
+    configurations: &mut crate::ssap_engine_config::ClientConfigurations,
+) -> io::Result<Vec<u8>> {
+    server_response_resolved(packet, database, approvals, &[], None, None, configurations)
+}
+fn server_response_resolved(
+    packet: &ServerPacket,
+    database: &Store,
+    approvals: &[crate::ssap_authorization::Approval],
+    values: &[crate::ssap_read_provider::ReadValue],
+    write: Option<&crate::ssap_write_provider::WriteResult>,
+    method: Option<&crate::ssap_method_provider::MethodResult>,
+    configurations: &mut crate::ssap_engine_config::ClientConfigurations,
 ) -> io::Result<Vec<u8>> {
     let raw = &packet.bytes;
     let negotiated = packet.mtu;
@@ -613,7 +1485,15 @@ fn server_response(
                 let database = database
                     .lock()
                     .map_err(|_| io::Error::other("database poisoned"))?;
-                if approvals.is_empty() {
+                if !values.is_empty() {
+                    database.read_uuid_resolved(
+                        request,
+                        negotiated,
+                        packet.level,
+                        approvals,
+                        values,
+                    )
+                } else if approvals.is_empty() {
                     database.read_uuid(request, negotiated, packet.level)
                 } else {
                     database.read_uuid_authorized(request, negotiated, packet.level, approvals)
@@ -669,7 +1549,50 @@ fn server_response(
             let mut database = database
                 .lock()
                 .map_err(|_| io::Error::other("database poisoned"))?;
-            if approvals.is_empty() {
+            if let ValuePdu::CallMethod { handle, .. } = request {
+                let answer = match database.method_result(request, packet.level, approvals, method)
+                {
+                    Ok(result) => ValuePdu::MethodResult(result),
+                    Err(error) => ValuePdu::Error {
+                        request: 19,
+                        handle,
+                        error,
+                    },
+                };
+                let mut out = vec![0; usize::from(negotiated)];
+                let n = answer
+                    .encode(negotiated, &mut out)
+                    .map_err(|_| io::Error::other("method response exceeds MTU"))?;
+                out.truncate(n);
+                return Ok(out);
+            }
+            if matches!(
+                request,
+                ValuePdu::Read { data_type: 2, .. } | ValuePdu::Write { data_type: 2, .. }
+            ) {
+                return database
+                    .answer_configuration(
+                        request,
+                        negotiated,
+                        packet.level,
+                        packet.constraint.map(|c| c.security_epoch),
+                        approvals,
+                        configurations,
+                    )
+                    .map_err(io::Error::other);
+            }
+            if write.is_some() {
+                database.answer_with_providers(
+                    request,
+                    negotiated,
+                    packet.level,
+                    approvals,
+                    values,
+                    write,
+                )
+            } else if !values.is_empty() {
+                database.answer_resolved(request, negotiated, packet.level, approvals, values)
+            } else if approvals.is_empty() {
                 database.answer(request, negotiated, packet.level)
             } else {
                 database.answer_authorized(request, negotiated, packet.level, approvals)
@@ -680,7 +1603,11 @@ fn server_response(
             let mut out = vec![0; 6];
             ValuePdu::Error {
                 request: raw[0],
-                handle: 0,
+                handle: if raw[0] == 19 && raw.len() >= 4 {
+                    u16::from_le_bytes([raw[2], raw[3]])
+                } else {
+                    0
+                },
                 error: if raw.get(1).is_some_and(|v| v & 3 != 3) {
                     16
                 } else if matches!(e, slk_protocol::ssap::value::ValueError::Unsupported) {
@@ -695,19 +1622,91 @@ fn server_response(
         }
     }
 }
-fn complete_server(wire: &Wire, decision: ServerDecision, database: &Store) -> io::Result<Pending> {
-    if Instant::now() >= decision.packet.deadline {
+fn complete_server(
+    wire: &Wire,
+    decision: ServerDecision,
+    database: &Store,
+    configurations: &mut crate::ssap_engine_config::ClientConfigurations,
+) -> io::Result<Option<Pending>> {
+    if let Some(error) = decision.admission_error {
+        return Err(error);
+    }
+    recheck_server_context(wire, &decision.packet)?;
+    if decision.packet.bytes[0] == 18 {
+        // Method command has no response, including application rejection.
+        if let Ok(request) = ValuePdu::decode(decision.packet.mtu, &decision.packet.bytes) {
+            let db = database
+                .lock()
+                .map_err(|_| io::Error::other("database poisoned"))?;
+            let _ = db.method_result(
+                request,
+                decision.packet.level,
+                &decision.approvals,
+                decision.method.as_ref(),
+            );
+        }
+        return Ok(None);
+    }
+    if decision.packet.bytes[0] == 12 {
+        // A command never manufactures a normal or error response.
+        if let Ok(request) = ValuePdu::decode(decision.packet.mtu, &decision.packet.bytes) {
+            let mut db = database
+                .lock()
+                .map_err(|_| io::Error::other("database poisoned"))?;
+            let _ = if decision.write.is_some() {
+                db.command_resolved(
+                    request,
+                    decision.packet.mtu,
+                    decision.packet.level,
+                    &decision.approvals,
+                    decision.write.as_ref(),
+                )
+            } else {
+                db.command_authorized(
+                    request,
+                    decision.packet.mtu,
+                    decision.packet.level,
+                    &decision.approvals,
+                )
+            };
+        }
+        return Ok(None);
+    }
+    let response = server_response_resolved(
+        &decision.packet,
+        database,
+        &decision.approvals,
+        &decision.values,
+        decision.write.as_ref(),
+        decision.method.as_ref(),
+        configurations,
+    )?;
+    Ok(Some(Pending {
+        sent: 0,
+        bytes: response,
+        deadline: decision.packet.deadline,
+        purpose: Purpose::ValueResponse,
+        constraint: decision.packet.constraint,
+    }))
+}
+
+fn recheck_server_context(wire: &Wire, packet: &ServerPacket) -> io::Result<()> {
+    if Instant::now() >= packet.deadline {
         return Err(io::Error::new(
             io::ErrorKind::TimedOut,
             "original SSAP authorization deadline",
         ));
     }
-    if let Some(original) = decision.packet.constraint {
+    #[cfg(test)]
+    if wire.fixture {
+        return Ok(());
+    }
+    if let Some(original) = packet.constraint {
         // A recheck is an admission snapshot, not an atomic transaction across
         // kernel security state and the userspace database. Later revocation
         // can stop the original response; it cannot roll back a prior write.
         let now = wire
-            .prepare(original.minimum, decision.packet.deadline)?
+            .prepare(original.minimum, packet.deadline)?
             .ok_or_else(|| io::Error::other("missing native authorization recheck"))?;
         if (
             now.controller,
@@ -734,33 +1733,31 @@ fn complete_server(wire: &Wire, decision: ServerDecision, database: &Store) -> i
             ));
         }
     }
-    let response = server_response(&decision.packet, database, &decision.approvals)?;
-    Ok(Pending {
-        bytes: response,
-        deadline: decision.packet.deadline,
-        purpose: Purpose::ValueResponse,
-        constraint: decision.packet.constraint,
-    })
+    Ok(())
 }
 
 // Native always checks actual kernel receipt facts. Local fixtures are explicit
 // test-only transports, never a production fallback or fabricated security.
+#[derive(Clone)]
 struct Wire {
-    fd: AsyncFd<OwnedFd>,
+    fd: std::sync::Arc<AsyncFd<OwnedFd>>,
     #[cfg(test)]
     fixture: bool,
 }
 impl Wire {
     fn native(fd: AsyncFd<OwnedFd>) -> Self {
         Self {
-            fd,
+            fd: std::sync::Arc::new(fd),
             #[cfg(test)]
             fixture: false,
         }
     }
     #[cfg(test)]
     fn fixture(fd: AsyncFd<OwnedFd>) -> Self {
-        Self { fd, fixture: true }
+        Self {
+            fd: std::sync::Arc::new(fd),
+            fixture: true,
+        }
     }
     fn receive(
         &self,
@@ -828,19 +1825,19 @@ impl Wire {
         )
         .map(Some)
     }
-    fn send(&self, fd: &OwnedFd, packet: &Pending) -> io::Result<()> {
+    fn send(&self, fd: &OwnedFd, packet: &Pending, bytes: &[u8]) -> io::Result<()> {
         #[cfg(test)]
         if self.fixture {
-            return send(fd, &packet.bytes);
+            return send(fd, bytes);
         }
         if let Some(c) = packet.constraint {
             let count = slk_channel::security::send(
                 fd.as_raw_fd(),
-                &packet.bytes,
+                bytes,
                 nix::libc::MSG_DONTWAIT | nix::libc::MSG_NOSIGNAL,
                 &c,
             )?;
-            if count != packet.bytes.len() {
+            if count != bytes.len() {
                 return Err(io::Error::other("partial SSAP constrained admission"));
             }
             Ok(())
@@ -852,12 +1849,29 @@ impl Wire {
 fn monotonic_deadline(deadline: Instant) -> io::Result<u64> {
     slk_channel::security::deadline_at(deadline.into_std())
 }
+fn sequenced(info: &ExchangeInfo) -> bool {
+    info.extension.is_some_and(|e| e.fragment_sequence)
+}
+fn accepts_extended(info: &ExchangeInfo, control: u8) -> bool {
+    info.extension
+        .is_some_and(|e| control & 3 == 3 || e.fragment_sequence)
+}
+fn value_budget(info: &Info) -> u16 {
+    if ExchangeInfo::decode(info.4, &info.7).is_ok_and(|p| sequenced(&p)) {
+        fragments::LOGICAL_MTU
+    } else {
+        info.5
+    }
+}
 fn encode(kind: ExchangeKind, mtu: u16) -> io::Result<Vec<u8>> {
     let info = ExchangeInfo {
         kind,
         mtu: Some(mtu),
         version: Some([1, 2]),
-        extension: None,
+        extension: Some(ExtensionCapabilities {
+            fragment_sequence: true,
+            transaction_capacity: None,
+        }),
         reliable: false,
     };
     let mut bytes = [0; 10];
@@ -972,6 +1986,7 @@ async fn exchange_loop(
     let request = encode(ExchangeKind::Request, capabilities.mtu)?;
     let response = encode(ExchangeKind::Response, capabilities.mtu)?;
     let mut pending = VecDeque::from([Pending {
+        sent: 0,
         bytes: request.clone(),
         deadline: original_deadline,
         purpose: Purpose::Request,
@@ -985,17 +2000,85 @@ async fn exchange_loop(
     let mut client: Option<ClientRequest> = None;
     let mut incoming_wait: Option<IncomingWait> = None;
     let mut buffer = [0; 2042];
+    let mut assemblies: [fragments::Reassembly<Option<slk_protocol::SleMessageSecurity>, Instant>;
+        3] = std::array::from_fn(|_| fragments::Reassembly::default());
     let mut server_queue: VecDeque<ServerPacket> = VecDeque::new();
     let mut server: Option<(Instant, ServerTask)> = None;
     let mut next_server_id = 0u64;
+    let mut configurations = crate::ssap_engine_config::ClientConfigurations::default();
+    let mut update: Option<UpdateRequest> = None;
+    let mut receive: Option<crate::ssap_receive_transaction::ReceiveTransaction> = None;
+    let mut last_subscription: VecDeque<crate::ssap_subscription::Closed> = VecDeque::new();
+    let mut next_subscription = 1u64;
     loop {
         retire_client_wait(&mut client, &mut pending, Instant::now());
+        retire_update_wait(&mut update, &mut pending, Instant::now());
+        if let Some(current) = receive.as_mut() {
+            current
+                .maintain(&mut incoming_wait, Instant::now())
+                .map_err(io::Error::other)?;
+            retire_client_wait(&mut client, &mut pending, Instant::now());
+            for closed in current.take_closed() {
+                remember_subscription(&mut last_subscription, closed);
+            }
+            if current.finished() && client.is_none() {
+                for closed in receive.take().expect("finished transaction").finish() {
+                    remember_subscription(&mut last_subscription, closed);
+                }
+            } else if client.is_none()
+                && let Some((handle, value, deadline)) = current.next(&mut incoming_wait)
+            {
+                let mtu = capabilities.mtu.min(
+                    peer_reply
+                        .as_ref()
+                        .and_then(|(p, _)| p.mtu)
+                        .unwrap_or(capabilities.mtu),
+                );
+                let packet = match &value {
+                    Some(value) => ValuePdu::Write {
+                        handle,
+                        data_type: 2,
+                        value,
+                        verify: true,
+                    },
+                    None => ValuePdu::Read {
+                        handle,
+                        data_type: 2,
+                    },
+                };
+                let mut raw = vec![0; usize::from(mtu)];
+                let n = packet
+                    .encode(mtu, &mut raw)
+                    .map_err(|e| io::Error::other(format!("configuration request codec: {e:?}")))?;
+                raw.truncate(n);
+                let (reply, result) = oneshot::channel();
+                let load = server_queue.len() + usize::from(server.is_some());
+                let admitted = ClientAdmission {
+                    wire: &wire,
+                    client: &mut client,
+                    pending: &mut pending,
+                    response_load: load,
+                    ready: initial_done,
+                    mtu,
+                }
+                .begin(raw, deadline, 2, reply);
+                if admitted
+                    && let Some(expected) = current.expected_epoch()
+                    && client.as_ref().and_then(|c| c.epoch) != Some(expected)
+                {
+                    return Err(io::Error::other(
+                        "subscription original security changed before configuration admission",
+                    ));
+                }
+                current.submitted(handle, result, admitted);
+            }
+        }
         if server.is_none()
             && let Some(packet) = server_queue.pop_front()
         {
             server = Some((
                 packet.deadline,
-                Box::pin(authorize_server(packet, database.clone())),
+                Box::pin(resolve_server(packet, database.clone(), wire.clone())),
             ));
         }
         let server_load = server_queue.len() + usize::from(server.is_some());
@@ -1036,7 +2119,10 @@ async fn exchange_loop(
         let debt_deadline = pending
             .iter()
             .map(|p| p.deadline)
+            .chain(assemblies.iter().filter_map(|a| a.deadline()))
             .chain(client.as_ref().map(ClientRequest::obligation_deadline))
+            .chain(update.as_ref().map(UpdateRequest::obligation_deadline))
+            .chain(receive.as_ref().map(|r| r.wake_deadline()))
             .chain(server.as_ref().map(|v| v.0))
             .chain(server_queue.iter().map(|v| v.deadline))
             .chain(
@@ -1053,8 +2139,20 @@ async fn exchange_loop(
         };
         tokio::select! {
             _ = &mut *stopped => return Ok(()),
+            _ = async { update.as_mut().expect("guarded update wait").withdrawn().await },
+                if update.as_ref().is_some_and(UpdateRequest::needs_withdrawal_watch) => {
+                retire_update_event(&mut update, &mut pending, Instant::now())?;
+                // A withdrawn author does not erase admitted work or its
+                // original drain. All-admitted work without an author no
+                // longer watches; an unfinished stream keeps its owner watch.
+            }
             _ = tokio::time::sleep_until(deadline) => {
                 retire_client_wait(&mut client, &mut pending, Instant::now());
+                retire_update_wait(&mut update, &mut pending, Instant::now());
+                if assemblies.iter().any(|a|a.deadline().is_some_and(|d|Instant::now()>=d)) {return Err(io::Error::new(io::ErrorKind::TimedOut,"original SSAP fragment deadline"));}
+                if update.as_ref().is_some_and(|v| Instant::now() >= v.obligation_deadline()) {
+                    return Err(io::Error::new(io::ErrorKind::TimedOut, "original SSAP indication obligation deadline"));
+                }
                 if (!initial_done && Instant::now() >= original_deadline) || pending.iter().any(|p| Instant::now() >= p.deadline) || client.as_ref().is_some_and(|v|Instant::now()>=v.obligation_deadline()) || server.as_ref().is_some_and(|v|Instant::now()>=v.0) || server_queue.iter().any(|v|Instant::now()>=v.deadline) {
                     return Err(io::Error::new(io::ErrorKind::TimedOut, "original SSAP obligation deadline"));
                 }
@@ -1062,20 +2160,118 @@ async fn exchange_loop(
             }
             query = incoming.recv() => {
                 let Some(query)=query else { return Ok(()); };
+                if let Query::Subscribe {owner,handles,modes,duration_ms,deadline,reply}=query {
+                    if reply.is_closed(){continue;}
+                    let prepared=(||{
+                        if !initial_done || (receive.is_none()&&(client.is_some()||incoming_wait.is_some()))
+                            || Instant::now()>=deadline || !owner.current()
+                            || !slk_contract::ssap::subscription::valid_request(&handles,modes,duration_ms){
+                            return Err("subscription busy/not-ready/expired/invalid".to_string());
+                        }
+                        let context=wire.prepare(2,deadline).map_err(|e|e.to_string())?.ok_or("Native subscription context required")?;
+                        let token=next_subscription;
+                        next_subscription=next_subscription.checked_add(1).ok_or("subscription namespace exhausted")?;
+                        let (expires,expires_ns)=crate::ssap_subscription::lease_expiration(Instant::now(),duration_ms)?;
+                        let info=slk_contract::ssap::subscription::Info{version:1,controller:capabilities.controller,
+                            generation:capabilities.generation,lifetime:capabilities.lifetime,handle:capabilities.handle,
+                            security_epoch:context.security_epoch,token,expires_ns,
+                            handles:handles.clone(),modes,state:slk_contract::ssap::subscription::STARTING,
+                            capacity:slk_contract::ssap::subscription::CAPACITY as u16};
+                        if receive.as_ref().is_some_and(|r|!r.can_join(&info)){return Err("subscription incompatible shared scope or capacity".into());}
+                        Ok((info,expires))
+                    })();
+                    match prepared {
+                        Err(error)=>{let _=reply.send(Err(error));},
+                        Ok((info,expires))=>{
+                            if let Some(current)=receive.as_mut(){current.join(owner,info,expires,deadline,reply);}
+                            else{receive=Some(crate::ssap_receive_transaction::ReceiveTransaction::new_stream(handles,modes,deadline,owner,info,expires,reply));}
+                        },
+                    }
+                    continue;
+                }
+                if let Query::SubscriptionRead{caller,token,wait,deadline,reply}=query {
+                    if reply.is_closed(){continue;}
+                    if let Some(current)=receive.as_mut().filter(|r|r.matches(&caller,token)) {
+                        let valid=(||{
+                            if Instant::now()>=deadline{return Err("subscription read original deadline".to_string());}
+                            let context=wire.prepare(2,deadline).map_err(|e|e.to_string())?.ok_or("Native context required")?;
+                            if current.expected_epoch()!=Some(context.security_epoch){return Err("subscription original security changed".into());}
+                            Ok(())
+                        })();
+                        match valid { Ok(())=>current.read(&caller,token,wait,deadline,reply),Err(error)=>{let _=reply.send(Err(error));} }
+                    } else if let Some(last)=last_subscription.iter().find(|r|r.owner==caller&&r.token==token) {
+                        let _=reply.send(last.result.clone());
+                    } else {let _=reply.send(Err("subscription owner/token unavailable".into()));}
+                    continue;
+                }
+                if let Query::SubscriptionRenew{caller,token,duration_ms,deadline,reply}=query {
+                    if reply.is_closed(){continue;}
+                    let result=(||{
+                        if Instant::now()>=deadline{return Err("subscription renewal original deadline".to_string());}
+                        let current=receive.as_mut().filter(|r|r.matches(&caller,token)).ok_or("subscription owner/token unavailable")?;
+                        let context=wire.prepare(2,deadline).map_err(|e|e.to_string())?.ok_or("Native context required")?;
+                        if current.expected_epoch()!=Some(context.security_epoch){return Err("subscription original security changed".into());}
+                        current.renew(&caller,token,duration_ms)
+                    })();
+                    let _=reply.send(result);continue;
+                }
+                if let Query::SubscriptionClose{caller,token,deadline,reply}=query {
+                    if reply.is_closed(){continue;}
+                    if Instant::now()>=deadline {let _=reply.send(Err("subscription close original deadline".into()));continue;}
+                    if let Some(current)=receive.as_mut().filter(|r|r.matches(&caller,token)){current.close(&caller,token,reply);}
+                    else if let Some(last)=last_subscription.iter().find(|r|r.owner==caller&&r.token==token){let _=reply.send(last.result.clone());}
+                    else {let _=reply.send(Err("subscription owner/token unavailable".into()));}
+                    continue;
+                }
+                if let Query::Configuration { caller, handle, deadline, reply } = query {
+                    if reply.is_closed() {continue;}
+                    let result = (|| {
+                        if !initial_done || Instant::now() >= deadline {return Err("configuration observation not-ready/expired".to_string());}
+                        let context=wire.prepare(2,deadline).map_err(|e|e.to_string())?.ok_or("native security context required")?;
+                        let db=database.lock().map_err(|_|"database poisoned")?;
+                        let (owner,_)=db.owned_update(handle,&caller)?;
+                        Ok(configurations.get(handle,&owner,context.security_epoch))
+                    })();
+                    let _=reply.send(result);continue;
+                }
+                if let Query::Update { caller, handle, indication, deadline, reply } = query {
+                    if reply.is_closed() {continue;}
+                    if update.is_some() || pending.len()+server_load>=8 || !initial_done || Instant::now()>=deadline {
+                        let _=reply.send(Err("SSAP update busy/not-ready/expired".into()));continue;
+                    }
+                    let prepared = (|| {
+                        let context=wire.prepare(2,deadline).map_err(|e|e.to_string())?.ok_or("native security context required")?;
+                        let db=database.lock().map_err(|_|"database poisoned")?;
+                        let (owner,value)=db.owned_update(handle,&caller)?;
+                        let mode=if indication {2} else {1};
+                        if configurations.get(handle,&owner,context.security_epoch)&mode==0 {return Err("peer client configuration does not enable requested mode".to_string());}
+                        let mtu=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
+                        let packet=slk_protocol::ssap::updates::Update { indication,event:false,
+                            items:vec![slk_protocol::ssap::updates::Item{handle,value:&value}] };
+                        let budget=if peer_reply.as_ref().is_some_and(|(p,_)|sequenced(p)) {fragments::MAX_LOGICAL_MTU}else{mtu};
+                        let mut raw=vec![0;usize::from(budget)];
+                        let size=packet.encode(budget,&mut raw).map_err(|e|format!("update exceeds negotiated logical budget: {e:?}"))?;
+                        raw.truncate(size);Ok((owner,mode,context,raw))
+                    })();
+                    match prepared {
+                        Err(error)=>{let _=reply.send(Err(error));},
+                        Ok((owner,mode,context,raw))=> {
+                            pending.push_back(Pending{sent: 0,bytes:raw.clone(),deadline,purpose:Purpose::Update,constraint:Some(context)});
+                            update=Some(UpdateRequest{submitted_all:false,handle,owner,mode,epoch:context.security_epoch,deadline,drain:None,pdu:raw,reply:Some(reply)});
+                        }
+                    }
+                    continue;
+                }
                 if let Query::Incoming{handles,modes,deadline,reply}=query {
                     if reply.is_closed(){continue;}
-                    if incoming_wait.is_some() || !initial_done || Instant::now()>=deadline || handles.is_empty() || handles.len()>32 || modes==0 || modes&!3!=0 || handles.contains(&0) || handles.iter().enumerate().any(|(i,h)|handles[..i].contains(h)) {let _=reply.send(Err("SSAP local receive busy/not-ready/invalid/expired".into()));continue;}
+                    if receive.is_some() || client.is_some() || incoming_wait.is_some() || !initial_done || Instant::now()>=deadline || handles.is_empty() || handles.len()>32 || modes==0 || modes&!3!=0 || handles.contains(&0) || handles.iter().enumerate().any(|(i,h)|handles[..i].contains(h)) {let _=reply.send(Err("SSAP receive busy/not-ready/invalid/expired".into()));continue;}
                     slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
-                    incoming_wait=Some(IncomingWait{handles,modes,deadline,reply});continue;
+                    receive=Some(crate::ssap_receive_transaction::ReceiveTransaction::new(handles,modes,deadline,reply));continue;
                 }
                 if let Query::Value{bytes,deadline,minimum,reply}=query {
-                    if client.is_some() || pending.len()+server_load>=8 || !initial_done || Instant::now()>=deadline {let _=reply.send(Err("SSAP busy/not-ready/expired".into()));continue;}
-                    slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
-                    if bytes.len()>usize::from(capabilities.mtu) {let _=reply.send(Err("SSAP request exceeds channel".into()));continue;}
-                    if reply.is_closed(){continue;}
-                    let constraint=match wire.prepare(minimum,deadline) {Ok(c)=>c,Err(e)=>{let _=reply.send(Err(format!("SSAP send intent refused: {e}")));continue;}};
-                    let epoch=constraint.map(|c|c.security_epoch);
-                    pending.push_back(Pending{bytes:bytes.clone(),deadline,purpose:Purpose::Client,constraint});client=Some(ClientRequest{bytes,deadline,minimum,epoch,admitted:false,cleanup_deadline:None,reply:Some(reply)});continue;
+                    if receive.as_ref().is_some_and(|r|r.owns_client_sequence()) {let _=reply.send(Err("SSAP client sequence owned by receive transaction".into()));continue;}
+                    ClientAdmission {wire:&wire,client:&mut client,pending:&mut pending,response_load:server_load,ready:initial_done,mtu:if peer_reply.as_ref().is_some_and(|(p,_)|sequenced(p)){fragments::LOGICAL_MTU}else{capabilities.mtu}}
+                        .begin(bytes,deadline,minimum,reply);continue;
                 }
                 if let Query::TransportStatus{deadline,reply}=query {
                     if reply.is_closed() {continue;}
@@ -1102,63 +2298,143 @@ async fn exchange_loop(
                 };
                 let _=reply.send(result);
             }
+            event = async {receive.as_mut().expect("guarded receive transaction").event().await}, if receive.is_some() => {
+                receive.as_mut().expect("current receive transaction").apply(event).map_err(io::Error::other)?;
+            }
             decision = async { server.as_mut().expect("guarded server obligation").1.as_mut().await }, if server.is_some() => {
                 server.take();
-                pending.push_back(complete_server(&wire,decision,&database)?);
+                if let Some(response)=complete_server(&wire,decision,&database,&mut configurations)? {
+                    pending.push_back(response);
+                }
             }
             ready = wire.fd.writable(), if !pending.is_empty() => {
                 let mut ready = ready?;
                 retire_client_wait(&mut client, &mut pending, Instant::now());
+                retire_update_wait(&mut update, &mut pending, Instant::now());
                 let Some(packet) = pending.front() else { continue; };
                 if Instant::now() >= packet.deadline { return Err(io::Error::new(io::ErrorKind::TimedOut, "expired SSAP submit")); }
-                if let Ok(result) = ready.try_io(|fd| wire.send(fd.get_ref(), packet)) {
+                let is_update=matches!(packet.purpose,Purpose::Update);
+                let sequence=match packet.purpose {
+                    Purpose::Client|Purpose::Update=>peer_reply.as_ref().is_some_and(|(p,_)|sequenced(p)),
+                    Purpose::ValueResponse=>ExchangeInfo::decode(capabilities.mtu,&peer_request).is_ok_and(|p|sequenced(&p)),
+                    _=>false,
+                };
+                let mtu=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
+                let plan=fragments::Plan::new(&packet.bytes,mtu,sequence).map_err(|e|io::Error::other(format!("SSAP fragment plan: {e:?}")))?;
+                let mut fragment=vec![0;usize::from(mtu)];
+                let count=plan.count();let size=plan.encode(packet.sent,&mut fragment).map_err(|e|io::Error::other(format!("SSAP fragment encode: {e:?}")))?;
+                fragment.truncate(size);
+                let outcome = if is_update {
+                    // Same DB mutex as removal. This nonblocking syscall admits
+                    // one immutable value snapshot; no lock crosses an await.
+                    let db=database.lock().map_err(|_|io::Error::other("database poisoned"))?;
+                    let current=update.as_ref().ok_or_else(||io::Error::other("missing update obligation"))?;
+                    if !current.owner.current() || configurations.get(current.handle,&current.owner,current.epoch)&current.mode==0 {
+                        if current.drain.is_some() {return Err(io::Error::other("partial update owner/configuration withdrawn;retire SSAP actor"));}
+                        drop(db);
+                        if let Some(mut current)=update.take() && let Some(reply)=current.reply.take() {let _=reply.send(Err("update owner/configuration withdrawn before admission".into()));}
+                        pending.pop_front();continue;
+                    }
+                    ready.try_io(|fd| wire.send(fd.get_ref(), packet, &fragment))
+                } else {ready.try_io(|fd| wire.send(fd.get_ref(), packet, &fragment))};
+                if let Ok(result) = outcome {
                     result?;
+                    let packet=pending.front_mut().expect("guarded queue");
+                    if matches!(packet.purpose,Purpose::Client) && let Some(client)=&mut client {
+                        client.admit_part(Instant::now(),packet.sent+1==count);
+                    }
+                    if is_update {
+                        update.as_mut().ok_or_else(||io::Error::other("missing update admission"))?
+                            .admit_part(Instant::now(),packet.sent+1==count);
+                    }
+                    packet.sent+=1;
+                    if packet.sent<count {continue;}
                     let packet = pending.pop_front().expect("guarded queue");
                     match packet.purpose {
                         Purpose::Request => request_admitted = true,
                         Purpose::Response => response_admitted = packet.bytes,
                         Purpose::Error | Purpose::ValueResponse => {},
-                        Purpose::Client => {if let Some(client)=&mut client {client.admitted=true;client.cleanup_deadline=Some(Instant::now()+Duration::from_secs(5));}}
+                        Purpose::Client => finish_admitted_command(&mut client,Instant::now()),
+                        Purpose::Update => {
+                            let current=update.as_mut().ok_or_else(||io::Error::other("missing admitted update"))?;
+                            if current.mode!=2 {
+                                let mut current=update.take().expect("admitted notification");
+                                if let Some(reply)=current.reply.take() {let _=reply.send(Ok(slk_contract::ssap::UpdateReceipt {stage:1,pdu:current.pdu,acknowledgement:vec![]}));}
+                                // No SSAP reply is owed. Native still retains
+                                // physical TX/credit obligations independently.
+                            }
+                        }
                     }
                 }
             }
             ready = wire.fd.readable() => {
                 let mut ready = ready?;
                 if let Ok(result) = ready.try_io(|fd| wire.receive(fd.get_ref(), &mut buffer, capabilities)) {
-                    let (size, receipt) = result?;
-                    let reply_deadline = if initial_done { Instant::now()+Duration::from_secs(5) } else { original_deadline };
-                    let constraint = receipt.map(|m| slk_protocol::SleSendConstraint::from_receipt(m,m.security,
-                        monotonic_deadline(reply_deadline)?)).transpose()?;
+                    let (size, mut receipt) = result?;
+                    let mut reply_deadline = if initial_done { Instant::now()+Duration::from_secs(5) } else { original_deadline };
+
                     if size == 0 || size > usize::from(capabilities.mtu) { return Err(io::Error::other("invalid SSAP PDU length")); }
-                    let raw = &buffer[..size];
+                    let wire_raw = &buffer[..size];
+                    let assembled;
+                    let raw = if fragments::needs_reassembly(wire_raw) {
+                        if !initial_done {return Err(io::Error::other("SSAP fragments before negotiation"));}
+                        let lane=fragments::lane(wire_raw[0]).expect("supported fragment lane");
+                        let enabled=if lane==0 {ExchangeInfo::decode(capabilities.mtu,&peer_request).is_ok_and(|p|accepts_extended(&p,wire_raw[1]))}
+                            else {peer_reply.as_ref().is_some_and(|(p,_)|accepts_extended(p,wire_raw[1]))};
+                        if lane==1 && let Some(c)=&client {reply_deadline=reply_deadline.min(c.obligation_deadline());}
+                        if lane==2 && let Some(w)=&incoming_wait {reply_deadline=reply_deadline.min(w.deadline);}
+                        let complete=assemblies[lane].receive(wire_raw,capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu)),enabled,receipt,Instant::now(),reply_deadline)
+                            .map_err(|e|io::Error::other(format!("SSAP fragment stream retired: {e:?}")))?;
+                        let Some(complete)=complete else {continue;};
+                        receipt=complete.context;reply_deadline=complete.deadline;assembled=complete.bytes;&assembled[..]
+                    } else {
+                        if fragments::lane(wire_raw[0]).is_some_and(|lane|assemblies[lane].deadline().is_some()) {return Err(io::Error::other("complete SSAP value interleaves unfinished fragment lane"));}
+                        wire_raw
+                    };
+                    let constraint=receipt.map(|m|slk_protocol::SleSendConstraint::from_receipt(m,m.security,monotonic_deadline(reply_deadline)?)).transpose()?;
                     if !initial_done && Instant::now() >= original_deadline { return Err(io::Error::new(io::ErrorKind::TimedOut, "late SSAP reply")); }
                     if matches!(raw[0],15|16) {
                         if raw[0]==16 && pending.len()+server_load>=8{return Err(io::Error::other("SSAP ACK queue full"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
                         slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
-                        let ack=incoming_packet(negotiated,raw,&mut incoming_wait)?;
-                        if !ack.is_empty(){pending.push_back(Pending{bytes:ack,deadline:Instant::now()+Duration::from_secs(5),purpose:Purpose::ValueResponse,constraint});}
-                    } else if matches!(raw[0],4|6|8|10|13) {
+                        if let Some(current)=receive.as_mut() {
+                            current.maintain(&mut incoming_wait,Instant::now()).map_err(io::Error::other)?;
+                        }
+                        let budget=if peer_reply.as_ref().is_some_and(|(p,_)|sequenced(p)){fragments::MAX_LOGICAL_MTU}else{negotiated};
+                        let ack=incoming_packet(negotiated,budget,raw,receipt,&mut incoming_wait)?;
+                        if !ack.is_empty(){pending.push_back(Pending{sent: 0,bytes:ack,deadline:reply_deadline,purpose:Purpose::ValueResponse,constraint});}
+                    } else if raw[0]==17 {
+                        let Some(mut current)=update.take() else {return Err(io::Error::other("unsolicited indication ACK"));};
+                        if current.mode!=2 || !current.submitted_all || current.drain.is_none_or(|d|Instant::now()>=d) {
+                            return Err(io::Error::other("indication ACK before admission or after drain deadline"));
+                        }
+                        let m=receipt.ok_or_else(||io::Error::other("missing ACK security receipt"))?;
+                        if m.security_epoch!=current.epoch || m.security<2 {return Err(io::Error::other("indication ACK original security changed"));}
+                        let flags=slk_protocol::ssap::updates::decode_ack(capabilities.mtu,raw,false,1)
+                            .map_err(|e|io::Error::other(format!("invalid indication ACK: {e:?}")))?;
+                        if let Some(reply)=current.reply.take().filter(|r| !r.is_closed() && current.owner.current() && Instant::now()<current.deadline) {
+                            let result=if flags==[1] {Ok(slk_contract::ssap::UpdateReceipt{stage:2,pdu:current.pdu,acknowledgement:raw.to_vec()})}
+                                else {Err("peer indication receive queue refused update".into())};
+                            let _=reply.send(result);
+                        }
+                    } else if matches!(raw[0],4|6|8|10|12|13|18|19) {
                         if !initial_done {return Err(io::Error::other("SSAP value/discovery before ExchangeInfo completion"));}
                         if pending.len()+server_load>=8 {return Err(io::Error::other("SSAP response obligation queue full"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
                         slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
                         next_server_id=next_server_id.checked_add(1).ok_or_else(||io::Error::other("SSAP original request namespace exhausted"))?;
-                        server_queue.push_back(ServerPacket {bytes:raw.to_vec(),deadline:reply_deadline,constraint,mtu:negotiated,level:receipt.map_or(0,|m|m.security),request_id:next_server_id});
-                    } else if matches!(raw[0],1|5|7|9|11|14) {
-                        let Some(ClientRequest{bytes:request,deadline,minimum,epoch,admitted,cleanup_deadline,reply})=client.take() else {return Err(io::Error::other("unsolicited SSAP value reply"));};
+                        server_queue.push_back(ServerPacket {bytes:raw.to_vec(),deadline:reply_deadline,constraint,mtu:if matches!(raw[0],8|10|12|13|18|19) && ExchangeInfo::decode(capabilities.mtu,&peer_request).is_ok_and(|p|sequenced(&p)){fragments::LOGICAL_MTU}else{negotiated},level:receipt.map_or(0,|m|m.security),request_id:next_server_id});
+                    } else if matches!(raw[0],1|5|7|9|11|14|20) {
+                        let Some(current)=client.take() else {return Err(io::Error::other("unsolicited SSAP value reply"));};
+                        current.validate_reply(receipt,Instant::now())?;
+                        let ClientRequest{bytes:request,deadline,reply,..}=current;
                         let reply=reply.filter(|r| !r.is_closed() && Instant::now()<deadline);
-                        if let Some(epoch)=epoch {
-                            let m=receipt.ok_or_else(||io::Error::other("missing reply receipt"))?;
-                            if m.security_epoch!=epoch || m.security<minimum{return Err(io::Error::other("SSAP reply differs from original request security intent"));}
-                        }
-                        if !admitted || cleanup_deadline.is_none_or(|at|Instant::now()>=at) {return Err(io::Error::other("SSAP reply before admission or after physical drain deadline"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
                         if request[0]==10 {
                             let r=slk_protocol::ssap::read_uuid::Request::decode(negotiated,&request).map_err(|_|io::Error::other("invalid local UUID request"))?;
                             if let Ok(ValuePdu::ReadError(16))=ValuePdu::decode(negotiated,raw){finish_client(reply,Err("peer requires unsupported SSAP fragmentation".into()));continue;}
-                            if let Ok(ValuePdu::Error{request:10,error,..})=ValuePdu::decode(negotiated,raw){finish_client(reply,Err(format!("peer read UUID protocol error {error}")));continue;}
-                            let entries=slk_protocol::ssap::read_uuid::decode(negotiated,raw).map_err(|_|io::Error::other("invalid read UUID response"))?;
+                            if let Ok(ValuePdu::Error{request:10,error,..})=ValuePdu::decode(negotiated,raw){finish_client(reply,Err(format!("peer read UUID protocol error {error}").into()));continue;}
+                            let entries=slk_protocol::ssap::read_uuid::decode(if peer_reply.as_ref().is_some_and(|(p,_)|sequenced(p)){fragments::LOGICAL_MTU}else{negotiated},raw).map_err(|_|io::Error::other("invalid read UUID response"))?;
                             if entries.iter().any(|i|i.handle<r.start || i.handle>r.end) {return Err(io::Error::other("read UUID response outside requested range"));}
                             finish_client(reply,Ok(raw.to_vec()));continue;
                         }
@@ -1168,21 +2444,16 @@ async fn exchange_loop(
                             else {slk_protocol::ssap::discovery::decode_page(request,negotiated,raw).map_err(|_|io::Error::other("invalid find response"))?;}
                             finish_client(reply,Ok(raw.to_vec()));continue;
                         }
-                        let parsed=ValuePdu::decode(negotiated,raw).map_err(|_|io::Error::other("invalid value response"))?;
-                        let result=match (ValuePdu::decode(capabilities.mtu,&request).map_err(|_|io::Error::other("invalid local request"))?,parsed) {
-                            (ValuePdu::Read{..},ValuePdu::ReadValue(value))=>Ok(value.to_vec()),
-                            (ValuePdu::Read{..},ValuePdu::ReadError(error))=>Err(format!("peer read error {error}")),
-                            (ValuePdu::Write{handle,data_type,value,verify:true},ValuePdu::WrittenValue{handle:h,data_type:t,value:v}) if (handle,data_type,value)==(h,t,v)=>Ok(v.to_vec()),
-                            (ValuePdu::Write{handle,..},ValuePdu::WriteError{handle:h,error}) if handle==h=>Err(format!("peer write error {error}")),
-                            (ValuePdu::Read{..},ValuePdu::Error{request:8,error,..})|(ValuePdu::Write{..},ValuePdu::Error{request:13,error,..})=>Err(format!("peer protocol error {error}")),
-                            _=>return Err(io::Error::other("SSAP response does not match original operation")),
-                        };finish_client(reply,result);
+                        let value_budget=if peer_reply.as_ref().is_some_and(|(p,_)|sequenced(p)){fragments::LOGICAL_MTU}else{negotiated};
+                        // Admission,lifetime andsecurity checks above still
+                        // precede classification;never parse diagnostics.
+                        finish_client(reply,client_value_response(value_budget,&request,raw)?);
                     } else if raw[0] == 2 || raw[0] == 3 {
                         let info = match ExchangeInfo::decode(capabilities.mtu,raw) {
                             Ok(info)=>info,
                             Err(_) if raw[0]==2 => {
                                 if pending.len()>=8 {return Err(io::Error::other("SSAP invalid-PDU response queue full"));}
-                                pending.push_back(Pending {bytes:vec![1,0,2,0,0,1],purpose:Purpose::Error,constraint,deadline:Instant::now()+Duration::from_secs(5)});
+                                pending.push_back(Pending {sent: 0,bytes:vec![1,0,2,0,0,1],purpose:Purpose::Error,constraint,deadline:Instant::now()+Duration::from_secs(5)});
                                 continue;
                             }
                             Err(_)=>return Err(io::Error::other("invalid ExchangeInfo response")),
@@ -1195,16 +2466,16 @@ async fn exchange_loop(
                             if response_owed || pending.len() >= 8 { return Err(io::Error::other("SSAP response queue full")); }
                             if let Some((peer,_)) = &peer_reply && peer.mtu != info.mtu { return Err(io::Error::other("peer dual-role MTU mismatch")); }
                             peer_request = raw.to_vec();
-                            pending.push_back(Pending { bytes: response.clone(), purpose: Purpose::Response,constraint,
+                            pending.push_back(Pending {sent: 0, bytes: response.clone(), purpose: Purpose::Response,constraint,
                                 deadline: if initial_done { Instant::now() + Duration::from_secs(5) } else { original_deadline } });
                         }
                     } else if matches!(raw[0] & 0x7f, 4 | 6 | 8 | 10 | 13 | 19) {
                         if pending.len() >= 8 { return Err(io::Error::other("SSAP error queue full")); }
                         // T/XS20001 table50: complete ErrorRsp including RFU MCC.
-                        pending.push_back(Pending { bytes: vec![1,0,raw[0],0,0,2], purpose: Purpose::Error,constraint,
+                        pending.push_back(Pending {sent: 0, bytes: vec![1,0,raw[0],0,0,2], purpose: Purpose::Error,constraint,
                             deadline: Instant::now() + Duration::from_secs(5) });
-                    } else if matches!(raw[0], 12 | 18) {
-                        // Unsupported commands/notifications carry no response obligation.
+                    } else if raw[0] & 0x7f == 12 || raw[0] & 0x7f == 18 {
+                        // Unsupported extended commands/notifications carry no response obligation.
                     } else { return Err(io::Error::other("unsupported or unmatched SSAP response")); }
                 }
             }
@@ -1215,6 +2486,676 @@ async fn exchange_loop(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn method_result_is_not_echo_and_errors_are_correlated() {
+        let request = [19, 3, 0x34, 0x12, 0xaa];
+        assert_eq!(
+            client_value_response(249, &request, &[20, 3, 0x98, 0x76])
+                .unwrap()
+                .unwrap(),
+            [0x98, 0x76]
+        );
+        assert_eq!(
+            client_value_response(249, &request, &[20, 3])
+                .unwrap()
+                .unwrap(),
+            []
+        );
+        for bad in [
+            &[14, 3][..],
+            &[9, 3, 0xaa][..],
+            &[1, 0, 19, 0x35, 0x12, 2][..],
+            &[1, 0, 13, 0x34, 0x12, 2][..],
+        ] {
+            assert!(client_value_response(249, &request, bad).is_err());
+        }
+        let unsupported = vec![1, 0, 19, 0x34, 0x12, 2];
+        assert_eq!(unsupported, [1, 0, 19, 0x34, 0x12, 2]);
+        assert!(
+            client_value_response(249, &request, &unsupported)
+                .unwrap()
+                .is_err()
+        );
+        assert!(ValuePdu::decode(249, &[19, 7, 0x34, 0x12]).is_err());
+    }
+    #[tokio::test]
+    async fn discovery_follows_methods_in_one_bounded_original_transaction() {
+        use slk_protocol::ssap::discovery::FindKind;
+        // Production Observer pagination. The queue consumer supplies explicit
+        // peer bytes/errors; it is not a Native channel or hardware fixture.
+        for scenario in 0..3 {
+            let info: Info = (0, 7, 13, 1, 249, 249, vec![], vec![], vec![], vec![]);
+            let (_status, state) = watch::channel(Status::Negotiated(info.clone()));
+            let (queries, mut incoming) = mpsc::channel(8);
+            let observer = Observer { state, queries };
+            let original = Instant::now() + Duration::from_secs(1);
+            let task = tokio::spawn(observer.discover(None, FindKind::Primary, original));
+            let Some(Query::Info(reply)) = incoming.recv().await else {
+                panic!("info")
+            };
+            reply.send(Ok(info)).unwrap();
+            let method_handle = if scenario == 2 { 17 } else { 18 };
+            let cases = [
+                (1, 1, 65535, vec![5, 11, 1, 16, 0, 19, 0, 1, 2, 6]),
+                (1, 20, 65535, vec![1, 0, 4, 20, 0, 11]),
+                (
+                    4,
+                    16,
+                    19,
+                    vec![5, 11, 1, method_handle, 0, 0x34, 0x12, 0, 0, 0, 0, 0],
+                ),
+                (
+                    4,
+                    u16::from(method_handle) + 1,
+                    19,
+                    vec![1, 0, 4, method_handle + 1, 0, 11],
+                ),
+                (3, 16, 19, vec![5, 11, 1, 17, 0, 0x35, 0x12, 1, 0, 0, 0, 0]),
+                (3, 18, 19, vec![1, 0, 4, 18, 0, 11]),
+            ];
+            for (index, (kind, start, end, response)) in cases.into_iter().enumerate() {
+                let Some(Query::Value {
+                    bytes,
+                    deadline,
+                    minimum,
+                    reply,
+                }) = incoming.recv().await
+                else {
+                    panic!("value queue")
+                };
+                let expected = [
+                    4,
+                    0x10 | kind,
+                    start as u8,
+                    (start >> 8) as u8,
+                    end as u8,
+                    (end >> 8) as u8,
+                ];
+                assert_eq!(bytes, expected);
+                assert_eq!(minimum, 0);
+                assert_eq!(deadline, original);
+                if scenario == 1 && index == 2 {
+                    reply.send(Err("method dependency refused".into())).unwrap();
+                    break;
+                }
+                reply.send(Ok(response)).unwrap();
+            }
+            let result = task.await.unwrap();
+            match scenario {
+                0 => {
+                    let (entries, trace) = result.unwrap();
+                    assert_eq!(
+                        entries
+                            .iter()
+                            .map(|e| (e.category, e.handle))
+                            .collect::<Vec<_>>(),
+                        [(0, 16), (2, 17), (3, 18)]
+                    );
+                    assert_eq!(trace.len(), 6);
+                }
+                1 => assert!(result.unwrap_err().contains("method dependency refused")),
+                _ => assert!(result.unwrap_err().contains("duplicate remote handle")),
+            }
+            assert!(incoming.try_recv().is_err());
+        }
+    }
+
+    #[tokio::test]
+    async fn discovery_original_deadline_covers_info_and_page_waits() {
+        use slk_protocol::ssap::discovery::FindKind;
+        // Exercise production Observer; only actor replies/metadata are fixtures.
+        // No socket, USB, firmware or cancellation/drain qualification follows.
+        for phase in 0..3 {
+            let info: Info = (0, 7, 13, 1, 249, 249, vec![], vec![], vec![], vec![]);
+            let (_status, state) = watch::channel(Status::Negotiated(info.clone()));
+            let (queries, mut incoming) = mpsc::channel(8);
+            let observer = Observer { state, queries };
+            let original = if phase == 0 {
+                Instant::now()
+            } else {
+                Instant::now() + Duration::from_millis(100)
+            };
+            let task = tokio::spawn(observer.discover(None, FindKind::Primary, original));
+            if phase == 0 {
+                assert!(task.await.unwrap().unwrap_err().contains("deadline"));
+                assert!(incoming.try_recv().is_err());
+                continue;
+            }
+            let Some(Query::Info(reply)) = incoming.recv().await else {
+                panic!("info")
+            };
+            if phase == 1 {
+                tokio::time::sleep_until(original).await;
+                assert!(task.await.unwrap().unwrap_err().contains("deadline"));
+                assert!(reply.send(Ok(info)).is_err());
+            } else {
+                reply.send(Ok(info)).unwrap();
+                let Some(Query::Value {
+                    deadline, reply, ..
+                }) = incoming.recv().await
+                else {
+                    panic!("page")
+                };
+                assert_eq!(deadline, original);
+                tokio::time::sleep_until(original).await;
+                assert!(task.await.unwrap().unwrap_err().contains("deadline"));
+                // Late response is not retried or reused by this consumer.
+                assert!(reply.send(Ok(vec![1, 0, 4, 1, 0, 11])).is_err());
+            }
+            assert!(incoming.try_recv().is_err());
+        }
+    }
+
+    #[tokio::test]
+    async fn method_requester_reuses_queue_and_preserves_original_deadline() {
+        // Actual Observer encoder/admission; metadata and queue consumer are
+        // explicit fixtures, not a peer, Native implementation or hardware.
+        for command in [false, true] {
+            let info: Info = (0, 7, 13, 1, 249, 249, vec![], vec![], vec![], vec![]);
+            let (_status, state) = watch::channel(Status::Negotiated(info.clone()));
+            let (queries, mut incoming) = mpsc::channel(8);
+            let observer = Observer { state, queries };
+            let original = Instant::now() + Duration::from_secs(1);
+            let task = tokio::spawn(async move {
+                if command {
+                    observer
+                        .call_method_command(0x1234, vec![0xaa], 2, original)
+                        .await
+                        .map(|_| vec![])
+                } else {
+                    observer.call_method(0x1234, vec![0xaa], 2, original).await
+                }
+            });
+            let Some(Query::Info(reply)) = incoming.recv().await else {
+                panic!("info required")
+            };
+            reply.send(Ok(info)).unwrap();
+            let Some(Query::Value {
+                bytes,
+                deadline,
+                minimum,
+                reply,
+            }) = incoming.recv().await
+            else {
+                panic!("shared value queue required")
+            };
+            assert_eq!(bytes, [if command { 18 } else { 19 }, 3, 0x34, 0x12, 0xaa]);
+            assert_eq!(deadline, original);
+            assert_eq!(minimum, 2);
+            reply
+                .send(Err("explicit dependency refusal".into()))
+                .unwrap();
+            assert_eq!(
+                task.await.unwrap().unwrap_err(),
+                "explicit dependency refusal"
+            );
+        }
+        for command in [false, true] {
+            let (_status, state) = watch::channel(Status::Starting);
+            let (queries, mut incoming) = mpsc::channel(8);
+            let observer = Observer { state, queries };
+            let original = Instant::now() + Duration::from_millis(20);
+            let result = if command {
+                observer
+                    .call_method_command(1, vec![], 0, original)
+                    .await
+                    .map(|_| vec![])
+            } else {
+                observer.call_method(1, vec![], 0, original).await
+            };
+            assert!(result.unwrap_err().contains("original deadline"));
+            assert!(incoming.try_recv().is_err());
+        }
+    }
+    #[tokio::test]
+    async fn description_uses_existing_value_queue_and_original_request_scope() {
+        // Negotiation metadata and the queue consumer are explicit fixtures.
+        // The actual observer constructs/enqueues the request; the consumer
+        // refuses admission rather than simulating a Native/peer success.
+        let info: Info = (0, 7, 13, 1, 249, 249, vec![], vec![], vec![], vec![]);
+        let (_status, state) = watch::channel(Status::Negotiated(info.clone()));
+        let (queries, mut incoming) = mpsc::channel(8);
+        let observer = Observer { state, queries };
+        let original = Instant::now() + Duration::from_secs(1);
+        let task = tokio::spawn(observer.read_description(17, 2, original));
+        let Some(Query::Info(reply)) = incoming.recv().await else {
+            panic!("same info query required before value admission");
+        };
+        reply.send(Ok(info)).unwrap();
+        let Some(Query::Value {
+            bytes,
+            deadline,
+            minimum,
+            reply,
+        }) = incoming.recv().await
+        else {
+            panic!("description must use the existing value queue");
+        };
+        assert_eq!(bytes, [8, 3, 17, 0, 1]);
+        assert_eq!(deadline, original);
+        assert_eq!(minimum, 2);
+        reply
+            .send(Err("fixture rejects Native dependency".into()))
+            .unwrap();
+        assert_eq!(
+            task.await.unwrap().unwrap_err(),
+            "fixture rejects Native dependency"
+        );
+        assert!(incoming.recv().await.is_none());
+
+        // Actual production decoder returns value bytes, not the whole PDU.
+        assert_eq!(
+            client_value_response(249, &[8, 3, 17, 0, 1], &[9, 3, b'x'])
+                .unwrap()
+                .unwrap(),
+            b"x"
+        );
+        assert!(
+            client_value_response(249, &[8, 3, 17, 0, 1], &[9, 11, 13, 0])
+                .unwrap()
+                .is_err()
+        );
+        assert!(client_value_response(249, &[8, 3, 17, 0, 1], &[14, 3]).is_err());
+    }
+
+    #[tokio::test]
+    async fn description_original_deadline_and_failed_actor_never_enqueue() {
+        for status in [
+            Status::Starting,
+            Status::Failed("original lifetime failed".into()),
+        ] {
+            let (_sender, state) = watch::channel(status);
+            let (queries, mut incoming) = mpsc::channel(8);
+            let observer = Observer { state, queries };
+            let original = Instant::now() + Duration::from_millis(20);
+            let result = tokio::time::timeout(
+                Duration::from_millis(250),
+                observer.read_description(17, 0, original),
+            )
+            .await
+            .unwrap();
+            assert!(result.is_err());
+            assert!(matches!(
+                incoming.try_recv(),
+                Err(mpsc::error::TryRecvError::Disconnected)
+            ));
+        }
+    }
+
+    struct CommandAuthorizationBarrier {
+        seen: mpsc::Sender<(
+            slk_contract::ssap::SsapAuthorizationPrompt,
+            oneshot::Sender<bool>,
+        )>,
+        returned: mpsc::Sender<u64>,
+    }
+    #[zbus::interface(name = "org.sparklink.SsapAuthorizer")]
+    impl CommandAuthorizationBarrier {
+        async fn authorize_value(
+            &self,
+            prompt: slk_contract::ssap::SsapAuthorizationPrompt,
+        ) -> bool {
+            let request_id = prompt.0;
+            let (decision, result) = oneshot::channel();
+            self.seen.send((prompt, decision)).await.unwrap();
+            let allow = result.await.unwrap_or(false);
+            self.returned.send(request_id).await.unwrap();
+            allow
+        }
+    }
+
+    #[tokio::test]
+    async fn command_owner_original_deadline_rejects_late_callback_and_late_completion() {
+        // Real private D-Bus, Owner watch and database, with explicit receipt
+        // metadata as function input. AF_UNIX cannot provide a Native context:
+        // timeout must win before that recheck. This is not the full actor,
+        // kernel submission/drain, production system bus or radio gate.
+        let bus = crate::event_loop::tests::PrivateBus::start();
+        let server = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let (seen, mut prompts) = mpsc::channel(1);
+        let (returned, mut callbacks) = mpsc::channel(1);
+        let caller = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .serve_at(
+                "/authorizer",
+                CommandAuthorizationBarrier { seen, returned },
+            )
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let database = std::sync::Arc::new(std::sync::Mutex::new(
+            crate::ssap_database::Database::default(),
+        ));
+        let slots = std::sync::Arc::new(tokio::sync::Semaphore::new(1));
+        let owner = crate::ssap_authorization::Owner::pin(
+            &server,
+            caller.unique_name().unwrap().to_string(),
+            zbus::zvariant::OwnedObjectPath::try_from("/authorizer").unwrap(),
+            &database,
+            slots.clone().try_acquire_owned().unwrap(),
+            Instant::now() + Duration::from_secs(5),
+        )
+        .await
+        .unwrap();
+        let (_, _, handles) = database
+            .lock()
+            .unwrap()
+            .register_owned(
+                vec![1, 0],
+                vec![(
+                    vec![2, 0],
+                    3,
+                    slk_protocol::ssap::access::SSAP_ACCESS_WRITE_AUTHORIZED,
+                    vec![7],
+                )],
+                owner.clone(),
+            )
+            .unwrap();
+        let handle = handles[0];
+        let (fd, peer) = transport_pair();
+        let wire = Wire::native(AsyncFd::new(fd).unwrap());
+
+        for (request_id, approve_before_deadline) in [(1, false), (2, true)] {
+            let original = Instant::now() + Duration::from_millis(400);
+            let constraint = slk_protocol::SleSendConstraint {
+                version: 1,
+                size: 48,
+                minimum: 0,
+                controller: 0,
+                generation: 7,
+                lifetime: 13,
+                handle: 1,
+                security_epoch: 41,
+                local_tcid: 10,
+                remote_tcid: 10,
+                pi: 0,
+                deadline_monotonic_ns: monotonic_deadline(original).unwrap(),
+                reserved: 0,
+            };
+            let packet = ServerPacket {
+                bytes: vec![12, 3, handle as u8, (handle >> 8) as u8, 0, 9],
+                deadline: original,
+                constraint: Some(constraint),
+                mtu: 249,
+                level: 0,
+                request_id,
+            };
+            // Time already spent waiting to run the front server obligation
+            // belongs to the same deadline, not a new callback budget.
+            tokio::time::sleep(Duration::from_millis(200)).await;
+            assert!(Instant::now() < original);
+            let task = tokio::spawn(authorize_server(packet, database.clone()));
+            let (prompt, allow) = tokio::time::timeout_at(original, prompts.recv())
+                .await
+                .expect("actual WriteCommand callback must start before its original deadline")
+                .unwrap();
+            assert_eq!(prompt.0, request_id);
+            assert_eq!(prompt.1, (0, 7, 13, 1, 41, 0, 10, 10, 0));
+            assert_eq!((prompt.2, prompt.3, prompt.6), (handle, true, 0));
+            assert_eq!(prompt.4, constraint.deadline_monotonic_ns);
+            assert_eq!(prompt.5, [9]);
+            let mut allow = Some(allow);
+            if approve_before_deadline {
+                allow.take().unwrap().send(true).unwrap();
+            }
+            // Watchdog slack is less than the consumed queue wait above, so
+            // restarting even the same 400 ms budget cannot pass this test.
+            let decision = tokio::time::timeout_at(original + Duration::from_millis(100), task)
+                .await
+                .expect("authorization must not start a fresh callback deadline")
+                .unwrap();
+            assert_eq!(decision.packet.deadline, original);
+            assert_eq!(decision.packet.constraint, Some(constraint));
+            assert_eq!(
+                decision.approvals.len(),
+                usize::from(approve_before_deadline)
+            );
+            if approve_before_deadline {
+                assert!(Instant::now() < original);
+                assert!(std::sync::Arc::ptr_eq(&decision.approvals[0].owner, &owner));
+                tokio::time::sleep_until(original).await;
+            } else {
+                assert!(Instant::now() >= original);
+            }
+            let error = complete_server(
+                &wire,
+                decision,
+                &database,
+                &mut crate::ssap_engine_config::ClientConfigurations::default(),
+            )
+            .err()
+            .unwrap();
+            assert_eq!(error.kind(), io::ErrorKind::TimedOut);
+            assert_eq!(error.to_string(), "original SSAP authorization deadline");
+            assert_eq!(database.lock().unwrap().local_read(handle).unwrap(), [7]);
+            if let Some(allow) = allow {
+                // The real D-Bus callback now returns true after its requester
+                // expired. It cannot retroactively become an Approval.
+                allow.send(true).unwrap();
+            }
+            assert_eq!(
+                tokio::time::timeout(Duration::from_secs(1), callbacks.recv())
+                    .await
+                    .unwrap(),
+                Some(request_id)
+            );
+            assert_eq!(database.lock().unwrap().local_read(handle).unwrap(), [7]);
+            assert!(matches!(
+                prompts.try_recv(),
+                Err(mpsc::error::TryRecvError::Empty)
+            ));
+            let mut received = [0; 16];
+            assert_eq!(
+                receive_fixture(&peer, &mut received).unwrap_err().kind(),
+                io::ErrorKind::WouldBlock
+            );
+        }
+        owner.shutdown().await;
+        assert_eq!(slots.available_permits(), 1);
+    }
+
+    #[tokio::test]
+    async fn command_observer_original_deadline_never_enqueues_after_negotiation_wait() {
+        let (_state, state) = watch::channel(Status::Starting);
+        let (queries, mut incoming) = mpsc::channel(8);
+        let observer = Observer {
+            state,
+            queries: queries.clone(),
+        };
+        let original = Instant::now() + Duration::from_millis(30);
+        let result = tokio::time::timeout(
+            Duration::from_millis(250),
+            observer.write_command(17, vec![9], 0, original),
+        )
+        .await
+        .expect("WriteCommand must retain its deadline while waiting for negotiation");
+        assert_eq!(result.unwrap_err(), "SSAP command original deadline");
+        assert!(matches!(
+            incoming.try_recv(),
+            Err(mpsc::error::TryRecvError::Empty)
+        ));
+    }
+
+    #[tokio::test]
+    async fn command_failed_observer_never_restarts_or_enqueues_a_new_request() {
+        // Terminal watch state is an explicit fixture. This tests the actual
+        // public-in-daemon Observer entry, not the actor transition or Native
+        // obligation cleanup that produced Failed; those need the VM gate.
+        let failure = "original SSAP authorization deadline";
+        let (_state, state) = watch::channel(Status::Failed(failure.into()));
+        let (queries, mut incoming) = mpsc::channel(8);
+        for value in [vec![], vec![9], vec![8; 32]] {
+            let observer = Observer {
+                state: state.clone(),
+                queries: queries.clone(),
+            };
+            assert_eq!(
+                observer
+                    .write_command(17, value, 0, Instant::now() + Duration::from_secs(1))
+                    .await
+                    .unwrap_err(),
+                failure
+            );
+            assert!(matches!(&*state.borrow(), Status::Failed(error) if error == failure));
+            assert!(matches!(
+                incoming.try_recv(),
+                Err(mpsc::error::TryRecvError::Empty)
+            ));
+        }
+    }
+
+    #[test]
+    fn command_completion_is_local_all_fragment_admission_without_peer_reply() {
+        for opcode in [12, 18] {
+            for expire in [false, true] {
+                let now = Instant::now();
+                let (send, mut receive) = oneshot::channel();
+                let mut client = Some(ClientRequest {
+                    minimum: 0,
+                    epoch: None,
+                    bytes: vec![opcode, 3, 17, 0, 0, 9],
+                    deadline: now + Duration::from_secs(1),
+                    admitted: false,
+                    submitted_all: false,
+                    cleanup_deadline: None,
+                    reply: Some(send),
+                });
+                finish_admitted_command(&mut client, now);
+                assert!(client.is_some());
+                client.as_mut().unwrap().admit_part(now, false);
+                finish_admitted_command(&mut client, now);
+                assert!(client.is_some());
+                assert!(matches!(
+                    receive.try_recv(),
+                    Err(oneshot::error::TryRecvError::Empty)
+                ));
+                assert!(client.as_ref().unwrap().validate_reply(None, now).is_err());
+                let original = client.as_ref().unwrap().deadline;
+                client.as_mut().unwrap().admit_part(now, true);
+                finish_admitted_command(&mut client, if expire { original } else { now });
+                assert!(client.is_none());
+                let result = receive.try_recv().unwrap();
+                if expire {
+                    assert!(result.is_err());
+                } else {
+                    assert_eq!(result.unwrap(), Vec::<u8>::new());
+                }
+            }
+        }
+    }
+    #[test]
+    fn cancelled_partial_command_keeps_original_obligation_until_final_admission() {
+        let now = Instant::now();
+        let (send, receive) = oneshot::channel();
+        let deadline = now + Duration::from_secs(1);
+        let mut client = Some(ClientRequest {
+            minimum: 0,
+            epoch: None,
+            bytes: vec![12, 3, 17, 0, 0, 9],
+            deadline,
+            admitted: false,
+            submitted_all: false,
+            cleanup_deadline: None,
+            reply: Some(send),
+        });
+        client.as_mut().unwrap().admit_part(now, false);
+        let cleanup = client.as_ref().unwrap().cleanup_deadline;
+        let mut pending = VecDeque::from([Pending {
+            sent: 1,
+            bytes: client.as_ref().unwrap().bytes.clone(),
+            deadline,
+            purpose: Purpose::Client,
+            constraint: None,
+        }]);
+        drop(receive);
+        retire_client_wait(&mut client, &mut pending, now);
+        assert!(client.as_ref().unwrap().reply.is_none());
+        assert_eq!(pending.len(), 1);
+        assert_eq!(pending[0].deadline, deadline);
+        assert_eq!(client.as_ref().unwrap().cleanup_deadline, cleanup);
+        finish_admitted_command(&mut client, now);
+        assert!(client.is_some());
+        client.as_mut().unwrap().admit_part(now, true);
+        finish_admitted_command(&mut client, now);
+        assert!(client.is_none());
+        // This function only retires the local wait. The existing queue and
+        // Native ledger are not mutated or refunded by cancellation/completion.
+        assert_eq!(pending.len(), 1);
+    }
+    #[tokio::test]
+    async fn actual_command_server_never_replies_and_keeps_following_read_usable() {
+        // Production completion/database with an explicit AF_UNIX transport
+        // fixture and no Native receipt; this is not kernel/security/RF proof.
+        let (fd, _peer) = transport_pair();
+        let wire = Wire::fixture(AsyncFd::new(fd).unwrap());
+        let mut db = crate::ssap_database::Database::default();
+        let (_, _, handles) = db
+            .register(
+                vec![1, 0],
+                vec![(vec![2, 0], 3, 0, vec![1]), (vec![3, 0], 5, 0, vec![2])],
+            )
+            .unwrap();
+        let store = std::sync::Arc::new(std::sync::Mutex::new(db));
+        let mut configuration = crate::ssap_engine_config::ClientConfigurations::default();
+        let decision = |bytes: Vec<u8>, deadline| ServerDecision {
+            values: vec![],
+            write: None,
+            method: None,
+            admission_error: None,
+            packet: ServerPacket {
+                bytes,
+                deadline,
+                constraint: None,
+                mtu: 249,
+                level: 0,
+                request_id: 1,
+            },
+            approvals: vec![],
+        };
+        for (handle, control, expected) in [
+            (handles[0], 3, vec![9]),
+            (handles[1], 3, vec![2]),
+            (handles[0], 35, vec![9]),
+        ] {
+            let bytes = vec![12, control, handle as u8, (handle >> 8) as u8, 0, 9];
+            let response = complete_server(
+                &wire,
+                decision(bytes, Instant::now() + Duration::from_secs(1)),
+                &store,
+                &mut configuration,
+            )
+            .unwrap();
+            assert!(response.is_none());
+            assert_eq!(store.lock().unwrap().local_read(handle).unwrap(), expected);
+        }
+        let bytes = vec![12, 3, handles[0] as u8, (handles[0] >> 8) as u8, 0, 7];
+        assert!(
+            complete_server(
+                &wire,
+                decision(bytes, Instant::now() - Duration::from_millis(1)),
+                &store,
+                &mut configuration
+            )
+            .is_err()
+        );
+        assert_eq!(store.lock().unwrap().local_read(handles[0]).unwrap(), [9]);
+        let bytes = vec![8, 3, handles[0] as u8, (handles[0] >> 8) as u8, 0];
+        let response = complete_server(
+            &wire,
+            decision(bytes, Instant::now() + Duration::from_secs(1)),
+            &store,
+            &mut configuration,
+        )
+        .unwrap()
+        .unwrap();
+        assert_eq!(response.bytes, [9, 3, 9]);
+    }
     #[test]
     fn expired_initializer_cannot_register_a_reactor_or_start_wire_work() {
         let (fd, _peer) = transport_pair();
@@ -1240,17 +3181,20 @@ mod tests {
                 bytes: vec![8, 0, 17, 0],
                 deadline: now + Duration::from_secs(1),
                 admitted: false,
+                submitted_all: false,
                 cleanup_deadline: None,
                 reply: Some(tx),
             });
             let mut pending = VecDeque::from([
                 Pending {
+                    sent: 0,
                     bytes: vec![1],
                     deadline: now + Duration::from_secs(2),
                     purpose: Purpose::Response,
                     constraint: None,
                 },
                 Pending {
+                    sent: 0,
                     bytes: vec![8, 0, 17, 0],
                     deadline: now + Duration::from_secs(1),
                     purpose: Purpose::Client,
@@ -1278,6 +3222,7 @@ mod tests {
                     rx.try_recv()
                         .unwrap()
                         .unwrap_err()
+                        .to_string()
                         .contains("before admission")
                 );
             }
@@ -1295,6 +3240,7 @@ mod tests {
             bytes: vec![8, 0, 17, 0],
             deadline: original,
             admitted: true,
+            submitted_all: true,
             cleanup_deadline: Some(drain),
             reply: Some(tx),
         });
@@ -1304,6 +3250,7 @@ mod tests {
             rx.try_recv()
                 .unwrap()
                 .unwrap_err()
+                .to_string()
                 .contains("original deadline")
         );
         let c = client.as_ref().unwrap();
@@ -1321,6 +3268,280 @@ mod tests {
         finish_client(c.reply.take(), Ok(vec![99]));
         assert_eq!(rx.try_recv(), Err(oneshot::error::TryRecvError::Closed));
         assert!(pending.is_empty());
+    }
+    #[test]
+    fn typed_write_rejection_requires_original_handle_operation_and_layout() {
+        let request = [13, 35, 17, 0, 2, 0, 0];
+        let result = client_value_response(249, &request, &[14, 7, 1, 17, 0, 4]).unwrap();
+        assert_eq!(
+            result,
+            Err(ClientFailure::WriteError {
+                handle: 17,
+                error: 4
+            })
+        );
+        assert_eq!(result.unwrap_err().to_string(), "peer write error 4");
+        for raw in [&[14, 7, 1, 18, 0, 4][..], &[14, 11, 4, 0], &[9, 11, 4, 0]] {
+            assert!(client_value_response(249, &request, raw).is_err());
+        }
+        assert!(matches!(
+            client_value_response(249, &request, &[1, 0, 13, 17, 0, 4]).unwrap(),
+            Err(ClientFailure::Message(_))
+        ));
+        assert_eq!(
+            client_value_response(249, &request, &[14, 3, 17, 0, 2, 0, 0]).unwrap(),
+            Ok(vec![0, 0])
+        );
+    }
+    #[test]
+    fn extended_complete_and_sequence_capabilities_remain_distinct() {
+        let mut p = ExchangeInfo {
+            kind: ExchangeKind::Response,
+            mtu: Some(2042),
+            version: Some([1, 2]),
+            extension: None,
+            reliable: false,
+        };
+        assert!(!accepts_extended(&p, 3));
+        assert!(!accepts_extended(&p, 0));
+        p.extension = Some(ExtensionCapabilities {
+            fragment_sequence: false,
+            transaction_capacity: None,
+        });
+        assert!(accepts_extended(&p, 3));
+        assert!(!accepts_extended(&p, 0));
+        p.extension.as_mut().unwrap().fragment_sequence = true;
+        for c in 0..4 {
+            assert!(accepts_extended(&p, c));
+        }
+    }
+    #[test]
+    fn actual_fragment_admissions_start_one_drain_and_keep_author_deadline() {
+        let now = Instant::now();
+        let deadline = now + Duration::from_secs(1);
+        let (tx, _rx) = oneshot::channel();
+        let mut c = ClientRequest {
+            minimum: 0,
+            epoch: None,
+            bytes: vec![13, 35, 17, 0, 0],
+            deadline,
+            admitted: false,
+            submitted_all: false,
+            cleanup_deadline: None,
+            reply: Some(tx),
+        };
+        c.admit_part(now, false);
+        let first = c.cleanup_deadline;
+        assert!(c.admitted);
+        assert!(!c.submitted_all);
+        assert_eq!(first, Some(now + Duration::from_secs(5)));
+        c.admit_part(now + Duration::from_millis(900), true);
+        assert!(c.submitted_all);
+        assert_eq!(c.cleanup_deadline, first);
+        assert_eq!(c.deadline, deadline);
+        let mut client = Some(c);
+        let mut pending = VecDeque::new();
+        retire_client_wait(&mut client, &mut pending, deadline);
+        let c = client.unwrap();
+        assert!(c.reply.is_none());
+        assert_eq!(c.cleanup_deadline, first);
+        assert_eq!(c.obligation_deadline(), first.unwrap());
+    }
+    #[tokio::test]
+    async fn actual_partial_client_backpressure_preserves_cancelled_stream_and_reply_guard() {
+        // Actual production codec/Plan/Wire::send/request transitions with
+        // explicit AF_UNIX dependencies. This starts AFTER Native admission;
+        // it does not bypass ClientAdmission's real ioctl or invent security.
+        let (fd, peer) = transport_pair();
+        let small = 1024i32;
+        assert_eq!(
+            unsafe {
+                nix::libc::setsockopt(
+                    fd.as_raw_fd(),
+                    nix::libc::SOL_SOCKET,
+                    nix::libc::SO_SNDBUF,
+                    (&small as *const i32).cast(),
+                    std::mem::size_of_val(&small) as nix::libc::socklen_t,
+                )
+            },
+            0
+        );
+        let wire = Wire::fixture(AsyncFd::new(fd).unwrap());
+        let first = Instant::now();
+        let deadline = first + Duration::from_secs(1);
+        let value = vec![0xa7; 2042];
+        let mut raw = vec![0; usize::from(fragments::LOGICAL_MTU)];
+        let size = ValuePdu::Write {
+            handle: 17,
+            data_type: 0,
+            value: &value,
+            verify: true,
+        }
+        .encode(fragments::LOGICAL_MTU, &mut raw)
+        .unwrap();
+        raw.truncate(size);
+        let plan = fragments::Plan::new(&raw, 249, true).unwrap();
+        assert!(plan.count() > 1);
+        let (reply, author) = oneshot::channel();
+        let mut current = ClientRequest {
+            minimum: 0,
+            epoch: None,
+            bytes: raw.clone(),
+            deadline,
+            admitted: false,
+            submitted_all: false,
+            cleanup_deadline: None,
+            reply: Some(reply),
+        };
+        let mut packet = Pending {
+            sent: 0,
+            bytes: raw.clone(),
+            deadline,
+            purpose: Purpose::Client,
+            constraint: None,
+        };
+        let mut frames = Vec::new();
+        while packet.sent < plan.count() {
+            let mut part = vec![0; 249];
+            let n = plan.encode(packet.sent, &mut part).unwrap();
+            part.truncate(n);
+            match wire.send(wire.fd.get_ref(), &packet, &part) {
+                Ok(()) => {
+                    packet.sent += 1;
+                    current.admit_part(
+                        first + Duration::from_millis(packet.sent as u64),
+                        packet.sent == plan.count(),
+                    );
+                    frames.push(part);
+                }
+                Err(error) if error.kind() == io::ErrorKind::WouldBlock => break,
+                Err(error) => panic!("actual fixture send failed: {error}"),
+            }
+        }
+        assert!(
+            packet.sent > 0 && packet.sent < plan.count(),
+            "actual partial software admission required"
+        );
+        assert!(current.admitted && !current.submitted_all);
+        let first_drain = current.cleanup_deadline.unwrap();
+        assert_eq!(
+            first_drain,
+            first + Duration::from_millis(1) + Duration::from_secs(5)
+        );
+        assert!(
+            current
+                .validate_reply(None, first + Duration::from_millis(100))
+                .is_err()
+        );
+        drop(author);
+        let original = current.bytes.clone();
+        let mut client = Some(current);
+        let mut pending = VecDeque::from([packet]);
+        retire_client_wait(
+            &mut client,
+            &mut pending,
+            first + Duration::from_millis(100),
+        );
+        let current = client.as_mut().unwrap();
+        assert!(current.reply.is_none() && current.admitted && !current.submitted_all);
+        assert_eq!(current.bytes, original);
+        assert_eq!(current.cleanup_deadline, Some(first_drain));
+        assert_eq!(current.obligation_deadline(), first_drain);
+        assert_eq!(pending.front().unwrap().deadline, deadline);
+        // Drain only the genuine socket records. No generated peer response,
+        // credit, completion or successful author result is substituted.
+        let mut observed = Vec::new();
+        for _ in 0..frames.len() {
+            let mut received = [0; 249];
+            let size = receive_fixture(&peer, &mut received).unwrap();
+            observed.push(received[..size].to_vec());
+        }
+        assert_eq!(observed, frames);
+        assert_eq!(
+            receive_fixture(&peer, &mut [0; 249]).unwrap_err().kind(),
+            io::ErrorKind::WouldBlock
+        );
+        while pending.front().unwrap().sent < plan.count() {
+            let packet = pending.front_mut().unwrap();
+            let mut part = vec![0; 249];
+            let n = plan.encode(packet.sent, &mut part).unwrap();
+            part.truncate(n);
+            wire.send(wire.fd.get_ref(), packet, &part).unwrap();
+            packet.sent += 1;
+            current.admit_part(
+                first + Duration::from_millis(200),
+                packet.sent == plan.count(),
+            );
+            let mut received = [0; 249];
+            let size = receive_fixture(&peer, &mut received).unwrap();
+            assert_eq!(&received[..size], part);
+        }
+        assert!(current.submitted_all && current.reply.is_none());
+        assert_eq!(current.cleanup_deadline, Some(first_drain));
+        assert_eq!(current.deadline, deadline);
+        // A valid late reply could drain this complete stream; it cannot
+        // revive the cancelled author. The boundary itself stays exclusive.
+        current
+            .validate_reply(None, first_drain - Duration::from_nanos(1))
+            .unwrap();
+        assert!(current.validate_reply(None, first_drain).is_err());
+    }
+    #[test]
+    fn actual_reply_guard_keeps_admission_drain_and_security_independent() {
+        let now = Instant::now();
+        let (reply, _author) = oneshot::channel();
+        let mut request = ClientRequest {
+            minimum: 2,
+            epoch: Some(37),
+            bytes: vec![8, 3, 17, 0],
+            deadline: now + Duration::from_secs(1),
+            admitted: false,
+            submitted_all: false,
+            cleanup_deadline: None,
+            reply: Some(reply),
+        };
+        let valid = slk_protocol::SleMessageSecurity {
+            security: 2,
+            security_epoch: 37,
+            ..Default::default()
+        };
+        assert!(request.validate_reply(Some(valid), now).is_err());
+        request.admit_part(now, false);
+        assert!(request.validate_reply(Some(valid), now).is_err());
+        request.admit_part(now + Duration::from_millis(1), true);
+        assert!(
+            request
+                .validate_reply(None, now)
+                .unwrap_err()
+                .to_string()
+                .contains("missing reply receipt")
+        );
+        for wrong in [
+            slk_protocol::SleMessageSecurity {
+                security_epoch: 38,
+                ..valid
+            },
+            slk_protocol::SleMessageSecurity {
+                security: 1,
+                ..valid
+            },
+        ] {
+            assert!(
+                request
+                    .validate_reply(Some(wrong), now)
+                    .unwrap_err()
+                    .to_string()
+                    .contains("original request security intent")
+            );
+        }
+        request.validate_reply(Some(valid), now).unwrap();
+        assert!(
+            request
+                .validate_reply(Some(valid), now + Duration::from_secs(5))
+                .is_err()
+        );
+        assert_eq!(request.cleanup_deadline, Some(now + Duration::from_secs(5)));
+        assert_eq!(request.deadline, now + Duration::from_secs(1));
     }
     #[tokio::test]
     async fn actual_observer_original_deadline_bounds_negotiation_and_never_enqueues_late_value() {
@@ -1373,6 +3594,152 @@ mod tests {
         .unwrap()
     }
     #[tokio::test]
+    async fn actual_actor_response_backpressure_keeps_original_negotiation_obligation() {
+        // Actual exchange_loop and OS socket pressure. AF_UNIX supplies no
+        // Native receipt, Grant, credit, USB or RF evidence. The extra fd only
+        // fills the transport queue before the peer starts its request.
+        for outcome in ["unblock", "deadline", "stop"] {
+            let (fd, peer) = transport_pair();
+            let pressure = fd.try_clone().unwrap();
+            let small = 1024i32;
+            assert_eq!(
+                unsafe {
+                    nix::libc::setsockopt(
+                        fd.as_raw_fd(),
+                        nix::libc::SOL_SOCKET,
+                        nix::libc::SO_SNDBUF,
+                        (&small as *const i32).cast(),
+                        std::mem::size_of_val(&small) as nix::libc::socklen_t,
+                    )
+                },
+                0
+            );
+            let peer = AsyncFd::new(peer).unwrap();
+            let (state, mut view) = watch::channel(Status::Starting);
+            let (stop, mut stopped) = oneshot::channel();
+            let (_queries, incoming) = mpsc::channel(8);
+            let deadline = Instant::now() + Duration::from_secs(1);
+            let task = tokio::spawn(async move {
+                exchange_loop(
+                    Wire::fixture(AsyncFd::new(fd).unwrap()),
+                    fixture_capabilities(0),
+                    deadline,
+                    &mut stopped,
+                    incoming,
+                    &state,
+                    std::sync::Arc::new(std::sync::Mutex::new(
+                        crate::ssap_database::Database::default(),
+                    )),
+                )
+                .await
+            });
+            let own_request = tokio::time::timeout(Duration::from_secs(1), async {
+                loop {
+                    let mut ready = peer.readable().await.unwrap();
+                    let mut raw = [0; 249];
+                    if let Ok(result) = ready.try_io(|fd| receive_fixture(fd.get_ref(), &mut raw)) {
+                        return raw[..result.unwrap()].to_vec();
+                    }
+                }
+            })
+            .await
+            .unwrap();
+            assert_eq!(own_request, [2, 7, 249, 0, 1, 2, 4, 0, 0, 0]);
+            let filler = [0xee; 249];
+            let mut admitted = 0;
+            loop {
+                match send(&pressure, &filler) {
+                    Ok(()) => {
+                        admitted += 1;
+                        assert!(admitted <= 128);
+                    }
+                    Err(e) if e.kind() == io::ErrorKind::WouldBlock => break,
+                    Err(e) => panic!("pressure setup: {e}"),
+                }
+            }
+            assert!(admitted > 0);
+            // Independent peer bytes: its request precedes its response to us.
+            send(peer.get_ref(), &[2, 7, 249, 0, 1, 2, 4, 0, 0, 0]).unwrap();
+            send(peer.get_ref(), &[3, 7, 249, 0, 1, 2, 4, 0, 0, 0]).unwrap();
+            tokio::time::timeout_at(deadline, async {
+                loop {
+                    let mut unread = 0i32;
+                    assert_eq!(
+                        unsafe {
+                            nix::libc::ioctl(pressure.as_raw_fd(), nix::libc::FIONREAD, &mut unread)
+                        },
+                        0
+                    );
+                    if unread == 0 {
+                        break;
+                    }
+                    view.changed().await.unwrap();
+                }
+            })
+            .await
+            .unwrap();
+            assert!(
+                matches!(*view.borrow(), Status::Starting),
+                "peer response must not discharge our backpressured response"
+            );
+            assert!(!task.is_finished());
+            match outcome {
+                "unblock" => {
+                    // Only drain the actual pressure records; the next packet
+                    // must be the actor's own exact ExchangeInfo response.
+                    for _ in 0..admitted {
+                        let mut raw = [0; 249];
+                        let n = receive_fixture(peer.get_ref(), &mut raw).unwrap();
+                        assert_eq!(&raw[..n], filler);
+                    }
+                    let info = negotiated(view.clone()).await;
+                    assert_eq!(info.7, [3, 7, 249, 0, 1, 2, 4, 0, 0, 0]);
+                    assert_eq!(info.9, [3, 7, 249, 0, 1, 2, 4, 0, 0, 0]);
+                    let mut raw = [0; 249];
+                    let n = receive_fixture(peer.get_ref(), &mut raw).unwrap();
+                    assert_eq!(&raw[..n], info.9);
+                    stop.send(()).unwrap();
+                    task.await.unwrap().unwrap();
+                }
+                "deadline" => {
+                    let error = tokio::time::timeout(Duration::from_secs(2), task)
+                        .await
+                        .unwrap()
+                        .unwrap()
+                        .unwrap_err();
+                    assert_eq!(error.kind(), io::ErrorKind::TimedOut);
+                    assert!(Instant::now() >= deadline);
+                    assert!(matches!(*view.borrow(), Status::Starting));
+                    drop(stop);
+                }
+                "stop" => {
+                    stop.send(()).unwrap();
+                    tokio::time::timeout_at(deadline, task)
+                        .await
+                        .unwrap()
+                        .unwrap()
+                        .unwrap();
+                    assert!(matches!(*view.borrow(), Status::Starting));
+                }
+                _ => unreachable!(),
+            }
+            if outcome != "unblock" {
+                for _ in 0..admitted {
+                    let mut raw = [0; 249];
+                    let n = receive_fixture(peer.get_ref(), &mut raw).unwrap();
+                    assert_eq!(&raw[..n], filler);
+                }
+            }
+            assert_eq!(
+                receive_fixture(peer.get_ref(), &mut [0; 249])
+                    .unwrap_err()
+                    .kind(),
+                io::ErrorKind::WouldBlock,
+                "expiry/stop cannot fabricate a successful response"
+            );
+        }
+    }
+    #[tokio::test]
     async fn native_wire_never_accepts_local_fixture_as_security_context() {
         let (a, b) = transport_pair();
         send(&b, b"fixture-only").unwrap();
@@ -1385,7 +3752,10 @@ mod tests {
                 .raw_os_error(),
             Some(nix::libc::EAFNOSUPPORT)
         );
-        let fixture = Wire::fixture(native.fd);
+        let fixture = Wire {
+            fixture: true,
+            ..native
+        };
         let (count, context) = fixture
             .receive(fixture.fd.get_ref(), &mut bytes, fixture_capabilities(0))
             .unwrap();
@@ -1436,10 +3806,10 @@ mod tests {
         for info in [negotiated(r0).await, negotiated(r1).await] {
             assert_eq!(info.4, 249);
             assert_eq!(info.5, 249);
-            assert_eq!(info.6, [2, 3, 249, 0, 1, 2]);
-            assert_eq!(info.7, [3, 3, 249, 0, 1, 2]);
-            assert_eq!(info.8, [2, 3, 249, 0, 1, 2]);
-            assert_eq!(info.9, [3, 3, 249, 0, 1, 2]);
+            assert_eq!(info.6, [2, 7, 249, 0, 1, 2, 4, 0, 0, 0]);
+            assert_eq!(info.7, [3, 7, 249, 0, 1, 2, 4, 0, 0, 0]);
+            assert_eq!(info.8, [2, 7, 249, 0, 1, 2, 4, 0, 0, 0]);
+            assert_eq!(info.9, [3, 7, 249, 0, 1, 2, 4, 0, 0, 0]);
         }
         let observer = Observer {
             state: state0,
@@ -1473,7 +3843,7 @@ mod tests {
                     handles,
                     modes,
                     deadline: Instant::now() + Duration::from_secs(1),
-                    reply,
+                    reply: reply.into(),
                 }),
                 rx,
             )
@@ -1482,7 +3852,7 @@ mod tests {
         let notification = [15, 3, 17, 0, 2, 0, 7, 8];
         let (mut w, mut rx) = wait(vec![17], 2);
         assert_eq!(
-            incoming_packet(249, &indication, &mut w).unwrap(),
+            incoming_packet(249, 249, &indication, None, &mut w).unwrap(),
             [17, 3, 1]
         );
         assert_eq!(rx.try_recv().unwrap().unwrap(), (true, indication.to_vec()));
@@ -1490,31 +3860,31 @@ mod tests {
         let (mut w, rx) = wait(vec![17], 2);
         drop(rx);
         assert_eq!(
-            incoming_packet(249, &indication, &mut w).unwrap(),
+            incoming_packet(249, 249, &indication, None, &mut w).unwrap(),
             [17, 3, 0]
         );
         let (mut w, _rx) = wait(vec![18], 2);
         assert_eq!(
-            incoming_packet(249, &indication, &mut w).unwrap(),
+            incoming_packet(249, 249, &indication, None, &mut w).unwrap(),
             [17, 3, 0]
         );
         assert!(w.is_some());
         let (mut w, _rx) = wait(vec![17], 1);
         assert_eq!(
-            incoming_packet(249, &indication, &mut w).unwrap(),
+            incoming_packet(249, 249, &indication, None, &mut w).unwrap(),
             [17, 3, 0]
         );
         assert!(w.is_some());
         w.as_mut().unwrap().deadline = Instant::now() - Duration::from_millis(1);
         assert!(
-            incoming_packet(249, &notification, &mut w)
+            incoming_packet(249, 249, &notification, None, &mut w)
                 .unwrap()
                 .is_empty()
         );
         assert!(w.is_some());
         let (mut w, mut rx) = wait(vec![17], 1);
         assert!(
-            incoming_packet(249, &notification, &mut w)
+            incoming_packet(249, 249, &notification, None, &mut w)
                 .unwrap()
                 .is_empty()
         );
@@ -1525,13 +3895,16 @@ mod tests {
         let (mut w, _rx) = wait(vec![17], 2);
         let mut event = indication;
         event[1] = 7;
-        assert_eq!(incoming_packet(249, &event, &mut w).unwrap(), [17, 7, 0]);
+        assert_eq!(
+            incoming_packet(249, 249, &event, None, &mut w).unwrap(),
+            [17, 7, 0]
+        );
         assert!(w.is_some());
         let (mut w, _rx) = wait(vec![17], 2);
-        assert!(incoming_packet(249, &indication[..7], &mut w).is_err());
+        assert!(incoming_packet(249, 249, &indication[..7], None, &mut w).is_err());
         assert!(w.is_some());
         assert_eq!(
-            incoming_packet(249, &indication, &mut None).unwrap(),
+            incoming_packet(249, 249, &indication, None, &mut None).unwrap(),
             [17, 3, 0]
         );
     }
@@ -1555,6 +3928,206 @@ mod tests {
         .await
         .unwrap_err();
         assert_eq!(error.kind(), io::ErrorKind::TimedOut);
+    }
+
+    #[tokio::test]
+    async fn partial_update_caller_or_owner_exit_retains_original_physical_obligation() {
+        // Actual Owner watch and update bookkeeping; no Native/USB/credit stub.
+        let bus = crate::event_loop::tests::PrivateBus::start();
+        let server = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let caller = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let store = std::sync::Arc::new(std::sync::Mutex::new(
+            crate::ssap_database::Database::default(),
+        ));
+        let slots = std::sync::Arc::new(tokio::sync::Semaphore::new(1));
+        let first = Instant::now();
+        let owner = crate::ssap_authorization::Owner::pin(
+            &server,
+            caller.unique_name().unwrap().to_string(),
+            zbus::zvariant::OwnedObjectPath::try_from("/").unwrap(),
+            &store,
+            slots.clone().try_acquire_owned().unwrap(),
+            first + Duration::from_secs(5),
+        )
+        .await
+        .unwrap();
+        for partial in [false, true] {
+            let (reply, rx) = oneshot::channel();
+            let mut current = UpdateRequest {
+                submitted_all: false,
+                handle: 17,
+                owner: owner.clone(),
+                mode: 2,
+                epoch: 7,
+                deadline: first + Duration::from_secs(4),
+                drain: None,
+                pdu: vec![16, 3, 17, 0, 0, 0],
+                reply: Some(reply),
+            };
+            if partial {
+                current.admit_part(first, false);
+            }
+            let mut pending = VecDeque::from([Pending {
+                sent: usize::from(partial),
+                bytes: current.pdu.clone(),
+                deadline: current.deadline,
+                purpose: Purpose::Update,
+                constraint: None,
+            }]);
+            let mut update = Some(current);
+            drop(rx);
+            retire_update_wait(&mut update, &mut pending, first + Duration::from_secs(1));
+            if partial {
+                let current = update.as_mut().unwrap();
+                assert!(current.reply.is_none() && !current.submitted_all);
+                assert_eq!(pending.len(), 1);
+                assert_eq!(
+                    current.obligation_deadline(),
+                    first + Duration::from_secs(5)
+                );
+                current.admit_part(first + Duration::from_secs(2), true);
+                assert!(current.submitted_all);
+                assert_eq!(current.drain, Some(first + Duration::from_secs(5)));
+                assert_eq!(current.deadline, first + Duration::from_secs(4));
+            } else {
+                assert!(update.is_none() && pending.is_empty());
+            }
+        }
+        let (reply, _rx) = oneshot::channel();
+        let mut current = UpdateRequest {
+            submitted_all: false,
+            handle: 17,
+            owner: owner.clone(),
+            mode: 2,
+            epoch: 7,
+            deadline: first + Duration::from_secs(4),
+            drain: None,
+            pdu: vec![16, 3, 17, 0, 0, 0],
+            reply: Some(reply),
+        };
+        current.admit_part(first, false);
+        owner.revoke();
+        let mut pending = VecDeque::from([Pending {
+            sent: 1,
+            bytes: current.pdu.clone(),
+            deadline: current.deadline,
+            purpose: Purpose::Update,
+            constraint: None,
+        }]);
+        let mut update = Some(current);
+        retire_update_wait(&mut update, &mut pending, first + Duration::from_secs(1));
+        assert!(update.as_ref().unwrap().reply.is_none());
+        assert_eq!(pending.len(), 1);
+        assert_eq!(update.unwrap().drain, Some(first + Duration::from_secs(5)));
+        owner.shutdown().await;
+        assert_eq!(slots.available_permits(), 1);
+    }
+    #[test]
+    fn shared_incoming_fanout_ack_is_any_acceptance_and_queues_account_independently() {
+        use crate::ssap_subscription::{Queue, Sink};
+        use slk_contract::ssap::subscription as stream;
+        let expires = Instant::now() + Duration::from_secs(10);
+        let info = stream::Info {
+            version: 1,
+            controller: 2,
+            generation: 7,
+            lifetime: 9,
+            handle: 11,
+            security_epoch: 13,
+            token: 17,
+            expires_ns: 1,
+            handles: vec![19],
+            modes: 3,
+            state: stream::ACTIVE,
+            capacity: 16,
+        };
+        let a = Queue::new(info.clone(), expires);
+        let b = Queue::new(stream::Info { token: 18, ..info }, expires);
+        let (_alive, observed) = watch::channel(true);
+        let mut w = Some(IncomingWait {
+            handles: vec![19],
+            modes: 3,
+            deadline: expires,
+            reply: IncomingDelivery::Stream(vec![
+                Sink {
+                    queue: a.clone(),
+                    alive: observed.clone(),
+                },
+                Sink {
+                    queue: b.clone(),
+                    alive: observed,
+                },
+            ]),
+        });
+        let receipt = slk_protocol::SleMessageSecurity {
+            version: 1,
+            size: 40,
+            controller: 2,
+            generation: 7,
+            lifetime: 9,
+            handle: 11,
+            local_tcid: 10,
+            remote_tcid: 10,
+            pi: 0,
+            security_epoch: 13,
+            flags: 3,
+            security: 2,
+        };
+        let indication = [16, 3, 19, 0, 2, 0, 7, 8];
+        for n in 0..18 {
+            assert_eq!(
+                incoming_packet(249, 249, &indication, Some(receipt), &mut w).unwrap(),
+                [17, 3, 1]
+            );
+            if n < 17 {
+                let drained = b.lock().unwrap().take_batch();
+                assert_eq!(drained.packets.len(), 1);
+            }
+        }
+        let slow = a.lock().unwrap().take_batch();
+        assert_eq!(slow.packets.len(), 16);
+        assert_eq!(slow.refused_indications, 2);
+        assert_eq!(slow.last_sequence, 18);
+        let fast = b.lock().unwrap().take_batch();
+        assert_eq!(fast.packets.len(), 1);
+        assert_eq!(fast.refused_indications, 0);
+        assert_eq!(fast.last_sequence, 18);
+        a.lock().unwrap().close(stream::RELEASED).unwrap();
+        assert_eq!(
+            incoming_packet(249, 249, &indication, Some(receipt), &mut w).unwrap(),
+            [17, 3, 1]
+        );
+        b.lock().unwrap().close(stream::RELEASED).unwrap();
+        assert_eq!(
+            incoming_packet(249, 249, &indication, Some(receipt), &mut w).unwrap(),
+            [17, 3, 0]
+        );
+    }
+    #[test]
+    fn subscription_tombstones_have_fixed_budget_and_keep_original_owner() {
+        let mut history = VecDeque::new();
+        for token in 1..=20 {
+            remember_subscription(
+                &mut history,
+                crate::ssap_subscription::Closed {
+                    owner: format!(":1.{token}"),
+                    token,
+                    result: Err("explicit fixture failure".into()),
+                },
+            );
+        }
+        assert_eq!(history.len(), 16);
+        assert_eq!(history.front().unwrap().token, 5);
+        assert!(history.iter().all(|v| v.result.is_err()));
+        assert!(!history.iter().any(|v| v.owner == ":1.19" && v.token == 20));
     }
 }
 

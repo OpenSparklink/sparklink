@@ -1,6 +1,7 @@
 mod commands;
 mod security_agent;
 mod ssap_server;
+mod ssap_subscription;
 
 use std::process;
 
@@ -139,17 +140,27 @@ Commands:
   connection-objects            List typed physical connection objects
   peer-info <path>               Show a typed peer and its connection lifetimes
   connection-info <path>        Show one immutable connection identity
+  link-measurement <path> <rssi|phy> [timeout-ms]  Read a real Managed link observation
+  link-payload-preference <path> <octets> [timeout-ms]  Request link payload preference; acknowledgment only
   disconnect-object <path>      Disconnect the exact physical lifetime
-  ssap-discover <path> [structure|service|property uuid-hex] Discover actual peer metadata
+  ssap-discover <path> [structure|service|property|method uuid-hex] Discover actual peer metadata
   ssap-list                            Inspect local service metadata only
   ssap-register <service-hex> <property-hex> <ops> <access> <value-hex> Configure local database only
   ssap-serve <service-hex> <property-hex> <ops> <access> <value-hex> [ask|allow|deny] Own a foreground local service; policy decision is not peer receipt
+  ssap-serve-method <service-hex> <method-hex> <access> [ask|allow|deny] Own a foreground method; explicit independent result, no automatic echo
+    stdin: value, description TEXT, replace HEX, provider (READ-only), configuration/notify/indicate CONNECTION, quit
+    provider replies: provide pTOKEN HEX|- or provider-error pTOKEN AF..FF (hex); original request deadline applies
   ssap-remove <start-handle>                 Remove local service (handles not reused)
   ssap-local-read <handle>                   Inspect local database, not peer receipt
-  ssap-observe <path> <handle> [notify|indicate|both] [wait-ms] Observe one actual incoming packet; no remote subscription
+  ssap-receive <path> <handle> [notify|indicate|both] [wait-ms] Authenticated CPCD enable, one update, verified disable
+  ssap-subscribe <path> <handle> [notify|indicate|both] [count] [lease-ms] Finite leased updates, explicit cleanup; no auto-renew
   ssap-read-uuid <path> <start> <end> <uuid-hex> [minimum] Read actual peer values by UUID
   ssap-read <path> <handle> [minimum]                  Read actual peer value on SMTC
+  ssap-read-description <path> <handle> [minimum]      Read public static type1 description
   ssap-write <path> <handle> <value-hex> [minimum]      Write with peer verification and reply
+  ssap-write-command <path> <handle> <value-hex> [minimum] Software admission only; no peer delivery confirmation
+  ssap-call-method <path> <handle> <arguments-hex> [minimum] Remote method result; requester only
+  ssap-call-method-command <path> <handle> <arguments-hex> [minimum] Software admission only
   transport-status <path>                    Read current Session queues/debt/state (not drain/reuse proof)
   ssap-info <path>                           Read peer-validated SMTC ExchangeInfo (not services)
   disconnect <address> [type]    Disconnect an unambiguous current peer

@@ -21,26 +21,41 @@ class DaemonHoldCoordinator(HoldCoordinator):
 
 class Invocation:
     """Read live pipes, never a redirected producer file; reap before sealing."""
-    def __init__(self, args, toggle, *, credentials=None):
+    def __init__(self, args, toggle, *, credentials=None, stdin=None, env=None):
         self.row=dict(args=args,toggle=toggle,start_wall_ns=time.time_ns())
         options={} if credentials is None else dict(user=credentials[0],group=credentials[1],extra_groups=[])
+        if stdin is not None:options['stdin']=stdin
+        if env is not None:options['env']=env
         self.process=subprocess.Popen(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE,**options)
         self.row['pid']=self.process.pid
         self.prefix=b''
 
     def until(self, pattern, *, timeout=2, limit=None, label='actual scan request marker'):
+        def matched(prefix):
+            matches=re.findall(pattern,prefix,re.M)
+            if len(matches)>1:raise ValueError('duplicate '+label)
+            return len(matches)==1
+        self.pump_until(matched,timeout=timeout,limit=limit,label=label)
+        return re.findall(pattern,self.prefix,re.M)[0]
+
+    def pump_until(self, predicate, *, timeout=2, limit=None, label='actual caller output'):
+        """Consume this owned pipe only; snapshots never reread a live file.
+
+        Cached bytes can already satisfy a later barrier. Prefix ownership is
+        shared with finish(), which appends the unread suffix exactly once.
+        """
         deadline=time.monotonic()+timeout
         with selectors.DefaultSelector() as watch:
             watch.register(self.process.stdout,selectors.EVENT_READ)
             while time.monotonic()<deadline:
+                if limit is not None and len(self.prefix)>limit:raise ValueError('bounded '+label+' output exceeded')
+                if predicate(self.prefix):return self.prefix
                 for key,_ in watch.select(.005):
                     data=os.read(key.fileobj.fileno(),4096)
                     if not data:raise ValueError('caller ended before '+label)
                     self.prefix+=data
                     if limit is not None and len(self.prefix)>limit:raise ValueError('bounded '+label+' output exceeded')
-                    matches=re.findall(pattern,self.prefix,re.M)
-                    if len(matches)==1:return matches[0]
-                    if len(matches)>1:raise ValueError('duplicate '+label)
+                    if predicate(self.prefix):return self.prefix
                 if self.process.poll() is not None:raise ValueError('caller failed before '+label)
         raise TimeoutError('bounded '+label)
 

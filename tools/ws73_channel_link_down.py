@@ -15,7 +15,7 @@ from ws73_management_setup import decode, setup, query
 from sparklink.structs import SleConnectionSubmit, SleConnectionResult, SleLinkSnapshot, SleControllerSnapshot
 
 
-def exercise(r, save, grant, observers, writers, snapshots, leases, discover, outcomes, standby, stop, bound_disconnect):
+def exercise(r, save, grant, observers, writers, snapshots, leases, discover, outcomes, standby, stop, bound_disconnect, *, sibling=None):
     i=r['index'];p=1-i
     row=dict(status='STARTING',management_before=[bytes(a.management_status()).hex() for a in observers],
              links_before=[bytes(a.link_snapshot()).hex() for a in observers],
@@ -25,6 +25,7 @@ def exercise(r, save, grant, observers, writers, snapshots, leases, discover, ou
     # The explicit Disconnect below does NOT revoke either Managed epoch.
     from ws73_channel_prefix_hold import PrefixBarrier
     barrier=PrefixBarrier(r,save);barrier.arm(grant,prime=True)
+    if sibling:sibling.exchange('while_held')
     link=decode(SleLinkSnapshot,row['links_before'][i]).links[0]
     request=bound_disconnect(snapshots[i],link,950)
     row.update(input=bytes(request).hex(),submit_before_wall_ns=time.time_ns());save()
@@ -46,12 +47,14 @@ def exercise(r, save, grant, observers, writers, snapshots, leases, discover, ou
     row['links_after']=[bytes(a.link_snapshot()).hex() for a in observers]
     row['management_after']=[bytes(a.management_status()).hex() for a in observers]
     row['ready_after']=[bytes(a.snapshot()).hex() for a in observers];save()
+    if sibling:sibling.exchange('after_down')
     # Physical link loss affects its peer, but cannot remove the peer's lease
     # or its independent controller-level scan capability.
     for identifier,operation in [(104,2),(105,3),(106,4)]:
         req=standby(snapshots[p],identifier,'scanning') if operation==3 else stop(snapshots[p],identifier,operation)
         req.operation=operation;discover(p,req)
     row['scan_checked_wall_ns']=time.time_ns()
+    if sibling:sibling.finish()
     for n in [i,p]:writers[n].release_management(leases[n],1)
     row['management_cleaned']=[bytes(a.management_status()).hex() for a in observers]
     row.update(status='ACTUAL_LINK_DOWN_PASS',end_wall_ns=time.time_ns())
@@ -84,7 +87,7 @@ def verify(r):
             ready=decode(SleControllerSnapshot,row[key][n])
             if ready.flags!=1 or ready.generation!=snapshots[n].generation:raise ValueError('same registered Ready controller required')
     request=decode(SleConnectionSubmit,row['input']);old=decode(SleLinkSnapshot,row['links_before'][i]).links[0]
-    if (request.version,request.operation,request.generation,request.request_id,request.handle,request.reason,request.expected_lifetime)!=(2,2,snapshots[i].generation,950,old.handle,0x13,old.lifetime) or bytes(request.expected_address)!=bytes(old.address) or request.expected_role!=old.role or request.expected_address_type!=old.address_type:raise ValueError('exact bound Disconnect input required')
+    if (request.version,request.operation,request.generation,request.request_id,request.handle,request.reason,request.expected_lifetime)!=(2,2,snapshots[i].generation,950,old.handle,0x10,old.lifetime) or bytes(request.expected_address)!=bytes(old.address) or request.expected_role!=old.role or request.expected_address_type!=old.address_type:raise ValueError('exact bound Disconnect input required')
     result=decode(SleConnectionResult,row['result'])
     if (result.version,result.profile,result.state,result.operation,result.generation,result.request_id,result.handle,result.flags,result.dev_index)!=(1,1,4,2,snapshots[i].generation,950,old.handle,7,i) or any([result.error,result.fault_error,result.command_status,result.outcome_status,*result.reserved]):raise ValueError('actual successful Disconnect result required')
     armed=g['armed'];witness=g['blocking_witness'];blocked=row['blocked_result']
@@ -107,7 +110,7 @@ def corroborate(r,capture):
     row=verify(r);g=r['channel_grant'];i=r['index'];sdus,legs=business_evidence(g,r,capture)
     owner=g['owners'][i];same=lambda v,n: (v['bus'],v['device'])==(r['usb'][n]['bus'],r['usb'][n]['device'])
     commands=[c for c in capture['commands'] if same(c,i) and c['opcode']==0x1403 and row['submit_before_wall_ns']<=c['wall_ns']<=row['checks_after_wall_ns']]
-    if len(commands)!=1 or commands[0]['params']!=(owner['handle'].to_bytes(2,'little')+b'\x13').hex() or not commands[0].get('completion'):raise CaptureError('one actual exact Disconnect USB submission required')
+    if len(commands)!=1 or commands[0]['params']!=(owner['handle'].to_bytes(2,'little')+b'\x10').hex() or not commands[0].get('completion'):raise CaptureError('one actual exact Disconnect USB submission required')
     statuses=[e for e in capture['native_events'] if same(e,i) and e['event']==1 and bytes.fromhex(e['params'])[:2]==b'\x03\x14' and commands[0]['wall_ns']<=e['wall_ns']<=row['checks_after_wall_ns']]
     if len(statuses)!=1 or bytes.fromhex(statuses[0]['params'])[3:]!=b'\0':raise CaptureError('one actual successful Disconnect Status required')
     for n,event in enumerate(row['down']):

@@ -2,6 +2,7 @@
 //! explicit finite argument/result fixture, never SSAP, firmware or RF.
 mod support;
 use libsparklink::{ApplicationError, Client};
+use std::time::Duration;
 fn deadline() -> libsparklink::Deadline {
     libsparklink::Deadline::after(std::time::Duration::from_secs(5)).unwrap()
 }
@@ -17,6 +18,9 @@ struct State {
     generation: AtomicU64,
     role: AtomicU8,
     calls: AtomicUsize,
+    malformed_update: AtomicU8,
+    discovery_stamps: std::sync::Mutex<Vec<slk_contract::Deadline>>,
+    description_stamps: std::sync::Mutex<Vec<slk_contract::Deadline>>,
     entered: Notify,
     release: Notify,
 }
@@ -69,6 +73,33 @@ impl Link {
         }
         Ok(vec![0x34, 0x78])
     }
+    async fn read_ssap_description(
+        &self,
+        handle: u16,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        self.0.calls.fetch_add(1, Ordering::SeqCst);
+        self.0.description_stamps.lock().unwrap().push(original);
+        match handle {
+            13 => return Ok(vec![]),
+            14 => return Ok(vec![b'a'; 245]),
+            15 => return Ok(vec![0xff]),
+            16 => return Ok(vec![b'a', 0]),
+            _ => {}
+        }
+        if handle == 99 {
+            self.0.entered.notify_one();
+            self.0.release.notified().await;
+        } else if (handle, minimum) != (17, 2) {
+            return Err(zbus::fdo::Error::NotSupported(
+                "unmatched description fixture".into(),
+            ));
+        }
+        Ok("独立描述".as_bytes().to_vec())
+    }
     fn write_ssap_value(
         &self,
         handle: u16,
@@ -86,13 +117,78 @@ impl Link {
         }
         Ok(vec![0x90]) // Deliberately differs from input: no local method echo.
     }
-    fn discover_ssap(
+    async fn write_ssap_command(
+        &self,
+        handle: u16,
+        value: Vec<u8>,
+        minimum: u32,
+        deadline: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<()> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .unwrap();
+        self.0.calls.fetch_add(1, Ordering::SeqCst);
+        if handle == 99 {
+            self.0.entered.notify_one();
+            self.0.release.notified().await;
+        } else if !matches!(
+            (handle, minimum, value.as_slice()),
+            (17, 1, [0x56, 0x12]) | (17, 0, [])
+        ) {
+            return Err(zbus::fdo::Error::NotSupported(
+                "exact command fixture required".into(),
+            ));
+        }
+        // Finite RPC fixture: no wire response or remote-delivery claim.
+        Ok(())
+    }
+
+    async fn call_ssap_method(
+        &self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        self.0.calls.fetch_add(1, Ordering::SeqCst);
+        self.0.description_stamps.lock().unwrap().push(original);
+        if handle == 99 {
+            self.0.entered.notify_one();
+            self.0.release.notified().await;
+        } else if handle == 98 {
+            return Ok(vec![0; 2046]);
+        } else if (handle, minimum, arguments) != (17, 1, vec![0x56, 0x12]) {
+            return Err(zbus::fdo::Error::NotSupported(
+                "unmatched method fixture".into(),
+            ));
+        }
+        Ok(vec![0x90, 0x78, 0x34])
+    }
+    async fn call_ssap_method_command(
+        &self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<()> {
+        self.call_ssap_method(handle, arguments, minimum, original)
+            .await
+            .map(|_| ())
+    }
+    async fn discover_ssap(
         &self,
         uuid: Vec<u8>,
         kind: u8,
+        original: slk_contract::Deadline,
     ) -> zbus::fdo::Result<slk_contract::ssap::Discovery> {
+        self.0.discovery_stamps.lock().unwrap().push(original);
         self.0.calls.fetch_add(1, Ordering::SeqCst);
-        if (uuid, kind) != (vec![1, 2], 3) {
+        if uuid == [9, 9] {
+            self.0.entered.notify_one();
+            self.0.release.notified().await;
+        }
+        if !matches!(uuid.as_slice(), [1, 2] | [9, 9]) || !matches!(kind, 3 | 4) {
             return Err(zbus::fdo::Error::NotSupported(
                 "unsupported fixture discovery".into(),
             ));
@@ -122,19 +218,65 @@ impl Link {
         }
         Ok((vec![(17, true, 0, vec![0xab])], vec![0x12], vec![0x34]))
     }
-    fn observe_ssap_incoming(
+    fn receive_ssap_update(
         &self,
         handles: Vec<u16>,
         modes: u8,
-        wait_ms: u32,
-    ) -> zbus::fdo::Result<(bool, Vec<u8>)> {
+        deadline: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<slk_contract::ssap::Incoming> {
         self.0.calls.fetch_add(1, Ordering::SeqCst);
-        if (handles, modes, wait_ms) != (vec![17, 18], 2, 1234) {
+        let original =
+            slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+                .map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
+        if (handles, modes) != (vec![17, 18], 2)
+            || original.remaining().unwrap() > Duration::from_millis(1234)
+        {
             return Err(zbus::fdo::Error::InvalidArgs(
                 "exact incoming fixture required".into(),
             ));
         }
-        Ok((true, vec![0x24, 1, 2]))
+        let raw = match self.0.malformed_update.load(Ordering::SeqCst) {
+            1 => vec![0x24, 1, 2],
+            2 => vec![16, 3, 19, 0, 1, 0, 0xab],
+            3 => vec![15, 3, 17, 0, 1, 0, 0xab],
+            _ => vec![16, 3, 17, 0, 1, 0, 0xab],
+        };
+        Ok((true, raw))
+    }
+    fn send_owned_ssap_update(
+        &self,
+        handle: u16,
+        indication: bool,
+        deadline: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<slk_contract::ssap::UpdateReceipt> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .unwrap();
+        self.0.calls.fetch_add(1, Ordering::SeqCst);
+        if handle != 17 {
+            return Err(zbus::fdo::Error::AccessDenied(
+                "foreign fixture owner".into(),
+            ));
+        }
+        Ok(slk_contract::ssap::UpdateReceipt {
+            stage: if indication { 2 } else { 1 },
+            pdu: vec![if indication { 16 } else { 15 }, 3, 17, 0, 1, 0, 0xab],
+            acknowledgement: if indication { vec![17, 3, 1] } else { vec![] },
+        })
+    }
+    fn get_owned_ssap_configuration(
+        &self,
+        handle: u16,
+        deadline: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<u8> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .unwrap();
+        self.0.calls.fetch_add(1, Ordering::SeqCst);
+        if handle != 17 {
+            return Err(zbus::fdo::Error::AccessDenied(
+                "foreign fixture owner".into(),
+            ));
+        }
+        Ok(3)
     }
     fn get_ssap_info(&self) -> slk_contract::ssap::ExchangeInfo {
         self.0.calls.fetch_add(1, Ordering::SeqCst);
@@ -179,23 +321,43 @@ async fn actual_ssap_client_serializes_all_existing_methods_without_echo_or_fall
     let (entries, trace) = remote.discover(vec![1, 2], 3).await?;
     assert_eq!(entries, remote.cached().await?);
     assert_eq!(trace, [(vec![0x11], vec![0x22])]);
+    let original = deadline();
+    let (methods, method_trace) = remote.discover_until(vec![1, 2], 4, original).await?;
+    assert_eq!(
+        state.discovery_stamps.lock().unwrap()[1],
+        slk_contract::deadline_wire(original.stamp())
+    );
+    assert_eq!(methods, entries);
+    assert_eq!(method_trace, trace);
+    let before = state.calls.load(Ordering::SeqCst);
+    for kind in [2, 5, 6, 255] {
+        assert!(matches!(
+            remote.discover(vec![1, 2], kind).await,
+            Err(ApplicationError::Invalid(_))
+        ));
+    }
+    assert!(matches!(
+        remote.discover(vec![1, 2, 3], 4).await,
+        Err(ApplicationError::Invalid(_))
+    ));
+    assert_eq!(state.calls.load(Ordering::SeqCst), before);
     assert_eq!(
         remote.read_by_uuid(17, 20, 0, vec![1, 2], 2).await?,
         (vec![(17, true, 0, vec![0xab])], vec![0x12], vec![0x34])
     );
     assert_eq!(
-        remote.observe(vec![17, 18], 2, 1234).await?,
-        (true, vec![0x24, 1, 2])
+        remote.receive_update(vec![17, 18], 2, 1234).await?,
+        (true, vec![16, 3, 17, 0, 1, 0, 0xab])
     );
     assert_eq!(remote.exchange_info().await?.5, 240);
     assert_eq!(link.transport_status().await?.5, 1);
-    assert_eq!(state.calls.load(Ordering::SeqCst), 9); // No hidden retry, fallback or engine calls.
+    assert_eq!(state.calls.load(Ordering::SeqCst), 10); // No hidden retry, fallback or engine calls.
     state.role.store(1, Ordering::SeqCst);
     assert!(matches!(
         remote.read(17, 2, deadline()).await,
         Err(ApplicationError::Identity(_))
     ));
-    assert_eq!(state.calls.load(Ordering::SeqCst), 9);
+    assert_eq!(state.calls.load(Ordering::SeqCst), 10);
     Ok(())
 }
 #[tokio::test]
@@ -231,5 +393,376 @@ async fn late_reply_cannot_complete_under_changed_generation_and_old_owner() -> 
         Err(ApplicationError::Identity(_))
     ));
     assert_eq!(state.calls.load(Ordering::SeqCst), 1);
+    Ok(())
+}
+
+#[tokio::test]
+async fn malformed_foreign_or_wrong_kind_update_never_becomes_application_delivery()
+-> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let (_server, caller, state) = fixture(&bus.address).await?;
+    let client = Client::from_connection(caller).await?;
+    let link = client.connection(BASE, PATH).await?;
+    for kind in 1..=3 {
+        state.malformed_update.store(kind, Ordering::SeqCst);
+        assert!(matches!(
+            link.ssap().receive_update(vec![17, 18], 2, 1234).await,
+            Err(ApplicationError::Identity(_))
+        ));
+    }
+    assert_eq!(state.calls.load(Ordering::SeqCst), 3);
+    Ok(())
+}
+
+#[tokio::test]
+async fn actual_owned_update_rpc_has_literal_signatures_and_distinct_stages() -> anyhow::Result<()>
+{
+    let bus = support::Bus::start();
+    let (_server, caller, state) = fixture(&bus.address).await?;
+    let proxy = zbus::Proxy::new(
+        &caller,
+        "org.sparklink",
+        PATH,
+        "org.freedesktop.DBus.Introspectable",
+    )
+    .await?;
+    let xml: String = proxy.call("Introspect", &()).await?;
+    for (method, inputs, outputs) in [
+        (
+            "SendOwnedSsapUpdate",
+            vec!["q", "b", "(ttttt)"],
+            vec!["(yayay)"],
+        ),
+        ("GetOwnedSsapConfiguration", vec!["q", "(ttttt)"], vec!["y"]),
+        ("WriteSsapCommand", vec!["q", "ay", "u", "(ttttt)"], vec![]),
+        ("ReadSsapDescription", vec!["q", "u", "(ttttt)"], vec!["ay"]),
+        (
+            "ReceiveSsapUpdate",
+            vec!["aq", "y", "(ttttt)"],
+            vec!["(bay)"],
+        ),
+    ] {
+        let part = xml
+            .split_once(&format!("<method name=\"{method}\">"))
+            .unwrap()
+            .1
+            .split_once("</method>")
+            .unwrap()
+            .0;
+        let types = |direction: &str| {
+            part.lines()
+                .filter(|l| {
+                    l.contains("<arg ") && l.contains(&format!("direction=\"{direction}\""))
+                })
+                .map(|l| {
+                    l.split_once("type=\"")
+                        .unwrap()
+                        .1
+                        .split_once('"')
+                        .unwrap()
+                        .0
+                })
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(types("in"), inputs);
+        assert_eq!(types("out"), outputs);
+    }
+    assert!(!xml.contains("ObserveSsapIncoming"));
+    let client = Client::from_connection(caller).await?;
+    let link = client.connection(BASE, PATH).await?;
+    let remote = link.ssap();
+    assert_eq!(remote.owned_configuration(17, deadline()).await?, 3);
+    let notification = remote.send_owned_update(17, false, deadline()).await?;
+    assert_eq!(
+        (
+            notification.stage,
+            notification.pdu,
+            notification.acknowledgement
+        ),
+        (1, vec![15, 3, 17, 0, 1, 0, 0xab], vec![])
+    );
+    let indication = remote.send_owned_update(17, true, deadline()).await?;
+    assert_eq!(
+        (indication.stage, indication.pdu, indication.acknowledgement),
+        (2, vec![16, 3, 17, 0, 1, 0, 0xab], vec![17, 3, 1])
+    );
+    assert!(
+        matches!(remote.send_owned_update(18,false,deadline()).await,Err(ApplicationError::Bus(zbus::Error::MethodError(name,_,_))) if name.as_str()=="org.freedesktop.DBus.Error.AccessDenied")
+    );
+    assert_eq!(state.calls.load(Ordering::SeqCst), 4);
+    Ok(())
+}
+
+#[tokio::test]
+async fn command_has_unit_admission_and_no_retry_or_expired_identity_fallback() -> anyhow::Result<()>
+{
+    let bus = support::Bus::start();
+    let (_server, caller, state) = fixture(&bus.address).await?;
+    let client = Client::from_connection(caller).await?;
+    let link = client.connection(BASE, PATH).await?;
+    let remote = link.ssap();
+    remote
+        .write_without_response(17, vec![0x56, 0x12], 1, deadline())
+        .await?;
+    remote
+        .write_without_response(17, vec![], 0, deadline())
+        .await?;
+    assert!(
+        matches!(remote.write_without_response(18, vec![], 0, deadline()).await,
+        Err(ApplicationError::Bus(zbus::Error::MethodError(name, _, _)))
+        if name.as_str() == "org.freedesktop.DBus.Error.NotSupported")
+    );
+    assert_eq!(state.calls.load(Ordering::SeqCst), 3);
+    let expired = libsparklink::Deadline::after(Duration::from_millis(1))?;
+    tokio::time::sleep(Duration::from_millis(5)).await;
+    assert!(
+        matches!(remote.write_without_response(17, vec![], 0, expired).await,
+        Err(ApplicationError::Io(error)) if error.raw_os_error() == Some(nix::libc::ETIMEDOUT))
+    );
+    state.role.store(1, Ordering::SeqCst);
+    assert!(matches!(
+        remote
+            .write_without_response(17, vec![], 0, deadline())
+            .await,
+        Err(ApplicationError::Identity(_))
+    ));
+    assert_eq!(state.calls.load(Ordering::SeqCst), 3);
+    Ok(())
+}
+
+#[tokio::test]
+async fn command_late_reply_cannot_cross_connection_identity() -> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let (_server, caller, state) = fixture(&bus.address).await?;
+    let client = Client::from_connection(caller).await?;
+    let link = client.connection(BASE, PATH).await?;
+    let call = async {
+        link.ssap()
+            .write_without_response(99, vec![1], 0, deadline())
+            .await
+    };
+    let interleave = async {
+        state.entered.notified().await;
+        state.generation.store(8, Ordering::SeqCst);
+        state.release.notify_one();
+    };
+    let (result, ()) = tokio::time::timeout(Duration::from_secs(5), async {
+        tokio::join!(call, interleave)
+    })
+    .await?;
+    assert!(matches!(result, Err(ApplicationError::Identity(_))));
+    assert_eq!(state.calls.load(Ordering::SeqCst), 1);
+    Ok(())
+}
+
+#[tokio::test]
+async fn command_wait_keeps_original_deadline_without_retrying_uncertain_admission()
+-> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let (_server, caller, state) = fixture(&bus.address).await?;
+    let client = Client::from_connection(caller).await?;
+    let link = client.connection(BASE, PATH).await?;
+    let original = libsparklink::Deadline::after(Duration::from_millis(200))?;
+    let call = async {
+        link.ssap()
+            .write_without_response(99, vec![1], 0, original)
+            .await
+    };
+    let interleave = async {
+        state.entered.notified().await;
+        tokio::time::sleep(Duration::from_millis(300)).await;
+        state.release.notify_one();
+    };
+    let (result, ()) = tokio::time::timeout(Duration::from_secs(5), async {
+        tokio::join!(call, interleave)
+    })
+    .await?;
+    assert!(matches!(result, Err(ApplicationError::Io(error))
+        if error.raw_os_error() == Some(nix::libc::ETIMEDOUT)));
+    assert_eq!(state.calls.load(Ordering::SeqCst), 1);
+    Ok(())
+}
+
+#[tokio::test]
+async fn description_read_uses_its_own_method_deadline_and_immutable_identity() -> anyhow::Result<()>
+{
+    let bus = support::Bus::start();
+    let (_server, caller, state) = fixture(&bus.address).await?;
+    let client = Client::from_connection(caller).await?;
+    let link = client.connection(BASE, PATH).await?;
+    let original = deadline();
+    assert_eq!(
+        link.ssap().read_description(17, 2, original).await?,
+        "独立描述".as_bytes()
+    );
+    assert_eq!(
+        state.description_stamps.lock().unwrap()[0].0,
+        original.stamp().monotonic_ns
+    );
+    assert!(
+        matches!(link.ssap().read_description(18,2,deadline()).await,
+        Err(ApplicationError::Bus(zbus::Error::MethodError(name,_,_)))
+        if name.as_str()=="org.freedesktop.DBus.Error.NotSupported")
+    );
+    let expired = libsparklink::Deadline::after(Duration::from_millis(1))?;
+    tokio::time::sleep(Duration::from_millis(5)).await;
+    assert!(
+        matches!(link.ssap().read_description(17,2,expired).await,Err(ApplicationError::Io(e))
+        if e.raw_os_error()==Some(nix::libc::ETIMEDOUT))
+    );
+    assert_eq!(state.calls.load(Ordering::SeqCst), 2);
+    let call = async { link.ssap().read_description(99, 0, deadline()).await };
+    let interleave = async {
+        state.entered.notified().await;
+        state.generation.store(8, Ordering::SeqCst);
+        state.release.notify_one();
+    };
+    let (result, ()) = tokio::time::timeout(Duration::from_secs(5), async {
+        tokio::join!(call, interleave)
+    })
+    .await?;
+    assert!(matches!(result, Err(ApplicationError::Identity(_))));
+    assert_eq!(state.calls.load(Ordering::SeqCst), 3);
+    assert_eq!(state.description_stamps.lock().unwrap().len(), 3);
+    Ok(())
+}
+
+#[tokio::test]
+async fn description_rejects_invalid_peer_text_without_property_fallback() -> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let (_server, caller, state) = fixture(&bus.address).await?;
+    let client = Client::from_connection(caller).await?;
+    let link = client.connection(BASE, PATH).await?;
+    for handle in 13..=16 {
+        assert!(
+            matches!(link.ssap().read_description(handle,0,deadline()).await,
+            Err(ApplicationError::Io(error)) if error.raw_os_error()==Some(nix::libc::EPROTO))
+        );
+    }
+    assert_eq!(state.calls.load(Ordering::SeqCst), 4);
+    assert_eq!(state.description_stamps.lock().unwrap().len(), 4);
+    Ok(())
+}
+
+#[tokio::test]
+async fn method_client_is_bounded_scoped_and_never_echoes_or_retries() -> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let (_server, caller, state) = fixture(&bus.address).await?;
+    let client = Client::from_connection(caller).await?;
+    let link = client.connection(BASE, PATH).await?;
+    let original = deadline();
+    assert_eq!(
+        link.ssap()
+            .call_method(17, vec![0x56, 0x12], 1, original)
+            .await?,
+        [0x90, 0x78, 0x34]
+    );
+    assert_eq!(
+        state.description_stamps.lock().unwrap()[0].0,
+        original.stamp().monotonic_ns
+    );
+    link.ssap()
+        .call_method_without_response(17, vec![0x56, 0x12], 1, deadline())
+        .await?;
+    assert!(
+        link.ssap()
+            .call_method(18, vec![], 0, deadline())
+            .await
+            .is_err()
+    );
+    assert!(
+        matches!(link.ssap().call_method(98,vec![],0,deadline()).await,Err(ApplicationError::Io(e)) if e.raw_os_error()==Some(nix::libc::EPROTO))
+    );
+    let calls = state.calls.load(Ordering::SeqCst);
+    for command in [false, true] {
+        let r = if command {
+            link.ssap()
+                .call_method_without_response(17, vec![0; 2044], 0, deadline())
+                .await
+                .map(|_| vec![])
+        } else {
+            link.ssap()
+                .call_method(17, vec![0; 2044], 0, deadline())
+                .await
+        };
+        assert!(
+            matches!(r,Err(ApplicationError::Io(e)) if e.raw_os_error()==Some(nix::libc::EMSGSIZE))
+        );
+    }
+    assert_eq!(state.calls.load(Ordering::SeqCst), calls);
+    for command in [false, true] {
+        let original = libsparklink::Deadline::after(Duration::from_millis(100))?;
+        let call = async {
+            if command {
+                link.ssap()
+                    .call_method_without_response(99, vec![], 0, original)
+                    .await
+                    .map(|_| vec![])
+            } else {
+                link.ssap().call_method(99, vec![], 0, original).await
+            }
+        };
+        let interleave = async {
+            state.entered.notified().await;
+            tokio::time::sleep(Duration::from_millis(200)).await;
+            state.release.notify_one();
+        };
+        let (r, ()) = tokio::time::timeout(Duration::from_secs(3), async {
+            tokio::join!(call, interleave)
+        })
+        .await?;
+        assert!(
+            matches!(r,Err(ApplicationError::Io(e)) if e.raw_os_error()==Some(nix::libc::ETIMEDOUT))
+        );
+    }
+    assert_eq!(state.calls.load(Ordering::SeqCst), calls + 2);
+    let call = async { link.ssap().call_method(99, vec![], 0, deadline()).await };
+    let interleave = async {
+        state.entered.notified().await;
+        state.generation.store(8, Ordering::SeqCst);
+        state.release.notify_one();
+    };
+    let (r, ()) = tokio::time::timeout(Duration::from_secs(3), async {
+        tokio::join!(call, interleave)
+    })
+    .await?;
+    assert!(matches!(r, Err(ApplicationError::Identity(_))));
+    Ok(())
+}
+
+#[tokio::test]
+async fn discovery_deadline_and_late_identity_are_checked_by_actual_sdk() -> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let (_server, caller, state) = fixture(&bus.address).await?;
+    let client = Client::from_connection(caller).await?;
+    let link = client.connection(BASE, PATH).await?;
+    let remote = link.ssap();
+    let expired = libsparklink::Deadline::after(Duration::from_millis(1))?;
+    tokio::time::sleep_until(expired.instant().into()).await;
+    assert!(matches!(remote.discover_until(vec![1,2], 4, expired).await,
+        Err(ApplicationError::Io(e)) if e.raw_os_error() == Some(110)));
+    assert_eq!(state.calls.load(Ordering::SeqCst), 0);
+    let original = libsparklink::Deadline::after(Duration::from_millis(100))?;
+    assert!(
+        matches!(remote.discover_until(vec![9,9], 4, original).await,
+        Err(ApplicationError::Io(e)) if e.raw_os_error() == Some(110))
+    );
+    assert_eq!(
+        state.discovery_stamps.lock().unwrap().as_slice(),
+        &[slk_contract::deadline_wire(original.stamp())]
+    );
+    state.release.notify_one();
+    // Independent call: a reply after lifetime replacement cannot be returned
+    // as a current observation. Service responses are explicit D-Bus fixtures.
+    state.entered.notified().await;
+    let call = remote.discover_until(vec![9, 9], 4, deadline());
+    let change = async {
+        state.entered.notified().await;
+        state.generation.store(8, Ordering::SeqCst);
+        state.release.notify_one();
+    };
+    let (result, ()) =
+        tokio::time::timeout(Duration::from_secs(5), async { tokio::join!(call, change) }).await?;
+    assert!(matches!(result, Err(ApplicationError::Identity(_))));
     Ok(())
 }

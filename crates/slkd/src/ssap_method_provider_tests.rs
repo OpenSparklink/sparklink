@@ -1,0 +1,884 @@
+//! Production manager/database/Owner/Engine with an actual private D-Bus peer.
+//! Wire::fixture explicitly bypasses Native receipt checks; no kernel or RF proof.
+use super::*;
+use slk_contract::ssap::{MethodProviderReply, MethodProviderRequest};
+struct Invocation {
+    request: MethodProviderRequest,
+    reply: oneshot::Sender<MethodProviderReply>,
+}
+struct Provider(mpsc::Sender<Invocation>);
+#[zbus::interface(name = "org.sparklink.SsapMethodProvider")]
+impl Provider {
+    async fn call_method(
+        &self,
+        request: MethodProviderRequest,
+    ) -> zbus::fdo::Result<MethodProviderReply> {
+        let (reply, result) = oneshot::channel();
+        self.0
+            .try_send(Invocation { request, reply })
+            .map_err(|_| zbus::fdo::Error::LimitsExceeded("fixture queue".into()))?;
+        result
+            .await
+            .map_err(|_| zbus::fdo::Error::Failed("fixture released".into()))
+    }
+}
+async fn manager(owner: &Connection) -> zbus::Proxy<'_> {
+    zbus::Proxy::new(
+        owner,
+        "org.sparklink.AuthTest",
+        "/services",
+        "org.sparklink.ServiceManager",
+    )
+    .await
+    .unwrap()
+}
+async fn register_method(owner: &Connection, access: u32) -> (u16, u16) {
+    let (start, _, handles): slk_contract::ssap::local::Registration = manager(owner)
+        .await
+        .call(
+            "RegisterOwnedLocalService",
+            &(
+                vec![1u8, 0],
+                Vec::<slk_contract::ssap::local::PropertyDefinition>::new(),
+                vec![(vec![3u8, 0], access)],
+                OwnedObjectPath::try_from("/authorizer").unwrap(),
+                owned_deadline(),
+            ),
+        )
+        .await
+        .unwrap();
+    assert_eq!(handles.len(), 1);
+    (start, handles[0])
+}
+async fn bind(owner: &Connection, h: u16) -> zbus::Result<()> {
+    manager(owner)
+        .await
+        .call(
+            "BindOwnedMethodProvider",
+            &(
+                h,
+                OwnedObjectPath::try_from("/method").unwrap(),
+                owned_deadline(),
+            ),
+        )
+        .await
+}
+fn wire() -> Wire {
+    let (socket, _peer) = std::os::unix::net::UnixDatagram::pair().unwrap();
+    socket.set_nonblocking(true).unwrap();
+    Wire::fixture(AsyncFd::new(socket.into()).unwrap())
+}
+fn request(h: u16, command: bool, id: u64) -> ServerPacket {
+    packet(
+        if command {
+            ValuePdu::CallMethodCommand {
+                handle: h,
+                arguments: &[0x93, 0x17],
+            }
+        } else {
+            ValuePdu::CallMethod {
+                handle: h,
+                arguments: &[0x93, 0x17],
+            }
+        },
+        id,
+        0,
+        Duration::from_secs(2),
+    )
+}
+fn finish(wire: &Wire, d: ServerDecision, db: &Store) -> io::Result<Option<Pending>> {
+    complete_server(
+        wire,
+        d,
+        db,
+        &mut crate::ssap_engine_config::ClientConfigurations::default(),
+    )
+}
+async fn next(calls: &mut mpsc::Receiver<Invocation>) -> Invocation {
+    tokio::time::timeout(Duration::from_secs(1), calls.recv())
+        .await
+        .unwrap()
+        .unwrap()
+}
+
+#[tokio::test]
+async fn method_real_callback_has_distinct_policy_target_and_independent_result() {
+    let (_bus, state, _server, owner, mut policy) = setup(true, Duration::ZERO).await;
+    let (tx, mut calls) = mpsc::channel(4);
+    owner
+        .object_server()
+        .at("/method", Provider(tx))
+        .await
+        .unwrap();
+    let (_, h) = register_method(&owner, 4).await;
+    bind(&owner, h).await.unwrap();
+    let db = store(&state).await;
+    let wire = wire();
+    for (id, command, reply) in [
+        (1, false, (0, vec![0x55, 0x66, 0x77])),
+        (2, true, (0, vec![])),
+        (3, true, (0xb1, vec![])),
+    ] {
+        let packet = request(h, command, id);
+        let original = packet.constraint.unwrap();
+        let task = tokio::spawn(resolve_server(packet, db.clone(), wire.clone()));
+        let call = next(&mut calls).await;
+        let prompt = policy.recv().await.unwrap();
+        assert_eq!((prompt.2, prompt.3, prompt.6), (h, true, 3));
+        assert_eq!(prompt.5, [0x93, 0x17]);
+        assert_eq!(call.request.request_id, id);
+        assert_eq!(call.request.method, h);
+        assert_eq!(call.request.identity, (0, 7, 13, 1, 41, 0, 10, 10, 0));
+        assert_eq!(call.request.deadline_ns, original.deadline_monotonic_ns);
+        assert_eq!(call.request.arguments, [0x93, 0x17]);
+        assert_eq!(call.request.operation, if command { 18 } else { 19 });
+        assert_eq!(
+            call.request.maximum_result_bytes,
+            if command { 0 } else { 247 }
+        );
+        assert!(
+            !task.is_finished(),
+            "policy approval is not method completion"
+        );
+        call.reply.send(reply).unwrap();
+        let result = finish(&wire, task.await.unwrap(), &db).unwrap();
+        if command {
+            assert!(result.is_none());
+        } else {
+            assert_eq!(result.unwrap().bytes, [20, 3, 0x55, 0x66, 0x77]);
+        }
+        assert!(
+            db.lock().unwrap().local_read(h).is_err(),
+            "method is not a stored property"
+        );
+    }
+}
+
+#[tokio::test]
+async fn method_errors_binding_ownership_and_reply_bounds_fail_closed() {
+    let (bus, state, _server, owner, _policy) = setup(false, Duration::ZERO).await;
+    let (tx, mut calls) = mpsc::channel(4);
+    owner
+        .object_server()
+        .at("/method", Provider(tx))
+        .await
+        .unwrap();
+    let (start, h) = register_method(&owner, 4).await;
+    bind(&owner, h).await.unwrap();
+    let other = client(&bus).await;
+    assert!(bind(&other, h).await.is_err());
+    assert!(bind(&owner, h).await.is_err());
+    let db = store(&state).await;
+    let wire = wire();
+    for (handle, error) in [(h, 9), (start, 12), (u16::MAX, 4)] {
+        let d = resolve_server(request(handle, false, 1), db.clone(), wire.clone()).await;
+        assert_eq!(
+            finish(&wire, d, &db).unwrap().unwrap().bytes,
+            [1, 0, 19, handle as u8, (handle >> 8) as u8, error]
+        );
+        assert!(calls.try_recv().is_err());
+    }
+    let (_, public) = register_method(&owner, 0).await;
+    let d = resolve_server(request(public, false, 1), db.clone(), wire.clone()).await;
+    assert_eq!(finish(&wire, d, &db).unwrap().unwrap().bytes[5], 0xaf);
+    bind(&owner, public).await.unwrap();
+    for (reply, expected) in [
+        ((0, vec![1; 248]), 0xaf),
+        ((1, vec![]), 0xaf),
+        ((0xb0, vec![1]), 0xaf),
+        ((0xb1, vec![]), 0xb1),
+    ] {
+        let task = tokio::spawn(resolve_server(
+            request(public, false, 2),
+            db.clone(),
+            wire.clone(),
+        ));
+        next(&mut calls).await.reply.send(reply).unwrap();
+        assert_eq!(
+            finish(&wire, task.await.unwrap(), &db)
+                .unwrap()
+                .unwrap()
+                .bytes,
+            [1, 0, 19, public as u8, (public >> 8) as u8, expected]
+        );
+    }
+    let (_, protected) = register_method(&owner, 2).await;
+    bind(&owner, protected).await.unwrap();
+    let d = resolve_server(request(protected, false, 3), db.clone(), wire.clone()).await;
+    assert_eq!(finish(&wire, d, &db).unwrap().unwrap().bytes[5], 8);
+    assert!(calls.try_recv().is_err());
+}
+
+#[tokio::test]
+async fn method_pending_withdrawal_and_expiry_cannot_revive_result_or_other_service() {
+    let (_bus, state, _server, owner, _policy) = setup(true, Duration::ZERO).await;
+    let (tx, mut calls) = mpsc::channel(4);
+    owner
+        .object_server()
+        .at("/method", Provider(tx))
+        .await
+        .unwrap();
+    let (start, h) = register_method(&owner, 0).await;
+    bind(&owner, h).await.unwrap();
+    let (_, guard) = register(&owner, 0).await;
+    let db = store(&state).await;
+    let wire = wire();
+    let task = tokio::spawn(resolve_server(
+        request(h, false, 1),
+        db.clone(),
+        wire.clone(),
+    ));
+    let call = next(&mut calls).await;
+    manager(&owner)
+        .await
+        .call::<_, _, ()>("UnregisterOwnedLocalService", &(start, owned_deadline()))
+        .await
+        .unwrap();
+    let d = tokio::time::timeout(Duration::from_secs(1), task)
+        .await
+        .unwrap()
+        .unwrap();
+    let _ = call.reply.send((0, vec![9]));
+    assert_eq!(
+        finish(&wire, d, &db).unwrap().unwrap().bytes,
+        [1, 0, 19, h as u8, (h >> 8) as u8, 4]
+    );
+    assert_eq!(db.lock().unwrap().local_read(guard).unwrap(), [7]);
+    let (_, h2) = register_method(&owner, 0).await;
+    assert!(h2 > h);
+    bind(&owner, h2).await.unwrap();
+    let mut p = request(h2, false, 2);
+    p.deadline = Instant::now() + Duration::from_millis(80);
+    p.constraint.as_mut().unwrap().deadline_monotonic_ns = monotonic_deadline(p.deadline).unwrap();
+    let task = tokio::spawn(resolve_server(p, db.clone(), wire.clone()));
+    let call = next(&mut calls).await;
+    let d = tokio::time::timeout(Duration::from_secs(1), task)
+        .await
+        .unwrap()
+        .unwrap();
+    let _ = call.reply.send((0, vec![8]));
+    assert_eq!(
+        finish(&wire, d, &db).err().unwrap().kind(),
+        io::ErrorKind::TimedOut
+    );
+    assert_eq!(db.lock().unwrap().local_read(guard).unwrap(), [7]);
+}
+
+#[tokio::test]
+async fn owned_method_discovery_and_shared_registration_budget() {
+    use slk_protocol::ssap::discovery::{EntryClass, FindKind, FindRequest, decode_page};
+    let (_bus, state, _server, owner, _policy) = setup(true, Duration::ZERO).await;
+    let (start, h) = register_method(&owner, 0).await;
+    let db = store(&state).await;
+    let req = FindRequest {
+        kind: FindKind::Primary,
+        class: EntryClass::Mixed,
+        start,
+        end: h,
+        uuid: None,
+    };
+    let bytes = db.lock().unwrap().find(req, 249).unwrap();
+    let page = decode_page(req, 249, &bytes).unwrap();
+    assert_eq!(page[0].members, 4);
+    let req = FindRequest {
+        kind: FindKind::Methods,
+        ..req
+    };
+    let bytes = db.lock().unwrap().find(req, 249).unwrap();
+    let page = decode_page(req, 249, &bytes).unwrap();
+    assert_eq!(page[0].handle, h);
+    assert_eq!(page[0].category, 3);
+    let too_many = vec![(vec![3u8, 0], 0u32); 64];
+    let result = manager(&owner)
+        .await
+        .call::<_, _, slk_contract::ssap::local::Registration>(
+            "RegisterOwnedLocalService",
+            &(
+                vec![1u8, 0],
+                vec![(vec![2u8, 0], 1u32, 0u32, Vec::<u8>::new())],
+                too_many,
+                OwnedObjectPath::try_from("/authorizer").unwrap(),
+                owned_deadline(),
+            ),
+        )
+        .await;
+    assert!(result.is_err());
+    assert_eq!(db.lock().unwrap().list().len(), 1);
+}
+
+#[tokio::test]
+async fn method_bus_signature_and_owner_exit_do_not_revive_other_registration() {
+    let (bus, state, _server, owner, _policy) = setup(true, Duration::ZERO).await;
+    let (tx, mut calls) = mpsc::channel(4);
+    owner
+        .object_server()
+        .at("/method", Provider(tx))
+        .await
+        .unwrap();
+    let peer = client(&bus).await;
+    let proxy = zbus::Proxy::new(
+        &peer,
+        owner.unique_name().unwrap().as_str(),
+        "/method",
+        "org.sparklink.SsapMethodProvider",
+    )
+    .await
+    .unwrap();
+    let xml = proxy.introspect().await.unwrap();
+    let method = xml
+        .split_once("<method name=\"CallMethod\">")
+        .unwrap()
+        .1
+        .split_once("</method>")
+        .unwrap()
+        .0;
+    let input: Vec<_> = method
+        .lines()
+        .filter(|s| s.contains("direction=\"in\""))
+        .map(|s| {
+            s.split_once("type=\"")
+                .unwrap()
+                .1
+                .split_once('"')
+                .unwrap()
+                .0
+        })
+        .collect();
+    assert_eq!(input, ["(t(qttqtuyyy)qtyayq)"]);
+    let (_, h) = register_method(&owner, 0).await;
+    bind(&owner, h).await.unwrap();
+    let (_, guard) = register(&peer, 0).await;
+    let db = store(&state).await;
+    let wire = wire();
+    let task = tokio::spawn(resolve_server(
+        request(h, false, 1),
+        db.clone(),
+        wire.clone(),
+    ));
+    let call = next(&mut calls).await;
+    drop(proxy);
+    owner.close().await.unwrap();
+    let d = tokio::time::timeout(Duration::from_secs(1), task)
+        .await
+        .unwrap()
+        .unwrap();
+    let _ = call.reply.send((0, vec![7]));
+    assert_eq!(
+        finish(&wire, d, &db).unwrap().unwrap().bytes,
+        [1, 0, 19, h as u8, (h >> 8) as u8, 4]
+    );
+    assert_eq!(db.lock().unwrap().local_read(guard).unwrap(), [7]);
+    let (_, new_handle) = register_method(&peer, 0).await;
+    assert!(new_handle > h);
+    let d = resolve_server(request(h, false, 2), db.clone(), wire.clone()).await;
+    assert_eq!(
+        finish(&wire, d, &db).unwrap().unwrap().bytes,
+        [1, 0, 19, h as u8, (h >> 8) as u8, 4]
+    );
+}
+
+/// Real private-bus Provider + production response/fragment/client functions.
+/// The negotiated budget and receipt identity are explicit fixtures; this does
+/// not exercise the actor scheduler, Native authorization, credit or RF.
+#[tokio::test]
+async fn method_long_results_cross_production_encoding_and_reassembly_without_truncation() {
+    let (_bus, state, _server, owner, _policy) = setup(true, Duration::ZERO).await;
+    let (tx, mut calls) = mpsc::channel(1);
+    owner
+        .object_server()
+        .at("/method", Provider(tx))
+        .await
+        .unwrap();
+    let (_, h) = register_method(&owner, 0).await;
+    bind(&owner, h).await.unwrap();
+    let db = store(&state).await;
+    let wire = wire();
+    for (id, size) in [0usize, 247, 248, 249, 250, 251, 252, 253, 254, 255, 2045]
+        .into_iter()
+        .enumerate()
+    {
+        let mut packet = request(h, false, id as u64 + 1);
+        packet.mtu = 2047; // Negotiated sequence support, not a physical MTU.
+        let deadline = packet.deadline;
+        let constraint = packet.constraint;
+        let request_bytes = packet.bytes.clone();
+        let task = tokio::spawn(resolve_server(packet, db.clone(), wire.clone()));
+        let call = next(&mut calls).await;
+        assert_eq!(call.request.maximum_result_bytes, 2045);
+        assert_eq!(
+            call.request.deadline_ns,
+            constraint.unwrap().deadline_monotonic_ns
+        );
+        // Deterministic nonuniform independent result, including zero bytes.
+        let value: Vec<u8> = (0..size).map(|n| (n.wrapping_mul(73) + id) as u8).collect();
+        call.reply.send((0, value.clone())).unwrap();
+        let pending = finish(&wire, task.await.unwrap(), &db).unwrap().unwrap();
+        assert_eq!(pending.deadline, deadline);
+        assert_eq!(pending.constraint, constraint);
+        assert_eq!(pending.sent, 0);
+        let expected: Vec<_> = [20, 3].into_iter().chain(value.iter().copied()).collect();
+        assert_eq!(pending.bytes, expected);
+        let plan = fragments::Plan::new(&pending.bytes, 249, true).unwrap();
+        assert_eq!(
+            plan.count(),
+            if size <= 247 { 1 } else { size.div_ceil(245) }
+        );
+        let mut assembly = fragments::Reassembly::<u64, Instant>::default();
+        let mut complete = None;
+        for index in 0..plan.count() {
+            let mut encoded = [0u8; 249];
+            let len = plan.encode(index, &mut encoded).unwrap();
+            if size <= 247 {
+                assert_eq!(&encoded[..len], expected);
+                complete = Some(encoded[..len].to_vec());
+            } else {
+                // Independent literal opcode/header and slicing oracle: do
+                // not accept a mutually compatible encoder/decoder mistake.
+                let last = index + 1 == plan.count();
+                assert_eq!(
+                    &encoded[..4],
+                    &[
+                        0x94,
+                        if index == 0 {
+                            0
+                        } else if last {
+                            2
+                        } else {
+                            1
+                        },
+                        if index == 0 || last {
+                            plan.count() as u8
+                        } else {
+                            index as u8
+                        },
+                        0
+                    ]
+                );
+                assert_eq!(
+                    &encoded[4..len],
+                    &value[index * 245..((index + 1) * 245).min(size)]
+                );
+                let decoded = assembly
+                    .receive(&encoded[..len], 249, true, 13, Instant::now(), deadline)
+                    .unwrap();
+                assert_eq!(decoded.is_some(), last);
+                if let Some(decoded) = decoded {
+                    assert_eq!(decoded.context, 13);
+                    assert_eq!(decoded.deadline, deadline);
+                    complete = Some(decoded.bytes);
+                }
+            }
+        }
+        let complete = complete.unwrap();
+        assert_eq!(complete, expected);
+        assert_eq!(
+            client_value_response(2047, &request_bytes, &complete)
+                .unwrap()
+                .unwrap(),
+            value
+        );
+        if size > 247 {
+            assert!(matches!(
+                fragments::Plan::new(&pending.bytes, 249, false),
+                Err(fragments::Error::Unsupported)
+            ));
+        }
+    }
+}
+
+#[tokio::test]
+async fn method_long_provider_overflow_refuses_whole_result_and_next_request_recovers() {
+    let (_bus, state, _server, owner, _policy) = setup(true, Duration::ZERO).await;
+    let (tx, mut calls) = mpsc::channel(1);
+    owner
+        .object_server()
+        .at("/method", Provider(tx))
+        .await
+        .unwrap();
+    let (_, h) = register_method(&owner, 0).await;
+    bind(&owner, h).await.unwrap();
+    let db = store(&state).await;
+    let wire = wire();
+    for (id, size) in [(1, 2046usize), (2, 2045)] {
+        let mut packet = request(h, false, id);
+        packet.mtu = 2047;
+        let task = tokio::spawn(resolve_server(packet, db.clone(), wire.clone()));
+        let call = next(&mut calls).await;
+        assert_eq!(call.request.maximum_result_bytes, 2045);
+        call.reply.send((0, vec![0x6a; size])).unwrap();
+        let bytes = finish(&wire, task.await.unwrap(), &db)
+            .unwrap()
+            .unwrap()
+            .bytes;
+        if id == 1 {
+            assert_eq!(bytes, [1, 0, 19, h as u8, (h >> 8) as u8, 0xaf]);
+        } else {
+            assert_eq!(bytes.len(), 2047);
+            assert_eq!(&bytes[..2], [20, 3]);
+            assert!(bytes[2..].iter().all(|b| *b == 0x6a));
+        }
+    }
+}
+
+#[tokio::test]
+async fn method_long_withdrawal_preserves_only_encoded_snapshot_and_original_deadline() {
+    let (_bus, state, _server, owner, _policy) = setup(true, Duration::ZERO).await;
+    let (tx, mut calls) = mpsc::channel(1);
+    owner
+        .object_server()
+        .at("/method", Provider(tx))
+        .await
+        .unwrap();
+    let (start, h) = register_method(&owner, 0).await;
+    bind(&owner, h).await.unwrap();
+    let (_, guard) = register(&owner, 0).await;
+    let db = store(&state).await;
+    let wire = wire();
+    let mut decisions = Vec::new();
+    for id in 1..=3 {
+        let mut packet = request(h, false, id);
+        packet.mtu = 2047;
+        let task = tokio::spawn(resolve_server(packet, db.clone(), wire.clone()));
+        next(&mut calls)
+            .await
+            .reply
+            .send((0, vec![0x5a; 2045]))
+            .unwrap();
+        decisions.push(task.await.unwrap());
+    }
+    let encoded = finish(&wire, decisions.remove(0), &db).unwrap().unwrap();
+    manager(&owner)
+        .await
+        .call::<_, _, ()>("UnregisterOwnedLocalService", &(start, owned_deadline()))
+        .await
+        .unwrap();
+    assert_eq!(
+        finish(&wire, decisions.remove(0), &db)
+            .unwrap()
+            .unwrap()
+            .bytes,
+        [1, 0, 19, h as u8, (h >> 8) as u8, 4]
+    );
+    assert_eq!(
+        encoded.bytes.len(),
+        2047,
+        "already encoded bytes are immutable, not retracted"
+    );
+    assert!(encoded.bytes[2..].iter().all(|b| *b == 0x5a));
+    let mut expired = decisions.remove(0);
+    // Explicit expired-clock boundary fixture; no sleep or renewed deadline.
+    expired.packet.deadline = Instant::now();
+    assert_eq!(
+        finish(&wire, expired, &db).err().unwrap().kind(),
+        io::ErrorKind::TimedOut
+    );
+    assert_eq!(db.lock().unwrap().local_read(guard).unwrap(), [7]);
+}
+
+#[tokio::test]
+async fn method_arguments_cross_actual_codec_reassembly_and_provider_without_truncation() {
+    let (_bus, state, _server, owner, _policy) = setup(true, Duration::ZERO).await;
+    let (tx, mut calls) = mpsc::channel(1);
+    owner
+        .object_server()
+        .at("/method", Provider(tx))
+        .await
+        .unwrap();
+    let (_, h) = register_method(&owner, 0).await;
+    bind(&owner, h).await.unwrap();
+    let db = store(&state).await;
+    let wire = wire();
+    let mut id = 0u64;
+    for command in [false, true] {
+        for mtu in [249u16, 2042] {
+            for size in [0usize, 245, 246, 249, 250, 253, 254, 255, 2038, 2039, 2043] {
+                id += 1;
+                let arguments: Vec<u8> = (0..size)
+                    .map(|n| (n.wrapping_mul(137) + id as usize) as u8)
+                    .collect();
+                let value_request = if command {
+                    ValuePdu::CallMethodCommand {
+                        handle: h,
+                        arguments: &arguments,
+                    }
+                } else {
+                    ValuePdu::CallMethod {
+                        handle: h,
+                        arguments: &arguments,
+                    }
+                };
+                let mut raw = vec![0xcc; 2047];
+                let n = value_request.encode(2047, &mut raw).unwrap();
+                raw.truncate(n);
+                let opcode = if command { 18 } else { 19 };
+                let expected: Vec<_> = [opcode, 3, h as u8, (h >> 8) as u8]
+                    .into_iter()
+                    .chain(arguments.iter().copied())
+                    .collect();
+                assert_eq!(raw, expected);
+                let mut packet = request(h, command, id);
+                packet.mtu = 2047; // Explicit negotiated/Native context fixture.
+                let deadline = packet.deadline;
+                let constraint = packet.constraint.unwrap();
+                let plan = fragments::Plan::new(&raw, mtu, true).unwrap();
+                let payload = usize::from(mtu) - 4;
+                let count = if raw.len() <= usize::from(mtu) {
+                    1
+                } else {
+                    (size + 2).div_ceil(payload)
+                };
+                assert_eq!(plan.count(), count);
+                let mut assembly = fragments::Reassembly::<u64, Instant>::default();
+                let mut complete = None;
+                for index in 0..count {
+                    let mut part = vec![0; usize::from(mtu)];
+                    let n = plan.encode(index, &mut part).unwrap();
+                    part.truncate(n);
+                    if count == 1 {
+                        assert_eq!(part, expected);
+                        complete = Some(part);
+                    } else {
+                        let last = index + 1 == count;
+                        assert_eq!(
+                            &part[..4],
+                            &[
+                                opcode | 0x80,
+                                if index == 0 {
+                                    0
+                                } else if last {
+                                    2
+                                } else {
+                                    1
+                                },
+                                if index == 0 || last {
+                                    count as u8
+                                } else {
+                                    index as u8
+                                },
+                                0
+                            ]
+                        );
+                        // Independent slice includes the method handle once,
+                        // as part of the logical payload, not every fragment.
+                        assert_eq!(
+                            &part[4..],
+                            &expected[2 + index * payload
+                                ..(2 + (index + 1) * payload).min(expected.len())]
+                        );
+                        let decoded = assembly
+                            .receive(&part, mtu, true, 13, Instant::now(), deadline)
+                            .unwrap();
+                        assert_eq!(decoded.is_some(), last);
+                        if let Some(decoded) = decoded {
+                            assert_eq!(decoded.context, 13);
+                            assert_eq!(decoded.deadline, deadline);
+                            complete = Some(decoded.bytes);
+                        }
+                    }
+                }
+                packet.bytes = complete.unwrap();
+                assert_eq!(packet.bytes, expected);
+                let task = tokio::spawn(resolve_server(packet, db.clone(), wire.clone()));
+                let call = next(&mut calls).await;
+                assert_eq!(call.request.arguments, arguments);
+                assert_eq!(call.request.method, h);
+                assert_eq!(call.request.operation, opcode);
+                assert_eq!(call.request.request_id, id);
+                assert_eq!(call.request.deadline_ns, constraint.deadline_monotonic_ns);
+                assert_eq!(call.request.identity, (0, 7, 13, 1, 41, 0, 10, 10, 0));
+                assert_eq!(
+                    call.request.maximum_result_bytes,
+                    if command { 0 } else { 2045 }
+                );
+                let independent = if command {
+                    vec![]
+                } else {
+                    vec![0x5a, id as u8, 0]
+                };
+                call.reply.send((0, independent.clone())).unwrap();
+                let pending = finish(&wire, task.await.unwrap(), &db).unwrap();
+                if command {
+                    assert!(pending.is_none(), "command must not manufacture a reply");
+                } else {
+                    let pending = pending.unwrap();
+                    assert_eq!(pending.deadline, deadline);
+                    assert_eq!(pending.constraint, Some(constraint));
+                    assert_eq!(
+                        client_value_response(2047, &expected, &pending.bytes)
+                            .unwrap()
+                            .unwrap(),
+                        independent
+                    );
+                }
+                if count > 1 {
+                    assert!(matches!(
+                        fragments::Plan::new(&raw, mtu, false),
+                        Err(fragments::Error::Unsupported)
+                    ));
+                }
+            }
+        }
+    }
+    // Over-limit producer input fails atomically, before Provider invocation.
+    for command in [false, true] {
+        let arguments = vec![0x6b; 2044];
+        let value_request = if command {
+            ValuePdu::CallMethodCommand {
+                handle: h,
+                arguments: &arguments,
+            }
+        } else {
+            ValuePdu::CallMethod {
+                handle: h,
+                arguments: &arguments,
+            }
+        };
+        let mut raw = [0xcc; 2048];
+        assert_eq!(
+            value_request.encode(2047, &mut raw),
+            Err(slk_protocol::ssap::value::ValueError::Mtu)
+        );
+        assert!(raw.iter().all(|b| *b == 0xcc));
+        assert!(calls.try_recv().is_err());
+    }
+}
+
+#[tokio::test]
+async fn negotiated_fixture_actors_cannot_invoke_provider_without_native_channel() {
+    // Actual actors, socket scheduling, fragmentation and private D-Bus owner.
+    // AF_UNIX has no Native channel identity/receipt. It must not acquire one
+    // merely because ExchangeInfo completed. This is a refusal integration,
+    // not a positive method, kernel credit or RF qualification.
+    let (_bus, state, _server, owner, mut policy) = setup(true, Duration::ZERO).await;
+    let (tx, mut calls) = mpsc::channel(4);
+    owner
+        .object_server()
+        .at("/method", Provider(tx))
+        .await
+        .unwrap();
+    let (_, h) = register_method(&owner, 4).await;
+    bind(&owner, h).await.unwrap();
+    let database = store(&state).await;
+    for opcode in [18, 19] {
+        for length in [2, 2043] {
+            let (a, b) = std::os::unix::net::UnixDatagram::pair().unwrap();
+            a.set_nonblocking(true).unwrap();
+            let injected_peer: OwnedFd = a.try_clone().unwrap().into();
+            b.set_nonblocking(true).unwrap();
+            let mut controls = Vec::new();
+            let mut tasks = Vec::new();
+            for (controller, socket) in [a, b].into_iter().enumerate() {
+                let (status, view) = watch::channel(Status::Starting);
+                let (stop, mut stopped) = oneshot::channel();
+                let (queries, incoming) = mpsc::channel(8);
+                let db = if controller == 1 {
+                    database.clone()
+                } else {
+                    std::sync::Arc::new(std::sync::Mutex::new(
+                        crate::ssap_database::Database::default(),
+                    ))
+                };
+                let wire = Wire::fixture(AsyncFd::new(socket.into()).unwrap());
+                let capabilities = SleChannelInfo {
+                    version: 1,
+                    size: 40,
+                    controller: controller as u16,
+                    generation: 1,
+                    lifetime: 1,
+                    mtu: 249,
+                    mps: 249,
+                    local_tcid: 10,
+                    remote_tcid: 10,
+                    directions: 3,
+                    ..Default::default()
+                };
+                tasks.push(tokio::spawn(async move {
+                    exchange_loop(
+                        wire,
+                        capabilities,
+                        Instant::now() + Duration::from_secs(1),
+                        &mut stopped,
+                        incoming,
+                        &status,
+                        db,
+                    )
+                    .await
+                }));
+                controls.push((stop, queries, view));
+            }
+            for (_, _, view) in &mut controls {
+                tokio::time::timeout(Duration::from_secs(1), async {
+                    loop {
+                        if let Status::Negotiated(info) = view.borrow().clone() {
+                            assert_eq!((info.4, info.5), (249, 249));
+                            break;
+                        }
+                        view.changed().await.unwrap();
+                    }
+                })
+                .await
+                .unwrap();
+            }
+            // The actor's real queue is exercised directly. Observer::info
+            // intentionally rejects this fixture's fd at its Native query;
+            // no fabricated successful ioctl is added to reach this boundary.
+            let mut bytes = vec![opcode, 3, h as u8, (h >> 8) as u8];
+            bytes.extend((0..length).map(|i| (i * 37 + 11) as u8));
+            let (reply, result) = oneshot::channel();
+            controls[0]
+                .1
+                .send(Query::Value {
+                    bytes: bytes.clone(),
+                    minimum: 0,
+                    deadline: Instant::now() + Duration::from_millis(500),
+                    reply,
+                })
+                .await
+                .unwrap();
+            let refused = tokio::time::timeout(Duration::from_secs(1), result)
+                .await
+                .unwrap()
+                .unwrap()
+                .unwrap_err();
+            assert!(refused.to_string().contains("SSAP send intent refused:"));
+            assert!(refused.to_string().contains("25"));
+            assert!(!tasks[0].is_finished() && !tasks[1].is_finished());
+            // Independently exercise the RX boundary with an explicit peer
+            // injection after local admission was refused. This is not a
+            // successful SDK send and supplies no Native security metadata.
+            let plan = fragments::Plan::new(&bytes, 249, true).unwrap();
+            for part in 0..plan.count() {
+                let mut raw = [0; 249];
+                let size = plan.encode(part, &mut raw).unwrap();
+                send(&injected_peer, &raw[..size]).unwrap();
+            }
+            let receiving = tasks.pop().unwrap();
+            let error = tokio::time::timeout(Duration::from_secs(1), receiving)
+                .await
+                .unwrap()
+                .unwrap()
+                .unwrap_err();
+            assert_eq!(
+                error.raw_os_error(),
+                Some(nix::libc::ENOTTY),
+                "the receiving actor must perform the actual Native query"
+            );
+            assert!(
+                matches!(calls.try_recv(), Err(mpsc::error::TryRecvError::Empty)),
+                "negotiation cannot authorize a provider effect"
+            );
+            assert!(
+                matches!(policy.try_recv(), Err(mpsc::error::TryRecvError::Empty)),
+                "policy approval cannot replace a missing Native channel"
+            );
+            let (_server_stop, _server_queries, _) = controls.pop().unwrap();
+            let (stop, _queries, _) = controls.pop().unwrap();
+            stop.send(()).unwrap();
+            tokio::time::timeout(Duration::from_secs(1), tasks.pop().unwrap())
+                .await
+                .unwrap()
+                .unwrap()
+                .unwrap();
+        }
+    }
+}

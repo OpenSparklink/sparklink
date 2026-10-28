@@ -47,8 +47,8 @@ def fixture(phase=0):
         approval=dict(token=1,wall_ns=wall(2.1),monotonic_ns=int(2.1*N)))
     fields=['1','7',str(t),str(t+11),'9',str(t+1),'4','0','19','true','32',str(int(6.2*N)),'1','1']
     i['prompt_events']=[dict(fields=fields,wall_ns=wall(1.2),monotonic_ns=int(1.2*N))]
-    i['stdout']+=f"SsapAuthorizationPrompt: token=1 request=7 index={t} generation={t+11} lifetime=9 handle={t+1} epoch=4 security=0 property=19 write=true bytes=32 deadline_ns={int(6.2*N)}; answer 'yes 1' or 'no 1'\n"
-    i['stdout']+='SsapAuthorizationDecision: request=7 property=19 write=true security=0 approved=true; local policy only\n'
+    i['stdout']+=f"SsapAuthorizationPrompt: token=1 request=7 index={t} generation={t+11} lifetime=9 handle={t+1} epoch=4 security=0 property=19 data_type=0 write=true bytes=32 deadline_ns={int(6.2*N)}; answer 'yes 1' or 'no 1'\n"
+    i['stdout']+='SsapAuthorizationDecision: request=7 property=19 data_type=0 write=true security=0 approved=true; local policy only\n'
     args=['/bin/slctl','--adapter',owners[s]['owner']['path'],'ssap-read',owners[s]['object']['path'],'17','0']
     i['busy_read']=dict(args=args,exit=1,stdout='',stderr='SSAP busy/not-ready/expired',**command(1.4,1.5))
     i['next_read_attempts']=[dict(args=args,exit=0,stderr='',stdout=f'Selected {owners[s]["owner"]["path"]}\nSsapPeerValue: operation=ssap-read path={owners[s]["object"]["path"]} handle=17 value={g["secret"]}\n',**command(2.2,2.4))]

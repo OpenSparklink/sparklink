@@ -1,17 +1,32 @@
 //! Actual cdylib/header and Python public entry against a real private bus.
-//! Fixture replies are explicit denials/AF_UNIX fds, never a successful channel.
+//! Finite metadata, explicit denials/AF_UNIX fds and actual SDK callbacks; no
+//! successful Native channel, daemon SSAP Engine, wire or hardware qualification.
 #[path = "application_ffi/authorization.rs"]
 mod authorization;
+#[path = "application_ffi/discovery_requester.rs"]
+mod discovery_requester;
+#[path = "application_ffi/method_provider.rs"]
+mod method_provider;
+#[path = "application_ffi/method_requester.rs"]
+mod method_requester;
+#[path = "application_ffi/pending_owner.rs"]
+mod pending_owner;
+#[path = "application_ffi/read_provider.rs"]
+mod read_provider;
+#[path = "application_ffi/subscription.rs"]
+mod subscription;
 mod support;
 #[path = "application_ffi/value_update.rs"]
 mod value_update;
+#[path = "application_ffi/write_provider.rs"]
+mod write_provider;
 use std::{
     io::{BufRead, Read, Write},
     path::PathBuf,
     process::{Command, Stdio},
     sync::{
         Arc, Mutex,
-        atomic::{AtomicU64, AtomicUsize, Ordering},
+        atomic::{AtomicBool, AtomicU64, AtomicUsize, Ordering},
     },
 };
 const BASE: &str = "/org/sparklink/slk2_g7";
@@ -107,9 +122,99 @@ impl Adapter {
         7
     }
 }
-struct Link(Arc<AtomicUsize>, Arc<AtomicUsize>, Arc<AtomicU64>);
+type CommandCall = (u16, u32, Vec<u8>, slk_contract::Deadline);
+struct Link(
+    Arc<AtomicUsize>,
+    Arc<AtomicUsize>,
+    Arc<AtomicU64>,
+    Arc<subscription::Metadata>,
+    Arc<Mutex<Vec<CommandCall>>>,
+    Arc<AtomicUsize>,
+    Arc<AtomicUsize>,
+    Arc<Mutex<Vec<CommandCall>>>,
+    Arc<AtomicUsize>,
+);
 #[zbus::interface(name = "org.sparklink.Connection")]
 impl Link {
+    fn discover_ssap(
+        &self,
+        uuid: Vec<u8>,
+        kind: u8,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<slk_contract::ssap::Discovery> {
+        let d = slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        assert!(d.remaining().unwrap() <= std::time::Duration::from_secs(5));
+        self.8.fetch_add(1, Ordering::SeqCst);
+        if kind != 4 || !matches!(uuid.as_slice(), [1, 2] | [3, 4] | [5, 6] | [7, 8]) {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "finite discovery fixture".into(),
+            ));
+        }
+        if uuid == [5, 6] {
+            return Err(zbus::fdo::Error::NotSupported("fixture refusal".into()));
+        }
+        if uuid == [7, 8] {
+            return Err(zbus::fdo::Error::Timeout("fixture timeout".into()));
+        }
+        let descriptors = if uuid == [3, 4] {
+            vec![0; 256]
+        } else {
+            vec![0x80]
+        };
+        Ok((
+            vec![(3, 17, 17, vec![1, 2], 0, descriptors, 0)],
+            vec![(
+                vec![6, 20, 1, 0, 255, 255, 1, 2],
+                vec![7, 11, 1, 17, 0, 1, 2, 0, 0, 0, 0, 1, 0x80],
+            )],
+        ))
+    }
+
+    fn subscribe_ssap_updates(
+        &self,
+        handles: Vec<u16>,
+        modes: u8,
+        duration_ms: u32,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<slk_contract::ssap::subscription::Info> {
+        self.3.subscribe(
+            handles,
+            modes,
+            duration_ms,
+            deadline,
+            h.sender().unwrap().to_string(),
+            self.2.load(Ordering::SeqCst),
+        )
+    }
+    fn read_ssap_updates(
+        &self,
+        token: u64,
+        _wait: bool,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<slk_contract::ssap::subscription::Batch> {
+        self.3.read(token, deadline, h.sender().unwrap().as_str())
+    }
+    fn renew_ssap_subscription(
+        &self,
+        token: u64,
+        duration_ms: u32,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<slk_contract::ssap::subscription::Info> {
+        self.3
+            .renew(token, duration_ms, deadline, h.sender().unwrap().as_str())
+    }
+    fn close_ssap_subscription(
+        &self,
+        token: u64,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<slk_contract::ssap::subscription::Batch> {
+        self.3.close(token, deadline, h.sender().unwrap().as_str())
+    }
     fn get_info(&self) -> slk_contract::ConnectionInfo {
         (
             7,
@@ -170,6 +275,62 @@ impl Link {
             )),
         }
     }
+    fn read_ssap_description(
+        &self,
+        handle: u16,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        self.5.fetch_add(1, Ordering::SeqCst);
+        match (handle, minimum) {
+            (17, 0 | 2) => Ok("描述".as_bytes().to_vec()),
+            _ => Err(zbus::fdo::Error::NotSupported(
+                "finite description fixture".into(),
+            )),
+        }
+    }
+
+    fn call_ssap_method(
+        &self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        libsparklink::Deadline::from_stamp(slk_contract::deadline_stamp(original)).unwrap();
+        self.6.fetch_add(1, Ordering::SeqCst);
+        // Actual VM consumers use public minimum=0; finite private-bus cases,
+        // not a peer Engine or evidence of successful radio delivery.
+        match (handle, minimum) {
+            (64, 0) if arguments == [0x56, 0x12] => return Ok(vec![0x90, 0x78, 0x34]),
+            (65, 0) if arguments.is_empty() => return Ok(vec![]),
+            (66, 0) if arguments == vec![0x31; 2043] => return Ok(vec![0xa6; 2045]),
+            (68, 0) => return Err(zbus::fdo::Error::Timeout("finite immediate error".into())),
+            _ => {}
+        }
+        if (handle, minimum, arguments) != (17, 1, vec![0x56, 0x12]) {
+            return Err(zbus::fdo::Error::NotSupported(
+                "finite method fixture".into(),
+            ));
+        }
+        Ok(vec![0x90, 0x78, 0x34])
+    }
+    fn call_ssap_method_command(
+        &self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<()> {
+        self.7
+            .lock()
+            .unwrap()
+            .push((handle, minimum, arguments.clone(), original));
+        self.call_ssap_method(handle, arguments, minimum, original)
+            .map(|_| ())
+    }
     fn write_ssap_value(
         &self,
         handle: u16,
@@ -191,18 +352,56 @@ impl Link {
             )),
         }
     }
+    fn write_ssap_command(
+        &self,
+        handle: u16,
+        value: Vec<u8>,
+        minimum: u32,
+        deadline: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<()> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .unwrap();
+        self.1.fetch_add(1, Ordering::SeqCst);
+        self.4
+            .lock()
+            .unwrap()
+            .push((handle, minimum, value.clone(), deadline));
+        match (handle, minimum, value.as_slice()) {
+            (17, 1, [0x56, 0x12]) | (17, 0, []) => Ok(()),
+            (17, 0, bytes) if bytes.len() == 2042 && bytes.iter().all(|v| *v == 0xa5) => Ok(()),
+            // An explicit finite daemon fixture, not a negotiated MTU or RF result.
+            (17, 0, bytes) if bytes.len() == 2043 => Err(zbus::fdo::Error::InvalidArgs(
+                "fixture-only 2043 command rejection; not negotiated MTU or hardware".into(),
+            )),
+            (21, 0, bytes) if bytes.len() == 2043 => Err(zbus::fdo::Error::Timeout(
+                "wrong-error negative control for command rejection helper".into(),
+            )),
+            (22, 0, bytes) if bytes.len() == 2043 => Ok(()), // Unexpected-success negative control.
+            (21, 0, [0x56, 0x12]) => Err(zbus::fdo::Error::Timeout(
+                "explicit immediate command error fixture; not elapsed deadline".into(),
+            )),
+            _ => Err(zbus::fdo::Error::InvalidArgs(
+                "unmatched command fixture".into(),
+            )),
+        }
+    }
 }
 
 // Finite metadata and callback sender fixture,not a DB,wire or Native Engine.
 #[derive(Default)]
 struct OwnedMetadata {
+    method_entry: AtomicBool,
     owner: Mutex<String>,
     authorizer: Mutex<String>,
+    provider: Mutex<String>,
+    provider_binds: AtomicUsize,
+    operations: AtomicUsize,
     registered: AtomicUsize,
     read: AtomicUsize,
     removed: AtomicUsize,
     value: Mutex<Vec<u8>>,
     replacements: AtomicUsize,
+    descriptions: Mutex<Vec<(u16, String, slk_contract::Deadline)>>,
 }
 struct OwnedServices(Arc<OwnedMetadata>);
 #[zbus::interface(name = "org.sparklink.ServiceManager")]
@@ -211,15 +410,28 @@ impl OwnedServices {
         &self,
         uuid: Vec<u8>,
         properties: Vec<slk_contract::ssap::local::PropertyDefinition>,
+        methods: Vec<slk_contract::ssap::local::MethodDefinition>,
         authorizer: zbus::zvariant::OwnedObjectPath,
         stamp: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> (u16, u16, Vec<u16>) {
         slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(stamp)).unwrap();
+        self.0.method_entry.store(uuid == [4, 0], Ordering::SeqCst);
+        if uuid == [4, 0] {
+            assert!(properties.is_empty());
+            assert_eq!(methods, [(vec![3, 0], 4)]);
+            assert_eq!(authorizer.as_str(), "/org/sparklink/sdk/ssap_authorizer");
+            *self.0.authorizer.lock().unwrap() = authorizer.to_string();
+            *self.0.owner.lock().unwrap() = h.sender().unwrap().to_string();
+            self.0.provider.lock().unwrap().clear();
+            self.0.registered.fetch_add(1, Ordering::SeqCst);
+            return (16, 17, vec![17]);
+        }
+        assert!(methods.is_empty());
         assert_eq!(uuid, [1, 0]);
         let access = properties[0].2;
         assert!(matches!(access, 0 | 36));
-        assert!(matches!(properties[0].1, 1 | 5));
+        assert!(matches!(properties[0].1, 1 | 5 | 6));
         assert_eq!(
             properties,
             [(vec![2, 0], properties[0].1, access, vec![7, 8, 9])]
@@ -234,9 +446,67 @@ impl OwnedServices {
             }
         );
         *self.0.authorizer.lock().unwrap() = authorizer.to_string();
+        self.0.provider.lock().unwrap().clear();
+        self.0
+            .operations
+            .store(properties[0].1 as usize, Ordering::SeqCst);
         *self.0.owner.lock().unwrap() = h.sender().unwrap().to_string();
         self.0.registered.fetch_add(1, Ordering::SeqCst);
         (16, 17, vec![17])
+    }
+    fn bind_owned_method_provider(
+        &self,
+        handle: u16,
+        provider: zbus::zvariant::OwnedObjectPath,
+        original: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        assert!(self.0.method_entry.load(Ordering::SeqCst));
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        assert_eq!(handle, 17);
+        assert_eq!(provider.as_str(), "/org/sparklink/sdk/ssap_read_provider");
+        let mut current = self.0.provider.lock().unwrap();
+        assert!(current.is_empty(), "one bind per original registration");
+        *current = provider.to_string();
+        self.0.provider_binds.fetch_add(1, Ordering::SeqCst);
+    }
+    fn bind_owned_read_provider(
+        &self,
+        handle: u16,
+        provider: zbus::zvariant::OwnedObjectPath,
+        original: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        assert_eq!(self.0.operations.load(Ordering::SeqCst), 1);
+        assert_eq!(handle, 17);
+        assert_eq!(provider.as_str(), "/org/sparklink/sdk/ssap_read_provider");
+        let mut current = self.0.provider.lock().unwrap();
+        assert!(current.is_empty(), "one bind per original registration");
+        *current = provider.to_string();
+        self.0.provider_binds.fetch_add(1, Ordering::SeqCst);
+    }
+    fn bind_owned_write_provider(
+        &self,
+        handle: u16,
+        provider: zbus::zvariant::OwnedObjectPath,
+        original: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        assert_eq!(self.0.operations.load(Ordering::SeqCst), 6);
+        assert_eq!(handle, 17);
+        assert_eq!(provider.as_str(), "/org/sparklink/sdk/ssap_read_provider");
+        let mut current = self.0.provider.lock().unwrap();
+        assert!(current.is_empty(), "one bind per original registration");
+        *current = provider.to_string();
+        self.0.provider_binds.fetch_add(1, Ordering::SeqCst);
     }
     fn read_owned_local_value(
         &self,
@@ -263,6 +533,24 @@ impl OwnedServices {
         assert!(value.len() <= 2042);
         *self.0.value.lock().unwrap() = value;
         self.0.replacements.fetch_add(1, Ordering::SeqCst);
+    }
+    fn set_owned_local_description(
+        &self,
+        handle: u16,
+        text: String,
+        original: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        assert_eq!(handle, 17);
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        assert!((1..=244).contains(&text.len()) && !text.contains('\0'));
+        self.0
+            .descriptions
+            .lock()
+            .unwrap()
+            .push((handle, text, original));
     }
     fn unregister_owned_local_service(
         &self,
@@ -366,6 +654,21 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         "actual SDK consumer compile: {}",
         String::from_utf8_lossy(&compiled.stderr)
     );
+    let method_probe = directory.join("method-provider");
+    let compiled = Command::new(&compiler)
+        .args(["-std=c11", "-Wall", "-Wextra", "-Werror"])
+        .arg(root.join("crates/libsparklink/tests/fixtures/method_provider.c"))
+        .arg("-I")
+        .arg(root.join("crates/libsparklink/include"))
+        .arg(&library)
+        .arg("-o")
+        .arg(&method_probe)
+        .output()?;
+    anyhow::ensure!(
+        compiled.status.success(),
+        "method consumer compile: {}",
+        String::from_utf8_lossy(&compiled.stderr)
+    );
     // Explicit qualification retention keeps the actual executable and outputs;
     // recompiling a consumer later cannot reconstruct its execution identity.
     let identities = Command::new("sha256sum")
@@ -373,6 +676,16 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         .arg(&runtime_library)
         .arg(&c)
         .arg(&sdk_probe)
+        .arg(&method_probe)
+        .arg(root.join("crates/libsparklink/tests/fixtures/method_provider.c"))
+        .arg(root.join("crates/libsparklink/tests/fixtures/method_provider.py"))
+        .arg(root.join("crates/libsparklink/tests/application_ffi/method_provider.rs"))
+        .arg(root.join("crates/libsparklink/tests/application_ffi/method_requester.rs"))
+        .arg(root.join("crates/libsparklink/tests/application_ffi/discovery_requester.rs"))
+        .arg(root.join("crates/libsparklink/src/ffi_service_method_provider.rs"))
+        .arg(root.join("crates/libsparklink/tests/application_ffi/write_provider.rs"))
+        .arg(root.join("crates/libsparklink/src/ffi_service_write_provider.rs"))
+        .arg(root.join("crates/libsparklink/src/ssap/provider/request.rs"))
         .arg(root.join("crates/libsparklink/include/sparklink.h"))
         .arg(root.join("crates/libsparklink/tests/fixtures/application_client.c"))
         .arg(root.join("crates/libsparklink/tests/fixtures/application_client.py"))
@@ -380,8 +693,20 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         .arg(root.join("tools/testing/application_client/client.py"))
         .arg(root.join("bindings/python/sparklink/local_services.py"))
         .arg(root.join("bindings/python/sparklink/service_authorization.py"))
+        .arg(root.join("bindings/python/sparklink/service_provider.py"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/authorization.rs"))
+        .arg(root.join("crates/libsparklink/tests/application_ffi/read_provider.rs"))
+        .arg(root.join("crates/libsparklink/src/ffi_service_provider.rs"))
+        .arg(root.join("crates/libsparklink/src/ssap/provider.rs"))
+        .arg(root.join("crates/libsparklink/src/ssap/provider/frontend.rs"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/value_update.rs"))
+        .arg(root.join("crates/libsparklink/tests/application_ffi/subscription.rs"))
+        .arg(root.join("bindings/python/sparklink/ssap_discovery.py"))
+        .arg(root.join("crates/libsparklink/src/ffi_ssap_discovery.rs"))
+        .arg(root.join("crates/libsparklink/src/ssap.rs"))
+        .arg(root.join("bindings/python/sparklink/ssap_subscription.py"))
+        .arg(root.join("crates/libsparklink/src/ssap/subscription.rs"))
+        .arg(root.join("crates/libsparklink/src/ffi_ssap_subscription.rs"))
         .output()?;
     anyhow::ensure!(
         identities.status.success() && identities.stderr.is_empty(),
@@ -391,7 +716,13 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     let bus = support::Bus::start();
     let calls = Arc::new(AtomicUsize::new(0));
     let ssap_calls = Arc::new(AtomicUsize::new(0));
+    let method_calls = Arc::new(AtomicUsize::new(0));
+    let method_command_calls = Arc::new(Mutex::new(Vec::new()));
+    let discovery_calls = Arc::new(AtomicUsize::new(0));
+    let description_reads = Arc::new(AtomicUsize::new(0));
+    let command_calls = Arc::new(Mutex::new(Vec::new()));
     let lifetime = Arc::new(AtomicU64::new(11));
+    let subscriptions = Arc::new(subscription::Metadata::default());
     let owned = Arc::new(OwnedMetadata::default());
     let server = zbus::connection::Builder::address(bus.address.as_str())?
         .name("org.sparklink")?
@@ -400,7 +731,17 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         .serve_at(format!("{BASE}/services"), OwnedServices(owned.clone()))?
         .serve_at(
             PATH,
-            Link(calls.clone(), ssap_calls.clone(), lifetime.clone()),
+            Link(
+                calls.clone(),
+                ssap_calls.clone(),
+                lifetime.clone(),
+                subscriptions.clone(),
+                command_calls.clone(),
+                description_reads.clone(),
+                method_calls.clone(),
+                method_command_calls.clone(),
+                discovery_calls.clone(),
+            ),
         )?
         .build()
         .await?;
@@ -508,6 +849,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
                     write,
                     deadline,
                     value.clone(),
+                    0,
                 );
                 let wall_start = std::time::SystemTime::now()
                     .duration_since(std::time::UNIX_EPOCH)?
@@ -622,6 +964,15 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         &bus.address,
     )
     .await?;
+    subscription::exercise(
+        &root,
+        &sdk_probe,
+        &runtime_library,
+        &directory,
+        &bus.address,
+        &subscriptions,
+    )
+    .await?;
     assert_eq!(
         (
             owned.registered.load(Ordering::SeqCst),
@@ -727,13 +1078,36 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         );
     }
     assert_eq!(
+        discovery_calls.load(Ordering::SeqCst),
+        8,
+        "four discovery RPCs per actual language; no retry for local reads or invalid inputs"
+    );
+    assert_eq!(
+        description_reads.load(Ordering::SeqCst),
+        5,
+        "new description method only; expired/invalid/stale calls cannot fall back to value"
+    );
+    {
+        let descriptions = owned.descriptions.lock().unwrap();
+        assert_eq!(descriptions.len(), 4);
+        assert_eq!(
+            descriptions.iter().map(|v| v.1.len()).collect::<Vec<_>>(),
+            [6, 244, 6, 244]
+        );
+    }
+    assert_eq!(
         calls.load(Ordering::SeqCst),
         22,
         "no retry or weaker fallback, invalid inputs never reach OpenChannel"
     );
     assert_eq!(
+        method_calls.load(Ordering::SeqCst),
+        7,
+        "C four/Python three actual method RPCs; invalid and expired calls never retry"
+    );
+    assert_eq!(
         ssap_calls.load(Ordering::SeqCst),
-        14,
+        24,
         "exact finite RPC count; invalid, expired and retired inputs never retry"
     );
     lifetime.store(11, Ordering::SeqCst);
@@ -815,7 +1189,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
             }
         }
     }
-    assert_eq!(ssap_calls.load(Ordering::SeqCst), 18);
+    assert_eq!(ssap_calls.load(Ordering::SeqCst), 28);
     // Actual C/Python VM consumers, including their new negative-result mode.
     // An immediate FDO Timeout tests errno mapping only: it must never qualify
     // the hardware gate's original five-second elapsed-time requirement.
@@ -876,8 +1250,376 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     }
     assert_eq!(
         ssap_calls.load(Ordering::SeqCst),
-        26,
+        36,
         "eight added actual value calls; invalid expectations rejected before RPC"
+    );
+    // Actual new command helper entry points, with their own admission-only
+    // output schema. The service remains a finite RPC fixture, never peer RF.
+    for language in ["c", "python"] {
+        for scenario in [
+            "admitted",
+            "empty",
+            "boundary2042",
+            "rejected",
+            "eof",
+            "stale",
+            "invalid",
+            "oversized2043",
+        ] {
+            lifetime.store(11, Ordering::SeqCst);
+            let payload = match scenario {
+                "empty" => String::new(),
+                "boundary2042" => "a5".repeat(2042),
+                "oversized2043" => "a5".repeat(2043),
+                _ => "5612".to_owned(),
+            };
+            let minimum = match scenario {
+                "invalid" => 3,
+                "empty" | "boundary2042" | "oversized2043" => 0,
+                _ => 1,
+            };
+            let minimum_arg = minimum.to_string();
+            let admitted = matches!(scenario, "admitted" | "empty" | "boundary2042");
+            let invalid_input = matches!(scenario, "invalid" | "oversized2043");
+            let mut command = Command::new("timeout");
+            command.arg("20s");
+            if language == "c" {
+                command.arg(&sdk_probe);
+            } else {
+                command
+                    .arg("python3")
+                    .arg(root.join("tools/testing/application_client/client.py"));
+            }
+            let mut process = command
+                .args([
+                    "ssap-command",
+                    "2",
+                    "7",
+                    PATH,
+                    if scenario == "rejected" { "18" } else { "17" },
+                    &payload,
+                    &minimum_arg,
+                ])
+                .env("DBUS_SYSTEM_BUS_ADDRESS", &bus.address)
+                .env("LIBSPARKLINK_PATH", &runtime_library)
+                .env("PYTHONPATH", root.join("bindings/python"))
+                .env("LD_LIBRARY_PATH", &directory)
+                .stdin(Stdio::piped())
+                .stdout(Stdio::piped())
+                .stderr(Stdio::piped())
+                .spawn()?;
+            let mut stdout = std::io::BufReader::new(process.stdout.take().unwrap());
+            let mut barrier = String::new();
+            stdout.read_line(&mut barrier)?;
+            let barrier_value: Option<serde_json::Value> = if invalid_input {
+                assert!(barrier.is_empty(), "invalid input must not open the caller");
+                None
+            } else {
+                let value: serde_json::Value = serde_json::from_str(&barrier)?;
+                assert_eq!(value["stage"], "ssap_command_start_barrier");
+                assert_eq!(value["api"], language);
+                assert_eq!(value["client_closed"], true);
+                assert!(value["deadline_ns"].as_u64().is_some());
+                if scenario == "stale" {
+                    lifetime.store(12, Ordering::SeqCst);
+                }
+                if scenario == "eof" {
+                    drop(process.stdin.take());
+                } else {
+                    process.stdin.as_mut().unwrap().write_all(b"start\n")?;
+                }
+                Some(value)
+            };
+            let mut remaining = String::new();
+            stdout.read_to_string(&mut remaining)?;
+            let output = process.wait_with_output()?;
+            std::fs::write(
+                directory.join(format!("sdk-{language}-command-{scenario}.stdout")),
+                barrier + &remaining,
+            )?;
+            std::fs::write(
+                directory.join(format!("sdk-{language}-command-{scenario}.stderr")),
+                &output.stderr,
+            )?;
+            assert_eq!(output.status.success(), admitted, "{language}/{scenario}");
+            assert!(!remaining.contains("SsapPeerValue:"));
+            if admitted {
+                assert!(output.stderr.is_empty());
+                let line = remaining
+                    .strip_prefix("SSAP_COMMAND_ADMITTED: ")
+                    .expect("explicit admission receipt");
+                let receipt: serde_json::Value = serde_json::from_str(line)?;
+                assert_eq!(receipt["api"], language);
+                assert_eq!(receipt["handle"], 17);
+                assert_eq!(receipt["value"], payload);
+                assert_eq!(receipt["minimum"], minimum);
+                assert_eq!(receipt["admission_only"], true);
+                assert_eq!(receipt["peer_delivery_confirmed"], false);
+                assert_eq!(
+                    receipt["deadline_ns"],
+                    barrier_value.unwrap()["deadline_ns"]
+                );
+                let (called, returned, end) = (
+                    receipt["call_ns"].as_u64().unwrap(),
+                    receipt["returned_ns"].as_u64().unwrap(),
+                    receipt["deadline_ns"].as_u64().unwrap(),
+                );
+                assert!(called < returned && returned <= end);
+            } else {
+                assert!(
+                    remaining.is_empty(),
+                    "failure cannot emit an admission receipt"
+                );
+                if language == "c" && invalid_input {
+                    assert_eq!(output.status.code(), Some(2));
+                    assert!(output.stderr.is_empty(), "C syntax rejection is exit 2");
+                } else {
+                    assert!(!output.stderr.is_empty());
+                }
+            }
+        }
+    }
+    lifetime.store(11, Ordering::SeqCst);
+    assert_eq!(
+        ssap_calls.load(Ordering::SeqCst),
+        44,
+        "eight command RPCs including empty/2042; EOF/invalid/oversized/retired helper cases never enter the method"
+    );
+    // Both actual external SDKs must enter the daemon fixture for the new
+    // 2043 negative mode. This verifies ABI/serialization, not Native/RF.
+    for language in ["c", "python"] {
+        for scenario in [
+            "rejected",
+            "wrong-error",
+            "unexpected-success",
+            "eof",
+            "bad-start",
+            "stale",
+            "invalid-minimum",
+            "undersized",
+            "oversized",
+            "empty",
+            "invalid-hex",
+        ] {
+            lifetime.store(11, Ordering::SeqCst);
+            let payload = match scenario {
+                "undersized" => "a5".repeat(2042),
+                "oversized" => "a5".repeat(2044),
+                "empty" => String::new(),
+                "invalid-hex" => "gg".repeat(2043),
+                _ => "a5".repeat(2043),
+            };
+            let handle = match scenario {
+                "wrong-error" => 21,
+                "unexpected-success" => 22,
+                _ => 17,
+            };
+            let invalid = matches!(
+                scenario,
+                "invalid-minimum" | "undersized" | "oversized" | "empty" | "invalid-hex"
+            );
+            let enters = matches!(scenario, "rejected" | "wrong-error" | "unexpected-success");
+            let before = command_calls.lock().unwrap().len();
+            let mut command = Command::new("timeout");
+            command.arg("20s");
+            if language == "c" {
+                command.arg(&sdk_probe);
+            } else {
+                command
+                    .arg("python3")
+                    .arg(root.join("tools/testing/application_client/client.py"));
+            }
+            let mut process = command
+                .args([
+                    "ssap-command-reject",
+                    "2",
+                    "7",
+                    PATH,
+                    &handle.to_string(),
+                    &payload,
+                    if scenario == "invalid-minimum" {
+                        "1"
+                    } else {
+                        "0"
+                    },
+                ])
+                .env("DBUS_SYSTEM_BUS_ADDRESS", &bus.address)
+                .env("LIBSPARKLINK_PATH", &runtime_library)
+                .env("PYTHONPATH", root.join("bindings/python"))
+                .env("LD_LIBRARY_PATH", &directory)
+                .stdin(Stdio::piped())
+                .stdout(Stdio::piped())
+                .stderr(Stdio::piped())
+                .spawn()?;
+            let mut stdout = std::io::BufReader::new(process.stdout.take().unwrap());
+            let mut barrier = String::new();
+            stdout.read_line(&mut barrier)?;
+            let barrier_value: Option<serde_json::Value> = if invalid {
+                assert!(barrier.is_empty(), "syntax rejection cannot enter the SDK");
+                None
+            } else {
+                let value: serde_json::Value = serde_json::from_str(&barrier)?;
+                assert_eq!(value["stage"], "ssap_command_start_barrier");
+                assert_eq!(value["mode"], "ssap-command-reject");
+                assert_eq!(value["schema_version"], 1);
+                assert_eq!(value["api"], language);
+                assert_eq!(value["client_closed"], true);
+                if scenario == "stale" {
+                    lifetime.store(12, Ordering::SeqCst);
+                }
+                if scenario == "eof" {
+                    drop(process.stdin.take());
+                } else {
+                    process
+                        .stdin
+                        .as_mut()
+                        .unwrap()
+                        .write_all(if scenario == "bad-start" {
+                            b"wrong\n"
+                        } else {
+                            b"start\n"
+                        })?;
+                }
+                Some(value)
+            };
+            let mut remaining = String::new();
+            stdout.read_to_string(&mut remaining)?;
+            let output = process.wait_with_output()?;
+            std::fs::write(
+                directory.join(format!("sdk-{language}-command-reject-{scenario}.stdout")),
+                barrier + &remaining,
+            )?;
+            std::fs::write(
+                directory.join(format!("sdk-{language}-command-reject-{scenario}.stderr")),
+                &output.stderr,
+            )?;
+            assert_eq!(
+                output.status.success(),
+                scenario == "rejected",
+                "{language}/{scenario}"
+            );
+            let calls = command_calls.lock().unwrap();
+            assert_eq!(
+                calls.len(),
+                before + usize::from(enters),
+                "actual daemon entry {language}/{scenario}"
+            );
+            if enters {
+                let (actual_handle, minimum, actual_value, original) = &calls[before];
+                assert_eq!((*actual_handle, *minimum), (handle, 0));
+                assert_eq!(actual_value.as_slice(), vec![0xa5; 2043]);
+                assert_eq!(
+                    Some(original.0),
+                    barrier_value.as_ref().unwrap()["deadline_ns"].as_u64()
+                );
+            }
+            if scenario == "rejected" {
+                assert!(output.stderr.is_empty());
+                assert_eq!(remaining.lines().count(), 1);
+                let receipt: serde_json::Value = serde_json::from_str(
+                    remaining
+                        .strip_prefix("SSAP_COMMAND_REJECTED: ")
+                        .expect("actual SDK rejection receipt"),
+                )?;
+                assert_eq!(receipt["schema_version"], 1);
+                assert_eq!(receipt["mode"], "ssap-command-reject");
+                assert_eq!(receipt["api"], language);
+                assert_eq!(receipt["method"], "WriteSsapCommand");
+                assert_eq!(receipt["index"], 2);
+                assert_eq!(receipt["generation"], 7);
+                assert_eq!(receipt["path"], PATH);
+                assert_eq!(receipt["handle"], 17);
+                assert_eq!(receipt["value"], payload);
+                assert_eq!(receipt["application_bytes"], 2043);
+                assert_eq!(receipt["minimum"], 0);
+                assert_eq!(receipt["sdk_entered"], true);
+                assert_eq!(receipt["errno"], nix::libc::EINVAL);
+                assert_eq!(receipt["operation_success"], false);
+                assert_eq!(receipt["peer_delivery_confirmed"], false);
+                assert_eq!(
+                    receipt["deadline_ns"],
+                    barrier_value.as_ref().unwrap()["deadline_ns"]
+                );
+                let (called, returned, end) = (
+                    receipt["call_ns"].as_u64().unwrap(),
+                    receipt["returned_ns"].as_u64().unwrap(),
+                    receipt["deadline_ns"].as_u64().unwrap(),
+                );
+                assert!(called < returned && returned < end);
+            } else {
+                assert!(
+                    remaining.is_empty(),
+                    "wrong/error/invalid cases cannot report expected rejection"
+                );
+            }
+        }
+    }
+    lifetime.store(11, Ordering::SeqCst);
+    assert_eq!(
+        ssap_calls.load(Ordering::SeqCst),
+        50,
+        "six actual new command RPCs; all other negative modes stop before the method"
+    );
+    authorization::lifecycle(
+        &root,
+        &sdk_probe,
+        &runtime_library,
+        &directory,
+        &bus.address,
+        &server,
+        &owned,
+    )
+    .await?;
+    read_provider::exercise(
+        &root,
+        &sdk_probe,
+        &runtime_library,
+        &directory,
+        &bus.address,
+        &server,
+        &owned,
+    )
+    .await?;
+    write_provider::exercise(
+        &root,
+        &sdk_probe,
+        &runtime_library,
+        &directory,
+        &bus.address,
+        &server,
+        &owned,
+    )
+    .await?;
+    method_provider::exercise(
+        &root,
+        &method_probe,
+        &runtime_library,
+        &directory,
+        &bus.address,
+        &server,
+        &owned,
+    )
+    .await?;
+    discovery_requester::exercise(
+        &root,
+        &sdk_probe,
+        &runtime_library,
+        &directory,
+        &bus.address,
+        &discovery_calls,
+    )?;
+    method_requester::exercise(
+        &root,
+        &sdk_probe,
+        &runtime_library,
+        &directory,
+        &bus.address,
+        &method_command_calls,
+    )?;
+    assert_eq!(
+        method_calls.load(Ordering::SeqCst),
+        37,
+        "twenty request and ten command calls; invalid inputs and unreleased barriers never submit"
     );
     let unchanged = Command::new("sha256sum")
         .arg("--check")
@@ -887,6 +1629,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         unchanged.status.success(),
         "executed artifact changed during test"
     );
+    pending_owner::check(&root, &directory, &runtime_library, &sdk_probe).await?;
     std::fs::write(
         directory.join("COMPLETE"),
         b"CURRENT_APPLICATION_CLIENT_NEGATIVE_BUS_PASS\n",

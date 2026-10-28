@@ -47,7 +47,7 @@ def wire_fixture(phase=0,late=True):
     def event(i,token,request,at):
         fields=[str(token),str(request),str(t),str(owners[t]['owner']['generation']),'11',str(t+1),'9','0',str(i['handle']),'true','32',str(int((at+5)*N)),str(token),str(token)]
         v=dict(fields=fields,wall_ns=wall(at),monotonic_ns=int(at*N));i.setdefault('prompt_events',[]).append(v)
-        i['stdout']+=f"SsapAuthorizationPrompt: token={token} request={request} index={t} generation={owners[t]['owner']['generation']} lifetime=11 handle={t+1} epoch=9 security=0 property={i['handle']} write=true bytes=32 deadline_ns={fields[11]}; answer 'yes {token}' or 'no {token}'\n"
+        i['stdout']+=f"SsapAuthorizationPrompt: token={token} request={request} index={t} generation={owners[t]['owner']['generation']} lifetime=11 handle={t+1} epoch=9 security=0 property={i['handle']} data_type=0 write=true bytes=32 deadline_ns={fields[11]}; answer 'yes {token}' or 'no {token}'\n"
         i.setdefault('peer_during_prompt',[]).append(dict(args=['slctl','--adapter',owners[s]['owner']['path'],'show'],exit=0,stdout='  State:       Ready\n',stderr=''))
     event(ex,1,7,2.1);event(e,1,8,5.2);event(e,2,9,6.2)
     ex.update(peer_error=9,owner_exit=-9,owner_exit_wall_ns=wall(2.4))
@@ -95,7 +95,7 @@ def sdk_wire_fixture(phase=0,late=True):
     for key,size in [('secret',32),('value',32),('uuid',16),('service',16)]:closed[key]=hashlib.sha256(('close-'+key).encode()).hexdigest()[:2*size]
     fields=['1','10',str(t),str(owners[t]['owner']['generation']),'11',str(t+1),'9','0','23','true','32',str(int(17.7*N)),'1','1']
     closed['prompt_events']=[dict(fields=fields,wall_ns=wall(12.7),monotonic_ns=int(12.7*N))]
-    closed['stdout']=f"SsapOwnedService: start=22 end=23 property=23; local registration only\nSsapAuthorizationPrompt: token=1 request=10 index={t} generation={owners[t]['owner']['generation']} lifetime=11 handle={t+1} epoch=9 security=0 property=23 write=true bytes=32 deadline_ns={fields[11]}; answer 'yes 1' or 'no 1'\n"
+    closed['stdout']=f"SsapOwnedService: start=22 end=23 property=23; local registration only\nSsapAuthorizationPrompt: token=1 request=10 index={t} generation={owners[t]['owner']['generation']} lifetime=11 handle={t+1} epoch=9 security=0 property=23 data_type=0 write=true bytes=32 deadline_ns={fields[11]}; answer 'yes 1' or 'no 1'\n"
     closed['peer_during_prompt']=[copy.deepcopy(ex['peer_during_prompt'][0])]
     closed['close_input']=dict(wall_ns=wall(12.8),monotonic_ns=int(12.8*N))
     closed['close_receipt']=dict(api=api,token=1,info_preserved=True,notification_fd_alive=True,reply_result=-116,closed_ns=int(12.9*N))
@@ -114,7 +114,7 @@ def sdk_wire_fixture(phase=0,late=True):
         item.update(publisher_api=api,environment=application_environment(),args=owned_arguments(api,owners[t],item['service'],item['uuid'],item['secret'],item['policy']))
         item['stdout']=f'SdkOwnedAPI: api={api} client_closed=true\n'+item['stdout']
         for event in item.get('prompt_events',[]):
-            f=event['fields'];context=dict(api=api,index=int(f[2]),generation=int(f[3]),token=int(f[0]),request_id=int(f[1]),lifetime=int(f[4]),handle=int(f[5]),epoch=int(f[6]),level=int(f[7]),deadline_ns=int(f[11]),property=int(f[8]),write=True,value=item['value'],local_tcid=10,remote_tcid=10,pi=0)
+            f=event['fields'];context=dict(api=api,index=int(f[2]),generation=int(f[3]),token=int(f[0]),request_id=int(f[1]),lifetime=int(f[4]),handle=int(f[5]),epoch=int(f[6]),level=int(f[7]),deadline_ns=int(f[11]),property=int(f[8]),data_type=0,write=True,value=item['value'],local_tcid=10,remote_tcid=10,pi=0)
             item['stdout']+='SdkAuthorizationRequest: '+json.dumps(context)+'\n'
     for token,current,allow,called,result,key in [(1,1,False,True,0,'denial_input'),(1,2,True,False,-116,'stale_input'),(2,2,True,True,-110,'late_input')]:
         e['stdout']+='SdkAuthorizationReply: '+json.dumps(dict(api=api,token=token,current_token=current,allow=allow,api_called=called,result=result,returned_ns=e[key]['monotonic_ns']+1_000_000))+'\n'
@@ -151,6 +151,13 @@ def sdk_wire_fixture(phase=0,late=True):
 
 
 class LifecycleReceipts(unittest.TestCase):
+    def test_untyped_or_descriptor_prompt_cannot_qualify_a_property_scenario(self):
+        for replacement in ['', ' data_type=2', ' data_type=255']:
+            row,matched,sdus,_=sdk_wire_fixture()
+            row['ssap_owner_lifecycle'][1]['stdout']=row['ssap_owner_lifecycle'][1]['stdout'].replace(' data_type=0',replacement)
+            with self.subTest(replacement=replacement),self.assertRaises(CaptureError):
+                corroborate(row,matched,sdus)
+
     def test_sdk_variant_reuses_actual_wire_oracle_and_requires_all_close_cases(self):
         for phase in (0,1):
             for late in (False,True):

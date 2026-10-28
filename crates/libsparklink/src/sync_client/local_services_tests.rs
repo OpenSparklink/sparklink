@@ -10,12 +10,16 @@ const PATH: &str = "/org/sparklink/slk2_g7";
 #[derive(Default)]
 struct Script {
     mode: AtomicU8,
+    expected_operations: u32,
     registrations: AtomicU64,
     reads: AtomicU64,
     replacements: Mutex<Vec<(u16, Vec<u8>)>>,
+    descriptions: Mutex<Vec<(u16, String)>>,
     removals: AtomicU64,
     owner: Mutex<String>,
     authorizer: Mutex<String>,
+    provider: Mutex<String>,
+    provider_binds: AtomicU64,
     stamps: Mutex<Vec<slk_contract::Deadline>>,
 }
 struct Manager;
@@ -42,22 +46,84 @@ fn approval_prompt(deadline: u64) -> slk_contract::ssap::SsapAuthorizationPrompt
         false,
         deadline,
         vec![],
+        0,
     )
 }
 #[zbus::interface(name = "org.sparklink.ServiceManager")]
 impl Services {
+    async fn bind_owned_read_provider(
+        &self,
+        handle: u16,
+        path: zbus::zvariant::OwnedObjectPath,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<()> {
+        assert_eq!(handle, 17);
+        assert!(matches!(self.0.expected_operations, 0 | 1));
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        self.0.stamps.lock().unwrap().push(deadline);
+        self.0.provider_binds.fetch_add(1, Ordering::SeqCst);
+        *self.0.provider.lock().unwrap() = path.to_string();
+        if self.0.mode.load(Ordering::SeqCst) == 12 {
+            return Err(zbus::fdo::Error::NotSupported(
+                "fixture bind refusal".into(),
+            ));
+        }
+        if self.0.mode.load(Ordering::SeqCst) == 13 {
+            tokio::time::sleep(Duration::from_millis(100)).await;
+        }
+        Ok(())
+    }
+    async fn bind_owned_write_provider(
+        &self,
+        handle: u16,
+        path: zbus::zvariant::OwnedObjectPath,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<()> {
+        assert_eq!(handle, 17);
+        assert!(matches!(self.0.expected_operations, 0 | 6));
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        self.0.stamps.lock().unwrap().push(deadline);
+        self.0.provider_binds.fetch_add(1, Ordering::SeqCst);
+        *self.0.provider.lock().unwrap() = path.to_string();
+        match self.0.mode.load(Ordering::SeqCst) {
+            12 => {
+                return Err(zbus::fdo::Error::NotSupported(
+                    "fixture bind refusal".into(),
+                ));
+            }
+            13 => tokio::time::sleep(Duration::from_millis(100)).await,
+            _ => (),
+        }
+        Ok(())
+    }
     async fn register_owned_local_service(
         &self,
         uuid: Vec<u8>,
         properties: Vec<slk_contract::ssap::local::PropertyDefinition>,
+        methods: Vec<slk_contract::ssap::local::MethodDefinition>,
         authorizer: zbus::zvariant::OwnedObjectPath,
         deadline: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> zbus::fdo::Result<(u16, u16, Vec<u16>)> {
+        self.0.registrations.fetch_add(1, Ordering::SeqCst);
+        assert!(methods.is_empty());
         assert_eq!(uuid, [1, 0]);
         let access = properties[0].2;
         assert!(matches!(access, 0 | 36));
-        assert_eq!(properties, [(vec![2, 0], 5, access, vec![7, 8, 9])]);
+        // Mode0 is only the mixed READ/WRITE capacity fixture; ordinary tests
+        // keep their exact expected operation. It supplies metadata, not a DB.
+        let expected_operations = if self.0.expected_operations == 0 {
+            assert!(matches!(properties[0].1, 1 | 6));
+            properties[0].1
+        } else {
+            self.0.expected_operations
+        };
+        assert_eq!(
+            properties,
+            [(vec![2, 0], expected_operations, access, vec![7, 8, 9])]
+        );
         assert_eq!(
             authorizer.as_str(),
             if access == 36 {
@@ -68,7 +134,6 @@ impl Services {
         );
         *self.0.authorizer.lock().unwrap() = authorizer.to_string();
         self.0.stamps.lock().unwrap().push(deadline);
-        self.0.registrations.fetch_add(1, Ordering::SeqCst);
         *self.0.owner.lock().unwrap() = h.sender().unwrap().to_string();
         match self.0.mode.load(Ordering::SeqCst) {
             1 => {
@@ -93,6 +158,34 @@ impl Services {
         assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
         self.0.stamps.lock().unwrap().push(deadline);
         self.0.reads.fetch_add(1, Ordering::SeqCst);
+        if self.0.mode.load(Ordering::SeqCst) == 9 {
+            let owner = self.0.owner.lock().unwrap().clone();
+            let path = self.0.provider.lock().unwrap().clone();
+            let request = slk_contract::ssap::ReadProviderRequest {
+                request_id: 1,
+                identity: (2, 7, 13, 1, 41, 0, 10, 10, 0),
+                property: 17,
+                deadline_ns: deadline.0,
+                maximum_bytes: 32,
+            };
+            let reply: slk_contract::ssap::ReadProviderReply = connection
+                .call_method(
+                    Some(owner.as_str()),
+                    path.as_str(),
+                    Some("org.sparklink.SsapReadProvider"),
+                    "ReadValue",
+                    &(request,),
+                )
+                .await?
+                .body()
+                .deserialize()?;
+            if reply.0 != 0 {
+                return Err(zbus::fdo::Error::Failed(
+                    "actual application provider error".into(),
+                ));
+            }
+            return Ok(reply.1);
+        }
         if self.0.mode.load(Ordering::SeqCst) == 8 {
             let owner = self.0.owner.lock().unwrap().clone();
             let path = self.0.authorizer.lock().unwrap().clone();
@@ -144,6 +237,31 @@ impl Services {
             _ => Ok(()),
         }
     }
+    async fn set_owned_local_description(
+        &self,
+        handle: u16,
+        description: String,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<()> {
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        self.0.stamps.lock().unwrap().push(deadline);
+        self.0
+            .descriptions
+            .lock()
+            .unwrap()
+            .push((handle, description));
+        match self.0.mode.load(Ordering::SeqCst) {
+            10 => Err(zbus::fdo::Error::LimitsExceeded(
+                "fixture-only budget refusal".into(),
+            )),
+            11 => {
+                tokio::time::sleep(Duration::from_millis(100)).await;
+                Ok(())
+            }
+            _ => Ok(()),
+        }
+    }
     fn unregister_owned_local_service(
         &self,
         start: u16,
@@ -162,6 +280,11 @@ impl Services {
         Ok(())
     }
 }
+
+#[path = "service_provider_tests.rs"]
+mod service_provider_tests;
+#[path = "service_write_provider_tests.rs"]
+mod service_write_provider_tests;
 fn ns() -> u64 {
     slk_channel::deadline::Deadline::after(Duration::from_secs(2))
         .unwrap()
@@ -185,9 +308,25 @@ fn property() -> SlkServiceProperty {
     p
 }
 async fn fixture() -> (support::Bus, zbus::Connection, Arc<Script>, *mut SlkClient) {
+    fixture_with_operations(5).await
+}
+async fn fixture_with_operations(
+    operations: u32,
+) -> (support::Bus, zbus::Connection, Arc<Script>, *mut SlkClient) {
     let bus = support::Bus::start();
-    let script = Arc::new(Script::default());
-    let server = zbus::connection::Builder::address(bus.address.as_str())
+    let script = Arc::new(Script {
+        expected_operations: operations,
+        ..Script::default()
+    });
+    let server = service_server(&bus.address, script.clone()).await;
+    let c = service_client(&bus.address);
+    (bus, server, script, c)
+}
+
+// Shared private-bus metadata fixture. Replacing its owner exercises the real
+// Client/Dispatcher watches; it never represents slkd, a kernel or a radio.
+async fn service_server(address: &str, script: Arc<Script>) -> zbus::Connection {
+    zbus::connection::Builder::address(address)
         .unwrap()
         .name("org.sparklink")
         .unwrap()
@@ -195,12 +334,15 @@ async fn fixture() -> (support::Bus, zbus::Connection, Arc<Script>, *mut SlkClie
         .unwrap()
         .serve_at(PATH, Adapter)
         .unwrap()
-        .serve_at(format!("{PATH}/services"), Services(script.clone()))
+        .serve_at(format!("{PATH}/services"), Services(script))
         .unwrap()
         .build()
         .await
-        .unwrap();
-    let address = bus.address.clone();
+        .unwrap()
+}
+
+fn service_client(address: &str) -> *mut SlkClient {
+    let address = address.to_owned();
     let exec = SyncClient::start(
         Deadline::from_monotonic_ns(ns()).unwrap(),
         move || async move {
@@ -213,15 +355,11 @@ async fn fixture() -> (support::Bus, zbus::Connection, Arc<Script>, *mut SlkClie
         },
     )
     .unwrap();
-    (
-        bus,
-        server,
-        script,
-        Box::into_raw(Box::new(SlkClient {
-            inner: Arc::new(exec),
-        })),
-    )
+    Box::into_raw(Box::new(SlkClient {
+        inner: Arc::new(exec),
+    }))
 }
+
 unsafe fn acquire(c: *const SlkClient, deadline: u64) -> (i32, *mut SlkLocalService) {
     let mut output = std::ptr::null_mut();
     let code = unsafe {
@@ -260,7 +398,7 @@ async fn actual_owned_ffi_retains_caller_short_buffer_and_explicit_withdrawal() 
     );
     assert_eq!(receipt.handles[0], 17);
     assert!(receipt.handles[1..].iter().all(|h| *h == 0));
-    assert_eq!(receipt.reserved, [0; 2]);
+    assert_eq!(receipt.method_count, 0);
     let mut buffer = [0xaa; 8];
     let mut length = 99;
     assert_eq!(
@@ -358,6 +496,103 @@ async fn invalid_owned_ffi_never_invokes_broker_or_changes_outputs() {
     assert_eq!(s.registrations.load(Ordering::SeqCst), 0);
     unsafe { slk_client_close(c) };
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn actual_rust_owned_registration_bounds_metadata_before_broker_call() {
+    use crate::Deadline;
+
+    let (bus, _server, script, c) = fixture().await;
+    unsafe { slk_client_close(c) };
+    let client = Client::from_connection(
+        zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap(),
+    )
+    .await
+    .unwrap();
+    let services = client.controller(PATH).await.unwrap().local_services();
+    let property = (vec![2, 0], 5, 0, vec![7, 8, 9]);
+    for count in [0, 65] {
+        let result = services
+            .register_service(
+                vec![1, 0],
+                vec![property.clone(); count],
+                zbus::zvariant::OwnedObjectPath::try_from("/").unwrap(),
+                Deadline::after(Duration::from_secs(2)).unwrap(),
+            )
+            .await;
+        assert!(matches!(
+            result,
+            Err(crate::ApplicationError::Invalid(
+                "owned-service entry count"
+            ))
+        ));
+        assert_eq!(script.registrations.load(Ordering::SeqCst), 0);
+    }
+    // The limit is on combined entries, not each array independently.
+    for (properties, methods) in [(64, 1), (1, 64), (0, 65)] {
+        let result = services
+            .register_entries(
+                vec![1, 0],
+                vec![property.clone(); properties],
+                vec![(vec![3, 0], 0); methods],
+                zbus::zvariant::OwnedObjectPath::try_from("/").unwrap(),
+                Deadline::after(Duration::from_secs(2)).unwrap(),
+            )
+            .await;
+        assert!(matches!(
+            result,
+            Err(crate::ApplicationError::Invalid(
+                "owned-service entry count"
+            ))
+        ));
+        assert_eq!(script.registrations.load(Ordering::SeqCst), 0);
+        assert!(script.stamps.lock().unwrap().is_empty());
+    }
+    // The second case also proves expiry precedes parsing the new requirements.
+    for operations in [5, u32::MAX] {
+        let original = Deadline::at(Instant::now() - Duration::from_secs(1)).unwrap();
+        let result = services
+            .register_service(
+                vec![1, 0],
+                vec![(vec![2, 0], operations, 0, vec![7, 8, 9])],
+                zbus::zvariant::OwnedObjectPath::try_from("/").unwrap(),
+                original,
+            )
+            .await;
+        assert!(matches!(
+            result,
+            Err(crate::ApplicationError::Io(error))
+                if error.raw_os_error() == Some(nix::libc::ETIMEDOUT)
+        ));
+        assert_eq!(script.registrations.load(Ordering::SeqCst), 0);
+        assert!(script.stamps.lock().unwrap().is_empty());
+    }
+    // The actual broker is reachable; rejection above did not invoke it.
+    let original = Deadline::after(Duration::from_secs(2)).unwrap();
+    let mut registration = services
+        .register_service(
+            vec![1, 0],
+            vec![property],
+            zbus::zvariant::OwnedObjectPath::try_from("/").unwrap(),
+            original,
+        )
+        .await
+        .unwrap();
+    assert_eq!(script.registrations.load(Ordering::SeqCst), 1);
+    assert_eq!(
+        script.stamps.lock().unwrap()[0].0,
+        original.stamp().monotonic_ns
+    );
+    registration
+        .unregister(Deadline::after(Duration::from_secs(2)).unwrap())
+        .await
+        .unwrap();
+    assert_eq!(script.removals.load(Ordering::SeqCst), 1);
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn failed_owned_ffi_keeps_denial_bad_receipt_deadline_and_uncertain_removal() {
     let (_bus, server, s, c) = fixture().await;
@@ -494,4 +729,163 @@ async fn actual_owned_replacement_ffi_has_bounds_original_deadline_and_no_fallba
     );
     assert_eq!(s.replacements.lock().unwrap().len(), 5);
     unsafe { slk_local_service_free(v) };
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn actual_owned_description_ffi_preserves_utf8_bounds_owner_and_original_deadline() {
+    let (_bus, _server, script, client) = fixture().await;
+    let (error, view) = unsafe { acquire(client, ns()) };
+    assert_eq!(error, 0);
+    unsafe { slk_client_close(client) };
+    for text in ["d".to_owned(), "é".repeat(122)] {
+        let original = ns();
+        assert_eq!(
+            unsafe {
+                slk_local_service_set_description(view, 17, text.as_ptr(), text.len(), original)
+            },
+            0
+        );
+        assert_eq!(
+            script.descriptions.lock().unwrap().last(),
+            Some(&(17, text))
+        );
+        assert_eq!(script.stamps.lock().unwrap().last().unwrap().0, original);
+    }
+    let large = [b'a'; 245];
+    let invalid = [0xffu8];
+    let nul = [b'a', 0];
+    for (handle, bytes) in [
+        (0, &large[..1]),
+        (18, &large[..1]),
+        (17, &large[..0]),
+        (17, &large[..]),
+        (17, &invalid[..]),
+        (17, &nul[..]),
+    ] {
+        assert_eq!(
+            unsafe {
+                slk_local_service_set_description(view, handle, bytes.as_ptr(), bytes.len(), ns())
+            },
+            -nix::libc::EINVAL
+        );
+    }
+    assert_eq!(
+        unsafe { slk_local_service_set_description(view, 17, std::ptr::null(), 1, ns()) },
+        -nix::libc::EINVAL
+    );
+    assert_eq!(
+        unsafe { slk_local_service_set_description(view, 17, large.as_ptr(), 1, 0) },
+        -nix::libc::ETIMEDOUT
+    );
+    assert_eq!(script.descriptions.lock().unwrap().len(), 2);
+    script.mode.store(10, Ordering::SeqCst);
+    assert_eq!(
+        unsafe { slk_local_service_set_description(view, 17, large.as_ptr(), 1, ns()) },
+        -nix::libc::ENOBUFS
+    );
+    script.mode.store(11, Ordering::SeqCst);
+    let original = slk_channel::deadline::Deadline::after(Duration::from_millis(20))
+        .unwrap()
+        .stamp()
+        .monotonic_ns;
+    assert_eq!(
+        unsafe { slk_local_service_set_description(view, 17, large.as_ptr(), 1, original) },
+        -nix::libc::ETIMEDOUT
+    );
+    tokio::time::sleep(Duration::from_millis(120)).await;
+    assert_eq!(script.stamps.lock().unwrap().last().unwrap().0, original);
+    script.mode.store(5, Ordering::SeqCst);
+    assert_eq!(
+        unsafe { slk_local_service_unregister(view, ns()) },
+        -nix::libc::ETIMEDOUT
+    );
+    assert_eq!(
+        unsafe { slk_local_service_set_description(view, 17, large.as_ptr(), 1, ns()) },
+        -nix::libc::EINVAL
+    );
+    script.mode.store(0, Ordering::SeqCst);
+    assert_eq!(unsafe { slk_local_service_unregister(view, ns()) }, 0);
+    assert_eq!(
+        unsafe { slk_local_service_set_description(view, 17, large.as_ptr(), 1, ns()) },
+        -nix::libc::EINVAL
+    );
+    assert_eq!(script.descriptions.lock().unwrap().len(), 4);
+    assert!(script.replacements.lock().unwrap().is_empty());
+    unsafe { slk_local_service_free(view) };
+}
+
+// Actual public Rust entry and real private D-Bus; broker metadata/errors are
+// fixtures. This does not exercise the daemon database, Native or RF.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn rust_write_provider_binding_preserves_owner_deadline_and_refusal() {
+    use slk_channel::deadline::Deadline;
+    let (bus, _server, script, c) = fixture_with_operations(6).await;
+    unsafe { slk_client_close(c) };
+    let client = Client::from_connection(
+        zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap(),
+    )
+    .await
+    .unwrap();
+    let controller = client.controller(PATH).await.unwrap();
+    let registration = controller
+        .local_services()
+        .register_service(
+            vec![1, 0],
+            vec![(vec![2, 0], 6, 0, vec![7, 8, 9])],
+            zbus::zvariant::OwnedObjectPath::try_from("/").unwrap(),
+            Deadline::after(Duration::from_secs(2)).unwrap(),
+        )
+        .await
+        .unwrap();
+    let path = || zbus::zvariant::OwnedObjectPath::try_from("/writer").unwrap();
+    for (handle, name) in [(18, "/writer"), (17, "/")] {
+        assert!(
+            registration
+                .bind_write_provider(
+                    handle,
+                    zbus::zvariant::OwnedObjectPath::try_from(name).unwrap(),
+                    Deadline::after(Duration::from_secs(1)).unwrap()
+                )
+                .await
+                .is_err()
+        );
+    }
+    assert_eq!(script.provider_binds.load(Ordering::SeqCst), 0);
+    let original = Deadline::after(Duration::from_secs(1)).unwrap();
+    registration
+        .bind_write_provider(17, path(), original)
+        .await
+        .unwrap();
+    assert_eq!(*script.provider.lock().unwrap(), "/writer");
+    assert_eq!(
+        *script.stamps.lock().unwrap().last().unwrap(),
+        slk_contract::deadline_wire(original.stamp())
+    );
+    script.mode.store(12, Ordering::SeqCst);
+    let refusal = registration
+        .bind_write_provider(17, path(), Deadline::after(Duration::from_secs(1)).unwrap())
+        .await
+        .unwrap_err();
+    assert!(refusal.to_string().contains("NotSupported"), "{refusal}");
+    script.mode.store(13, Ordering::SeqCst);
+    assert!(
+        registration
+            .bind_write_provider(
+                17,
+                path(),
+                Deadline::after(Duration::from_millis(20)).unwrap()
+            )
+            .await
+            .is_err()
+    );
+    tokio::time::sleep(Duration::from_millis(120)).await;
+    assert_eq!(
+        script.provider_binds.load(Ordering::SeqCst),
+        3,
+        "uncertain bind must not retry"
+    );
 }

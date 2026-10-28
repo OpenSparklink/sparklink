@@ -14,6 +14,7 @@ import time
 
 from ws73_capture import command_reply, check_capture_stats, corroborate, corroborate_synthetic, corroborate_passthrough, corroborate_recovery, discovery, read_capture, CaptureError
 from ws73_north_star import daemon_identity, healthy_native_runtime, ordinary_identity, registration, file_record
+import ws73_firmware_profile as firmware_profile
 
 EVIDENCE = Path('/evidence')
 TOOLS = Path(__file__).resolve().parent
@@ -80,7 +81,10 @@ def ready(slot):
                         raise ValueError('one expected board model per physical guest slot required')
                     from ws73_lab_resources import check_hcc
                     data['hcc_chip']=check_hcc((p/'chip_information').read_text().strip(),models[0].split(',')[slot])
+                    data['input_profile']=firmware_profile.guest_observation(p,models[0].split(',')[slot],str(slot+1))
                 if data['bus']!=1:raise ValueError('capture bus and actual guest WS73 bus differ')
+                if (p/'sle_address_source').exists():
+                    data['sle_address_source']=(p/'sle_address_source').read_text().strip()
                 (EVIDENCE/f'ready-{slot}.json').write_text(json.dumps(data,indent=2)+'\n')
                 return
             except OSError as error:
@@ -105,11 +109,15 @@ def instructions():
     pid=int(subprocess.check_output(['/bin/pidof','slkd'],text=True))
     print('WS73_TARGET_ENVIRONMENT_READY: physical_acceptance=0',flush=True)
     print('Ordinary uid1000 shell; capture started BEFORE USB attachment. Exit the shell after testing to seal capture.',flush=True)
+    plan=json.loads((Path('/')/firmware_profile.PLAN).read_text())
+    artifacts=[('kernel_image','/boot/bzImage')]
+    for slot in range(1,3):
+        item=plan['entries'][str(slot)]
+        artifacts += [(f'slot{slot}_'+name.replace('.','_'),'/lib/firmware/'+item['directory']+'/'+name)
+                      for name in [*firmware_profile.FILES,'profile.bin']]
     print(shlex.join(['/bin/python3',str(TOOLS/'ws73_north_star.py'),'run','--ports',a['port'],b['port'],
                       '--slctl','/bin/slctl','--slkd-pid',str(pid),'--output','/evidence/application/control',
-                      *[x for label,p in [('kernel_image','/boot/bzImage'),('firmware','/lib/firmware/sparklink/ws73/ws73.bin'),
-                                        ('wifi_calibration','/lib/firmware/sparklink/ws73/wifi_cali.bin'),('btc_calibration','/lib/firmware/sparklink/ws73/btc_cali.bin'),
-                                        ('bsle_custom','/lib/firmware/sparklink/ws73/bsle_custom.bin'),('pm_config','/lib/firmware/sparklink/ws73/pm_config.bin')]
+                      *[x for label,p in artifacts
                         for x in ['--artifact',label+'='+p]]]),flush=True)
 
 
@@ -157,7 +165,12 @@ def support():
     if any(int(fields[k],16) for k in ['CapEff','CapPrm','CapAmb']):raise ValueError('ordinary app retained capabilities')
     collector=dict(line.split(':',1) for line in (EVIDENCE/'capture-process-status.txt').read_text().splitlines() if ':' in line)
     if list(map(int,collector['Uid'].split()))!=[1003]*4 or any(int(collector[k],16) for k in ['CapEff','CapPrm','CapAmb']):raise ValueError('capture process did not drop privileges')
-    if application('/bin/sh','-c','test -w /bin/slkd || test -w /lib/firmware/sparklink/ws73/ws73.bin').returncode==0:raise ValueError('ordinary app can overwrite privileged code/firmware')
+    privileged=['/bin/slkd']+['/lib/firmware/'+item['directory']+'/'+name
+        for item in json.loads((Path('/')/firmware_profile.PLAN).read_text())['entries'].values()
+        for name in [*firmware_profile.FILES,'profile.bin']]
+    check='import os,sys;p='+repr(privileged)+';sys.exit(2 if not all(os.path.isfile(x) for x in p) else 0 if any(os.access(x,os.W_OK) for x in p) else 1)'
+    checked=application('/bin/python3','-c',check)
+    if checked.returncode!=1:raise ValueError('ordinary privileged-file permission probe failed or writable')
     if application('/bin/sh','-c','test -r /dev/usbmon1 || test -w /dev/usbmon1').returncode==0:raise ValueError('ordinary app has raw USB capture permission')
     for who,mode in [('observer','observer'),('ws73','control')]:
         with (EVIDENCE/f'policy-{mode}.log').open('w') as log:
@@ -333,7 +346,13 @@ def verify_parallel():
     capture=read_capture(EVIDENCE/'ws73.pcap',[(o['bus'],o['device']) for o in owners])
     count=check_capture_stats((EVIDENCE/'capture-stats.txt').read_text())
     if capture['packet_count']!=count:raise ValueError('parallel sealed capture count mismatch')
-    proof=corroborate(run,capture)
+    subscription='ws73.parallel_subscription=1'in Path('/proc/cmdline').read_text().split()
+    if business and run.get('shared_subscription_mode',False)is not subscription:raise ValueError('explicit shared subscription boot/evidence mismatch')
+    from ws73_parallel_data import benchmark_mode,benchmark_case,benchmark_case_from_boot
+    benchmark=benchmark_mode(run)
+    if benchmark!=('ws73.parallel_benchmark=1'in Path('/proc/cmdline').read_text().split()):raise ValueError('explicit paired benchmark boot/evidence mismatch')
+    if benchmark_case(run)!=benchmark_case_from_boot(Path('/proc/cmdline').read_text().split()):raise ValueError('explicit paired benchmark case/evidence mismatch')
+    proof=corroborate(run,capture,**({'evidence':EVIDENCE}if subscription or benchmark else{}))
     (EVIDENCE/f'{name}-proofs.json').write_text(json.dumps(proof,indent=2)+'\n')
     print('WS73_TARGET_PARALLEL_BUSINESS: PASS' if business else 'WS73_TARGET_PARALLEL_RF: PASS',flush=True)
 
@@ -344,7 +363,10 @@ def verify_passthrough():
     capture=read_capture(EVIDENCE/'ws73.pcap',[(r['bus'],r['device']) for r in identities])
     packets=check_capture_stats((EVIDENCE/'capture-stats.txt').read_text())
     if packets!=capture['packet_count']:raise ValueError('passthrough capture packet count mismatch')
-    proofs=corroborate_passthrough(run,capture)
+    from ws73_runtime_address import boot_addresses
+    addresses=boot_addresses(Path('/proc/cmdline').read_text().split())
+    address_record=json.loads((EVIDENCE/'runtime-address/run.json').read_text()) if addresses else None
+    proofs=corroborate_passthrough(run,capture,address_record,addresses)
     if ('ws73.link_resync=1' in Path('/proc/cmdline').read_text().split()) != ('link_resync' in run):
         raise ValueError('explicit subscriber resync request/evidence mismatch')
     if 'link_resync' in run:
@@ -392,15 +414,77 @@ def verify_passthrough():
     if initialization_requested:
         from ws73_ssap_initialization import corroborate_guest, verify_fd_supervisor, profile
         stages=[v.split('=',1)[1] for v in Path('/proc/cmdline').read_text().split() if v.startswith('ws73.ssap_initialization_stage=')]
-        if len(stages)>1 or run['ssap_initialization'].get('stage','cmtc')!=profile(stages[0] if stages else 'cmtc')['stage']:
+        if len(stages)>1 or run['ssap_initialization'].get('stage','cmtc')!=profile(stages[0] if stages else 'cmtc',run['ssap_initialization'].get('exchange_contract',1))['stage']:
             raise ValueError('actual VM command line and guest initialization stage differ')
         verify_fd_supervisor(run,EVIDENCE)
         proofs.append({'ssap_initialization':corroborate_guest(run,capture)})
     requester_requested='ws73.ssap_requester_lifecycle=1' in Path('/proc/cmdline').read_text().split()
     if any(bool(row.get('ssap_requester_lifecycle_required',False))!=requester_requested for row in run.get('channel_socket',[])) or(requester_requested and not run.get('channel_socket')):raise ValueError('requester lifecycle request/evidence mismatch')
+    sender_requested='ws73.ssap_sender_deadline=1' in Path('/proc/cmdline').read_text().split()
+    if any(bool(row.get('ssap_sender_deadline_required',False))!=sender_requested for row in run.get('channel_socket',[]))or(sender_requested and not run.get('channel_socket')):raise ValueError('sender deadline request/evidence mismatch')
+    from ws73_ssap_sender_deadline import boot_case
+    sender_case=boot_case(Path('/proc/cmdline').read_text().split(),sender_requested)
+    if sender_requested and any(row.get('ssap_sender_lifecycle_case','deadline')!=sender_case for row in run.get('channel_socket',[])):raise ValueError('sender lifecycle case/boot evidence mismatch')
+    subscription_requested='ws73.ssap_subscription=1' in Path('/proc/cmdline').read_text().split()
+    if any(bool(row.get('ssap_subscription_required',False))!=subscription_requested for row in run.get('channel_socket',[]))or subscription_requested and not run.get('channel_socket'):raise ValueError('subscription request/evidence mismatch')
+    renewal_requested='ws73.ssap_subscription_renewal=1'in Path('/proc/cmdline').read_text().split()
+    from ws73_ssap_subscription import renewal_required
+    if renewal_requested and not subscription_requested or any(renewal_required(row)!=renewal_requested for row in run.get('channel_socket',[])):raise ValueError('renewal boot/request/evidence mismatch')
+    pressure_requested='ws73.ssap_subscription_pressure=1'in Path('/proc/cmdline').read_text().split()
+    from ws73_ssap_subscription import pressure_required
+    if pressure_requested and not subscription_requested or any(pressure_required(row)!=pressure_requested for row in run.get('channel_socket',[])):raise ValueError('pressure boot/request/evidence mismatch')
+    loss_requested='ws73.ssap_subscription_owner_loss=1'in Path('/proc/cmdline').read_text().split()
+    from ws73_ssap_subscription import owner_loss_required
+    if loss_requested and not subscription_requested or any(owner_loss_required(row)!=loss_requested for row in run.get('channel_socket',[])):raise ValueError('owner-loss boot/request/evidence mismatch')
+    inflight_requested='ws73.ssap_subscription_inflight_release=1'in Path('/proc/cmdline').read_text().split()
+    from ws73_ssap_subscription import inflight_required
+    if inflight_requested and not subscription_requested or any(inflight_required(row)!=inflight_requested for row in run.get('channel_socket',[])):raise ValueError('in-flight release boot/request/evidence mismatch')
+    from ws73_ssap_subscription import boot_inflight_case,inflight_case
+    requested_case=boot_inflight_case(Path('/proc/cmdline').read_text().split(),inflight_requested)
+    if any(inflight_case(row)!=requested_case for row in run.get('channel_socket',[])):raise ValueError('in-flight original case boot/evidence mismatch')
+    from ws73_ssap_subscription import shared_boot,shared_required,boot_shared_case,shared_case
+    shared_requested=shared_boot(Path('/proc/cmdline').read_text().split())
+    if shared_requested and not subscription_requested or any(shared_required(row)!=shared_requested for row in run.get('channel_socket',[])):raise ValueError('shared owner boot/request/evidence mismatch')
+    requested_shared_case=boot_shared_case(Path('/proc/cmdline').read_text().split(),shared_requested)
+    if any(shared_case(row)!=requested_shared_case for row in run.get('channel_socket',[])):raise ValueError('shared lifetime boot/evidence mismatch')
+    from ws73_role_snapshot import TOKEN,requested as snapshot_requested
+    snapshot_boot=Path('/proc/cmdline').read_text().split().count(TOKEN)
+    if snapshot_boot>1 or snapshot_boot and not subscription_requested or any(snapshot_requested(row)!=bool(snapshot_boot)for row in run.get('channel_socket',[])):raise ValueError('snapshot boot/request/evidence mismatch')
+    delivery_requested='ws73.ssap_update_delivery=1' in Path('/proc/cmdline').read_text().split()
+    if any(bool(row.get('ssap_update_delivery_required',False))!=delivery_requested for row in run.get('channel_socket',[])) or (delivery_requested and not run.get('channel_socket')):raise ValueError('update delivery request/evidence mismatch')
     lifecycle_requested='ws73.ssap_owner_lifecycle=1' in Path('/proc/cmdline').read_text().split()
     if any(bool(row.get('ssap_owner_lifecycle_required',False))!=lifecycle_requested for row in run.get('channel_socket',[])) or (lifecycle_requested and not run.get('channel_socket')):raise ValueError('owner lifecycle request/evidence mismatch')
     owned_requested='ws73.ssap_owned=1' in Path('/proc/cmdline').read_text().split()
+    from ws73_ssap_description import boot_requested as description_boot,validate_rows as description_rows
+    description_rows(run.get('channel_socket',[]),description_boot(Path('/proc/cmdline').read_text().split()))
+    from ws73_ssap_method_provider import boot_requested as method_provider_boot,validate_rows as method_provider_rows
+    method_provider_rows(run.get('channel_socket',[]),method_provider_boot(Path('/proc/cmdline').read_text().split()))
+    from ws73_ssap_read_provider import boot_requested as provider_boot,validate_rows as provider_rows
+    provider_rows(run.get('channel_socket',[]),provider_boot(Path('/proc/cmdline').read_text().split()))
+    from ws73_ssap_sdk_read_provider import boot_requested as sdk_provider_boot,validate_rows as sdk_provider_rows
+    sdk_provider_rows(run.get('channel_socket',[]),sdk_provider_boot(Path('/proc/cmdline').read_text().split()))
+    from ws73_ssap_sdk_write_provider import boot_requested as sdk_write_provider_boot,validate_rows as sdk_write_provider_rows
+    sdk_write_provider_rows(run.get('channel_socket',[]),sdk_write_provider_boot(Path('/proc/cmdline').read_text().split()))
+    from ws73_ssap_write_unregister import boot_requested as write_unregister_boot,validate_rows as write_unregister_rows
+    write_unregister_rows(run.get('channel_socket',[]),write_unregister_boot(Path('/proc/cmdline').read_text().split()))
+    from ws73_ssap_write_owner_exit import boot_requested as write_owner_exit_boot,validate_rows as write_owner_exit_rows
+    write_owner_exit_rows(run.get('channel_socket',[]),write_owner_exit_boot(Path('/proc/cmdline').read_text().split()))
+    from ws73_ssap_write_down import boot_requested as write_down_boot,validate_rows as write_down_rows
+    write_down_rows(run.get('channel_socket',[]),write_down_boot(Path('/proc/cmdline').read_text().split()))
+    from ws73_ssap_write_deadline import boot_requested as write_deadline_boot,validate_rows as write_deadline_rows
+    write_deadline_rows(run.get('channel_socket',[]),write_deadline_boot(Path('/proc/cmdline').read_text().split()))
+    from ws73_ssap_provider_owner_exit import boot_requested as provider_exit_boot,validate_rows as provider_exit_rows,VERSION as provider_exit_version
+    provider_exit_rows(run.get('channel_socket',[]),provider_exit_boot(Path('/proc/cmdline').read_text().split()),version=provider_exit_version)
+    from ws73_ssap_provider_unregister import boot_requested as provider_unregister_boot,validate_rows as provider_unregister_rows
+    provider_unregister_rows(run.get('channel_socket',[]),provider_unregister_boot(Path('/proc/cmdline').read_text().split()))
+    from ws73_ssap_provider_deadline import boot_requested as provider_deadline_boot,validate_rows as provider_deadline_rows,VERSION as provider_deadline_version
+    provider_deadline_rows(run.get('channel_socket',[]),provider_deadline_boot(Path('/proc/cmdline').read_text().split()),version=provider_deadline_version)
+    from ws73_ssap_command import boot_requested as command_boot,validate_rows as command_rows
+    command_rows(run.get('channel_socket',[]),command_boot(Path('/proc/cmdline').read_text().split()))
+    from ws73_ssap_command_policy import boot_requested as policy_boot,validate_rows as policy_rows
+    policy_rows(run.get('channel_socket',[]),policy_boot(Path('/proc/cmdline').read_text().split()))
+    from ws73_ssap_command_deadline import boot_requested as deadline_boot,validate_rows as deadline_rows
+    deadline_rows(run.get('channel_socket',[]),deadline_boot(Path('/proc/cmdline').read_text().split()))
     if any(bool(row.get('ssap_owned_required',False))!=owned_requested for row in run.get('channel_socket',[])) or (owned_requested and not run.get('channel_socket')):
         raise ValueError('explicit owned SSAP request and evidence must agree')
     if requested_connection:
@@ -410,10 +494,31 @@ def verify_passthrough():
         if run['connection_control'].get('connection_objects'):
             from ws73_connection_objects import corroborate as object_corroborate
             object_corroborate(run,capture,connections)
+        from ws73_link_measurement import TOKEN,corroborate as measurement_corroborate
+        tokens=Path('/proc/cmdline').read_text().split()
+        requested_measurements=tokens.count(TOKEN)
+        if requested_measurements>1 or bool(requested_measurements)!=run.get('link_measurements_requested',False):
+            raise ValueError('link observation boot/request mismatch')
+        measured=measurement_corroborate(run,capture,bool(requested_measurements))
+        if measured is not None:proofs.append({'link_measurements':measured})
+        from ws73_link_payload import TOKEN as PAYLOAD_TOKEN,corroborate as payload_corroborate,MODE
+        modes=[t for t in tokens if t.startswith('ws73.link_payload_preference=')]
+        if len(modes)>1 or modes not in ([],[PAYLOAD_TOKEN]) or bool(modes)!=(run.get('link_payload_preference_requested') is not None):
+            raise ValueError('link payload boot/request mismatch')
+        payload=payload_corroborate(run,capture,MODE if modes else None)
+        if payload is not None:proofs.append({'link_payload_preference':payload})
     benchmark_modes=[w.split('=',1)[1] for w in Path('/proc/cmdline').read_text().split() if w.startswith('ws73.benchmark_mode=')]
     if bool(benchmark_modes)!=('socket_benchmark' in run) or len(benchmark_modes)>1:raise ValueError('benchmark request/evidence mismatch')
+    dynamic_boot=[w for w in Path('/proc/cmdline').read_text().split()if w.startswith(('ws73.benchmark_dynamic=','ws73.benchmark_parallel=','ws73.benchmark_active=','ws73.benchmark_close=','ws73.benchmark_pressure='))]
+    if dynamic_boot and not benchmark_modes:raise ValueError('dynamic benchmark boot target without benchmark')
+    benchmark_role=[v for v in Path('/proc/cmdline').read_text().split()if v.startswith('ws73.socket_benchmark_apps=')]
+    if benchmark_role and(benchmark_role!=['ws73.socket_benchmark_apps=1']or not benchmark_modes):raise ValueError('benchmark apps-only boot scope mismatch')
+    from ws73_benchmark_ssap import from_boot as service_boot,selected as selected_service,workload as service_workload
+    service=service_boot(Path('/proc/cmdline').read_text().split())
+    if service is not None and not benchmark_modes:raise ValueError('concurrent SSAP requires the benchmark root scope')
     if benchmark_modes:
-        from ws73_socket_benchmark import corroborate as benchmark_corroborate
+        from ws73_socket_benchmark import corroborate as benchmark_corroborate,apps_role
+        if bool(benchmark_role)!=all(apps_role(row)for row in run['socket_benchmark']):raise ValueError('benchmark role/boot/evidence mismatch')
         from ws73_socket_benchmark import configuration
         fields={}
         words=Path('/proc/cmdline').read_text().split()
@@ -423,6 +528,11 @@ def verify_passthrough():
             fields[field]=int(values[0])
         config=configuration(benchmark_modes[0],fields['window'],count=fields['count'],size=fields['bytes'],interval_us=fields['interval_us'])
         if any(row['config']!=config for row in run['socket_benchmark']):raise ValueError('requested exact workload differs')
+        from ws73_socket_benchmark import channel_from_boot,row_channel
+        channel=channel_from_boot(words,config)
+        if any(row_channel(row)!=channel for row in run['socket_benchmark']):raise ValueError('requested channel target differs from actual benchmark')
+        if any(selected_service(row)!=service for row in run['socket_benchmark']):raise ValueError('requested concurrent SSAP differs from actual benchmark')
+        if service is not None:service_workload(config,channel)
         proofs.append({'socket_benchmark':benchmark_corroborate(run,capture,EVIDENCE)})
     if 'daemon_removal' in run:
         from ws73_daemon_removal import corroborate_wire

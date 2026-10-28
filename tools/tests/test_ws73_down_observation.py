@@ -90,6 +90,47 @@ class Observation(unittest.TestCase):
         with self.assertRaises(CaptureError):
             corroborate_down_property(run.data,phase,b,{'wall_ns':7_000_000_000})
 
+    def test_exact_protected_inflight_capture_reuses_workload_guard(self):
+        for seconds in (6,12):
+            args=SimpleNamespace(connection_down_failure_observe_seconds=seconds,passthrough=True,
+                connection_verify=True,channel_socket_verify=True,ssap_subscription_verify=True,
+                ssap_subscription_inflight_release_verify=True,security_agent='numeric-approve')
+            self.assertEqual(requested_down_failure_observation(args),seconds)
+            # Host uses qmp_hotplug plus an explicit real-mode argument;guest
+            # uses passthrough. Both validate the same bounded workload.
+            host=vars(args).copy();host.pop('passthrough');host['qmp_hotplug']=True
+            self.assertEqual(requested_down_failure_observation(SimpleNamespace(**host),passthrough=True),seconds)
+            for key,value in [('passthrough',False),('passthrough',1),('connection_verify',1),
+                    ('channel_socket_verify',None),('ssap_subscription_verify',False),
+                    ('ssap_subscription_verify',1),('ssap_subscription_inflight_release_verify',1),
+                    ('ssap_subscription_inflight_release_verify',False),('security_agent','approve'),
+                    ('security_agent',None),('ssap_subscription_owner_loss_verify',True),
+                    ('ssap_subscription_renewal_verify',True),('ssap_subscription_pressure_verify',True),
+                    ('ssap_update_delivery_verify',True),('fault_recovery',True),
+                    ('channel_socket_burst',True),('application_client_verify',True),
+                    ('managed_partial_case','release'),('channel_benchmark','ping')]:
+                bad=vars(args)|{key:value}
+                with self.subTest(seconds=seconds,key=key,value=value),self.assertRaises(ValueError):
+                    requested_down_failure_observation(SimpleNamespace(**bad))
+
+    def test_protected_observer_still_raises_original_failure_after_twelve_seconds(self):
+        clock=Clock();run=Run(clock,{'/a':0,'/b':99});phase={}
+        run.args=SimpleNamespace(connection_down_failure_observe_seconds=12,passthrough=True,
+            connection_verify=True,channel_socket_verify=True,ssap_subscription_verify=True,
+            ssap_subscription_inflight_release_verify=True,security_agent='numeric-approve')
+        self.assertEqual(requested_down_failure_observation(run.args),12)
+        run.args.ssap_subscription_inflight_case='expiry'
+        with self.assertRaises(ValueError):requested_down_failure_observation(run.args)
+        run.args.ssap_subscription_inflight_case='release'
+        a={'path':'/a','address':'AA:AA:AA:AA:AA:AA','generation':1};b={'path':'/b','address':'BB:BB:BB:BB:BB:BB','generation':2}
+        with patch('ws73_connection_control.time',SimpleNamespace(monotonic=clock.monotonic,time_ns=clock.time_ns,sleep=clock.sleep)):
+            with self.assertRaisesRegex(CaptureError,'shared budget'):await_down_properties(run,phase,a,b)
+        row=phase['down_property_observation']['passive_failure_capture']
+        self.assertEqual(phase['down_property_observation']['budget_seconds'],5)
+        self.assertEqual(run.data['status'],'FAIL')
+        self.assertEqual(row['command_count_before'],row['command_count_after'])
+        self.assertEqual(row['end_monotonic_ns']-row['start_monotonic_ns'],12_000_000_000)
+
     def test_interrupting_passive_window_is_not_a_completed_observation(self):
         clock=Clock();run=Run(clock,{'/a':0,'/b':6});phase={}
         run.args=SimpleNamespace(connection_down_failure_observe_seconds=6)

@@ -43,26 +43,100 @@ pub fn admit(
 ) -> zbus::fdo::Result<Option<Instant>> {
     check_sender(context.daemon_owner, sender)?;
     let id = prompt.1;
-    if context.owner_lost
+    let permitted = match prompt.6 {
+        0 => {
+            context
+                .access
+                .check_authorization_result(id.5, prompt.3, true)
+                .is_ok()
+                && if prompt.3 {
+                    // This callback describes the write direction, not its
+                    // wire opcode. The daemon checks the exact operation both
+                    // before dispatch and before committing the property.
+                    context.operations.contains(SsapOperations::WRITE_NO_RSP)
+                        || context.operations.contains(SsapOperations::WRITE_WITH_RSP)
+                } else {
+                    context.operations.contains(SsapOperations::READ)
+                }
+        }
+        2 => {
+            prompt.3
+                && context.operations.contains(SsapOperations::CLIENT_CFG_WR)
+                && slk_protocol::ssap::client_config::decode(
+                    &prompt.5,
+                    slk_protocol::ssap::client_config::modes(context.operations),
+                )
+                .is_ok()
+                && slk_protocol::ssap::client_config::WRITE_ACCESS
+                    .check_authorization_result(id.5, true, true)
+                    .is_ok()
+        }
+        _ => false,
+    };
+    admit_identity(
+        context.controller,
+        context.owner_lost,
+        context.property,
+        prompt,
+        permitted,
+        2042,
+    )
+}
+
+/// Original method observation, distinct from property operation indicators.
+/// Approval here is local policy only; the daemon retains final authority.
+/// cbindgen:ignore
+pub struct MethodAuthorizationContext<'a> {
+    pub daemon_owner: &'a str,
+    pub owner_lost: bool,
+    pub controller: ControllerId,
+    pub method: Option<u16>,
+    pub access: slk_protocol::ssap::access::MethodAccess,
+}
+
+pub fn admit_method(
+    context: &MethodAuthorizationContext<'_>,
+    sender: Option<&str>,
+    prompt: &Prompt,
+) -> zbus::fdo::Result<Option<Instant>> {
+    check_sender(context.daemon_owner, sender)?;
+    let permitted = prompt.6 == slk_contract::ssap::METHOD_TARGET
+        && prompt.3
+        && prompt.2 != 0
+        && prompt.1.1 != 0
+        && prompt.1.3 <= 0x0fff
+        && context.access.check(prompt.1.5, true).is_ok();
+    admit_identity(
+        context.controller,
+        context.owner_lost,
+        context.method,
+        prompt,
+        permitted,
+        slk_contract::ssap::MAX_METHOD_ARGUMENT_BYTES,
+    )
+}
+
+fn admit_identity(
+    controller: ControllerId,
+    owner_lost: bool,
+    target: Option<u16>,
+    prompt: &Prompt,
+    permitted: bool,
+    maximum: usize,
+) -> zbus::fdo::Result<Option<Instant>> {
+    let id = prompt.1;
+    if owner_lost
         || prompt.0 == 0
-        || context.property != Some(prompt.2)
-        || id.0 != context.controller.index
-        || id.1 != context.controller.generation
+        || target != Some(prompt.2)
+        || !permitted
+        || id.0 != controller.index
+        || id.1 != controller.generation
         || id.2 == 0
         || id.4 == 0
         || id.5 > 2
         || (id.6, id.7, id.8) != (10, 10, 0)
-        || prompt.5.len() > 2042
+        || prompt.5.len() > maximum
         || !prompt.3 && !prompt.5.is_empty()
-        || context
-            .access
-            .check_authorization_result(id.5, prompt.3, true)
-            .is_err()
-        || !context.operations.contains(if prompt.3 {
-            SsapOperations::WRITE_WITH_RSP
-        } else {
-            SsapOperations::READ
-        })
     {
         return Ok(None);
     }
@@ -82,17 +156,30 @@ pub fn admit(
 /// its own D-Bus progress by invoking foreign callbacks on that executor thread.
 pub async fn await_decision(
     result: oneshot::Receiver<bool>,
-    mut lost: watch::Receiver<bool>,
+    lost: watch::Receiver<bool>,
     original: Instant,
 ) -> bool {
+    await_reply(result, lost, original).await.unwrap_or(false)
+}
+
+/// Keep one actual reply within the original owner scope and deadline.
+pub(crate) async fn await_reply<T>(
+    result: oneshot::Receiver<T>,
+    mut lost: watch::Receiver<bool>,
+    original: Instant,
+) -> Option<T> {
     if *lost.borrow() || lost.has_changed().is_err() || original <= Instant::now() {
-        return false;
+        return None;
     }
     tokio::select! {biased;
-        _=lost.changed()=>false,
-        result=tokio::time::timeout_at(original.into(),result)=>
-            matches!(result,Ok(Ok(true))) && !*lost.borrow()
-                && lost.has_changed().is_ok() && original > Instant::now(),
+        _=lost.changed()=>None,
+        result=tokio::time::timeout_at(original.into(),result)=> {
+            if !*lost.borrow() && lost.has_changed().is_ok() && original > Instant::now() {
+                result.ok().and_then(|reply| reply.ok())
+            } else {
+                None
+            }
+        },
     }
 }
 

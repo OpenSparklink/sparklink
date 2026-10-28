@@ -15,6 +15,7 @@ from sparklink.structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
+    SleLinkCommandSubmit, SleLinkCommandResult,
     SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus, SleSessionTxStatus,
     SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel, SleSecurityNumericConfirm, SleConnectionSecurity,
 )
@@ -29,6 +30,23 @@ class NativeBindingTests(unittest.TestCase):
         self.handle = self.lib.slk_adapter_open(b"/dev/null")
         self.assertTrue(self.handle)
         self.addCleanup(self.lib.slk_adapter_free, self.handle)
+
+    def test_managed_link_query_is_real_ioctl_and_preserves_failed_outputs(self):
+        request = SleLinkCommandSubmit(version=1, action=1, generation=2, lease_epoch=3,
+                                     request_id=4, lifetime=5, deadline_monotonic_ns=100_000_000, timeout_ms=100, kind=1)
+        request.address[:] = [1] * 6
+        original = bytes(request)
+        self.assertEqual(self.lib.slk_link_command_submit(self.handle, ctypes.byref(request)), -errno.ENOTTY)
+        self.assertEqual(bytes(request), original)
+        self.assertEqual(self.lib.slk_link_command_submit(None, ctypes.byref(request)), -errno.EINVAL)
+        self.assertEqual(self.lib.slk_link_command_submit(self.handle, None), -errno.EINVAL)
+        result = SleLinkCommandResult(request_id=77)
+        canary = bytes(result)
+        self.assertEqual(self.lib.slk_link_command_result(self.handle, 2, 0, 4, ctypes.byref(result)), -errno.ENOTTY)
+        self.assertEqual(bytes(result), canary)
+        self.assertEqual(self.lib.slk_link_command_result(self.handle, 2, 0, 0, ctypes.byref(result)), -errno.EINVAL)
+        self.assertEqual(self.lib.slk_link_command_result(None, 2, 1, 0, ctypes.byref(result)), -errno.EINVAL)
+        self.assertEqual(self.lib.slk_link_command_result(self.handle, 2, 1, 0, None), -errno.EINVAL)
 
     def test_limited_security_submit_is_real_ioctl_not_local_success(self):
         request=SleSecurityNegotiationSubmit(version=2,deadline_monotonic_ns=1,profile=1,flags=1,action=2,generation=1,lifetime=1,request_id=1,timeout_ms=5000)

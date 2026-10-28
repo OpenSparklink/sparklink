@@ -11,16 +11,115 @@ import re
 import json
 import os
 import secrets
+import stat
 import subprocess
 import time
+import traceback
 from ws73_capture import CaptureError
 from ws73_channel_socket import credentials
 
+OUTPUT_MAXIMUM=2*1024*1024
 
-def wait_text(process, path, pattern, deadline, min_count=1):
-    if not 1<=min_count<=16:raise CaptureError('bounded output observation count required')
+
+def owned_input(files,uid,gid,*,text=False):
+    """One new test pipe, reopenable by its child after the supervisor drops uid.
+
+    Reuses the service-role gate's ownership rule. Never changes inherited
+    caller stdin, global permissions or the CLI's independent O_NONBLOCK open.
+    """
+    readfd,writefd=os.pipe2(os.O_CLOEXEC)
+    files.callback(os.close,readfd)
+    writer=files.enter_context(os.fdopen(writefd,'w' if text else 'wb',buffering=1 if text else 0))
+    pipe=os.fstat(readfd)
+    if (pipe.st_uid,pipe.st_gid)!=(uid,gid):os.fchown(readfd,uid,gid)
+    os.fchmod(readfd,0o600)
+    pipe=os.fstat(readfd)
+    identity=dict(uid=pipe.st_uid,gid=pipe.st_gid,mode=stat.S_IMODE(pipe.st_mode),fifo=stat.S_ISFIFO(pipe.st_mode))
+    if identity!=dict(uid=uid,gid=gid,mode=0o600,fifo=True):raise CaptureError('actual child-owned stdin pipe required')
+    return readfd,writer,identity
+
+
+@contextmanager
+def observed_process(args,item,out,err,**options):
+    """Reuse bounded child pipes; persisted files are evidence sinks,not IPC.
+
+    This byte bound covers existing 128-observation long-value fixtures;it
+    changes no protocol budget,request count,deadline or application payload.
+    """
+    from ws73_dynamic_channels import ApplicationOutput
+    process=None;primary=None
+    item['output_files']=[str(out),str(err)]
+    with ExitStack()as files:
+        reader=ApplicationOutput(OUTPUT_MAXIMUM);files.callback(reader.close)
+        try:
+            sinks=[files.enter_context(p.open('xb'))for p in (out,err)]
+            writer=None
+            if options.get('stdin')==subprocess.PIPE and options.get('user') is not None:
+                options['stdin'],writer,item['stdin']=owned_input(files,options['user'],options['group'],text=options.get('text',False))
+            process=subprocess.Popen(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE,**options)
+            if writer is not None:process.stdin=writer
+            process.ws73_observed_output=(reader,item,(out,err))
+            reader.add(process,item,sinks)
+            item['output_collection']['complete']=False
+            yield process
+        except BaseException as error:
+            primary=error
+            raise
+        finally:
+            if process is not None:
+                try:
+                    if process.poll()is None:process.kill()
+                    process.wait(timeout=2)
+                    reader.final(item)
+                    item['output_collection']['complete']=True
+                except BaseException as error:
+                    item.setdefault('output_cleanup_errors',[]).append(dict(error=str(error),
+                        error_type=type(error).__name__,errno=getattr(error,'errno',None),traceback=traceback.format_exc()))
+                    if primary is None:raise
+                finally:
+                    item.update(exit=process.returncode,end_wall_ns=time.time_ns())
+                    if process.stdin:process.stdin.close()
+
+
+def output_text(process,path):
+    """Only an explicitly observed real child supplies a live transcript."""
+    state=getattr(process,'ws73_observed_output',None)
+    if not isinstance(state,tuple)or len(state)!=3:raise CaptureError('explicit bounded child output required;no live file fallback')
+    reader,item,paths=state
+    if Path(path)not in paths:raise CaptureError('output path differs from original child')
+    reader.drain()
+    return item['stdout'if Path(path)==paths[0]else'stderr']
+
+
+def wait_output(process,timeout):
+    """Drain the same child pipes while waiting within one original budget."""
+    deadline=time.monotonic()+timeout
     while True:
-        text=Path(path).read_text()
+        state=getattr(process,'ws73_observed_output',None)
+        if not isinstance(state,tuple)or len(state)!=3:raise CaptureError('observed child required')
+        state[0].drain()
+        result=process.poll()
+        if result is not None:return result
+        if time.monotonic()>=deadline:raise subprocess.TimeoutExpired(process.args,timeout)
+        time.sleep(.005)
+
+
+def verify_output(item):
+    record=item.get('output_collection',{})
+    if (record.get('method')!='bounded-child-pipes'or type(record.get('maximum_bytes_per_stream'))is not int
+            or record['maximum_bytes_per_stream']!=OUTPUT_MAXIMUM or record.get('complete')is not True
+            or item.get('output_collection_error')or item.get('output_collection_followup_errors')or item.get('output_cleanup_errors')):
+        raise CaptureError('complete original bounded pipe output required')
+    for name in ('stdout','stderr'):
+        size=item.get('captured_bytes',{}).get(name)
+        if type(size)is not int or not 0<=size<=OUTPUT_MAXIMUM or size!=len(item[name].encode('utf-8')):
+            raise CaptureError('complete exact output byte accounting required')
+
+
+def wait_text(process, path, pattern, deadline, min_count=1, *, max_count=16, count_budget=80):
+    if type(count_budget)is not int or count_budget not in (80,128)or not 1<=max_count<=count_budget or not 1<=min_count<=max_count:raise CaptureError('bounded output observation count required')
+    while True:
+        text=output_text(process,path)
         matches=re.findall(pattern,text,re.M)
         if len(matches)>=min_count:return matches,text
         if process.poll() is not None or time.monotonic()>=deadline:
@@ -29,51 +128,83 @@ def wait_text(process, path, pattern, deadline, min_count=1):
 
 
 @contextmanager
-def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api=None,read_only=False):
+def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api=None,read_only=False,updates=False,application_uid=1000,operations=5,read_provider=False,write_provider=False,method_access=None):
+    if method_access is not None and (type(method_access)is not int or method_access!=4
+            or sdk_api is not None or read_only or updates or read_provider or write_provider
+            or operations!=5 or application_uid!=1000):
+        raise CaptureError('explicit standalone CLI authorized method publisher required')
+    if (type(read_provider)is not bool or type(write_provider)is not bool
+            or (read_provider and (write_provider or sdk_api not in ('c','python') or read_only is not True or operations!=1 or updates))
+            or (write_provider and (sdk_api not in ('c','python') or read_only is not False or operations!=6 or updates))):
+        raise CaptureError('explicit non-overlapping READ/WRITE SDK Provider test owner required')
+    if type(operations)is not int or operations not in (1,3,5,6) or (operations==6 and not write_provider) or (operations!=5 and sdk_api is not None and not (read_provider or write_provider)):
+        raise CaptureError('explicit CLI READ, READ/WRITE_COMMAND or original publisher operations required')
+    if application_uid not in (1000,1005):raise CaptureError('fixed publisher test role required')
+    if application_uid==1005:
+        from ws73_application_role import require_vm
+        require_vm('ws73.ssap_subscription=1')
+        if sdk_api not in ('c','python'):raise CaptureError('service-only publisher requires existing SDK consumer')
     source,target=row['owners'][sender],row['owners'][1-sender]
     secret=secrets.token_hex(32);value=secrets.token_hex(32);uuid=secrets.token_hex(16);service=secrets.token_hex(16)
     prefix=run.output/f'ssap-owned-{row["phase"]}-{sender}-{label or policy}'
     out=Path(str(prefix)+'.stdout');err=Path(str(prefix)+'.stderr')
-    args=[str(run.args.slctl),'--adapter',target['owner']['path'],'ssap-serve',service,uuid,'5','36',secret,policy]
+    args=[str(run.args.slctl),'--adapter',target['owner']['path'],'ssap-serve',service,uuid,str(operations),'36',secret,policy]
+    if method_access is not None:
+        args=[str(run.args.slctl),'--adapter',target['owner']['path'],'ssap-serve-method',service,uuid,str(method_access),policy]
     environment=None
     if sdk_api is not None:
         from ws73_application_client import application_environment,owned_arguments
-        args=owned_arguments(sdk_api,target,service,uuid,secret,policy,read_only=read_only)
+        args=owned_arguments(sdk_api,target,service,uuid,secret,policy,read_only=read_only,
+            update_connection=target['object']['path'] if updates else None,read_provider=read_provider,write_provider=write_provider)
         environment=application_environment()
     item=dict(sender=sender,target=1-sender,policy=policy,secret=secret,value=value,uuid=uuid,service=service,args=args,start_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
+    if operations!=5:item['operations']=operations
+    if method_access is not None:item.update(entry_kind='method',method_access=method_access)
     if sdk_api is not None:item.update(publisher_api=sdk_api,environment=environment)
+    if read_provider:item['sdk_read_provider_contract_version']=1
+    if write_provider:item['sdk_write_provider_contract_version']=1
     row.setdefault(collection,[]).append(item);run.save();process=None
     try:
-        with ExitStack() as files:
-            process=subprocess.Popen(args,env=dict(os.environ,**environment) if environment else None,stdin=subprocess.PIPE,stdout=files.enter_context(out.open('x')),stderr=files.enter_context(err.open('x')),text=True)
-            item.update(pid=process.pid,credentials=credentials(process.pid));run.save()
-            matches,_=wait_text(process,out,r'^SsapOwnedService: start=(\d+) end=(\d+) property=(\d+); local registration only$',time.monotonic()+5)
+        with observed_process(args,item,out,err,env=dict(os.environ,**environment)if environment else None,stdin=subprocess.PIPE,text=True,**({'user':application_uid,'group':application_uid,'extra_groups':[]}if os.geteuid()==0 else {}))as process:
+            if application_uid==1005:
+                from ws73_application_client import process_identity
+                item['credentials'],item['process_status']=process_identity(process.pid,1005)
+            else:item['credentials']=credentials(process.pid)
+            item.update(pid=process.pid);run.save()
+            registration=(r'^SsapOwnedMethod: start=(\d+) end=(\d+) method=(\d+); local registration only$' if method_access is not None
+                          else r'^SsapOwnedService: start=(\d+) end=(\d+) property=(\d+); local registration only$')
+            matches,_=wait_text(process,out,registration,time.monotonic()+5)
             if len(matches)!=1:raise CaptureError('one actual owned registration required')
-            if sdk_api is not None and out.read_text().splitlines()[0]!=f'SdkOwnedAPI: api={sdk_api} client_closed=true':
+            if sdk_api is not None and output_text(process,out).splitlines()[0]!=f'SdkOwnedAPI: api={sdk_api} client_closed=true':
                 raise CaptureError('actual SDK original caller and parent-close barrier required')
             start,end,handle=map(int,matches[0]);item.update(start=start,end=end,handle=handle);run.save()
             yield process,item
     finally:
-        if process is not None:
-            if process.poll() is None:process.kill();process.wait(timeout=2)
-            item.update(exit=process.returncode,stdout=out.read_text() if out.exists() else '',stderr=err.read_text() if err.exists() else '')
-            if process.stdin:process.stdin.close()
         item['end_wall_ns']=time.time_ns();run.save()
 
 
-def value_snapshot(process,item,expected):
+def value_snapshot(process,item,expected,*,limit=16):
+    version=item.get('ssap_shared_pressure_contract_version')
+    if version is not None and(type(version)is not int or version!=1):raise CaptureError('explicit shared-pressure value observation contract required')
+    budget=128 if version is not None else 80
+    # Reject a caller/profile mismatch before sending the actual command.
+    if type(limit)is not int or not 1<=limit<=budget:raise CaptureError('bounded value observation count required')
     path=Path(item['output_files'][0]);pattern=r'^SsapOwnedValue: handle=(\d+) value=([0-9a-f]*)$'
-    count=len(re.findall(pattern,path.read_text(),re.M));observation=dict(start_wall_ns=time.time_ns(),start_monotonic_ns=time.monotonic_ns())
+    count=len(re.findall(pattern,output_text(process,path),re.M));observation=dict(start_wall_ns=time.time_ns(),start_monotonic_ns=time.monotonic_ns())
+    if count>=limit:raise CaptureError('value observation count exhausted before command')
     process.stdin.write('value\n');process.stdin.flush()
-    values,_=wait_text(process,path,pattern,time.monotonic()+2,min_count=count+1)
+    values,_=wait_text(process,path,pattern,time.monotonic()+2,min_count=count+1,max_count=limit,count_budget=budget)
     if len(values)!=count+1 or values[-1]!=(str(item['handle']),expected):raise CaptureError('original owner application value snapshot differs')
     observation.update(end_wall_ns=time.time_ns(),end_monotonic_ns=time.monotonic_ns(),handle=item['handle'],value=expected,ordinal=count+1)
     item.setdefault('value_snapshots',[]).append(observation);return observation
 
 
-def await_removed(run,target,start):
-    deadline=time.monotonic()+2
+def await_removed(run,target,start,*,deadline_ns=None):
+    if deadline_ns is not None and (type(deadline_ns)is not int or deadline_ns<=0):
+        raise CaptureError('original absolute cleanup deadline required')
+    deadline=min(time.monotonic()+2,deadline_ns/1e9)if deadline_ns is not None else time.monotonic()+2
     while True:
+        if time.monotonic()>=deadline:raise CaptureError('original owner cleanup observation deadline')
         c=run.command([str(run.args.slctl),'--adapter',target['owner']['path'],'ssap-list'],max(.001,deadline-time.monotonic()),collection='ssap_owned_cleanup')
         if time.monotonic()>deadline:raise CaptureError('original owner cleanup observation deadline')
         if c['exit']:raise CaptureError('local metadata cleanup query failed')
@@ -86,12 +217,20 @@ def await_removed(run,target,start):
 
 def execute(run,row):
     row['ssap_owned_required']=True;row['ssap_owned']=[];run.save()
+    description=getattr(run.args,'ssap_description_verify',False)
+    if description:
+        row.update(ssap_description_required=True,ssap_description_version=1)
+        from ws73_ssap_update_delivery import tool_records
+        row['ssap_description_tools']=tool_records();run.save()
     for sender in (0,1):
         source,target=row['owners'][sender],row['owners'][1-sender]
         for policy in ('allow','deny'):
             with publisher(run,row,sender,policy) as (process,item):
                 h=item['handle'];level=row.get('security_requirement',0)
                 def command(words):return run.command([str(run.args.slctl),'--adapter',source['owner']['path'],*words],10,collection='ssap_owned')
+                if description:
+                    from ws73_ssap_description import execute as description_execute
+                    description_execute(run,row,process,item)
                 item['read']=command(['ssap-read',source['object']['path'],str(h),str(level)])
                 item['uuid_read']=command(['ssap-read-uuid',source['object']['path'],'16','65535',item['uuid'],str(level)])
                 item['write']=command(['ssap-write',source['object']['path'],str(h),item['value'],str(level)])
@@ -107,6 +246,9 @@ def execute(run,row):
                 item['after_owner_exit']=await_removed(run,target,item['start'])
                 item['removed_read']=command(['ssap-read',source['object']['path'],str(h),str(level)])
                 if not item['removed_read']['exit'] or 'peer read error 4' not in item['removed_read']['stderr']:raise CaptureError('retired owner handle must fail over real SMTC')
+                if description:
+                    from ws73_ssap_description import retired as description_retired
+                    description_retired(run,row,item)
 
 
 def corroborate(row,matched):
@@ -125,7 +267,7 @@ def corroborate(row,matched):
         if item['credentials']['uids']!=[1000]*4 or any(int(v,16) for v in item['credentials']['capabilities'].values()):raise CaptureError('ordinary owner without capabilities required')
         if item['exit']!=-9 or item['owner_exit']!=-9 or item['stderr']:raise CaptureError('actual abrupt service owner loss required')
         if item['local_value']!=(value if allow else secret).hex() or f'SsapOwnedValue: handle={h} value={item["local_value"]}' not in item['stdout'].splitlines():raise CaptureError('actual owner-side value verification required')
-        decisions=re.findall(r'^SsapAuthorizationDecision: request=(\d+) property=(\d+) write=(true|false) security=(\d+) approved=(true|false); local policy only$',item['stdout'],re.M)
+        decisions=re.findall(r'^SsapAuthorizationDecision: request=(\d+) property=(\d+) data_type=0 write=(true|false) security=(\d+) approved=(true|false); local policy only$',item['stdout'],re.M)
         if len(decisions)!=4 or [d[2] for d in decisions]!=['false','false','true','false'] or any(int(d[1])!=h or int(d[3])!=row.get('security_requirement',0) or d[4]!=str(allow).lower() for d in decisions) or len({d[0] for d in decisions})!=4:raise CaptureError('four original per-request owner decisions required')
         wire=[]
         ops=value_operations(h,uuid,secret,value,0 if allow else 9)+[('removed_read',b'\x08\x03'+h.to_bytes(2,'little')+b'\x00',b'\x09\x0b\x04\x00')]
@@ -148,4 +290,9 @@ def corroborate(row,matched):
         if metadata['exit'] or len(lists)!=1 or any(v[0]==item['start'] for v in json.loads(lists[0])):raise CaptureError('actual removed registration metadata required')
         if not item['write']['end_wall_ns']<item['owner_exit_wall_ns']<item['removed_read']['start_wall_ns']:raise CaptureError('owner loss must precede actual remote refusal')
         proof.append(dict(sender=s,policy=item['policy'],wire=wire,owner_lost=True,scope='uid1000 guest system bus;not service-only deployment,crypto identity,Bond or full cancellation matrix'))
+        if row.get('ssap_description_required',False):
+            from ws73_ssap_description import corroborate as description_corroborate
+            result,extra=description_corroborate(row,item,matched)
+            proof[-1]['description']=result
+            for key in credit:credit[key]+=extra[key]
     return proof,credit

@@ -4,6 +4,8 @@
 pub mod discovery;
 #[path = "ssap/exchange.rs"]
 pub mod exchange;
+#[path = "ssap/fragments.rs"]
+pub mod fragments;
 #[path = "ssap/read_uuid.rs"]
 pub mod read_uuid;
 #[path = "ssap/updates.rs"]
@@ -13,6 +15,8 @@ pub mod value;
 
 #[path = "ssap/access.rs"]
 pub mod access;
+#[path = "ssap/client_config.rs"]
+pub mod client_config;
 
 use core::{fmt, ops::BitOr};
 

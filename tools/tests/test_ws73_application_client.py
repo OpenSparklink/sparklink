@@ -1,19 +1,39 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Verifier fixtures only, no controller/device or qualification produced."""
 import copy
+import errno
+import io
 import json
 from pathlib import Path
 import sys
 import tempfile
+import time
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).parents[1]))
-from ws73_application_client import corroborate, valid_summary, application_environment
+from ws73_application_client import (corroborate, valid_summary, application_environment,
+    ssap_call, ssap_commands, ssap_receipt, ssap_error_arguments, ssap_error_command, ssap_error_receipt)
 from ws73_capture import CaptureError
 from ws73_target import run_exit_code
 import ws73_target as target
 import test_ws73_ssap_value as value_cases
+
+
+def error_fixture(api='c',expected_errno=errno.EIO):
+    entry=dict(owner=dict(index=0,generation=1),object=dict(path='/original/link'))
+    args=['ssap-read',entry['object']['path'],'2']
+    call=dict(stage='ssap_call',api=api,deadline_ns=6_000_000_000,call_ns=1_100_000_000,client_closed=True)
+    returned=6_010_000_000 if expected_errno==errno.ETIMEDOUT else 2_000_000_000
+    result=dict(stage='ssap_error',api=api,errno=expected_errno,operation_success=False,
+                deadline_ns=call['deadline_ns'],returned_ns=returned)
+    app=dict(api=api,args=ssap_error_arguments(api,entry,args,expected_errno),environment=application_environment(),
+        ssap_operation=args[0],ssap_path=args[1],ssap_handle=2,ssap_expected_errno=expected_errno,ssap_proposed='',
+        start_monotonic_ns=1_000_000_000,end_monotonic_ns=returned+10_000_000,
+        ssap_error_deadline_ns=call['deadline_ns'],ssap_supervisor_deadline_ns=8_000_000_000,
+        credentials=dict(uids=[1000]*4,capabilities={k:'0'for k in ('CapEff','CapPrm','CapAmb','CapInh')}),
+        exit=0,stderr='',stdout=json.dumps(call)+'\n'+json.dumps(result)+'\n')
+    return entry,app,call,result
 
 
 def sdk_ssap_fixture(row,sdus):
@@ -45,7 +65,7 @@ def sdk_ssap_fixture(row,sdus):
             arguments=(['/bin/ws73-application-client-c']if api=='c'else['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py'])+['ssap',str(entry['owner']['index']),str(entry['owner']['generation']),entry['object']['path'],operation,str(item['handle']),item[key]]
             if operation=='ssap-write':arguments.append(item['value'])
             barrier=json.dumps(dict(stage='ssap_start_barrier',api=api,client_closed=True))
-            app.update(position=position,api=api,args=arguments,environment=application_environment(),ssap_operation=operation,ssap_path=entry['object']['path'],ssap_handle=item['handle'],ssap_expected=item[key],stdout=barrier+'\n'+app['stdout'],stderr='',credentials=dict(uids=[1000]*4,capabilities={k:'0'for k in ['CapEff','CapPrm','CapAmb','CapInh']}))
+            app.update(position=position,api=api,args=arguments,environment=application_environment(),ssap_operation=operation,ssap_path=entry['object']['path'],ssap_handle=item['handle'],ssap_expected=item[key],stdout=barrier+'\n'+app['stdout'],stderr='',credentials=dict(uids=[1004]*4,gids=[1004]*4,groups=[],capabilities={k:'0'for k in ['CapEff','CapPrm','CapAmb','CapInh']}))
             row['ssap_language_clients'].append(app)
         publisher=row['ssap_owned_publishers'][item['target']];ordinal=len(publisher['value_snapshots'])+1
         observation=dict(api=publisher['api'],publisher_pid=publisher['pid'],handle=item['handle'],value=item['value'],ordinal=ordinal,start_wall_ns=start+26,end_wall_ns=start+28)
@@ -55,7 +75,7 @@ def sdk_ssap_fixture(row,sdus):
             token=(ordinal-1)*5+j+1
             decision=dict(api=publisher['api'],index=owner['index'],generation=owner['generation'],
                 token=token,request_id=token+10,lifetime=obj['lifetime'],handle=obj['handle'],
-                epoch=1,level=0,deadline_ns=10_000_000_000,property=item['handle'],write=name=='write',
+                epoch=1,level=0,deadline_ns=10_000_000_000,property=item['handle'],data_type=0,write=name=='write',
                 value=item['value'] if name=='write' else '',local_tcid=10,remote_tcid=10,pi=0,
                 allow=True,decision_ns=9_000_000_000+token,decision_wall_ns=item[name]['start_wall_ns']+2)
             publisher['stdout']+='SdkAuthorizationDecision: '+json.dumps(decision)+'\n'
@@ -83,12 +103,13 @@ def fixture():
             complete=dict(stage='complete',api=api,sent=sent.hex(),received=received.hex(),last_close_rebind='NotSupported')
             apps.append(dict(position=i,api=api,environment=application_environment(),stdout=json.dumps(ready)+'\n'+json.dumps(complete)+'\n',stderr='',exit=0,credentials=dict(uids=[1004]*4,gids=[1004]*4,groups=[],capabilities={k:'0' for k in ['CapEff','CapPrm','CapAmb','CapInh']})))
         row=dict(phase=n,owners=owners,request=request.hex(),reply=reply.hex(),applications=apps,start_wall_ns=100+n*10000,end_wall_ns=9999+n*10000,status='APPLICATION_CLIENT_EVIDENCE_PENDING')
-        from ws73_application_role import DENIALS
+        from ws73_application_role import DENIALS,SSAP_PREFLIGHT
         lines=['AUTH_CREDENTIALS: uid=1004 gid=1004 caps=0','AUTH_CHANNEL_KERNEL_ACCESS: denied','AUTH_DENIED: own-service']
         for destination in ['named','unique']:
-            lines+=['AUTH_CHANNEL_IDENTITY: '+destination]+['AUTH_DENIED: '+m for m in DENIALS]
+            lines+=['AUTH_CHANNEL_IDENTITY: '+destination]+['AUTH_DENIED: '+m for m in DENIALS[:2]]
+            lines+=['AUTH_SSAP_PREFLIGHT: '+m for m in SSAP_PREFLIGHT]+['AUTH_DENIED: '+m for m in DENIALS[2:]]
         lines+=['AUTH_CHANNEL_ROLE: sparklink-apps-only']
-        row.update(channel_role='sparklink-apps-only',role_probe=dict(args=['/bin/bus-policy-probe',owners[0]['object']['path'],'application-channel'],credentials=copy.deepcopy(apps[0]['credentials']),exit=0,stderr='',stdout='\n'.join(lines)+'\n',start_wall_ns=110+n*10000,end_wall_ns=120+n*10000))
+        row.update(channel_role='sparklink-apps-only',application_role_contract_version=2,role_probe=dict(args=['/bin/bus-policy-probe',owners[0]['object']['path'],'application-channel'],credentials=copy.deepcopy(apps[0]['credentials']),exit=0,stderr='',stdout='\n'.join(lines)+'\n',start_wall_ns=110+n*10000,end_wall_ns=120+n*10000))
         rows.append(row)
         for source,target,payload in [(0,1,request),(1,0,reply)]:
             frame=(b'\x1f\0'+(len(payload)+1).to_bytes(2,'little')+b'\xf1'+payload).hex()
@@ -99,9 +120,242 @@ def fixture():
 
 
 class ApplicationClientEvidence(unittest.TestCase):
+    def test_method_result_and_arguments_have_separate_bounds_and_receipts(self):
+        entry,template,_,_=error_fixture();row=dict(phase=0,owners=[entry])
+        for api in ('c','python'):
+            for arguments,expected in [(b'',b''),(b'\x31'*32,b'\xa6'*17),(b'\x31'*2043,b'\xa6'*2045)]:
+                args=['ssap-call-method',entry['object']['path'],'2',arguments.hex()]
+                _,command,_,environment,_,_=ssap_call(None,row,entry,args,expected,api=api,expected_size=len(expected),application_uid=1000)
+                self.assertEqual(command[-2:],[expected.hex(),arguments.hex()])
+                app=dict(api=api,args=command,environment=environment,ssap_operation=args[0],ssap_path=args[1],
+                    ssap_handle=2,ssap_arguments=arguments.hex(),ssap_expected=expected.hex(),exit=0,stderr='',
+                    credentials=template['credentials'],stdout=json.dumps(dict(stage='ssap_start_barrier',api=api,client_closed=True))+'\n'+
+                    f'SsapPeerValue: operation={args[0]} path={args[1]} handle=2 value={expected.hex()}\n')
+                ssap_receipt(app,entry,expected_size=len(expected))
+                for field,value in [('ssap_arguments','00'),('args',command[:-1]+['00']),('ssap_handle',3),('exit',1),('stderr','truncated')]:
+                    bad=copy.deepcopy(app);bad[field]=value
+                    with self.subTest(api=api,field=field),self.assertRaises(CaptureError):
+                        ssap_receipt(bad,entry,expected_size=len(expected))
+                if arguments!=expected:
+                    bad=copy.deepcopy(app);bad['stdout']=bad['stdout'].replace('value='+expected.hex(),'value='+arguments.hex())
+                    with self.assertRaises(CaptureError):ssap_receipt(bad,entry,expected_size=len(expected))
+        for value in ('aa'*2044,'AA','0','a g',None):
+            args=['ssap-call-method',entry['object']['path'],'2',value]
+            with self.subTest(value_type=type(value)),self.assertRaises(CaptureError):
+                ssap_call(None,row,entry,args,b'a',api='c',expected_size=1,application_uid=1000)
+            with self.assertRaises(CaptureError):ssap_error_arguments('c',entry,args,errno.EIO)
+        for size in (2046,-1,True):
+            with self.subTest(size=size),self.assertRaises(CaptureError):
+                ssap_call(None,row,entry,['ssap-call-method',entry['object']['path'],'2',''],
+                          b'a'*max(int(size),0),api='c',expected_size=size,application_uid=1000)
+
+    def test_method_error_receipt_preserves_arguments_errno_and_original_deadline(self):
+        for api in ('c','python'):
+            entry,app,_,_=error_fixture(api)
+            args=['ssap-call-method',entry['object']['path'],'2','31'*2043]
+            app.update(ssap_operation=args[0],ssap_proposed=args[3],ssap_arguments=args[3],
+                       args=ssap_error_arguments(api,entry,args,errno.EIO))
+            ssap_error_receipt(app,entry,expected_errno=errno.EIO)
+            for field,value in [('ssap_arguments',''),('ssap_proposed',''),('ssap_expected_errno',errno.EACCES)]:
+                bad=copy.deepcopy(app);bad[field]=value
+                with self.subTest(api=api,field=field),self.assertRaises(CaptureError):
+                    ssap_error_receipt(bad,entry,expected_errno=errno.EIO)
+
+    def test_only_type0_read_can_expect_zero_bytes_and_actual_result_stays_exact(self):
+        entry,_,_,_=error_fixture();row=dict(phase=0,owners=[entry])
+        for api in ('c','python'):
+            for size in (0,1,2042):
+                value=b'\xa7'*size;args=['ssap-read',entry['object']['path'],'2']
+                _,command,_,environment,_,_=ssap_call(None,row,entry,args,value,api=api,expected_size=size,application_uid=1000)
+                app=dict(api=api,args=command,environment=environment,ssap_operation='ssap-read',ssap_path=args[1],
+                    ssap_handle=2,ssap_expected=value.hex(),exit=0,stderr='',credentials=error_fixture()[1]['credentials'],
+                    stdout=json.dumps(dict(stage='ssap_start_barrier',api=api,client_closed=True))+'\n'+
+                           f'SsapPeerValue: operation=ssap-read path={args[1]} handle=2 value={value.hex()}\n')
+                with self.subTest(api=api,size=size):ssap_receipt(app,entry,expected_size=size)
+                bad=copy.deepcopy(app);bad['stdout']=bad['stdout'].replace(' value=',' value=ff')
+                with self.subTest(api=api,size=size,kind='different-actual-value'),self.assertRaises(CaptureError):
+                    ssap_receipt(bad,entry,expected_size=size)
+        for operation in ('ssap-read-description','ssap-write'):
+            args=[operation,entry['object']['path'],'2']+(['']if operation=='ssap-write'else[])
+            with self.subTest(operation=operation),self.assertRaises(CaptureError):
+                ssap_call(None,row,entry,args,b'',api='c',expected_size=0,application_uid=1000)
+        for size in (-1,True,2043):
+            value=b'a'*max(0,int(size))
+            with self.subTest(size=size),self.assertRaises(CaptureError):
+                ssap_call(None,row,entry,['ssap-read',entry['object']['path'],'2'],value,
+                          api='c',expected_size=size,application_uid=1000)
+
+    def test_shared_error_receipt_keeps_exact_errno_caller_and_original_deadline(self):
+        for api in ('c','python'):
+            for expected_errno in (errno.EIO,errno.ETIMEDOUT):
+                entry,app,_,_=error_fixture(api,expected_errno)
+                result=ssap_error_receipt(app,entry,expected_errno=expected_errno)
+                self.assertEqual(result['errno'],expected_errno)
+                self.assertIs(result['operation_success'],False)
+        mutations=('errno','success','api','args','header','extra','stderr','exit-bool','root','missing-cap',
+                   'inherited-cap','deadline','late','renewed-supervisor','changed-original','bool-deadline','wrong-handle')
+        for kind in mutations:
+            entry,app,call,result=error_fixture()
+            if kind=='errno':result['errno']=errno.ETIMEDOUT
+            elif kind=='success':result['operation_success']=True
+            elif kind=='api':result['api']='python'
+            elif kind=='args':app['args'][-1]='1'
+            elif kind=='header':call['client_closed']=False
+            elif kind=='extra':result['unexpected']='ignored'
+            elif kind=='stderr':app['stderr']='unexpected diagnostic'
+            elif kind=='exit-bool':app['exit']=False
+            elif kind=='root':app['credentials']['uids']=[0]*4
+            elif kind=='missing-cap':del app['credentials']['capabilities']['CapInh']
+            elif kind=='inherited-cap':app['credentials']['capabilities']['CapInh']='1'
+            elif kind=='deadline':result['deadline_ns']+=1
+            elif kind=='late':result['returned_ns']=call['deadline_ns']+1;app['end_monotonic_ns']=result['returned_ns']+1
+            elif kind=='renewed-supervisor':app['ssap_supervisor_deadline_ns']+=1
+            elif kind=='changed-original':app['ssap_error_deadline_ns']+=1
+            elif kind=='bool-deadline':call['deadline_ns']=True
+            else:app['ssap_handle']=True
+            app['stdout']=json.dumps(call)+'\n'+json.dumps(result)+'\n'
+            with self.subTest(kind=kind),self.assertRaises(CaptureError):ssap_error_receipt(app,entry,expected_errno=errno.EIO)
+
+    def test_error_arguments_reject_unbounded_or_mismatched_calls_before_dispatch(self):
+        entry,_,_,_=error_fixture();args=['ssap-read',entry['object']['path'],'2']
+        for bad_errno in (None,False,0,4096):
+            with self.subTest(errno=bad_errno),self.assertRaises(CaptureError):
+                ssap_error_arguments('c',entry,args,bad_errno)
+        for invalid in (['ssap-read','/foreign/link','2'],['ssap-read',args[1],'02'],
+                        ['ssap-read',args[1],'0'],['ssap-write',args[1],'2',''],
+                        ['ssap-write',args[1],'2','aa'*2043]):
+            with self.subTest(args=invalid[:3]),self.assertRaises(CaptureError):
+                ssap_error_arguments('c',entry,invalid,errno.EIO)
+
+    def test_shared_supervisor_preserves_error_output_and_never_sends_success_release(self):
+        # Explicit child-process fixture: executes the real supervisor/callback/
+        # finally path, without claiming an SDK, wire Engine or device result.
+        entry,template,_,_=error_fixture();children=[]
+        class Child:
+            def __init__(self,command,**kwargs):
+                self.command=command;self.stdout=kwargs['stdout'];self.stderr=kwargs['stderr']
+                self.stdin=io.BytesIO();self.returncode=None;self.pid=12345;self.killed=False
+                now=time.monotonic_ns();self.deadline=now+5_000_000_000
+                self.stdout.write((json.dumps(dict(stage='ssap_call',api='c',deadline_ns=self.deadline,
+                    call_ns=now,client_closed=True))+'\n').encode());self.stdout.flush();children.append(self)
+            def poll(self):return self.returncode
+            def kill(self):
+                self.killed=True;self.returncode=-9
+                self.stderr.write(b'original cancelled child output\n');self.stderr.flush()
+            def wait(self,timeout=None):
+                if self.returncode is None:
+                    self.stdout.write((json.dumps(dict(stage='ssap_error',api='c',errno=errno.EIO,
+                        operation_success=False,deadline_ns=self.deadline,returned_ns=time.monotonic_ns()))+'\n').encode())
+                    self.stdout.flush();self.returncode=0
+                return self.returncode
+        for abort in (False,True):
+            with tempfile.TemporaryDirectory() as directory:
+                row=dict(phase=0,owners=[entry]);run=SimpleNamespace(output=Path(directory),data={},save=lambda:None)
+                def callback(app,deadline):
+                    self.assertEqual(deadline,app['start_monotonic_ns']+7_000_000_000)
+                    self.assertEqual(app['ssap_supervisor_deadline_ns'],deadline)
+                    self.assertNotIn('ssap_release_monotonic_ns',app)
+                    self.assertEqual(children[-1].stdin.getvalue(),b'')
+                    if abort:raise CaptureError('original callback failure')
+                with patch('ws73_application_client.subprocess.Popen',side_effect=Child),\
+                     patch('ws73_application_client.process_identity',return_value=(template['credentials'],'original process status')):
+                    if abort:
+                        with self.assertRaisesRegex(CaptureError,'original callback failure'):
+                            ssap_error_command(run,row,entry,['ssap-read',entry['object']['path'],'2'],errno.EIO,api='c',after_start=callback)
+                        app=row['ssap_language_clients'][0]
+                        self.assertEqual(app['exit'],-9);self.assertTrue(children[-1].killed)
+                        self.assertIn('original cancelled child output',app['stderr'])
+                        self.assertEqual(len(app['stdout'].splitlines()),1)
+                    else:
+                        app=ssap_error_command(run,row,entry,['ssap-read',entry['object']['path'],'2'],errno.EIO,api='c',after_start=callback)
+                        self.assertEqual(app['exit'],0);self.assertFalse(children[-1].killed)
+                        self.assertEqual(ssap_error_receipt(app,entry,expected_errno=errno.EIO)['errno'],errno.EIO)
+                self.assertTrue(children[-1].stdin.closed)
+                self.assertEqual(Path(app['output_files'][0]).read_text(),app['stdout'])
+
+    def test_discovery_uses_existing_supervisor_and_preserves_failed_child(self):
+        # Only Popen/credentials are fixtures; plan, barrier, release, receipt
+        # validation and finally/drain are the production supervisor functions.
+        from test_ws73_ssap_method_provider import fixture_v3_discovery
+        for phase in (0,1):
+            fixture_row,_,_=fixture_v3_discovery(phase)
+            entry=fixture_row['owners'][0];original=fixture_row['ssap_method_provider_cases'][0]['discovery']
+            for failure in (None,'exit','barrier'):
+                children=[];test=self
+                class Child:
+                    def __init__(self,command,**kwargs):
+                        self.stdin=io.BytesIO();self.stdout=kwargs['stdout'];self.stderr=kwargs['stderr']
+                        self.returncode=None;self.pid=12345;self.killed=False
+                        test.assertEqual(command,original['args'])
+                        first,last=original['stdout'].splitlines();self.result=json.loads(last)
+                        self.deadline=time.monotonic_ns()+5_000_000_000
+                        barrier=json.loads(first);barrier['deadline_ns']=self.deadline
+                        if failure=='barrier':barrier['client_closed']=False
+                        self.stdout.write((json.dumps(barrier)+'\n').encode());self.stdout.flush();children.append(self)
+                    def poll(self):return self.returncode
+                    def kill(self):self.killed=True;self.returncode=-9
+                    def wait(self,timeout=None):
+                        if self.returncode is None:
+                            test.assertEqual(self.stdin.getvalue(),b'start\n')
+                            if failure=='exit':
+                                self.stderr.write(b'original discovery failure\n');self.stderr.flush();self.returncode=1
+                            else:
+                                call=time.monotonic_ns();self.result.update(deadline_ns=self.deadline,call_ns=call,returned_ns=call+1)
+                                self.stdout.write((json.dumps(self.result)+'\n').encode());self.stdout.flush();self.returncode=0
+                        return self.returncode
+                with self.subTest(api=original['api'],failure=failure),tempfile.TemporaryDirectory() as directory:
+                    row=dict(phase=phase,owners=[entry]);run=SimpleNamespace(output=Path(directory),data={},save=lambda:None)
+                    with patch('ws73_application_client.subprocess.Popen',side_effect=Child),patch('ws73_application_client.process_identity',return_value=(original['credentials'],'fixture process identity')):
+                        args=['ssap-find-method',entry['object']['path'],str(original['ssap_handle']),original['ssap_expected']]
+                        def invoke():return ssap_commands(run,row,[(entry,args,bytes.fromhex(original['ssap_expected']))],api=original['api'],expected_size=16)
+                        if failure:
+                            with self.assertRaises(CaptureError):invoke()
+                        else:
+                            result=invoke()[0];ssap_receipt(result,entry,expected_size=16)
+                    child=children[-1];app=row['ssap_language_clients'][0]
+                    self.assertTrue(child.stdin.closed)
+                    self.assertEqual(Path(app['output_files'][0]).read_text(),app['stdout'])
+                    self.assertEqual(app['exit'],{'exit':1,'barrier':-9,None:0}[failure])
+                    if failure=='exit':self.assertIn('original discovery failure',app['stderr'])
+                    if failure=='barrier':self.assertTrue(child.killed);self.assertNotIn('ssap_release_monotonic_ns',app)
+
+    def test_shared_success_supervisor_releases_read_and_method_original_barrier(self):
+        entry,template,_,_=error_fixture();children=[];test=self
+        class Child:
+            def __init__(self,command,**kwargs):
+                self.command=command;self.stdout=kwargs['stdout'];self.stdin=io.BytesIO()
+                self.returncode=None;self.pid=12345
+                self.stdout.write(b'{"stage":"ssap_start_barrier","api":"c","client_closed":true}\n')
+                self.stdout.flush();children.append(self)
+            def poll(self):return self.returncode
+            def kill(self):self.returncode=-9
+            def wait(self,timeout=None):
+                if self.returncode is None:
+                    test.assertEqual(self.stdin.getvalue(),b'start\n')
+                    operation=self.command[5];expected=self.command[7]
+                    if operation=='ssap-call-method':test.assertEqual(self.command[8],'31')
+                    else:test.assertEqual(expected,'')
+                    self.stdout.write(f'SsapPeerValue: operation={operation} path={entry["object"]["path"]} handle=2 value={expected}\n'.encode())
+                    self.stdout.flush();self.returncode=0
+                return self.returncode
+        for operation,expected,extra in [('ssap-read',b'',[]),('ssap-call-method',b'\xa6',['31'])]:
+            with self.subTest(operation=operation),tempfile.TemporaryDirectory() as directory:
+                row=dict(phase=0,owners=[entry]);run=SimpleNamespace(output=Path(directory),data={},save=lambda:None)
+                def callback(app,deadline):
+                    self.assertEqual(children[-1].stdin.getvalue(),b'start\n')
+                    self.assertEqual(deadline,app['ssap_release_monotonic_ns']+7_000_000_000)
+                    self.assertNotIn('ssap_expected_errno',app)
+                    if extra:self.assertEqual(app['ssap_arguments'],extra[0])
+                with patch('ws73_application_client.subprocess.Popen',side_effect=Child),\
+                     patch('ws73_application_client.process_identity',return_value=(template['credentials'],'original process status')):
+                    app=ssap_commands(run,row,[(entry,[operation,entry['object']['path'],'2']+extra,expected)],
+                                      api='c',expected_size=len(expected),after_start=callback)[0]
+                ssap_receipt(app,entry,expected_size=len(expected))
+                self.assertEqual(app['exit'],0);self.assertTrue(children[-1].stdin.closed)
+
     def test_policy_decisions_must_match_original_lifetime_proposal_and_window(self):
         cases=['missing','duplicate','deny','lifetime','generation','index-bool','handle','epoch',
-               'property','late','wrong-value','write','wall','token','request','unknown','malformed','old-mode']
+               'property','data-type','untyped','late','wrong-value','write','wall','token','request','unknown','malformed','old-mode']
         for case in cases:
             run,sdus=fixture();row=run['application_clients'][0];app=row['ssap_owned_publishers'][0]
             lines=app['stdout'].splitlines();positions=[i for i,line in enumerate(lines) if line.startswith('SdkAuthorizationDecision: ')]
@@ -115,6 +369,8 @@ class ApplicationClientEvidence(unittest.TestCase):
             elif case=='handle':data['handle']+=1
             elif case=='epoch':data['epoch']=0
             elif case=='property':data['property']+=1
+            elif case=='data-type':data['data_type']=2
+            elif case=='untyped':data.pop('data_type')
             elif case=='late':data['decision_ns']=data['deadline_ns']
             elif case=='wrong-value':data['value']='00'*32
             elif case=='write':data['write']=False
@@ -167,15 +423,18 @@ class ApplicationClientEvidence(unittest.TestCase):
         run,sdus=fixture()
         with patch('ws73_application_client.reassemble_acb',return_value=sdus):proof=corroborate(run,{})
         self.assertTrue(valid_summary(proof))
-        supervision=dict(status='ACTUAL_GUEST_APPS_ONLY_PAIRS_AND_POLICY_OUTPUTS_CHECKED',uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=4,daemon=dict(pid=1,start_ticks=1),supervisor=dict(pid=2,start_ticks=2))
-        record=dict(supervisor_exit=0,application_role_supervision=supervision,application_client_verification_requested=True,application_client_acceptance=True,application_client_corroboration=proof,status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0)
+        supervision=dict(status='ACTUAL_GUEST_APPS_ONLY_PAIRS_AND_POLICY_OUTPUTS_CHECKED',contract_version=2,ssap_client_uid=1004,uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=4,daemon=dict(pid=1,start_ticks=1),supervisor=dict(pid=2,start_ticks=2))
+        record=dict(application_role_contract_version=2,supervisor_exit=0,application_role_supervision=supervision,application_client_verification_requested=True,application_client_acceptance=True,application_client_corroboration=proof,status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0)
         self.assertEqual(run_exit_code(record),0)
-        for key in ['application_client_verification_requested','application_client_acceptance','application_client_corroboration','application_role_supervision']:
+        for key in ['application_role_contract_version','application_client_verification_requested','application_client_acceptance','application_client_corroboration','application_role_supervision']:
             bad=copy.deepcopy(record);bad.pop(key)
             with self.subTest(key=key):self.assertEqual(run_exit_code(bad),1)
         bad=copy.deepcopy(record);bad['application_client_corroboration']['proofs'][0]['legs'].pop();self.assertEqual(run_exit_code(bad),1)
         bad=copy.deepcopy(record);bad['qemu_exit']=1;self.assertEqual(run_exit_code(bad),1)
         bad=copy.deepcopy(record);bad['application_client_corroboration'].pop('ssap');self.assertEqual(run_exit_code(bad),1)
+        for version in [None,1,2.0,True]:
+            bad=copy.deepcopy(record);bad['application_role_contract_version']=version
+            with self.subTest(version=version):self.assertEqual(run_exit_code(bad),1)
 
     def test_missing_changed_duplicate_and_wrong_lifetime_rejected(self):
         def mutate(name,run,sdus):
@@ -197,7 +456,7 @@ class ApplicationClientEvidence(unittest.TestCase):
             with self.subTest(name=name),patch('ws73_application_client.reassemble_acb',return_value=sdus),self.assertRaises(CaptureError):corroborate(run,{})
 
     def test_ssap_clients_wire_and_original_result_are_mandatory(self):
-        for case in ['missing-required','missing-call','wrong-api','wrong-output','wrong-args','root','late-window','missing-wire']:
+        for case in ['missing-required','missing-call','wrong-api','wrong-output','wrong-args','root','management','extra-group','gids','inherited-cap','late-window','missing-wire']:
             run,sdus=fixture();row=run['application_clients'][0];app=row['ssap_values'][0]['read_before']
             if case=='missing-required':row.pop('ssap_language_required')
             elif case=='missing-call':row['ssap_language_clients'].pop()
@@ -205,19 +464,27 @@ class ApplicationClientEvidence(unittest.TestCase):
             elif case=='wrong-output':app['stdout']=app['stdout'].replace(app['ssap_expected'],'00'*32)
             elif case=='wrong-args':app['args'][0]='/bin/slctl'
             elif case=='root':app['credentials']['uids']=[0]*4
+            elif case=='management':app['credentials']['uids']=[1000]*4
+            elif case=='extra-group':app['credentials']['groups']=[1000]
+            elif case=='gids':app['credentials']['gids']=[1000]*4
+            elif case=='inherited-cap':app['credentials']['capabilities']['CapInh']='1'
             elif case=='late-window':app['start_wall_ns']=app['end_wall_ns']+1
             elif case=='missing-wire':sdus.pop(4)
             with self.subTest(case=case),patch('ws73_application_client.reassemble_acb',return_value=sdus),self.assertRaises(CaptureError):corroborate(run,{})
 
     def test_role_evidence_cannot_be_replaced_by_management_or_partial_success(self):
         from ws73_application_role import verify_probe
-        for kind in ['missing','manager','group','cap','denial','raw','path','exit','stderr','interval']:
+        for kind in ['missing','manager','group','cap','denial','preflight','command-preflight','old-contract','float-contract','raw','path','exit','stderr','interval']:
             run,_=fixture();row=run['application_clients'][0];probe=row['role_probe']
             if kind=='missing':row.pop('role_probe')
             elif kind=='manager':probe['credentials']['uids']=[1000]*4
             elif kind=='group':probe['credentials']['groups']=[1000]
             elif kind=='cap':probe['credentials']['capabilities']['CapInh']='1'
-            elif kind=='denial':probe['stdout']=probe['stdout'].replace('AUTH_DENIED: ReadSsapValue\n','')
+            elif kind=='denial':probe['stdout']=probe['stdout'].replace('AUTH_DENIED: SubmitDisconnect\n','')
+            elif kind=='preflight':probe['stdout']=probe['stdout'].replace('AUTH_SSAP_PREFLIGHT: ReadSsapValue\n','')
+            elif kind=='command-preflight':probe['stdout']=probe['stdout'].replace('AUTH_SSAP_PREFLIGHT: WriteSsapCommand\n','')
+            elif kind=='old-contract':row['application_role_contract_version']=1
+            elif kind=='float-contract':row['application_role_contract_version']=2.0
             elif kind=='raw':probe['stdout']=probe['stdout'].replace('KERNEL_ACCESS: denied','KERNEL_ACCESS: allowed')
             elif kind=='path':probe['args'][1]='/old/lifetime'
             elif kind=='exit':probe['exit']=1

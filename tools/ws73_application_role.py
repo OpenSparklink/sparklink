@@ -3,7 +3,7 @@
 
 Reuse the existing SDK one-shot pair and real system-bus probe. Root opens only
 fixed evidence paths and drops channels to UID/GID1004,SSAP publishers to1005
-and peer SDK/CLI calls to1000,each with no extra groups.
+and remote value SDK calls to1004. Management discovery/UUID observations stay1000,each with no extra groups.
 No protocol bytes, Native lease, Host, fake reply or arbitrary command service.
 """
 from pathlib import Path
@@ -25,7 +25,10 @@ SSAP_FIELDS=('ssap_language_required','ssap_language_clients','ssap_registration
     'ssap_owned_publishers_required','ssap_owned_publishers','ssap_value_required',
     'ssap_read_uuid_required','ssap_update_local_rejection_required','ssap_values',
     'ssap_local_registrations','ssap_discovery_required','ssap_discoveries','unsupported_incoming','role_ssap_commands')
-DENIALS=['StopControllerScan','SubmitDisconnect','ReadSsapValue','WriteSsapValue',
+SSAP_PREFLIGHT=['ReadSsapValue','WriteSsapValue','WriteSsapCommand','ReceiveSsapUpdate',
+                'SubscribeSsapUpdates','ReadSsapUpdates','RenewSsapSubscription','CloseSsapSubscription']
+DENIALS=['StopControllerScan','SubmitDisconnect','DiscoverSsap','GetCachedSsap','ReadSsapByUuid',
+         'GetSsapInfo','SendOwnedSsapUpdate','GetOwnedSsapConfiguration',
          'AllocateReferenceSecurity','interface-less-GetInfo','unknown-method']
 
 
@@ -63,7 +66,7 @@ def read_json(path, uid, limit=131072):
 
 def _verify_probe(row):
     probe=row['role_probe'];identity=probe['credentials']
-    if (row.get('channel_role')!='sparklink-apps-only' or probe['exit'] or probe['stderr'] or
+    if (type(row.get('application_role_contract_version'))is not int or row['application_role_contract_version']!=2 or row.get('channel_role')!='sparklink-apps-only' or probe['exit'] or probe['stderr'] or
             identity['uids']!=[1004]*4 or identity['gids']!=[1004]*4 or identity['groups'] or
             set(identity['capabilities'])!={'CapEff','CapPrm','CapAmb','CapInh'} or
             any(int(v,16)for v in identity['capabilities'].values())):
@@ -77,7 +80,9 @@ def _verify_probe(row):
     expected=['AUTH_CREDENTIALS: uid=1004 gid=1004 caps=0','AUTH_CHANNEL_KERNEL_ACCESS: denied','AUTH_DENIED: own-service']
     for destination in ('named','unique'):
         expected+=['AUTH_CHANNEL_IDENTITY: '+destination]
-        expected+=['AUTH_DENIED: '+name for name in DENIALS]
+        expected+=['AUTH_DENIED: '+name for name in DENIALS[:2]]
+        expected+=['AUTH_SSAP_PREFLIGHT: '+name for name in SSAP_PREFLIGHT]
+        expected+=['AUTH_DENIED: '+name for name in DENIALS[2:]]
     expected+=['AUTH_CHANNEL_ROLE: sparklink-apps-only']
     if lines!=expected:raise CaptureError('all original role observations and denials required')
     if not probe['start_wall_ns']<=probe['end_wall_ns']:
@@ -114,7 +119,7 @@ def request_pair(run,row):
     if result.get('ssap_gate_status')!='OWNED_SDK_VALUE_EVIDENCE_PENDING':raise CaptureError('actual root-supervised Owned SDK phase missing')
     for key in SSAP_FIELDS:
         if key not in result:raise CaptureError('missing root-supervised SDK field: '+key)
-    for key in ('applications','start_barrier_wall_ns','role_probe','channel_role','role_supervisor',*SSAP_FIELDS):
+    for key in ('applications','start_barrier_wall_ns','role_probe','channel_role','application_role_contract_version','role_supervisor',*SSAP_FIELDS):
         row[key]=result[key]
     run.save()
 
@@ -129,7 +134,7 @@ def verify_supervisor_artifacts(control,evidence):
     for phase,row in enumerate(control['application_clients']):
         original=json.loads((root/f'phase-{phase}'/'run.json').read_text())
         verify_probe(original)
-        for key in ('phase','owners','request','reply','tools','applications','role_probe','channel_role','role_supervisor','start_barrier_wall_ns',*SSAP_FIELDS):
+        for key in ('phase','owners','request','reply','tools','applications','role_probe','channel_role','application_role_contract_version','role_supervisor','start_barrier_wall_ns',*SSAP_FIELDS):
             if row[key]!=original[key]:raise CaptureError('root-supervised phase differs from control record')
         if original.get('pair_status')!='CHANNEL_PAIR_EVIDENCE_PENDING' or original['role_supervisor']!=finished['supervisor']:
             raise CaptureError('completed original role phase required')
@@ -139,13 +144,14 @@ def verify_supervisor_artifacts(control,evidence):
                 if path.read_text()!=app['stdout'if path.suffix=='.stdout'else'stderr']:
                     raise CaptureError('original actual role process output differs')
     if len(control['application_clients'])!=2:raise CaptureError('two original role phases required')
-    return dict(status='ACTUAL_GUEST_APPS_ONLY_PAIRS_AND_POLICY_OUTPUTS_CHECKED',uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=4,daemon=finished['daemon'],supervisor=finished['supervisor'],scope='Finite actual system-bus role and SDK one-shot gate;not full deployment/revocation/deadline or per-application authorization')
+    return dict(status='ACTUAL_GUEST_APPS_ONLY_PAIRS_AND_POLICY_OUTPUTS_CHECKED',contract_version=2,ssap_client_uid=1004,uid=1004,gid=1004,extra_groups=[],role_probes=2,application_processes=4,daemon=finished['daemon'],supervisor=finished['supervisor'],scope='Finite actual system-bus role and SDK one-shot gate;not full deployment/revocation/deadline or per-application authorization')
 
 
 def valid_supervision(proof):
     """Terminal shape only. Raw root files and process output are checked above."""
     try:
         return (proof['status']=='ACTUAL_GUEST_APPS_ONLY_PAIRS_AND_POLICY_OUTPUTS_CHECKED' and
+                type(proof['contract_version'])is int and proof['contract_version']==2 and proof['ssap_client_uid']==1004 and
                 proof['uid']==1004 and proof['gid']==1004 and proof['extra_groups']==[] and
                 proof['role_probes']==2 and proof['application_processes']==4 and
                 all(type(proof[k]['pid'])is int and proof[k]['pid']>0 and
@@ -155,22 +161,76 @@ def valid_supervision(proof):
 
 
 def require_vm(token='ws73.application_clients=1'):
-    if (token not in ('ws73.application_clients=1', 'ws73.application_discovery=1') or
+    if (token not in ('ws73.application_clients=1', 'ws73.application_discovery=1', 'ws73.ssap_subscription=1', 'ws73.socket_benchmark_apps=1') or
             os.geteuid()!=0 or token not in Path('/proc/cmdline').read_text().split()or
             Path('/sys/class/dmi/id/sys_vendor').read_text().strip()!='QEMU'or not Path('/scratch-root-uuid').is_file()):
         raise CaptureError('explicit disposable QEMU SDK role gate required')
 
 
-def supervise(daemon_pid):
-    require_vm()
+def prepare_ssap_commands(context,row):
+    """Same finite manager observation wrapper for values and concurrent load."""
+    from ws73_north_star import Run
+    from ws73_application_client import process_identity
+    row['role_ssap_commands']=context.data.setdefault('ssap_values',[])
+    def observed(process,record):
+        record['credentials'],record['process_status']=process_identity(process.pid,1000)
+    context.command=lambda args,timeout,**kwargs:Run.command(context,args,timeout,
+        child_credentials={'user':1000,'group':1000,'extra_groups':[]},on_started=observed,**kwargs)
+
+
+def supervise(daemon_pid,*,mode='values',pair=None):
+    """New subscription artifacts keep all hot files off the9p export."""
+    from ws73_role_snapshot import TOKEN,local_root,profile
+    if mode=='benchmark':
+        from ws73_socket_benchmark import check_pair_boot
+        check_pair_boot(pair,Path('/proc/cmdline').read_text().split())
+    if pair is not None:
+        profile('subscription'if mode=='subscription'else mode,pair)
+        require_vm('ws73.socket_benchmark_apps=1'if mode=='benchmark'else'ws73.ssap_subscription=1')
+        if mode!='benchmark' and Path('/proc/cmdline').read_text().split().count('ws73.parallel_subscription=1')!=1:
+            raise CaptureError('explicit parallel role supervisor required')
+    if mode=='benchmark'or mode=='subscription'and TOKEN in Path('/proc/cmdline').read_text().split():
+        benchmark=mode=='benchmark';kind='benchmark'if benchmark else'subscription'
+        require_vm('ws73.socket_benchmark_apps=1'if benchmark else'ws73.ssap_subscription=1')
+        def interrupted(*_):raise InterruptedError('role supervisor stopped')
+        signal.signal(signal.SIGTERM,interrupted)
+        with local_root(kind=kind,pair=pair)as local:
+            finished=_supervise(daemon_pid,mode=mode,snapshot_root=local,pair=pair)
+        if benchmark:
+            from ws73_socket_benchmark import role_paths
+            root,_,_=role_paths(pair)
+        else:
+            from ws73_ssap_subscription import role_paths
+            root,_=role_paths(pair)
+        (root/'finished.json').write_text(json.dumps(finished)+'\n')
+        (root/'finished.json').chmod(0o644)
+        return
+    if pair is not None:raise CaptureError('parallel roles require original closed snapshots')
+    return _supervise(daemon_pid,mode=mode)
+
+
+def _supervise(daemon_pid,*,mode='values',snapshot_root=None,pair=None):
+    if mode not in ('values','subscription','benchmark'):raise CaptureError('fixed role supervision mode required')
+    subscription=mode=='subscription';benchmark=mode=='benchmark'
+    require_vm('ws73.socket_benchmark_apps=1'if benchmark else'ws73.ssap_subscription=1'if subscription else'ws73.application_clients=1')
+    if benchmark:
+        from ws73_socket_benchmark import role_paths,check_pair_boot,validate_role_request as request_check,execute_supervised as execute_phase
+        check_pair_boot(pair,Path('/proc/cmdline').read_text().split())
+        root,_,input_root=role_paths(pair)
+        if snapshot_root is None:raise CaptureError('benchmark requires actual local closed snapshots')
+    elif subscription:
+        from ws73_ssap_subscription import role_paths,validate_request as request_check,execute_supervised as execute_phase
+        root,input_root=role_paths(pair)
+    else:root=ROOT;request_check=validate_request
+    if not subscription and not benchmark:input_root=INPUT
     from ws73_application_client import channel_pair,process_identity
-    ROOT.mkdir(exist_ok=False);ROOT.chmod(0o755)
+    root.mkdir(exist_ok=False);root.chmod(0o755)
     supervisor=daemon_identity(os.getpid());daemon=daemon_identity(daemon_pid)
     def interrupted(*_):raise InterruptedError('role supervisor stopped')
     signal.signal(signal.SIGTERM,interrupted)
-    end=time.monotonic()+120
+    end=time.monotonic()+(1600 if benchmark else 180 if subscription else 120)
     for phase in (0,1):
-        request=INPUT/f'app-channel-role-{phase}.request.json'
+        request=input_root/(f'benchmark-role-{phase}.request.json'if benchmark else f'subscription-role-{phase}.request.json'if subscription else f'app-channel-role-{phase}.request.json')
         while True:
             if daemon_identity(daemon_pid)!=daemon:raise CaptureError('original daemon changed')
             if request.is_file():
@@ -178,15 +238,26 @@ def supervise(daemon_pid):
                 except json.JSONDecodeError:pass # Writer has not finished original bounded JSON.
             if time.monotonic()>=end:raise CaptureError('finite role request deadline')
             time.sleep(.01)
-        validate_request(row,phase)
-        folder=ROOT/f'phase-{phase}';folder.mkdir(mode=0o755)
-        row.update(channel_role='sparklink-apps-only',role_supervisor=supervisor)
+        request_check(row,phase)
+        if row.get('parallel_pair')!=pair:raise CaptureError('root supervisor/request pair mismatch')
+        if subscription:
+            from ws73_role_snapshot import requested as snapshot_requested
+            if snapshot_requested(row)!=(snapshot_root is not None):raise CaptureError('snapshot boot/request mismatch')
+        folder=(snapshot_root or root)/f'phase-{phase}';folder.mkdir(mode=0o755)
+        row.update(channel_role='sparklink-apps-only',application_role_contract_version=2,role_supervisor=supervisor)
         def save():
             target=folder/'progress.json';temporary=folder/'progress.tmp'
             temporary.write_text(json.dumps(row,indent=2)+'\n');temporary.chmod(0o644);temporary.replace(target)
         context=SimpleNamespace(output=folder,save=save)
         try:
-            if row['tools']!={key:file_record(path)for key,path in [('c','/bin/ws73-application-client-c'),('python','/usr/share/sparklink/tools/ws73-application-client.py'),('library','/usr/lib/libsparklink.so.0')]}:
+            if benchmark:
+                from ws73_socket_benchmark import request_tools
+                expected_tools=request_tools(row)
+            elif subscription:
+                from ws73_ssap_subscription import request_tools
+                expected_tools=request_tools(row)
+            else:expected_tools={key:file_record(path)for key,path in [('c','/bin/ws73-application-client-c'),('python','/usr/share/sparklink/tools/ws73-application-client.py'),('library','/usr/lib/libsparklink.so.0')]}
+            if row['tools']!=expected_tools:
                 raise CaptureError('exact actual SDK artifacts required')
             probe=dict(args=['/bin/bus-policy-probe',row['owners'][0]['object']['path'],'application-channel'],start_wall_ns=time.time_ns())
             row['role_probe']=probe;save();out=folder/'probe.stdout';err=folder/'probe.stderr'
@@ -199,27 +270,40 @@ def supervise(daemon_pid):
                     if process.poll()is None:process.kill()
                     process.wait()
                     probe.update(exit=process.returncode,stdout=out.read_text(),stderr=err.read_text(),end_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
-            verify_probe(row);channel_pair(context,row)
-            from ws73_north_star import Run
-            from ws73_application_client import ssap_phase
+            verify_probe(row)
             context.args=SimpleNamespace(slctl=Path('/bin/slctl'));context.data={}
-            row['role_ssap_commands']=context.data.setdefault('ssap_values',[])
-            def observed(process,record):
-                record['credentials'],record['process_status']=process_identity(process.pid,1000)
-            context.command=lambda args,timeout,**kwargs:Run.command(context,args,timeout,
-                child_credentials={'user':1000,'group':1000,'extra_groups':[]},on_started=observed,**kwargs)
-            ssap_phase(context,row)
-            row.update(ssap_gate_status='OWNED_SDK_VALUE_EVIDENCE_PENDING',end_wall_ns=time.time_ns())
+            if benchmark:execute_phase(context,row)
+            else:
+                if not subscription:channel_pair(context,row)
+                from ws73_application_client import ssap_phase
+                prepare_ssap_commands(context,row)
+                if subscription:execute_phase(context,row)
+                else:ssap_phase(context,row,application_uid=1004)
+                row['ssap_gate_status']='OWNED_SDK_VALUE_EVIDENCE_PENDING'if not subscription else'CONTINUOUS_SUBSCRIPTION_PENDING_USB'
+            row['end_wall_ns']=time.time_ns()
             if daemon_identity(daemon_pid)!=daemon:raise CaptureError('original daemon changed during pair')
         except BaseException as error:
             row.update(pair_status='FAIL',error=str(error),error_traceback=traceback.format_exc());raise
         finally:
+            if snapshot_root:
+                from ws73_role_snapshot import remap_outputs,publish
+                remap_outputs(row,folder,root/f'phase-{phase}')
             save();(folder/'progress.json').replace(folder/'run.json')
-    finished=ROOT/'finished.json'
-    finished.write_text(json.dumps(dict(status='TWO_FINITE_ROLE_PAIRS_COMPLETED',daemon=daemon,supervisor=supervisor))+'\n');finished.chmod(0o644)
+            if snapshot_root:publish(folder,root/f'phase-{phase}',phase=phase,success='error'not in row,kind='benchmark'if benchmark else'subscription',pair=pair)
+    finished=root/'finished.json'
+    value=dict(status='TWO_FINITE_BENCHMARK_PHASES_COMPLETED'if benchmark else'TWO_FINITE_SUBSCRIPTION_PHASES_COMPLETED'if subscription else'TWO_FINITE_ROLE_PAIRS_COMPLETED',daemon=daemon,supervisor=supervisor)
+    if benchmark:value['socket_benchmark_role_contract_version']=1
+    if benchmark and pair is not None:value['benchmark_parallel_contract_version']=1
+    if pair is not None:value['parallel_pair']=pair
+    if snapshot_root:
+        value['snapshot_contract_version']=1
+        return value
+    finished.write_text(json.dumps(value)+'\n');finished.chmod(0o644)
 
 
 if __name__=='__main__':
-    import sys
-    if len(sys.argv)!=2:raise SystemExit('usage: ws73_application_role.py ACTUAL_DAEMON_PID')
-    supervise(int(sys.argv[1]))
+    import argparse
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('daemon_pid',type=int);parser.add_argument('mode',nargs='?',choices=['values','subscription','benchmark'],default='values')
+    parser.add_argument('--parallel-pair',type=int,choices=[0,1])
+    args=parser.parse_args();supervise(args.daemon_pid,mode=args.mode,pair=args.parallel_pair)

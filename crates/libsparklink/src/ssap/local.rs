@@ -3,7 +3,13 @@
 use crate::{ApplicationError, client::bounded, controller::Controller};
 use slk_channel::deadline::Deadline;
 use slk_contract::ssap::local as wire;
+use slk_protocol::{
+    SsapOperations,
+    ssap::access::{MethodAccess, SsapAccess},
+};
+use std::sync::Arc;
 type Result<T> = std::result::Result<T, ApplicationError>;
+const MAX_OWNED_ENTRIES: usize = 64;
 #[derive(Clone)]
 pub struct StagingServices {
     controller: Controller,
@@ -59,9 +65,50 @@ impl LocalServices {
         authorizer: zbus::zvariant::OwnedObjectPath,
         original: Deadline,
     ) -> Result<ServiceRegistration> {
+        self.register_entries(uuid, properties, Vec::new(), authorizer, original)
+            .await
+    }
+    /// Register distinct properties and methods using one owner receipt and
+    /// original deadline. Receipt handles are properties first, then methods.
+    /// This is local staging, not remote publication or execution.
+    pub async fn register_entries(
+        &self,
+        uuid: Vec<u8>,
+        properties: Vec<wire::PropertyDefinition>,
+        methods: Vec<wire::MethodDefinition>,
+        authorizer: zbus::zvariant::OwnedObjectPath,
+        original: Deadline,
+    ) -> Result<ServiceRegistration> {
+        let expected = properties
+            .len()
+            .checked_add(methods.len())
+            .ok_or(ApplicationError::Invalid("owned-service entry count"))?;
+        if !(1..=MAX_OWNED_ENTRIES).contains(&expected) {
+            return Err(ApplicationError::Invalid("owned-service entry count"));
+        }
+        // Reject before allocating the additional immutable admission metadata.
+        // This remains the caller's original deadline, not a renewed budget.
+        original.remaining()?;
         let id = self.controller.id();
         let path = format!("{}/services", self.controller.path());
-        let expected = properties.len();
+        // Immutable admission requirements only, never a second value database.
+        let mut requirements = properties
+            .iter()
+            .map(|p| {
+                Ok(EntryRequirements::Property(
+                    SsapOperations::from_bits(p.1)
+                        .map_err(|_| ApplicationError::Invalid("invalid service operations"))?,
+                    SsapAccess::from_bits(p.2)
+                        .map_err(|_| ApplicationError::Invalid("invalid service access"))?,
+                ))
+            })
+            .collect::<Result<Vec<_>>>()?;
+        for (_, bits) in &methods {
+            requirements.push(EntryRequirements::Method(
+                MethodAccess::from_bits(*bits)
+                    .map_err(|_| ApplicationError::Invalid("invalid method access"))?,
+            ));
+        }
         let mut received = None;
         let result = bounded(&self.controller.client, original, async {
             self.controller.client.check_generation(id).await?;
@@ -76,6 +123,7 @@ impl LocalServices {
                     &(
                         uuid,
                         properties,
+                        methods,
                         authorizer,
                         slk_contract::deadline_wire(original.stamp()),
                     ),
@@ -102,6 +150,8 @@ impl LocalServices {
             controller: self.controller.clone(),
             receipt,
             state: RegistrationState::Active,
+            requirements,
+            provider_scope: Arc::default(),
         };
         if let Err(error) = result {
             if let Ok(cleanup) = Deadline::after(std::time::Duration::from_secs(1)) {
@@ -113,12 +163,26 @@ impl LocalServices {
     }
 }
 fn valid_receipt(value: &wire::Registration, expected: usize) -> bool {
-    (1..=64).contains(&expected)
+    (1..=MAX_OWNED_ENTRIES).contains(&expected)
         && value.0 != 0
         && value.1 > value.0
         && value.2.len() == expected
         && value.2.iter().all(|h| *h > value.0 && *h <= value.1)
         && value.2.windows(2).all(|w| w[0] < w[1])
+}
+
+#[derive(Clone, Copy)]
+pub(crate) enum EntryRequirements {
+    Property(SsapOperations, SsapAccess),
+    Method(MethodAccess),
+}
+impl EntryRequirements {
+    pub(crate) fn needs_local_authorization(self) -> bool {
+        match self {
+            Self::Property(_, access) => access.needs_local_authorization(),
+            Self::Method(access) => access.needs_local_authorization(),
+        }
+    }
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -135,12 +199,48 @@ pub struct ServiceRegistration {
     controller: Controller,
     receipt: wire::Registration,
     state: RegistrationState,
+    requirements: Vec<EntryRequirements>,
+    provider_scope: Arc<super::provider::frontend::RegistrationScope>,
 }
 impl ServiceRegistration {
+    pub(crate) fn provider_client(&self) -> &crate::Client {
+        &self.controller.client
+    }
+    pub(crate) fn provider_scope(&self) -> Arc<super::provider::frontend::RegistrationScope> {
+        self.provider_scope.clone()
+    }
+    pub(crate) fn provider_context(
+        &self,
+        property: u16,
+    ) -> Result<(slk_contract::ControllerId, EntryRequirements)> {
+        if self.state != RegistrationState::Active {
+            return Err(ApplicationError::Invalid("inactive service registration"));
+        }
+        let index = self
+            .receipt
+            .2
+            .iter()
+            .position(|h| *h == property)
+            .ok_or(ApplicationError::Invalid("foreign service property"))?;
+        Ok((self.controller.id(), self.requirements[index]))
+    }
+    fn require_property(&self, handle: u16) -> Result<()> {
+        let index = self
+            .receipt
+            .2
+            .iter()
+            .position(|h| *h == handle)
+            .ok_or(ApplicationError::Invalid("foreign service handle"))?;
+        if matches!(self.requirements[index], EntryRequirements::Method(_)) {
+            return Err(std::io::Error::from_raw_os_error(nix::libc::EOPNOTSUPP).into());
+        }
+        Ok(())
+    }
     pub fn receipt(&self) -> &wire::Registration {
         &self.receipt
     }
     pub async fn read_local(&self, handle: u16, original: Deadline) -> Result<Vec<u8>> {
+        self.require_property(handle)?;
         if self.state == RegistrationState::Removed || !self.receipt.2.contains(&handle) {
             return Err(ApplicationError::Invalid(
                 "inactive or foreign service handle",
@@ -176,6 +276,7 @@ impl ServiceRegistration {
                 "inactive/foreign property or oversized value",
             ));
         }
+        self.require_property(handle)?;
         let request: wire::OwnedValueRequest =
             (handle, value, slk_contract::deadline_wire(original.stamp()));
         let _: () = bounded(
@@ -188,10 +289,123 @@ impl ServiceRegistration {
         original.remaining()?;
         Ok(())
     }
+    /// Bind this owner's read-only property to a callback on the same caller
+    /// connection. The daemon permanently discards its stored value; there is
+    /// no rebind, unbind or fallback. Timeout or a lost reply can follow commit,
+    /// so an uncertain result must not be retried automatically.
+    pub async fn bind_read_provider(
+        &self,
+        handle: u16,
+        provider: zbus::zvariant::OwnedObjectPath,
+        original: Deadline,
+    ) -> Result<()> {
+        self.require_property(handle)?;
+        self.bind_provider(handle, provider, original, wire::BIND_READ_PROVIDER_OWNED)
+            .await
+    }
+    /// Delegate a write-only property to a WriteValue endpoint on the original
+    /// caller connection. Bind once; no staging fallback or automatic retry.
+    /// This low-level Rust surface does not install an inbox. The application
+    /// owns its endpoint and must enforce original identity/deadline. A lost
+    /// callback response does not roll back an application write effect.
+    pub async fn bind_write_provider(
+        &self,
+        handle: u16,
+        provider: zbus::zvariant::OwnedObjectPath,
+        original: Deadline,
+    ) -> Result<()> {
+        self.require_property(handle)?;
+        self.bind_provider(handle, provider, original, wire::BIND_WRITE_PROVIDER_OWNED)
+            .await
+    }
+    /// Bind a method callback on the original owner bus. No argument echo,
+    /// retry, wire Engine or implicit rollback is supplied by this SDK call.
+    pub async fn bind_method_provider(
+        &self,
+        handle: u16,
+        provider: zbus::zvariant::OwnedObjectPath,
+        original: Deadline,
+    ) -> Result<()> {
+        if !matches!(
+            self.provider_context(handle)?.1,
+            EntryRequirements::Method(_)
+        ) {
+            return Err(std::io::Error::from_raw_os_error(nix::libc::EOPNOTSUPP).into());
+        }
+        self.bind_provider(handle, provider, original, wire::BIND_METHOD_PROVIDER_OWNED)
+            .await
+    }
+    async fn bind_provider(
+        &self,
+        handle: u16,
+        provider: zbus::zvariant::OwnedObjectPath,
+        original: Deadline,
+        method: &str,
+    ) -> Result<()> {
+        if self.state != RegistrationState::Active
+            || !self.receipt.2.contains(&handle)
+            || provider.as_str() == "/"
+            || provider.as_str().len() > 255
+        {
+            return Err(ApplicationError::Invalid(
+                "inactive/foreign property or invalid provider path",
+            ));
+        }
+        let request: wire::OwnedReadProviderRequest = (
+            handle,
+            provider,
+            slk_contract::deadline_wire(original.stamp()),
+        );
+        let _: () = bounded(
+            &self.controller.client,
+            original,
+            self.controller.call(wire::MANAGER, method, &request),
+        )
+        .await?;
+        original.remaining()?;
+        Ok(())
+    }
+    /// Set a public, read-only UTF-8 property description (1..244 bytes,no NUL).
+    /// This is an original-owner local commit, not remote publication or delivery.
+    /// It changes neither property permissions nor the property's value. A lost
+    /// reply or timeout can follow commit; never retry an uncertain result.
+    pub async fn set_description(
+        &self,
+        handle: u16,
+        description: String,
+        original: Deadline,
+    ) -> Result<()> {
+        if self.state != RegistrationState::Active
+            || !self.receipt.2.contains(&handle)
+            || description.is_empty()
+            || description.contains('\0')
+            || description.len() > wire::MAX_DESCRIPTION_BYTES
+        {
+            return Err(ApplicationError::Invalid(
+                "inactive/foreign property or invalid description length",
+            ));
+        }
+        self.require_property(handle)?;
+        let request: wire::OwnedDescriptionRequest = (
+            handle,
+            description,
+            slk_contract::deadline_wire(original.stamp()),
+        );
+        let _: () = bounded(
+            &self.controller.client,
+            original,
+            self.controller
+                .call(wire::MANAGER, wire::SET_DESCRIPTION_OWNED, &request),
+        )
+        .await?;
+        original.remaining()?;
+        Ok(())
+    }
     /// Withdrawal is allowed after local owner-scope loss. It targets only the
     /// original unique daemon + immutable generation path + owner-bound start
     /// handle (not reused within that database). It cannot admit new work.
     pub async fn unregister(&mut self, original: Deadline) -> Result<()> {
+        self.provider_scope.stop();
         if self.state == RegistrationState::Removed {
             return Err(ApplicationError::Invalid("service already unregistered"));
         }
@@ -221,5 +435,10 @@ impl ServiceRegistration {
         original.remaining()?;
         self.state = RegistrationState::Removed;
         Ok(())
+    }
+}
+impl Drop for ServiceRegistration {
+    fn drop(&mut self) {
+        self.provider_scope.stop();
     }
 }

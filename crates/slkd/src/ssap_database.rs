@@ -1,7 +1,9 @@
 //! Bounded adapter-local service data. Handles are never reused within this
 //! registration. Local insertion is not remote discovery/publication success.
+//! Reply codecs receive a bounded logical-PDU budget; the sole Engine enforces
+//! each physical datagram MTU and negotiated fragment support before sending.
 use crate::ssap_authorization::{Approval, Owner, Target};
-use slk_protocol::ssap::access::SsapAccess;
+use slk_protocol::ssap::access::{MethodAccess, SsapAccess};
 use slk_protocol::ssap::discovery::{Entry, FindKind, FindRequest, encode_page};
 use slk_protocol::{SsapOperations, ssap::value::ValuePdu};
 use std::collections::BTreeMap;
@@ -13,19 +15,47 @@ pub(crate) enum LocalValueError {
     Owner,
     Length,
     Budget,
+    Unsupported,
 }
 
-pub(crate) use slk_contract::ssap::local::{PropertyDefinition, ServiceRecord as LocalService};
+pub(crate) use slk_contract::ssap::local::{
+    MethodDefinition, PropertyDefinition, ServiceRecord as LocalService,
+};
+enum ValueSource {
+    Stored(Vec<u8>),
+    Provider(Arc<crate::ssap_read_provider::Binding>),
+    Writer(Arc<crate::ssap_write_provider::Binding>),
+}
+impl ValueSource {
+    fn stored(&self) -> Option<&[u8]> {
+        match self {
+            Self::Stored(value) => Some(value),
+            Self::Provider(_) | Self::Writer(_) => None,
+        }
+    }
+    fn bytes(&self) -> usize {
+        self.stored().map_or(0, <[u8]>::len)
+    }
+}
 struct Property {
     uuid: Vec<u8>,
     operations: SsapOperations,
     access: SsapAccess,
-    value: Vec<u8>,
+    value: ValueSource,
+    // Type1 is explicitly public and read-only; property access/operations do
+    // not authorize or restrict it. No separate handle or callback is created.
+    description: Option<Vec<u8>>,
+}
+struct Method {
+    uuid: Vec<u8>,
+    access: MethodAccess,
+    binding: Option<Arc<crate::ssap_method_provider::Binding>>,
 }
 struct Service {
     end: u16,
     uuid: Vec<u8>,
     properties: BTreeMap<u16, Property>,
+    methods: BTreeMap<u16, Method>,
     owner: Option<Arc<Owner>>,
 }
 pub(crate) struct Database {
@@ -63,7 +93,7 @@ impl Database {
         uuid: Vec<u8>,
         definitions: Vec<PropertyDefinition>,
     ) -> Result<(u16, u16, Vec<u16>), String> {
-        self.register_inner(uuid, definitions, None)
+        self.register_inner(uuid, definitions, vec![], None)
     }
     pub(crate) fn register_owned(
         &mut self,
@@ -74,23 +104,50 @@ impl Database {
         if !owner.current() {
             return Err("service owner retired".into());
         }
-        self.register_inner(uuid, definitions, Some(owner))
+        self.register_inner(uuid, definitions, vec![], Some(owner))
+    }
+    pub(crate) fn register_owned_entries(
+        &mut self,
+        uuid: Vec<u8>,
+        properties: Vec<PropertyDefinition>,
+        methods: Vec<MethodDefinition>,
+        owner: Arc<Owner>,
+    ) -> Result<(u16, u16, Vec<u16>), String> {
+        if methods.is_empty() {
+            return self.register_owned(uuid, properties, owner);
+        }
+        self.register_inner(uuid, properties, methods, Some(owner))
     }
     fn register_inner(
         &mut self,
         uuid: Vec<u8>,
         definitions: Vec<PropertyDefinition>,
+        methods: Vec<MethodDefinition>,
         owner: Option<Arc<Owner>>,
     ) -> Result<(u16, u16, Vec<u16>), String> {
         fn uuid_valid(v: &[u8]) -> bool {
             matches!(v.len(), 2 | 16) && v.iter().any(|b| *b != 0)
         }
-        if !uuid_valid(&uuid) || definitions.is_empty() {
+        if !uuid_valid(&uuid) || definitions.is_empty() && methods.is_empty() {
             return Err("invalid UUID or empty service".into());
         }
-        let count: usize = self.services.values().map(|s| s.properties.len()).sum();
-        if self.services.len() >= 16 || count + definitions.len() > 64 {
+        let count: usize = self
+            .services
+            .values()
+            .map(|s| s.properties.len() + s.methods.len())
+            .sum();
+        if self.services.len() >= 16 || count + definitions.len() + methods.len() > 64 {
             return Err("local database capacity".into());
+        }
+        for (uuid, bits) in &methods {
+            let access = MethodAccess::from_bits(*bits)?;
+            if !uuid_valid(uuid)
+                || owner.is_none()
+                || access.needs_local_authorization()
+                    && owner.as_ref().is_none_or(|o| !o.supports_authorization())
+            {
+                return Err("invalid method UUID/owner/authorization".into());
+            }
         }
         let mut added = 0;
         for (uuid, ops, access, value) in &definitions {
@@ -101,9 +158,15 @@ impl Database {
                 return Err("SSAP local authorization not connected".into());
             }
             let ops = SsapOperations::from_bits(*ops).map_err(|e| e.to_string())?;
-            if !uuid_valid(uuid) || ops.bits() & !5 != 0 {
+            if !uuid_valid(uuid)
+                || !slk_protocol::ssap::client_config::supported_owned(
+                    ops,
+                    owner.as_ref().is_some_and(|o| o.supports_authorization()),
+                )
+            {
                 return Err(
-                    "only value READ/WRITE_WITH_RSP permissions currently supported".into(),
+                    "unsupported operations or update capability without owned CPCD authorizer"
+                        .into(),
                 );
             }
             if value.len() > 2042 {
@@ -114,7 +177,8 @@ impl Database {
         if self.bytes + added > 8192 {
             return Err("local database byte budget".into());
         }
-        let end = self.next + definitions.len() as u32;
+        let property_count = definitions.len();
+        let end = self.next + (property_count + methods.len()) as u32;
         if end > u32::from(u16::MAX) {
             return Err("local handle namespace exhausted".into());
         }
@@ -130,12 +194,27 @@ impl Database {
                         uuid,
                         operations: SsapOperations::from_bits(ops).expect("validated"),
                         access: SsapAccess::from_bits(access).expect("validated"),
-                        value,
+                        value: ValueSource::Stored(value),
+                        description: None,
                     },
                 )
             })
             .collect::<BTreeMap<_, _>>();
-        let handles = properties.keys().copied().collect();
+        let methods = methods
+            .into_iter()
+            .enumerate()
+            .map(|(i, (uuid, bits))| {
+                (
+                    (self.next + 1 + property_count as u32 + i as u32) as u16,
+                    Method {
+                        uuid,
+                        access: MethodAccess::from_bits(bits).expect("validated"),
+                        binding: None,
+                    },
+                )
+            })
+            .collect::<BTreeMap<_, _>>();
+        let handles = properties.keys().chain(methods.keys()).copied().collect();
         // Final owned-registration admission, after validation/allocation and
         // under the same DB lock as removal/value admission. No await follows.
         if owner.as_ref().is_some_and(|o| !o.can_register()) {
@@ -147,6 +226,7 @@ impl Database {
                 end,
                 uuid,
                 properties,
+                methods,
                 owner,
             },
         );
@@ -175,7 +255,11 @@ impl Database {
             .services
             .remove(&start)
             .ok_or("unknown local service")?;
-        self.bytes -= s.properties.values().map(|p| p.value.len()).sum::<usize>();
+        self.bytes -= s
+            .properties
+            .values()
+            .map(|p| p.value.bytes() + p.description.as_ref().map_or(0, Vec::len))
+            .sum::<usize>();
         if let Some(owner) = s.owner {
             owner.revoke();
         }
@@ -202,14 +286,137 @@ impl Database {
         }
         self.remove(start)
     }
-    pub(crate) fn local_read_owned(&self, handle: u16, owner: &str) -> Result<Vec<u8>, String> {
+    pub(crate) fn bind_owned_method_provider(
+        &mut self,
+        handle: u16,
+        caller: &str,
+        path: zbus::zvariant::OwnedObjectPath,
+    ) -> Result<(), LocalValueError> {
+        if path.as_str() == "/" || path.as_str().len() > 255 {
+            return Err(LocalValueError::Length);
+        }
+        let service = self
+            .services
+            .values_mut()
+            .find(|s| {
+                s.methods.contains_key(&handle)
+                    && s.owner
+                        .as_ref()
+                        .is_some_and(|o| o.current() && o.name == caller)
+            })
+            .ok_or(LocalValueError::Owner)?;
+        let method = service.methods.get_mut(&handle).expect("owned method");
+        if method.binding.is_some() {
+            return Err(LocalValueError::Unsupported);
+        }
+        method.binding = Some(Arc::new(crate::ssap_method_provider::Binding {
+            owner: service.owner.as_ref().expect("owned").clone(),
+            path,
+        }));
+        Ok(())
+    }
+    fn method_access(
+        &self,
+        handle: u16,
+        level: u32,
+        approvals: &[Approval],
+    ) -> Result<&Method, u8> {
+        let method = self
+            .services
+            .values()
+            .find_map(|s| s.methods.get(&handle))
+            .ok_or_else(|| {
+                if self.services.contains_key(&handle) || self.property(handle).is_some() {
+                    12u8
+                } else {
+                    4u8
+                }
+            })?;
+        method.access.check(
+            level,
+            self.locally_authorized(handle, slk_contract::ssap::METHOD_TARGET, true, approvals),
+        )?;
+        Ok(method)
+    }
+    pub(crate) fn method_provider_target(
+        &self,
+        request: ValuePdu<'_>,
+        level: u32,
+        approvals: &[Approval],
+    ) -> Option<crate::ssap_method_provider::Target> {
+        let (handle, args) = match request {
+            ValuePdu::CallMethod { handle, arguments }
+            | ValuePdu::CallMethodCommand { handle, arguments } => (handle, arguments),
+            _ => return None,
+        };
+        if args.len() > slk_contract::ssap::MAX_METHOD_ARGUMENT_BYTES {
+            return None;
+        }
+        let binding = self
+            .method_access(handle, level, approvals)
+            .ok()?
+            .binding
+            .as_ref()?;
+        binding
+            .owner
+            .current()
+            .then(|| crate::ssap_method_provider::Target {
+                handle,
+                binding: binding.clone(),
+            })
+    }
+    pub(crate) fn method_result<'a>(
+        &self,
+        request: ValuePdu<'_>,
+        level: u32,
+        approvals: &[Approval],
+        result: Option<&'a crate::ssap_method_provider::MethodResult>,
+    ) -> Result<&'a [u8], u8> {
+        let (handle, arguments, opcode) = match request {
+            ValuePdu::CallMethod { handle, arguments } => (handle, arguments, 19),
+            ValuePdu::CallMethodCommand { handle, arguments } => (handle, arguments, 18),
+            _ => return Err(2),
+        };
+        let binding = self
+            .method_access(handle, level, approvals)?
+            .binding
+            .as_ref()
+            .ok_or(0xafu8)?;
+        if !binding.owner.current() {
+            return Err(4);
+        }
+        let r = result
+            .filter(|r| {
+                r.target.handle == handle
+                    && Arc::ptr_eq(&r.target.binding, binding)
+                    && r.request.method == handle
+                    && r.request.operation == opcode
+                    && r.request.arguments == arguments
+            })
+            .ok_or(0xafu8)?;
+        match &r.result {
+            Ok(bytes)
+                if bytes.len() <= usize::from(r.request.maximum_result_bytes)
+                    && (opcode == 19 || bytes.is_empty()) =>
+            {
+                Ok(bytes)
+            }
+            Err(error) if (0xaf..=0xff).contains(error) => Err(*error),
+            _ => Err(0xaf),
+        }
+    }
+    pub(crate) fn local_read_owned(
+        &self,
+        handle: u16,
+        owner: &str,
+    ) -> Result<Vec<u8>, LocalValueError> {
         if !self.services.values().any(|s| {
             s.properties.contains_key(&handle)
                 && s.owner
                     .as_ref()
                     .is_some_and(|o| o.current() && o.name == owner)
         }) {
-            return Err("property is not owned by caller".into());
+            return Err(LocalValueError::Owner);
         }
         self.local_read(handle)
     }
@@ -235,23 +442,146 @@ impl Database {
             return Err(LocalValueError::Length);
         }
         let property = service.properties.get_mut(&handle).expect("owned property");
-        let next = budget::replacement_bytes(self.bytes, property.value.len(), value.len())
+        let current = property
+            .value
+            .stored()
+            .ok_or(LocalValueError::Unsupported)?;
+        let next = budget::replacement_bytes(self.bytes, current.len(), value.len())
             .ok_or(LocalValueError::Budget)?;
-        property.value = value;
+        property.value = ValueSource::Stored(value);
+        self.bytes = next;
+        Ok(())
+    }
+    /// One-way explicit source change. The stored value is consumed; a failed
+    /// callback can never expose it. Rebinding requires a new Owned registration.
+    pub(crate) fn bind_owned_read_provider(
+        &mut self,
+        handle: u16,
+        caller: &str,
+        path: zbus::zvariant::OwnedObjectPath,
+    ) -> Result<(), LocalValueError> {
+        let service = self
+            .services
+            .values_mut()
+            .find(|s| {
+                s.properties.contains_key(&handle)
+                    && s.owner
+                        .as_ref()
+                        .is_some_and(|o| o.current() && o.name == caller)
+            })
+            .ok_or(LocalValueError::Owner)?;
+        if path.as_str() == "/" || path.as_str().len() > 255 {
+            return Err(LocalValueError::Length);
+        }
+        let property = service.properties.get_mut(&handle).expect("owned property");
+        if property.operations != SsapOperations::READ {
+            return Err(LocalValueError::Unsupported);
+        }
+        let size = property
+            .value
+            .stored()
+            .ok_or(LocalValueError::Unsupported)?
+            .len();
+        property.value = ValueSource::Provider(Arc::new(crate::ssap_read_provider::Binding {
+            owner: service.owner.as_ref().expect("owned service").clone(),
+            path,
+        }));
+        self.bytes -= size;
+        Ok(())
+    }
+    /// A write-only property delegates effects to its original owner. Consume
+    /// staging once; no read fallback, rebinding or automatic local mutation.
+    pub(crate) fn bind_owned_write_provider(
+        &mut self,
+        handle: u16,
+        caller: &str,
+        path: zbus::zvariant::OwnedObjectPath,
+    ) -> Result<(), LocalValueError> {
+        let service = self
+            .services
+            .values_mut()
+            .find(|s| {
+                s.properties.contains_key(&handle)
+                    && s.owner
+                        .as_ref()
+                        .is_some_and(|o| o.current() && o.name == caller)
+            })
+            .ok_or(LocalValueError::Owner)?;
+        if path.as_str() == "/" || path.as_str().len() > 255 {
+            return Err(LocalValueError::Length);
+        }
+        let property = service.properties.get_mut(&handle).expect("owned property");
+        let supported = SsapOperations::WRITE_WITH_RSP | SsapOperations::WRITE_NO_RSP;
+        if property.operations.bits() == 0 || !supported.contains(property.operations) {
+            return Err(LocalValueError::Unsupported);
+        }
+        let size = property
+            .value
+            .stored()
+            .ok_or(LocalValueError::Unsupported)?
+            .len();
+        property.value = ValueSource::Writer(Arc::new(crate::ssap_write_provider::Binding {
+            owner: service.owner.as_ref().expect("owned service").clone(),
+            path,
+        }));
+        self.bytes -= size;
+        Ok(())
+    }
+    /// Local metadata admission shares the database budget and retirement lock.
+    /// This never writes the property value or the per-client CPCD state.
+    pub(crate) fn set_owned_description(
+        &mut self,
+        handle: u16,
+        owner: &str,
+        description: String,
+    ) -> Result<(), LocalValueError> {
+        let service = self
+            .services
+            .values_mut()
+            .find(|s| {
+                s.properties.contains_key(&handle)
+                    && s.owner
+                        .as_ref()
+                        .is_some_and(|o| o.current() && o.name == owner)
+            })
+            .ok_or(LocalValueError::Owner)?;
+        if description.is_empty()
+            || description.len() > slk_contract::ssap::local::MAX_DESCRIPTION_BYTES
+            || description.contains('\0')
+        {
+            return Err(LocalValueError::Length);
+        }
+        let property = service.properties.get_mut(&handle).expect("owned property");
+        let next = budget::replacement_bytes(
+            self.bytes,
+            property.description.as_ref().map_or(0, Vec::len),
+            description.len(),
+        )
+        .ok_or(LocalValueError::Budget)?;
+        property.description = Some(description.into_bytes());
         self.bytes = next;
         Ok(())
     }
     fn target(&self, handle: u16, level: u32, write: bool) -> Option<Target> {
-        let service = self
-            .services
-            .values()
-            .find(|s| s.properties.contains_key(&handle))?;
-        let p = service.properties.get(&handle)?;
         let operation = if write {
             SsapOperations::WRITE_WITH_RSP
         } else {
             SsapOperations::READ
         };
+        self.target_operation(handle, level, write, operation)
+    }
+    fn target_operation(
+        &self,
+        handle: u16,
+        level: u32,
+        write: bool,
+        operation: SsapOperations,
+    ) -> Option<Target> {
+        let service = self
+            .services
+            .values()
+            .find(|s| s.properties.contains_key(&handle))?;
+        let p = service.properties.get(&handle)?;
         if !p.operations.contains(operation)
             || p.access.check(level, write) != Err(9)
             || p.access
@@ -266,10 +596,68 @@ impl Database {
         }
         Some(Target {
             handle,
+            data_type: 0,
             owner: owner.clone(),
         })
     }
     pub(crate) fn value_targets(&self, request: ValuePdu<'_>, level: u32) -> Vec<Target> {
+        if let ValuePdu::CallMethod { handle, .. } | ValuePdu::CallMethodCommand { handle, .. } =
+            request
+        {
+            return self
+                .services
+                .values()
+                .find_map(|service| {
+                    let method = service.methods.get(&handle)?;
+                    let owner = service.owner.as_ref()?;
+                    (owner.current()
+                        && owner.supports_authorization()
+                        && method.access.check(level, false) == Err(9)
+                        && method.access.check(level, true).is_ok())
+                    .then(|| Target {
+                        handle,
+                        data_type: slk_contract::ssap::METHOD_TARGET,
+                        owner: owner.clone(),
+                    })
+                })
+                .into_iter()
+                .collect();
+        }
+        if let ValuePdu::WriteCommand {
+            handle,
+            data_type: 0,
+            ..
+        } = request
+        {
+            return self
+                .target_operation(handle, level, true, SsapOperations::WRITE_NO_RSP)
+                .into_iter()
+                .collect();
+        }
+        if let ValuePdu::Write {
+            handle,
+            data_type: 2,
+            value,
+            ..
+        } = request
+        {
+            return self
+                .configuration_property(handle)
+                .ok()
+                .and_then(|(modes, owner)| {
+                    slk_protocol::ssap::client_config::decode(value, modes).ok()?;
+                    slk_protocol::ssap::client_config::WRITE_ACCESS
+                        .check_authorization_result(level, true, true)
+                        .ok()
+                        .map(|_| Target {
+                            handle,
+                            data_type: 2,
+                            owner,
+                        })
+                })
+                .into_iter()
+                .collect();
+        }
         let (handle, write) = match request {
             ValuePdu::Read {
                 handle,
@@ -299,16 +687,25 @@ impl Database {
             .filter_map(|(h, _)| self.target(*h, level, false))
             .collect()
     }
-    fn locally_authorized(&self, handle: u16, approvals: &[Approval]) -> bool {
+    fn locally_authorized(
+        &self,
+        handle: u16,
+        data_type: u8,
+        write: bool,
+        approvals: &[Approval],
+    ) -> bool {
         self.services
             .values()
-            .find(|s| s.properties.contains_key(&handle))
+            .find(|s| s.properties.contains_key(&handle) || s.methods.contains_key(&handle))
             .and_then(|s| s.owner.as_ref())
             .is_some_and(|o| {
                 o.current()
-                    && approvals
-                        .iter()
-                        .any(|a| a.handle == handle && Arc::ptr_eq(o, &a.owner))
+                    && approvals.iter().any(|a| {
+                        a.handle == handle
+                            && a.data_type == data_type
+                            && a.write == write
+                            && Arc::ptr_eq(o, &a.owner)
+                    })
             })
     }
     pub(crate) fn find(&self, request: FindRequest<'_>, mtu: u16) -> Result<Vec<u8>, String> {
@@ -328,7 +725,8 @@ impl Database {
                     uuid: service.uuid.clone(),
                     operations: 0,
                     descriptors: vec![],
-                    members: 2,
+                    members: (u8::from(!service.properties.is_empty()) * 2)
+                        | (u8::from(!service.methods.is_empty()) * 4),
                 });
             }
             if matches!(request.kind, FindKind::Properties | FindKind::Structure) {
@@ -347,6 +745,39 @@ impl Database {
                             end: *handle,
                             uuid: property.uuid.clone(),
                             operations: property.operations.bits(),
+                            descriptors: {
+                                let mut types = Vec::with_capacity(2);
+                                if property.description.is_some() {
+                                    types.push(1);
+                                }
+                                if slk_protocol::ssap::client_config::modes(property.operations)
+                                    != 0
+                                {
+                                    types.push(2);
+                                }
+                                types
+                            },
+                            members: 0,
+                        });
+                    }
+                }
+            }
+            if matches!(request.kind, FindKind::Methods | FindKind::Structure) {
+                for (handle, method) in &service.methods {
+                    let included = matched
+                        || request.kind == FindKind::Methods
+                            && request.uuid.is_some_and(|u| u == method.uuid);
+                    if included
+                        && *handle >= request.start
+                        && *handle <= request.end
+                        && request.accepts(&method.uuid)
+                    {
+                        entries.push(Entry {
+                            category: if method.uuid.len() == 16 { 11 } else { 3 },
+                            handle: *handle,
+                            end: *handle,
+                            uuid: method.uuid.clone(),
+                            operations: 0,
                             descriptors: vec![],
                             members: 0,
                         });
@@ -384,6 +815,16 @@ impl Database {
         level: u32,
         approvals: &[Approval],
     ) -> Result<Vec<u8>, String> {
+        self.read_uuid_resolved(request, mtu, level, approvals, &[])
+    }
+    pub(crate) fn read_uuid_resolved(
+        &self,
+        request: slk_protocol::ssap::read_uuid::Request<'_>,
+        mtu: u16,
+        level: u32,
+        approvals: &[Approval],
+        values: &[crate::ssap_read_provider::ReadValue],
+    ) -> Result<Vec<u8>, String> {
         use slk_protocol::ssap::read_uuid::{Item, encode};
         let mut items = Vec::new();
         if request.start == 0 || request.start > request.end {
@@ -402,11 +843,11 @@ impl Database {
                         } else if let Err(error) = p.access.check_authorization_result(
                             level,
                             false,
-                            self.locally_authorized(*handle, approvals),
+                            self.locally_authorized(*handle, 0, false, approvals),
                         ) {
                             Err(u16::from(error))
                         } else {
-                            Ok(p.value.as_slice())
+                            self.read_value(*handle, values)
                         };
                         items.push(Item {
                             handle: *handle,
@@ -445,10 +886,386 @@ impl Database {
             .values()
             .find_map(|s| s.properties.get(&handle))
     }
-    pub(crate) fn local_read(&self, handle: u16) -> Result<Vec<u8>, String> {
+    pub(crate) fn configuration_property(&self, handle: u16) -> Result<(u8, Arc<Owner>), u8> {
+        let service = self
+            .services
+            .values()
+            .find(|s| s.properties.contains_key(&handle))
+            .ok_or(4u8)?;
+        let property = service.properties.get(&handle).ok_or(4u8)?;
+        let modes = slk_protocol::ssap::client_config::modes(property.operations);
+        if modes == 0 || !property.operations.contains(SsapOperations::CLIENT_CFG_WR) {
+            return Err(13);
+        }
+        let owner = service
+            .owner
+            .as_ref()
+            .filter(|o| o.current() && o.supports_authorization())
+            .ok_or(13u8)?;
+        Ok((modes, owner.clone()))
+    }
+    pub(crate) fn owned_update(
+        &self,
+        handle: u16,
+        caller: &str,
+    ) -> Result<(Arc<Owner>, Vec<u8>), String> {
+        let (_, owner) = self
+            .configuration_property(handle)
+            .map_err(|_| "owned update capability unavailable")?;
+        if owner.name != caller {
+            return Err("property is not owned by caller".into());
+        }
+        let value = self
+            .property(handle)
+            .ok_or("property retired")?
+            .value
+            .stored()
+            .ok_or("dynamic read provider does not supply updates")?
+            .to_vec();
+        Ok((owner, value))
+    }
+    /// Called under the DB admission mutex, with configuration owned by this
+    /// one physical actor. Never store per-client state in the adapter DB.
+    pub(crate) fn answer_configuration(
+        &self,
+        request: ValuePdu<'_>,
+        mtu: u16,
+        level: u32,
+        epoch: Option<u64>,
+        approvals: &[Approval],
+        configurations: &mut crate::ssap_engine_config::ClientConfigurations,
+    ) -> Result<Vec<u8>, String> {
+        use slk_protocol::ssap::client_config::{self, WRITE_ACCESS};
+        let (handle, write) = match request {
+            ValuePdu::Read {
+                handle,
+                data_type: 2,
+            } => (handle, false),
+            ValuePdu::Write {
+                handle,
+                data_type: 2,
+                ..
+            } => (handle, true),
+            _ => return Err("not a client configuration request".into()),
+        };
+        let property = self.configuration_property(handle);
+        let epoch = epoch.filter(|epoch| *epoch != 0).ok_or(9u8);
+        let mut commit = None;
+        let mut bytes = [0; 2];
+        let response = match (property, epoch) {
+            (Err(error), _) | (_, Err(error)) if write => ValuePdu::WriteError { handle, error },
+            (Err(error), _) | (_, Err(error)) => ValuePdu::ReadError(u16::from(error)),
+            (Ok((supported, owner)), Ok(epoch)) => match request {
+                ValuePdu::Read { .. } => {
+                    bytes[0] = configurations.get(handle, &owner, epoch);
+                    ValuePdu::ReadValue(&bytes)
+                }
+                ValuePdu::Write { value, verify, .. } => {
+                    let admitted = client_config::decode(value, supported)
+                        .map_err(|_| 5)
+                        .and_then(|modes| {
+                            WRITE_ACCESS
+                                .check_authorization_result(
+                                    level,
+                                    true,
+                                    self.locally_authorized(
+                                        handle,
+                                        client_config::DATA_TYPE,
+                                        true,
+                                        approvals,
+                                    ),
+                                )
+                                .map(|_| modes)
+                        });
+                    match admitted {
+                        Err(error) => ValuePdu::WriteError { handle, error },
+                        Ok(modes) => {
+                            commit = Some((owner, epoch, modes));
+                            if verify {
+                                ValuePdu::WrittenValue {
+                                    handle,
+                                    data_type: 2,
+                                    value,
+                                }
+                            } else {
+                                ValuePdu::Written
+                            }
+                        }
+                    }
+                }
+                _ => unreachable!("validated configuration operation"),
+            },
+        };
+        let mut output = vec![0; usize::from(mtu)];
+        let mut size = response
+            .encode(mtu, &mut output)
+            .map_err(|e| format!("configuration response: {e:?}"))?;
+        // Allocate/validate the response before changing state. A local commit
+        // still does not imply the peer received that response.
+        if let Some((owner, epoch, modes)) = commit
+            && let Err(error) = configurations.set(handle, &owner, epoch, modes)
+        {
+            size = ValuePdu::WriteError { handle, error }
+                .encode(mtu, &mut output)
+                .map_err(|e| format!("configuration refusal: {e:?}"))?;
+        }
+        output.truncate(size);
+        Ok(output)
+    }
+    pub(crate) fn local_read(&self, handle: u16) -> Result<Vec<u8>, LocalValueError> {
         self.property(handle)
-            .map(|p| p.value.clone())
-            .ok_or_else(|| "unknown local property".into())
+            .ok_or(LocalValueError::Owner)?
+            .value
+            .stored()
+            .map(<[u8]>::to_vec)
+            .ok_or(LocalValueError::Unsupported)
+    }
+    /// Called after policy approval, still under the existing database lock.
+    /// Public properties also need a provider; policy-target filtering cannot
+    /// be reused here because it deliberately selects only authorization gaps.
+    pub(crate) fn read_provider_target(
+        &self,
+        handle: u16,
+        level: u32,
+        approvals: &[Approval],
+    ) -> Option<crate::ssap_read_provider::Target> {
+        let property = self.property(handle)?;
+        if !property.operations.contains(SsapOperations::READ)
+            || property
+                .access
+                .check_authorization_result(
+                    level,
+                    false,
+                    self.locally_authorized(handle, 0, false, approvals),
+                )
+                .is_err()
+        {
+            return None;
+        }
+        let ValueSource::Provider(binding) = &property.value else {
+            return None;
+        };
+        binding
+            .owner
+            .current()
+            .then(|| crate::ssap_read_provider::Target {
+                handle,
+                binding: binding.clone(),
+            })
+    }
+    pub(crate) fn uuid_read_provider_targets(
+        &self,
+        request: slk_protocol::ssap::read_uuid::Request<'_>,
+        level: u32,
+        approvals: &[Approval],
+    ) -> Vec<crate::ssap_read_provider::Target> {
+        if request.start == 0 || request.start > request.end || request.data_type != 0 {
+            return vec![];
+        }
+        self.services
+            .values()
+            .flat_map(|s| s.properties.range(request.start..=request.end))
+            .filter(|(_, p)| p.uuid == request.uuid)
+            .filter_map(|(h, _)| self.read_provider_target(*h, level, approvals))
+            .collect()
+    }
+    fn read_value<'a>(
+        &'a self,
+        handle: u16,
+        values: &'a [crate::ssap_read_provider::ReadValue],
+    ) -> Result<&'a [u8], u16> {
+        match &self.property(handle).ok_or(4u16)?.value {
+            ValueSource::Stored(value) => Ok(value),
+            ValueSource::Writer(_) => Err(6),
+            ValueSource::Provider(binding) => {
+                if !binding.owner.current() {
+                    return Err(4);
+                }
+                let resolved = values
+                    .iter()
+                    .find(|v| v.target.handle == handle && Arc::ptr_eq(&v.target.binding, binding))
+                    .ok_or(slk_contract::ssap::PROVIDER_UNAVAILABLE)?;
+                resolved.result.as_deref().map_err(|error| *error)
+            }
+        }
+    }
+    /// Apply one complete command without constructing a normal or error PDU.
+    /// Error codes are local refusal reasons only; commands never owe a reply.
+    pub(crate) fn command_authorized(
+        &mut self,
+        request: ValuePdu<'_>,
+        mtu: u16,
+        level: u32,
+        approvals: &[Approval],
+    ) -> Result<(), u8> {
+        if !matches!(request, ValuePdu::WriteCommand { .. }) {
+            return Err(2);
+        }
+        self.command_resolved(request, mtu, level, approvals, None)
+    }
+    pub(crate) fn command_resolved(
+        &mut self,
+        request: ValuePdu<'_>,
+        mtu: u16,
+        level: u32,
+        approvals: &[Approval],
+        result: Option<&crate::ssap_write_provider::WriteResult>,
+    ) -> Result<(), u8> {
+        if !matches!(request, ValuePdu::WriteCommand { .. }) {
+            return Err(2);
+        }
+        self.write_value(request, mtu, level, approvals, result)
+    }
+    fn write_access(
+        &self,
+        handle: u16,
+        data_type: u8,
+        operation: SsapOperations,
+        level: u32,
+        approvals: &[Approval],
+    ) -> Result<&Property, u8> {
+        let service = self
+            .services
+            .values()
+            .find(|s| s.properties.contains_key(&handle))
+            .ok_or(4u8)?;
+        if service.owner.as_ref().is_some_and(|owner| !owner.current()) {
+            return Err(4);
+        }
+        let property = service.properties.get(&handle).ok_or(4u8)?;
+        if data_type != 0 {
+            return Err(13);
+        }
+        if !property.operations.contains(operation) {
+            return Err(7);
+        }
+        property.access.check_authorization_result(
+            level,
+            true,
+            self.locally_authorized(handle, data_type, true, approvals),
+        )?;
+        Ok(property)
+    }
+    pub(crate) fn write_provider_target(
+        &self,
+        request: ValuePdu<'_>,
+        level: u32,
+        approvals: &[Approval],
+    ) -> Option<crate::ssap_write_provider::Target> {
+        let (handle, data_type, value, operation) = match request {
+            ValuePdu::Write {
+                handle,
+                data_type,
+                value,
+                ..
+            } => (handle, data_type, value, SsapOperations::WRITE_WITH_RSP),
+            ValuePdu::WriteCommand {
+                handle,
+                data_type,
+                value,
+            } => (handle, data_type, value, SsapOperations::WRITE_NO_RSP),
+            _ => return None,
+        };
+        if value.len() > slk_contract::ssap::MAX_PROVIDER_VALUE_BYTES {
+            return None;
+        }
+        let property = self
+            .write_access(handle, data_type, operation, level, approvals)
+            .ok()?;
+        let ValueSource::Writer(binding) = &property.value else {
+            return None;
+        };
+        binding
+            .owner
+            .current()
+            .then(|| crate::ssap_write_provider::Target {
+                handle,
+                binding: binding.clone(),
+            })
+    }
+    /// Called under the database mutex after the Engine's original context
+    /// recheck. Permission remains specific to the request or command opcode.
+    fn write_value(
+        &mut self,
+        request: ValuePdu<'_>,
+        mtu: u16,
+        level: u32,
+        approvals: &[Approval],
+        result: Option<&crate::ssap_write_provider::WriteResult>,
+    ) -> Result<(), u8> {
+        let (handle, data_type, value, operation) = match request {
+            ValuePdu::Write {
+                handle,
+                data_type,
+                value,
+                ..
+            } => (handle, data_type, value, SsapOperations::WRITE_WITH_RSP),
+            ValuePdu::WriteCommand {
+                handle,
+                data_type,
+                value,
+            } => (handle, data_type, value, SsapOperations::WRITE_NO_RSP),
+            _ => return Err(2),
+        };
+        let property = self.write_access(handle, data_type, operation, level, approvals)?;
+        if value
+            .len()
+            .checked_add(5)
+            .is_none_or(|size| size > usize::from(mtu))
+        {
+            return Err(16);
+        }
+        if let ValueSource::Writer(binding) = &property.value {
+            let unavailable = slk_contract::ssap::PROVIDER_UNAVAILABLE as u8;
+            let result = result.ok_or(unavailable)?;
+            let opcode = if matches!(request, ValuePdu::WriteCommand { .. }) {
+                12
+            } else {
+                13
+            };
+            let verify = matches!(request, ValuePdu::Write { verify: true, .. });
+            if result.target.handle != handle
+                || !Arc::ptr_eq(&result.target.binding, binding)
+                || result.request.property != handle
+                || result.request.operation != opcode
+                || result.request.data_type != data_type
+                || result.request.offset != 0
+                || result.request.value != value
+                || result.request.verify != verify
+            {
+                return Err(unavailable);
+            }
+            return match &result.result {
+                Ok(accepted)
+                    if (verify && accepted == value) || (!verify && accepted.is_empty()) =>
+                {
+                    Ok(())
+                }
+                Err(error @ 0xaf..=0xff) => Err(*error),
+                _ => Err(unavailable),
+            };
+        }
+        let next = budget::replacement_bytes(
+            self.bytes,
+            property.value.stored().ok_or(7u8)?.len(),
+            value.len(),
+        )
+        .ok_or(5u8)?;
+        if value
+            .len()
+            .checked_add(5)
+            .is_none_or(|size| size > usize::from(mtu))
+        {
+            return Err(16);
+        }
+        let property = self
+            .services
+            .values_mut()
+            .find_map(|s| s.properties.get_mut(&handle))
+            .expect("checked property under DB mutex");
+        property.value = ValueSource::Stored(value.to_vec());
+        self.bytes = next;
+        Ok(())
     }
     /// Returns a real protocol response. Mutates only on validated single-value
     /// writes with sufficient permission, value budget and negotiated PDU size.
@@ -467,8 +1284,51 @@ impl Database {
         level: u32,
         approvals: &[Approval],
     ) -> Result<Vec<u8>, String> {
+        self.answer_resolved(request, mtu, level, approvals, &[])
+    }
+    pub(crate) fn answer_resolved(
+        &mut self,
+        request: ValuePdu<'_>,
+        mtu: u16,
+        level: u32,
+        approvals: &[Approval],
+        values: &[crate::ssap_read_provider::ReadValue],
+    ) -> Result<Vec<u8>, String> {
+        self.answer_with_providers(request, mtu, level, approvals, values, None)
+    }
+    pub(crate) fn answer_with_providers(
+        &mut self,
+        request: ValuePdu<'_>,
+        mtu: u16,
+        level: u32,
+        approvals: &[Approval],
+        values: &[crate::ssap_read_provider::ReadValue],
+        write: Option<&crate::ssap_write_provider::WriteResult>,
+    ) -> Result<Vec<u8>, String> {
         let mut out = vec![0; usize::from(mtu)];
         let response = match request {
+            ValuePdu::Read {
+                handle,
+                data_type: 1,
+            } => {
+                match self
+                    .services
+                    .values()
+                    .find(|s| s.properties.contains_key(&handle))
+                {
+                    None => ValuePdu::ReadError(4),
+                    Some(s) if s.owner.as_ref().is_some_and(|o| !o.current()) => {
+                        ValuePdu::ReadError(4)
+                    }
+                    Some(s) => match s.properties[&handle].description.as_deref() {
+                        None => ValuePdu::ReadError(13),
+                        Some(value) if value.len() + 2 > usize::from(mtu) => {
+                            ValuePdu::ReadError(16)
+                        }
+                        Some(value) => ValuePdu::ReadValue(value),
+                    },
+                }
+            }
             ValuePdu::Read { handle, data_type } => match self.property(handle) {
                 None => ValuePdu::ReadError(4),
                 Some(_) if data_type != 0 => ValuePdu::ReadError(13),
@@ -478,7 +1338,7 @@ impl Database {
                         .check_authorization_result(
                             level,
                             false,
-                            self.locally_authorized(handle, approvals),
+                            self.locally_authorized(handle, data_type, false, approvals),
                         )
                         .is_err() =>
                 {
@@ -487,78 +1347,34 @@ impl Database {
                             .check_authorization_result(
                                 level,
                                 false,
-                                self.locally_authorized(handle, approvals),
+                                self.locally_authorized(handle, data_type, false, approvals),
                             )
                             .unwrap_err(),
                     ))
                 }
-                Some(p) if p.value.len() + 2 > usize::from(mtu) => ValuePdu::Error {
-                    request: 8,
-                    handle: 0,
-                    error: 16,
+                // T/XS 20001-2025 §7.4.4.5 requires READ_RSP for this
+                // unsupported-fragmentation result, as with read-by-UUID.
+                Some(_) => match self.read_value(handle, values) {
+                    Ok(value) if value.len() + 2 > usize::from(mtu) => ValuePdu::ReadError(16),
+                    Ok(value) => ValuePdu::ReadValue(value),
+                    Err(error) => ValuePdu::ReadError(error),
                 },
-                Some(p) => ValuePdu::ReadValue(&p.value),
             },
             ValuePdu::Write {
                 handle,
                 data_type,
                 value,
                 verify,
-            } => {
-                let error = match self.property(handle) {
-                    None => Some(4),
-                    Some(_) if data_type != 0 => Some(13),
-                    Some(p) if !p.operations.contains(SsapOperations::WRITE_WITH_RSP) => Some(7),
-                    Some(p)
-                        if p.access
-                            .check_authorization_result(
-                                level,
-                                true,
-                                self.locally_authorized(handle, approvals),
-                            )
-                            .is_err() =>
-                    {
-                        p.access
-                            .check_authorization_result(
-                                level,
-                                true,
-                                self.locally_authorized(handle, approvals),
-                            )
-                            .err()
-                    }
-                    Some(p)
-                        if budget::replacement_bytes(self.bytes, p.value.len(), value.len())
-                            .is_none() =>
-                    {
-                        Some(5)
-                    }
-                    _ => None,
-                };
-                if let Some(error) = error {
-                    ValuePdu::WriteError { handle, error }
-                } else {
-                    if value.len() + 5 > usize::from(mtu) {
-                        return Err("write exceeds negotiated PDU".into());
-                    }
-                    let p = self
-                        .services
-                        .values_mut()
-                        .find_map(|s| s.properties.get_mut(&handle))
-                        .expect("checked property");
-                    self.bytes = budget::replacement_bytes(self.bytes, p.value.len(), value.len())
-                        .expect("replacement admission checked under DB mutex");
-                    p.value = value.to_vec();
-                    if verify {
-                        ValuePdu::WrittenValue {
-                            handle,
-                            data_type,
-                            value,
-                        }
-                    } else {
-                        ValuePdu::Written
-                    }
-                }
-            }
+            } => match self.write_value(request, mtu, level, approvals, write) {
+                Err(16) => return Err("write exceeds negotiated PDU".into()),
+                Err(error) => ValuePdu::WriteError { handle, error },
+                Ok(()) if verify => ValuePdu::WrittenValue {
+                    handle,
+                    data_type,
+                    value,
+                },
+                Ok(()) => ValuePdu::Written,
+            },
             _ => return Err("not a value request".into()),
         };
         let size = response
@@ -571,6 +1387,264 @@ impl Database {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn command_and_request_permissions_do_not_authorize_each_other() {
+        for operations in [1, 3, 5, 7] {
+            let mut database = Database::default();
+            let (_, _, handles) = database
+                .register(vec![1, 0], vec![(vec![2, 0], operations, 0, vec![1])])
+                .unwrap();
+            let handle = handles[0];
+            let command = ValuePdu::WriteCommand {
+                handle,
+                data_type: 0,
+                value: &[9, 8],
+            };
+            // The response-producing API must never render a command response.
+            assert!(database.answer(command, 249, 0).is_err());
+            assert_eq!(database.local_read(handle).unwrap(), [1]);
+            assert_eq!(
+                database.command_authorized(command, 249, 0, &[]),
+                if operations & 2 != 0 { Ok(()) } else { Err(7) }
+            );
+            let after_command = if operations & 2 != 0 {
+                vec![9, 8]
+            } else {
+                vec![1]
+            };
+            assert_eq!(database.local_read(handle).unwrap(), after_command);
+            let request = ValuePdu::Write {
+                handle,
+                data_type: 0,
+                value: &[6],
+                verify: true,
+            };
+            assert_eq!(database.command_authorized(request, 249, 0, &[]), Err(2));
+            assert_eq!(database.local_read(handle).unwrap(), after_command);
+            let response = database.answer(request, 249, 0).unwrap();
+            if operations & 4 != 0 {
+                assert_eq!(
+                    ValuePdu::decode(249, &response).unwrap(),
+                    ValuePdu::WrittenValue {
+                        handle,
+                        data_type: 0,
+                        value: &[6]
+                    }
+                );
+                assert_eq!(database.local_read(handle).unwrap(), [6]);
+            } else {
+                assert_eq!(
+                    ValuePdu::decode(249, &response).unwrap(),
+                    ValuePdu::WriteError { handle, error: 7 }
+                );
+                assert_eq!(database.local_read(handle).unwrap(), after_command);
+            }
+        }
+    }
+
+    #[test]
+    fn command_replaces_only_after_complete_length_type_and_budget_admission() {
+        let mut database = Database::default();
+        let (_, _, handles) = database
+            .register(vec![1, 0], vec![(vec![2, 0], 3, 0, vec![1, 2])])
+            .unwrap();
+        let handle = handles[0];
+        for (data_type, value, mtu, expected) in [
+            (2, vec![4], 249, 13),
+            (0, vec![4; 245], 249, 16),
+            (0, vec![4; 2043], 4096, 5),
+            (0, vec![], 4, 16),
+        ] {
+            let before = (database.bytes, database.local_read(handle).unwrap());
+            assert_eq!(
+                database.command_authorized(
+                    ValuePdu::WriteCommand {
+                        handle,
+                        data_type,
+                        value: &value
+                    },
+                    mtu,
+                    0,
+                    &[]
+                ),
+                Err(expected)
+            );
+            assert_eq!(
+                (database.bytes, database.local_read(handle).unwrap()),
+                before
+            );
+        }
+        let maximum = vec![0x5a; 2042];
+        assert_eq!(
+            database.command_authorized(
+                ValuePdu::WriteCommand {
+                    handle,
+                    data_type: 0,
+                    value: &maximum
+                },
+                2047,
+                0,
+                &[]
+            ),
+            Ok(())
+        );
+        assert_eq!(database.local_read(handle).unwrap(), maximum);
+        assert_eq!(database.bytes, 2042);
+        assert_eq!(
+            database.command_authorized(
+                ValuePdu::WriteCommand {
+                    handle,
+                    data_type: 0,
+                    value: &[]
+                },
+                5,
+                0,
+                &[]
+            ),
+            Ok(())
+        );
+        assert_eq!(database.local_read(handle).unwrap(), []);
+        assert_eq!(database.bytes, 0);
+        assert_eq!(
+            database.command_authorized(
+                ValuePdu::WriteCommand {
+                    handle: 0,
+                    data_type: 0,
+                    value: &[1]
+                },
+                249,
+                0,
+                &[]
+            ),
+            Err(4)
+        );
+
+        let mut full = Database::default();
+        let mut definitions = vec![(vec![2, 0], 3, 0, vec![1; 2042]); 4];
+        definitions.push((vec![2, 0], 3, 0, vec![1; 24]));
+        let (_, _, handles) = full.register(vec![1, 0], definitions).unwrap();
+        let handle = handles[4];
+        assert_eq!(full.bytes, 8192);
+        assert_eq!(
+            full.command_authorized(
+                ValuePdu::WriteCommand {
+                    handle,
+                    data_type: 0,
+                    value: &[2; 25]
+                },
+                249,
+                0,
+                &[]
+            ),
+            Err(5)
+        );
+        assert_eq!(full.local_read(handle).unwrap(), [1; 24]);
+        assert_eq!(full.bytes, 8192);
+    }
+
+    #[tokio::test]
+    async fn command_requires_the_registered_owner_approval_and_actual_security_level() {
+        // Real private-bus owner watches; supplied approvals exercise the DB
+        // predicate only, not an application callback or Native security proof.
+        let bus = crate::event_loop::tests::PrivateBus::start();
+        let server = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let caller = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let foreign = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let store = Arc::new(std::sync::Mutex::new(Database::default()));
+        let slots = Arc::new(tokio::sync::Semaphore::new(2));
+        let deadline = tokio::time::Instant::now() + std::time::Duration::from_secs(5);
+        let mut owners = Vec::new();
+        for connection in [&caller, &foreign] {
+            owners.push(
+                Owner::pin(
+                    &server,
+                    connection.unique_name().unwrap().to_string(),
+                    zbus::zvariant::OwnedObjectPath::try_from("/authorizer").unwrap(),
+                    &store,
+                    slots.clone().try_acquire_owned().unwrap(),
+                    deadline,
+                )
+                .await
+                .unwrap(),
+            );
+        }
+        {
+            let mut database = store.lock().unwrap();
+            let (_, _, handles) = database
+                .register_owned(
+                    vec![1, 0],
+                    vec![(vec![2, 0], 3, 6, vec![1])],
+                    owners[0].clone(),
+                )
+                .unwrap();
+            let handle = handles[0];
+            let command = ValuePdu::WriteCommand {
+                handle,
+                data_type: 0,
+                value: &[7, 8],
+            };
+            let targets = database.value_targets(command, 2);
+            assert_eq!(targets.len(), 1);
+            assert!(Arc::ptr_eq(&targets[0].owner, &owners[0]));
+            assert_eq!(database.command_authorized(command, 249, 2, &[]), Err(9));
+            let foreign_approval = Approval {
+                handle,
+                data_type: 0,
+                write: true,
+                owner: owners[1].clone(),
+            };
+            assert_eq!(
+                database.command_authorized(command, 249, 2, &[foreign_approval]),
+                Err(9)
+            );
+            let approval = Approval {
+                handle,
+                data_type: 0,
+                write: true,
+                owner: owners[0].clone(),
+            };
+            assert_eq!(
+                database.command_authorized(command, 249, 1, std::slice::from_ref(&approval)),
+                Err(8)
+            );
+            assert_eq!(database.local_read(handle).unwrap(), [1]);
+            assert_eq!(
+                database.command_authorized(command, 249, 2, std::slice::from_ref(&approval)),
+                Ok(())
+            );
+            assert_eq!(database.local_read(handle).unwrap(), [7, 8]);
+            owners[0].revoke();
+            assert_eq!(
+                database.command_authorized(
+                    ValuePdu::WriteCommand {
+                        handle,
+                        data_type: 0,
+                        value: &[9]
+                    },
+                    249,
+                    2,
+                    &[approval]
+                ),
+                Err(4)
+            );
+            assert_eq!(database.local_read(handle).unwrap(), [7, 8]);
+        }
+        for owner in owners {
+            owner.shutdown().await;
+        }
+    }
     #[test]
     fn attribute_security_checks_original_level_before_values_or_mutation() {
         use slk_protocol::ssap::read_uuid::{Request, decode};
@@ -764,6 +1838,40 @@ mod tests {
             Ok(&[1, 2][..])
         );
     }
+
+    #[test]
+    fn complete_read_boundary_rejects_without_mutation_then_accepts_next_operation() {
+        for size in [62, 63, 64] {
+            let mut d = Database::default();
+            let value = vec![0x5a; size];
+            let (_, _, handles) = d
+                .register(vec![1, 0], vec![(vec![2, 0], 5, 0, value.clone())])
+                .unwrap();
+            let handle = handles[0];
+            let read = ValuePdu::Read {
+                handle,
+                data_type: 0,
+            };
+            let raw = d.answer(read, 64, 0).unwrap();
+            if size == 62 {
+                assert_eq!(raw, [vec![9, 3], value.clone()].concat());
+            } else {
+                assert_eq!(raw, [9, 11, 16, 0]);
+            }
+            assert_eq!(d.local_read(handle).unwrap(), value);
+            let next = ValuePdu::Write {
+                handle,
+                data_type: 0,
+                value: &[1, 2],
+                verify: true,
+            };
+            assert_eq!(
+                d.answer(next, 64, 0).unwrap(),
+                [14, 3, handle as u8, (handle >> 8) as u8, 0, 1, 2]
+            );
+            assert_eq!(d.answer(read, 64, 0).unwrap(), [9, 3, 1, 2]);
+        }
+    }
     #[test]
     fn permissions_budget_and_nonreuse_are_production_state() {
         let mut d = Database::default();
@@ -831,7 +1939,7 @@ mod tests {
         );
         assert_eq!(d.local_read(hs[0]).unwrap(), [4]);
         let before = (d.next, d.bytes, d.list());
-        for ops in [2, 3, 6, 7] {
+        for ops in [32, 256, 1024, 7 | 32] {
             assert!(
                 d.register(vec![1, 0], vec![(vec![2, 0], ops, 0, vec![])])
                     .is_err()

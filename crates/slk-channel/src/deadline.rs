@@ -90,7 +90,10 @@ fn monotonic_ns() -> io::Result<u64> {
         .and_then(|v| v.checked_add(now.tv_nsec as u64))
         .ok_or_else(|| error(nix::libc::EOVERFLOW))
 }
-fn stamp(at: Instant) -> io::Result<u64> {
+/// Convert a local observation Instant to CLOCK_MONOTONIC nanoseconds.
+/// This timestamp grants no admission and imposes no operation budget. Callers
+/// must bound their own lifetime; TX continues through kernel_deadline_at.
+pub fn monotonic_timestamp_at(at: Instant) -> io::Result<u64> {
     // Sample the clock before the Instant: rounding can only shorten a budget.
     let ns = monotonic_ns()?;
     let sampled = Instant::now();
@@ -133,7 +136,7 @@ impl Deadline {
             return Err(error(nix::libc::EINVAL));
         }
         let (boot_id, time_namespace_device, time_namespace_inode) = domain()?;
-        let monotonic_ns = stamp(at)?;
+        let monotonic_ns = monotonic_timestamp_at(at)?;
         if domain()? != (boot_id, time_namespace_device, time_namespace_inode) {
             return Err(error(nix::libc::EOPNOTSUPP));
         }
@@ -253,7 +256,7 @@ pub(crate) fn kernel_deadline_at(at: Instant) -> io::Result<u64> {
     if at <= Instant::now() {
         return Err(error(nix::libc::ETIMEDOUT));
     }
-    stamp(at)
+    monotonic_timestamp_at(at)
 }
 
 #[cfg(test)]

@@ -80,9 +80,21 @@ class ObserverPolicyTests(unittest.TestCase):
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'OpenChannel'},
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'OpenChannelScoped'},
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'PrepareDynamicChannel'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'ReadSsapValue'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'ReadSsapDescription'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'WriteSsapValue'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'WriteSsapCommand'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'CallSsapMethod'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'CallSsapMethodCommand'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'ReceiveSsapUpdate'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'SubscribeSsapUpdates'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'ReadSsapUpdates'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'RenewSsapSubscription'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'CloseSsapSubscription'},
         ])
         self.assertFalse(any('own' in r for r in rules))
-        # Contract change: applications own only their bounded discovery lease.
+        # Contract change: bounded SSAP client calls join owned discovery/channel use.
+        # This does not grant controller management or foreign Owned mutation.
         # A controller scan/stop/cancel, connection teardown or future method
         # remains management authority; do not replace this with a broad allow.
         adapter_members={r['send_member']for r in rules if r.get('send_interface')=='org.sparklink.Adapter'}
@@ -97,6 +109,33 @@ class ObserverPolicyTests(unittest.TestCase):
         self.assertIn('async fn stop_controller_scan',source)
         self.assertNotIn('async fn start_discovery',source)
         self.assertNotIn('async fn stop_discovery',source)
+
+    def test_description_read_and_owner_mutation_keep_distinct_groups(self):
+        # XML role contract only,not actual system-bus/kernel authorization.
+        root=ET.parse(Path(__file__).resolve().parents[2]/'data/dbus/sparklink.conf').getroot()
+        def members(group):
+            return {(r.get('send_interface'),r.get('send_member'))
+                    for r in root.find(f"policy[@group='{group}']").findall('allow')}
+        read=('org.sparklink.Connection','ReadSsapDescription')
+        set_owned=('org.sparklink.ServiceManager','SetOwnedLocalDescription')
+        self.assertIn(read,members('sparklink-apps'))
+        self.assertNotIn(set_owned,members('sparklink-apps'))
+        self.assertIn(set_owned,members('sparklink-services'))
+        self.assertNotIn(read,members('sparklink-services'))
+        default=root.find("policy[@context='default']")
+        self.assertFalse(any((r.get('send_interface'),r.get('send_member'))in(read,set_owned)
+                             for r in default.findall('allow')))
+
+    def test_dynamic_read_provider_binding_is_service_authority_only(self):
+        # Static deployment-role contract; not a real system-bus or RF gate.
+        root=ET.parse(Path(__file__).resolve().parents[2]/'data/dbus/sparklink.conf').getroot()
+        def allows(policy):
+            return {(r.get('send_interface'),r.get('send_member')) for r in policy.findall('allow')}
+        for method in ('BindOwnedReadProvider', 'BindOwnedWriteProvider', 'BindOwnedMethodProvider'):
+            binding=('org.sparklink.ServiceManager',method)
+            self.assertIn(binding,allows(root.find("policy[@group='sparklink-services']")))
+            self.assertNotIn(binding,allows(root.find("policy[@group='sparklink-apps']")))
+            self.assertNotIn(binding,allows(root.find("policy[@context='default']")))
 
     def test_synthetic_complete_role_fixture_requires_actual_original_wire(self):
         record,run,capture=fixture();p=corroborate(record,run,capture)

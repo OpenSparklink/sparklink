@@ -23,6 +23,13 @@
 
 ## 当前源码与拒绝规则
 
+系统总线角色与属性权限位是两层约束。`sparklink-apps` 只获得原期限约束的远端
+读写、单次接收及持续接收租约调用；不获得 controller 管理、Owned 服务修改或
+安全安装权限。服务拥有者、实际链路机制／epoch 和远端属性审批仍独立检查。
+无原期限的发现／UUID／信息入口本批未扩权。确切方法见[接口参考](interfaces.md)。
+实际 system bus 中错误预检只能证明策略允许请求到达 daemon；正向业务仍须对端
+应用校验、回复及两端包证据，不能以 InvalidArgs、协议 ACK 或本地入队替代。
+
 实际生产语义由 Rust `slk_protocol::SsapOperations` 与唯一用户态Engine消费。
 旧内核 `SL_SSAP_OP_*` 和valid/allows/fits_legacy helper已退出公开头，只保留在
 有来源hash的私有C测试见证中；它不是内核SSAP服务接口。
@@ -33,8 +40,16 @@ legacy narrowing 仅保留历史 ABI/权限回归，不再有生产 facade 消�
 旧 AddProperty/WriteProperty/RemoteService.Write/CallMethod 等未发布入口已删除，
 CLI 和观察者白名单同步退休。原权限、超限和不截断语义由实际 codec/数据库及
 现有纯测试保留；不再把历史 248/252 输入限值描述成当前 Engine 的协商 MTU。
+
+完整PDU阶段按opcode开销限制远端值：read最多为协商MTU减2字节，单项UUID读取
+最多为MTU减4字节。本地数据库的2042字节预算不代表该值能装进任意响应。
+未协商本地支持的有序号分片格式时，超过完整响应MTU的两种读取都返回READ_RSP错误16，
+不截断、不换成通用错误响应、不更改属性值；同一actor仍可继续处理后续合法请求。
 真实读写仍核对操作位、连接身份、安全上下文、原期限和本地授权；登记成功不能
-代替对端收到。通知/指示和长写的未实现部分继续明确拒绝。
+代替对端收到。新开发路径对已协商分片序号的单值read/UUID/verified-write复用同一Engine，逻辑值
+预算2042字节；每片独立经过Native约束。更新/发现分片、事务号并发、无序号分片和
+完整失败矩阵仍未支持。机制见[分片解释](../explanation/ssap-value-fragments.md)，
+实际资格仍只由当前能力页的准确产物记录决定。
 
 `org.sparklink.ServiceManager.RegisterLocalService` 是现有唯一用户态数据库的
 入口，当前只接通 READ 和 WRITE_WITH_RSP（mask `0x05`）；其他有效操作位返回
@@ -139,7 +154,7 @@ Grant 或安全资格。它仅接受原 unique daemon、当前 controller/genera
 CLI 退出时先停止本地审批准入，再异步撤回登记；撤回失败不重新开放审批。
 这不表示远端清理已经完成，也不自动接通 C/Python callback、provider 或通知。
 
-`RegisterOwnedLocalService(uuid:ay, properties:a(ayuuay), authorizer:o, deadline:(ttttt))` 的 properties
+`RegisterOwnedLocalService(uuid:ay, properties:a(ayuuay), methods:a(ayu), authorizer:o, deadline:(ttttt))` 的 properties
 沿用上述四字段（实际 D-Bus 签名 `a(ayuuay)`），返回 `(start:q,end:q,handles:aq)`。
 登记者来自真实消息 sender 的 unique name，不能指定其他 owner。`authorizer=/`
 表示不提供审批；带授权位的登记此时返回 NotSupported。服务登记仍只表示本地配置。
@@ -147,10 +162,10 @@ CLI 退出时先停止本地审批准入，再异步撤回登记；撤回失败�
 `ReadOwnedLocalValue(handle:q, deadline:(ttttt))->ay`、
 `ReplaceOwnedLocalValue(handle:q,value:ay,deadline:(ttttt))` 只允许
 原 owner；管理组的显式全局移除/本地读权限仍独立。`sparklink-services` 策略只允许
-这四个 Owned 方法，不授 controller 管理或普通通道权限；[cd35/0568的guest最小角色门禁](../evidence/architecture-retirement-r1-20261017.json)
+Owned登记/读写/撤回、Provider绑定及说明配置，不授controller管理或普通通道权限；[cd35/0568的guest最小角色门禁](../evidence/architecture-retirement-r1-20261017.json)
 已核对实际system bus、组/凭据及设备权限，不代表service-only远端RF或完整发行版部署。
 
-四个 Owned 方法均携带现有 clock-domain 身份和绝对原期限；客户端检查、D-Bus、
+这些Owned管理方法均携带现有 clock-domain 身份和绝对原期限；客户端检查、D-Bus、
 状态锁等待、owner 监听安装及数据库最终准入共用该期限。过期返回 Timeout，
 不重置相对预算。监听安装另有两秒上限，只能缩短该请求。当前 zbus 在进入方法前
 以 `org.freedesktop.zbus.Error` 拒绝旧签名（Signature mismatch）；不兼容回退。
@@ -234,8 +249,10 @@ C 用 slk_local_service_authorization_fd 取得调用者负责关闭的 CLOEXEC 
 SlkAuthorizationRequest，再等待通知；EAGAIN表示没有可交付请求。fd转交仅转交就绪观察，
 不能据此在另一进程批准。对象禁止fork后使用；普通dup/exec不改变原sender或请求身份。
 
-request_info 返回2120字节的只读原上下文，value偏移72；包含controller/generation、
-lifetime/handle、epoch/level、TCID/PI、属性、原期限和本地token。读请求无值，写请求
+request_info 返回2120字节的只读原上下文，data_type偏移70、value偏移72；包含controller/generation、
+lifetime/handle、epoch/level、TCID/PI、属性、数据类型、原期限和本地token。data_type为
+属性值0或客户端配置2；其他类型拒绝。配置2只在声明更新/CPCD能力、真实等级2的
+两字节写请求中交付，独立于属性access；不能由同句柄的属性值批准推导配置批准。读请求无值，写请求
 只有被提议的0..2042字节；reserved/tail及未用字节归零。request_reply只接受0/1，
 直接进入原pending的一次性答复，不经同步RPC executor。0只表示本地决策准入，
 不是daemon提交、USB完成、协议确认或对端应用处理。重复／陈旧答复ESTALE，过期
@@ -246,6 +263,12 @@ Python service.next_authorization() 非阻塞；带 deadline_ns 时按一个不�
 原快照、reply(bool)答复并close/context退出。未答复的请求被释放即拒绝；请求保活的是
 本地审批上下文，不是Client、登记或物理连接。调用者应及时释放每个请求，不能靠保留
 旧句柄后再使用新token取得资格。任何批准都要经过同一Rust guard及daemon最终复核。
+
+未发布的`AuthorizeValue`输入为`(t(qttqtuyyy)qbtayy)`，末尾`y`是原SSAP数据类型，
+写入方向仍由原`b`字段表达。旧六字段输入在签名解码阶段拒绝；固定zbus版本返回
+`org.freedesktop.zbus.Error`及明确的旧/新签名差异，不进入审批队列，没有兼容期。daemon的批准
+收据同时绑定当前服务owner、句柄、数据类型及方向；批准不能跨目标或读写方向使用。
+C/Python及CLI快照显示该类型，SDK不依据对象路径或可修改的显示文字推断类型。
 
 合法unregister请求先停止本地审批，再尝试异步撤回；失败也不重开审批。free与daemon
 owner失效会唤醒等待者。该通知不是controller/connection状态流；物理退休、旧lifetime
@@ -276,7 +299,545 @@ controller/管理租约和登记必须仍有效，提交与远端写入/移除�
 Rust `ServiceRegistration.replace_local`、C `slk_local_service_replace` 与 Python
 `LocalService.replace_local` 使用这一入口，调用成功只表示本地提交，不发通知或指示。
 超时/答复丢失可能发生在提交之后，效果不确定；不自动重试。对端须另行实际读取，仍
-遵守协商MTU及现有无SSAP分片限制。动态provider回调、CCC、主动通知/指示发送仍未接通。
+遵守协商能力、物理MTU和逻辑值预算；仅已协商的单值分片走上述路径，不能推断
+通知/指示或provider也支持分片。动态只读值按下文独立的 Provider 契约处理；新CPCD及
+Owned通知/指示源码契约见[接口参考](interfaces.md#客户端配置与-ssap-更新的当前限制)，
+主动发送资格按当前能力入口的准确artifact及限定范围读取，旧本地替换PASS不升级
+为主动发送、持续订阅或完整生命周期资格。
 
 开始有效撤回后，SDK登记进入Withdrawing：后续本地替换被拒绝，即使撤回答复不确定；
 仍可观察本地值或显式重试原对象清理。Removed后不再读取/替换，不因新caller复活。
+
+### Owned read-only Provider
+
+本节描述唯一 Engine 已接通的源码契约；准确产物的验证范围由资格记录维护，不继承旧存储值或
+授权回调的资格。仅支持 Owned 属性的 type0 动态读取；操作位必须恰为 READ（`0x01`）。
+属性的加密、认证和本地授权要求仍分别适用，type1 公开说明保持独立。
+
+`ServiceManager.BindOwnedReadProvider(handle:q, provider:o, deadline:(ttttt))->()`
+由原登记的同一 unique caller 调用。`provider` 是该 caller 同一总线连接上导出的对象
+路径，必须非根路径且不超过255字节；不能指定另一 owner。原 controller、登记、管理
+租约及准入期限必须仍有效。绑定在同一数据库锁下提交，释放该属性原存储值占用，
+在本次登记内不可重复绑定、更换或解除。绑定后本地读取与替换返回 NotSupported，
+没有缓存值或原初值回退；type1 说明仍可按原接口设置和读取。
+
+零 handle、根路径或超长路径返回 InvalidArgs；未知非零 handle 或非原 owner 返回 AccessDenied；
+非恰好 READ 的属性、已绑定或不支持的模式返回 NotSupported。这些拒绝不提交绑定；
+原期限与现有 Owned 准入规则一致，超时或回复丢失不能证明绑定未发生。
+Rust SDK 另以本地回执预检 inactive/foreign handle，返回 Invalid；该本地拒绝不等于
+请求已到达 broker 或完成权限检查。
+
+Engine 调用原 unique owner 的 `org.sparklink.SsapReadProvider.ReadValue`。请求是
+单个结构体 `(t(qttqtuyyy)qtq)`，响应结构体为 `(qay)`：
+
+| 请求字段 | 类型 | 含义 |
+|---|---|---|
+| request_id | `t` | 本 Engine 的原服务端请求编号，不是 wire 消息事务号 |
+| identity | `(qttqtuyyy)` | controller、generation、connection lifetime、连接 handle、原 RX security epoch/level、local TCID、remote TCID、PI |
+| handle | `q` | 当前请求的 type0 属性 handle |
+| deadline_ns | `t` | 原服务端响应义务的绝对 CLOCK_MONOTONIC 纳秒期限 |
+| maximum_bytes | `q` | 本次 callback 可返回的动态值字节预算 |
+
+响应 `(status:q, value:ay)` 的 status 为0时接受0..maximum_bytes字节，空值是有效结果。
+status 在 `0xAF..0xFF` 时表示应用错误，value 必须为空。其他状态、错误的响应形状、
+超长值、非空错误值、方法失败或缺少可调用的 provider 均映射为应用错误 `0xAF`。
+读取失败使用相应的 ReadRsp 或 ReadByUuidRsp，不返回旧值。原期限耗尽仍按既有
+规则使 Engine 失败，不能改成应用错误后继续接受晚到结果或重置期限。
+
+Provider 等待涉及三个不同起点的期限，不能互相替代：
+
+| 期限 | 起点与约束 | 到期含义 |
+| --- | --- | --- |
+| SDK 请求 | 应用创建的绝对单调时钟期限，覆盖该调用的身份查询和 RPC 等待 | 当前 SDK 调用超时；不证明远端义务或在途数据已经撤销 |
+| 服务端响应 | Engine 接收请求形成的原响应义务，受原重组预算约束；授权和 Provider 共用它 | 当前 SSAP actor 失败；不继续提交迟到的应用值，也不保证能再发错误包 |
+| 请求者在途排空 | 当前 Engine 在首次软件准入后建立的五秒清理期限 | 作者超时或退出不能抹去该义务；无回复时请求者 actor 也可能失败 |
+
+测试监督器的观察预算独立于这些协议期限。前台 Provider token 到期后只拒绝晚到
+输入，原登记可继续存活至显式退出；该局部存活不代表原 SSAP actor 仍可收发。
+后续新连接 lifetime 上的成功，也不能当作旧 actor 恢复或设备自然恢复。
+
+单个动态值最多2042字节；一个服务端义务内所有 provider 返回值共用2042字节累计
+预算，包含按 UUID 读取多个匹配属性的情况，maximum_bytes 是尚余预算。混合结果中的
+原存储值不计入该动态分配预算，仍受数据库8192字节共享预算约束；完整编码响应、
+协商分片和物理 MTU 继续独立限制最终响应，不能截断或由逻辑预算推导一定可发送。
+
+需要本地授权时先完成原审批，再调用 provider；提供一个值不产生访问批准。等待
+复用原 owner watch、原请求身份和绝对期限，计入原 actor 的8条服务器义务总预算，
+不增加独立请求队列或 Engine。等待应用期间不持数据库锁；actor 可继续处理既有
+RX/client/ACK。消费结果时重新核对原 Native 上下文、登记、owner 及同一个 provider
+绑定对象，再按原顺序形成响应。该复核不是内核与数据库的原子事务，实际发送仍
+由原 Grant/Ticket/epoch/期限约束；callback 返回不等于对端收到。
+
+响应编码并进入原待发 Pending 后，已接受的字节成为不可变响应；随后注销服务不能
+撤回这份响应。它与既有存储值读取具有相同边界，仍由原 Native 上下文和期限限制
+实际发送；注销不保证已经接受的响应不会交付，也不产生对端已收到的证明。
+
+正常退出会尝试撤回登记；SIGKILL 等非协作退出依靠原 unique owner 消失通知清理。
+如果 READ 已通过本地审批并进入 Provider 等待，应用尚未答复就退出，在原 Native
+上下文与期限仍有效时，回调调用先失败可产生应用错误 `AF`；数据库先删除该属性
+则产生错误4。两者都不表示动态值成功交付，也不回退到绑定前的存储值。数据库
+清理与撤销在同一锁内完成，此场景不沿用尚在等待审批时的错误9。原期限到达或
+Native 上下文失效则按原义务失败处理，不保证还能发送错误响应。
+
+Rust `ServiceRegistration.bind_read_provider` 封装原绑定方法；共享的
+`ssap::provider::frontend` 实现具体 dispatcher、inbox 与一次性 request，SDK、C/Python
+和 CLI 使用同一条值回调生命周期。`ssap::provider::admit` 复用 AuthorizationContext
+检查原 sender、type0 读取、恰好 READ 和预算，`await_reply` 保留原期限/owner 丢失
+等待；frontend 在答复前重新准入。它不授予审批，也不拥有协议 Engine。
+SDK 在原 Client 总线导出 callback，不另建 Python 总线或 codec。
+动态写入、描述符 provider 和主动更新仍不在本契约范围。
+
+C `slk_local_service_bind_read_provider`／Python `LocalService.bind_read_provider`
+返回原属性的 `SlkReadProvider`／`ReadProvider`。绑定仍要求原服务与明确的绝对
+单调期限；该期限不是服务 TTL，也不替换各次回调的期限。SDK 保留已尝试的绑定，
+同一登记内不自动重试，包括结果不确定的超时。SDK 重复尝试返回 EALREADY，
+预留容量用尽为 EAGAIN，非 READ-only 模式为 EOPNOTSUPP；不属于原登记的属性在
+SDK 入口以 EINVAL 拒绝。绑定成功只表示本地 broker 接受。
+
+`slk_read_provider_next`／`next_request()` 非阻塞地取得一次性请求；未就绪为 EAGAIN。
+通知 fd 是 caller-owned CLOEXEC duplicate，只用于 poll，禁止读写内部计数器；先
+尝试取请求，再等待可读后重试。Python 可传不超过30秒的绝对本地等待期限，但它
+不延长或重写请求 `info.deadline_ns`。poll 不持有对象锁，reply/free 不排入执行
+原绑定 RPC 的队列；每个 inbox 只有一个待决请求，每个 dispatcher 最多16个 inbox
+预留。请求视图释放和 callback 完成前均保留该槽位，不以 `reply()` 返回代替 drain。
+
+`ReadProviderRequest.info`／`SlkReadProviderRequestInfo` 是原身份和预算快照；
+80字节 C 布局含 `reserved[11]`，与实际头和 ctypes 逐字段核对。快照中的 token 是
+本地不复用标识，不能仅凭数字、fd 或旧快照重新取得答复能力。C/Python 入口见
+[接口表](interfaces.md#sdk-只读-provider-收件箱)。
+
+`request.reply(bytes, status=0)`／`slk_read_provider_request_reply` 只接受显式值：
+状态0允许0至 `maximum_bytes` 字节，`AF..FF` 必须为空。非法状态/非空错误为
+EINVAL，超过原预算为 EMSGSIZE，均不消耗原请求；Python 预先以 TypeError／ValueError
+拒绝非法类型或状态，超长值仍为 OSError(EMSGSIZE)。不得截短、隐式成功或回退存储值。
+重复答复或原 daemon 丢失为 ESTALE，原期限耗尽为 ETIMEDOUT，本地停止为 ESHUTDOWN；
+同时发生多个失效条件时不承诺错误优先次序。返回0或 Python 正常返回只表示本地
+一次性答复被接受，仍须经过回调最终检查、daemon Native/数据库检查与真实发送。
+
+应用须保持原服务视图存活。inbox、request 及通知 fd 不持有 Client 或服务引用；
+service unregister/free 会先停止本地 Provider 准入，待决请求不继续获得答复权，
+但这不是远端撤回完成。inbox close/free 只停本地准入，不撤回服务、不解除绑定或
+恢复存储值。未答复 request 的释放表示不可用，不保证仍能发出 AF；原期限、数据库
+和 Native 规则继续适用。请求的不可变 info 在原 scope 关闭后仍可读取。
+Python 沿用原 PID 检查与 RLock，fork 继承对象在进入锁/C 前拒绝；C 对象不得与
+free 并发或跨 fork 使用，非空 value 指针须覆盖实际 length 字节有效内存。
+
+待决注销的受控检查须先实际取得原 Provider 请求，再在其原期限内调用服务注销。
+分别检查注销结果、仍持有的不可变 info、通知 fd，以及旧 request 的答复拒绝；
+单纯退出进程或先关闭 inbox 不能替代这一交错。现有外部 C/Python 回归通过真实
+私有 D-Bus 检查 SDK callback 的停止，服务登记元数据仍是 fixture，不能据此声明
+daemon 数据库删除、真实对端响应、独立服务隔离或空口生命周期验收通过。
+
+专用 VM runner 的 `--ssap-provider-unregister-verify` 使用已有
+`--ssap-read-provider-verify` / `--ssap-owned-verify` 与普通双设备通道基线。
+该选择与 Owner SIGKILL、Provider 到期及正向 SDK 值序列分别运行；不得合并为
+同一种生命周期结果。工具在原 SDK 请求实际到达后发送 `provider-unregister`，
+保留 request/info/readiness fd 的检查，并要求旧回复返回 `ESHUTDOWN`；进程在
+对端拒绝、退休 handle 拒绝和独立 guard 校验期间保持存活，最后正常退出。
+
+准入的 SDK 错误只是一端观察。判定还要求两端原 USB READ/响应、原期限、同一
+controller/generation/lifetime、guard 随机值实际校验，以及注销清理之后的普通
+通道往返；缺包、旧身份、超时、错误收据或用 SIGKILL 替代均失败。工具接通及
+fixture 检查不表示这个新 artifact 已通过实机，具体资格以唯一资格入口为准。
+
+这些应用入口已在源码接通；离线封装/ABI/生命周期检查与实际产物资格独立维护，
+不从基础远端读取或历史 CLI Provider 记录推导 C/Python 服务端 Provider 实机资格。
+
+现有 `ssap-serve` 进程输入 `provider`，将原 READ-only 属性绑定到本进程 callback。
+实际回调输出 `SsapReadProviderPrompt`，包含原身份、期限、maximum_bytes 和带 `p`
+前缀的本地 token。`provide pTOKEN HEX` 返回显式值，`-` 表示成功空值；
+`provider-error pTOKEN STATUS` 返回两位十六进制 `AF..FF` 应用错误。token 与审批
+提示共用进程内不复用的计数，回复命令各自独立；过期、重复、错误 token 或超长输入
+不能结清另一个请求。provider 与 authorizer 各有一个待决槽位，等待 stdin 不占用
+回调执行线程；前台退出先停共享 handle、关闭本地待决答复，再尝试撤回并移除两端点。
+审批 allow 不自动提供值；所有等待仍包含在原请求期限内。
+
+SSAP stdin 管道单行上限4160字节，含换行。终端输入须少于4096字节，含换行；
+达到 Linux canonical 行截断边界会拒绝，避免截短 hex 被当成成功短值。完整2042字节
+值若加命令/token 达到该边界，应通过管道在实际提示后答复；预先排入的新提示前输入
+会被丢弃。该输入限制不改变协议值预算。
+
+标准 T/XS 20001-2025 §7.3 将应用层接口留给实现决定，§7.4.4.5/表51允许读取返回
+上层应用错误。固定 NearLink Host `f0872dfaac33ffa99b80b352f6c05fba2df6414e` 的
+`nlstk_ssap_app_server.c` 公开授权入口仅返回布尔决定；`ssaps_server.c` 的普通读取
+先读取数据库并提交响应，再通知应用。内部可选值字段不是公开动态 provider 契约。
+本实现据此区分授权与提供值，未将参考 Host 当作标准裁判，也不宣称完整符合性。
+
+### Owned write-only Provider（源码接线，待新产物实机验收）
+
+这一路径复用唯一 Engine、原 Owned 登记和同一连接的有界服务端义务队列。
+它与审批回调分开：审批 `true` 不执行应用写入，也不能生成写成功。
+当前提供 daemon 类型化 D-Bus 入口、Rust 低层绑定和共用 Dispatcher 的 Rust/C/Python
+WRITE 收件箱；method 的daemon、Rust/C/Python共享收件箱和CLI服务端已接通；VM调用者、真实方法交付及完整长写事务仍缺失。READ Provider 的既有资格不转授这条新路径。
+
+`ServiceManager.BindOwnedWriteProvider(handle:q, provider:o, deadline:(ttttt))->()`
+仅允许原登记的 unique caller，经 `sparklink-services` 权限调用。属性须为 type0
+写专用，操作位为 `0x02`、`0x04` 或 `0x06`；混合 READ/WRITE 属性不能绑定此 Provider。
+未知/外来 handle、根路径、超长路径与原期限按 Owned 规则拒绝。绑定在原数据库锁下
+一次提交，移除初始存储值；已绑定、重新绑定或不支持的模式返回 NotSupported。
+此后本地读取/替换均不支持，没有原值回退。原绑定超时或回复丢失不能证明未提交，
+不自动重试。撤回原登记仍使用现有卸载路径。
+
+Rust `ServiceRegistration.bind_write_provider` 绑定同一 `Client::from_connection`
+连接上的应用对象，不自动创建回调收件箱。应用须先导出
+`org.sparklink.SsapWriteProvider.WriteValue` 并校验原 daemon unique sender；
+不能把任意进程发来的 callback 当作授权。请求为单个结构体
+`(t(qttqtuyyy)qtyyqayb)`：
+
+| 字段 | 类型 | 含义 |
+|---|---|---|
+| request_id | t | 当前原服务端义务标识 |
+| identity | (qttqtuyyy) | controller、generation、lifetime、handle、security epoch、机制、local/remote TCID、PI |
+| property / deadline_ns | q / t | 原属性与单调时钟绝对期限 |
+| operation | y | 12：无回复命令；13：有回复请求 |
+| data_type / offset | y / q | 当前仅 0 / 0；不隐含长写或描述符支持 |
+| value | ay | 原 PDU 的有界完整拟写值，最多2042字节且须满足实际协商 MTU |
+| verify | b | 原请求要求回送已接受值；命令恒 false |
+
+响应为 `(yay)`：状态0且 verify=false 必须附空数组；verify=true 必须附应用实际
+接受的完整原值，逐字节不符则拒绝。`0xaf..0xff` 应用错误必须附空数组。
+未知状态、错误附值、布尔答复、畸形答复、丢失或过期均不能作为成功，不截断值。
+服务端只在实际有效答复后形成 WriteRsp；WRITE command 无论成功失败都不生成响应。
+verify 的回送不能用方法 echo 或授权 allow 代替实际应用提交。
+
+Engine 在请求应用副作用前重新查询 Native 身份与权限，并在完成答复前再次检查原
+controller/generation/lifetime/epoch/通道和期限；当前测试传输的跳过仅存在于
+`cfg(test)`。这些检查不是跨内核与应用的原子事务：应用已经执行后若撤权、断链、
+退出或超时，可能不再发送成功响应，但不能宣称应用副作用已经回滚。调用者需处理
+结果不确定性；不自动重放写操作。原 worker 取消会释放该义务持有的 Wire 引用，
+不新增 detached worker、第二个 Session 或控制器发送路径。
+
+固定 NearLink Host `f0872dfaac33ffa99b80b352f6c05fba2df6414e` 的
+`ssaps_server_app.c` 将写操作和值交给上层回调，`ssaps_server_write.c` 按原请求的
+返回标志形成应答。本项目保留该操作区分，但跨进程应用答复、原期限和撤回语义由
+上述契约约束；参考行为不作为标准裁判。独立签名、实际私有 D-Bus 与生产 Engine
+回归不等于内核并发证明或真实对端业务交付，新 artifact 必须单独取得 VM 实机资格。
+
+#### SDK WRITE 收件箱
+
+Rust `Dispatcher.bind_write`、C `slk_local_service_bind_write_provider` 和 Python
+`LocalService.bind_write_provider` 使用原 Client/服务登记、原绑定期限及同一 Dispatcher。
+READ/WRITE 共用16个登记槽及各槽单个待决请求，不另开 WRITE 容量池；原 authorizer
+仍是独立审批。服务 stop、owner loss、绑定不确定性、通知 fd、原期限、队列唤醒和最终
+引用释放使用同一前端实现，写类型只增加准入字段和实际接受值的检查。
+
+| C | Python | 作用 |
+|---|---|---|
+| `slk_local_service_bind_write_provider` | `LocalService.bind_write_provider` | 一次原 owner 绑定；返回有限收件箱 |
+| `slk_write_provider_fd` | `WriteProvider.notification_fd()` | 调用者持有 CLOEXEC fd，仅供 poll，不携带答复权 |
+| `slk_write_provider_next` | `WriteProvider.next_request()` | 非阻塞取请求；Python 可选绝对期限仅限制本地等待，不续期原回调 |
+| `slk_write_provider_request_info` | `WriteProviderRequest.info` | 原 request/context/operation/offset/verify/长度快照；不是当前授权 |
+| `slk_write_provider_request_value` | `WriteProviderRequest.value` | 原拟写值的完整有界只读快照；C 短缓冲返回 ENOSPC，告知完整长度、不改缓冲 |
+| `slk_write_provider_request_reply` | `WriteProviderRequest.reply(value, status=0)` | 一次本地答复，不能代替实际应用副作用或对端收到 |
+| `slk_write_provider_request_free` / `slk_write_provider_free` | `request.close()` / `provider.close()` | 释放请求或停止本地准入；不回滚应用副作用，不隐含撤回服务 |
+
+`SlkWriteProviderRequestInfo` 固定80字节、8对齐；所有 reserved 必须为0。包含原
+controller、token、request id、lifetime、epoch、deadline、security level、handle、
+property、offset、value_length、local/remote TCID、PI、operation、data_type、verify。
+C 的非 NULL 指针仍须满足调用者内存契约，不能把调用者 UB 当作内核 EFAULT 支持。
+Python `info` 冻结、`value` 为不可变 bytes，实例禁止 fork 后使用。
+
+回复不通过同步 RPC executor，因此原 executor 等待其他调用时，本地答复不会排在其后。
+status 必须是0或 AF..FF；错误携值/未知状态为 EINVAL，超原答复预算为 EMSGSIZE，
+verify 的非一致接受值为 EINVAL；这些拒绝不消耗答复权。过期 ETIMEDOUT、停止
+ESHUTDOWN、失去原 daemon 或旧请求 ESTALE；没有静默截断、重试或新期限参数。
+同名 daemon 接任不更新既有 Client/Provider 的 owner：旧请求、注册及通知 fd 继续
+绑定原 unique owner；新客户端须重新取得注册，旧请求号或相同 controller 元数据
+不能恢复旧答复权。通知 fd 可因 owner 丢失而唤醒，其最后引用存活不代表权限存活。
+待决 D-Bus 调用可能先收到 NoReply，随后 SDK 才观察到 owner-loss 通知。SDK 在
+原调用期限内向总线核对原 unique owner：已消失或被替换时返回 ESTALE，并将原
+scope 标为失效；原 owner 仍在时保留 NoReply，不凭错误名称推断撤权。查询不续期、
+不跟随新 owner、不重发业务。期限已经耗尽时仍返回 ETIMEDOUT；这些本地终态都不
+证明远端操作回滚或物理义务排空。
+同步 C/Python 执行器也复用此 owner-loss 等待，覆盖普通远端 READ/WRITE 等调用；
+队列等待和执行使用同一原始期限。私有总线回归通过实际 C/Python WRITE 入口检查
+释放服务名、断开总线和存活 owner 的 NoReply 负对照；这些是 SDK 边界检查，
+不代替真实 daemon 退出、内核清理及新连接业务验收。
+接任后的连接门禁复用既有 beacon 配置及停止流程，先建立真实停止态 beacon，
+再要求删除／重建 connectable 集。该准备不替代随机发现或业务验收；失败立即保留，
+不接受首次直接建集来绕过原重建断言。
+VM 的 root 监督器在启动普通用户 CLI Provider 时，仅将新建的测试 stdin 管道交给
+该用户所有；复用 service-only 门禁的管道规则并记录 uid/gid/权限。CLI 仍独立重开
+非阻塞输入，不修改继承的共享文件状态。管道准备失败不得继续启动或伪造注册成功。
+daemon 专用门禁与普通门禁共用每设备 HCC／输入 profile 汇总，匹配端口、generation、
+设备及地址后仍经过原最终检查。guest 业务通过不豁免缺失材料，也不证明执行镜像认证。
+实际 C 导出/private D-Bus 回归覆盖原 parent Client 关闭、owner 切换、旧请求 ESTALE、
+新 sender 向旧端点的 AccessDenied，以及新 lifetime 只接受自己的答复。Adapter/服务
+元数据为显式 fixture；这不是 slkd SIGKILL、内核清理或真实业务恢复资格。
+同一 C/Python 外部消费者提供有限的 `hold-owner-loss` / `observe-owner-loss`
+测试观察命令：保留实际 WRITE 请求、值和通知 fd，暂停测试 UI 的自动取件；
+原期限内核对撤权，随后新 owner 接任及期限过后仍要求 ESTALE。观察不续期、不授予
+权限，也不执行管理停止。退出仅释放本地旧视图，明确不报告服务注销成功。
+真实 VM 使用独立的 `--channel-daemon-crash` v2 门禁：先实际观察待决 verified
+WRITE，再由原 init 监督 SIGKILL/reap；原 requester 必须在自己的期限内返回 ESTALE，
+存活 Provider 的 next/authorization/reply 也必须撤权。两 controller 均清理为 Free、
+物理表为空后才能接任；旧 fd 和旧请求仍拒绝，新连接通过原普通用户 socket 与
+SDK WRITE 门禁。它们共用 daemon，不声称一个进程退出只影响一只设备。
+该路径已接入测试工具，源码／离线检查不等于实机通过；v1 保留原资格，不可升级为
+待决 WRITE／新连接资格。新产物仍须独立双端捕获与对端应用校验。
+第二次 SDK 观察沿用原消费者的有限进程预算，不延长原请求的答复期限。
+
+返回0只表示本地接收了应用答复，若此后立即关闭最后 owner/bus，真实回调可能被丢弃。
+测试若要求观察远端 callback，应通过实际接收屏障保持原 owner，不能用本地0或固定
+sleep 假定已排空。真实 SSAP 对端业务确认仍须单独验证。
+
+原请求释放和 callback drain 是两个条件，仍存活的任一引用都保留容量；fd 的 dup
+只保留通知描述符，不能替代服务或恢复答复权。端点安装遇到已占用 WRITE 时仅移除
+本次创建的 READ 接口，不删除外来对象；取消部分安装只留下已停止的有界端点，直到
+原连接释放，不自动重试。同步 Client 打开失败会释放该原连接。
+
+#### 现有验收调用者的 WRITE 模式
+
+`tools/testing/application_client/client.c` 和 `client.py` 的
+`owned-writeonly INDEX GENERATION SERVICE_UUID PROPERTY_UUID INITIAL_HEX [allow|deny|ask]`
+复用原 Owned 登记、授权、poll 和清理循环；操作位固定为 `0x06`，不能冒充完整
+method、描述符、动态通道或长写协议支持。运行身份来自明确参数，不再使用独立
+WRITE 示例中固定的 controller/handle。测试工具不是生产服务数据库。
+
+`provider` 通过实际 SDK 绑定，`provide pTOKEN HEX` 先将输入完整值与原拟写值比较，
+相等后才答复；verify 返回接受值，其他成功答复为空。`-` 表示空值，
+`provider-error pTOKEN AF..FF` 返回应用错误。错误 token/值不答复、不清除待决请求。
+本地答复接受后更新该测试应用的有限内存值；`value` 单独报告它，不调用 daemon
+staging 读接口。错误和过期答复不改变这个测试值；这不是通用业务副作用的回滚承诺。
+
+`provider-unregister` 在已交付但未答复的 READ 或 WRITE 请求上沿同一服务撤回路径
+停止准入，保留原请求快照和通知 fd 供观察，并实际尝试旧答复；WRITE 使用原拟写值，
+防止参数校验错误掩盖应有的 `ESHUTDOWN`。`SdkWriteProviderUnregistered` 额外记录
+`value_preserved`，表示原拟写快照仍可读取，不代表该值已应用。撤回后 `value` 必须
+仍是之前实际接受的应用值，进程继续存活至 `quit`，正常输出 `SdkOwnedClosedExit`。
+撤回和旧答复检查受原始请求及调用者期限约束；失败不得伪装成成功撤回。
+实际 C/Python 私有 D-Bus 回归覆盖这条 SDK 路径；它不证明 daemon Engine、内核
+取消、真实对端错误或同行隔离，后者仍需专用 VM 双端证据。
+现有 runner 的 `--ssap-write-provider-unregister-verify` 复用共享 pending-case 和 guard，
+独立检查双端 WRITE 错误及后续业务；见[执行契约](vm-gate-inputs.md#sdk-write-provider-待决撤回门禁)。
+是否取得实机资格仍以准确编译产物与执行记录为准。
+
+JSON 观察分别记录原请求、实际 SDK 调用与结果、接受值和应用内存值。
+输入行有界，支持完整2042字节值及命令开销，不静默截断。`quit` 沿原清理路径
+停止准入、释放请求/fd、撤回服务；监督器必须先观察对端结果再结束 owner。
+现有 publisher 可显式选择 `write_provider=True, operations=6`；与 READ/updates
+组合明确拒绝。现有 runner 已提供独立 `--ssap-sdk-write-provider-verify` 选择器及
+双端 USB/SSAP 判定。保留 v1 的应用拒绝及31/32字节 verified WriteReq；独立
+v2 门禁覆盖应用拒绝、2037与2042字节值，仍交换 C/Python 角色。2037字节值加5字节
+WRITE 头构成完整2042字节PDU；2042字节值需要协商有序号分片。逐片核对两端
+原始USB身份、顺序、原期限、完整应用校验及回复，不能以局部片段或本地答复替代。
+旧 daemon-restart v2 仍显式执行原 v1 短值范围，不因工具升级继承长值资格。
+这些是门禁支持范围，实机结果须按准确新artifact单列；见
+[门禁契约](vm-gate-inputs.md#sdk-write-provider-的结果门禁)。源码/离线通过不等于
+准确新产物实机通过；command、长写及待决生命周期的完整门禁仍缺，旧 READ 资格不转授。
+
+### 显式公开的只读属性说明
+
+`SetOwnedLocalDescription(handle:q, description:s, deadline:(ttttt))` 为原 Owned
+属性设置 type1 说明。仅原 unique caller 可提交；controller、登记、管理租约及原期限
+必须仍有效。说明与属性值共同占用现有 8192 字节预算，替换、删除和远端读取使用
+同一数据库锁。它不分配新 handle，不改变属性值或 CPCD。
+
+本实现接受 1..244 个 UTF-8 **字节**，禁止内嵌 NUL；244 是当前实现边界，不是标准
+最大长度，NUL 拒绝来自 D-Bus String 契约。超限/空值/非法输入 EINVAL，非拥有者
+EACCES，预算不足 ENOBUFS，过期 ETIMEDOUT。超时可能发生于提交之后，不能当作回滚。
+
+说明由拥有者**显式选择公开**，远端只读，权限独立于属性值：即使属性读取需要审批
+或没有 READ 位，已登记的公开说明仍可读。type1 不进入属性审批回调，也不接受
+type0/type2 的批准收据。受保护说明、远端修改、动态 Provider 和其他描述符未因此开放。
+已有 type2 CPCD 独立保留；发现列表可同时包含 type1 和 type2。
+
+Rust `ServiceRegistration.set_description`、C `slk_local_service_set_description`、
+Python `LocalService.set_description` 复用这一入口；成功只表示本地提交。
+远端通过 `ReadSsapDescription(handle:q, minimum:u, deadline:(ttttt))->ay`、Rust
+`RemoteSsap.read_description`、C `slk_connection_ssap_read_description` 或 Python
+`connection.ssap().read_description` 读取。返回描述值字节，客户端验证本实现的 UTF-8
+及长度契约，错误 EPROTO，不回退读取属性值。`minimum` 继续约束原通道安全要求，
+不是给说明授予可信身份。缺失说明返回协议错误13，已退休 handle 错误4；不支持的
+远端写入不修改说明、属性或 CPCD。原期限、请求归属、Grant 与唯一 Session 不变。
+
+本段描述源码契约；准确编译产物的离线及实机资格分别读取唯一能力入口。
+
+
+更新等待通过服务 owner 的撤销通知和调用者等待端关闭来唤醒，随后重新检查生产状态。
+通知本身不授予发送权限，也不表示物理清理已完成。未准入的更新只移除自身待发工作；
+已准入更新保留首片建立的排空期限，作者原期限不续期。owner 撤销时，尚未完成准入的
+分片序列使该 SSAP actor 退休；已全部准入的指示继续履行有界 ACK 排空义务，退出的
+作者不再收到成功结果。ACK、软件准入和对端应用实际处理继续分别表达。
+调用者退出后，未完成准入的更新继续监听原 owner 撤销；全部准入且作者已退出时
+停用该监听分支，保留 ACK 排空，避免重复通知导致空转。
+
+## SDK READ Provider 原期限门禁
+
+`--ssap-provider-deadline-verify` 复用原 VM runner，并要求
+`--ssap-provider-owner-exit-verify`、READ Provider 与 Owned 基线。当前执行输出
+version 2：两连接角色分别使用 Python Provider/C requester 和 C Provider/Python
+requester。实际取得 SDK 请求和独立授权后不回复，分别保留 requester 调用期限、
+服务端原响应期限和有界终态观察预算，不通过重新调用来延长期限。
+
+晚答必须调用原 SDK request，返回 `ETIMEDOUT`；解析器拒绝、错 token、
+`ESTALE`、`ESHUTDOWN` 或仅打印错误不能替代这个场景。Provider 保持存活至
+普通 CUTC 业务完成，再显式注销。检查要求完整请求至清理窗口的双端原始捕获，
+不能出现返回缓存值、迟到响应或重复请求；后续普通业务仍使用原应用校验和回复。
+这不证明同一已终止 SSAP actor 恢复，也不证明物理在途义务已排空或自然恢复。
+
+version 1 的 CLI Provider 历史报告继续按原契约读取；当前 host/guest 拒绝把它作为
+SDK version 2 的执行结果。源码接线、离线 fixture、形式化和实际 VM/设备结果分开
+记录，新工具名称或版本本身不授予 SDK 生命周期资格。
+
+## 接收命令授权的原期限与终态
+
+接收端首片建立的原期限覆盖重组、队列等待和所有者授权。当前 Engine 在服务器
+义务到期后以 Failed 终止；命令没有响应，不能发 ErrorRsp 或 WriteRsp 冒充取消确认。
+已有调用者再查询 `GetSsapInfo` 会得到 D-Bus `Failed`，通用 SDK 错误映射为 EIO，
+不应将其当作发送端 SDK 自身期限耗尽的 ETIMEDOUT。具体原期限检查可能先发生在
+actor 定时器或授权结果消费处；两者都不得修改属性、重置期限或接受晚到批准。
+
+同一个物理 connection lifetime 不会因新 fd、重复查询或新的应用 deadline 隐式
+替换 Failed Engine。显式断链并建立新 lifetime 后，沿原初始化流程重新协商。
+普通 CUTC 属于同一 Native Session 的其他逻辑通道，其是否继续交付须以两端
+应用校验和回复验证。SSAP actor 退出不结算 Native 已开始的提交、credit 或 NOCP
+义务，也不等于完整物理清理已经完成。
+
+## Pending WRITE original expiry gate
+
+The optional `--ssap-write-provider-deadline-verify` VM gate reuses the existing
+Provider original-deadline runner with a typed verified type0 WRITE request.
+The application must receive the actual authorized request before expiry. The
+requester call deadline, Provider deadline and finite terminal-observation budget
+remain distinct. A late matching value must actually call the SDK and return
+`ETIMEDOUT`; the application value must remain unchanged. Neither that local
+error nor bounded absence of a wire response proves delivery or physical drain.
+
+The gate records paired request USB evidence and the complete bounded response
+window, then checks ordinary socket business in both connection roles. The
+expired SSAP actor must remain terminal. It does not require or claim same-actor
+SSAP recovery, and does not replace owner-loss, Down, long-write or natural
+recovery acceptance. Historical READ deadline schemas remain unchanged. This
+selector and offline tests are implementation scope; actual qualification remains
+bound to its separately registered source, artifact, tools and retained evidence.
+
+## 待决 WRITE owner 退出门禁
+
+`--ssap-write-provider-owner-exit-verify` 是独立的 SDK/Owned 验收选择器，
+复用既有 pending-case、唯一 Engine、真实 C/Python caller 和双端 USB 判定。
+它以实际 verified type0 WRITE 回调为屏障，核对 controller/generation/lifetime、
+request/epoch/property、完整 32 字节随机值及原期限后才终止 Provider 进程。
+退出、服务移除和实际 peer 错误必须处于原请求/Provider/监督期限内；不能续期。
+
+对端 WRITE 错误须由两端原始数据核对（AF 或 4），随后旧 handle READ 必须拒绝，
+另一独立 Owned guard 必须返回其真实值，普通通道仍须完成原四轮随机业务。
+进程死亡后无法查询其应用内存；不得据日志或无答复宣称应用值已回滚。
+不发送伪答复，不恢复缓存值，不把策略批准、SIGKILL 或 USB 完成当作对端结果。
+
+该选择器与其他 WRITE/READ 生命周期场景互斥；READ 历史 schema 1/2 保持不变。
+源码/离线 gate 的存在不表示新产物实机通过；Down/restart、长值和完整 SSAP
+生命周期仍按各自门禁验收。这里不提供新形式化或自然恢复资格。
+
+### Engine 停止期间的待决 WRITE
+
+连接所有者负责停止并 join 原 Engine；不能仅删除对象引用就宣布回调和 fd 已释放。
+生产 `Engine::stop()` 的有界等待到期后会 abort 并 join 原任务。已退出的等待者不再
+接收该任务的决策，新 lifetime 即使复用 request id 也不能接收旧回调结果。
+远端 D-Bus 方法仍可能完成其副作用；停止等待和关闭 fd 不承诺撤销应用写入。
+
+`engine_stop_drains_pending_write_without_reviving_it_or_stopping_another_callback`
+直接检查该生产 stop 路径、实际私有 D-Bus Provider 回调和 OS fd 引用；同时检查独立
+回调仍能返回、新 lifetime 的结果必须来自自己的答复、动态属性不退回 staging。
+测试故意使用没有 graceful-stop receiver 的既有 task fixture，以覆盖 abort/join，
+不会新增第二个 Engine 或把 Unix socket 当作 Native 通道。它不覆盖完整接收循环、
+内核 Down、USB drain、daemon restart 或无线交付；这些条件继续由 VM 门禁验收。
+
+### 待决 WRITE 与物理连接退出
+
+连接会话退出与服务所有者退出具有不同作用域。`ConnectionOwner` 停止该 lifetime
+的 Engine；controller 所属 Owned 注册及其 Provider 进程有自己的生命周期。
+连接 Down 不能作为服务已注销、远端应用副作用已回滚或物理发送义务已排空的证据。
+
+`--ssap-write-provider-down-verify` 沿同一回调屏障、原 typed Disconnect 和普通
+用户 SDK 检查这一边界：先真实收到待决 WRITE，再断链；Provider 保持存活，
+原请求在原期限内失败。v2 门禁随后在同一原期限内调用实际 SDK 的晚到答复，
+分别记录本地接收或 stale/shutdown 拒绝与测试应用值；本地成功不代表远端成功。
+双端完整捕获不得出现旧连接响应，最后显式清理服务。v1 历史资格没有执行这一步，
+不能授予 v2 资格；daemon restart、应用副作用回滚及完整范围仍由 U#22 追踪。
+测试参数与证据要求见 [VM 门禁输入](vm-gate-inputs.md#待决-write-的连接-down-门禁)。
+
+
+## Owned method 服务端
+
+方法与属性使用同一个 Owned 服务登记和撤回生命周期，但方法不是存储值或 WRITE。
+`RegisterOwnedLocalService` 的 `methods:a(ayu)` 每项为 UUID 与调用权限位；现有只登记
+属性的 SDK 调用传空 methods。receipt 的 handles 先按属性输入顺序、再按方法顺序返回。
+服务总数上限16，属性加方法共享64项上限；handle在同一数据库生命周期内不复用。
+`ListLocalServices` 仍是本地属性 staging 视图，不是完整方法目录；远端发现使用同一
+Engine 的 kind4、类别3/11和服务成员bit4。方法不接受本地属性读写或描述符绑定。
+
+调用权限采用现有加密、认证、授权谓词，方法位分别为1、2、4，拒绝其他位。
+应用应声明覆盖方法全部副作用的要求；批准不替代真实加密或认证。
+授权 prompt 最后字段是目标种类：0属性、2客户端配置描述符、3方法；3不是 wire
+value data_type。方法 prompt 携带原参数且 effect/write=true，不能拿属性批准替代。
+
+`ServiceManager.BindOwnedMethodProvider(handle:q, provider:o, deadline:(ttttt))->()`
+仅允许同一服务 owner 绑定一次，复用原登记、原期限和 owner 监视。回调接口
+`org.sparklink.SsapMethodProvider.CallMethod` 接收一个类型化结构：request id、原
+controller/generation/connection/security/TCID上下文、method handle、原单调期限、
+opcode、arguments及maximum_result_bytes；返回 `(status:y, result:ay)`。
+成功 status0 返回应用独立结果；0xaf–0xff 错误必须空结果，其他值/签名/超限拒绝。
+请求19允许结果上限为协商逻辑MTU减2，最多2045字节；命令18结果必须空，且任何
+成功、拒绝或错误均无线上回复。参数最多2043字节，沿既有分片预算，不截断。
+
+调用与返回均复核原上下文、权限及期限。撤回后旧绑定不能完成新登记；应用已经
+开始的副作用不可因取消回滚，超时结果不确定，调用者不得隐式重试。
+当前接线包含 daemon/类型化 D-Bus 服务端和 Rust 共享 Dispatcher 方法收件箱。
+C/Python方法收件箱复用同一Dispatcher；CLI方法服务端已接通；VM调用者及真实方法交付未验收。
+
+Rust `LocalServices::register_entries(uuid, properties, methods, authorizer, Deadline)`
+复用原登记和清理流程；`register_service`继续只登记属性。方法使用`MethodAccess`，
+不伪装成属性操作位；同一receipt按属性、方法顺序给出handle。属性读值、替换、说明
+及READ/WRITE绑定入口拒绝方法handle，方法绑定拒绝属性handle。
+
+`Dispatcher::bind_method`返回`MethodInbox`，与READ/WRITE共享16槽、原owner观察、
+登记撤回域和callback/request引用计账。`fd`只提供readiness；`try_next`/`next`取得
+原始`MethodProviderRequest`，`MethodRequest::reply(status, result)`只消费一次本地
+答复权。结果可以不同于参数；超限和非法错误状态拒绝且不截断，仍可在原期限内
+提交合法答复。command18的结果上限为0，本地答复不是线上ACK；daemon不发送
+方法命令响应。关闭、最终引用、撤回、owner丢失及期限沿原共享生命周期处理，
+不撤销已经发生的应用副作用，也不隐式重试。
+
+方法应用策略可使用`MethodAuthorizationContext`与`admit_method`校验原daemon、
+身份、target kind3、权限及原期限；它只验证本地观察，不授安全等级或内核Grant。
+新增接口安装失败只清理此次安装的READ/WRITE接口，保留原已占用接口；取消后
+遗留接口关闭准入并随原总线释放，不制造成功绑定。
+私有总线/生产函数 fixture 不验证 Native锁、USB、固件或真实对端交付；准确新产物的
+双设备方法业务和原路径保持仍需VM-only验收。
+
+
+### C/Python 方法 Provider
+
+C `slk_client_register_local_entries` 与 Python `Client.register_local_entries` 接受
+独立的属性和方法数组，总数1–64。`SlkServiceMethod`/`LocalMethod` 使用方法权限，
+不能把属性操作位当作权限；需要本地批准却未开启请求收件箱时返回不支持。
+原仅属性登记入口继续复用相同实现。receipt明确property_count/method_count；
+handles依次为属性和方法，Python另提供property_handles/method_handles。
+
+`slk_local_service_bind_method_provider`/`LocalService.bind_method_provider` 返回
+原owner的方法收件箱。C的fd/next/info/arguments/reply/free及Python的
+notification_fd/next_request/arguments/reply/close共享Rust队列和生命周期，
+没有外语callback执行器或第二套请求循环。readiness fd仅用于poll，复制fd不延续答复权。
+参数快照最多2043字节；C短缓冲返回ENOSPC和完整所需长度，保持缓冲区不变。
+独立结果最多2045字节，且受原请求结果预算约束；超限EMSGSIZE不截断、不消费答复权。
+command18只能返回空结果，本地拒绝也不会生成线上ACK。
+
+未发布C ABI保持receipt总长152及handle偏移24，但原reserved字段改为method_count；
+授权快照总长2120、value偏移72保持，value数组扩至2043，尾部保留字节减为5。
+调用者须同步当前头文件和绑定；属性授权仍最多2042，方法kind3不能接受属性handle。
+授权快照的data_type字段表示授权目标种类（0属性、2CPCD、3方法），不是wire类型。
+审批结果不等于方法执行或业务成功。
+
+每个请求只接受一次答复；重复ESTALE，原期限ETIMEDOUT，撤回/本地停止ESHUTDOWN，
+原daemon丢失ESTALE。request和inbox均须释放，已发生的副作用不可因取消回滚。
+外部C/Python离线消费者实际链接共享库，经私有D-Bus校验2043参数、2045独立结果、
+command零结果、错误输入和待决撤回；manager身份/登记为fixture，不授真实内核、
+协议Engine、固件或对端交付资格。CLI复用同一共享Dispatcher及原输入循环；VM调用者和真实双设备方法门禁继续开放。
+
+另有 daemon 生产函数组合回归：真实私有 D-Bus Provider 返回 0、247–255、2045
+字节独立结果，经实际响应编码、分片、重组及客户端结果解码；2046 字节整体拒绝，
+随后合法请求可继续。独立固定报文头／载荷切片检查避免仅以编码解码相互兼容判定。
+注销前已编码的不可变响应与尚未消费的候选结果分别检查，原期限到期拒绝新准入。
+此层的协商预算、Native 身份／传输是显式 fixture，不运行完整 actor 调度、内核
+credit 或 USB，不代表实机长结果、并发退出或撤权后在途排空通过。

@@ -10,12 +10,11 @@ import os
 from pathlib import Path
 import re
 import secrets
-import stat
 import subprocess
 import time
 from ws73_capture import CaptureError
 from ws73_north_star import file_record,daemon_identity,stable
-from ws73_ssap_owned import wait_text
+from ws73_ssap_owned import wait_text,observed_process
 
 STATUS='ACTUAL_GUEST_SERVICE_ROLE_EVIDENCE_PENDING'
 DENIED=['foreign-owned-read','global-value-read','foreign-owned-replace','foreign-owned-remove']
@@ -54,13 +53,9 @@ def record(application,owners,daemon_pid,folder=Path('/evidence/service-policy')
                     # The CLI deliberately reopens stdin for an independent
                     # O_NONBLOCK description. A root-owned inherited pipe is
                     # not reopenable after setuid, despite its inherited fd.
-                    readfd,writefd=os.pipe2(os.O_CLOEXEC)
-                    files.callback(os.close,readfd)
-                    writer=files.enter_context(os.fdopen(writefd,'wb',buffering=0))
-                    os.fchown(readfd,1005,1005);os.fchmod(readfd,0o600)
-                    pipe=os.fstat(readfd)
-                    entry['stdin']={'uid':pipe.st_uid,'gid':pipe.st_gid,'mode':stat.S_IMODE(pipe.st_mode),'fifo':stat.S_ISFIFO(pipe.st_mode)}
-                    process=subprocess.Popen(args,text=True,stdin=readfd,stdout=files.enter_context(out.open('x')),stderr=files.enter_context(err.open('x')),user=1005,group=1005,extra_groups=[])
+                    from ws73_ssap_owned import owned_input
+                    readfd,writer,entry['stdin']=owned_input(files,1005,1005)
+                    process=files.enter_context(observed_process(args,entry,out,err,text=True,stdin=readfd,user=1005,group=1005,extra_groups=[]))
                     entry.update(pid=process.pid,credentials=credentials(process.pid));save()
                     matches,_=wait_text(process,out,r'^SsapOwnedService: start=(\d+) end=(\d+) property=(\d+); local registration only$',time.monotonic()+5)
                     if len(matches)!=1:raise CaptureError('one actual service-only owner registration required')
@@ -78,9 +73,7 @@ def record(application,owners,daemon_pid,folder=Path('/evidence/service-policy')
                     if c['exit'] or len(rows)!=1 or any(v[0]==start for v in json.loads(rows[0])):raise CaptureError('service-only final unregister left metadata')
             finally:
                 if process:
-                    if process.poll() is None:process.kill();process.wait(timeout=2)
-                    if process.stdin:process.stdin.close()
-                    entry.update(exit=process.returncode,stdout=out.read_text() if out.exists() else '',stderr=err.read_text() if err.exists() else '')
+                    entry['exit']=process.returncode
                 entry['end_wall_ns']=time.time_ns();save()
         result.update(status=STATUS,end_wall_ns=time.time_ns());save()
     except BaseException as error:result.update(status='FAIL',error=str(error),end_wall_ns=time.time_ns());save();raise

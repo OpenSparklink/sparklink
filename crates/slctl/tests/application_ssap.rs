@@ -50,6 +50,33 @@ impl Link {
             )),
         }
     }
+
+    fn call_ssap_method(
+        &self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        libsparklink::Deadline::from_stamp(slk_contract::deadline_stamp(original)).unwrap();
+        self.calls.fetch_add(1, Ordering::SeqCst);
+        if (handle, minimum, arguments) != (17, 1, vec![0x56, 0x12]) {
+            return Err(zbus::fdo::Error::NotSupported(
+                "finite method fixture".into(),
+            ));
+        }
+        Ok(vec![0x90, 0x78, 0x34])
+    }
+    fn call_ssap_method_command(
+        &self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<()> {
+        self.call_ssap_method(handle, arguments, minimum, original)
+            .map(|_| ())
+    }
     fn write_ssap_value(
         &self,
         handle: u16,
@@ -63,6 +90,22 @@ impl Link {
             return Err(zbus::fdo::Error::InvalidArgs("exact fixture write".into()));
         }
         Ok(vec![0x90])
+    }
+    fn write_ssap_command(
+        &self,
+        handle: u16,
+        value: Vec<u8>,
+        minimum: u32,
+        deadline: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<()> {
+        libsparklink::Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).unwrap();
+        self.calls.fetch_add(1, Ordering::SeqCst);
+        if (handle, minimum, value) != (17, 1, vec![0x56, 0x12]) {
+            return Err(zbus::fdo::Error::NotSupported(
+                "exact fixture command".into(),
+            ));
+        }
+        Ok(())
     }
 }
 #[tokio::test]
@@ -87,6 +130,27 @@ async fn actual_cli_uses_sdk_and_refuses_late_identity_without_relabelling_succe
     for (command, handle, rest, expected) in [
         ("ssap-read", "17", vec!["2"], Some("value=3478")),
         ("ssap-write", "17", vec!["5612", "1"], Some("value=90")),
+        (
+            "ssap-write-command",
+            "17",
+            vec!["5612", "1"],
+            Some("stage=software_socket_admission peer_delivery=unconfirmed"),
+        ),
+        ("ssap-write-command", "18", vec!["5612", "1"], None),
+        (
+            "ssap-call-method",
+            "17",
+            vec!["5612", "1"],
+            Some("value=907834"),
+        ),
+        (
+            "ssap-call-method-command",
+            "17",
+            vec!["5612", "1"],
+            Some("stage=software_socket_admission peer_delivery=unconfirmed"),
+        ),
+        ("ssap-call-method", "18", vec!["5612", "1"], None),
+        ("ssap-call-method-command", "18", vec!["5612", "1"], None),
         ("ssap-read", "18", vec!["2"], None),
         ("ssap-read", "99", vec!["2"], None),
     ] {
@@ -104,9 +168,19 @@ async fn actual_cli_uses_sdk_and_refuses_late_identity_without_relabelling_succe
         if let Some(value) = expected {
             assert!(result.status.success(), "{stderr}");
             assert!(stdout.contains(value), "{stdout}");
+            if command == "ssap-write-command" {
+                assert!(stdout.contains("SsapCommandAdmission:"), "{stdout}");
+                assert!(
+                    !stdout.contains("SsapPeerValue:") && !stdout.contains("value="),
+                    "{stdout}"
+                );
+            }
         } else {
             assert!(!result.status.success());
-            assert!(!stdout.contains("SsapPeerValue:"), "{stdout}");
+            assert!(
+                !stdout.contains("SsapPeerValue:") && !stdout.contains("SsapCommandAdmission:"),
+                "{stdout}"
+            );
             assert!(
                 stderr.contains(if handle == "99" {
                     "controller generation"
@@ -117,6 +191,6 @@ async fn actual_cli_uses_sdk_and_refuses_late_identity_without_relabelling_succe
             );
         }
     }
-    assert_eq!(calls.load(Ordering::SeqCst), 4);
+    assert_eq!(calls.load(Ordering::SeqCst), 10);
     Ok(())
 }

@@ -61,12 +61,28 @@ class PassthroughControlRun(Run):
 class ConnectionControlRun(PassthroughControlRun):
     def __init__(self, args):
         super().__init__(args)
+        if getattr(args,'link_payload_preference',None) is not None:
+            self.data['link_payload_preference_requested']=args.link_payload_preference
+        if getattr(args,'link_measurements',False):
+            self.data['link_measurements_requested']=True
         self.native_controller_return = None
         if getattr(args, 'native_controller_return', None):
             from ws73_native_controller_return import Session
             self.native_controller_return = Session(self)
         self.data['connection_down_failure_observe_seconds'] = getattr(args, 'connection_down_failure_observe_seconds', 0)
         self.save()
+
+    def channel_completion(self, phase, finish):
+        if not getattr(self.args, 'ssap_write_provider_down_verify', False):
+            return None
+        def pending_write_down():
+            from ws73_ssap_write_down import execute
+            rows = [row for row in self.data.get('channel_socket', [])
+                    if row.get('owners') == phase['typed_objects']]
+            if len(rows) != 1:
+                raise ValueError('one original channel row for pending WRITE Down required')
+            execute(self, rows[0], phase, finish)
+        return pending_write_down
 
     def phase(self, a, b, count, label):
         if self.native_controller_return and label == 'replug':
@@ -81,6 +97,15 @@ class ConnectionControlRun(PassthroughControlRun):
             if getattr(self.args,'application_discovery_verify',False):
                 from ws73_application_discovery import execute as application_discovery
                 application_discovery(self,a,b)
+            if getattr(self.args,'ssap_sdk_write_provider_verify',False):
+                # The shared connection gate requires an actual stopped beacon
+                # before recreating a connectable set. Never assume firmware
+                # state from a previous VM, and never relax that assertion.
+                from ws73_ssap_initialization import restore_beacons
+                setup=dict(caller=a,peer=b)
+                self.data['write_provider_beacon_setup']=setup
+                self.save()
+                restore_beacons(self,setup)
             from ws73_connection_control import execute
             execute(self, a, b)
             from ws73_registry_metadata import execute as registry_metadata
@@ -160,7 +185,7 @@ def main():
     parser.add_argument('--slkd-pid',type=int,required=True)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--application-discovery-verify',action='store_true')
-    parser.add_argument('--application-discovery-case',choices=['release','owner-loss'],default='release')
+    parser.add_argument('--application-discovery-case',choices=['release','owner-loss','ttl','sdk-release'],default='release')
     parser.add_argument('--application-client-verify',action='store_true',help='dedicated actual public C/Python fixed-channel one-shot/dup/final-close gate')
     parser.add_argument('--passthrough',action='store_true',help='real RF, QMP guest-only disconnect; excludes physical unplug acceptance')
     parser.add_argument('--daemon-cancel-remove',action='store_true',help='cancel during original held reply, then remove only that guest owner; requires passthrough')
@@ -183,23 +208,83 @@ def main():
     parser.add_argument('--channel-benchmark-count',type=int,default=20)
     parser.add_argument('--channel-benchmark-bytes',type=int,default=61)
     parser.add_argument('--channel-benchmark-interval-us',type=int)
+    parser.add_argument('--channel-benchmark-dynamic',action='store_true')
+    parser.add_argument('--channel-benchmark-parallel',action='store_true')
+    parser.add_argument('--channel-benchmark-close-short',action='store_true')
+    parser.add_argument('--channel-benchmark-pressure',action='store_true')
+    parser.add_argument('--channel-benchmark-ssap-owned',action='store_true')
+    parser.add_argument('--channel-benchmark-ssap-duplex',action='store_true')
+    parser.add_argument('--channel-benchmark-credit-observe',action='store_true')
+    parser.add_argument('--channel-benchmark-hcc-memory-observe',action='store_true')
+    parser.add_argument('--channel-benchmark-link-probe',action='store_true')
+    parser.add_argument('--channel-benchmark-active-endpoint',type=int,choices=[0,1])
     parser.add_argument('--native-return-verify',action='store_true')
     parser.add_argument('--native-controller-return', choices=['initiator','acceptor'])
     parser.add_argument('--ssap-initialization-verify',action='store_true',help='actual selected negotiation-stage lease revoke, fd convergence and ordinary new lifetime preservation')
     parser.add_argument('--ssap-initialization-stage',choices=['cmtc','exchange'],default='cmtc')
     parser.add_argument('--ssap-owned-update-verify',action='store_true')
+    parser.add_argument('--ssap-subscription-verify',action='store_true')
+    parser.add_argument('--ssap-subscription-shared-verify',action='store_true',help='two actual SDK subscribers,partial retained release and last physical cleanup;dedicated gate')
+    parser.add_argument('--ssap-subscription-shared-case',choices=('release','expiry','owner-exit','pressure'),default='release',help='separate release,original expiry,reader exit or bounded slow-reader isolation;not kernel Grant revocation')
+    parser.add_argument('--ssap-subscription-renewal-verify',action='store_true')
+    parser.add_argument('--ssap-subscription-pressure-verify',action='store_true')
+    parser.add_argument('--ssap-subscription-owner-loss-verify',action='store_true')
+    parser.add_argument('--ssap-subscription-inflight-release-verify',action='store_true')
+    parser.add_argument('--ssap-subscription-inflight-case',choices=['release','expiry'],default='release',help='explicit original lease expiry or application release,through same bounded in-flight gate')
+    parser.add_argument('--ssap-update-delivery-verify',action='store_true')
+    parser.add_argument('--ssap-update-lifecycle-verify',action='store_true')
+    parser.add_argument('--ssap-sender-deadline-verify',action='store_true')
+    parser.add_argument('--ssap-sender-lifecycle-case',choices=['deadline','owner-after-deadline'],default='deadline')
+    parser.add_argument('--ssap-value-lengths-verify',action='store_true')
     parser.add_argument('--ssap-owner-lifecycle-verify',action='store_true',help='actual owner exit/stale prompt/original deadline with ordinary CUTC afterwards')
     parser.add_argument('--ssap-owner-publisher',choices=['cli','sdk'],default='cli',help='explicit owner frontend;SDK selects C/Python per role,no fallback')
     parser.add_argument('--ssap-requester-lifecycle-verify',action='store_true',help='actual C/Python requester exit/physical reply drain and CUTC while owner prompt held')
     parser.add_argument('--ssap-owned-verify',action='store_true',help='real owner authorization and exit cleanup;not complete SSAP or service-only policy qualification')
+    parser.add_argument('--ssap-description-verify',action='store_true',help='with --ssap-owned-verify: actual public read-only description discovery and SDK read')
+    parser.add_argument('--ssap-method-provider-verify',action='store_true',help='with --ssap-owned-verify: actual method Provider and independent SDK result')
+    parser.add_argument('--ssap-read-provider-verify',action='store_true',help='with --ssap-owned-verify: actual Owned dynamic read callback and peer SDK value comparison')
+    parser.add_argument('--ssap-sdk-read-provider-verify',action='store_true',help='with --ssap-read-provider-verify: actual C/Python SDK Provider callbacks and opposite-language peer verification')
+    parser.add_argument('--ssap-sdk-write-provider-verify',action='store_true',help='with --ssap-owned-verify: actual C/Python WRITE Provider rejection and short verified values, paired USB evidence')
+    parser.add_argument('--ssap-write-provider-unregister-verify',action='store_true',help='dedicated Owned/ordinary gate: pending C/Python WRITE unregister, original deadline, paired peer refusal and independent guard')
+    parser.add_argument('--native-event-retry-verify',action='store_true')
+    parser.add_argument('--ssap-write-provider-owner-exit-verify',action='store_true',help='dedicated Owned/ordinary gate: pending C/Python WRITE owner death, original deadline, paired peer refusal and independent guard')
+    parser.add_argument('--ssap-write-provider-down-verify',action='store_true',help='actual pending WRITE callback before typed Disconnect and two-end Down')
+    parser.add_argument('--ssap-write-provider-deadline-verify',action='store_true',help='dedicated Owned/ordinary gate: pending C/Python WRITE original expiry, late rejection and ordinary business')
+    parser.add_argument('--ssap-provider-owner-exit-verify',action='store_true',help='with --ssap-read-provider-verify: version2 C/Python pending SDK Provider owner loss and independent guard delivery')
+    parser.add_argument('--ssap-provider-unregister-verify',action='store_true',help='with --ssap-read-provider-verify: C/Python pending explicit unregister and independent guard delivery')
+    parser.add_argument('--ssap-provider-deadline-verify',action='store_true',help='with --ssap-provider-owner-exit-verify: immutable Provider deadline, rejected late token and ordinary CUTC continuity')
+    parser.add_argument('--ssap-write-command-verify',action='store_true',help='actual C/Python no-response write,remote Read and original owner checks;dedicated ordinary socket gate')
+    parser.add_argument('--ssap-write-command-policy-verify',action='store_true',help='actual command refusal and same-owner deny/allow after original positive cases;requires --ssap-write-command-verify')
+    parser.add_argument('--ssap-write-command-deadline-verify',action='store_true')
     parser.add_argument('--channel-socket-verify',action='store_true')
     parser.add_argument('--acb-transport-probe',action='store_true')
     parser.add_argument('--connection-verify',action='store_true',help='ordinary typed real Connect/Disconnect before RF; excludes connected release/close/dup')
+    parser.add_argument('--link-payload-preference',choices=['reported-acb-maximum'])
+    parser.add_argument('--link-measurements',action='store_true',help='finite actual Managed RSSI/PHY queries before ordinary workloads')
     parser.add_argument('--connection-advertising',choices=['fixed-t','negotiable-t'],default='fixed-t')
     args=parser.parse_args()
+    from ws73_ssap_method_provider import requested as method_provider_requested
+    try:method_provider_requested(args,passthrough=args.passthrough)
+    except ValueError as error:parser.error(str(error))
+    if args.link_payload_preference is not None and (not args.passthrough or not args.connection_verify or not (args.channel_socket_verify or args.channel_benchmark)):
+        parser.error('link payload preference requires existing native paired workload')
+    if args.link_measurements and (not args.passthrough or not args.connection_verify or not (args.channel_socket_verify or args.channel_benchmark)):
+        parser.error('link measurements require a real two-controller connection/application gate')
+    from ws73_ssap_sender_deadline import requested as sender_requested
+    try:sender_requested(args,passthrough=args.passthrough)
+    except ValueError as error:parser.error(str(error))
     # Fixed guest xHCI slots, not host topology defaults or device selection.
     # Establish them before any mode validator checks the selected pair.
     args.ports=['1-1','1-2']
+    from ws73_ssap_command import requested as command_requested
+    try:command_requested(args,passthrough=args.passthrough)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_command_policy import requested as command_policy_requested
+    try:command_policy_requested(args,passthrough=args.passthrough)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_command_deadline import requested as command_deadline_requested
+    try:command_deadline_requested(args,passthrough=args.passthrough)
+    except ValueError as error:parser.error(str(error))
     from ws73_connection_control import requested_down_failure_observation
     try:requested_down_failure_observation(args)
     except ValueError as error:parser.error(str(error))
@@ -216,12 +301,55 @@ def main():
     try:requested(args)
     except ValueError as error:parser.error(str(error))
     if args.ssap_requester_lifecycle_verify and (not args.channel_socket_verify or not args.passthrough or args.ssap_owner_lifecycle_verify or args.ssap_owned_verify or args.security_agent or args.channel_socket_close_prefix or args.channel_socket_burst or args.channel_socket_boundaries or args.dynamic_channel_verify or args.channel_fairness_verify):parser.error('requester lifecycle requires separate ordinary basic socket baseline')
+    from ws73_ssap_subscription import requested as subscription_requested
+    try:subscription_requested(args,passthrough=args.passthrough)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_update_delivery import requested as delivery_requested
+    try:delivery_requested(args,passthrough=args.passthrough)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_receive_lifecycle import requested as receive_requested
+    try:receive_requested(args,passthrough=args.passthrough)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_value import lengths_requested
+    try:lengths_requested(args,passthrough=args.passthrough)
+    except ValueError as error:parser.error(str(error))
     if args.ssap_owned_update_verify and (not args.channel_socket_verify or args.ssap_owner_lifecycle_verify or args.ssap_owned_verify or args.ssap_requester_lifecycle_verify or args.security_agent or args.channel_socket_close_prefix or args.channel_socket_burst or args.channel_socket_boundaries or args.dynamic_channel_verify or args.channel_fairness_verify):parser.error('owned update requires dedicated ordinary socket gate')
     if args.ssap_owner_publisher!='cli' and not args.ssap_owner_lifecycle_verify:parser.error('SDK publisher requires owner lifecycle')
     if args.ssap_owner_lifecycle_verify and (not args.channel_socket_verify or args.security_agent or args.channel_socket_close_prefix or args.channel_socket_burst or args.channel_socket_boundaries or args.dynamic_channel_verify or args.channel_fairness_verify):parser.error('owner lifecycle requires separate ordinary basic socket baseline')
+    from ws73_ssap_description import requested as description_requested
+    try:description_requested(args)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_read_provider import requested as provider_requested
+    try:provider_requested(args)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_sdk_read_provider import requested as sdk_provider_requested
+    try:sdk_provider_requested(args)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_sdk_write_provider import requested as sdk_write_provider_requested
+    try:sdk_write_provider_requested(args)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_write_unregister import requested as write_unregister_requested
+    try:write_unregister_requested(args)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_write_owner_exit import requested as write_owner_exit_requested
+    try:write_owner_exit_requested(args)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_write_down import requested as write_down_requested
+    try:write_down_requested(args)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_provider_owner_exit import requested as provider_exit_requested
+    try:provider_exit_requested(args)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_provider_unregister import requested as provider_unregister_requested
+    try:provider_unregister_requested(args)
+    except ValueError as error:parser.error(str(error))
+    from ws73_ssap_provider_deadline import requested as provider_deadline_requested
+    try:provider_deadline_requested(args)
+    except ValueError as error:parser.error(str(error))
     if args.ssap_owned_verify and (not args.channel_socket_verify or args.channel_socket_close_prefix or args.channel_socket_burst or args.channel_socket_boundaries or args.dynamic_channel_verify or args.channel_fairness_verify):parser.error('owned SSAP requires separate ordinary socket baseline')
-    from ws73_socket_benchmark import requested_configuration
-    try:requested_configuration(args)
+    from ws73_socket_benchmark import requested_configuration,requested_channel
+    from ws73_benchmark_ssap import requested as requested_benchmark_ssap
+    try:requested_configuration(args);requested_channel(args);requested_benchmark_ssap(args)
     except ValueError as error:parser.error(str(error))
     if args.channel_benchmark and (not args.connection_verify or args.channel_socket_verify or args.acb_transport_probe or args.security_agent or args.daemon_link_resync):parser.error('benchmark requires separate real connection without other application gates')
     if args.channel_fairness_verify and (not args.channel_socket_verify or args.dynamic_channel_verify or args.security_agent or args.channel_socket_close_prefix or args.channel_socket_burst or args.channel_socket_boundaries):parser.error('concurrent channel gate requires separate ordinary baseline')
@@ -240,6 +368,8 @@ def main():
     if args.channel_socket_rounds!=4 and not args.channel_socket_verify:parser.error('round count requires explicit socket gate')
     if args.channel_socket_close_prefix and (not args.channel_socket_verify or args.channel_socket_bytes!=2042 or args.channel_socket_rounds!=1 or args.channel_socket_boundaries):parser.error('prefix-close requires explicit one-round 2042-byte socket gate')
     if args.channel_socket_burst and (not args.channel_socket_verify or args.channel_socket_bytes!=2042 or args.channel_socket_rounds!=16 or args.channel_socket_close_prefix or args.channel_socket_boundaries):parser.error('burst requires explicit16-round2042-byte socket gate')
+    from ws73_native_event_retry import requested as retry_requested
+    retry_requested(args, passthrough=args.passthrough)
     if args.channel_socket_verify and (not args.connection_verify or args.acb_transport_probe or args.daemon_link_resync):parser.error('ordinary socket requires separate connection gate without test module')
     if args.acb_transport_probe and (not args.connection_verify or args.daemon_link_resync):parser.error('ACB probe requires a separate explicit connection gate')
     if args.connection_advertising!='fixed-t' and not args.connection_verify:

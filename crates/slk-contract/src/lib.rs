@@ -3,6 +3,8 @@
 use slk_protocol::SleAddr;
 pub mod controller_events;
 pub mod discovery;
+pub mod link_parameter;
+pub mod link_query;
 pub mod security;
 
 /// Absolute CLOCK_MONOTONIC ns, UUID high/low (big-endian bytes), namespace
@@ -74,8 +76,72 @@ pub mod ssap {
     pub type SsapAuthorizationIdentity = (u16, u64, u64, u16, u64, u32, u8, u8, u8);
     /// Request ID, original context, local property, write?, original monotonic
     /// deadline, proposed write value (empty for reads). Reads disclose no value
-    /// to the authorizer before its decision. This is a D-Bus-only tuple contract.
-    pub type SsapAuthorizationPrompt = (u64, SsapAuthorizationIdentity, u16, bool, u64, Vec<u8>);
+    /// to the authorizer before its decision. The final byte is the original
+    /// target kind (property value0, client configuration2, method3; method3 is not a wire data type); it is part of the policy
+    /// scope, not inferred from the handle or granted by a local decision.
+    pub type SsapAuthorizationPrompt =
+        (u64, SsapAuthorizationIdentity, u16, bool, u64, Vec<u8>, u8);
+
+    /// Application value request, independently of authorization. Type0 READ
+    /// only; the original receipt/deadline and cumulative value budget are not
+    /// renewed for this callback. Empty success differs from application error.
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type)]
+    pub struct ReadProviderRequest {
+        pub request_id: u64,
+        pub identity: SsapAuthorizationIdentity,
+        pub property: u16,
+        pub deadline_ns: u64,
+        pub maximum_bytes: u16,
+    }
+    /// Status0 has 0..maximum_bytes value bytes. Status0xAF..0xFF is an
+    /// application error and requires an empty value. No other status is valid.
+    pub type ReadProviderReply = (u16, Vec<u8>);
+    pub const READ_PROVIDER_INTERFACE: &str = "org.sparklink.SsapReadProvider";
+    pub const READ_PROVIDER_METHOD: &str = "ReadValue";
+    pub const MAX_PROVIDER_VALUE_BYTES: usize = 2042;
+    pub const PROVIDER_UNAVAILABLE: u16 = 0xaf;
+
+    /// Application-owned type0 write, after independent policy approval.
+    /// Operation is the actual SSAP opcode (12 command, 13 request). This base
+    /// single-value interface has offset0; no synthetic long-write transaction.
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type)]
+    pub struct WriteProviderRequest {
+        pub request_id: u64,
+        pub identity: SsapAuthorizationIdentity,
+        pub property: u16,
+        pub deadline_ns: u64,
+        pub operation: u8,
+        pub data_type: u8,
+        pub offset: u16,
+        pub value: Vec<u8>,
+        pub verify: bool,
+    }
+    /// Status0 accepts the original whole write. Verified writes must return
+    /// the actually accepted bytes, equal to the request; otherwise empty.
+    /// Application error0xAF..0xFF requires empty bytes. Transport failure or
+    /// timeout cannot establish whether the application already had an effect.
+    pub type WriteProviderReply = (u8, Vec<u8>);
+    pub const WRITE_PROVIDER_INTERFACE: &str = "org.sparklink.SsapWriteProvider";
+    pub const WRITE_PROVIDER_METHOD: &str = "WriteValue";
+
+    /// Invocation, separate from a property value or policy approval. Command18
+    /// has no wire response; request19 returns independent application bytes.
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type)]
+    pub struct MethodProviderRequest {
+        pub request_id: u64,
+        pub identity: SsapAuthorizationIdentity,
+        pub method: u16,
+        pub deadline_ns: u64,
+        pub operation: u8,
+        pub arguments: Vec<u8>,
+        pub maximum_result_bytes: u16,
+    }
+    pub const METHOD_PROVIDER_INTERFACE: &str = "org.sparklink.SsapMethodProvider";
+    pub const METHOD_PROVIDER_METHOD: &str = "CallMethod";
+    pub const METHOD_TARGET: u8 = 3;
+    pub const MAX_METHOD_ARGUMENT_BYTES: usize = 2043;
+    pub const MAX_METHOD_RESULT_BYTES: usize = 2045;
+    pub type MethodProviderReply = (u8, Vec<u8>);
 
     /// Local manager staging and caller-owned registration are distinct roles.
     pub mod local {
@@ -88,29 +154,137 @@ pub mod ssap {
         pub const UNREGISTER_OWNED: &str = "UnregisterOwnedLocalService";
         pub const READ_OWNED: &str = "ReadOwnedLocalValue";
         pub const REPLACE_OWNED: &str = "ReplaceOwnedLocalValue";
+        pub const SET_DESCRIPTION_OWNED: &str = "SetOwnedLocalDescription";
+        pub const BIND_READ_PROVIDER_OWNED: &str = "BindOwnedReadProvider";
+        pub const BIND_WRITE_PROVIDER_OWNED: &str = "BindOwnedWriteProvider";
+        pub const BIND_METHOD_PROVIDER_OWNED: &str = "BindOwnedMethodProvider";
+        /// Implementation bound in UTF-8 bytes, not a standard maximum.
+        pub const MAX_DESCRIPTION_BYTES: usize = 244;
         pub type PropertyDefinition = (Vec<u8>, u32, u32, Vec<u8>);
+        /// UUID and invocation access bits0..2; no stored argument or result.
+        pub type MethodDefinition = (Vec<u8>, u32);
         pub type PropertyRecord = (u16, Vec<u8>, u32, u32);
         pub type ServiceRecord = (u16, u16, Vec<u8>, Vec<PropertyRecord>);
         pub type Registration = (u16, u16, Vec<u16>);
         pub type OwnedRegistrationRequest = (
             Vec<u8>,
             Vec<PropertyDefinition>,
+            Vec<MethodDefinition>,
             zvariant::OwnedObjectPath,
             crate::Deadline,
         );
         pub type OwnedHandleRequest = (u16, crate::Deadline);
         pub type OwnedValueRequest = (u16, Vec<u8>, crate::Deadline);
+        pub type OwnedDescriptionRequest = (u16, String, crate::Deadline);
+        pub type OwnedReadProviderRequest = (u16, zvariant::OwnedObjectPath, crate::Deadline);
+        pub type OwnedWriteProviderRequest = (u16, zvariant::OwnedObjectPath, crate::Deadline);
     }
     pub const DISCOVER: &str = "DiscoverSsap";
     pub const CACHED: &str = "GetCachedSsap";
-    pub const OBSERVE: &str = "ObserveSsapIncoming";
+    pub const RECEIVE: &str = "ReceiveSsapUpdate";
+    pub const OWNED_UPDATE: &str = "SendOwnedSsapUpdate";
+    pub const OWNED_CONFIGURATION: &str = "GetOwnedSsapConfiguration";
+    /// stage1: notification software admission only; stage2: indication accepted
+    /// by the peer's protocol receive queue. Neither means application processing.
+    #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type)]
+    pub struct UpdateReceipt {
+        pub stage: u8,
+        pub pdu: Vec<u8>,
+        pub acknowledgement: Vec<u8>,
+    }
     pub const READ_UUID: &str = "ReadSsapByUuid";
     pub const READ: &str = "ReadSsapValue";
+    /// Public read-only type1 description, independent of property permissions.
+    pub const READ_DESCRIPTION: &str = "ReadSsapDescription";
     pub const WRITE: &str = "WriteSsapValue";
+    /// Empty return means all command fragments were admitted to the software
+    /// socket path, not controller completion or peer receipt/processing.
+    pub const WRITE_COMMAND: &str = "WriteSsapCommand";
+    pub const CALL_METHOD: &str = "CallSsapMethod";
+    pub const CALL_METHOD_COMMAND: &str = "CallSsapMethodCommand";
     pub const EXCHANGE_INFO: &str = "GetSsapInfo";
     pub type Entry = (u8, u16, u16, Vec<u8>, u32, Vec<u8>, u8);
     pub type Discovery = (Vec<Entry>, Vec<(Vec<u8>, Vec<u8>)>);
+    pub const DISCOVERY_ENTRIES: usize = 80;
+    pub const DISCOVERY_PAGES: usize = 96;
+    pub const DISCOVERY_REQUEST_BYTES: usize = 22;
+    pub const DISCOVERY_RESPONSE_BYTES: usize = 2048;
     pub type Incoming = (bool, Vec<u8>);
+    /// One caller-owned leased receive scope on the original physical actor.
+    /// A protocol ACK means bounded queue acceptance,not application handling.
+    pub mod subscription {
+        pub const CREATE: &str = "SubscribeSsapUpdates";
+        pub const READ: &str = "ReadSsapUpdates";
+        pub const RENEW: &str = "RenewSsapSubscription";
+        pub const CLOSE: &str = "CloseSsapSubscription";
+        pub const CAPACITY: usize = 16;
+        pub const BYTE_BUDGET: usize = 32768;
+        pub const STARTING: u8 = 0;
+        pub const ACTIVE: u8 = 1;
+        pub const CLOSING: u8 = 2;
+        pub const CLOSED: u8 = 3;
+        pub const RELEASED: u8 = 1;
+        pub const EXPIRED: u8 = 2;
+        pub const OWNER_LOST: u8 = 3;
+        pub const INITIALIZATION_CANCELLED: u8 = 4;
+        /// This lease's routing and configuration ownership are released.
+        /// Without REMOTE_RETAINED,the last remote configuration was verified off.
+        pub const CLEANUP_CONFIRMED: u32 = 1;
+        /// At this lease's terminal observation,other same-scope leases still
+        /// owned the remote CPCD. Not a claim that it is currently enabled.
+        pub const REMOTE_RETAINED: u32 = 2;
+        #[derive(
+            Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type,
+        )]
+        pub struct Info {
+            pub version: u32,
+            pub controller: u16,
+            pub generation: u64,
+            pub lifetime: u64,
+            pub handle: u16,
+            pub security_epoch: u64,
+            pub token: u64,
+            pub expires_ns: u64,
+            pub handles: Vec<u16>,
+            pub modes: u8,
+            pub state: u8,
+            pub capacity: u16,
+        }
+        #[derive(
+            Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type,
+        )]
+        pub struct Packet {
+            pub sequence: u64,
+            pub security_epoch: u64,
+            pub security_level: u32,
+            pub indication: bool,
+            pub pdu: Vec<u8>,
+        }
+        #[derive(
+            Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type,
+        )]
+        pub struct Batch {
+            pub info: Info,
+            pub last_sequence: u64,
+            pub dropped_notifications: u64,
+            pub refused_indications: u64,
+            pub discarded_on_close: u64,
+            pub flags: u32,
+            pub reason: u8,
+            pub packets: Vec<Packet>,
+        }
+        pub fn valid_request(handles: &[u16], modes: u8, duration_ms: u32) -> bool {
+            !handles.is_empty()
+                && handles.len() <= 32
+                && !handles.contains(&0)
+                && handles
+                    .iter()
+                    .enumerate()
+                    .all(|(i, h)| !handles[..i].contains(h))
+                && (1..=3).contains(&modes)
+                && (250..=60000).contains(&duration_ms)
+        }
+    }
     pub type UuidValues = (Vec<(u16, bool, u16, Vec<u8>)>, Vec<u8>, Vec<u8>);
     pub type ExchangeInfo = (
         u16,
@@ -233,13 +407,60 @@ pub fn matches_connection(controller: ControllerId, path: &str, info: &Connectio
 mod tests {
     use super::*;
     #[test]
+    fn read_provider_contract_preserves_independent_value_and_deadline_fields() {
+        use zvariant::Type;
+        let request = ssap::ReadProviderRequest {
+            request_id: 23,
+            identity: (2, 7, 11, 3, 19, 1, 10, 10, 0),
+            property: 29,
+            deadline_ns: 31,
+            maximum_bytes: 37,
+        };
+        assert_eq!(request.request_id, 23);
+        assert_eq!(request.identity, (2, 7, 11, 3, 19, 1, 10, 10, 0));
+        assert_eq!(
+            (request.property, request.deadline_ns, request.maximum_bytes),
+            (29, 31, 37)
+        );
+        assert_eq!(
+            ssap::ReadProviderRequest::SIGNATURE.to_string(),
+            "(t(qttqtuyyy)qtq)"
+        );
+        assert_eq!(ssap::ReadProviderReply::SIGNATURE.to_string(), "(qay)");
+        assert_eq!(
+            ssap::local::OwnedReadProviderRequest::SIGNATURE.to_string(),
+            "(qo(ttttt))"
+        );
+    }
+    #[test]
+    fn write_provider_has_independent_literal_signatures() {
+        use zvariant::Type;
+        assert_eq!(
+            ssap::WriteProviderRequest::SIGNATURE.to_string(),
+            "(t(qttqtuyyy)qtyyqayb)"
+        );
+        assert_eq!(ssap::WriteProviderReply::SIGNATURE.to_string(), "(yay)");
+        assert_eq!(
+            ssap::local::OwnedWriteProviderRequest::SIGNATURE.to_string(),
+            "(qo(ttttt))"
+        );
+    }
+    #[test]
     fn authorizer_contract_preserves_literal_field_order_and_signatures() {
         use zvariant::Type;
         let identity: ssap::SsapAuthorizationIdentity = (2, 7, 11, 3, 19, 1, 10, 10, 0);
-        let prompt: ssap::SsapAuthorizationPrompt = (23, identity, 29, true, 31, vec![37]);
+        let prompt: ssap::SsapAuthorizationPrompt = (23, identity, 29, true, 31, vec![37], 0);
         assert_eq!(
             prompt,
-            (23, (2, 7, 11, 3, 19, 1, 10, 10, 0), 29, true, 31, vec![37])
+            (
+                23,
+                (2, 7, 11, 3, 19, 1, 10, 10, 0),
+                29,
+                true,
+                31,
+                vec![37],
+                0
+            )
         );
         assert_eq!(
             ssap::SsapAuthorizationIdentity::SIGNATURE.to_string(),
@@ -247,7 +468,7 @@ mod tests {
         );
         assert_eq!(
             ssap::SsapAuthorizationPrompt::SIGNATURE.to_string(),
-            "(t(qttqtuyyy)qbtay)"
+            "(t(qttqtuyyy)qbtayy)"
         );
     }
 
@@ -410,7 +631,7 @@ mod owned_deadline_contract {
     fn owned_requests_have_one_original_stamp_and_no_legacy_shape() {
         assert_eq!(
             super::ssap::local::OwnedRegistrationRequest::SIGNATURE.to_string(),
-            "(aya(ayuuay)o(ttttt))"
+            "(aya(ayuuay)a(ayu)o(ttttt))"
         );
         assert_eq!(
             super::ssap::local::OwnedHandleRequest::SIGNATURE.to_string(),
@@ -419,6 +640,10 @@ mod owned_deadline_contract {
         assert_eq!(
             super::ssap::local::OwnedValueRequest::SIGNATURE.to_string(),
             "(qay(ttttt))"
+        );
+        assert_eq!(
+            super::ssap::local::OwnedDescriptionRequest::SIGNATURE.to_string(),
+            "(qs(ttttt))"
         );
     }
 }

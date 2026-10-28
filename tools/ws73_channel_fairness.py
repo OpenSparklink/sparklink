@@ -80,12 +80,13 @@ def execute(run, phase):
         if errors and not failed:raise CaptureError('concurrent output cleanup failed')
 
 
-def concurrent_progress(short, long):
+def concurrent_progress(short, long, *, short_count=20,long_count=16):
     """Captured PDU-boundary progress in both directions, not latency promises."""
     observations=[]
     for role in ['initiator','peer']:
         large=[v for v in long if v['role']==role];small=[v for v in short if v['role']==role]
-        if len(large)!=16 or len(small)!=20:raise CaptureError('complete short20/long16 per direction required')
+        if (any(type(v)is not int or v<2 for v in [short_count,long_count])
+            or len(large)!=long_count or len(small)!=short_count):raise CaptureError('complete original short/long counts per direction required')
         first=min(v['tx']['fragments'][0]['wall_ns'] for v in large)
         last=max(v['tx']['wall_ns'] for v in large)
         between=[v for v in small if first<v['tx']['wall_ns']<last]

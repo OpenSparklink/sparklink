@@ -10,7 +10,7 @@ use std::path::PathBuf;
     name = "slktest",
     version,
     about = "SparkLink application channel correctness and load tests",
-    long_about = "Application tests on ordinary delegated channel fds. Basic CUTC measurements only; dynamic routes are limited correctness exercises. Not a Host, packet capture, kernel selftest, formal prover or performance qualification. Load modes require stdin start after both Armed, then finish after both Quiescent; each control wait is bounded."
+    long_about = "Application tests on ordinary delegated channel fds. Basic CUTC or explicitly negotiated basic dynamic load channels; dynamic ping measurements and protected load modes are unsupported. Not a Host, packet capture, kernel selftest, formal prover or performance qualification. Load modes require stdin start after both Armed, then finish after both Quiescent; each control wait is bounded. Dynamic load channels require explicit active/passive negotiation roles independent of traffic direction."
 )]
 struct Cli {
     /// Use a private session bus for integration tests, never hardware qualification.
@@ -87,19 +87,71 @@ struct Pair {
     window: Option<usize>,
     #[arg(long, value_enum, default_value = "regular")]
     exercise: Exercise,
-    /// Dynamic correctness only; must supply all three route fields.
-    #[arg(long,requires_all=["destination_port","aid","check"])]
-    source_port: Option<u16>,
-    #[arg(long,requires_all=["source_port","aid","check"])]
-    destination_port: Option<u16>,
-    #[arg(long,requires_all=["source_port","destination_port","check"])]
-    aid: Option<u16>,
+    #[command(flatten)]
+    channel: ChannelSelection,
     /// Dynamic correctness: keep fd reference until an explicit close line.
     #[arg(long,requires_all=["source_port","check"])]
     hold: bool,
     /// Dynamic correctness: after real negotiation, await exact start line (30s).
     #[arg(long, requires_all=["source_port", "check"])]
     start_barrier: bool,
+}
+#[derive(Clone, Copy, PartialEq, Eq, ValueEnum)]
+enum ChannelRole {
+    Active,
+    Passive,
+}
+#[derive(Args)]
+struct ChannelSelection {
+    /// Dynamic routing only with all three nonzero fields; never a TCID or identity.
+    #[arg(long,requires_all=["destination_port","aid"])]
+    source_port: Option<u16>,
+    #[arg(long,requires_all=["source_port","aid"])]
+    destination_port: Option<u16>,
+    #[arg(long,requires_all=["source_port","destination_port"])]
+    aid: Option<u16>,
+    /// Dynamic load negotiation role, independent of which endpoint sends business data.
+    #[arg(long, value_enum, requires = "source_port")]
+    channel_role: Option<ChannelRole>,
+}
+impl ChannelSelection {
+    fn route(
+        &self,
+        bytes: usize,
+        correctness_peer: Option<bool>,
+    ) -> anyhow::Result<Option<channel::DynamicRoute>> {
+        let (Some(source_port), Some(destination_port), Some(aid)) =
+            (self.source_port, self.destination_port, self.aid)
+        else {
+            anyhow::ensure!(
+                self.source_port.is_none()
+                    && self.destination_port.is_none()
+                    && self.aid.is_none()
+                    && self.channel_role.is_none(),
+                "complete dynamic route required"
+            );
+            return Ok(None);
+        };
+        let passive = if let Some(peer) = correctness_peer {
+            anyhow::ensure!(
+                self.channel_role.is_none(),
+                "--check derives negotiation role from ping/peer"
+            );
+            peer
+        } else {
+            self.channel_role.ok_or_else(|| {
+                anyhow::anyhow!("dynamic load requires --channel-role active|passive")
+            })? == ChannelRole::Passive
+        };
+        let route = channel::DynamicRoute {
+            source_port,
+            destination_port,
+            aid,
+            passive,
+        };
+        route.request(bytes)?;
+        Ok(Some(route))
+    }
 }
 #[derive(Args)]
 struct Load {
@@ -113,6 +165,8 @@ struct Load {
     window: Option<usize>,
     #[arg(long)]
     report: PathBuf,
+    #[command(flatten)]
+    channel: ChannelSelection,
 }
 #[derive(Args)]
 struct Rate {
@@ -123,6 +177,11 @@ struct Rate {
     interval_us: u64,
 }
 impl Load {
+    fn validate(&self, mode: benchmark::LoadMode, interval_us: u64) -> anyhow::Result<()> {
+        self.config(mode, interval_us).validate()?;
+        self.channel.route(self.bytes, None)?;
+        Ok(())
+    }
     fn config(&self, mode: benchmark::LoadMode, interval_us: u64) -> benchmark::LoadConfig {
         benchmark::LoadConfig {
             mode,
@@ -141,6 +200,7 @@ impl Pair {
         }
         .validate()?;
         if self.check {
+            self.channel.route(self.bytes, Some(peer))?;
             if self.count > 20 || self.report.is_some() || self.window.is_some() {
                 anyhow::bail!("--check:1..20 messages,no report/window");
             }
@@ -158,7 +218,7 @@ impl Pair {
                     "burst requires initiator16x2042;prefix-close requires initiator1x2042"
                 );
             }
-            if self.source_port.is_some()
+            if self.channel.source_port.is_some()
                 && matches!(self.exercise, Exercise::Boundaries | Exercise::PrefixClose)
             {
                 anyhow::bail!("dynamic correctness supports regular/burst only");
@@ -166,13 +226,10 @@ impl Pair {
         } else {
             if self.report.is_none()
                 || self.exercise != Exercise::Regular
-                || self.source_port.is_some()
                 || self.hold
                 || self.start_barrier
             {
-                anyhow::bail!(
-                    "measurements require --report;route/exercise/hold are correctness-only"
-                );
+                anyhow::bail!("measurements require --report;exercise/hold are correctness-only");
             }
             if self.load {
                 if !peer {
@@ -188,8 +245,11 @@ impl Pair {
                     interval_us: 0,
                 }
                 .validate()?;
+                self.channel.route(self.bytes, None)?;
             } else if self.window.is_some() {
                 anyhow::bail!("--window for peer requires --load");
+            } else if self.channel.source_port.is_some() || self.channel.channel_role.is_some() {
+                anyhow::bail!("dynamic measurements require rate/window/duplex or peer --load");
             }
         }
         Ok(())
@@ -205,7 +265,7 @@ impl Cli {
             match command {
                 Channel::Ping(p) | Channel::Peer(p)
                     if p.check
-                        && p.source_port.is_none()
+                        && p.channel.source_port.is_none()
                         && matches!(p.exercise, Exercise::Regular | Exercise::Boundaries) => {}
                 _ => anyhow::bail!(
                     "--message-security requires fixed regular/boundaries --check; no performance or dynamic qualification"
@@ -216,9 +276,9 @@ impl Cli {
             match command {
                 Channel::Ping(p) | Channel::Peer(p)
                     if p.check
-                        && p.source_port.is_none()
-                        && p.destination_port.is_none()
-                        && p.aid.is_none() => {}
+                        && p.channel.source_port.is_none()
+                        && p.channel.destination_port.is_none()
+                        && p.channel.aid.is_none() => {}
                 _ => anyhow::bail!(
                     "--security currently requires a fixed --check exercise; protected performance reports/dynamic modes are not supported"
                 ),
@@ -227,12 +287,9 @@ impl Cli {
         match command {
             Channel::Ping(p) => p.validate(false),
             Channel::Peer(p) => p.validate(true),
-            Channel::Rate(r) => r
-                .load
-                .config(benchmark::LoadMode::Rate, r.interval_us)
-                .validate(),
-            Channel::Window(l) => l.config(benchmark::LoadMode::Window, 0).validate(),
-            Channel::Duplex(l) => l.config(benchmark::LoadMode::Duplex, 0).validate(),
+            Channel::Rate(r) => r.load.validate(benchmark::LoadMode::Rate, r.interval_us),
+            Channel::Window(l) => l.validate(benchmark::LoadMode::Window, 0),
+            Channel::Duplex(l) => l.validate(benchmark::LoadMode::Duplex, 0),
         }
     }
     async fn execute(self) -> anyhow::Result<()> {
@@ -270,14 +327,19 @@ async fn run_load(
     args: &Load,
     config: benchmark::LoadConfig,
 ) -> anyhow::Result<()> {
-    let fd = client.open_application_channel(&args.connection).await?;
-    benchmark::run_load(fd, config, &args.report)
+    let route = args.channel.route(args.bytes, None)?;
+    let fd = client
+        .open_application_channel(&args.connection, route, args.bytes)
+        .await?;
+    benchmark::run_load(fd, config, &args.report, route)
 }
 async fn run_pair(client: Client, p: Pair, peer: bool) -> anyhow::Result<()> {
     if p.check {
-        if let (Some(source), Some(destination), Some(aid)) =
-            (p.source_port, p.destination_port, p.aid)
-        {
+        if let (Some(source), Some(destination), Some(aid)) = (
+            p.channel.source_port,
+            p.channel.destination_port,
+            p.channel.aid,
+        ) {
             client
                 .cmd_dynamic_channel(
                     &p.connection,
@@ -304,7 +366,10 @@ async fn run_pair(client: Client, p: Pair, peer: bool) -> anyhow::Result<()> {
                 .await
         }
     } else {
-        let fd = client.open_application_channel(&p.connection).await?;
+        let route = p.channel.route(p.bytes, None)?;
+        let fd = client
+            .open_application_channel(&p.connection, route, p.bytes)
+            .await?;
         let path = p.report.expect("validated required report");
         if p.load {
             benchmark::run_load(
@@ -317,6 +382,7 @@ async fn run_pair(client: Client, p: Pair, peer: bool) -> anyhow::Result<()> {
                     interval_us: 0,
                 },
                 &path,
+                route,
             )
         } else {
             benchmark::run(
@@ -476,6 +542,81 @@ mod tests {
             ],
         ] {
             assert!(parse(&args).is_ok(), "{args:?}");
+        }
+    }
+    #[test]
+    fn dynamic_load_requires_explicit_negotiation_role_independent_of_data_role() {
+        for command in ["window", "rate", "duplex", "peer"] {
+            for role in ["active", "passive"] {
+                let mut args = vec![
+                    command,
+                    "/link",
+                    "--report",
+                    "new.json",
+                    "--source-port",
+                    "24576",
+                    "--destination-port",
+                    "24577",
+                    "--aid",
+                    "29441",
+                    "--channel-role",
+                    role,
+                ];
+                if command == "rate" {
+                    args.extend(["--interval-us", "1000"]);
+                }
+                if command == "peer" {
+                    args.push("--load");
+                }
+                assert!(parse(&args).is_ok(), "{args:?}");
+                let mut missing_role = args.clone();
+                let i = missing_role
+                    .iter()
+                    .position(|x| *x == "--channel-role")
+                    .unwrap();
+                missing_role.drain(i..i + 2);
+                assert!(parse(&missing_role).is_err(), "{missing_role:?}");
+                for (key, value) in [
+                    ("--source-port", "0"),
+                    ("--destination-port", "0"),
+                    ("--aid", "0"),
+                    ("--channel-role", "guess"),
+                ] {
+                    let mut bad = args.clone();
+                    let i = bad.iter().position(|x| *x == key).unwrap();
+                    bad[i + 1] = value;
+                    assert!(parse(&bad).is_err(), "{bad:?}");
+                }
+                let mut protected = args.clone();
+                protected.extend(["--security", "1"]);
+                assert!(parse(&protected).is_err());
+            }
+        }
+        for role in ["ping", "peer"] {
+            let mut args = vec![
+                role,
+                "/link",
+                "--report",
+                "new.json",
+                "--source-port",
+                "10",
+                "--destination-port",
+                "11",
+                "--aid",
+                "12",
+                "--channel-role",
+                "passive",
+            ];
+            assert!(
+                parse(&args).is_err(),
+                "schema1 dynamic measurement is unsupported"
+            );
+            args.retain(|x| !["--report", "new.json"].contains(x));
+            args.push("--check");
+            assert!(
+                parse(&args).is_err(),
+                "old correctness role must not change"
+            );
         }
     }
     #[test]

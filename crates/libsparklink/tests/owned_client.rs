@@ -4,7 +4,7 @@ mod support;
 use libsparklink::Client;
 use std::sync::{
     Arc, Mutex,
-    atomic::{AtomicU8, AtomicU64, Ordering},
+    atomic::{AtomicBool, AtomicU8, AtomicU64, Ordering},
 };
 use zbus::{Connection, zvariant::OwnedObjectPath};
 const BASE: &str = "/org/sparklink/slk2_g7";
@@ -19,6 +19,10 @@ struct State {
     owned_mode: AtomicU8,
     registrations: AtomicU64,
     stamps: Mutex<Vec<slk_contract::Deadline>>,
+    read_only_property: AtomicBool,
+    provider_mode: AtomicU8,
+    method_entry: AtomicBool,
+    provider_bindings: Mutex<Vec<(u16, String, slk_contract::Deadline)>>,
 }
 struct Manager;
 #[zbus::interface(name = "org.sparklink.Manager")]
@@ -42,14 +46,25 @@ impl Services {
         &self,
         uuid: Vec<u8>,
         properties: Vec<(Vec<u8>, u32, u32, Vec<u8>)>,
+        methods: Vec<slk_contract::ssap::local::MethodDefinition>,
         authorizer: OwnedObjectPath,
         deadline: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> zbus::fdo::Result<(u16, u16, Vec<u16>)> {
         slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
             .unwrap();
+        if self.0.method_entry.load(Ordering::SeqCst) {
+            assert_eq!(methods, [(vec![3, 0], 4)]);
+        } else {
+            assert!(methods.is_empty());
+        }
         assert_eq!(uuid, [1, 0]);
-        assert_eq!(properties, [(vec![2, 0], 5, 36, vec![0xab])]);
+        let (operations, access) = if self.0.read_only_property.load(Ordering::SeqCst) {
+            (1, 32)
+        } else {
+            (5, 36)
+        };
+        assert_eq!(properties, [(vec![2, 0], operations, access, vec![0xab])]);
         assert_eq!(authorizer.as_str(), "/test/authorizer");
         *self.0.owner.lock().unwrap() = h.sender().unwrap().to_string();
         self.0.registrations.fetch_add(1, Ordering::SeqCst);
@@ -62,7 +77,11 @@ impl Services {
             }
             _ => {}
         }
-        Ok((16, 17, vec![17]))
+        Ok(if self.0.method_entry.load(Ordering::SeqCst) {
+            (16, 18, vec![17, 18])
+        } else {
+            (16, 17, vec![17])
+        })
     }
     fn read_owned_local_value(
         &self,
@@ -75,6 +94,47 @@ impl Services {
         assert_eq!(handle, 17);
         assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
         vec![0xab]
+    }
+    async fn bind_owned_read_provider(
+        &self,
+        handle: u16,
+        provider: OwnedObjectPath,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<()> {
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .unwrap();
+        assert_eq!(handle, 17);
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        self.0
+            .provider_bindings
+            .lock()
+            .unwrap()
+            .push((handle, provider.to_string(), deadline));
+        match self.0.provider_mode.load(Ordering::SeqCst) {
+            1 => tokio::time::sleep(std::time::Duration::from_millis(100)).await,
+            2 => return Err(zbus::fdo::Error::NotSupported("fixture refusal".into())),
+            _ => {}
+        }
+        Ok(())
+    }
+    fn bind_owned_method_provider(
+        &self,
+        handle: u16,
+        provider: OwnedObjectPath,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) {
+        assert!(self.0.method_entry.load(Ordering::SeqCst));
+        assert_eq!(handle, 18);
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .unwrap();
+        self.0
+            .provider_bindings
+            .lock()
+            .unwrap()
+            .push((handle, provider.to_string(), deadline));
     }
     fn unregister_owned_local_service(
         &self,
@@ -366,3 +426,158 @@ async fn owned_registration_original_wait_receipt_validation_and_cleanup_target(
     );
     Ok(())
 }
+
+#[tokio::test]
+async fn read_provider_binding_validates_receipt_path_and_original_deadline_before_rpc()
+-> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let state = Arc::new(State {
+        generation: AtomicU64::new(7),
+        read_only_property: AtomicBool::new(true),
+        ..Default::default()
+    });
+    let _server = fixture(&bus, state.clone()).await;
+    let connection = zbus::connection::Builder::address(bus.address.as_str())?
+        .build()
+        .await?;
+    let client = Client::from_connection(connection).await?;
+    let view = client.controller(BASE).await?;
+    let mut service = view
+        .local_services()
+        .register_service(
+            vec![1, 0],
+            vec![(vec![2, 0], 1, 32, vec![0xab])],
+            "/test/authorizer".try_into()?,
+            libsparklink::Deadline::after(std::time::Duration::from_secs(2))?,
+        )
+        .await?;
+    for (handle, path) in [
+        (0, "/test/provider".to_string()),
+        (18, "/test/provider".to_string()),
+        (17, "/".to_string()),
+        (17, format!("/{}", "p".repeat(255))),
+    ] {
+        assert!(matches!(
+            service
+                .bind_read_provider(
+                    handle,
+                    path.try_into()?,
+                    libsparklink::Deadline::after(std::time::Duration::from_secs(2))?,
+                )
+                .await,
+            Err(libsparklink::ApplicationError::Invalid(_))
+        ));
+    }
+    let expired = libsparklink::Deadline::after(std::time::Duration::from_millis(5))?;
+    tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+    assert!(matches!(
+        service
+            .bind_read_provider(17, "/test/provider".try_into()?, expired)
+            .await,
+        Err(libsparklink::ApplicationError::Io(ref e))
+            if e.raw_os_error() == Some(nix::libc::ETIMEDOUT)
+    ));
+    assert!(state.provider_bindings.lock().unwrap().is_empty());
+
+    let path = format!("/{}", "p".repeat(254));
+    let original = libsparklink::Deadline::after(std::time::Duration::from_secs(2))?;
+    service
+        .bind_read_provider(17, path.clone().try_into()?, original)
+        .await?;
+    assert_eq!(
+        *state.provider_bindings.lock().unwrap(),
+        [(17, path, slk_contract::deadline_wire(original.stamp()))]
+    );
+    service
+        .unregister(libsparklink::Deadline::after(
+            std::time::Duration::from_secs(2),
+        )?)
+        .await?;
+    assert!(matches!(
+        service
+            .bind_read_provider(
+                17,
+                "/test/provider".try_into()?,
+                libsparklink::Deadline::after(std::time::Duration::from_secs(2))?,
+            )
+            .await,
+        Err(libsparklink::ApplicationError::Invalid(_))
+    ));
+    assert_eq!(state.provider_bindings.lock().unwrap().len(), 1);
+    Ok(())
+}
+
+#[tokio::test]
+async fn read_provider_binding_wait_is_bounded_without_retry_or_error_fallback()
+-> anyhow::Result<()> {
+    for mode in [1, 2] {
+        let bus = support::Bus::start();
+        let state = Arc::new(State {
+            generation: AtomicU64::new(7),
+            read_only_property: AtomicBool::new(true),
+            provider_mode: AtomicU8::new(mode),
+            ..Default::default()
+        });
+        let server = fixture(&bus, state.clone()).await;
+        let connection = zbus::connection::Builder::address(bus.address.as_str())?
+            .build()
+            .await?;
+        let client = Client::from_connection(connection).await?;
+        let service = client
+            .controller(BASE)
+            .await?
+            .local_services()
+            .register_service(
+                vec![1, 0],
+                vec![(vec![2, 0], 1, 32, vec![0xab])],
+                "/test/authorizer".try_into()?,
+                libsparklink::Deadline::after(std::time::Duration::from_secs(2))?,
+            )
+            .await?;
+        let original =
+            libsparklink::Deadline::after(std::time::Duration::from_millis(if mode == 1 {
+                30
+            } else {
+                2000
+            }))?;
+        let result = service
+            .bind_read_provider(17, "/test/provider".try_into()?, original)
+            .await;
+        if mode == 1 {
+            assert!(
+                matches!(result, Err(libsparklink::ApplicationError::Io(ref e))
+                if e.raw_os_error() == Some(nix::libc::ETIMEDOUT))
+            );
+        } else {
+            assert!(matches!(result, Err(libsparklink::ApplicationError::Bus(
+                zbus::Error::MethodError(ref name, _, _)))
+                if name.as_str() == "org.freedesktop.DBus.Error.NotSupported"));
+        }
+        assert_eq!(
+            *state.provider_bindings.lock().unwrap(),
+            [(
+                17,
+                "/test/provider".into(),
+                slk_contract::deadline_wire(original.stamp())
+            )]
+        );
+        let mut lost = client.owner_loss();
+        server.release_name("org.sparklink").await?;
+        tokio::time::timeout(std::time::Duration::from_secs(1), lost.changed()).await??;
+        assert!(
+            service
+                .bind_read_provider(
+                    17,
+                    "/test/provider".try_into()?,
+                    libsparklink::Deadline::after(std::time::Duration::from_secs(2))?,
+                )
+                .await
+                .is_err()
+        );
+        assert_eq!(state.provider_bindings.lock().unwrap().len(), 1);
+    }
+    Ok(())
+}
+
+#[path = "owned_client/method_provider.rs"]
+mod method_provider;

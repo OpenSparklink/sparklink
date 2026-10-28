@@ -4,6 +4,76 @@ use std::io::Read;
 use std::os::fd::{AsRawFd, OwnedFd};
 use std::time::{Duration, Instant};
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum DataChannelKind {
+    BasicCutc,
+    DynamicBasic,
+}
+
+/// Requested endpoint routing, not negotiated TCIDs or authenticated identity.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) struct DynamicRoute {
+    pub source_port: u16,
+    pub destination_port: u16,
+    pub aid: u16,
+    pub passive: bool,
+}
+impl DynamicRoute {
+    pub(crate) fn request(self, bytes: usize) -> anyhow::Result<slk_contract::DynamicRequest> {
+        anyhow::ensure!(
+            (29..=2042).contains(&bytes),
+            "dynamic application bytes29..2042"
+        );
+        anyhow::ensure!(
+            self.source_port != 0 && self.destination_port != 0 && self.aid != 0,
+            "dynamic source/destination/AID must be nonzero"
+        );
+        let mtu = u16::try_from(bytes.max(249))?;
+        Ok((
+            self.source_port,
+            self.destination_port,
+            self.aid,
+            mtu,
+            mtu + 5,
+            1,
+            self.passive,
+        ))
+    }
+    pub(crate) fn report(self, bytes: usize) -> anyhow::Result<serde_json::Value> {
+        let (_, _, _, mtu, mps, slqi, _) = self.request(bytes)?;
+        Ok(serde_json::json!({"version":1,"kind":"dynamic_basic",
+            "source_port":self.source_port,"destination_port":self.destination_port,
+            "aid":self.aid,"mtu":mtu,"mps":mps,"slqi":slqi,"passive":self.passive}))
+    }
+}
+
+pub(crate) fn require_data_capabilities(
+    info: &slk_protocol::channel::SleChannelInfo,
+    bytes: usize,
+    kind: DataChannelKind,
+) -> anyhow::Result<()> {
+    info.validate()?;
+    let mps = bytes
+        .checked_add(5)
+        .ok_or_else(|| anyhow::anyhow!("PDU length overflow"))?;
+    let tcids = match kind {
+        DataChannelKind::BasicCutc => info.local_tcid == 31 && info.remote_tcid == 31,
+        DataChannelKind::DynamicBasic => {
+            (0x80..=0xdf).contains(&info.local_tcid) && (0x80..=0xdf).contains(&info.remote_tcid)
+        }
+    };
+    anyhow::ensure!(
+        tcids
+            && info.pi == 241
+            && info.mode == 0
+            && info.directions == 3
+            && usize::from(info.mtu) >= bytes
+            && usize::from(info.mps) >= mps,
+        "actual channel capabilities do not permit this application workload"
+    );
+    Ok(())
+}
+
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(crate) enum Mode {
     Regular,
@@ -514,20 +584,15 @@ fn exercise_channel(
         Instant::now() + Duration::from_secs(10),
     )?;
     let info = slk_channel::query(fd.as_raw_fd())?;
-    let valid_pair = if dynamic {
-        (0x80..=0xdf).contains(&info.local_tcid) && (0x80..=0xdf).contains(&info.remote_tcid)
-    } else {
-        info.local_tcid == 31 && info.remote_tcid == 31
-    };
-    if !valid_pair
-        || info.pi != 241
-        || info.directions != 3
-        || usize::from(info.mtu) < message_bytes
-        || info.mode != 0
-        || usize::from(info.mps) < message_bytes + 5
-    {
-        anyhow::bail!("actual channel capabilities do not permit this business exercise");
-    }
+    require_data_capabilities(
+        &info,
+        message_bytes,
+        if dynamic {
+            DataChannelKind::DynamicBasic
+        } else {
+            DataChannelKind::BasicCutc
+        },
+    )?;
     println!(
         "NativeChannelInfo: index={} generation={} lifetime={} handle={} local={} remote={} pi={} mtu={} mps={} mode={} directions={}",
         info.controller,
@@ -850,6 +915,90 @@ fn exercise_messages(
 mod tests {
     use super::*;
     use std::os::fd::FromRawFd;
+
+    #[test]
+    fn workload_admission_uses_actual_fd_identity_capabilities_and_separate_route_intent() {
+        let route = DynamicRoute {
+            source_port: 24576,
+            destination_port: 24577,
+            aid: 29441,
+            passive: true,
+        };
+        assert_eq!(
+            route.request(61).unwrap(),
+            (24576, 24577, 29441, 249, 254, 1, true)
+        );
+        assert_eq!(route.request(2042).unwrap().4, 2047);
+        for bytes in [0, 28, 2043, usize::MAX] {
+            assert!(route.request(bytes).is_err());
+        }
+        for bad in [
+            DynamicRoute {
+                source_port: 0,
+                ..route
+            },
+            DynamicRoute {
+                destination_port: 0,
+                ..route
+            },
+            DynamicRoute { aid: 0, ..route },
+        ] {
+            assert!(bad.request(61).is_err());
+        }
+        let info = slk_protocol::SleChannelInfo {
+            version: 1,
+            size: 40,
+            generation: 7,
+            lifetime: 9,
+            local_tcid: 0x81,
+            remote_tcid: 0x83,
+            pi: 241,
+            mtu: 249,
+            mps: 254,
+            directions: 3,
+            ..Default::default()
+        };
+        require_data_capabilities(&info, 249, DataChannelKind::DynamicBasic).unwrap();
+        assert!(require_data_capabilities(&info, 61, DataChannelKind::BasicCutc).is_err());
+        for bad in [
+            slk_protocol::SleChannelInfo {
+                generation: 0,
+                ..info
+            },
+            slk_protocol::SleChannelInfo {
+                lifetime: 0,
+                ..info
+            },
+            slk_protocol::SleChannelInfo {
+                local_tcid: 31,
+                ..info
+            },
+            slk_protocol::SleChannelInfo {
+                remote_tcid: 0xe0,
+                ..info
+            },
+            slk_protocol::SleChannelInfo { pi: 242, ..info },
+            slk_protocol::SleChannelInfo {
+                directions: 1,
+                ..info
+            },
+            slk_protocol::SleChannelInfo { mode: 1, ..info },
+            slk_protocol::SleChannelInfo { mtu: 248, ..info },
+            slk_protocol::SleChannelInfo { mps: 253, ..info },
+        ] {
+            assert!(require_data_capabilities(&bad, 249, DataChannelKind::DynamicBasic).is_err());
+        }
+        assert!(
+            require_data_capabilities(&info, usize::MAX, DataChannelKind::DynamicBasic).is_err()
+        );
+        let fixed = slk_protocol::SleChannelInfo {
+            local_tcid: 31,
+            remote_tcid: 31,
+            ..info
+        };
+        require_data_capabilities(&fixed, 249, DataChannelKind::BasicCutc).unwrap();
+        assert!(require_data_capabilities(&fixed, 61, DataChannelKind::DynamicBasic).is_err());
+    }
 
     #[test]
     fn receipt_validator_rejects_old_unknown_wrong_scope_and_insufficient_mechanism() {

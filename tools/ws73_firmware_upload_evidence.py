@@ -96,7 +96,7 @@ def requested_mode(args):
     if mode not in MODES:
         raise ValueError('explicit --firmware-evidence rom-upload|runtime-observation required; staged files are not a loaded-image witness')
     if mode == 'rom-upload':
-        allowed = {'qmp_hotplug', 'connection_verify', 'channel_socket_verify', 'channel_socket_boundaries'}
+        allowed = {'qmp_hotplug', 'connection_verify', 'channel_socket_verify', 'channel_socket_boundaries', 'link_measurements'}
         if (not all(getattr(args, key, False) is True for key in ['qmp_hotplug', 'connection_verify', 'channel_socket_verify'])
                 or any(type(value) is bool and value and key not in allowed for key, value in vars(args).items())):
             raise ValueError('rom-upload evidence requires a dedicated ordinary two-device connection/socket gate')
@@ -134,6 +134,42 @@ def guest_instances(kernel_log):
     return by_key
 
 
+def selections_by_port(selection, ports):
+    """Decode explicit input identities, never infer a model from USB/HCC.
+
+    Legacy homogeneous records remain v1. V2 lists every selected physical
+    leaf in its fixed guest-slot order and cannot carry a global fallback.
+    """
+    if (not isinstance(ports, list) or not 1 <= len(ports) <= 4
+            or any(not isinstance(p, str) for p in ports) or len(set(ports)) != len(ports)
+            or not isinstance(selection, dict)):
+        raise CaptureError('explicit distinct physical leaves and input selection required')
+    if 'version' in selection:
+        if (type(selection['version']) is not int or selection['version'] != 2
+                or set(selection) != {'version', 'entries'} or not isinstance(selection['entries'], list)
+                or len(selection['entries']) != len(ports)):
+            raise CaptureError('complete version2 per-leaf firmware selection required')
+        result = {}
+        for slot, (port, row) in enumerate(zip(ports, selection['entries']), 1):
+            if (not isinstance(row, dict) or set(row) != {'host_port', 'guest_route', 'model', 'sdk', 'variant', 'images'}
+                    or row['host_port'] != port or row['guest_route'] != str(slot)):
+                raise CaptureError('ordered physical leaf/guest route firmware identity required')
+            result[port] = {k: row[k] for k in ('model', 'sdk', 'variant', 'images')}
+    else:
+        result = {port: selection for port in ports}
+    for row in result.values():
+        if (row.get('model') not in ('E', 'U') or row.get('sdk') != '1.10.110'
+                or row.get('variant') != ('e' if row['model'] == 'E' else 'us')
+                or not isinstance(row.get('images'), dict) or set(row['images']) != {name for _, name in IMAGES}):
+            raise CaptureError('explicit SDK110 model/variant/three images required for each leaf')
+        for image in row['images'].values():
+            if (not isinstance(image, dict) or set(image) != {'bytes', 'sha256'}
+                    or type(image['bytes']) is not int or not 64 < image['bytes'] <= 2**24
+                    or not isinstance(image['sha256'], str) or not re.fullmatch('[0-9a-f]{64}', image['sha256'])):
+                raise CaptureError('bounded explicit image size and SHA256 required')
+    return result
+
+
 def startup_rows(outgoing, incoming, kernel_log, ports, selection, observations, directory):
     """Compose existing upload/model oracles for every observed Runtime.
 
@@ -142,16 +178,12 @@ def startup_rows(outgoing, incoming, kernel_log, ports, selection, observations,
     code executes. A later warm enumeration does not inherit an earlier upload.
     """
     from ws73_model_evidence import corroborate_rows as model_reply
-    if (not ports or len(ports) > 4 or len(set(ports)) != len(ports)
-            or selection.get('model') not in ('E', 'U')
-            or selection.get('sdk') != '1.10.110'
-            or set(selection.get('images', {})) != {name for _, name in IMAGES}):
-        raise CaptureError('explicit homogeneous SDK110 inputs and distinct ports required')
+    per_port = selections_by_port(selection, ports)
     guest_to_host = {f'1-{slot + 1}': host for slot, host in enumerate(ports)}
     instances = guest_instances(kernel_log)
     rom_ports = set()
     for row in observations:
-        if (row.get('port') in ports and row.get('declared_model') == selection['model']
+        if (row.get('port') in ports and row.get('declared_model') == per_port[row['port']]['model']
                 and len(row.get('interfaces', [])) == 1
                 and row['interfaces'][0].get('endpoints') == 2):
             rom_ports.add(row['port'])
@@ -164,9 +196,10 @@ def startup_rows(outgoing, incoming, kernel_log, ports, selection, observations,
         if host not in rom_ports:
             raise CaptureError('no guarded two-endpoint ROM observation for upload port')
         rows = [r for r in outgoing if (r['bus'], r['device']) == key]
-        proof = corroborate(rows, directory)
+        selected_directory = directory[host] if isinstance(directory, dict) else directory
+        proof = corroborate(rows, selected_directory)
         for image in proof['images']:
-            expected = selection['images'][image['image']]
+            expected = per_port[host]['images'][image['image']]
             if (image['image_sha256'] != expected['sha256']
                     or image['bytes'] + 64 != expected['bytes']):
                 raise CaptureError('actual upload differs from explicit staged model inputs')
@@ -186,7 +219,7 @@ def startup_rows(outgoing, incoming, kernel_log, ports, selection, observations,
         host = guest_to_host[instance['port']]
         same = lambda r: (r['bus'], r['device']) == key
         model = model_reply([r for r in outgoing if same(r)], [r for r in incoming if same(r)])
-        if model['observation']['model'] != 'WS73' + selection['model']:
+        if model['observation']['model'] != 'WS73' + per_port[host]['model']:
             raise CaptureError('actual HCC model differs from explicit image model')
         row = dict(host_port=host, guest_port=instance['port'], bus=key[0], device=key[1],
                    hcc=model['observation'], result='MISSING',
@@ -203,7 +236,7 @@ def startup_rows(outgoing, incoming, kernel_log, ports, selection, observations,
     covered = {r['host_port'] for r in runtimes}
     unmatched = [dict(bus=k[0], device=k[1], guest_port=instances[k]['port']) for k in sorted(set(boots) - consumed)]
     result = 'PASS' if covered == set(ports) and runtimes and not unmatched and all(r['result'] == 'PASS' for r in runtimes) else 'MISSING'
-    return dict(version=1, result=result, selected_ports=list(ports), staged=selection,
+    return dict(version=2 if 'version' in selection else 1, result=result, selected_ports=list(ports), staged=selection,
                 runtimes=runtimes, ports_without_runtime=sorted(set(ports) - covered),
                 unmatched_uploads=unmatched,
                 cold_power_verified=False, executing_firmware_attested=False,
@@ -213,12 +246,17 @@ def startup_rows(outgoing, incoming, kernel_log, ports, selection, observations,
 def observe_run(share, prepared, ports, package, allocation):
     from ws73_boot_code_evidence import successful_in
     from ws73_capture import check_capture_stats, read_capture
+    import ws73_firmware_profile as profile
     capture = Path(share) / 'ws73.pcap'
     log = Path(share) / 'kernel.log'
     packets = check_capture_stats((Path(share) / 'capture-stats.txt').read_text())
+    plan = package['firmware_profiles']
+    profile.verify(Path(prepared) / 'root', plan, [str(i+1) for i in range(len(ports))])
+    directories = {host: Path(prepared) / 'root/lib/firmware' / plan['entries'][str(i+1)]['directory']
+                   for i, host in enumerate(ports)}
     evidence = startup_rows(successful_out(capture), successful_in(capture), log.read_text(),
-                            ports, package['explicit_firmware'], allocation['observations'],
-                            Path(prepared) / 'root/lib/firmware/sparklink/ws73')
+                            ports, allocation['firmware'], allocation['observations'],
+                            directories)
     identities = [(r['bus'], r['device']) for r in evidence['runtimes']]
     if not identities or read_capture(capture, identities)['packet_count'] != packets:
         raise CaptureError('complete Runtime capture and matching zero-drop statistics required')
@@ -234,18 +272,29 @@ def exit_gate(record, expected_mode=None):
     if ('firmware_evidence_mode' not in record and 'firmware_evidence_contract_version' not in record
             and expected_mode is None):
         return True
-    if type(record.get('firmware_evidence_contract_version')) is not int or record['firmware_evidence_contract_version'] != 1:
+    version = record.get('firmware_evidence_contract_version')
+    if type(version) is not int or version not in (1, 2):
         return False
     mode = record.get('firmware_evidence_mode')
     proof = record.get('firmware_evidence')
     if (mode not in MODES or not isinstance(proof, dict)
-            or type(proof.get('version')) is not int or proof['version'] != 1):
+            or type(proof.get('version')) is not int or proof['version'] != version):
         return False
     if (proof.get('result') not in ('PASS', 'MISSING', 'UNPROVED')
             or proof.get('cold_power_verified') is not False
             or proof.get('executing_firmware_attested') is not False):
         return False
     if proof['result'] != 'PASS':
+        if version == 2:
+            try:
+                allocation = record['physical_resource_allocation']
+                selection = allocation['firmware']
+                selections_by_port(selection, allocation['selected_ports'])
+                if (proof.get('staged') != selection or selection.get('version') != 2
+                        or proof.get('selected_ports') != allocation['selected_ports']):
+                    return False
+            except (KeyError, TypeError, CaptureError):
+                return False
         return mode == 'runtime-observation'
     allocation = record.get('physical_resource_allocation')
     if not isinstance(allocation, dict):
@@ -263,13 +312,15 @@ def exit_gate(record, expected_mode=None):
                     and r['proof'].get('status') == 'ACTUAL_RAM_UPLOAD_BYTES_MATCH' for r in rows)):
         return False
     selection = allocation.get('firmware')
-    if (proof.get('staged') != selection or not isinstance(selection, dict)
-            or selection.get('model') not in ('E', 'U') or selection.get('sdk') != '1.10.110'
-            or selection.get('variant') != ('e' if selection['model'] == 'E' else 'us')
-            or not isinstance(selection.get('images'), dict)):
+    try:
+        selections = selections_by_port(selection, ports)
+    except (CaptureError, TypeError, KeyError):
+        return False
+    if proof.get('staged') != selection or (version == 2) != ('version' in selection):
         return False
     seen = set()
     for row in rows:
+        selected = selections[row['host_port']]
         key = row.get('bus'), row.get('device')
         if any(type(v) is not int or v <= 0 for v in key) or key in seen:
             return False
@@ -277,7 +328,7 @@ def exit_gate(record, expected_mode=None):
         if row.get('guest_port') != f'1-{ports.index(row["host_port"]) + 1}':
             return False
         hcc = row.get('hcc')
-        if (not isinstance(hcc, dict) or hcc.get('model') != 'WS73' + selection['model']
+        if (not isinstance(hcc, dict) or hcc.get('model') != 'WS73' + selected['model']
                 or hcc.get('bus') != 'USB' or hcc.get('bus_id') != 0
                 or (hcc.get('bus_number'), hcc.get('device')) != key):
             return False
@@ -291,9 +342,9 @@ def exit_gate(record, expected_mode=None):
         for image, (address, name) in zip(images, IMAGES):
             if (not isinstance(image, dict) or image.get('image') != name
                     or image.get('load_address') != address
-                    or image.get('image_sha256') != selection.get('images', {}).get(name, {}).get('sha256')
+                    or image.get('image_sha256') != selected['images'][name]['sha256']
                     or type(image.get('bytes')) is not int
-                    or image['bytes'] + 64 != selection.get('images', {}).get(name, {}).get('bytes')):
+                    or image['bytes'] + 64 != selected['images'][name]['bytes']):
                 return False
     return True
 

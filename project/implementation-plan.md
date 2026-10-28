@@ -1,5 +1,143 @@
 # SparkLink / Linux 联合实施方案
 
+## 当前批次：方法长结果双端门禁v4
+
+长结果双端门禁v4源码为[1462159](https://github.com/OpenSparklink/sparklink/commit/14621593fe911b544634cd7097570a1fb5606d9c)。
+现有method runner保留发现、短结果、无响应命令、注销后拒绝，追加2045字节随机结果。
+实际C/Python消费者完整比较；两端必须有原身份下2042 MTU及双向序号分片协商。
+复用既有独立捕获设施核对两片SSAP、每个ACB片、实际TX计数和完整窗口；不同ACB
+切分的收发允许有依据的字节前缀重叠，不允许接收超前、缺失或重复。原期限不变。
+
+144项相关离线检查及严格HTML／清单／示例通过，包括执行器回调和分片负对照。
+这些进程I/O、协商记录和报文是显式fixture，不是新VM、实机、固件或形式化资格。
+既有生产函数长结果组合回归保留源码3305b98的限定范围；历史v1–v3不升级为v4。
+原始失败与全部资格身份保留，U#22的六条验收继续开放。
+
+[f6c2cf3](https://github.com/OpenSparklink/sparklink/commit/f6c2cf3c88154ba79a865cc55303b5fa464bd62f)补参数链生产函数组合：请求／命令、249／2042物理MTU，
+0至2043字节及相关边界经生产分片／重组后交付真实私有D-Bus Provider，独立字节
+核对handle、参数、身份及原期限；2044字节编码整体拒绝。77项Engine回归及严格
+Clippy通过，参数截断负对照被拒绝。另保留226c31b的实际actor响应背压／期限／stop
+范围；这些结果不能合并成完整method业务、Native权限／credit或实机隔离资格。
+原v4编译和执行身份不变。测试改动不改变公开契约或延后现有真实交付门禁。
+
+准确v4输入已封存并通过现有准备链校验，无USB隔离VM启动检查通过；这是构建与
+准备范围，尚未取得真实发现／method短长结果和原路径保持的新资格。历史v1–v3
+身份不变。K#15的源码审计确认平台版本查询走BSLE后的queue9 bulk；直接前移可能
+消费启动／ACK消息，现有streaming内存观察也不能作启动前旁路。SDK固定文本和
+两类镜像相同版本返回值均不能证明精确驻留镜像。后续须先明确未匹配消息保留、
+原期限、queue／sequence所有权和stop/drain，再作有区别的受控VM诊断。
+静态审计不证明自然根因或非人工恢复；不猜测wake、不绕过CLOSE、不重复未变化
+尝试。生命周期、数据和安全独立推进；
+完整S0–S6/19WP/10FV/12DG、VM-only、UserHost P4和原验收不变。
+
+## 有界 issue 清理结果与主线恢复
+
+重新读回35项及七个现有子项关系：2项既有关闭（U#1、U#21）、18项有限收尾、
+3个已拆分父项、12项长期跟踪。该维护批次收敛U#3的重复方法/离线进度，明确K#17/#19是
+已建立子项的父跟踪；三项在线正文精确读回，原验收逐字保留。
+没有新增关闭或重复拆分。U#1的原六条关闭依据及对应材料/源码映射已复核；
+U#10仍保留自然恢复要求，不能以其他业务通过替代。旧失败和反例不改判。
+未改生产代码、未重跑实机或形式化工具，也未新增资格。当前逐项处置以
+[维护记录](issue-maintenance-20261026.json)为准；维护结束后继续原功能主线，
+不增加数据面、安全或SSAP的长期前置条件。
+
+U#1原六条事件循环条件已逐项核对，关闭只结算该范围。Native receiver、retry取消、
+最小临界区和原期限保持；fixture、离线检查及授权本地准确产物材料分别解释。
+原完整保持运行失败仍是FAIL，不能由此关闭其他项或授予当前HEAD整体资格。
+
+公开源码`bac12d127cd4d32874949b61b0088baa0c0fe9e8`的五项CI完成；其中WS73/CMTC
+有界fuzz报告及artifact已核对，实际内核pin为`c39a1765fc6036da0a635a755cbd2022de4f0b28`，
+不是开发内核`52ae7f08f2eafc3d79920fe5a14892970ecdd284`。旧b154来源检查超时保留，
+新成功不证明旧超时根因已修复；K#24的调试VM及完整覆盖继续开放。
+
+U#10自然根因/非人工恢复保持原条件。U#3→U#21/#22/#23，K#17→K#21/#22，
+K#19→K#23/#24；父项原验收不因拆分而减少。维护批次已完成，随后运行现有方法VM门禁、核对双端证据及适用保持门禁
+和原数据/安全/SSAP主线，不追加无关完整控制面前置。
+S0–S6/19WP/10FV/12DG、VM-only和UserHost低优先级规划不变。
+
+| 原 issue | 分类 | 本批动作与剩余责任 |
+| --- | --- | --- |
+| [K#1](https://github.com/OpenSparklink/linux/issues/1) | 长期跟踪 | 复核，继续开放；Native 实现与验收分别由 K#2–#19 承接，本项维护所有权边界与映射；UserHost 独占包接口、状态屏障、权限/租约/故障矩阵由 U#7 和 WP14 延后实现。保留全部经修订的原要求，不把 P4 接管设为当前 Native 业务前置。 |
+| [K#2](https://github.com/OpenSparklink/linux/issues/2) | 有限收尾 | 复核，继续开放；按实际支持的标准/WS73 profile 逐项核齐参数、顺序、Status/Complete/领域终态、取消与晚到；保持故障拒绝和完整 packet 边界。未来 UserHost 不是 Native Backend；原厂商 Host 要求按 U#7 单独适配，不能用该延期项阻塞已支持 Native 路径收尾。 |
+| [K#3](https://github.com/OpenSparklink/linux/issues/3) | 有限收尾 | 复核，继续开放；收尾 U#2 的过滤后捕获完整性；按准确产物验证多订阅/慢消费者/退出重开/高流量、copy fault、退休唤醒与结果作者隔离。保留输入截断、订阅 overflow 与完整日志负对照；不把模型/fixture 升级为真实内核并发资格。 |
+| [K#4](https://github.com/OpenSparklink/linux/issues/4) | 有限收尾 | 复核，继续开放；将现有双设备交错及单侧退休门禁逐项映射到当前支持范围，继续补回调/worker/drain 与分配失败组合；多通道/四设备压力由 K#17 子项承接。安全/PHY 子系统功能由各自 issue 负责，本项验证其状态归属，不能等待全部协议特性后才判断隔离。 |
+| [K#5](https://github.com/OpenSparklink/linux/issues/5) | 有限收尾 | 复核，继续开放；按实际公开入口核齐唯一管理者、CAP/凭据、fd 传递/最终关闭、旧 generation/Grant epoch 与畸形输入；系统总线部署权限须在 VM 验证。原 BackendProxy 条款按 ADR0003 转为 U#7 的 UserHost 独占授权/隔离要求，不恢复 Native 任意命令旁路。 |
+| [K#6](https://github.com/OpenSparklink/linux/issues/6) | 有限收尾 | 复核，继续开放；按实际支持模式补齐 syscall/poll、预算、撤权/关闭/断链、原期限与旧 lifetime 拒绝；protected/可靠模式只按真实机制开放，未支持明确拒绝。双连接、长 PDU、慢 owner 与 daemon 退出继续按原门禁验收；SSAP 事务/属性业务归 U#3，data credit/通道公平归 K#17。 |
+| [K#7](https://github.com/OpenSparklink/linux/issues/7) | 长期跟踪 | 复核，继续开放；按方法完成真实 prompt/action、错误证明/密钥、重放、撤销、断链、owner 丢失及安装失败；实现/验证真实重连凭据 import/remove 与安全清理。opaque token 仅可选版本化能力，不伪造支持；长期协议/安全模型和 U#5/K#18 原验收继续开放。 |
+| [K#8](https://github.com/OpenSparklink/linux/issues/8) | 长期跟踪 | 复核，继续开放；由 K#1–#7/#9–#19 及 U#1–#8/#10 和本批子项逐条承接原范围；原厂商 Proxy 方向按 UserHost 修订。兼容期要求已由未发布 UAPI 的同步迁移/删除规则替代，旧编号不复用。全部必需条件完成前保持父项开放。 |
+| [K#9](https://github.com/OpenSparklink/linux/issues/9) | 有限收尾 | 复核，继续开放；逐项核齐注册失败回滚、模块引用、两实例交错、并发 unregister、旧 callback、stop/drain 和部分初始化；内建/模块组合由 K#12 联验。保留确定终态和引用排空要求，不以应用 fd 数量代替物理 drain。 |
+| [K#10](https://github.com/OpenSparklink/linux/issues/10) | 长期跟踪 | 复核，继续开放；保留部分初始化/重复 enable-disable/fd 最终关闭/stop-drain 门禁；查清自然启动超时、重枚举失败、消失及不依赖人工操作的有界恢复，之后验证 PM/reset-resume。人工拔插、hub 切电、QMP 与注入只能作各自受控测试，不能结算自然恢复。接口/固件/USB 根因分别复用 K#9/#14/#15；不新建重复总项。 |
+| [K#11](https://github.com/OpenSparklink/linux/issues/11) | 有限收尾 | 复核，继续开放；按设备/固件审计 known/unknown/unsupported、limits/quirks 和失败策略，补精确匹配/错误 fallback 与跨语言输出门禁。E/U 主固件与两份校准必须每设备一致；冷 ROM READM 有效性/稳定性及混合型号资格未闭合前保留显式板型。 |
+| [K#12](https://github.com/OpenSparklink/linux/issues/12) | 有限收尾 | 复核，继续开放；核齐所声明支持的 USB off/Virtual、通用 USB/WS73 独立开关、built-in/module 与实际加载卸载；检查匹配无抢占与迁移前后回归。Kconfig help 中遗留的功能状态说明需按当前资格边界更新，不能从目录迁移宣称所有构建或其他总线完成。 |
+| [K#13](https://github.com/OpenSparklink/linux/issues/13) | 有限收尾 | 复核，继续开放；审计 opcode/event、ACB/TCID/relay、USB/HCC/BSLE 字段矩阵的来源类型和未知项；核齐去敏 fixture 的来源/许可、最小配置/版本查询与每份固件适用范围。参考库不是标准裁判；不复制受限标准或未授权 blob。 |
+| [K#14](https://github.com/OpenSparklink/linux/issues/14) | 有限收尾 | 复核，继续开放；补适用 KASAN/lockdep/故障注入、畸形/截断/聚合、取消/拔出/重提交与 buffer 所有权门禁；测量单 RX URB callback/重提交空窗后再决定有界多 URB 或热路径优化，保持顺序/generation/stop-drain。自然 USB 根因由 K#10/#15 协同，不能以重新枚举替代状态清除。 |
+| [K#15](https://github.com/OpenSparklink/linux/issues/15) | 长期跟踪 | 复核，继续开放；继续缺失/损坏镜像、通知乱序/超时、部分初始化/退出与自然启动失败根因；E 运行期实验地址不等于出厂唯一身份，cold-ROM 自动选择、混合型号与无人工恢复仍须各自原门禁。许可/来源与复现输入保持外部，不上传未授权固件。 |
+| [K#16](https://github.com/OpenSparklink/linux/issues/16) | 有限收尾 | 复核，继续开放；核齐 READ/version/buffer、广播/扫描/建链/断链与同 opcode 并发、取消/超时后晚到、异步交错和重置身份；各 profile 的 golden 与实际支持接口分别验收。未知操作保持明确不支持，诊断入口遵循独占权限。 |
+| [K#17](https://github.com/OpenSparklink/linux/issues/17) | 需要拆分 | 正文收敛，保持开放；K#21 credit/Ticket/撤权/复用组合；K#22 动态通道背压/公平/多设备压力；父项四条原验收保留。 |
+| [K#18](https://github.com/OpenSparklink/linux/issues/18) | 长期跟踪 | 复核，继续开放；完成原两角色配对/加密数据/Bond 重连和各方法的拒绝/超时/crash/错误 proof/key/重放/断链/reset；真实凭据存储由 U#5，公共机制由 K#7。SDK110 与历史111的缺包/固件诊断失败保留；既有实现或限定门禁不能关闭完整安全。 |
+| [K#19](https://github.com/OpenSparklink/linux/issues/19) | 需要拆分 | 正文收敛，保持开放；K#23 资格/判定器闭包；K#24 生产 fuzz/调试 VM；跨后端、真实门禁、部署/发布边界仍属父项五条原要求。 |
+| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | 可关闭 | 复核既有关闭；原六条事件循环条件逐项审计完成，按自身范围关闭；源码/离线与授权本地准确材料分开。原业务保持失败和剩余门禁不改判，未授当前HEAD整体资格。 |
+| [U#2](https://github.com/OpenSparklink/sparklink/issues/2) | 有限收尾 | 复核，继续开放；过滤发生在丢失/截断报告之前的监控完整性缺口；实际多订阅、慢消费者、退出重开与退休回归。 |
+| [U#3](https://github.com/OpenSparklink/sparklink/issues/3) | 需要拆分 | 正文收敛，保持开放；U#21 SDK READ Provider 生命周期、U#22 剩余 SSAP 操作/长值/更新事务、U#23 真实 Profile；父项原完整验收保留。 |
+| [U#4](https://github.com/OpenSparklink/sparklink/issues/4) | 长期跟踪 | 复核，继续开放；核对实际 PHY／telemetry 查询、合法性／监管约束及 readback；接通 per-controller/per-connection fixed、balanced、throughput、low-power 策略和 hysteresis／驻留／退避；覆盖拒绝、断链、切换与公平性。 |
+| [U#5](https://github.com/OpenSparklink/sparklink/issues/5) | 长期跟踪 | 复核，继续开放；完成各认证方法的 Agent/调用者退出、原期限、晚到批准及安装失败门禁；真实重连凭据的安全存储、原子持久化、迁移、撤销与 bonded reconnect 仍按原范围验收。机制依赖 K#7/#18，不新造安全 Engine。 |
+| [U#6](https://github.com/OpenSparklink/sparklink/issues/6) | 有限收尾 | 复核，继续开放；按准确产物核齐产品 disable/enable、初始化失败、同地址不同地址类型、单侧退休与重新发布；确认每一公开方法的角色/权限和 unavailable 错误。独立 Bond/PHY 能力由 U#5/#4负责；本项只验证路由与状态消费，不等待它们整项交付。 |
+| [U#7](https://github.com/OpenSparklink/sparklink/issues/7) | 长期跟踪/P4 | 复核，继续开放；UserHost 独占所有权、接管/退出屏障、授权与隔离；P4 规划，非 Native 主线前置。 |
+| [U#8](https://github.com/OpenSparklink/sparklink/issues/8) | 长期跟踪 | 复核，继续开放；完整 S0–S6、19WP、10FV、12DG 及原验收全部保留；按每个生产行为的小项独立收尾/关闭，父跟踪只维护范围映射。自然故障根因、非人工恢复、剩余数据/安全/SSAP/Profile、部署/发布继续开放；UserHost 低优先级且非当前前置。 |
+| [U#10](https://github.com/OpenSparklink/sparklink/issues/10) | 有限收尾 | 复核，继续开放；保留运行期/物理拔插闭环原验收，以及用户追加的不依赖人工拔插故障恢复要求。后者仍须查明自然启动超时、重枚举失败与设备消失根因，并验证有界自动恢复及同行隔离；对应 K#10/#14/#15/#19 复用现有任务，不另建重复恢复跟踪。不等待与本里程碑无关的完整安全、Bond 或发布。 |
+
+| 已有子项 | 当前处置 | 独立退出范围 |
+| --- | --- | --- |
+| [U#21](https://github.com/OpenSparklink/sparklink/issues/21) | 可关闭 | 复核既有关闭；已按原六项 READ SDK Provider 验收关闭；不授予当前 HEAD 整体资格。 |
+| [U#22](https://github.com/OpenSparklink/sparklink/issues/22) | 有限收尾 | 复核，继续开放；方法请求／发现、daemon及Rust/C/Python/CLI服务端、实际SDK请求工具与VM场景／双端判定已提交；有限离线检查已核对。准确新产物真实交付、命令／发现／长结果和完整操作／生命周期仍待验收。 |
+| [U#23](https://github.com/OpenSparklink/sparklink/issues/23) | 长期跟踪 | 复核，继续开放；Battery/DeviceInfo/HID 真实业务、启用/卸载、隔离与原门禁。 |
+| [K#21](https://github.com/OpenSparklink/linux/issues/21) | 有限收尾 | 复核，继续开放；credit/Ticket/撤权/断链/原期限/晚到完成/复用组合；环境假设须独立验证。 |
+| [K#22](https://github.com/OpenSparklink/linux/issues/22) | 有限收尾 | 复核，继续开放；动态通道背压、公平性、多设备实际业务与关闭隔离。 |
+| [K#23](https://github.com/OpenSparklink/linux/issues/23) | 有限收尾 | 复核，继续开放；资格身份、原材料、判定器闭包及缺失/篡改/过期负对照。 |
+| [K#24](https://github.com/OpenSparklink/linux/issues/24) | 长期跟踪 | 复核，继续开放；准确bac12d1 CI的WS73/CMTC固定语料及有界探索完成；旧b154来源检查超时保留且根因未证实修复。生产有状态/syscall、调试VM覆盖与原退出条件仍开放。 |
+
+拆分映射：U#3 → U#21（SDK READ Provider 待决撤回/原期限/同行）、U#22（唯一 Engine
+剩余操作/长值/更新）、U#23（真实 Profile）；K#17 → K#21（credit/Ticket/撤权/复用）、
+K#22（通道背压/公平/多设备压力）；K#19 → K#23（资格判定闭包）、K#24（fuzz/调试 VM）。
+每项接口、依赖、退出条件和剩余门禁已写入对应 issue；原范围仍由父项映射，不另建总跟踪。
+
+U#1 已按原六条条件关闭；同一 Native receiver 的 suite v2、原期限、取消及关闭依据
+见该 issue 与维护记录。旧入口 UnknownMethod、早期 fixture 和完整业务保持失败均保留
+原身份；后续产物仍按改动范围回归，不能把旧“Native 订阅待验”继续作为本项关闭缺口。
+U#2 保留过滤前丢失报告缺口；U#10 保留用户追加的第八项自然恢复，不能只按七项早期范围关闭。
+旧正文完整留于授权本地快照，评论、原提交、失败与反例保留；公共表不披露实机详情。
+本批无生产协议变化、无新实机/形式化资格，未修改既有资格记录或把旧 PASS 转授新 HEAD。
+
+U#21 已收尾；继续 U#22 的真实服务行为及既有数据／安全主线；完整 S0–S6、19WP、
+10FV、12DG、VM-only、UserHost P4 及原范围不变；自然根因、非人工恢复继续开放。
+
+### 历史批次 R156：Owned type0 动态只读 Provider
+
+当前批次以本页生成摘要为准；下文保留 R156 的源码职责与限定范围，不表示后续产物已验收。
+
+沿 WP08/WP16/WP17 的现有 Owned 登记、唯一 Engine 和 SDK 增加只读 Provider，
+不另设计划或协议状态来源。原 caller 通过 `BindOwnedReadProvider` 为操作位恰好
+READ 的属性绑定同总线 callback；绑定消耗原存储值，登记内不能更换或解除，后续
+本地读取/替换 NotSupported。Rust 共享准入/等待与现有 CLI 的交互式 provider
+复用同一 caller；授权和提供值各有一个有界槽位。type1 公开说明独立，完整 C/Python Provider 收件箱与
+动态写入仍缺；它们现有远端读取可消费动态响应。精确字段及错误只维护在
+[接口参考](../docs/reference/ssap-permissions.md#owned-read-only-provider)。
+
+本批源码契约与验收范围：审批先于 provider，原身份/安全观察/绝对期限贯穿等待与响应；复用
+原 owner watch、8条义务预算，等待不持数据库锁，结果消费复核同一登记绑定。
+动态值单项及每义务累计2042字节，UUID 多项共享；错误、空值、剩余预算、畸形/
+超长结果、回调缺失、owner/登记退出和原期限失败均须覆盖。公开验证范围包括相关
+生产函数、实际 D-Bus/SDK 签名及文档离线检查。真实对端读回、应用错误、审批、
+期限、生命周期及既有属性/说明和普通业务回归的准确产物身份与门禁结果，
+只由授权的本地结构化记录维护。
+CLI 的实际准入、值/错误答复、不同/重复/晚到 token、owner 关闭、两槽位隔离及
+最大行输入分别验证；响应编码进入 Pending 后保留不可变字节，不把注销视为撤回。
+
+公共文档只记录源码契约与通用状态，不发布本地实机执行身份或材料。既有准确资格
+不转授新增入口；完整 S0–S6、19WP、10FV、12DG、VM-only、UserHost P4，以及数据/
+安全/多通道/四设备、部署、自然故障根因和非人工恢复范围保持开放，不新增控制面
+组合全集作为本批前置。CLI 操作及限制随实际 frontend 同步到接口、how-to 与手册。
+
 ### R5f9h：实际 User Native 返回跨 controller 退休（两角色限定通过，原两FAIL保留）
 
 准确服务77f7953／工具1433132／内核2fc及SDK110US的两独立角色VM已完成本批
@@ -370,6 +508,86 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 
 <!-- qualification-summary:start -->
 以下摘要由 `project/qualification-records.json` 生成；不以文档提交替代编译身份。
+
+当前实施批次（不是新产物资格，直接读取唯一记录）：
+```json
+{
+  "id": "WP08-SSAP-METHOD-LONG-GATE-v4",
+  "state": "RUNNER_PAIRED_CORROBORATOR_OFFLINE_PASS_FRESH_ARTIFACT_REAL_DELIVERY_PENDING",
+  "implementation_sources": {
+    "public": "14621593fe911b544634cd7097570a1fb5606d9c"
+  },
+  "production_behavior": "Existing method VM runner adds independent 2045-byte result through the same SDK supervisor. Original discovery/short/command/withdrawal retained. Shared physical fragment verifier checks exact two-way sequence negotiation, complete paired data, causal prefixes and actual TX count. No Host or runtime protocol change.",
+  "offline_checks": {
+    "related_regressions": 144,
+    "result": "PASS",
+    "strict_html_inventory_examples": "PASS",
+    "negative_controls": "missing/duplicate/corrupt/foreign/ordered SSAP and ACB evidence, original deadline, stale negotiation, historical version, incomplete saved window; executor callback and valid overlapping causal prefixes"
+  },
+  "offline_scope": "Actual Python executor/verifier with explicit process, negotiation and physical-packet fixtures. No actual VM, hardware, deployment, concurrency, firmware or formal qualification.",
+  "formal_status": "NO_NEW_PROOF",
+  "hardware_status": "NOT_RUN; previous exact qualifications and failures unchanged.",
+  "preparation_status": "V4_EXACT_INPUTS_VALIDATED_NO_USB_VM_SMOKE_PASS; REAL_DELIVERY_PENDING",
+  "source_audit": "SDK GET_VERSION is distinct from chip query; fixed host text/shared static version cannot attest resident image. Native queue9 query runs after BSLE; moving it may consume unmatched boot/ACK messages. Streaming-only EP0 observation is not a pre-start fallback. Safe diagnosis must retain events, original deadlines, queue/sequence ownership and stop/drain. Root cause and natural recovery remain unverified.",
+  "issue_sync": [
+    {
+      "repository": "linux",
+      "number": 15,
+      "state": "open",
+      "body_sha256": "508064c7175a6e17933b6dc2462f2eb2e479f90c2a32e43ffd8b62a70efbb9eb",
+      "source_offline_only": true,
+      "original_acceptance_unchanged": true
+    },
+    {
+      "repository": "sparklink",
+      "number": 22,
+      "state": "open",
+      "body_sha256": "a555e098d79002c3d9d759cabb5bde760f6ba4f37fac59706aff339d518d84a0",
+      "source_offline_only": true,
+      "original_acceptance_unchanged": true
+    }
+  ],
+  "exit_conditions": [
+    "Reuse sole SDK supervisor and original deadline",
+    "Preserve discovery/short/command/withdrawal assertions",
+    "2045-byte independent result linked to both endpoints and all physical fragments",
+    "Original scope retained for historical v1-v3",
+    "Publish source/offline summary only"
+  ],
+  "next": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently.",
+  "actor_obligation_regression": {
+    "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
+    "entry": "ssap_engine::exchange_loop",
+    "scenarios": [
+      "pending response prevents Negotiated despite peer reply",
+      "actual socket pressure drain admits exact response",
+      "original initialization deadline remains terminal",
+      "stop emits no pending response"
+    ],
+    "result": "OFFLINE_SCOPED_PASS",
+    "checks": {
+      "engine_tests": 76,
+      "clippy": "PASS",
+      "strict_html_inventory_examples": "PASS",
+      "premature_ready_mutation": "REJECTED_SOURCE_RESTORED"
+    },
+    "scope": "Real Tokio/UnixDatagram scheduling; explicit AF_UNIX receipt bypass and extra descriptor for bounded queue pressure. No full method business actor, Native Grant/credit, hardware isolation, USB/RF or formal proof. cfg(test) and explanation only; existing compiled artifact not rebuilt or upgraded."
+  },
+  "method_argument_regression": {
+    "source_public": "f6c2cf3c88154ba79a865cc55303b5fa464bd62f",
+    "entry": "ValuePdu encode, Plan/Reassembly, resolve_server, actual private-D-Bus MethodProvider, complete_server/client decoder",
+    "scenarios": "44 request19/command18 cases, physical MTU249/2042, parameter lengths0/245/246/249/250/253/254/255/2038/2039/2043; independent literal headers/handle/payload, full Provider arguments/identity/deadline, independent response or no command reply; two2044-byte encoder refusals before output modification.",
+    "result": "OFFLINE_SCOPED_PASS",
+    "checks": {
+      "engine_tests": 77,
+      "strict_clippy": "PASS",
+      "argument_truncation_mutation": "REJECTED_SOURCE_RESTORED"
+    },
+    "scope": "Actual production functions/private bus. Native identity, negotiation and Wire transport explicit fixtures; not full method actor scheduling, Native credit/USB/peer RF or formal proof. cfg(test) only; original v4 compiled/prepared identities unchanged."
+  }
+}
+```
+
 
 选定保留产物（不是当前工作树整体资格）：**K2fc/Ud9：共享发现显式release及Negotiable-T七尺寸/Owned/C-Python限定实机**。
 仅记录范围：`real_device` / `PASS`。
@@ -2160,7 +2378,7 @@ K表示`OpenSparklink/linux`，U表示`OpenSparklink/sparklink`。以下关联�
 
 | Issue | 原范围 | 工作包与补充验收 |
 |---|---|---|
-| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | 事件循环/锁/取消 | WP12；静默D-Bus响应、锁外signal、shutdown |
+| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | 可关闭／已关闭 | 原六条事件循环条件逐项审计完成，按自身范围关闭；源码/离线与授权本地准确材料分开。原业务保持失败和剩余门禁不改判，未授当前HEAD整体资格。 |
 | [U#2](https://github.com/OpenSparklink/sparklink/issues/2) | 独立事件/监控订阅 | WP12/16/18；多reader/overflow/旧poll删除 |
 | [U#3](https://github.com/OpenSparklink/sparklink/issues/3) | SSAP/Profile迁移 | WP04/06/08/10/18；真实服务和模式、权限、标准依赖 |
 | [U#4](https://github.com/OpenSparklink/sparklink/issues/4) | PHY policy | WP15；策略replay与真实actual能力 |
@@ -2196,7 +2414,7 @@ K表示`OpenSparklink/linux`，U表示`OpenSparklink/sparklink`。以下关联�
 | [K#17](https://github.com/OpenSparklink/linux/issues/17) | S4 TCID/ACB/credit/PDU | TCID 不当作连接 handle；253/254/255 边界、分片/重组、credit 耗尽与恢复；实机双向 |
 | [K#18](https://github.com/OpenSparklink/linux/issues/18) | S5 SMP relay / 加密 mechanism | relay layout/算法来源；双角色真实 pair/encrypt、错 key、revoke、Bond reconnect |
 | [K#19](https://github.com/OpenSparklink/linux/issues/19) | 每批证据；S6 全矩阵 | 严格 verdict、Virtual/标准 USB/WS73 分开；mixed backend、故障/PM/性能/复现与支持范围 |
-| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | S0 独立 receiver/cancel、短锁、同步 fd 分离 | 真实 D-Bus 静默 30s 仍响应；对象 signal 在锁外；并发更新与 shutdown |
+| [U#1](https://github.com/OpenSparklink/sparklink/issues/1) | 可关闭／已关闭 | 原六条事件循环条件逐项审计完成，按自身范围关闭；源码/离线与授权本地准确材料分开。原业务保持失败和剩余门禁不改判，未授当前HEAD整体资格。 |
 | [U#2](https://github.com/OpenSparklink/sparklink/issues/2) | S2 StateSubscription/SnoopSubscription | 与 K#3 联调，工具不抢事件；移除主路径破坏性 poll/50ms fallback |
 | [U#3](https://github.com/OpenSparklink/sparklink/issues/3) | S4 SSAP Engine/session/DB/Profile；修标准 UUID/权限 | goldens+malformed+MTU/长读写；未协商事务号时单在途；真实 Battery/HID/DeviceInfo PDU；restart/卸载/并行连接 |
 | [U#4](https://github.com/OpenSparklink/sparklink/issues/4) | S5 每连接 PHY policy | telemetry replay 的 hysteresis/dwell/backoff/clamp/rollback/fairness；只广告真能力 |
@@ -2337,6 +2555,16 @@ Agent/method/caller策略、批准原期限和单请求撤销，再取得正向/
 DQ2–DQ5、混合内容拆分与整篇用户流程重放继续开放，不是主线功能前置。
 
 ## 2026-10-16 核对：SSAP 更新的必要安全边界
+
+WP08/WP16/WP17 的只读 type1 说明切片复用已存在的 Owned 登记和唯一 SSAP actor，
+不等待全部控制面组合。退出要求：原 caller 在共享预算内设置有界 UTF-8 说明，
+对端真实发现 type1 后由 C/Python 新入口读取并逐字节校验，两个方向及连接角色，
+保留原属性审批/退出和普通业务断言。离线需覆盖权限独立、原期限、错误原子性、
+预算回收、实际语言符号/签名和证据负对照；实机使用准确新 artifact 单独取得。
+源码契约见 ADR0004 与接口参考，当前资格仍仅从结构化记录读取；不开放说明写入、
+独立受保护描述符策略或动态 Provider，不缩减完整服务、多通道和恢复范围。
+现有 U#3、K#6/#17/#19 保持原 scope，局部完成不关闭整项。实机执行身份及详情
+仅本地保留，公共仓库只维护源码和离线摘要。
 
 标准T/XS20001-2025 §7.2.5.2/表40要求客户端配置描述符写入具备认证和授权；
 配置按客户端独立，断链重置。固定参考Host f0872df 的ssap_type.h、ssapc_app.c/

@@ -10,10 +10,38 @@ import hashlib
 from pathlib import Path
 import struct
 import re
+import tempfile
 
 
 class CaptureError(ValueError):
     pass
+
+
+def packet_interval(packet):
+    """Complete original USB fragment interval, in its recorded clock only."""
+    if type(packet)is not dict:raise CaptureError('actual decoded USB packet required')
+    fragments=packet.get('fragments',[packet])
+    stamps=[p['wall_ns']for p in fragments]
+    if not stamps or any(type(v)is not int or v<=0 for v in stamps):raise CaptureError('original USB fragment timestamps required')
+    return min(stamps),max(stamps)
+
+
+def read_live_prefix(output, capture, targets, observations):
+    """Bounded snapshot of the private capture,without opening USB or editing it.
+
+    Incomplete live records are an observation to retry,never a valid packet.
+    The returned decoder is the same strict offline decoder used at final seal.
+    """
+    if len(observations)>=64:raise CaptureError('live capture observation budget exceeded')
+    with Path(capture).open('rb')as source:raw=source.read(16*1024*1024+1)
+    if len(raw)>16*1024*1024:raise CaptureError('live capture barrier byte budget exceeded')
+    observation=dict(bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest());observations.append(observation)
+    with tempfile.NamedTemporaryFile(dir=output,prefix='capture-prefix-')as snapshot:
+        snapshot.write(raw);snapshot.flush()
+        try:return read_capture(snapshot.name,targets)
+        except CaptureError as error:
+            if str(error)not in ['truncated pcap record header','truncated USB packet/header','unfinished OUT submission at capture end']:raise
+            observation['partial']=str(error);return None
 
 
 def marker_data(marker):
@@ -110,7 +138,16 @@ def acb(payload):
 
 def reassemble_acb(capture):
     """Independent ordered USB fragment proof, bounded by size/time and link events."""
-    partial, sdus = {}, []
+    return reassemble_acb_retired(capture)[0]
+
+
+def reassemble_acb_retired(capture):
+    """Same strict reassembler, retaining prefixes discarded at observed link events.
+
+    A retired prefix is not a complete SDU or application delivery. Missing link
+    termination still raises the original incomplete-capture error.
+    """
+    partial, sdus, retired = {}, [], []
     timeline = [(p['record'], p.get('hcc_offset', 0), 'data', p) for p in capture['acb_packets']]
     timeline += [(e['record'], e.get('hcc_offset', 0), 'link', e) for e in capture['native_events']
                  if e['event'] in {5, 0x15, 0x1401, 0x1405}]
@@ -119,7 +156,15 @@ def reassemble_acb(capture):
         if kind == 'link':
             body = bytes.fromhex(packet['params'])
             if body and body[0] == 0:
-                partial = {key: value for key, value in partial.items() if key[:2] != device}
+                if len(body) < 3 or int.from_bytes(body[1:3], 'little') > 0x0fff:
+                    raise CaptureError('successful link event lacks a bounded connection handle')
+                handle = int.from_bytes(body[1:3], 'little')
+                for key, pieces in partial.items():
+                    if key[:3] == device + (handle,):
+                        retired.append(dict(bus=key[0], device=key[1], handle=key[2],
+                                            direction=key[3], fragments=pieces,
+                                            retired_by=packet, complete_sdu=False))
+                partial = {key: value for key, value in partial.items() if key[:3] != device + (handle,)}
             continue
         boundary = packet.get('boundary', 0)
         key = device + (packet['handle'], packet['direction'])
@@ -144,7 +189,7 @@ def reassemble_acb(capture):
                 del partial[key]
     if partial:
         raise CaptureError('incomplete A3 at sealed capture end')
-    return sdus
+    return sdus, retired
 
 
 def hcc_acb(data):
@@ -158,18 +203,25 @@ def hcc_acb(data):
     return acb(data[68:68 + length])
 
 
-def read_capture(path, targets, *, observe_rx=False):
+def read_capture(path, targets, *, observe_rx=False, observe_rx_span=False, observe_bulk=False):
     """Read endpoint-1 IN and pair OUT submission/completion by USB/URB identity.
 
     Refuse truncation/malformed traffic on a target; ignore unrelated USB data.
     Keep raw file offsets and hashes for independently inspecting each proof.
     Capture content is not authenticated and synthetic fixtures are not RF.
     """
+    if observe_rx_span and not observe_rx:
+        raise CaptureError('capture span is explicit RX diagnostic metadata only')
+    if type(observe_bulk) is not bool or observe_bulk and not observe_rx:
+        raise CaptureError('bulk lifecycle metadata requires explicit RX observations')
+    span = None
+    selected_records = 0
     reports, complete, failures, empty, commands = [], [], [], [], []
     pending = {}
     native_events = []
     acb_packets = []
     rx_urbs = []
+    bulk_urbs = []
     targets = set(tuple(t) for t in targets)
     with Path(path).open('rb') as stream:
         header = stream.read(24)
@@ -212,6 +264,17 @@ def read_capture(path, targets, *, observe_rx=False):
                 raise CaptureError('pcap/usbmon clocks disagree')
             identity = {'bus': bus, 'device': device, 'wall_ns': timestamp,
                         'urb': urb, 'record': ordinal, 'file_offset': offset}
+            if observe_bulk:
+                bulk_urbs.append(identity | dict(kind=chr(kind), endpoint=endpoint,
+                                                status=status, length=length))
+            if observe_rx_span:
+                point = {k: identity[k] for k in ('bus','device','wall_ns','record','file_offset')}
+                selected_records += 1
+                if span is None:
+                    span = dict(earliest=point, latest=point)
+                else:
+                    if timestamp < span['earliest']['wall_ns']: span['earliest'] = point
+                    if timestamp > span['latest']['wall_ns']: span['latest'] = point
             if endpoint == 0x81 and observe_rx:
                 if kind in map(ord, 'SE') and (cap or captured != 64 or original != captured):
                     raise CaptureError('IN submission/error unexpectedly contains data or truncation')
@@ -285,6 +348,13 @@ def read_capture(path, targets, *, observe_rx=False):
             'acb_packets':acb_packets, 'packet_count': ordinal}
     if observe_rx:
         result['rx_urbs'] = rx_urbs
+    if observe_bulk:
+        result['bulk_urbs'] = bulk_urbs
+    if observe_rx_span:
+        if span is None:
+            raise CaptureError('nonempty validated target USB capture span required')
+        result['rx_capture_span'] = dict(version=1, quantum_ns=1000,
+            targets=[list(v) for v in sorted(targets)], selected_records=selected_records, **span)
     return result
 
 
@@ -329,7 +399,7 @@ def physical_device_descriptors(owners):
                 raise CaptureError('synthetic descriptors excluded from physical corroboration')
 
 
-def corroborate_passthrough(run, capture):
+def corroborate_passthrough(run, capture, address_record=None, requested_addresses=None):
     """Real RF with QMP guest lifecycle, never physical unplug acceptance."""
     if (run.get('scope') != 'real WS73 RF with QMP guest-detach control support'
             or run.get('status') != 'CONTROL_PASSTHROUGH_EVIDENCE_PENDING'
@@ -337,7 +407,11 @@ def corroborate_passthrough(run, capture):
             or run.get('physical_acceptance') is not False):
         raise CaptureError('explicit passthrough QMP control run required')
     physical_descriptors(run)
-    return _corroborate_control(run, capture)
+    addresses=None
+    if address_record is not None or requested_addresses is not None:
+        from ws73_runtime_address import corroborate as address_corroborate
+        addresses=address_corroborate(address_record,capture,requested_addresses)
+    return _corroborate_control(run, capture, address_setups=addresses)
 
 
 def corroborate_synthetic(run, capture):
@@ -622,7 +696,7 @@ def corroborate_diagnostic(run, capture, diagnostic):
     return {json_identity(owner): rows[0]['start_wall_ns']}, proofs
 
 
-def _corroborate_control(run, capture, replacement_phase='replug', boundary_field='unplug_observed_wall_ns', metadata_before=None, metadata_after=None):
+def _corroborate_control(run, capture, replacement_phase='replug', boundary_field='unplug_observed_wall_ns', metadata_before=None, metadata_after=None, address_setups=None):
     # Verify supporting records rather than trusting the success label alone.
     from ws73_north_star import parse_result, parse_match, parse_scan_window, parse_scan_complete, parse_scan_observed, stable
     identity = run['application_identity']
@@ -677,7 +751,15 @@ def _corroborate_control(run, capture, replacement_phase='replug', boundary_fiel
     identities = {json_identity(r[side]): r[side] for r in rounds for side in ['tx', 'rx']}
     metadata = {}
     for identity in identities.values():
-        metadata[json_identity(identity)] = [command_reply(capture, identity, opcode,
+        if address_setups and json_identity(identity) in address_setups:
+            proof=address_setups[json_identity(identity)]['readback']['reply']
+            if ((proof['bus'],proof['device'])!=(identity['bus'],identity['device'])
+                    or proof['value']!=identity['address'].replace(':','').lower()
+                    or proof['wall_ns']>identity['observed_wall_ns']):
+                raise CaptureError('verified volatile address differs from observed RF identity')
+        metadata[json_identity(identity)] = [address_setups[json_identity(identity)]['readback']
+            if opcode==0x0406 and address_setups and json_identity(identity) in address_setups
+            else command_reply(capture, identity, opcode,
             run[boundary_field] if identity == replacement else (metadata_after or {}).get(json_identity(identity), 0),
             (metadata_before or {}).get(json_identity(identity), identity['observed_wall_ns']), b'', value)
             for opcode,value in [(0x0404, identity['version']),

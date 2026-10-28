@@ -29,6 +29,25 @@ class _ControllerId(ctypes.Structure):
                 ("reserved", ctypes.c_uint8 * 6)]
 
 
+class _SsapUpdate(ctypes.Structure):
+    _fields_ = [("stage", ctypes.c_uint32), ("pdu_length", ctypes.c_uint16),
+                ("acknowledgement_length", ctypes.c_uint16),
+                ("pdu", ctypes.c_uint8 * 2048), ("acknowledgement", ctypes.c_uint8 * 3),
+                ("reserved", ctypes.c_uint8 * 5)]
+
+
+@dataclass(frozen=True)
+class SsapUpdate:
+    """stage1 software admission;2 peer queue ACK;3 received/disabled.
+
+    None of these stages means a peer application processed the business value.
+    pdu is the complete existing SSAP packet;this binding has no wire Engine.
+    """
+    stage: int
+    pdu: bytes
+    acknowledgement: bytes
+
+
 def _integer(value, bits, name, nonzero=False):
     if type(value) is not int or not int(nonzero) <= value < (1 << bits):
         raise ValueError(f"{name} must be an unsigned {bits}-bit integer")
@@ -60,9 +79,24 @@ def _library():
         "slk_connection_ssap_read": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
                                       ctypes.c_void_p, ctypes.c_size_t,
                                       ctypes.POINTER(ctypes.c_size_t), ctypes.c_uint64],
+        "slk_connection_ssap_read_description": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
+            ctypes.c_void_p, ctypes.c_size_t, ctypes.POINTER(ctypes.c_size_t), ctypes.c_uint64],
         "slk_connection_ssap_write": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
                                        ctypes.c_void_p, ctypes.c_size_t, ctypes.c_void_p,
                                        ctypes.c_size_t, ctypes.POINTER(ctypes.c_size_t), ctypes.c_uint64],
+        "slk_connection_ssap_write_command": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
+                                               ctypes.c_void_p, ctypes.c_size_t, ctypes.c_uint64],
+        "slk_connection_ssap_call_method": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
+            ctypes.c_void_p, ctypes.c_size_t, ctypes.c_void_p, ctypes.c_size_t,
+            ctypes.POINTER(ctypes.c_size_t), ctypes.c_uint64],
+        "slk_connection_ssap_call_method_command": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
+            ctypes.c_void_p, ctypes.c_size_t, ctypes.c_uint64],
+        "slk_connection_ssap_receive": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
+                                        ctypes.POINTER(_SsapUpdate), ctypes.c_uint64],
+        "slk_connection_ssap_send_owned": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
+                                           ctypes.POINTER(_SsapUpdate), ctypes.c_uint64],
+        "slk_connection_ssap_owned_configuration": [ctypes.c_void_p, ctypes.c_uint16,
+            ctypes.POINTER(ctypes.c_uint8), ctypes.c_uint64],
     }
     for name, arguments in signatures.items():
         function = getattr(lib, name)
@@ -152,6 +186,12 @@ class Client:
         """
         from .local_services import LocalService
         return LocalService._register(self, controller, uuid, properties, deadline_ns, authorization)
+
+    def register_local_entries(self, controller, uuid, properties, methods, *, deadline_ns, authorization="none"):
+        """One owner registration for1..64 distinct properties/methods; no RF publication."""
+        from .local_services import LocalService
+        return LocalService._register(self, controller, uuid, properties, deadline_ns,
+                                      authorization, methods=methods, entries=True)
 
     def discover(self, controller, *, prefix=b"", minimum_rssi=-128, duration_ms=20000, deadline_ns):
         """Acquire a caller discovery lease; see DiscoverySession for release semantics."""
@@ -278,19 +318,105 @@ class Connection:
 class RemoteSsap:
     """No wire codec, remote cache, retries or transactions in this binding.
 
-    Methods return exactly the existing Rust RemoteSsap result bytes. This is a
-    protocol result, not evidence that a peer application processed a write.
+    Read/write return exactly the Rust RemoteSsap protocol result bytes;
+    write_without_response returns None for software admission only. Neither
+    establishes that a peer application processed a write.
     Local timeout does not undo a possibly committed remote operation. The
-    current RPC has no new cross-process original-deadline field.
+    original absolute deadline includes local queueing and daemon work.
     """
     def __init__(self, connection):
         self._connection = connection
 
-    def _call(self, handle, minimum, deadline_ns, value):
+    def discover(self, uuid=b"", *, kind=1, deadline_ns):
+        """Management-only discovery through the unique SDK/Engine.
+
+        Returns immutable entries and original transaction bytes; no retry,
+        revalidation or current authority. Original deadline covers lock wait,
+        caller queue and daemon pages; maximum five seconds from this call.
+        """
+        from .ssap_discovery import discover
+        return discover(self._connection, uuid, kind, deadline_ns)
+
+    def subscribe(self, handles, *, deadline_ns, modes=3, duration_ms=5000):
+        """Finite caller-owned CPCD lease through the existing Rust client.
+
+        One lease per physical actor currently. release observes remote cleanup;
+        local close alone is not confirmation. No implicit retry or reconnect.
+        """
+        from .ssap_subscription import SsapSubscription
+        return SsapSubscription._acquire(self._connection, handles, modes, duration_ms, deadline_ns)
+
+    def _update(self, operation, handle, mode, deadline_ns):
+        _integer(handle, 16, "handle", nonzero=True)
+        deadline_ns = _deadline(deadline_ns)
+        output = _SsapUpdate()
+        connection = self._connection
+        connection._live()
+        with connection._lock:
+            connection._live()
+            fn = getattr(connection._lib, operation)
+            _result(fn(connection._handle, handle, mode, ctypes.byref(output), deadline_ns))
+        expected = 3 if operation == 'slk_connection_ssap_receive' else 2 if mode else 1
+        ack = bytes(output.acknowledgement[:output.acknowledgement_length])
+        if (output.stage != expected or not 6 <= output.pdu_length <= 2048
+                or output.acknowledgement_length > 3 or any(output.reserved)
+                or any(output.pdu[output.pdu_length:])
+                or any(output.acknowledgement[output.acknowledgement_length:])
+                or ack != (b'\x11\x03\x01' if expected == 2 else b'')):
+            import errno
+            raise OSError(errno.EPROTO, 'invalid SSAP update ABI receipt')
+        return SsapUpdate(output.stage, bytes(output.pdu[:output.pdu_length]), ack)
+
+    def receive_update(self, handle, *, deadline_ns, modes=3):
+        """Enable,receive one,and verify disable;original wait<=10s,no retry.
+
+        Pre-existing settings are not overwritten. Unknown cleanup makes this
+        physical SSAP actor unusable;timeout does not prove remote cleanup.
+        """
+        if type(modes) is not int or modes not in (1, 2, 3):
+            raise ValueError('modes must be 1,2,3')
+        return self._update('slk_connection_ssap_receive', handle, modes, deadline_ns)
+
+    def send_owned_update(self, handle, *, deadline_ns, indication=False):
+        """Only this original caller's active owned DB property;<=5s,no retry."""
+        if type(indication) is not bool:
+            raise TypeError('indication must be boolean')
+        return self._update('slk_connection_ssap_send_owned', handle, int(indication), deadline_ns)
+
+    def owned_configuration(self, handle, *, deadline_ns):
+        """Read-only Session configuration for an original-caller owned property."""
+        _integer(handle, 16, 'handle', nonzero=True)
+        deadline_ns = _deadline(deadline_ns)
+        connection = self._connection
+        value = ctypes.c_uint8()
+        connection._live()
+        with connection._lock:
+            connection._live()
+            _result(connection._lib.slk_connection_ssap_owned_configuration(
+                connection._handle, handle, ctypes.byref(value), deadline_ns))
+        if value.value & ~3:
+            import errno
+            raise OSError(errno.EPROTO, 'reserved configuration bits')
+        return value.value
+
+    @staticmethod
+    def _value_scope(handle, minimum, deadline_ns):
         _integer(handle, 16, "handle", nonzero=True)
         if type(minimum) is not int or minimum not in (0, 1, 2):
             raise ValueError("minimum must be mechanism 0..2")
-        deadline_ns = _deadline(deadline_ns)
+        return _deadline(deadline_ns)
+
+    @staticmethod
+    def _value_bytes(value):
+        if not isinstance(value, (bytes, bytearray, memoryview)):
+            raise TypeError("SSAP value must be bytes-like")
+        if len(value) > 65535 or (isinstance(value, memoryview) and value.nbytes > 65535):
+            import errno
+            raise OSError(errno.EMSGSIZE, os.strerror(errno.EMSGSIZE))
+        return bytes(value)
+
+    def _call(self, handle, minimum, deadline_ns, value, read_method="slk_connection_ssap_read", write_method="slk_connection_ssap_write"):
+        deadline_ns = self._value_scope(handle, minimum, deadline_ns)
         # Fixed memory budget, not negotiated MTU or long-write support. A
         # single operation, never count-query/retry after an executed remote read.
         output = (ctypes.c_uint8 * 65535)()
@@ -300,12 +426,12 @@ class RemoteSsap:
         with connection._lock:
             connection._live()
             if value is None:
-                status = connection._lib.slk_connection_ssap_read(
+                status = getattr(connection._lib, read_method)(
                     connection._handle, handle, minimum, output, len(output),
                     ctypes.byref(count), deadline_ns)
             else:
                 data = (ctypes.c_uint8 * len(value)).from_buffer_copy(value)
-                status = connection._lib.slk_connection_ssap_write(
+                status = getattr(connection._lib, write_method)(
                     connection._handle, handle, minimum, data, len(data), output,
                     len(output), ctypes.byref(count), deadline_ns)
             _result(status)
@@ -314,11 +440,58 @@ class RemoteSsap:
     def read(self, handle, *, deadline_ns, minimum=0):
         return self._call(handle, minimum, deadline_ns, None)
 
+    def read_description(self, handle, *, deadline_ns, minimum=0):
+        """Read public type1 description;returns its UTF-8 value bytes,as read does.
+
+        Minimum constrains channel security,not descriptor authorization.
+        No property-value fallback,callback or automatic retry.
+        """
+        return self._call(handle, minimum, deadline_ns, None,
+            "slk_connection_ssap_read_description")
+
     def write(self, handle, value, *, deadline_ns, minimum=0):
-        """Existing short write only; oversize explicitly rejected, never sliced."""
-        if not isinstance(value, (bytes, bytearray, memoryview)):
-            raise TypeError("SSAP value must be bytes-like")
-        if len(value) > 65535 or (isinstance(value, memoryview) and value.nbytes > 65535):
+        """Existing bounded write; oversize explicitly rejected, never sliced."""
+        return self._call(handle, minimum, deadline_ns, self._value_bytes(value))
+
+    def write_without_response(self, handle, value, *, deadline_ns, minimum=0):
+        """Submit one property command; None means software admission only.
+
+        All fragments entered the socket path, not confirmed USB completion,
+        peer receipt or application processing. No implicit retry, descriptor
+        or multi-item operation. Failure may follow partial admission. The
+        same original deadline and five-second ceiling apply as for write.
+        """
+        return self._command(handle, value, minimum, deadline_ns, "slk_connection_ssap_write_command")
+
+    def _command(self, handle, value, minimum, deadline_ns, method):
+        value = self._value_bytes(value)
+        deadline_ns = self._value_scope(handle, minimum, deadline_ns)
+        data = (ctypes.c_uint8 * len(value)).from_buffer_copy(value)
+        connection = self._connection
+        connection._live()
+        with connection._lock:
+            connection._live()
+            _result(getattr(connection._lib, method)(
+                connection._handle, handle, minimum, data, len(data), deadline_ns))
+
+    def call_method(self, handle, arguments, *, deadline_ns, minimum=0):
+        """Return independent peer result bytes; no retry of uncertain effects.
+
+        Local method Providers use Owned registration and the shared Dispatcher;
+        this request does not register a Provider or fabricate its result.
+        """
+        return self._call(handle, minimum, deadline_ns, self._method_arguments(arguments),
+            write_method="slk_connection_ssap_call_method")
+
+    @classmethod
+    def _method_arguments(cls, arguments):
+        value = cls._value_bytes(arguments)
+        if len(value) > 2043:
             import errno
             raise OSError(errno.EMSGSIZE, os.strerror(errno.EMSGSIZE))
-        return self._call(handle, minimum, deadline_ns, bytes(value))
+        return value
+
+    def call_method_without_response(self, handle, arguments, *, deadline_ns, minimum=0):
+        """None means software admission, not peer processing; never retries."""
+        return self._command(handle, self._method_arguments(arguments), minimum,
+            deadline_ns, "slk_connection_ssap_call_method_command")

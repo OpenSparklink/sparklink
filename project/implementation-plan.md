@@ -1,21 +1,22 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前批次：诊断接线与准确准备身份
+## 当前批次：SSAP发现原期限与既有goal恢复
 
-诊断QEMU已沿原runner准备链接入；更换二进制时，原门禁拒绝复用旧scratch-root
-启动证明。新二进制与同一签名内核/模块重新通过无USB的启动检查，之后准备通过。
-旧证明拒绝及modinfo文件名输入失败保留；修正的是准确输入，没有放宽门禁。
-生产driver/daemon/SDK、CLOSE、原期限及有限重试未改。具体执行身份和实机材料
-只保留于授权本地索引，当前不授予新的硬件或method交付资格。原观测及method
-离线检查保留其准确源码身份，不将本批准备结果升级为真实业务或恢复通过。
+发现原期限修复源码为[14fe1a8](https://github.com/OpenSparklink/sparklink/commit/14fe1a8d58ba65a9b316973cbf94e08ea57becca)。
+Rust SDK、CLI、未发布D-Bus签名与唯一Engine共享调用者原期限，覆盖身份预检、
+调用者作用域、状态锁、Info和分页；过期回复及缓存发布明确拒绝，96页/80条预算不变。
+37项相关离线回归、严格Clippy及HTML/清单/示例检查通过；真实handler状态锁阻塞、
+过期不准入、Info/分页等待、逐页期限、迟到身份与独立signature均有对应检查。
+私有总线和有限peer/actor依赖明确为fixture，不授Native并发、部署权限、固件或实机资格。
+初次缺D-Bus路径、沙箱socket拒绝及测试模块路径编译失败保留；修复环境/路径而非放宽断言。
+本批未运行硬件或新形式化证明，历史资格不转授；管理权限保持，C/Python发现封装、
+实际系统总线权限及准确产物method交付仍缺失。完整S0–S6/19WP/10FV/12DG与VM-only不变。
 
-下一步沿固定SDK通知/电源/启动调用链核对匹配SDK110固件语义；仅找到wake API
-不构成应调用的依据，禁止猜测性wake、跳过CLOSE确认或未变化重试。并行接通同一
-Engine的method发现SDK调用者、长结果和生命周期门禁；不把全部启动恢复或控制面
-竞争作为功能开发前置。原method v2的实际对端处理、双端包及原路径保持仍需准确
-产物验收。复用原runner、权限和资源白名单，不另造测试/Host/Engine框架。
-完整S0–S6/19WP/10FV/12DG、VM-only、UserHost P4及原验收保持；自然故障根因、
-非人工恢复、完整方法交付和其他未完成事项继续开放，局部证据不关闭K#15/U#22。
+下一批补同一SDK的C/Python发现调用者、长结果和适用生命周期；真实method v2及原路径
+保持依准确产物另验。启动状态沿固定SDK110/参考Host与实际证据核对；禁止猜测wake、
+跳过CLOSE或重复未变化失败。原启动失败及诊断仅在本地授权索引保留，不作为恢复通过。
+此前有界issue维护已完成，不扩为主线前置；UserHost P4、自然故障根因、非人工恢复及
+其他未完成整项保持开放。goal API空状态已按原持久范围恢复，没有结算未完成工作。
 
 ## 有界 issue 清理结果与主线恢复
 
@@ -499,52 +500,47 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP03-USB-REQUEST-STARTUP-DIAGNOSTIC-v1",
-  "state": "PREPARATION_IDENTITY_RECHECKED_REAL_METHOD_DELIVERY_UNQUALIFIED",
+  "id": "WP08-SSAP-DISCOVERY-ORIGINAL-DEADLINE-v1",
+  "state": "IMPLEMENTED_OFFLINE_PASS_REAL_DISCOVERY_AND_METHOD_DELIVERY_UNQUALIFIED",
   "implementation_sources": {
-    "public_observer": "f8b7975a0b455d15a69ec1bca1ed1db04c51d7b3",
-    "public_method_gate": "349aa4e37bbe9d5ac4db5b7bd4edc2a38a2f5f5d",
+    "public": "14fe1a8d58ba65a9b316973cbf94e08ea57becca",
     "production_kernel_unchanged": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
   },
-  "production_behavior": "Existing runner and per-device Native path retained. Separate observer selected through exact preparation inputs; new QEMU requires matching scratch-root kernel/signed-module proof. No runtime code, deadline, CLOSE behavior, retry budget, model selection or authorization changes.",
+  "production_behavior": "Rust SDK/CLI/unpublished D-Bus/unique Observer use one caller deadline across identity, caller-scoped preflight, Info and all pages; reject expired replies/cache publication. Existing page/entry budgets and management-only policy retained.",
   "offline_checks": {
-    "original_observer_and_method_checks": "Retain their original batch/source identity, not rerun or upgraded",
-    "scratch_root_no_usb": "PASS_NEW_QEMU_SAME_SIGNED_KERNEL_MODULE",
-    "preparation": "PASS_NEW_ARTIFACT_ORIGINAL_IDENTITY_GATES",
-    "initial_prepare": "FAIL_RETAINED_OLD_QEMU_BOOT_PROOF_REJECTED",
-    "initial_root_smoke": "FAIL_RETAINED_MODINFO_FILENAME_INPUT_FIXED_BY_MATCHING_ORIGINAL_MODULE",
-    "metadata_and_strict_docs": "PASS"
+    "engine_discovery": 4,
+    "connection_handlers_before_added_case": 21,
+    "actual_sdk_private_bus": 11,
+    "additional_actual_rpc_held_preflight": 1,
+    "strict_clippy": "PASS",
+    "strict_html_inventory_examples": "PASS"
   },
-  "offline_scope": "Scratch-root VM has no physical USB devices. Preparation verifies artifacts; it is not controller Ready, HCC/model, peer delivery, recovery, formal proof or current-head whole qualification.",
-  "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "LOCAL_AUTHORIZED_EVIDENCE_ONLY; no new public hardware or business qualification. Accurate identities, failures and raw material remain in private index.",
-  "issue_sync": {
-    "observed_at": "2026-10-27T20:15:46.688400+00:00",
-    "updates": [
-      {
-        "repository": "linux",
-        "number": 15,
-        "state": "open",
-        "body_sha256": "2b0ddce8b5afcc6bc022edcef0e32bbe9b6f30e0c4f1db242d44c28fd2907a94",
-        "source_offline_only": true
-      },
-      {
-        "repository": "sparklink",
-        "number": 22,
-        "state": "open",
-        "body_sha256": "d69c739ff4407c30715caeaf07afbfbb9faffd3b2ac6dbbd21c4cd496b3150dc",
-        "source_offline_only": true
-      }
-    ],
-    "scope": "Public source/preparation boundaries only; all private execution identities and hardware details retained locally; no acceptance changed or issue closed."
-  },
-  "exit_conditions": [
-    "Existing prepared QEMU/kernel/module identity gates preserved",
-    "Old preparation and filename-input failures retained; new accurate proof acquired",
-    "Private raw results audited and signed, no hardware details published",
-    "Existing issues and canonical state remain open and scope-consistent"
+  "offline_scope": "Production functions and actual private D-Bus/SDK; finite actor/peer replies and /dev/null backend explicitly fixtures. Not Native concurrency, deployed policy, firmware, physical cleanup, formal proof or hardware qualification.",
+  "initial_failures_retained": [
+    "Missing explicit private dbus-daemon executable",
+    "Sandbox denied private Unix socket",
+    "New test initially used incorrect event-loop module path"
   ],
-  "next": "Continue fixed SDK notification/power-state/bootstrap call-chain and matching SDK110 firmware audit without speculative wake, CLOSE bypass or unchanged retry. In parallel connect method discovery SDK callers and original long-result/lifecycle gates through the unique Engine; exact-artifact method v2 paired delivery remains required. No full recovery/control-plane prerequisite."
+  "formal_status": "NO_NEW_PROOF",
+  "hardware_status": "NOT_RUN; historical exact-artifact evidence and original failures retained, no qualification transfer.",
+  "exit_conditions": [
+    "SDK/CLI/D-Bus/Engine original deadline shared",
+    "Unpublished signature callers and independent introspection migrated",
+    "Production waiting/pagination and private-bus identity/error regressions passed",
+    "Management-only policy unchanged; no duplicate Engine",
+    "Source/offline issue summary exact readback; complete scope retained"
+  ],
+  "issue_sync": [
+    {
+      "repository": "sparklink",
+      "number": 22,
+      "state": "open",
+      "body_sha256": "a698fd2e7fc29b49de3cd3a61a4edfd3cad9250d0ca76f8037b161e9c6b28e3f",
+      "source_offline_only": true,
+      "original_acceptance_unchanged": true
+    }
+  ],
+  "next": "Add C/Python discovery views through the same SDK and bounded result contract; continue method long-result/lifecycle and exact-artifact paired v2 delivery. Startup root-cause audit remains parallel: no speculative wake, CLOSE bypass or unchanged retry. No complete control-plane/recovery prerequisite."
 }
 ```
 

@@ -387,7 +387,7 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "d69c739ff4407c30715caeaf07afbfbb9faffd3b2ac6dbbd21c4cd496b3150dc",
+      "body_sha256": "a698fd2e7fc29b49de3cd3a61a4edfd3cad9250d0ca76f8037b161e9c6b28e3f",
       "classification": "有限收尾",
       "closure_basis": "Existing dynamic WRITE command Provider v3 source/offline gate added; original six SSAP conditions OPEN. Exact actual qualification in authorized local index."
     },
@@ -8286,6 +8286,22 @@
         }
       ],
       "scope": "Public source/preparation boundaries only; all private execution identities and hardware details retained locally; no acceptance changed or issue closed."
+    },
+    {
+      "sources": {
+        "public": "14fe1a8d58ba65a9b316973cbf94e08ea57becca"
+      },
+      "updates": [
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "state": "open",
+          "body_sha256": "a698fd2e7fc29b49de3cd3a61a4edfd3cad9250d0ca76f8037b161e9c6b28e3f",
+          "source_offline_only": true,
+          "original_acceptance_unchanged": true
+        }
+      ],
+      "scope": "Original discovery deadline source/offline summary; no hardware publication or issue closure."
     }
   ],
   "current_disposition": {

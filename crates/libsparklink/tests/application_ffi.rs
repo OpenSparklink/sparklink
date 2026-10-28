@@ -3,6 +3,8 @@
 //! successful Native channel, daemon SSAP Engine, wire or hardware qualification.
 #[path = "application_ffi/authorization.rs"]
 mod authorization;
+#[path = "application_ffi/discovery_requester.rs"]
+mod discovery_requester;
 #[path = "application_ffi/method_provider.rs"]
 mod method_provider;
 #[path = "application_ffi/method_requester.rs"]
@@ -679,6 +681,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         .arg(root.join("crates/libsparklink/tests/fixtures/method_provider.py"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/method_provider.rs"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/method_requester.rs"))
+        .arg(root.join("crates/libsparklink/tests/application_ffi/discovery_requester.rs"))
         .arg(root.join("crates/libsparklink/src/ffi_service_method_provider.rs"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/write_provider.rs"))
         .arg(root.join("crates/libsparklink/src/ffi_service_write_provider.rs"))
@@ -1597,6 +1600,14 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         &owned,
     )
     .await?;
+    discovery_requester::exercise(
+        &root,
+        &sdk_probe,
+        &runtime_library,
+        &directory,
+        &bus.address,
+        &discovery_calls,
+    )?;
     method_requester::exercise(
         &root,
         &sdk_probe,

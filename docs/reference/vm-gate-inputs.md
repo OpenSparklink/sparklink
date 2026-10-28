@@ -90,6 +90,18 @@ ssap-method-command INDEX GENERATION CONNECTION HANDLE ARGUMENTS_HEX [MINIMUM]
 通过唯一 Engine 触发真实对端 Provider，核对原参数、应用处理记录和双端 USB；
 不能用准入、NOCP、请求方法或 WRITE 的历史通过替代。
 
+## 方法发现的实际 SDK 测试入口
+
+现有两种消费者另有 `ssap-find-method INDEX GENERATION CONNECTION UUID_HEX HANDLE`。
+它仅用于“过滤后恰好一个预期方法”的有限场景，UUID为小写2/16字节；不会回退按地址、
+handle或枚举顺序选择对象。先发 `ssap_discovery_start_barrier`（schema1），关闭父Client
+但保留原Connection，等待 `start\n`；连接获取、屏障及实际发现共用原5秒期限。
+成功行 `ssap_method_discovered` 包含原期限、调用/返回单调时刻、完整条目及每笔请求/回复
+hex trace。方法UUID、category和handle必须与提供方预期相符；失败无成功行。
+这是SDK观察收据，不是method调用成功、部署权限或真实双端USB证明。管理角色限制保持；
+新模式已接入实际C/Python私有总线测试，method runner完整双端发现判定仍待接通。
+历史method v1/v2结果不包含这项门禁，不能因工具升级改写历史资格。
+
 ## 显式链路发送载荷偏好
 
 可选 `--link-payload-preference reported-acb-maximum` 仅用于独立的双设备 Native

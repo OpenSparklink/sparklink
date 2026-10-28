@@ -1,38 +1,23 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前批次：方法发现双端门禁v3
+## 当前批次：方法长结果双端门禁v4
 
-方法发现门禁v3源码为[71fe23d](https://github.com/OpenSparklink/sparklink/commit/71fe23dd2a14e3b30adf24c6f33b1886afa8e727)。
-现有method runner在调用前复用C/Python helper及共享监督器发现已登记的唯一自定义
-方法；独立核对原期限、metadata、两笔发现事务、双端包、完整窗口及分页因果顺序。
-原request／command及注销后拒绝断言保留，历史v1/v2不升级为发现资格。
+长结果双端门禁v4源码为[1462159](https://github.com/OpenSparklink/sparklink/commit/14621593fe911b544634cd7097570a1fb5606d9c)。
+现有method runner保留发现、短结果、无响应命令、注销后拒绝，追加2045字节随机结果。
+实际C/Python消费者完整比较；两端必须有原身份下2042 MTU及双向序号分片协商。
+复用既有独立捕获设施核对两片SSAP、每个ACB片、实际TX计数和完整窗口；不同ACB
+切分的收发允许有依据的字节前缀重叠，不允许接收超前、缺失或重复。原期限不变。
 
-115项相关离线回归及严格锁定HTML通过；覆盖共享监督器的成功、错误屏障、失败输出，
-缺包／重复／错设备、乱序、元数据／期限篡改及缺失窗口清单。进程和报文依赖是显式
-fixture，不是实际内核并发、部署、固件、实机或形式化资格。初次fixture/import/参数
-检查顺序失败保留；未放宽断言。已封存C/Python消费者结果维持原编译身份。
-准确新产物的真实发现／method交付、长结果及完整生命周期仍缺失，U#22保持开放。
+144项相关离线检查及严格HTML／清单／示例通过，包括执行器回调和分片负对照。
+这些进程I/O、协商记录和报文是显式fixture，不是新VM、实机、固件或形式化资格。
+既有生产函数长结果组合回归保留源码3305b98的限定范围；历史v1–v3不升级为v4。
+原始失败与全部资格身份保留，U#22的六条验收继续开放。
 
-下一批准备准确新产物的发现／method交付及原路径保持；先独立定位K#15启动证据，
-不猜测wake、不跳过CLOSE、不重复未变化失败。长结果／生命周期、数据与安全保持并行，
-不等控制面全集。S0–S6/19WP/10FV/12DG、VM-only、UserHost P4及原验收不变；
-自然根因和非人工恢复继续开放。
-
-输入准备与关闭审查：准确服务 bundle 及现有准备链已校验，此步骤不授新实机资格。
-SDK 运行期 disable 与最后服务退出／板级复位是不同路径，Native 仍要求真实 CLOSE ACK。
-SDK110 E/U 静态审查区分请求处理返回与后续状态发送；完成路径发送后清除状态，发送
-函数存在提前退出和失败清理分支。局部未见重试不排除 ROM 内部重试，也不能证明实机
-ACK 丢失。准备镜像不代表设备驻留版本；下一步先关联驻留版本、完成触发及发送结果。
-K#15 已同步源码／离线摘要，保留原验收；自然根因、实际 drain 与非人工恢复仍未证明。
-不猜测 wake、不跳过 CLOSE、不重复未变化尝试。v3 实机输入继续封存，SSAP 长结果、
-生命周期和数据面独立推进，不把恢复全集设为它们的前置。
-
-method 长结果补充：复用现有生产函数和真实私有 D-Bus，覆盖0、247–255、2045字节，
-2046整体拒绝后合法请求继续；注销候选、编码快照及原期限分别检查。全部75项Engine
-回归、严格clippy／HTML通过；生产结果截断247字节的临时变异被拒绝并还原。
-该层使用显式Native身份／传输和协商预算fixture，不运行完整actor调度、内核credit或
-USB，不授新实机／形式化资格。源码3305b98，U#22原六条验收保持；下一步扩展现有
-双端VM判定的长结果实际分片，保留短包、发现、命令及历史失败范围。
+下一步封存准确v4输入，取得真实发现／method短长结果及原路径保持证据。v3已准备
+输入仅保留历史用途，不能通过更换工具直接转授v4资格。K#15继续关联驻留固件、
+CLOSE完成触发及ACK发送；静态调用路径不能证明自然根因、实际drain或非人工恢复。
+不猜测wake、不绕过CLOSE、不重复未变化尝试。生命周期、数据和安全独立推进；
+完整S0–S6/19WP/10FV/12DG、VM-only、UserHost P4和原验收不变。
 
 ## 有界 issue 清理结果与主线恢复
 
@@ -516,21 +501,23 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-SSAP-METHOD-DISCOVERY-GATE-v3",
-  "state": "RUNNER_PAIRED_CORROBORATOR_OFFLINE_PASS_EXACT_ARTIFACT_REAL_DELIVERY_PENDING",
+  "id": "WP08-SSAP-METHOD-LONG-GATE-v4",
+  "state": "RUNNER_PAIRED_CORROBORATOR_OFFLINE_PASS_FRESH_ARTIFACT_REAL_DELIVERY_PENDING",
   "implementation_sources": {
-    "public": "71fe23dd2a14e3b30adf24c6f33b1886afa8e727"
+    "public": "14621593fe911b544634cd7097570a1fb5606d9c"
   },
-  "production_behavior": "Existing method VM runner invokes the sole SDK discovery before method traffic through the existing supervisor. Independent finite two-page metadata/packet/cause/window checks; no Host, protocol, permission or runtime change.",
+  "production_behavior": "Existing method VM runner adds independent 2045-byte result through the same SDK supervisor. Original discovery/short/command/withdrawal retained. Shared physical fragment verifier checks exact two-way sequence negotiation, complete paired data, causal prefixes and actual TX count. No Host or runtime protocol change.",
   "offline_checks": {
-    "related_regressions": 115,
+    "related_regressions": 144,
     "result": "PASS",
     "strict_html_inventory_examples": "PASS",
-    "negative_controls": "missing/duplicate/wrong-peer/order/metadata/deadline/window/version; shared supervisor success/failure/barrier"
+    "negative_controls": "missing/duplicate/corrupt/foreign/ordered SSAP and ACB evidence, original deadline, stale negotiation, historical version, incomplete saved window; executor callback and valid overlapping causal prefixes"
   },
-  "offline_scope": "Real Python runner/corroborator with explicit process I/O and independent literal packet fixtures. Not VM, hardware, concurrency, deployment or formal qualification.",
+  "offline_scope": "Actual Python executor/verifier with explicit process, negotiation and physical-packet fixtures. No actual VM, hardware, deployment, concurrency, firmware or formal qualification.",
   "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "NOT_RUN; prior qualification and failure identities retained.",
+  "hardware_status": "NOT_RUN; previous exact qualifications and failures unchanged.",
+  "preparation_status": "NEW_V4_TOOLS_REQUIRE_FRESH_EXACT_INPUTS; V3_PREPARATION_NOT_UPGRADED",
+  "source_audit": "SDK110 E/U static paths separate CLOSE handler return from deferred status emission. Completion clears state after sender call; sender has early-return/failure-cleanup branches. ROM behavior and actual resident identity remain unverified; no root-cause/hardware/formal qualification.",
   "issue_sync": [
     {
       "repository": "linux",
@@ -544,42 +531,19 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
       "repository": "sparklink",
       "number": 22,
       "state": "open",
-      "body_sha256": "1ce54f4ba784ceeddb177596b5cc58faeba399ed3a09d8966d82fa0452498683",
+      "body_sha256": "2500ac316c1d79493dc55c87d082419a7548efca5b4f0a2954269b920bf41710",
       "source_offline_only": true,
       "original_acceptance_unchanged": true
     }
   ],
   "exit_conditions": [
-    "Existing supervisor and SDK reused with original deadline",
-    "Two discovery transactions tied to publisher metadata and both endpoints",
-    "Method request/command/withdrawal assertions retained",
-    "Historical v1/v2 not upgraded; source/offline public summary only"
+    "Reuse sole SDK supervisor and original deadline",
+    "Preserve discovery/short/command/withdrawal assertions",
+    "2045-byte independent result linked to both endpoints and all physical fragments",
+    "Original scope retained for historical v1-v3",
+    "Publish source/offline summary only"
   ],
-  "next": "Extend the existing method paired verifier/runner for long-result physical fragments, retaining short/discovery/command assertions and historical versions. In parallel establish resident firmware and deferred CLOSE observations before a distinct VM action. No guessed wake, CLOSE bypass or unchanged retry.",
-  "preparation_status": "LOCKED_EXACT_SOURCE_BUNDLE_STAGED_AND_EXISTING_INPUT_VALIDATORS_PASSED_NO_DEVICE_EXECUTION",
-  "source_audit": "SDK110 E/U static paths separate CLOSE handler return from deferred status emission. Completion clears state after sender call; sender has early-return/failure-cleanup branches. ROM behavior and actual resident identity remain unverified; no root-cause/hardware/formal qualification.",
-  "long_result_checks": {
-    "source": "3305b98a8356b600a97a758931ded9621e0e5b68",
-    "result": "OFFLINE_PRODUCTION_FUNCTION_COMPOSITION_PASS",
-    "engine_checks": 75,
-    "new_tests": 3,
-    "boundaries": [
-      0,
-      247,
-      248,
-      249,
-      250,
-      251,
-      252,
-      253,
-      254,
-      255,
-      2045,
-      2046
-    ],
-    "negative": "Production silent truncation rejected; original source restored and all Engine tests rerun",
-    "scope": "Actual private D-Bus and production Provider/Database/response/fragments/reassembly/client functions. Negotiated budget and Native identity/transport explicitly supplied fixtures; no actor-loop, syscall authorization, credit, USB, RF, deployment, formal or hardware qualification."
-  }
+  "next": "Prepare accurate v4 artifacts and fresh inputs; real method discovery/short/long delivery remains pending startup diagnosis. No protocol/runtime behavior change."
 }
 ```
 

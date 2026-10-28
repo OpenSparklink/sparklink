@@ -8389,6 +8389,19 @@
         }
       ],
       "scope": "Method long-result production function/private-bus composition and truncation negative control; no hardware/formal qualification."
+    },
+    {
+      "updates": [
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "state": "open",
+          "body_sha256": "2500ac316c1d79493dc55c87d082419a7548efca5b4f0a2954269b920bf41710",
+          "source_offline_only": true,
+          "original_acceptance_unchanged": true
+        }
+      ],
+      "scope": "Method v4 paired long-result gate, actual sequence receipts, shared fragment/cause/TX accounting, old versions retained; source/offline only."
     }
   ],
   "current_disposition": {

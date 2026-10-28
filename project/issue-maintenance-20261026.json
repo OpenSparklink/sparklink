@@ -387,7 +387,7 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "4d1466658a721d37259512362fb7516cbe0a3d2fceda00efd98fd924f760eacc",
+      "body_sha256": "617e0a501660f02f2394db636c84ab8cba8c429434cf1da2c1a77c85cac4d7d8",
       "classification": "有限收尾",
       "closure_basis": "Existing dynamic WRITE command Provider v3 source/offline gate added; original six SSAP conditions OPEN. Exact actual qualification in authorized local index."
     },
@@ -8334,6 +8334,22 @@
         }
       ],
       "scope": "Discovery VM consumer source/offline summary only; paired runner and real qualification pending."
+    },
+    {
+      "sources": {
+        "public": "71fe23dd2a14e3b30adf24c6f33b1886afa8e727"
+      },
+      "updates": [
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "state": "open",
+          "body_sha256": "617e0a501660f02f2394db636c84ab8cba8c429434cf1da2c1a77c85cac4d7d8",
+          "source_offline_only": true,
+          "original_acceptance_unchanged": true
+        }
+      ],
+      "scope": "Method discovery v3 existing runner and paired corroboration; offline only, original issue acceptance retained."
     }
   ],
   "current_disposition": {

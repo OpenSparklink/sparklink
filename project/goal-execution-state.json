@@ -2012,40 +2012,38 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP08-SSAP-DISCOVERY-VM-CONSUMERS-v1",
-      "state": "ACTUAL_CONSUMER_OFFLINE_PASS_PAIRED_RUNNER_AND_REAL_DELIVERY_PENDING",
+      "id": "WP08-SSAP-METHOD-DISCOVERY-GATE-v3",
+      "state": "RUNNER_PAIRED_CORROBORATOR_OFFLINE_PASS_EXACT_ARTIFACT_REAL_DELIVERY_PENDING",
       "implementation_sources": {
-        "public": "4387001776c55240e0d35545f2b8f8da66ddf61e"
+        "public": "71fe23dd2a14e3b30adf24c6f33b1886afa8e727"
       },
-      "production_behavior": "Existing C/Python VM consumers invoke the sole SDK/Engine discovery with original deadline and start barrier; exact expected method identity and all trace bytes retained. No Host, codec, permission or protocol change.",
+      "production_behavior": "Existing method VM runner invokes the sole SDK discovery before method traffic through the existing supervisor. Independent finite two-page metadata/packet/cause/window checks; no Host, protocol, permission or runtime change.",
       "offline_checks": {
-        "actual_language_suite": "PASS_COMPLETE_RETAINED_FINAL_ARTIFACT",
-        "new_consumer_scenarios": 20,
-        "new_RPCs": 10,
-        "original_barrier_clock": "EXIT_NOT_BEFORE_ORIGINAL_DEADLINE; NO_SUPERVISOR_TIMEOUT_SUBSTITUTION",
-        "strict_clippy": "PASS",
-        "strict_html_inventory_examples": "PASS"
+        "related_regressions": 115,
+        "result": "PASS",
+        "strict_html_inventory_examples": "PASS",
+        "negative_controls": "missing/duplicate/wrong-peer/order/metadata/deadline/window/version; shared supervisor success/failure/barrier"
       },
-      "offline_scope": "Actual compiled consumers against explicit finite private-bus metadata/peer. Not VM/hardware, Native concurrency, deployment policy or formal qualification.",
+      "offline_scope": "Real Python runner/corroborator with explicit process I/O and independent literal packet fixtures. Not VM, hardware, concurrency, deployment or formal qualification.",
       "formal_status": "NO_NEW_PROOF",
-      "hardware_status": "NOT_RUN; historical records and failures retained without qualification transfer.",
+      "hardware_status": "NOT_RUN; prior qualification and failure identities retained.",
       "issue_sync": [
         {
           "repository": "sparklink",
           "number": 22,
           "state": "open",
-          "body_sha256": "4d1466658a721d37259512362fb7516cbe0a3d2fceda00efd98fd924f760eacc",
+          "body_sha256": "617e0a501660f02f2394db636c84ab8cba8c429434cf1da2c1a77c85cac4d7d8",
           "source_offline_only": true,
           "original_acceptance_unchanged": true
         }
       ],
       "exit_conditions": [
-        "Same original SDK/Engine and five-second deadline",
-        "Expected method identity/full trace exposed with no success receipt on failure",
-        "Actual C/Python consumer and barrier-clock checks passed",
-        "Source/offline summary only; original issue acceptance retained"
+        "Existing supervisor and SDK reused with original deadline",
+        "Two discovery transactions tied to publisher metadata and both endpoints",
+        "Method request/command/withdrawal assertions retained",
+        "Historical v1/v2 not upgraded; source/offline public summary only"
       ],
-      "next": "Extend the existing method runner/supervisor to consume discovery receipts and independently bind paired USB discovery to publisher method identity; version the new acceptance without upgrading historical v1/v2. Continue exact-artifact method v2/long-result/lifecycle and startup audit in parallel, no guessed wake/CLOSE bypass/unchanged retry or full-control prerequisite."
+      "next": "Prepare accurate-artifact v3 discovery/method delivery and original-path regression using existing VM-only qualified startup; independently resolve K15 startup evidence before any unchanged retry. Continue long result/lifetime/data/security paths without all-control prerequisites. No guessed wake, CLOSE bypass or credit reset."
     },
     "selected_qualification": {
       "version": 1,
@@ -5201,7 +5199,7 @@
   },
   "next_batch_contract": {
     "work_package": "WP08/U#22",
-    "production_behavior": "Extend the existing method runner/supervisor to consume discovery receipts and independently bind paired USB discovery to publisher method identity; version the new acceptance without upgrading historical v1/v2. Continue exact-artifact method v2/long-result/lifecycle and startup audit in parallel, no guessed wake/CLOSE bypass/unchanged retry or full-control prerequisite.",
+    "production_behavior": "Prepare accurate-artifact v3 discovery/method delivery and original-path regression using existing VM-only qualified startup; independently resolve K15 startup evidence before any unchanged retry. Continue long result/lifetime/data/security paths without all-control prerequisites. No guessed wake, CLOSE bypass or credit reset.",
     "exit_conditions": [
       "Original owned method handle/operation/arguments/security/deadline reach same shared Provider Dispatcher",
       "Method request returns independently produced application result; command has no protocol reply",
@@ -5296,6 +5294,6 @@
   },
   "discovery_vm_consumer": {
     "authority": "project/qualification-records.json:batch",
-    "status": "ACTUAL_CONSUMER_OFFLINE_PASS_PAIRED_RUNNER_AND_REAL_DELIVERY_PENDING"
+    "status": "RUNNER_PAIRED_CORROBORATOR_OFFLINE_PASS_EXACT_ARTIFACT_REAL_DELIVERY_PENDING"
   }
 }

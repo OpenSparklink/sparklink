@@ -2,16 +2,16 @@
 
 ## 本批实现与验证边界
 
-发现VM消费者源码为[4387001](https://github.com/OpenSparklink/sparklink/commit/4387001776c55240e0d35545f2b8f8da66ddf61e)。
-现有C/Python helper增加`ssap-find-method`，通过同一SDK/Engine核对过滤后单个预期
-方法UUID/category/handle，并输出条目和完整原始事务trace。连接获取、显式启动屏障
-和发现共用原5秒；父Client关闭后原Connection继续持有同一caller。
+方法发现门禁v3源码为[71fe23d](https://github.com/OpenSparklink/sparklink/commit/71fe23dd2a14e3b30adf24c6f33b1886afa8e727)。
+现有method runner在调用前复用C/Python helper及共享监督器发现已登记的唯一自定义
+方法；独立核对原期限、metadata、两笔发现事务、双端包、完整窗口及分页因果顺序。
+原request／command及注销后拒绝断言保留，历史v1/v2不升级为发现资格。
 
-实际编译C/Python私有总线回归通过20个新增场景：匹配/错handle、畸形/拒绝/超时、
-非法参数及未释放屏障；精确10次新增RPC，无成功行冒充失败。屏障退出时间按原钟
-deadline核对，不以监督器12秒替代。完整既有SDK集成及严格Clippy/HTML同批通过。
-依赖是有限metadata/peer fixture，不是Native/固件或新实机资格；未运行新形式化。
-method runner的独立双端发现判定及准确产物发现/方法交付仍缺失，历史v1/v2不升级。
+115项相关离线回归及严格锁定HTML通过；覆盖共享监督器的成功、错误屏障、失败输出，
+缺包／重复／错设备、乱序、元数据／期限篡改及缺失窗口清单。进程和报文依赖是显式
+fixture，不是实际内核并发、部署、固件、实机或形式化资格。初次fixture/import/参数
+检查顺序失败保留；未放宽断言。已封存C/Python消费者结果维持原编译身份。
+准确新产物的真实发现／method交付、长结果及完整生命周期仍缺失，U#22保持开放。
 
 ## Issue 状态与验证边界
 
@@ -101,40 +101,38 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-SSAP-DISCOVERY-VM-CONSUMERS-v1",
-  "state": "ACTUAL_CONSUMER_OFFLINE_PASS_PAIRED_RUNNER_AND_REAL_DELIVERY_PENDING",
+  "id": "WP08-SSAP-METHOD-DISCOVERY-GATE-v3",
+  "state": "RUNNER_PAIRED_CORROBORATOR_OFFLINE_PASS_EXACT_ARTIFACT_REAL_DELIVERY_PENDING",
   "implementation_sources": {
-    "public": "4387001776c55240e0d35545f2b8f8da66ddf61e"
+    "public": "71fe23dd2a14e3b30adf24c6f33b1886afa8e727"
   },
-  "production_behavior": "Existing C/Python VM consumers invoke the sole SDK/Engine discovery with original deadline and start barrier; exact expected method identity and all trace bytes retained. No Host, codec, permission or protocol change.",
+  "production_behavior": "Existing method VM runner invokes the sole SDK discovery before method traffic through the existing supervisor. Independent finite two-page metadata/packet/cause/window checks; no Host, protocol, permission or runtime change.",
   "offline_checks": {
-    "actual_language_suite": "PASS_COMPLETE_RETAINED_FINAL_ARTIFACT",
-    "new_consumer_scenarios": 20,
-    "new_RPCs": 10,
-    "original_barrier_clock": "EXIT_NOT_BEFORE_ORIGINAL_DEADLINE; NO_SUPERVISOR_TIMEOUT_SUBSTITUTION",
-    "strict_clippy": "PASS",
-    "strict_html_inventory_examples": "PASS"
+    "related_regressions": 115,
+    "result": "PASS",
+    "strict_html_inventory_examples": "PASS",
+    "negative_controls": "missing/duplicate/wrong-peer/order/metadata/deadline/window/version; shared supervisor success/failure/barrier"
   },
-  "offline_scope": "Actual compiled consumers against explicit finite private-bus metadata/peer. Not VM/hardware, Native concurrency, deployment policy or formal qualification.",
+  "offline_scope": "Real Python runner/corroborator with explicit process I/O and independent literal packet fixtures. Not VM, hardware, concurrency, deployment or formal qualification.",
   "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "NOT_RUN; historical records and failures retained without qualification transfer.",
+  "hardware_status": "NOT_RUN; prior qualification and failure identities retained.",
   "issue_sync": [
     {
       "repository": "sparklink",
       "number": 22,
       "state": "open",
-      "body_sha256": "4d1466658a721d37259512362fb7516cbe0a3d2fceda00efd98fd924f760eacc",
+      "body_sha256": "617e0a501660f02f2394db636c84ab8cba8c429434cf1da2c1a77c85cac4d7d8",
       "source_offline_only": true,
       "original_acceptance_unchanged": true
     }
   ],
   "exit_conditions": [
-    "Same original SDK/Engine and five-second deadline",
-    "Expected method identity/full trace exposed with no success receipt on failure",
-    "Actual C/Python consumer and barrier-clock checks passed",
-    "Source/offline summary only; original issue acceptance retained"
+    "Existing supervisor and SDK reused with original deadline",
+    "Two discovery transactions tied to publisher metadata and both endpoints",
+    "Method request/command/withdrawal assertions retained",
+    "Historical v1/v2 not upgraded; source/offline public summary only"
   ],
-  "next": "Extend the existing method runner/supervisor to consume discovery receipts and independently bind paired USB discovery to publisher method identity; version the new acceptance without upgrading historical v1/v2. Continue exact-artifact method v2/long-result/lifecycle and startup audit in parallel, no guessed wake/CLOSE bypass/unchanged retry or full-control prerequisite."
+  "next": "Prepare accurate-artifact v3 discovery/method delivery and original-path regression using existing VM-only qualified startup; independently resolve K15 startup evidence before any unchanged retry. Continue long result/lifetime/data/security paths without all-control prerequisites. No guessed wake, CLOSE bypass or credit reset."
 }
 ```
 

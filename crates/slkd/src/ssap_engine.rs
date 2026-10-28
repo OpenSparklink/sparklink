@@ -386,7 +386,8 @@ impl Observer {
         let hierarchy = uuid.is_none() && kind == FindKind::Primary;
         while let Some((kind, mut start, end)) = ranges.pop() {
             loop {
-                if Instant::now() >= deadline || trace.len() >= 96 {
+                if Instant::now() >= deadline || trace.len() >= slk_contract::ssap::DISCOVERY_PAGES
+                {
                     return Err("bounded discovery deadline/pages exceeded".into());
                 }
                 let request = FindRequest {
@@ -424,7 +425,7 @@ impl Observer {
                 }
                 let page = decode_page(request, info.5, &raw)
                     .map_err(|e| format!("find response: {e:?}"))?;
-                if entries.len() + page.len() > 80 {
+                if entries.len() + page.len() > slk_contract::ssap::DISCOVERY_ENTRIES {
                     return Err("remote database entry budget".into());
                 }
                 let next = if kind == FindKind::Primary {

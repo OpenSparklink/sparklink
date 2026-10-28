@@ -327,6 +327,16 @@ class RemoteSsap:
     def __init__(self, connection):
         self._connection = connection
 
+    def discover(self, uuid=b"", *, kind=1, deadline_ns):
+        """Management-only discovery through the unique SDK/Engine.
+
+        Returns immutable entries and original transaction bytes; no retry,
+        revalidation or current authority. Original deadline covers lock wait,
+        caller queue and daemon pages; maximum five seconds from this call.
+        """
+        from .ssap_discovery import discover
+        return discover(self._connection, uuid, kind, deadline_ns)
+
     def subscribe(self, handles, *, deadline_ns, modes=3, duration_ms=5000):
         """Finite caller-owned CPCD lease through the existing Rust client.
 

@@ -130,9 +130,45 @@ struct Link(
     Arc<AtomicUsize>,
     Arc<AtomicUsize>,
     Arc<Mutex<Vec<CommandCall>>>,
+    Arc<AtomicUsize>,
 );
 #[zbus::interface(name = "org.sparklink.Connection")]
 impl Link {
+    fn discover_ssap(
+        &self,
+        uuid: Vec<u8>,
+        kind: u8,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<slk_contract::ssap::Discovery> {
+        let d = slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        assert!(d.remaining().unwrap() <= std::time::Duration::from_secs(5));
+        self.8.fetch_add(1, Ordering::SeqCst);
+        if kind != 4 || !matches!(uuid.as_slice(), [1, 2] | [3, 4] | [5, 6] | [7, 8]) {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "finite discovery fixture".into(),
+            ));
+        }
+        if uuid == [5, 6] {
+            return Err(zbus::fdo::Error::NotSupported("fixture refusal".into()));
+        }
+        if uuid == [7, 8] {
+            return Err(zbus::fdo::Error::Timeout("fixture timeout".into()));
+        }
+        let descriptors = if uuid == [3, 4] {
+            vec![0; 256]
+        } else {
+            vec![0x80]
+        };
+        Ok((
+            vec![(3, 17, 17, vec![1, 2], 0, descriptors, 0)],
+            vec![(
+                vec![6, 20, 1, 0, 255, 255, 1, 2],
+                vec![7, 11, 1, 17, 0, 1, 2, 0, 0, 0, 0, 1, 0x80],
+            )],
+        ))
+    }
+
     fn subscribe_ssap_updates(
         &self,
         handles: Vec<u16>,
@@ -662,6 +698,9 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         .arg(root.join("crates/libsparklink/src/ssap/provider/frontend.rs"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/value_update.rs"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/subscription.rs"))
+        .arg(root.join("bindings/python/sparklink/ssap_discovery.py"))
+        .arg(root.join("crates/libsparklink/src/ffi_ssap_discovery.rs"))
+        .arg(root.join("crates/libsparklink/src/ssap.rs"))
         .arg(root.join("bindings/python/sparklink/ssap_subscription.py"))
         .arg(root.join("crates/libsparklink/src/ssap/subscription.rs"))
         .arg(root.join("crates/libsparklink/src/ffi_ssap_subscription.rs"))
@@ -676,6 +715,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     let ssap_calls = Arc::new(AtomicUsize::new(0));
     let method_calls = Arc::new(AtomicUsize::new(0));
     let method_command_calls = Arc::new(Mutex::new(Vec::new()));
+    let discovery_calls = Arc::new(AtomicUsize::new(0));
     let description_reads = Arc::new(AtomicUsize::new(0));
     let command_calls = Arc::new(Mutex::new(Vec::new()));
     let lifetime = Arc::new(AtomicU64::new(11));
@@ -697,6 +737,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
                 description_reads.clone(),
                 method_calls.clone(),
                 method_command_calls.clone(),
+                discovery_calls.clone(),
             ),
         )?
         .build()
@@ -1033,6 +1074,11 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
                 .contains("CURRENT_CONTROLLER_DIRECTORY_LANGUAGE_FIXTURE_PASS_NOT_RF")
         );
     }
+    assert_eq!(
+        discovery_calls.load(Ordering::SeqCst),
+        8,
+        "four discovery RPCs per actual language; no retry for local reads or invalid inputs"
+    );
     assert_eq!(
         description_reads.load(Ordering::SeqCst),
         5,

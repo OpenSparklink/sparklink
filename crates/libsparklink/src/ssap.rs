@@ -29,6 +29,39 @@ fn validate_update(handles: &[u16], modes: u8, indication: bool, raw: &[u8]) -> 
     Ok(())
 }
 
+// Bound broker metadata once for every language view. This is not a second
+// protocol decoder or proof of peer delivery; raw trace remains independently
+// auditable. Deserialization itself is also subject to the D-Bus message limit.
+fn validate_discovery(value: wire::Discovery) -> Result<wire::Discovery> {
+    let (entries, trace) = &value;
+    if entries.len() > wire::DISCOVERY_ENTRIES
+        || trace.is_empty()
+        || trace.len() > wire::DISCOVERY_PAGES
+        || trace.iter().any(|(request, response)| {
+            request.is_empty()
+                || request.len() > wire::DISCOVERY_REQUEST_BYTES
+                || response.is_empty()
+                || response.len() > wire::DISCOVERY_RESPONSE_BYTES
+        })
+        || entries.iter().any(|e| {
+            !matches!(e.0, 0..=4 | 8..=12)
+                || e.1 == 0
+                || (e.2 != 0 && e.2 < e.1)
+                || !matches!(e.3.len(), 2 | 16)
+                || (e.0 & 8 != 0) != (e.3.len() == 16)
+                || slk_protocol::ssap::SsapOperations::from_bits(e.4).is_err()
+                || e.5.len() > 255
+                || e.6 & !15 != 0
+        })
+        || entries.windows(2).any(|pair| pair[0].1 >= pair[1].1)
+    {
+        return Err(ApplicationError::Identity(
+            "malformed or over-budget SSAP discovery receipt",
+        ));
+    }
+    Ok(value)
+}
+
 /// Borrows one pinned physical lifetime and the original daemon owner.
 /// This is not a remote service registration or a security authorization.
 pub struct RemoteSsap<'a> {
@@ -168,16 +201,17 @@ impl<'a> RemoteSsap<'a> {
             &self.link.client,
             original,
             self.current(async {
-                Ok(self
-                    .link
-                    .client
-                    .proxy(&self.link.path, contract::CONNECTION)
-                    .await?
-                    .call(
-                        wire::DISCOVER,
-                        &(uuid, kind, contract::deadline_wire(original.stamp())),
-                    )
-                    .await?)
+                validate_discovery(
+                    self.link
+                        .client
+                        .proxy(&self.link.path, contract::CONNECTION)
+                        .await?
+                        .call(
+                            wire::DISCOVER,
+                            &(uuid, kind, contract::deadline_wire(original.stamp())),
+                        )
+                        .await?,
+                )
             }),
         )
         .await
@@ -492,5 +526,64 @@ impl<'a> RemoteSsap<'a> {
             return Err(ApplicationError::Identity("SSAP exchange lifetime"));
         }
         Ok(value)
+    }
+}
+
+#[cfg(test)]
+mod discovery_boundary_tests {
+    use super::*;
+    fn valid() -> wire::Discovery {
+        (
+            vec![(3, 17, 17, vec![1, 2], 0, vec![], 0)],
+            vec![(vec![6; 8], vec![7; 12])],
+        )
+    }
+    #[test]
+    fn discovery_receipt_preserves_limits_and_rejects_malformed_metadata() {
+        // Actual SDK boundary validator, not a wire decoder or peer fixture.
+        let mut maximum = valid();
+        maximum.0 = (1..=80)
+            .map(|h| (11, h, h, vec![9; 16], 0x73f, vec![0xff; 255], 0))
+            .collect();
+        maximum.1 = vec![(vec![6; 22], vec![7; 2048]); 96];
+        assert_eq!(validate_discovery(maximum.clone()).unwrap(), maximum);
+        let mut empty = valid();
+        empty.0.clear();
+        assert!(validate_discovery(empty).is_ok());
+        for case in 0..15 {
+            let mut value = valid();
+            match case {
+                0 => value.0 = vec![value.0[0].clone(); 81],
+                1 => value.1 = vec![value.1[0].clone(); 97],
+                2 => value.1.clear(),
+                3 => value.1[0].0.clear(),
+                4 => value.1[0].1.clear(),
+                5 => value.1[0].0 = vec![6; 23],
+                6 => value.1[0].1 = vec![7; 2049],
+                7 => value.0[0].0 = 5,
+                8 => value.0[0].1 = 0,
+                9 => value.0[0].2 = 16,
+                10 => value.0[0].3 = vec![1; 3],
+                11 => value.0[0].3 = vec![1; 16],
+                12 => value.0[0].4 = 0x8000,
+                13 => value.0[0].5 = vec![1; 256],
+                _ => value.0[0].6 = 16,
+            }
+            assert!(
+                matches!(
+                    validate_discovery(value),
+                    Err(ApplicationError::Identity(_))
+                ),
+                "case{case}"
+            );
+        }
+        let mut duplicate = valid();
+        duplicate.0.push(duplicate.0[0].clone());
+        assert!(validate_discovery(duplicate).is_err());
+        let mut descending = valid();
+        let mut entry = descending.0[0].clone();
+        entry.1 = 16;
+        descending.0.push(entry);
+        assert!(validate_discovery(descending).is_err());
     }
 }

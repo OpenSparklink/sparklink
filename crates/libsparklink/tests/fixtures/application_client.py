@@ -125,6 +125,32 @@ with description_service:
 
 with connection:
     ssap = connection.ssap()
+    from sparklink import SsapDiscovery, SsapEntry
+    from sparklink.ssap_discovery import _Entry
+    import ctypes
+    assert ctypes.sizeof(_Entry)==284 and _Entry.uuid.offset==12
+    discovered = ssap.discover(b'\x01\x02',kind=4,deadline_ns=deadline())
+    assert discovered == SsapDiscovery((SsapEntry(3,17,17,b'\x01\x02',0,b'\x80',0),),
+        ((b'\x06\x14\x01\x00\xff\xff\x01\x02',b'\x07\x0b\x01\x11\x00\x01\x02\x00\x00\x00\x00\x01\x80'),))
+    error(errno.ESTALE,lambda:ssap.discover(b'\x03\x04',kind=4,deadline_ns=deadline()))
+    error(errno.EOPNOTSUPP,lambda:ssap.discover(b'\x05\x06',kind=4,deadline_ns=deadline()))
+    error(errno.ETIMEDOUT,lambda:ssap.discover(b'\x07\x08',kind=4,deadline_ns=deadline()))
+    error(errno.ETIMEDOUT,lambda:ssap.discover(b'\x01\x02',kind=4,deadline_ns=1))
+    for invalid_uuid,invalid_kind in [(b'1',4),(b'12',2),(b'12',True),(b'x'*17,4)]:
+        try:ssap.discover(invalid_uuid,kind=invalid_kind,deadline_ns=deadline())
+        except ValueError:pass
+        else:raise AssertionError('invalid discovery input accepted')
+    held,release=threading.Event(),threading.Event()
+    def hold_discovery_lock():
+        with connection._lock:
+            held.set();release.wait(3)
+    holder=threading.Thread(target=hold_discovery_lock);holder.start();assert held.wait(2)
+    try:
+        error(errno.ETIMEDOUT,lambda:ssap.discover(b'\x01\x02',kind=4,
+            deadline_ns=time.monotonic_ns()+50_000_000))
+        assert not release.is_set()
+    finally:
+        release.set();holder.join(2);assert not holder.is_alive()
     assert ssap.read(17,minimum=2,deadline_ns=deadline()) == b"\x34\x78"
     assert ssap.read_description(17,minimum=2,deadline_ns=deadline()) == '描述'.encode('utf8')
     error(errno.EOPNOTSUPP,lambda:ssap.read_description(18,deadline_ns=deadline()))
@@ -159,6 +185,7 @@ except ValueError:
     pass
 else:
     raise AssertionError("closed connection view revived")
+assert discovered.entries[0].handle==17 # immutable observation survives close
 assert len(os.listdir('/proc/self/fd')) == fds_before
 assert threads_converged(threads_before)
 print("CURRENT_APPLICATION_CONNECTION_SSAP_FIXTURE_PASS_NOT_RF")

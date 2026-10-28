@@ -205,6 +205,10 @@ pub mod ssap {
     pub const EXCHANGE_INFO: &str = "GetSsapInfo";
     pub type Entry = (u8, u16, u16, Vec<u8>, u32, Vec<u8>, u8);
     pub type Discovery = (Vec<Entry>, Vec<(Vec<u8>, Vec<u8>)>);
+    pub const DISCOVERY_ENTRIES: usize = 80;
+    pub const DISCOVERY_PAGES: usize = 96;
+    pub const DISCOVERY_REQUEST_BYTES: usize = 22;
+    pub const DISCOVERY_RESPONSE_BYTES: usize = 2048;
     pub type Incoming = (bool, Vec<u8>);
     /// One caller-owned leased receive scope on the original physical actor.
     /// A protocol ACK means bounded queue acceptance,not application handling.

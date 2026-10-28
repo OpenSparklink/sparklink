@@ -622,8 +622,36 @@ WRITE_NO_RSP、descriptor、notify/indicate等声明明确NotSupported；共享�
 `slctl ssap-discover CONNECTION method UUID_HEX` 使用同一SDK/daemon发现入口。
 本地method登记与D-Bus Provider已接入同一数据库/Engine；Rust/C/Python共享Dispatcher方法收件箱已接通，CLI方法服务端已接通，VM调用者和真实方法交付仍待验收。
 发现方法不表示调用成功、授权或安全资格。完整服务数据库快照、事件/引用发现及
-ServiceChanged一致性尚无承诺。C/Python现有method调用入口保留，本批未新增其发现封装。
+ServiceChanged一致性尚无承诺。C/Python发现封装已复用同一SDK，接口如下；新的准确实机资格仍待验收。
 普通服务从handle16分配，保留旧流量证据但不转授旧范围为标准合格。
+
+### C/Python发现结果与所有权
+
+C `slk_connection_ssap_discover(connection, uuid, uuid_length, kind, deadline_ns, &result)`
+执行一次发现；Python为 `connection.ssap().discover(uuid, kind=4, deadline_ns=original)`。
+两者仍受管理角色策略约束，不能据SDK存在推导普通应用组已有权限。
+UUID为空/2/16字节，按原字节顺序传递；kind为0/1/3/4。C返回0或负errno，失败不改
+result。原单调时钟期限覆盖同步执行队列、身份预检、daemon及分页，5秒上限在入队前
+固定；Python在等待对象锁前固定并按同一期限结束锁等待。退出不能撤回已提交物理工作。
+
+成功结果是该次观察的独立只读副本，最多80条和96个事务，不持有Client/Connection，
+不会跟随daemon替换或重连。关闭原对象后仍可读历史结果；这不是当前服务可用性、安全
+或Grant。Rust共享边界检查条目/UUID/描述符/trace长度和顺序，错误不截断；它不另行
+解析wire或证明peer收到，D-Bus反序列化还受其自身消息大小限制。
+
+| C入口 | 结果与失败语义 |
+|---|---|
+| `slk_ssap_discovery_counts(result, &entries, &pages)` | 本地数量，无RPC；非法指针参数EINVAL，输出不变 |
+| `slk_ssap_discovery_entry(result, index, &entry)` | `SlkSsapEntry`：category、handle/end、UUID、operations、descriptors、members；unused/reserved置零；越界ENOENT不改输出 |
+| `slk_ssap_discovery_trace(result, index, response, buffer, capacity, &length)` | response=0请求/1回复，capacity=1..2048；ENOBUFS仅改所需length，buffer不变；其他失败二者不变；可换大缓冲重读本地副本，不会再次发现 |
+| `slk_ssap_discovery_free(result)` | 恰好释放一次，NULL可用；无RPC、断链或撤权，不得与读取并发 |
+
+Python返回冻结的 `SsapDiscovery(entries, trace)`，条目为冻结 `SsapEntry`，trace为
+请求/回复bytes的tuple；native结果总在复制完成或异常时释放。C必须提供真实有效、
+独占、无别名的内存，不能使用悬空指针或并发free。非法kind/UUID为EINVAL，过期为
+ETIMEDOUT，远端NotSupported为EOPNOTSUPP；身份改变或畸形/超预算broker结果为ESTALE。
+发现结果、USB写入和NOCP均不能代替业务应用实际校验回复。新入口的私有D-Bus及实际
+C/Python检查只是离线资格；部署权限、VM调用工具与真实发现/方法交付另行验收。
 
 ### ReadByUUID：有限完整PDU模式
 

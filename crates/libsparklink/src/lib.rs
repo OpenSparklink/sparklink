@@ -15,6 +15,7 @@ pub mod ffi_service_authorization;
 pub mod ffi_service_method_provider;
 pub mod ffi_service_provider;
 pub mod ffi_service_write_provider;
+pub mod ffi_ssap_discovery;
 pub mod ffi_ssap_subscription;
 pub mod peer;
 pub mod security;

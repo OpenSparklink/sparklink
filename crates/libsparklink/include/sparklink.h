@@ -100,6 +100,12 @@ typedef struct SlkReadProvider SlkReadProvider;
 typedef struct SlkReadProviderRequest SlkReadProviderRequest;
 
 /**
+ * An owned historical observation. Does not retain a Client/Connection or
+ * confer current lifetime, service availability, security or a Grant.
+ */
+typedef struct SlkSsapDiscoveryResult SlkSsapDiscoveryResult;
+
+/**
  * Retains the originating caller and shared executor,not the parent C view.
  * This is an opaque lease,not a socket fd with dup/SCM_RIGHTS semantics.
  */
@@ -424,6 +430,23 @@ typedef struct SlkWriteProviderRequestInfo {
     uint8_t verify;
     uint8_t reserved[6];
 } SlkWriteProviderRequestInfo;
+
+/**
+ * One bounded observed entry; unused array bytes and reserved bytes are zero.
+ * UUID/descriptor bytes retain wire order. category0..4 or8..12; method3/11.
+ */
+typedef struct SlkSsapEntry {
+    uint32_t operations;
+    uint16_t handle;
+    uint16_t end;
+    uint8_t category;
+    uint8_t members;
+    uint8_t uuid_length;
+    uint8_t descriptor_length;
+    uint8_t uuid[16];
+    uint8_t descriptors[255];
+    uint8_t reserved[1];
+} SlkSsapEntry;
 
 /**
  * Last validated lease observation; not Ready or future Native authorization.
@@ -1336,6 +1359,70 @@ int slk_write_provider_request_value(const struct SlkWriteProviderRequest *reque
                                      uint8_t *buffer,
                                      uintptr_t capacity,
                                      uintptr_t *length);
+
+/**
+ * Perform one management-only SSAP discovery via the same SDK/daemon Engine.
+ * kind0 structure,1 primary hierarchy,3 property,4 method; UUID empty/2/16bytes.
+ * Original CLOCK_MONOTONIC deadline covers local queue/identity/daemon/pages;
+ * five-second ceiling captured before queueing. Success returns one immutable
+ * bounded result (80entries/96transactions); failure leaves output unchanged.
+ * No retries or partial result. Timeout cannot undo already submitted work.
+ * # Safety
+ * connection is live without concurrent close; uuid is immutable uuid_length
+ * bytes (NULL allowed only for empty). output is an exclusive aligned pointer
+ * slot, not aliasing inputs. Same no-use-after-fork contract as Connection.
+ * Release successful output exactly once via slk_ssap_discovery_free.
+ */
+int slk_connection_ssap_discover(const struct SlkConnection *connection,
+                                 const uint8_t *uuid,
+                                 uintptr_t uuid_length,
+                                 uint8_t kind,
+                                 uint64_t deadline_ns,
+                                 struct SlkSsapDiscoveryResult **output);
+
+/**
+ * Copy immutable result counts; no RPC or revalidation of current state.
+ * # Safety
+ * result is live; entries/pages are exclusive aligned writable slots, mutually
+ * disjoint and not aliasing result. No concurrent free. Failure changes neither.
+ */
+int slk_ssap_discovery_counts(const struct SlkSsapDiscoveryResult *result,
+                              uintptr_t *entries,
+                              uintptr_t *pages);
+
+/**
+ * Copy an entry by zero-based index; out-of-range ENOENT, output unchanged.
+ * # Safety
+ * result remains live; output is exclusive aligned writable SlkSsapEntry,
+ * disjoint from result. No concurrent free.
+ */
+int slk_ssap_discovery_entry(const struct SlkSsapDiscoveryResult *result,
+                             uintptr_t index,
+                             struct SlkSsapEntry *output);
+
+/**
+ * Copy request(response=0) or reply(response=1) of one zero-based transaction.
+ * Capacity1..2048; ENOBUFS sets required length without changing buffer. Other
+ * failures change neither. This is a local immutable copy, so a larger-buffer
+ * retry never retransmits a request. Raw bytes are not peer-delivery proof.
+ * # Safety
+ * result remains live; buffer has capacity exclusive writable bytes; length
+ * is exclusive aligned storage. All disjoint, no concurrent free.
+ */
+int slk_ssap_discovery_trace(const struct SlkSsapDiscoveryResult *result,
+                             uintptr_t index,
+                             uint8_t response,
+                             uint8_t *buffer,
+                             uintptr_t capacity,
+                             uintptr_t *length);
+
+/**
+ * Free this immutable result; NULL accepted. No RPC, lease or connection action.
+ * # Safety
+ * NULL or one successful owned result, freed once, with no concurrent read or
+ * subsequent use. Result reads never access the originating executor.
+ */
+void slk_ssap_discovery_free(struct SlkSsapDiscoveryResult *result);
 
 /**
  * Acquire the existing remote SSAP receive lease. Count1..32 unique discovered

@@ -742,3 +742,143 @@ async fn method_arguments_cross_actual_codec_reassembly_and_provider_without_tru
         assert!(calls.try_recv().is_err());
     }
 }
+
+#[tokio::test]
+async fn negotiated_fixture_actors_cannot_invoke_provider_without_native_channel() {
+    // Actual actors, socket scheduling, fragmentation and private D-Bus owner.
+    // AF_UNIX has no Native channel identity/receipt. It must not acquire one
+    // merely because ExchangeInfo completed. This is a refusal integration,
+    // not a positive method, kernel credit or RF qualification.
+    let (_bus, state, _server, owner, mut policy) = setup(true, Duration::ZERO).await;
+    let (tx, mut calls) = mpsc::channel(4);
+    owner
+        .object_server()
+        .at("/method", Provider(tx))
+        .await
+        .unwrap();
+    let (_, h) = register_method(&owner, 4).await;
+    bind(&owner, h).await.unwrap();
+    let database = store(&state).await;
+    for opcode in [18, 19] {
+        for length in [2, 2043] {
+            let (a, b) = std::os::unix::net::UnixDatagram::pair().unwrap();
+            a.set_nonblocking(true).unwrap();
+            let injected_peer: OwnedFd = a.try_clone().unwrap().into();
+            b.set_nonblocking(true).unwrap();
+            let mut controls = Vec::new();
+            let mut tasks = Vec::new();
+            for (controller, socket) in [a, b].into_iter().enumerate() {
+                let (status, view) = watch::channel(Status::Starting);
+                let (stop, mut stopped) = oneshot::channel();
+                let (queries, incoming) = mpsc::channel(8);
+                let db = if controller == 1 {
+                    database.clone()
+                } else {
+                    std::sync::Arc::new(std::sync::Mutex::new(
+                        crate::ssap_database::Database::default(),
+                    ))
+                };
+                let wire = Wire::fixture(AsyncFd::new(socket.into()).unwrap());
+                let capabilities = SleChannelInfo {
+                    version: 1,
+                    size: 40,
+                    controller: controller as u16,
+                    generation: 1,
+                    lifetime: 1,
+                    mtu: 249,
+                    mps: 249,
+                    local_tcid: 10,
+                    remote_tcid: 10,
+                    directions: 3,
+                    ..Default::default()
+                };
+                tasks.push(tokio::spawn(async move {
+                    exchange_loop(
+                        wire,
+                        capabilities,
+                        Instant::now() + Duration::from_secs(1),
+                        &mut stopped,
+                        incoming,
+                        &status,
+                        db,
+                    )
+                    .await
+                }));
+                controls.push((stop, queries, view));
+            }
+            for (_, _, view) in &mut controls {
+                tokio::time::timeout(Duration::from_secs(1), async {
+                    loop {
+                        if let Status::Negotiated(info) = view.borrow().clone() {
+                            assert_eq!((info.4, info.5), (249, 249));
+                            break;
+                        }
+                        view.changed().await.unwrap();
+                    }
+                })
+                .await
+                .unwrap();
+            }
+            // The actor's real queue is exercised directly. Observer::info
+            // intentionally rejects this fixture's fd at its Native query;
+            // no fabricated successful ioctl is added to reach this boundary.
+            let mut bytes = vec![opcode, 3, h as u8, (h >> 8) as u8];
+            bytes.extend((0..length).map(|i| (i * 37 + 11) as u8));
+            let (reply, result) = oneshot::channel();
+            controls[0]
+                .1
+                .send(Query::Value {
+                    bytes: bytes.clone(),
+                    minimum: 0,
+                    deadline: Instant::now() + Duration::from_millis(500),
+                    reply,
+                })
+                .await
+                .unwrap();
+            let refused = tokio::time::timeout(Duration::from_secs(1), result)
+                .await
+                .unwrap()
+                .unwrap()
+                .unwrap_err();
+            assert!(refused.to_string().contains("SSAP send intent refused:"));
+            assert!(refused.to_string().contains("25"));
+            assert!(!tasks[0].is_finished() && !tasks[1].is_finished());
+            // Independently exercise the RX boundary with an explicit peer
+            // injection after local admission was refused. This is not a
+            // successful SDK send and supplies no Native security metadata.
+            let plan = fragments::Plan::new(&bytes, 249, true).unwrap();
+            for part in 0..plan.count() {
+                let mut raw = [0; 249];
+                let size = plan.encode(part, &mut raw).unwrap();
+                send(&injected_peer, &raw[..size]).unwrap();
+            }
+            let receiving = tasks.pop().unwrap();
+            let error = tokio::time::timeout(Duration::from_secs(1), receiving)
+                .await
+                .unwrap()
+                .unwrap()
+                .unwrap_err();
+            assert_eq!(
+                error.raw_os_error(),
+                Some(nix::libc::ENOTTY),
+                "the receiving actor must perform the actual Native query"
+            );
+            assert!(
+                matches!(calls.try_recv(), Err(mpsc::error::TryRecvError::Empty)),
+                "negotiation cannot authorize a provider effect"
+            );
+            assert!(
+                matches!(policy.try_recv(), Err(mpsc::error::TryRecvError::Empty)),
+                "policy approval cannot replace a missing Native channel"
+            );
+            let (_server_stop, _server_queries, _) = controls.pop().unwrap();
+            let (stop, _queries, _) = controls.pop().unwrap();
+            stop.send(()).unwrap();
+            tokio::time::timeout(Duration::from_secs(1), tasks.pop().unwrap())
+                .await
+                .unwrap()
+                .unwrap()
+                .unwrap();
+        }
+    }
+}

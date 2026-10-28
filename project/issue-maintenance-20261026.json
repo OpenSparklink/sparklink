@@ -387,7 +387,7 @@
       "parent": 3,
       "state": "open",
       "action": "created_and_native_parent_relation_verified",
-      "body_sha256": "a698fd2e7fc29b49de3cd3a61a4edfd3cad9250d0ca76f8037b161e9c6b28e3f",
+      "body_sha256": "cc15715cf1bfebabcb4a986618e2704689836a30b146fb953e39a3d1720ce953",
       "classification": "有限收尾",
       "closure_basis": "Existing dynamic WRITE command Provider v3 source/offline gate added; original six SSAP conditions OPEN. Exact actual qualification in authorized local index."
     },
@@ -8302,6 +8302,22 @@
         }
       ],
       "scope": "Original discovery deadline source/offline summary; no hardware publication or issue closure."
+    },
+    {
+      "sources": {
+        "public": "ed219c46489c21f30620f2358ad96f6490434abf"
+      },
+      "updates": [
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "state": "open",
+          "body_sha256": "cc15715cf1bfebabcb4a986618e2704689836a30b146fb953e39a3d1720ce953",
+          "source_offline_only": true,
+          "original_acceptance_unchanged": true
+        }
+      ],
+      "scope": "C/Python discovery source/offline summary; no hardware publication or issue closure."
     }
   ],
   "current_disposition": {

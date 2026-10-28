@@ -1,22 +1,23 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前批次：SSAP发现原期限与既有goal恢复
+## 当前批次：C/Python发现结果绑定
 
-发现原期限修复源码为[14fe1a8](https://github.com/OpenSparklink/sparklink/commit/14fe1a8d58ba65a9b316973cbf94e08ea57becca)。
-Rust SDK、CLI、未发布D-Bus签名与唯一Engine共享调用者原期限，覆盖身份预检、
-调用者作用域、状态锁、Info和分页；过期回复及缓存发布明确拒绝，96页/80条预算不变。
-37项相关离线回归、严格Clippy及HTML/清单/示例检查通过；真实handler状态锁阻塞、
-过期不准入、Info/分页等待、逐页期限、迟到身份与独立signature均有对应检查。
-私有总线和有限peer/actor依赖明确为fixture，不授Native并发、部署权限、固件或实机资格。
-初次缺D-Bus路径、沙箱socket拒绝及测试模块路径编译失败保留；修复环境/路径而非放宽断言。
-本批未运行硬件或新形式化证明，历史资格不转授；管理权限保持，C/Python发现封装、
-实际系统总线权限及准确产物method交付仍缺失。完整S0–S6/19WP/10FV/12DG与VM-only不变。
+C/Python发现绑定源码为[ed219c4](https://github.com/OpenSparklink/sparklink/commit/ed219c46489c21f30620f2358ad96f6490434abf)。
+新入口复用唯一Rust SDK/Engine与原期限，结果最多80条/96事务；条目/trace本地读取不
+重发RPC，不保留Client/Connection、授权或当前可用性。Python等对象锁也受原期限约束。
+共享Rust边界拒绝畸形/超预算结果，生成C头及Python导出、实际调用者和参考文档同步。
 
-下一批补同一SDK的C/Python发现调用者、长结果和适用生命周期；真实method v2及原路径
-保持依准确产物另验。启动状态沿固定SDK110/参考Host与实际证据核对；禁止猜测wake、
-跳过CLOSE或重复未变化失败。原启动失败及诊断仅在本地授权索引保留，不作为恢复通过。
-此前有界issue维护已完成，不扩为主线前置；UserHost P4、自然故障根因、非人工恢复及
-其他未完成整项保持开放。goal API空状态已按原持久范围恢复，没有结算未完成工作。
+实际共享库/私有D-Bus的C/Python消费者通过，精确四次发现RPC/语言；覆盖错误不改输出、
+短缓冲不重发、关闭后历史结果、拒绝/超时与资源收敛。另有111项Python、11项Rust SDK、
+5项daemon发现及生产边界最大值/17种负对照通过；严格Clippy、生成头/导出和HTML通过。
+初次工作目录与全套Python环境失败保留，正确路径/库/缓存/socket权限重跑，未放宽断言。
+依赖明确为fixture；未运行新形式化或硬件，不授Native并发、系统部署权限或真实交付资格。
+管理权限保持；VM发现工具、准确产物发现/method双端验收及完整生命周期仍缺失。
+
+下一批接现有VM消费者和方法runner的发现模式，对照对端实际方法UUID/handle及trace，
+按准确artifact取得双端交付并回归原路径。长结果/生命周期、启动根因并行，禁止猜测wake、
+CLOSE旁路或未变化重试。S0–S6/19WP/10FV/12DG、VM-only及原验收保持，UserHost P4；
+自然故障、非人工恢复、U#22及其他未完成整项仍开放，不扩为控制面竞争全集前置。
 
 ## 有界 issue 清理结果与主线恢复
 
@@ -500,47 +501,48 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-SSAP-DISCOVERY-ORIGINAL-DEADLINE-v1",
-  "state": "IMPLEMENTED_OFFLINE_PASS_REAL_DISCOVERY_AND_METHOD_DELIVERY_UNQUALIFIED",
+  "id": "WP08-SSAP-DISCOVERY-LANGUAGE-VIEWS-v1",
+  "state": "IMPLEMENTED_OFFLINE_PASS_VM_CALLER_AND_REAL_DELIVERY_PENDING",
   "implementation_sources": {
-    "public": "14fe1a8d58ba65a9b316973cbf94e08ea57becca",
+    "public": "ed219c46489c21f30620f2358ad96f6490434abf",
     "production_kernel_unchanged": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
   },
-  "production_behavior": "Rust SDK/CLI/unpublished D-Bus/unique Observer use one caller deadline across identity, caller-scoped preflight, Info and all pages; reject expired replies/cache publication. Existing page/entry budgets and management-only policy retained.",
+  "production_behavior": "C/Python call existing RemoteSsap original-deadline discovery. Immutable bounded entry/trace results retain no executor/connection/authority; local reads never repeat RPC. Shared Rust result boundary and existing Engine 80/96 limits; management-only policy unchanged.",
   "offline_checks": {
-    "engine_discovery": 4,
-    "connection_handlers_before_added_case": 21,
-    "actual_sdk_private_bus": 11,
-    "additional_actual_rpc_held_preflight": 1,
+    "actual_cdylib_C_Python_private_bus": "PASS_COMPLETE_RETAINED_ARTIFACTS; four expected discovery RPCs per language, negative/no-retry/output/lifetime and lock-deadline checks",
+    "python_contract_suite": 111,
+    "rust_sdk_private_bus": 11,
+    "daemon_discovery": 5,
+    "production_receipt_validator": "PASS_MAXIMUM_BUDGET_AND_17_NEGATIVE_VARIANTS",
     "strict_clippy": "PASS",
+    "generated_header_actual_exports": "MATCH",
     "strict_html_inventory_examples": "PASS"
   },
-  "offline_scope": "Production functions and actual private D-Bus/SDK; finite actor/peer replies and /dev/null backend explicitly fixtures. Not Native concurrency, deployed policy, firmware, physical cleanup, formal proof or hardware qualification.",
+  "offline_scope": "Actual language entry points and production SDK/daemon functions against explicit finite metadata/peer fixtures. No Native concurrency, deployment permissions, firmware, air delivery or implementation refinement proof.",
   "initial_failures_retained": [
-    "Missing explicit private dbus-daemon executable",
-    "Sandbox denied private Unix socket",
-    "New test initially used incorrect event-loop module path"
+    "Edit command used wrong working directory before mutation; rerun from correct worktree",
+    "Python full suite first used missing library/kernel paths and readonly ccache; sandbox also denied local socket opts; explicit actual inputs and permission context fixed without weakening assertions"
   ],
   "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "NOT_RUN; historical exact-artifact evidence and original failures retained, no qualification transfer.",
-  "exit_conditions": [
-    "SDK/CLI/D-Bus/Engine original deadline shared",
-    "Unpublished signature callers and independent introspection migrated",
-    "Production waiting/pagination and private-bus identity/error regressions passed",
-    "Management-only policy unchanged; no duplicate Engine",
-    "Source/offline issue summary exact readback; complete scope retained"
-  ],
+  "hardware_status": "NOT_RUN; historical identities/failures retained, no new real discovery/method qualification.",
   "issue_sync": [
     {
       "repository": "sparklink",
       "number": 22,
       "state": "open",
-      "body_sha256": "a698fd2e7fc29b49de3cd3a61a4edfd3cad9250d0ca76f8037b161e9c6b28e3f",
+      "body_sha256": "cc15715cf1bfebabcb4a986618e2704689836a30b146fb953e39a3d1720ce953",
       "source_offline_only": true,
       "original_acceptance_unchanged": true
     }
   ],
-  "next": "Add C/Python discovery views through the same SDK and bounded result contract; continue method long-result/lifecycle and exact-artifact paired v2 delivery. Startup root-cause audit remains parallel: no speculative wake, CLOSE bypass or unchanged retry. No complete control-plane/recovery prerequisite."
+  "exit_conditions": [
+    "Same SDK/unique Engine and original deadline used",
+    "Owned bounded immutable result does not retain connection or retry",
+    "C header/Python export/callers/docs agree",
+    "Actual compiled C/Python fixture and scope-negative checks passed",
+    "Source-only U22 readback and canonical state synchronized; issue remains open"
+  ],
+  "next": "Connect discovery mode in existing C/Python VM consumer and method runner; independently check expected remote method identity and trace with exact artifact. Continue long-result/lifecycle and method v2 paired delivery. Startup audit stays parallel without guessed wake/CLOSE bypass/unchanged retry; no all-recovery/control-plane prerequisite."
 }
 ```
 

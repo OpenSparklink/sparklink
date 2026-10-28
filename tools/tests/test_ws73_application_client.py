@@ -273,6 +273,52 @@ class ApplicationClientEvidence(unittest.TestCase):
                 self.assertTrue(children[-1].stdin.closed)
                 self.assertEqual(Path(app['output_files'][0]).read_text(),app['stdout'])
 
+    def test_discovery_uses_existing_supervisor_and_preserves_failed_child(self):
+        # Only Popen/credentials are fixtures; plan, barrier, release, receipt
+        # validation and finally/drain are the production supervisor functions.
+        from test_ws73_ssap_method_provider import fixture_v3_discovery
+        for phase in (0,1):
+            fixture_row,_,_=fixture_v3_discovery(phase)
+            entry=fixture_row['owners'][0];original=fixture_row['ssap_method_provider_cases'][0]['discovery']
+            for failure in (None,'exit','barrier'):
+                children=[];test=self
+                class Child:
+                    def __init__(self,command,**kwargs):
+                        self.stdin=io.BytesIO();self.stdout=kwargs['stdout'];self.stderr=kwargs['stderr']
+                        self.returncode=None;self.pid=12345;self.killed=False
+                        test.assertEqual(command,original['args'])
+                        first,last=original['stdout'].splitlines();self.result=json.loads(last)
+                        self.deadline=time.monotonic_ns()+5_000_000_000
+                        barrier=json.loads(first);barrier['deadline_ns']=self.deadline
+                        if failure=='barrier':barrier['client_closed']=False
+                        self.stdout.write((json.dumps(barrier)+'\n').encode());self.stdout.flush();children.append(self)
+                    def poll(self):return self.returncode
+                    def kill(self):self.killed=True;self.returncode=-9
+                    def wait(self,timeout=None):
+                        if self.returncode is None:
+                            test.assertEqual(self.stdin.getvalue(),b'start\n')
+                            if failure=='exit':
+                                self.stderr.write(b'original discovery failure\n');self.stderr.flush();self.returncode=1
+                            else:
+                                call=time.monotonic_ns();self.result.update(deadline_ns=self.deadline,call_ns=call,returned_ns=call+1)
+                                self.stdout.write((json.dumps(self.result)+'\n').encode());self.stdout.flush();self.returncode=0
+                        return self.returncode
+                with self.subTest(api=original['api'],failure=failure),tempfile.TemporaryDirectory() as directory:
+                    row=dict(phase=phase,owners=[entry]);run=SimpleNamespace(output=Path(directory),data={},save=lambda:None)
+                    with patch('ws73_application_client.subprocess.Popen',side_effect=Child),patch('ws73_application_client.process_identity',return_value=(original['credentials'],'fixture process identity')):
+                        args=['ssap-find-method',entry['object']['path'],str(original['ssap_handle']),original['ssap_expected']]
+                        def invoke():return ssap_commands(run,row,[(entry,args,bytes.fromhex(original['ssap_expected']))],api=original['api'],expected_size=16)
+                        if failure:
+                            with self.assertRaises(CaptureError):invoke()
+                        else:
+                            result=invoke()[0];ssap_receipt(result,entry,expected_size=16)
+                    child=children[-1];app=row['ssap_language_clients'][0]
+                    self.assertTrue(child.stdin.closed)
+                    self.assertEqual(Path(app['output_files'][0]).read_text(),app['stdout'])
+                    self.assertEqual(app['exit'],{'exit':1,'barrier':-9,None:0}[failure])
+                    if failure=='exit':self.assertIn('original discovery failure',app['stderr'])
+                    if failure=='barrier':self.assertTrue(child.killed);self.assertNotIn('ssap_release_monotonic_ns',app)
+
     def test_shared_success_supervisor_releases_read_and_method_original_barrier(self):
         entry,template,_,_=error_fixture();children=[];test=self
         class Child:

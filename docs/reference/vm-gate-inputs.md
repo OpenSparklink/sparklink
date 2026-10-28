@@ -13,8 +13,8 @@ Managed 连接清理门禁当前逐字节要求 SLE 主动断链原因 `0x10`，
 
 `--ssap-method-provider-verify` 是独立、显式启用的短方法场景，要求既有
 `--passthrough --connection-verify --channel-socket-verify --ssap-owned-verify`，
-普通通道基线保持 61 字节／4 轮；不能与其他 SSAP 场景混用。当前门禁契约为 v2，
-v1 只解释其原请求场景，不升级为 command 资格。
+普通通道基线保持 61 字节／4 轮；不能与其他 SSAP 场景混用。当前门禁契约为 v3，
+v1/v2 分别只解释原请求／command 场景，不升级为发现资格。
 启动 token 为 `ws73.ssap_method_provider=1`，缺失、重复、错误值或缺少 Owned
 依赖均拒绝。准备载体必须包含准确的场景、共享监督器、CLI 与 C/Python 工具身份。
 
@@ -36,10 +36,14 @@ v1 只解释其原请求场景，不升级为 command 资格。
 期间的双端 command 及注销后拒绝，额外或缺失的 SSAP 包均失败；剩余方法包也须
 被归属。这个有限窗口的无响应观察不是永久无晚到包的证明。
 保存摘要重建全部请求／command 配对及窗口清单，但不能替代原始捕获完整性、
-准确工具身份和最终 VM 退出检查；v1/v2 不混用，不信任孤立的 PASS 字段。
+准确工具身份和最终 VM 退出检查；v1/v2/v3 不混用，不信任孤立的 PASS 字段。
 
-此入口的离线 fixture 检查不代表真实方法交付已通过。v2 覆盖短 request／result、
-两种 command 应用处理、错误后继续服务及撤回；方法发现、长结果／分片、完整生命周期
+v3 在每方向的方法调用前，通过同一 C/Python helper 发现提供方的唯一自定义方法。
+独立判定两笔发现事务（条目页和终止回复）的双端包、原期限、分页因果顺序及完整窗口；
+元数据和原始 trace 必须对应已登记的 UUID/handle，不能用本地登记替代远端发现。
+
+此入口的离线 fixture 检查不代表真实方法交付已通过。v3 在 v2 短 request／result、
+两种 command 应用处理、错误后继续服务及撤回上增加发现门禁；新产物实机、长结果／分片、完整生命周期
 和权限部署仍须各自验收。真实设备执行保持 VM-only、明确端口白名单和每设备 SDK110
 镜像选择，不从已有 READ／WRITE 或旧 artifact 继承资格。
 
@@ -99,7 +103,8 @@ handle或枚举顺序选择对象。先发 `ssap_discovery_start_barrier`（sche
 成功行 `ssap_method_discovered` 包含原期限、调用/返回单调时刻、完整条目及每笔请求/回复
 hex trace。方法UUID、category和handle必须与提供方预期相符；失败无成功行。
 这是SDK观察收据，不是method调用成功、部署权限或真实双端USB证明。管理角色限制保持；
-新模式已接入实际C/Python私有总线测试，method runner完整双端发现判定仍待接通。
+新模式已接入实际C/Python私有总线测试；method runner v3 复用现有监督器，
+增加自定义16字节方法的完整双端发现判定，准确新产物的实机发现／方法交付尚未验收。
 历史method v1/v2结果不包含这项门禁，不能因工具升级改写历史资格。
 
 ## 显式链路发送载荷偏好

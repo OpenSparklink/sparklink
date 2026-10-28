@@ -6,6 +6,7 @@ No synthetic controller, protocol Engine, load generator or performance claim.
 from contextlib import ExitStack, contextmanager
 import errno
 import json
+import re
 import os
 from pathlib import Path
 import subprocess
@@ -72,7 +73,53 @@ def _ssap_method_arguments(value):
     return value
 
 
+def discovery_barrier(text, api):
+    value=json.loads(text)
+    if (type(value)is not dict or set(value)!={'stage','schema_version','api','deadline_ns','client_closed'}
+            or value['stage']!='ssap_discovery_start_barrier' or type(value['schema_version'])is not int
+            or value['schema_version']!=1 or value['api']!=api or value['client_closed']is not True
+            or type(value['deadline_ns'])is not int or value['deadline_ns']<=0):
+        raise CaptureError('original discovery barrier required')
+    return value
+
+
+def discovery_receipt(app, entry):
+    _ssap_process_receipt(app,1000)
+    lines=app['stdout'].splitlines()
+    if len(lines)!=2:raise CaptureError('complete discovery barrier/result required')
+    first=discovery_barrier(lines[0],app['api']);v=json.loads(lines[1])
+    fields={'stage','schema_version','api','index','generation','deadline_ns','call_ns','returned_ns',
+            'category','handle','end','uuid','operations','descriptors','members','trace'}
+    if type(v)is not dict or set(v)!=fields:raise CaptureError('typed complete discovery result required')
+    ints=fields-{'stage','api','uuid','descriptors','trace'}
+    if any(type(v[k])is not int or not 0<=v[k]<2**64 for k in ints):raise CaptureError('bounded discovery integer fields')
+    uuid=app['ssap_expected'];handle=app['ssap_handle'];path=entry['object']['path']
+    if (app['api'] not in ('c','python') or app['ssap_operation']!='ssap-find-method'
+            or app['ssap_path']!=path or type(handle)is not int or not 1<=handle<65535
+            or type(uuid)is not str or not re.fullmatch('[0-9a-f]{32}',uuid)
+            or v['stage']!='ssap_method_discovered' or v['schema_version']!=1 or v['api']!=app['api']
+            or (v['index'],v['generation'])!=(entry['owner']['index'],entry['owner']['generation'])
+            or (v['category'],v['handle'],v['end'],v['uuid'],v['operations'],v['descriptors'],v['members'])!=(11,handle,handle,uuid,0,'',0)
+            or v['deadline_ns']!=first['deadline_ns']
+            or not app['ssap_release_monotonic_ns']<=v['call_ns']<v['returned_ns']<v['deadline_ns']
+            or not 0<v['deadline_ns']-app['ssap_release_monotonic_ns']<=5_000_000_000):
+        raise CaptureError('same original caller/deadline/publisher method required')
+    prefix=['/bin/ws73-application-client-c'] if app['api']=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
+    if app['args']!=prefix+['ssap-find-method',str(v['index']),str(v['generation']),path,uuid,str(handle)]:
+        raise CaptureError('exact discovery executable/arguments required')
+    # Independent finite golden contract for this one custom method, not a
+    # general parser or a copied production discovery Engine.
+    h=handle.to_bytes(2,'little');u=bytes.fromhex(uuid);next_handle=(handle+1).to_bytes(2,'little')
+    trace=[dict(request=(b'\x06\x14\x01\x00\xff\xff'+u).hex(),response=(b'\x07\x0b\x81'+h+u+b'\0'*5).hex()),
+           dict(request=(b'\x06\x14'+next_handle+b'\xff\xff'+u).hex(),response=(b'\x01\0\x06'+next_handle+b'\x0b').hex())]
+    if v['trace']!=trace:raise CaptureError('complete original method discovery pages/terminal error required')
+    return v
+
+
 def ssap_receipt(app,entry,*,expected_size=32,expected_uid=1000):
+    if app.get('ssap_operation')=='ssap-find-method':
+        if expected_uid!=1000:raise CaptureError('discovery remains management-role scoped')
+        return discovery_receipt(app,entry)
     _ssap_process_receipt(app,expected_uid)
     lines=app['stdout'].splitlines()
     if len(lines)!=2 or json.loads(lines[0])!=dict(stage='ssap_start_barrier',api=app['api'],client_closed=True):
@@ -191,6 +238,9 @@ def _ssap_commands(run,row,calls,*,api=None,expected_size=32,application_uid=100
     if error_mode and (paired or batch is not None):raise CaptureError('one original negative-scenario SDK call required')
     if after_start is not None and (not callable(after_start) or paired):
         raise CaptureError('single-child bounded after-start callback required')
+    discovery_mode=any(c[1] and c[1][0]=='ssap-find-method' for c in calls)
+    if discovery_mode and (paired or error_mode or after_start is not None or application_uid!=1000):
+        raise CaptureError('one management discovery without callback required')
     if paired:
         from ws73_application_role import require_vm
         require_vm('ws73.socket_benchmark_apps=1')
@@ -240,6 +290,8 @@ def _ssap_commands(run,row,calls,*,api=None,expected_size=32,application_uid=100
                     if error_mode and lines:
                         call=_ssap_error_call_receipt(lines[0],app['api'])
                         app['ssap_error_deadline_ns']=call['deadline_ns'];run.save();break
+                    if discovery_mode and len(lines)==1:
+                        discovery_barrier(lines[0],app['api']);break
                     if len(lines)==1 and json.loads(lines[0])==dict(stage='ssap_start_barrier',api=app['api'],client_closed=True):break
                     if proc.poll()is not None or time.monotonic()>=ready_deadline:raise CaptureError('actual SDK SSAP original start barrier failed')
                     time.sleep(.01)
@@ -282,6 +334,14 @@ def _ssap_commands(run,row,calls,*,api=None,expected_size=32,application_uid=100
 def ssap_call(run,row,entry,args,expected,*,api,expected_size,application_uid):
     """Same fixed executable and full-value contract for single and paired calls."""
     if not isinstance(expected,bytes) or len(expected)!=expected_size:raise CaptureError('original bounded expected SSAP value required')
+    if type(args)is list and args and args[0]=='ssap-find-method':
+        if (application_uid!=1000 or api not in ('c','python') or expected_size!=16 or len(args)!=4
+                or args[1]!=entry['object']['path'] or not re.fullmatch('[0-9a-f]{32}',args[3])
+                or args[3]!=expected.hex() or not 1<=int(args[2])<65535):
+            raise CaptureError('one exact custom method discovery scope required')
+        prefix=['/bin/ws73-application-client-c'] if api=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
+        command=prefix+['ssap-find-method',str(entry['owner']['index']),str(entry['owner']['generation']),args[1],args[3],args[2]]
+        return entry,command,api,application_environment(),args,expected
     if application_uid not in (1000,1004):raise CaptureError('explicit SSAP test role required')
     if application_uid==1004 and os.geteuid()!=0:raise CaptureError('apps-only SSAP requires existing VM root role supervisor')
     if (type(args)is not list or not args or args[0]not in ('ssap-read','ssap-read-description','ssap-write','ssap-call-method')

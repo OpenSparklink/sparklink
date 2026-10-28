@@ -118,18 +118,96 @@ def fixture_v2_command(phase=0):
     return row,matched,packets
 
 
+def fixture_v3_discovery(phase=0):
+    from ws73_application_client import application_environment
+    from test_ws73_ssap_command import credentials
+    row,matched,packets=fixture_v2_command(phase)
+    row['ssap_method_provider_version']=3
+    record=10000
+    for item in row['ssap_method_provider_cases']:
+        source,target=row['owners'][item['sender']],row['owners'][item['target']]
+        start=item['bound_wall_ns']+100000
+        api='c' if (phase+item['sender'])%2==0 else 'python'
+        # Literal independent golden two-page discovery, not production encoder.
+        uuid=item['uuid'];h=item['handle'];le=h.to_bytes(2,'little').hex();next_h=(h+1).to_bytes(2,'little').hex()
+        trace=[dict(request='06140100ffff'+uuid,response='070b81'+le+uuid+'0000000000'),
+               dict(request='0614'+next_h+'ffff'+uuid,response='010006'+next_h+'0b')]
+        barrier=dict(stage='ssap_discovery_start_barrier',schema_version=1,api=api,client_closed=True,deadline_ns=start+5000000000)
+        result=dict(stage='ssap_method_discovered',schema_version=1,api=api,index=source['owner']['index'],generation=source['owner']['generation'],deadline_ns=barrier['deadline_ns'],call_ns=start+200,returned_ns=start+90000,category=11,handle=h,end=h,uuid=uuid,operations=0,descriptors='',members=0,trace=trace)
+        prefix=['/bin/ws73-application-client-c'] if api=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
+        app=dict(api=api,args=prefix+['ssap-find-method',str(source['owner']['index']),str(source['owner']['generation']),source['object']['path'],uuid,str(h)],
+                 environment=application_environment(),credentials=credentials(),exit=0,stderr='',stdout=json.dumps(barrier)+'\n'+json.dumps(result)+'\n',
+                 ssap_operation='ssap-find-method',ssap_path=source['object']['path'],ssap_handle=h,ssap_expected=uuid,
+                 start_wall_ns=start,ssap_released_wall_ns=start+100,end_wall_ns=start+100000,ssap_release_monotonic_ns=start+100)
+        item['discovery']=app
+        for ordinal,page in enumerate(trace):
+            for j,(owner,direction,pdu) in enumerate([(source,'out',page['request']),(target,'in',page['request']),(target,'out',page['response']),(source,'in',page['response'])]):
+                raw='0a00'+(len(pdu)//2).to_bytes(2,'little').hex()+pdu
+                packet=dict(bus=owner['owner']['bus'],device=owner['owner']['device'],handle=owner['object']['handle'],direction=direction,data=raw,boundary=0,record=record,wall_ns=start+1000*(ordinal*4+j+1))
+                record+=1;packet['fragments']=[copy.deepcopy(packet)];packets.append(packet)
+    return row,matched,packets
+
+
 def summary(version=1):
     rows=[]
     for phase in (0,1):
-        row,matched,packets=(fixture if version==1 else fixture_v2_command)(phase)
+        row,matched,packets={1:fixture,2:fixture_v2_command,3:fixture_v3_discovery}[version](phase)
         items,credit=method.corroborate(row,matched,inventory=copy.deepcopy(packets))
         if packets:raise AssertionError('unconsumed fixture wire')
         rows.append(dict(phase=phase,owners=row['owners'],ssap_method_providers=items))
-        if credit!={0:8 if version==1 else 10,1:8 if version==1 else 10}:raise AssertionError('actual TXs counted once, not both legs')
+        if credit!={0:{1:8,2:10,3:14}[version],1:{1:8,2:10,3:14}[version]}:raise AssertionError('actual TXs counted once, not both legs')
     return dict(proofs=rows)
 
 
 class MethodProviderEvidence(unittest.TestCase):
+    def test_v3_discovery_and_existing_methods_have_full_paired_evidence(self):
+        proof=summary(3)
+        self.assertTrue(method.valid_summary(proof,version=3))
+        self.assertFalse(method.valid_summary(proof,version=2))
+        self.assertFalse(method.valid_summary(summary(2),version=3))
+        method.validate_rows([fixture_v3_discovery(p)[0] for p in (0,1)],True)
+        for row in proof['proofs']:
+            for item in row['ssap_method_providers']:
+                self.assertEqual(len(item['discovery_window_packets']),8)
+                self.assertEqual(len(item['wire']),14)
+
+    def test_v3_rejects_bad_discovery_metadata_trace_and_deadline(self):
+        mutations={
+            'wrong-uuid':lambda v:v.update(uuid='00'*16),
+            'wrong-handle':lambda v:v.update(handle=18),
+            'bool-category':lambda v:v.update(category=True),
+            'wrong-generation':lambda v:v.update(generation=999),
+            'metadata':lambda v:v.update(operations=1),
+            'no-terminal-page':lambda v:v['trace'].pop(),
+            'wrong-response':lambda v:v['trace'][0].update(response='0700'),
+            'expired':lambda v:v.update(returned_ns=v['deadline_ns']),
+            'renewed-deadline':lambda v:v.update(deadline_ns=v['deadline_ns']+1),
+        }
+        for name,change in mutations.items():
+            row,matched,packets=fixture_v3_discovery();app=row['ssap_method_provider_cases'][0]['discovery']
+            first,last=app['stdout'].splitlines();value=json.loads(last);change(value);app['stdout']=first+'\n'+json.dumps(value)+'\n'
+            with self.subTest(name=name),self.assertRaises(CaptureError):method.corroborate(row,matched,inventory=copy.deepcopy(packets))
+
+    def test_v3_missing_duplicate_wrong_peer_and_page_order_fail_closed(self):
+        for mutation in ('missing','duplicate','wrong-peer','page-order','extra','incomplete-saved'):
+            row,matched,packets=fixture_v3_discovery()
+            p=next(p for p in packets if p['record']==10003)
+            if mutation=='missing':packets.remove(p)
+            elif mutation=='duplicate':packets.append(copy.deepcopy(p))
+            elif mutation=='wrong-peer':p['device']=999
+            elif mutation=='page-order':
+                # Preserve each request/response pair's causal order, but send
+                # the terminal request before the first reply is consumed.
+                for q in packets:
+                    if q['record'] in (10002,10003):
+                        q['wall_ns']+=5000;q['fragments'][0]['wall_ns']=q['wall_ns']
+            elif mutation=='extra':
+                q=copy.deepcopy(p);q['record']=99999;q['data']='0a0002000700';packets.append(q)
+            else:
+                proof=summary(3);proof['proofs'][0]['ssap_method_providers'][0].pop('discovery_window_packets')
+                self.assertFalse(method.valid_summary(proof,version=3));continue
+            with self.subTest(mutation=mutation),self.assertRaises(CaptureError):method.corroborate(row,matched,inventory=copy.deepcopy(packets))
+
     def test_v2_commands_keep_v1_request_gate_and_count_only_actual_transmits(self):
         proof=summary(2)
         self.assertTrue(method.valid_summary(proof,version=2))
@@ -140,7 +218,7 @@ class MethodProviderEvidence(unittest.TestCase):
         for phase in (0,1):
             row,_,_=fixture_v2_command(phase)
             rows=[fixture_v2_command(p)[0] for p in (0,1)]
-            method.validate_rows(rows,True)
+            method.validate_rows(rows,True,version=2)
             for item in row['ssap_method_provider_cases']:
                 self.assertEqual(len(item['steps']),5)
                 self.assertEqual([s['callback']['prompt']['operation'] for s in item['steps']],[19,19,19,18,18])
@@ -213,7 +291,7 @@ class MethodProviderEvidence(unittest.TestCase):
             def publisher(run,row,sender,policy,**kw):
                 self.assertEqual(kw['method_access'],4)
                 proc=SimpleNamespace(pid=200+sender,stdin=io.StringIO(),returncode=0)
-                item=dict(sender=sender,target=1-sender,handle=17,start=16,end=17,pid=proc.pid,output_files=['out','err'])
+                item=dict(sender=sender,target=1-sender,handle=17,start=16,end=17,uuid='ab'*16,pid=proc.pid,output_files=['out','err'])
                 row['ssap_method_provider_cases'].append(item);active.update(proc=proc,item=item,text=[])
                 processes.append(proc);yield proc,item
             def wait_text(proc,path,pattern,deadline,**kw):
@@ -233,7 +311,12 @@ class MethodProviderEvidence(unittest.TestCase):
                 case['command']=call(run,row,entry,['ssap-method-command',entry['object']['path'],str(case['handle']),case['value']],None,
                     api=case['api'],after_start=lambda app,deadline:app.update(start_monotonic_ns=deadline-7_000_000_000))
             def commands(run,row,calls,**kw):
-                entry,args,expected=calls[0];return [call(run,row,entry,args,expected,**kw)]
+                entry,args,expected=calls[0]
+                if args[0]=='ssap-find-method':
+                    self.assertEqual(args[3],active['item']['uuid'])
+                    self.assertEqual(expected,bytes.fromhex(args[3]))
+                    return [dict(executor_io_fixture=True)]
+                return [call(run,row,entry,args,expected,**kw)]
             with tempfile.TemporaryDirectory() as directory:
                 run=SimpleNamespace(output=Path(directory),args=SimpleNamespace(slctl='slctl'),save=lambda:None,command=lambda *a,**kw:{})
                 with patch('ws73_ssap_owned.publisher',publisher),patch('ws73_ssap_owned.wait_text',wait_text),\

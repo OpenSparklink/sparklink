@@ -16,7 +16,7 @@ import time
 
 from ws73_capture import CaptureError, packet_interval
 
-VERSION = 2
+VERSION = 3
 TOKEN = 'ws73.ssap_method_provider=1'
 STATUS = 'METHOD_PROVIDER_APPLICATION_PAIRED_USB'
 PENDING = 'METHOD_PROVIDER_PENDING_PAIRED_USB'
@@ -25,7 +25,7 @@ COMMAND_MODES = ('command-error-ff', 'command-accepted')
 
 
 def modes(version):
-    if type(version) is not int or version not in (1, 2):
+    if type(version) is not int or version not in (1, 2, 3):
         raise CaptureError('explicit method contract version required')
     return MODES if version == 1 else MODES + COMMAND_MODES
 PROMPT = (r'^SsapMethodProviderPrompt: token=p(?P<token>[1-9]\d*) request=(?P<request>[1-9]\d*) '
@@ -126,6 +126,10 @@ def execute(run, row):
             if found != [str(item['handle'])]: raise CaptureError('same owner must bind one actual method')
             item['bound_wall_ns'] = time.time_ns(); run.save()
             api = 'c' if (row['phase']+sender)%2 == 0 else 'python'
+            item['discovery'] = ssap_commands(run,row,[(source,
+                ['ssap-find-method',source['object']['path'],str(item['handle']),item['uuid']],
+                bytes.fromhex(item['uuid']))],api=api,expected_size=16)[0]
+            run.save()
             for ordinal,mode in enumerate(modes(VERSION),1):
                 # First eight random bytes identify this request; remaining
                 # bytes are payload. The application sees and verifies all32.
@@ -208,6 +212,18 @@ def _case(row,item,matched,*,inventory=None):
     if lines.count(registration)!=1 or lines.count(bound)!=1:raise CaptureError('same registered method and binding required')
     order=[lines.index(registration),lines.index(bound)];stamps=[item['start_wall_ns'],item['prepared_wall_ns'],item['bound_wall_ns']]
     requests=[];exchanges=[]
+    discovery_legs=0
+    if version==3:
+        from ws73_application_client import discovery_receipt
+        app=item['discovery'];found=discovery_receipt(app,source)
+        if (found['uuid']!=item['uuid'] or found['handle']!=h
+                or app['api']!=('c' if (row['phase']+s)%2==0 else 'python')):
+            raise CaptureError('discovery must identify this actual publisher')
+        stamps.extend([app['start_wall_ns'],app['ssap_released_wall_ns'],app['end_wall_ns']])
+        for page in found['trace']:
+            requests.append(bytes.fromhex(page['request']));exchanges.append((app,bytes.fromhex(page['response']),None))
+        discovery_legs=4
+    elif 'discovery' in item:raise CaptureError('historical method version cannot claim discovery')
     for ordinal,(step,d) in enumerate(zip(item['steps'],data,strict=True)):
         callback,app=step['callback'],step['request'];expected=bytes.fromhex(item['result']) if ordinal==2 else b'';status=255 if ordinal in (0,3) else 0
         command=ordinal>=3
@@ -262,25 +278,34 @@ def _case(row,item,matched,*,inventory=None):
         raise CaptureError('owner withdrawal and real retired method refusal required')
     stamps.extend([item['quit_wall_ns'],item['owner_exit_wall_ns'],cleanup['start_wall_ns'],cleanup['end_wall_ns'],removed['start_wall_ns'],removed['end_wall_ns'],item['end_wall_ns']])
     if order!=sorted(order) or len(set(order))!=len(order) or any(type(v)is not int or v<=0 for v in stamps) or stamps!=sorted(stamps):raise CaptureError('original method chronology required')
-    requests.append(requests[0]);exchanges.append((removed,b'\x01\0\x13'+h.to_bytes(2,'little')+b'\x04',None))
-    wire,credit=_wire(row,item,matched,exchanges,requests=requests,one_way_opcode=18 if version==2 else None)
+    requests.append(requests[discovery_legs//2]);exchanges.append((removed,b'\x01\0\x13'+h.to_bytes(2,'little')+b'\x04',None))
+    wire,credit=_wire(row,item,matched,exchanges,requests=requests,one_way_opcode=18 if version>=2 else None)
     position=0
     for _,response,_ in exchanges:
         legs=wire[position:position+(1 if response is None else 2)];position+=len(legs)
         if any(packet_interval(p['tx'])[1]>packet_interval(p['rx'])[0] for p in legs) or len(legs)==2 and packet_interval(legs[0]['rx'])[1]>packet_interval(legs[1]['tx'])[0]:raise CaptureError('paired method causal order required')
+    if version==3 and packet_interval(wire[1]['rx'])[1]>packet_interval(wire[2]['tx'])[0]:
+        raise CaptureError('discovery terminal request must follow first response')
     proof=dict(status=STATUS,version=version,sender=s,target=t,result=item['result'],wire=wire,
                context=copy.deepcopy(dict(phase=row['phase'],owners=row['owners'],ssap_receipts=row['ssap_receipts'])),case=copy.deepcopy(item))
-    if version==2:
+    if version>=2:
         proof['context']['ssap_method_provider_version']=version
         if type(inventory) is not list:raise CaptureError('complete original SDU inventory required for command observation')
         endpoints={(i['bus'],i['device'],i['handle']) for i in identities}
         start=item['steps'][3]['request']['start_wall_ns'];end=item['end_wall_ns']
         observed=[p for p in inventory if (p['bus'],p['device'],p['handle']) in endpoints
                   and start<=p['wall_ns']<=end and p['data'].startswith('0a00')]
-        expected=[leg[side] for leg in wire[6:] for side in ('tx','rx')]
+        expected=[leg[side] for leg in wire[discovery_legs+6:] for side in ('tx','rx')]
         canonical=lambda xs:sorted(json.dumps(x,sort_keys=True) for x in xs)
         if canonical(observed)!=canonical(expected):raise CaptureError('extra or missing command-window SSAP packet; no response may be fabricated')
         proof['command_window_packets']=copy.deepcopy(observed)
+        if version==3:
+            app=item['discovery']
+            observed=[p for p in inventory if (p['bus'],p['device'],p['handle']) in endpoints
+                      and app['start_wall_ns']<=p['wall_ns']<=app['end_wall_ns'] and p['data'].startswith('0a00')]
+            expected=[leg[side] for leg in wire[:4] for side in ('tx','rx')]
+            if canonical(observed)!=canonical(expected):raise CaptureError('extra or missing discovery-window packet')
+            proof['discovery_window_packets']=copy.deepcopy(observed)
     return proof,credit
 
 
@@ -290,7 +315,7 @@ def corroborate(row,matched,*,inventory=None):
         return [],{0:0,1:0}
     if (row.get('ssap_owned_required') is not True or len(row.get('ssap_owned',[]))!=4
             or {(i['sender'],i['policy']) for i in row['ssap_owned']}!={(s,p) for s in (0,1) for p in ('allow','deny')}
-            or type(row.get('ssap_method_provider_version')) is not int or row['ssap_method_provider_version'] not in (1,2)
+            or type(row.get('ssap_method_provider_version')) is not int or row['ssap_method_provider_version'] not in (1,2,3)
             or len(row.get('ssap_method_provider_cases',[]))!=2 or {i['sender'] for i in row['ssap_method_provider_cases']}!={0,1}):raise CaptureError('original baseline and two method directions required')
     proof=[];credit={0:0,1:0}
     for case in row['ssap_method_provider_cases']:
@@ -301,7 +326,7 @@ def corroborate(row,matched,*,inventory=None):
 
 
 def valid_summary(proof,*,version=None):
-    if version is not None and (type(version) is not int or version not in (1,2)):return False
+    if version is not None and (type(version) is not int or version not in (1,2,3)):return False
     try:
         rows=proof['proofs'];values=set();arguments=set();versions=set()
         if type(rows)is not list or len(rows)!=2:return False
@@ -310,7 +335,7 @@ def valid_summary(proof,*,version=None):
             if type(row['phase'])is not int or row['phase']!=phase or len(items)!=2 or {i['sender'] for i in items}!={0,1}:return False
             for item in items:
                 context,case=item['context'],item['case']
-                if type(item['version'])is not int or item['version'] not in (1,2) or version is not None and item['version']!=version or context['phase']!=phase or context['owners']!=row['owners'] or item['result'] in values or len(item['wire'])!=(8 if item['version']==1 else 10):return False
+                if type(item['version'])is not int or item['version'] not in (1,2,3) or version is not None and item['version']!=version or context['phase']!=phase or context['owners']!=row['owners'] or item['result'] in values or len(item['wire'])!={1:8,2:10,3:14}[item['version']]:return False
                 versions.add(item['version'])
                 values.add(item['result'])
                 for step in case['steps']:
@@ -322,7 +347,7 @@ def valid_summary(proof,*,version=None):
                     found=[p for p in packets if tuple(p[k] for k in ('bus','device','handle','direction','data'))==key and window['start_wall_ns']<=p['wall_ns']<=window['end_wall_ns']]
                     if len(found)!=1:raise CaptureError('one retained paired method packet required')
                     packets.remove(found[0]);return found[0]
-                rebuilt,_=_case(context,case,matched,inventory=item.get('command_window_packets'))
+                rebuilt,_=_case(context,case,matched,inventory=(item.get('command_window_packets',[])+item.get('discovery_window_packets',[]) if item['version']==3 else item.get('command_window_packets')))
                 if packets or json.dumps(rebuilt,sort_keys=True)!=json.dumps(item,sort_keys=True):return False
         return len(versions)==1
     except (KeyError,AttributeError,IndexError,TypeError,ValueError):return False
@@ -334,7 +359,7 @@ def valid_manifest(record):
         if type(selected)is not bool or boot_requested([t for arg in record.get('qemu_args',[]) for t in arg.split()])!=selected:return False
         proof=record.get('channel_socket_corroboration',{})
         if not selected:return record.get('ssap_method_provider_acceptance',False)is False and 'ssap_method_provider_version' not in record and not any('ssap_method_providers' in r for r in proof.get('proofs',[]))
-        return (type(record.get('ssap_method_provider_version'))is int and record['ssap_method_provider_version'] in (1,2)
+        return (type(record.get('ssap_method_provider_version'))is int and record['ssap_method_provider_version'] in (1,2,3)
                 and record.get('ssap_method_provider_acceptance')is True and record.get('ssap_owned_requested')is True
                 and record.get('ssap_owned_acceptance')is True and record.get('ordinary_channel_socket_acceptance')is True
                 and record.get('status')=='PASSTHROUGH_SUPPORT_PASS'

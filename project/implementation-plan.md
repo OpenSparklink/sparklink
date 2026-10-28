@@ -13,11 +13,12 @@
 既有生产函数长结果组合回归保留源码3305b98的限定范围；历史v1–v3不升级为v4。
 原始失败与全部资格身份保留，U#22的六条验收继续开放。
 
-另有[226c31b](https://github.com/OpenSparklink/sparklink/commit/226c31bae2f3f889d664ee795efe55722144de42)的实际actor协商响应背压回归：
-等待本端响应期间保持Starting，覆盖解除背压、原期限和stop；76项Engine回归、
-严格Clippy／HTML通过，提前发布Negotiated的生产负对照被拒绝。这里使用明确的
-AF_UNIX及队列压力依赖，不证明完整method业务、Native权限／credit或实机隔离。
-既有v4编译产物身份不变，不将该测试提交当作新实机资格。
+[f6c2cf3](https://github.com/OpenSparklink/sparklink/commit/f6c2cf3c88154ba79a865cc55303b5fa464bd62f)补参数链生产函数组合：请求／命令、249／2042物理MTU，
+0至2043字节及相关边界经生产分片／重组后交付真实私有D-Bus Provider，独立字节
+核对handle、参数、身份及原期限；2044字节编码整体拒绝。77项Engine回归及严格
+Clippy通过，参数截断负对照被拒绝。另保留226c31b的实际actor响应背压／期限／stop
+范围；这些结果不能合并成完整method业务、Native权限／credit或实机隔离资格。
+原v4编译和执行身份不变。测试改动不改变公开契约或延后现有真实交付门禁。
 
 准确v4输入已封存并通过现有准备链校验，无USB隔离VM启动检查通过；这是构建与
 准备范围，尚未取得真实发现／method短长结果和原路径保持的新资格。历史v1–v3
@@ -541,7 +542,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
       "repository": "sparklink",
       "number": 22,
       "state": "open",
-      "body_sha256": "54df06121f00b899b30df86478b3d3f0e2ceb73d0166d8e26e08b0e1b3e9ff43",
+      "body_sha256": "a555e098d79002c3d9d759cabb5bde760f6ba4f37fac59706aff339d518d84a0",
       "source_offline_only": true,
       "original_acceptance_unchanged": true
     }
@@ -571,6 +572,18 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
       "premature_ready_mutation": "REJECTED_SOURCE_RESTORED"
     },
     "scope": "Real Tokio/UnixDatagram scheduling; explicit AF_UNIX receipt bypass and extra descriptor for bounded queue pressure. No full method business actor, Native Grant/credit, hardware isolation, USB/RF or formal proof. cfg(test) and explanation only; existing compiled artifact not rebuilt or upgraded."
+  },
+  "method_argument_regression": {
+    "source_public": "f6c2cf3c88154ba79a865cc55303b5fa464bd62f",
+    "entry": "ValuePdu encode, Plan/Reassembly, resolve_server, actual private-D-Bus MethodProvider, complete_server/client decoder",
+    "scenarios": "44 request19/command18 cases, physical MTU249/2042, parameter lengths0/245/246/249/250/253/254/255/2038/2039/2043; independent literal headers/handle/payload, full Provider arguments/identity/deadline, independent response or no command reply; two2044-byte encoder refusals before output modification.",
+    "result": "OFFLINE_SCOPED_PASS",
+    "checks": {
+      "engine_tests": 77,
+      "strict_clippy": "PASS",
+      "argument_truncation_mutation": "REJECTED_SOURCE_RESTORED"
+    },
+    "scope": "Actual production functions/private bus. Native identity, negotiation and Wire transport explicit fixtures; not full method actor scheduling, Native credit/USB/peer RF or formal proof. cfg(test) only; original v4 compiled/prepared identities unchanged."
   }
 }
 ```

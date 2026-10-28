@@ -43,7 +43,7 @@
         "repository": "sparklink",
         "number": 22,
         "state": "open",
-        "body_sha256": "54df06121f00b899b30df86478b3d3f0e2ceb73d0166d8e26e08b0e1b3e9ff43",
+        "body_sha256": "a555e098d79002c3d9d759cabb5bde760f6ba4f37fac59706aff339d518d84a0",
         "source_offline_only": true,
         "original_acceptance_unchanged": true
       }
@@ -73,6 +73,18 @@
         "premature_ready_mutation": "REJECTED_SOURCE_RESTORED"
       },
       "scope": "Real Tokio/UnixDatagram scheduling; explicit AF_UNIX receipt bypass and extra descriptor for bounded queue pressure. No full method business actor, Native Grant/credit, hardware isolation, USB/RF or formal proof. cfg(test) and explanation only; existing compiled artifact not rebuilt or upgraded."
+    },
+    "method_argument_regression": {
+      "source_public": "f6c2cf3c88154ba79a865cc55303b5fa464bd62f",
+      "entry": "ValuePdu encode, Plan/Reassembly, resolve_server, actual private-D-Bus MethodProvider, complete_server/client decoder",
+      "scenarios": "44 request19/command18 cases, physical MTU249/2042, parameter lengths0/245/246/249/250/253/254/255/2038/2039/2043; independent literal headers/handle/payload, full Provider arguments/identity/deadline, independent response or no command reply; two2044-byte encoder refusals before output modification.",
+      "result": "OFFLINE_SCOPED_PASS",
+      "checks": {
+        "engine_tests": 77,
+        "strict_clippy": "PASS",
+        "argument_truncation_mutation": "REJECTED_SOURCE_RESTORED"
+      },
+      "scope": "Actual production functions/private bus. Native identity, negotiation and Wire transport explicit fixtures; not full method actor scheduling, Native credit/USB/peer RF or formal proof. cfg(test) only; original v4 compiled/prepared identities unchanged."
     }
   },
   "overall_required_records": [

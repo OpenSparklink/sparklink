@@ -8439,6 +8439,22 @@
         "public": "226c31bae2f3f889d664ee795efe55722144de42"
       },
       "scope": "Actual actor response backpressure, original deadline and stop; local socket/offline only. Original scope and private hardware details preserved."
+    },
+    {
+      "updates": [
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "state": "open",
+          "body_sha256": "a555e098d79002c3d9d759cabb5bde760f6ba4f37fac59706aff339d518d84a0",
+          "source_offline_only": true,
+          "original_acceptance_unchanged": true
+        }
+      ],
+      "sources": {
+        "public": "f6c2cf3c88154ba79a865cc55303b5fa464bd62f"
+      },
+      "scope": "Production method parameter boundaries with independent byte oracle and actual private-bus Provider; truncation negative control. No hardware/formal claim; original acceptance unchanged."
     }
   ],
   "current_disposition": {

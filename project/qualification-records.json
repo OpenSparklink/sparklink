@@ -30,18 +30,18 @@
     "hardware_status": "NOT_RUN; prior qualification and failure identities retained.",
     "issue_sync": [
       {
-        "repository": "sparklink",
-        "number": 22,
-        "state": "open",
-        "body_sha256": "617e0a501660f02f2394db636c84ab8cba8c429434cf1da2c1a77c85cac4d7d8",
-        "source_offline_only": true,
-        "original_acceptance_unchanged": true
-      },
-      {
         "repository": "linux",
         "number": 15,
         "state": "open",
         "body_sha256": "f2b227c6a743e924aa4e3e0bfea2faeee0dc652c8efb1a322dde50311e1164c4",
+        "source_offline_only": true,
+        "original_acceptance_unchanged": true
+      },
+      {
+        "repository": "sparklink",
+        "number": 22,
+        "state": "open",
+        "body_sha256": "1ce54f4ba784ceeddb177596b5cc58faeba399ed3a09d8966d82fa0452498683",
         "source_offline_only": true,
         "original_acceptance_unchanged": true
       }
@@ -52,9 +52,31 @@
       "Method request/command/withdrawal assertions retained",
       "Historical v1/v2 not upgraded; source/offline public summary only"
     ],
-    "next": "Establish resident firmware identity and deferred-completion/status-send observations through supported diagnostics before a distinct controlled VM experiment. Keep exact v3 inputs staged; continue SSAP long-result/lifetime/data work independently. No guessed wake, CLOSE bypass or unchanged retry.",
+    "next": "Extend the existing method paired verifier/runner for long-result physical fragments, retaining short/discovery/command assertions and historical versions. In parallel establish resident firmware and deferred CLOSE observations before a distinct VM action. No guessed wake, CLOSE bypass or unchanged retry.",
     "preparation_status": "LOCKED_EXACT_SOURCE_BUNDLE_STAGED_AND_EXISTING_INPUT_VALIDATORS_PASSED_NO_DEVICE_EXECUTION",
-    "source_audit": "SDK110 E/U static paths separate CLOSE handler return from deferred status emission. Completion clears state after sender call; sender has early-return/failure-cleanup branches. ROM behavior and actual resident identity remain unverified; no root-cause/hardware/formal qualification."
+    "source_audit": "SDK110 E/U static paths separate CLOSE handler return from deferred status emission. Completion clears state after sender call; sender has early-return/failure-cleanup branches. ROM behavior and actual resident identity remain unverified; no root-cause/hardware/formal qualification.",
+    "long_result_checks": {
+      "source": "3305b98a8356b600a97a758931ded9621e0e5b68",
+      "result": "OFFLINE_PRODUCTION_FUNCTION_COMPOSITION_PASS",
+      "engine_checks": 75,
+      "new_tests": 3,
+      "boundaries": [
+        0,
+        247,
+        248,
+        249,
+        250,
+        251,
+        252,
+        253,
+        254,
+        255,
+        2045,
+        2046
+      ],
+      "negative": "Production silent truncation rejected; original source restored and all Engine tests rerun",
+      "scope": "Actual private D-Bus and production Provider/Database/response/fragments/reassembly/client functions. Negotiated budget and Native identity/transport explicitly supplied fixtures; no actor-loop, syscall authorization, credit, USB, RF, deployment, formal or hardware qualification."
+    }
   },
   "overall_required_records": [
     "deadline-real21",

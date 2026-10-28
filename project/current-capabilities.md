@@ -22,6 +22,13 @@ K#15 已同步源码／离线摘要，保留原验收；自然根因、实际 dr
 不猜测 wake、不跳过 CLOSE、不重复未变化尝试。v3 实机输入继续封存，SSAP 长结果、
 生命周期和数据面独立推进，不把恢复全集设为它们的前置。
 
+method 长结果补充：复用现有生产函数和真实私有 D-Bus，覆盖0、247–255、2045字节，
+2046整体拒绝后合法请求继续；注销候选、编码快照及原期限分别检查。全部75项Engine
+回归、严格clippy／HTML通过；生产结果截断247字节的临时变异被拒绝并还原。
+该层使用显式Native身份／传输和协商预算fixture，不运行完整actor调度、内核credit或
+USB，不授新实机／形式化资格。源码3305b98，U#22原六条验收保持；下一步扩展现有
+双端VM判定的长结果实际分片，保留短包、发现、命令及历史失败范围。
+
 ## Issue 状态与验证边界
 
 重新读回35项及七个现有子项关系：2项既有关闭（U#1、U#21）、18项有限收尾、
@@ -127,18 +134,18 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
   "hardware_status": "NOT_RUN; prior qualification and failure identities retained.",
   "issue_sync": [
     {
-      "repository": "sparklink",
-      "number": 22,
-      "state": "open",
-      "body_sha256": "617e0a501660f02f2394db636c84ab8cba8c429434cf1da2c1a77c85cac4d7d8",
-      "source_offline_only": true,
-      "original_acceptance_unchanged": true
-    },
-    {
       "repository": "linux",
       "number": 15,
       "state": "open",
       "body_sha256": "f2b227c6a743e924aa4e3e0bfea2faeee0dc652c8efb1a322dde50311e1164c4",
+      "source_offline_only": true,
+      "original_acceptance_unchanged": true
+    },
+    {
+      "repository": "sparklink",
+      "number": 22,
+      "state": "open",
+      "body_sha256": "1ce54f4ba784ceeddb177596b5cc58faeba399ed3a09d8966d82fa0452498683",
       "source_offline_only": true,
       "original_acceptance_unchanged": true
     }
@@ -149,9 +156,31 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Method request/command/withdrawal assertions retained",
     "Historical v1/v2 not upgraded; source/offline public summary only"
   ],
-  "next": "Establish resident firmware identity and deferred-completion/status-send observations through supported diagnostics before a distinct controlled VM experiment. Keep exact v3 inputs staged; continue SSAP long-result/lifetime/data work independently. No guessed wake, CLOSE bypass or unchanged retry.",
+  "next": "Extend the existing method paired verifier/runner for long-result physical fragments, retaining short/discovery/command assertions and historical versions. In parallel establish resident firmware and deferred CLOSE observations before a distinct VM action. No guessed wake, CLOSE bypass or unchanged retry.",
   "preparation_status": "LOCKED_EXACT_SOURCE_BUNDLE_STAGED_AND_EXISTING_INPUT_VALIDATORS_PASSED_NO_DEVICE_EXECUTION",
-  "source_audit": "SDK110 E/U static paths separate CLOSE handler return from deferred status emission. Completion clears state after sender call; sender has early-return/failure-cleanup branches. ROM behavior and actual resident identity remain unverified; no root-cause/hardware/formal qualification."
+  "source_audit": "SDK110 E/U static paths separate CLOSE handler return from deferred status emission. Completion clears state after sender call; sender has early-return/failure-cleanup branches. ROM behavior and actual resident identity remain unverified; no root-cause/hardware/formal qualification.",
+  "long_result_checks": {
+    "source": "3305b98a8356b600a97a758931ded9621e0e5b68",
+    "result": "OFFLINE_PRODUCTION_FUNCTION_COMPOSITION_PASS",
+    "engine_checks": 75,
+    "new_tests": 3,
+    "boundaries": [
+      0,
+      247,
+      248,
+      249,
+      250,
+      251,
+      252,
+      253,
+      254,
+      255,
+      2045,
+      2046
+    ],
+    "negative": "Production silent truncation rejected; original source restored and all Engine tests rerun",
+    "scope": "Actual private D-Bus and production Provider/Database/response/fragments/reassembly/client functions. Negotiated budget and Native identity/transport explicitly supplied fixtures; no actor-loop, syscall authorization, credit, USB, RF, deployment, formal or hardware qualification."
+  }
 }
 ```
 

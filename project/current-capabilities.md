@@ -13,11 +13,14 @@ fixture，不是实际内核并发、部署、固件、实机或形式化资格�
 检查顺序失败保留；未放宽断言。已封存C/Python消费者结果维持原编译身份。
 准确新产物的真实发现／method交付、长结果及完整生命周期仍缺失，U#22保持开放。
 
-输入准备补充：固定工具链、共享锁和8路预算已完成准确服务bundle及现有准备链校验；
-此步骤不授新实机资格。SDK关闭源码审查区分运行期disable与最后服务退出／板级复位；
-Native恢复仍要求真实CLOSE ACK，不从EP0完成推导状态清除。NearLink Host／OHOS关闭
-委托下层，不能代替WS73固件行为证据。K#15已同步源码摘要并保留原验收；匹配SDK110
-固件端处理、失败时状态及自然恢复仍待验证，不猜测wake或重复未变化失败。
+输入准备与关闭审查：准确服务 bundle 及现有准备链已校验，此步骤不授新实机资格。
+SDK 运行期 disable 与最后服务退出／板级复位是不同路径，Native 仍要求真实 CLOSE ACK。
+SDK110 E/U 静态审查区分请求处理返回与后续状态发送；完成路径发送后清除状态，发送
+函数存在提前退出和失败清理分支。局部未见重试不排除 ROM 内部重试，也不能证明实机
+ACK 丢失。准备镜像不代表设备驻留版本；下一步先关联驻留版本、完成触发及发送结果。
+K#15 已同步源码／离线摘要，保留原验收；自然根因、实际 drain 与非人工恢复仍未证明。
+不猜测 wake、不跳过 CLOSE、不重复未变化尝试。v3 实机输入继续封存，SSAP 长结果、
+生命周期和数据面独立推进，不把恢复全集设为它们的前置。
 
 ## Issue 状态与验证边界
 
@@ -135,7 +138,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
       "repository": "linux",
       "number": 15,
       "state": "open",
-      "body_sha256": "1049ef93fef8145082f5e1f5c98e5d8ea97468ed70d1ee031a875760bb0b66cb",
+      "body_sha256": "f2b227c6a743e924aa4e3e0bfea2faeee0dc652c8efb1a322dde50311e1164c4",
       "source_offline_only": true,
       "original_acceptance_unchanged": true
     }
@@ -146,9 +149,9 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Method request/command/withdrawal assertions retained",
     "Historical v1/v2 not upgraded; source/offline public summary only"
   ],
-  "next": "Accurate v3 inputs are staged. Audit matching SDK110 firmware EP0/CLOSE behavior and original successful/failed traces before a controlled distinct hardware action; then perform v3 discovery/method and original-path regression using the existing VM-only startup. Long-result/lifetime/data/security work remains parallel; no guessed wake, CLOSE bypass or unchanged retry.",
+  "next": "Establish resident firmware identity and deferred-completion/status-send observations through supported diagnostics before a distinct controlled VM experiment. Keep exact v3 inputs staged; continue SSAP long-result/lifetime/data work independently. No guessed wake, CLOSE bypass or unchanged retry.",
   "preparation_status": "LOCKED_EXACT_SOURCE_BUNDLE_STAGED_AND_EXISTING_INPUT_VALIDATORS_PASSED_NO_DEVICE_EXECUTION",
-  "source_audit": "SDK runtime disable and last-service power-reset are separate paths. Native CLOSE ACK retained. NearLink/OHOS layer close delegates hardware. Firmware-side cleanup/power and root cause remain unproved."
+  "source_audit": "SDK110 E/U static paths separate CLOSE handler return from deferred status emission. Completion clears state after sender call; sender has early-return/failure-cleanup branches. ROM behavior and actual resident identity remain unverified; no root-cause/hardware/formal qualification."
 }
 ```
 

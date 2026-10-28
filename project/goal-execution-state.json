@@ -2040,7 +2040,7 @@
           "repository": "linux",
           "number": 15,
           "state": "open",
-          "body_sha256": "1049ef93fef8145082f5e1f5c98e5d8ea97468ed70d1ee031a875760bb0b66cb",
+          "body_sha256": "f2b227c6a743e924aa4e3e0bfea2faeee0dc652c8efb1a322dde50311e1164c4",
           "source_offline_only": true,
           "original_acceptance_unchanged": true
         }
@@ -2051,9 +2051,9 @@
         "Method request/command/withdrawal assertions retained",
         "Historical v1/v2 not upgraded; source/offline public summary only"
       ],
-      "next": "Accurate v3 inputs are staged. Audit matching SDK110 firmware EP0/CLOSE behavior and original successful/failed traces before a controlled distinct hardware action; then perform v3 discovery/method and original-path regression using the existing VM-only startup. Long-result/lifetime/data/security work remains parallel; no guessed wake, CLOSE bypass or unchanged retry.",
+      "next": "Establish resident firmware identity and deferred-completion/status-send observations through supported diagnostics before a distinct controlled VM experiment. Keep exact v3 inputs staged; continue SSAP long-result/lifetime/data work independently. No guessed wake, CLOSE bypass or unchanged retry.",
       "preparation_status": "LOCKED_EXACT_SOURCE_BUNDLE_STAGED_AND_EXISTING_INPUT_VALIDATORS_PASSED_NO_DEVICE_EXECUTION",
-      "source_audit": "SDK runtime disable and last-service power-reset are separate paths. Native CLOSE ACK retained. NearLink/OHOS layer close delegates hardware. Firmware-side cleanup/power and root cause remain unproved."
+      "source_audit": "SDK110 E/U static paths separate CLOSE handler return from deferred status emission. Completion clears state after sender call; sender has early-return/failure-cleanup branches. ROM behavior and actual resident identity remain unverified; no root-cause/hardware/formal qualification."
     },
     "selected_qualification": {
       "version": 1,
@@ -5309,5 +5309,9 @@
   "artifact_preparation": {
     "authority": "project/qualification-records.json:batch",
     "status": "LOCKED_EXACT_SOURCE_BUNDLE_STAGED_AND_EXISTING_INPUT_VALIDATORS_PASSED_NO_DEVICE_EXECUTION"
+  },
+  "startup_diagnostic_scope": {
+    "authority": "project/qualification-records.json:batch",
+    "state": "STATIC_CALL_PATH_AUDITED_RESIDENT_IDENTITY_AND_ROM_BEHAVIOR_UNVERIFIED"
   }
 }

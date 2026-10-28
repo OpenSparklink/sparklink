@@ -8363,6 +8363,19 @@
         }
       ],
       "scope": "Source-only SDK runtime-disable versus last-service reset and delegated NearLink/OHOS cleanup review; no hardware/formal/root-cause qualification."
+    },
+    {
+      "updates": [
+        {
+          "repository": "linux",
+          "number": 15,
+          "state": "open",
+          "body_sha256": "f2b227c6a743e924aa4e3e0bfea2faeee0dc652c8efb1a322dde50311e1164c4",
+          "source_offline_only": true,
+          "original_acceptance_unchanged": true
+        }
+      ],
+      "scope": "Static CLOSE handler versus deferred ACK path; ROM behavior and resident firmware identity remain unverified. No hardware or formal qualification."
     }
   ],
   "current_disposition": {

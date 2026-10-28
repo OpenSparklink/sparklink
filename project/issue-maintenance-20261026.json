@@ -8350,6 +8350,19 @@
         }
       ],
       "scope": "Method discovery v3 existing runner and paired corroboration; offline only, original issue acceptance retained."
+    },
+    {
+      "updates": [
+        {
+          "repository": "linux",
+          "number": 15,
+          "state": "open",
+          "body_sha256": "1049ef93fef8145082f5e1f5c98e5d8ea97468ed70d1ee031a875760bb0b66cb",
+          "source_offline_only": true,
+          "original_acceptance_unchanged": true
+        }
+      ],
+      "scope": "Source-only SDK runtime-disable versus last-service reset and delegated NearLink/OHOS cleanup review; no hardware/formal/root-cause qualification."
     }
   ],
   "current_disposition": {

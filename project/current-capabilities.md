@@ -13,6 +13,12 @@ fixture，不是实际内核并发、部署、固件、实机或形式化资格�
 检查顺序失败保留；未放宽断言。已封存C/Python消费者结果维持原编译身份。
 准确新产物的真实发现／method交付、长结果及完整生命周期仍缺失，U#22保持开放。
 
+输入准备补充：固定工具链、共享锁和8路预算已完成准确服务bundle及现有准备链校验；
+此步骤不授新实机资格。SDK关闭源码审查区分运行期disable与最后服务退出／板级复位；
+Native恢复仍要求真实CLOSE ACK，不从EP0完成推导状态清除。NearLink Host／OHOS关闭
+委托下层，不能代替WS73固件行为证据。K#15已同步源码摘要并保留原验收；匹配SDK110
+固件端处理、失败时状态及自然恢复仍待验证，不猜测wake或重复未变化失败。
+
 ## Issue 状态与验证边界
 
 重新读回35项及七个现有子项关系：2项既有关闭（U#1、U#21）、18项有限收尾、
@@ -124,6 +130,14 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
       "body_sha256": "617e0a501660f02f2394db636c84ab8cba8c429434cf1da2c1a77c85cac4d7d8",
       "source_offline_only": true,
       "original_acceptance_unchanged": true
+    },
+    {
+      "repository": "linux",
+      "number": 15,
+      "state": "open",
+      "body_sha256": "1049ef93fef8145082f5e1f5c98e5d8ea97468ed70d1ee031a875760bb0b66cb",
+      "source_offline_only": true,
+      "original_acceptance_unchanged": true
     }
   ],
   "exit_conditions": [
@@ -132,7 +146,9 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Method request/command/withdrawal assertions retained",
     "Historical v1/v2 not upgraded; source/offline public summary only"
   ],
-  "next": "Prepare accurate-artifact v3 discovery/method delivery and original-path regression using existing VM-only qualified startup; independently resolve K15 startup evidence before any unchanged retry. Continue long result/lifetime/data/security paths without all-control prerequisites. No guessed wake, CLOSE bypass or credit reset."
+  "next": "Accurate v3 inputs are staged. Audit matching SDK110 firmware EP0/CLOSE behavior and original successful/failed traces before a controlled distinct hardware action; then perform v3 discovery/method and original-path regression using the existing VM-only startup. Long-result/lifetime/data/security work remains parallel; no guessed wake, CLOSE bypass or unchanged retry.",
+  "preparation_status": "LOCKED_EXACT_SOURCE_BUNDLE_STAGED_AND_EXISTING_INPUT_VALIDATORS_PASSED_NO_DEVICE_EXECUTION",
+  "source_audit": "SDK runtime disable and last-service power-reset are separate paths. Native CLOSE ACK retained. NearLink/OHOS layer close delegates hardware. Firmware-side cleanup/power and root cause remain unproved."
 }
 ```
 

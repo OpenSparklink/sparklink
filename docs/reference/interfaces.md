@@ -137,9 +137,9 @@ write输入允许空值，长度超65535为EMSGSIZE；这个语言内存上限�
 `Connection.GetInfo` 预检与既有 `OpenChannel`／`OpenChannelScoped`／
 `PrepareDynamicChannel`，以及已有原期限约束的 `ReadSsapValue`、`WriteSsapValue`、`WriteSsapCommand`、
 `ReceiveSsapUpdate` 和下方四个持续接收方法。原身份、远端权限与机制事实仍由唯一
-Engine 校验；组成员不是 Native Grant 或服务所有者。管理权未开放。`DiscoverSsap`、
-`GetCachedSsap`、`ReadSsapByUuid`、`GetSsapInfo` 尚未通过本批原期限／调用者审计，
-继续只由管理角色调用；不能宣称完整 SSAP 客户端权限迁移完成。
+Engine 校验；组成员不是 Native Grant 或服务所有者。管理权未开放。`DiscoverSsap` 已接通SDK至Engine的同一原期限与调用者退出作用域，
+部署权限及真实发现交付仍待验收；`GetCachedSsap`、`ReadSsapByUuid`、`GetSsapInfo`
+的完整原期限／调用者审计仍缺失。这四个入口继续只由管理角色调用；不能宣称完整 SSAP 客户端权限迁移完成。
 新规则的实际 system bus／应用组实机资格须单独取得，不继承管理组历史门禁。
 C调用者须提供真实有效、独占、无别名且满足声明长度的内存区域；坏指针属于FFI
 调用者契约，不能用来代替内核EFAULT门禁。
@@ -610,10 +610,14 @@ lifetime 的终态记录和真实通道／USB证据，不能把日志或状态�
 WRITE_NO_RSP、descriptor、notify/indicate等声明明确NotSupported；共享权限类型
 仍保留标准完整语义。此拒绝只有生产数据库/实际D-Bus离线门禁，不转授Ub5实机资格。
 
-`Connection.DiscoverSsap(uuid,kind)` 与 `GetCachedSsap` 按实际 SMTC 响应产生元数据；
+`Connection.DiscoverSsap(uuid,kind,original_deadline)` 与 `GetCachedSsap` 按实际 SMTC 响应产生元数据；
 未知缓存失败。kind 为结构0、首要服务1、属性3或方法4，UUID为空或2/16字节。
 方法类别为标准3/自定义11，不能把属性类别2/10当作方法。空UUID+primary模式按
-服务成员位分别查询属性和方法，共用原5秒期限、96页及80条总预算；方法查询失败
+服务成员位分别查询属性和方法，共用从调用者开始、最长5秒的原期限、96页及80条总预算。Rust `discover_until`
+接收已开始的期限；`discover` 在身份预检前创建5秒期限。D-Bus新增 `(ttttt)`
+原期限参数（未发布接口，无旧签名兼容）；daemon预检、actor Info与所有分页不得续期。
+调用者退出终止等待，不抹去在途物理义务。`slctl` 连接获取与缓存核对亦使用同一期限。
+方法查询失败
 或跨类别重复handle使整次发现失败，不发布部分结果为完整缓存。
 `slctl ssap-discover CONNECTION method UUID_HEX` 使用同一SDK/daemon发现入口。
 本地method登记与D-Bus Provider已接入同一数据库/Engine；Rust/C/Python共享Dispatcher方法收件箱已接通，CLI方法服务端已接通，VM调用者和真实方法交付仍待验收。

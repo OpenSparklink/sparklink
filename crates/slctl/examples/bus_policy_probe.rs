@@ -989,7 +989,7 @@ async fn application_channel(path: &str) -> anyhow::Result<()> {
                         path,
                         Some(slk_contract::CONNECTION),
                         "DiscoverSsap",
-                        &(vec![0u8], 255u8),
+                        &(vec![0u8], 255u8, (0u64, 0u64, 0u64, 0u64, 0u64)),
                     )
                     .await,
             ),

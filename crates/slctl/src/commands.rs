@@ -71,9 +71,14 @@ impl Context {
                 } else {
                     Vec::new()
                 };
-                let link = self.application_connection(args[1]).await?;
+                let original = libsparklink::Deadline::after(std::time::Duration::from_secs(5))?;
+                let link = tokio::time::timeout_at(
+                    original.instant().into(),
+                    self.application_connection(args[1]),
+                )
+                .await??;
                 let object = link.ssap();
-                let (entries, trace) = object.discover(uuid, kind).await?;
+                let (entries, trace) = object.discover_until(uuid, kind, original).await?;
                 for (category, handle, end, uuid, operations, descriptors, members) in &entries {
                     println!(
                         "SsapRemoteEntry: category={category} handle={handle} end={end} uuid={} operations={operations} descriptors={} members={members}",
@@ -82,7 +87,10 @@ impl Context {
                     );
                 }
                 if args.len() == 2 {
-                    let cached = object.cached().await?;
+                    let cached =
+                        tokio::time::timeout_at(original.instant().into(), object.cached())
+                            .await??;
+                    original.remaining()?;
                     if cached != entries {
                         anyhow::bail!("lifetime remote cache differs from actual discovery");
                     }

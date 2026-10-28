@@ -140,23 +140,46 @@ impl<'a> RemoteSsap<'a> {
         .await
     }
     /// Discover structure(0), primary services(1), properties(3) or methods(4).
-    /// Primary discovery follows advertised property/method members using the
-    /// daemon's single original deadline and bounded page/entry budget.
+    /// The five-second budget begins before identity checks and is not renewed
+    /// by daemon preflight, actor negotiation or subsequent pages.
     pub async fn discover(&self, uuid: Vec<u8>, kind: u8) -> Result<wire::Discovery> {
+        self.discover_until(
+            uuid,
+            kind,
+            crate::Deadline::after(slk_channel::deadline::PROTOCOL_WAIT)?,
+        )
+        .await
+    }
+    /// Use the caller's original deadline, including earlier acquisition/queueing.
+    /// Discovery remains management-only pending its deployed permission gate.
+    pub async fn discover_until(
+        &self,
+        uuid: Vec<u8>,
+        kind: u8,
+        original: crate::Deadline,
+    ) -> Result<wire::Discovery> {
         if !matches!(kind, 0 | 1 | 3 | 4) || !uuid.is_empty() && !matches!(uuid.len(), 2 | 16) {
             return Err(ApplicationError::Invalid(
                 "unsupported SSAP discovery kind/UUID",
             ));
         }
-        self.current(async {
-            Ok(self
-                .link
-                .client
-                .proxy(&self.link.path, contract::CONNECTION)
-                .await?
-                .call(wire::DISCOVER, &(uuid, kind))
-                .await?)
-        })
+        let original = original.capped(slk_channel::deadline::PROTOCOL_WAIT)?;
+        crate::client::bounded(
+            &self.link.client,
+            original,
+            self.current(async {
+                Ok(self
+                    .link
+                    .client
+                    .proxy(&self.link.path, contract::CONNECTION)
+                    .await?
+                    .call(
+                        wire::DISCOVER,
+                        &(uuid, kind, contract::deadline_wire(original.stamp())),
+                    )
+                    .await?)
+            }),
+        )
         .await
     }
     /// Advisory daemon cache for this lifetime; not availability or a grant.

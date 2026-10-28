@@ -364,15 +364,22 @@ impl Observer {
         self,
         uuid: Option<Vec<u8>>,
         kind: slk_protocol::ssap::discovery::FindKind,
+        deadline: Instant,
     ) -> Result<Discovery, String> {
         use slk_protocol::ssap::discovery::{EntryClass, FindKind, FindRequest, decode_page};
-        let deadline = Instant::now() + Duration::from_secs(5);
-        let info = Observer {
-            state: self.state.clone(),
-            queries: self.queries.clone(),
+        if Instant::now() >= deadline {
+            return Err("SSAP discovery original deadline".into());
         }
-        .info()
-        .await?;
+        let info = tokio::time::timeout_at(
+            deadline,
+            Observer {
+                state: self.state.clone(),
+                queries: self.queries.clone(),
+            }
+            .info(),
+        )
+        .await
+        .map_err(|_| "SSAP discovery original deadline".to_string())??;
         let mut entries = Vec::new();
         let mut trace = Vec::new();
         let mut ranges = vec![(kind, 1u16, 65535u16)];
@@ -395,6 +402,11 @@ impl Observer {
                     .map_err(|e| format!("find request: {e:?}"))?;
                 bytes.truncate(n);
                 let raw = self.request(bytes.clone(), deadline, 0).await?;
+                // A ready reply may win timeout_at's poll after expiry. Never
+                // accept that page or publish a complete cache under a new wait.
+                if Instant::now() >= deadline {
+                    return Err("SSAP discovery original deadline".into());
+                }
                 trace.push((bytes, raw.clone()));
                 if let Ok(ValuePdu::Error {
                     request: op,
@@ -2516,12 +2528,12 @@ mod tests {
             let (_status, state) = watch::channel(Status::Negotiated(info.clone()));
             let (queries, mut incoming) = mpsc::channel(8);
             let observer = Observer { state, queries };
-            let task = tokio::spawn(observer.discover(None, FindKind::Primary));
+            let original = Instant::now() + Duration::from_secs(1);
+            let task = tokio::spawn(observer.discover(None, FindKind::Primary, original));
             let Some(Query::Info(reply)) = incoming.recv().await else {
                 panic!("info")
             };
             reply.send(Ok(info)).unwrap();
-            let mut original = None;
             let method_handle = if scenario == 2 { 17 } else { 18 };
             let cases = [
                 (1, 1, 65535, vec![5, 11, 1, 16, 0, 19, 0, 1, 2, 6]),
@@ -2561,7 +2573,7 @@ mod tests {
                 ];
                 assert_eq!(bytes, expected);
                 assert_eq!(minimum, 0);
-                assert_eq!(deadline, *original.get_or_insert(deadline));
+                assert_eq!(deadline, original);
                 if scenario == 1 && index == 2 {
                     reply.send(Err("method dependency refused".into())).unwrap();
                     break;
@@ -2583,6 +2595,52 @@ mod tests {
                 }
                 1 => assert!(result.unwrap_err().contains("method dependency refused")),
                 _ => assert!(result.unwrap_err().contains("duplicate remote handle")),
+            }
+            assert!(incoming.try_recv().is_err());
+        }
+    }
+
+    #[tokio::test]
+    async fn discovery_original_deadline_covers_info_and_page_waits() {
+        use slk_protocol::ssap::discovery::FindKind;
+        // Exercise production Observer; only actor replies/metadata are fixtures.
+        // No socket, USB, firmware or cancellation/drain qualification follows.
+        for phase in 0..3 {
+            let info: Info = (0, 7, 13, 1, 249, 249, vec![], vec![], vec![], vec![]);
+            let (_status, state) = watch::channel(Status::Negotiated(info.clone()));
+            let (queries, mut incoming) = mpsc::channel(8);
+            let observer = Observer { state, queries };
+            let original = if phase == 0 {
+                Instant::now()
+            } else {
+                Instant::now() + Duration::from_millis(100)
+            };
+            let task = tokio::spawn(observer.discover(None, FindKind::Primary, original));
+            if phase == 0 {
+                assert!(task.await.unwrap().unwrap_err().contains("deadline"));
+                assert!(incoming.try_recv().is_err());
+                continue;
+            }
+            let Some(Query::Info(reply)) = incoming.recv().await else {
+                panic!("info")
+            };
+            if phase == 1 {
+                tokio::time::sleep_until(original).await;
+                assert!(task.await.unwrap().unwrap_err().contains("deadline"));
+                assert!(reply.send(Ok(info)).is_err());
+            } else {
+                reply.send(Ok(info)).unwrap();
+                let Some(Query::Value {
+                    deadline, reply, ..
+                }) = incoming.recv().await
+                else {
+                    panic!("page")
+                };
+                assert_eq!(deadline, original);
+                tokio::time::sleep_until(original).await;
+                assert!(task.await.unwrap().unwrap_err().contains("deadline"));
+                // Late response is not retried or reused by this consumer.
+                assert!(reply.send(Ok(vec![1, 0, 4, 1, 0, 11])).is_err());
             }
             assert!(incoming.try_recv().is_err());
         }

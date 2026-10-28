@@ -19,6 +19,7 @@ struct State {
     role: AtomicU8,
     calls: AtomicUsize,
     malformed_update: AtomicU8,
+    discovery_stamps: std::sync::Mutex<Vec<slk_contract::Deadline>>,
     description_stamps: std::sync::Mutex<Vec<slk_contract::Deadline>>,
     entered: Notify,
     release: Notify,
@@ -175,13 +176,19 @@ impl Link {
             .await
             .map(|_| ())
     }
-    fn discover_ssap(
+    async fn discover_ssap(
         &self,
         uuid: Vec<u8>,
         kind: u8,
+        original: slk_contract::Deadline,
     ) -> zbus::fdo::Result<slk_contract::ssap::Discovery> {
+        self.0.discovery_stamps.lock().unwrap().push(original);
         self.0.calls.fetch_add(1, Ordering::SeqCst);
-        if uuid != [1, 2] || !matches!(kind, 3 | 4) {
+        if uuid == [9, 9] {
+            self.0.entered.notify_one();
+            self.0.release.notified().await;
+        }
+        if !matches!(uuid.as_slice(), [1, 2] | [9, 9]) || !matches!(kind, 3 | 4) {
             return Err(zbus::fdo::Error::NotSupported(
                 "unsupported fixture discovery".into(),
             ));
@@ -314,7 +321,12 @@ async fn actual_ssap_client_serializes_all_existing_methods_without_echo_or_fall
     let (entries, trace) = remote.discover(vec![1, 2], 3).await?;
     assert_eq!(entries, remote.cached().await?);
     assert_eq!(trace, [(vec![0x11], vec![0x22])]);
-    let (methods, method_trace) = remote.discover(vec![1, 2], 4).await?;
+    let original = deadline();
+    let (methods, method_trace) = remote.discover_until(vec![1, 2], 4, original).await?;
+    assert_eq!(
+        state.discovery_stamps.lock().unwrap()[1],
+        slk_contract::deadline_wire(original.stamp())
+    );
     assert_eq!(methods, entries);
     assert_eq!(method_trace, trace);
     let before = state.calls.load(Ordering::SeqCst);
@@ -715,5 +727,42 @@ async fn method_client_is_bounded_scoped_and_never_echoes_or_retries() -> anyhow
     })
     .await?;
     assert!(matches!(r, Err(ApplicationError::Identity(_))));
+    Ok(())
+}
+
+#[tokio::test]
+async fn discovery_deadline_and_late_identity_are_checked_by_actual_sdk() -> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let (_server, caller, state) = fixture(&bus.address).await?;
+    let client = Client::from_connection(caller).await?;
+    let link = client.connection(BASE, PATH).await?;
+    let remote = link.ssap();
+    let expired = libsparklink::Deadline::after(Duration::from_millis(1))?;
+    tokio::time::sleep_until(expired.instant().into()).await;
+    assert!(matches!(remote.discover_until(vec![1,2], 4, expired).await,
+        Err(ApplicationError::Io(e)) if e.raw_os_error() == Some(110)));
+    assert_eq!(state.calls.load(Ordering::SeqCst), 0);
+    let original = libsparklink::Deadline::after(Duration::from_millis(100))?;
+    assert!(
+        matches!(remote.discover_until(vec![9,9], 4, original).await,
+        Err(ApplicationError::Io(e)) if e.raw_os_error() == Some(110))
+    );
+    assert_eq!(
+        state.discovery_stamps.lock().unwrap().as_slice(),
+        &[slk_contract::deadline_wire(original.stamp())]
+    );
+    state.release.notify_one();
+    // Independent call: a reply after lifetime replacement cannot be returned
+    // as a current observation. Service responses are explicit D-Bus fixtures.
+    state.entered.notified().await;
+    let call = remote.discover_until(vec![9, 9], 4, deadline());
+    let change = async {
+        state.entered.notified().await;
+        state.generation.store(8, Ordering::SeqCst);
+        state.release.notify_one();
+    };
+    let (result, ()) =
+        tokio::time::timeout(Duration::from_secs(5), async { tokio::join!(call, change) }).await?;
+    assert!(matches!(result, Err(ApplicationError::Identity(_))));
     Ok(())
 }

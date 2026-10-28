@@ -1246,7 +1246,14 @@ impl ConnectionIface {
         )
         .await
     }
-    async fn discover_ssap(&self, uuid: Vec<u8>, kind: u8) -> zbus::fdo::Result<SsapDiscovery> {
+    async fn discover_ssap(
+        &self,
+        uuid: Vec<u8>,
+        kind: u8,
+        original: slk_contract::Deadline,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+        #[zbus(connection)] connection: &zbus::Connection,
+    ) -> zbus::fdo::Result<SsapDiscovery> {
         let kind = match kind {
             0 => slk_protocol::ssap::discovery::FindKind::Structure,
             1 => slk_protocol::ssap::discovery::FindKind::Primary,
@@ -1263,53 +1270,59 @@ impl ConnectionIface {
                 "UUID must be2/16bytes".into(),
             ));
         }
-        let (known, current) = self.observation().await;
-        if !known || !current {
-            return Err(zbus::fdo::Error::Failed(
-                "connection lifetime is not current".into(),
-            ));
-        }
-        self.start_ssap().await?;
-        let actor = self.ssap.lock().await;
-        let observer = actor
-            .as_ref()
-            .ok_or_else(|| zbus::fdo::Error::Failed("actor unavailable".into()))?
-            .observer();
-        drop(actor);
-        let complete = uuid.is_empty() && kind == slk_protocol::ssap::discovery::FindKind::Primary;
-        if complete {
-            *self.remote_services.lock().await = None;
-        }
-        let (entries, trace) = observer
-            .discover(if uuid.is_empty() { None } else { Some(uuid) }, kind)
-            .await
-            .map_err(zbus::fdo::Error::Failed)?;
-        let (known, current) = self.observation().await;
-        if !known || !current {
-            return Err(zbus::fdo::Error::Failed(
-                "connection retired during discovery".into(),
-            ));
-        }
-        if complete {
-            *self.remote_services.lock().await = Some(entries.clone());
-        }
-        Ok((
-            entries
-                .into_iter()
-                .map(|e| {
-                    (
-                        e.category,
-                        e.handle,
-                        e.end,
-                        e.uuid,
-                        e.operations,
-                        e.descriptors,
-                        e.members,
+        self.scoped_ssap_call(
+            original,
+            slk_channel::deadline::PROTOCOL_WAIT,
+            header,
+            connection,
+            |observer, _sender, deadline| async move {
+                let complete =
+                    uuid.is_empty() && kind == slk_protocol::ssap::discovery::FindKind::Primary;
+                if complete {
+                    *self.remote_services.lock().await = None;
+                }
+                let (entries, trace) = observer
+                    .discover(
+                        if uuid.is_empty() { None } else { Some(uuid) },
+                        kind,
+                        deadline,
                     )
-                })
-                .collect(),
-            trace,
-        ))
+                    .await
+                    .map_err(zbus::fdo::Error::Failed)?;
+                if self.observation().await != (true, true) {
+                    return Err(zbus::fdo::Error::Failed(
+                        "connection retired during discovery".into(),
+                    ));
+                }
+                if complete {
+                    let mut cache = self.remote_services.lock().await;
+                    if tokio::time::Instant::now() >= deadline {
+                        return Err(zbus::fdo::Error::Timeout(
+                            "SSAP discovery original deadline".into(),
+                        ));
+                    }
+                    *cache = Some(entries.clone());
+                }
+                Ok((
+                    entries
+                        .into_iter()
+                        .map(|e| {
+                            (
+                                e.category,
+                                e.handle,
+                                e.end,
+                                e.uuid,
+                                e.operations,
+                                e.descriptors,
+                                e.members,
+                            )
+                        })
+                        .collect(),
+                    trace,
+                ))
+            },
+        )
+        .await
     }
     /// Advisory metadata for this exact lifetime, never a security/availability grant.
     async fn get_cached_ssap(&self) -> zbus::fdo::Result<Vec<SsapEntry>> {
@@ -2803,7 +2816,7 @@ mod grant_tests {
             ),
             (
                 "DiscoverSsap",
-                vec!["ay", "y"],
+                vec!["ay", "y", "(ttttt)"],
                 vec!["(a(yqqayuayy)a(ayay))"],
             ),
             ("GetCachedSsap", vec![], vec!["a(yqqayuayy)"]),
@@ -3036,6 +3049,69 @@ mod grant_tests {
         );
         assert!(iface.ssap.lock().await.is_none());
     }
+    #[tokio::test]
+    async fn discovery_rpc_deadline_includes_held_preflight_state() {
+        // Actual production D-Bus handler and caller scope; /dev/null and the
+        // held adapter are explicit dependencies, not a usable Native backend.
+        let bus = crate::event_loop::tests::PrivateBus::start();
+        let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
+            slk_native::Adapter::open("/dev/null").unwrap(),
+            crate::config::DaemonConfig::default(),
+            crate::bonding::BondingStore::new(std::path::Path::new("/tmp"), "discovery-deadline"),
+            crate::profile::ProfileRegistry::new(),
+        )));
+        let iface = ConnectionIface::new(state.clone(), 7, SleLinkInfo::default(), 0);
+        let server = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .serve_at("/test", iface.clone())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let caller = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let proxy = zbus::Proxy::new(
+            &caller,
+            server.unique_name().unwrap().as_str(),
+            "/test",
+            slk_contract::CONNECTION,
+        )
+        .await
+        .unwrap();
+        let _held = state.lock().await;
+        for already_expired in [true, false] {
+            let original =
+                slk_channel::deadline::Deadline::after(std::time::Duration::from_millis(100))
+                    .unwrap();
+            if already_expired {
+                tokio::time::sleep_until(original.instant().into()).await;
+            }
+            let result: Result<SsapDiscovery, zbus::Error> = tokio::time::timeout(
+                std::time::Duration::from_secs(2),
+                proxy.call(
+                    "DiscoverSsap",
+                    &(
+                        Vec::<u8>::new(),
+                        1u8,
+                        slk_contract::deadline_wire(original.stamp()),
+                    ),
+                ),
+            )
+            .await
+            .expect("handler must not wait for held state beyond original deadline");
+            assert!(matches!(result, Err(zbus::Error::MethodError(name, _, _))
+                if name.as_str() == "org.freedesktop.DBus.Error.Timeout"));
+            assert!(iface.ssap.lock().await.is_none());
+            assert!(matches!(
+                *iface.ssap_initialization.lock().await,
+                Initialization::NotStarted
+            ));
+        }
+    }
+
     #[tokio::test]
     async fn actual_scoped_handler_rejects_before_held_business_state() {
         let state = Arc::new(Mutex::new(crate::state::AdapterState::new(

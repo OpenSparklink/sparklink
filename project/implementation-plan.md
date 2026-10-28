@@ -1,23 +1,22 @@
 # SparkLink / Linux 联合实施方案
 
-## 当前批次：C/Python发现结果绑定
+## 当前批次：方法发现VM消费者
 
-C/Python发现绑定源码为[ed219c4](https://github.com/OpenSparklink/sparklink/commit/ed219c46489c21f30620f2358ad96f6490434abf)。
-新入口复用唯一Rust SDK/Engine与原期限，结果最多80条/96事务；条目/trace本地读取不
-重发RPC，不保留Client/Connection、授权或当前可用性。Python等对象锁也受原期限约束。
-共享Rust边界拒绝畸形/超预算结果，生成C头及Python导出、实际调用者和参考文档同步。
+发现VM消费者源码为[4387001](https://github.com/OpenSparklink/sparklink/commit/4387001776c55240e0d35545f2b8f8da66ddf61e)。
+现有C/Python helper增加`ssap-find-method`，通过同一SDK/Engine核对过滤后单个预期
+方法UUID/category/handle，并输出条目和完整原始事务trace。连接获取、显式启动屏障
+和发现共用原5秒；父Client关闭后原Connection继续持有同一caller。
 
-实际共享库/私有D-Bus的C/Python消费者通过，精确四次发现RPC/语言；覆盖错误不改输出、
-短缓冲不重发、关闭后历史结果、拒绝/超时与资源收敛。另有111项Python、11项Rust SDK、
-5项daemon发现及生产边界最大值/17种负对照通过；严格Clippy、生成头/导出和HTML通过。
-初次工作目录与全套Python环境失败保留，正确路径/库/缓存/socket权限重跑，未放宽断言。
-依赖明确为fixture；未运行新形式化或硬件，不授Native并发、系统部署权限或真实交付资格。
-管理权限保持；VM发现工具、准确产物发现/method双端验收及完整生命周期仍缺失。
+实际编译C/Python私有总线回归通过20个新增场景：匹配/错handle、畸形/拒绝/超时、
+非法参数及未释放屏障；精确10次新增RPC，无成功行冒充失败。屏障退出时间按原钟
+deadline核对，不以监督器12秒替代。完整既有SDK集成及严格Clippy/HTML同批通过。
+依赖是有限metadata/peer fixture，不是Native/固件或新实机资格；未运行新形式化。
+method runner的独立双端发现判定及准确产物发现/方法交付仍缺失，历史v1/v2不升级。
 
-下一批接现有VM消费者和方法runner的发现模式，对照对端实际方法UUID/handle及trace，
-按准确artifact取得双端交付并回归原路径。长结果/生命周期、启动根因并行，禁止猜测wake、
-CLOSE旁路或未变化重试。S0–S6/19WP/10FV/12DG、VM-only及原验收保持，UserHost P4；
-自然故障、非人工恢复、U#22及其他未完成整项仍开放，不扩为控制面竞争全集前置。
+下一批复用现有监督器/方法runner，绑定publisher方法身份、实际SDK发现收据及双端USB，
+按新增版本验收；旧v1/v2保持原范围。新产物真实交付与原路径保持、长结果/生命周期
+和启动根因并行；不猜测wake、不跳过CLOSE、不重复未变化失败。S0–S6/19WP/10FV/12DG、
+VM-only、UserHost P4及原验收保持，自然故障和非人工恢复继续开放。
 
 ## 有界 issue 清理结果与主线恢复
 
@@ -501,48 +500,40 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
 当前实施批次（不是新产物资格，直接读取唯一记录）：
 ```json
 {
-  "id": "WP08-SSAP-DISCOVERY-LANGUAGE-VIEWS-v1",
-  "state": "IMPLEMENTED_OFFLINE_PASS_VM_CALLER_AND_REAL_DELIVERY_PENDING",
+  "id": "WP08-SSAP-DISCOVERY-VM-CONSUMERS-v1",
+  "state": "ACTUAL_CONSUMER_OFFLINE_PASS_PAIRED_RUNNER_AND_REAL_DELIVERY_PENDING",
   "implementation_sources": {
-    "public": "ed219c46489c21f30620f2358ad96f6490434abf",
-    "production_kernel_unchanged": "52ae7f08f2eafc3d79920fe5a14892970ecdd284"
+    "public": "4387001776c55240e0d35545f2b8f8da66ddf61e"
   },
-  "production_behavior": "C/Python call existing RemoteSsap original-deadline discovery. Immutable bounded entry/trace results retain no executor/connection/authority; local reads never repeat RPC. Shared Rust result boundary and existing Engine 80/96 limits; management-only policy unchanged.",
+  "production_behavior": "Existing C/Python VM consumers invoke the sole SDK/Engine discovery with original deadline and start barrier; exact expected method identity and all trace bytes retained. No Host, codec, permission or protocol change.",
   "offline_checks": {
-    "actual_cdylib_C_Python_private_bus": "PASS_COMPLETE_RETAINED_ARTIFACTS; four expected discovery RPCs per language, negative/no-retry/output/lifetime and lock-deadline checks",
-    "python_contract_suite": 111,
-    "rust_sdk_private_bus": 11,
-    "daemon_discovery": 5,
-    "production_receipt_validator": "PASS_MAXIMUM_BUDGET_AND_17_NEGATIVE_VARIANTS",
+    "actual_language_suite": "PASS_COMPLETE_RETAINED_FINAL_ARTIFACT",
+    "new_consumer_scenarios": 20,
+    "new_RPCs": 10,
+    "original_barrier_clock": "EXIT_NOT_BEFORE_ORIGINAL_DEADLINE; NO_SUPERVISOR_TIMEOUT_SUBSTITUTION",
     "strict_clippy": "PASS",
-    "generated_header_actual_exports": "MATCH",
     "strict_html_inventory_examples": "PASS"
   },
-  "offline_scope": "Actual language entry points and production SDK/daemon functions against explicit finite metadata/peer fixtures. No Native concurrency, deployment permissions, firmware, air delivery or implementation refinement proof.",
-  "initial_failures_retained": [
-    "Edit command used wrong working directory before mutation; rerun from correct worktree",
-    "Python full suite first used missing library/kernel paths and readonly ccache; sandbox also denied local socket opts; explicit actual inputs and permission context fixed without weakening assertions"
-  ],
+  "offline_scope": "Actual compiled consumers against explicit finite private-bus metadata/peer. Not VM/hardware, Native concurrency, deployment policy or formal qualification.",
   "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "NOT_RUN; historical identities/failures retained, no new real discovery/method qualification.",
+  "hardware_status": "NOT_RUN; historical records and failures retained without qualification transfer.",
   "issue_sync": [
     {
       "repository": "sparklink",
       "number": 22,
       "state": "open",
-      "body_sha256": "cc15715cf1bfebabcb4a986618e2704689836a30b146fb953e39a3d1720ce953",
+      "body_sha256": "4d1466658a721d37259512362fb7516cbe0a3d2fceda00efd98fd924f760eacc",
       "source_offline_only": true,
       "original_acceptance_unchanged": true
     }
   ],
   "exit_conditions": [
-    "Same SDK/unique Engine and original deadline used",
-    "Owned bounded immutable result does not retain connection or retry",
-    "C header/Python export/callers/docs agree",
-    "Actual compiled C/Python fixture and scope-negative checks passed",
-    "Source-only U22 readback and canonical state synchronized; issue remains open"
+    "Same original SDK/Engine and five-second deadline",
+    "Expected method identity/full trace exposed with no success receipt on failure",
+    "Actual C/Python consumer and barrier-clock checks passed",
+    "Source/offline summary only; original issue acceptance retained"
   ],
-  "next": "Connect discovery mode in existing C/Python VM consumer and method runner; independently check expected remote method identity and trace with exact artifact. Continue long-result/lifecycle and method v2 paired delivery. Startup audit stays parallel without guessed wake/CLOSE bypass/unchanged retry; no all-recovery/control-plane prerequisite."
+  "next": "Extend the existing method runner/supervisor to consume discovery receipts and independently bind paired USB discovery to publisher method identity; version the new acceptance without upgrading historical v1/v2. Continue exact-artifact method v2/long-result/lifecycle and startup audit in parallel, no guessed wake/CLOSE bypass/unchanged retry or full-control prerequisite."
 }
 ```
 

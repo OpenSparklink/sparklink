@@ -3594,6 +3594,152 @@ mod tests {
         .unwrap()
     }
     #[tokio::test]
+    async fn actual_actor_response_backpressure_keeps_original_negotiation_obligation() {
+        // Actual exchange_loop and OS socket pressure. AF_UNIX supplies no
+        // Native receipt, Grant, credit, USB or RF evidence. The extra fd only
+        // fills the transport queue before the peer starts its request.
+        for outcome in ["unblock", "deadline", "stop"] {
+            let (fd, peer) = transport_pair();
+            let pressure = fd.try_clone().unwrap();
+            let small = 1024i32;
+            assert_eq!(
+                unsafe {
+                    nix::libc::setsockopt(
+                        fd.as_raw_fd(),
+                        nix::libc::SOL_SOCKET,
+                        nix::libc::SO_SNDBUF,
+                        (&small as *const i32).cast(),
+                        std::mem::size_of_val(&small) as nix::libc::socklen_t,
+                    )
+                },
+                0
+            );
+            let peer = AsyncFd::new(peer).unwrap();
+            let (state, mut view) = watch::channel(Status::Starting);
+            let (stop, mut stopped) = oneshot::channel();
+            let (_queries, incoming) = mpsc::channel(8);
+            let deadline = Instant::now() + Duration::from_secs(1);
+            let task = tokio::spawn(async move {
+                exchange_loop(
+                    Wire::fixture(AsyncFd::new(fd).unwrap()),
+                    fixture_capabilities(0),
+                    deadline,
+                    &mut stopped,
+                    incoming,
+                    &state,
+                    std::sync::Arc::new(std::sync::Mutex::new(
+                        crate::ssap_database::Database::default(),
+                    )),
+                )
+                .await
+            });
+            let own_request = tokio::time::timeout(Duration::from_secs(1), async {
+                loop {
+                    let mut ready = peer.readable().await.unwrap();
+                    let mut raw = [0; 249];
+                    if let Ok(result) = ready.try_io(|fd| receive_fixture(fd.get_ref(), &mut raw)) {
+                        return raw[..result.unwrap()].to_vec();
+                    }
+                }
+            })
+            .await
+            .unwrap();
+            assert_eq!(own_request, [2, 7, 249, 0, 1, 2, 4, 0, 0, 0]);
+            let filler = [0xee; 249];
+            let mut admitted = 0;
+            loop {
+                match send(&pressure, &filler) {
+                    Ok(()) => {
+                        admitted += 1;
+                        assert!(admitted <= 128);
+                    }
+                    Err(e) if e.kind() == io::ErrorKind::WouldBlock => break,
+                    Err(e) => panic!("pressure setup: {e}"),
+                }
+            }
+            assert!(admitted > 0);
+            // Independent peer bytes: its request precedes its response to us.
+            send(peer.get_ref(), &[2, 7, 249, 0, 1, 2, 4, 0, 0, 0]).unwrap();
+            send(peer.get_ref(), &[3, 7, 249, 0, 1, 2, 4, 0, 0, 0]).unwrap();
+            tokio::time::timeout_at(deadline, async {
+                loop {
+                    let mut unread = 0i32;
+                    assert_eq!(
+                        unsafe {
+                            nix::libc::ioctl(pressure.as_raw_fd(), nix::libc::FIONREAD, &mut unread)
+                        },
+                        0
+                    );
+                    if unread == 0 {
+                        break;
+                    }
+                    view.changed().await.unwrap();
+                }
+            })
+            .await
+            .unwrap();
+            assert!(
+                matches!(*view.borrow(), Status::Starting),
+                "peer response must not discharge our backpressured response"
+            );
+            assert!(!task.is_finished());
+            match outcome {
+                "unblock" => {
+                    // Only drain the actual pressure records; the next packet
+                    // must be the actor's own exact ExchangeInfo response.
+                    for _ in 0..admitted {
+                        let mut raw = [0; 249];
+                        let n = receive_fixture(peer.get_ref(), &mut raw).unwrap();
+                        assert_eq!(&raw[..n], filler);
+                    }
+                    let info = negotiated(view.clone()).await;
+                    assert_eq!(info.7, [3, 7, 249, 0, 1, 2, 4, 0, 0, 0]);
+                    assert_eq!(info.9, [3, 7, 249, 0, 1, 2, 4, 0, 0, 0]);
+                    let mut raw = [0; 249];
+                    let n = receive_fixture(peer.get_ref(), &mut raw).unwrap();
+                    assert_eq!(&raw[..n], info.9);
+                    stop.send(()).unwrap();
+                    task.await.unwrap().unwrap();
+                }
+                "deadline" => {
+                    let error = tokio::time::timeout(Duration::from_secs(2), task)
+                        .await
+                        .unwrap()
+                        .unwrap()
+                        .unwrap_err();
+                    assert_eq!(error.kind(), io::ErrorKind::TimedOut);
+                    assert!(Instant::now() >= deadline);
+                    assert!(matches!(*view.borrow(), Status::Starting));
+                    drop(stop);
+                }
+                "stop" => {
+                    stop.send(()).unwrap();
+                    tokio::time::timeout_at(deadline, task)
+                        .await
+                        .unwrap()
+                        .unwrap()
+                        .unwrap();
+                    assert!(matches!(*view.borrow(), Status::Starting));
+                }
+                _ => unreachable!(),
+            }
+            if outcome != "unblock" {
+                for _ in 0..admitted {
+                    let mut raw = [0; 249];
+                    let n = receive_fixture(peer.get_ref(), &mut raw).unwrap();
+                    assert_eq!(&raw[..n], filler);
+                }
+            }
+            assert_eq!(
+                receive_fixture(peer.get_ref(), &mut [0; 249])
+                    .unwrap_err()
+                    .kind(),
+                io::ErrorKind::WouldBlock,
+                "expiry/stop cannot fabricate a successful response"
+            );
+        }
+    }
+    #[tokio::test]
     async fn native_wire_never_accepts_local_fixture_as_security_context() {
         let (a, b) = transport_pair();
         send(&b, b"fixture-only").unwrap();

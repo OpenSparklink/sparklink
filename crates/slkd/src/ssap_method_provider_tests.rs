@@ -574,3 +574,171 @@ async fn method_long_withdrawal_preserves_only_encoded_snapshot_and_original_dea
     );
     assert_eq!(db.lock().unwrap().local_read(guard).unwrap(), [7]);
 }
+
+#[tokio::test]
+async fn method_arguments_cross_actual_codec_reassembly_and_provider_without_truncation() {
+    let (_bus, state, _server, owner, _policy) = setup(true, Duration::ZERO).await;
+    let (tx, mut calls) = mpsc::channel(1);
+    owner
+        .object_server()
+        .at("/method", Provider(tx))
+        .await
+        .unwrap();
+    let (_, h) = register_method(&owner, 0).await;
+    bind(&owner, h).await.unwrap();
+    let db = store(&state).await;
+    let wire = wire();
+    let mut id = 0u64;
+    for command in [false, true] {
+        for mtu in [249u16, 2042] {
+            for size in [0usize, 245, 246, 249, 250, 253, 254, 255, 2038, 2039, 2043] {
+                id += 1;
+                let arguments: Vec<u8> = (0..size)
+                    .map(|n| (n.wrapping_mul(137) + id as usize) as u8)
+                    .collect();
+                let value_request = if command {
+                    ValuePdu::CallMethodCommand {
+                        handle: h,
+                        arguments: &arguments,
+                    }
+                } else {
+                    ValuePdu::CallMethod {
+                        handle: h,
+                        arguments: &arguments,
+                    }
+                };
+                let mut raw = vec![0xcc; 2047];
+                let n = value_request.encode(2047, &mut raw).unwrap();
+                raw.truncate(n);
+                let opcode = if command { 18 } else { 19 };
+                let expected: Vec<_> = [opcode, 3, h as u8, (h >> 8) as u8]
+                    .into_iter()
+                    .chain(arguments.iter().copied())
+                    .collect();
+                assert_eq!(raw, expected);
+                let mut packet = request(h, command, id);
+                packet.mtu = 2047; // Explicit negotiated/Native context fixture.
+                let deadline = packet.deadline;
+                let constraint = packet.constraint.unwrap();
+                let plan = fragments::Plan::new(&raw, mtu, true).unwrap();
+                let payload = usize::from(mtu) - 4;
+                let count = if raw.len() <= usize::from(mtu) {
+                    1
+                } else {
+                    (size + 2).div_ceil(payload)
+                };
+                assert_eq!(plan.count(), count);
+                let mut assembly = fragments::Reassembly::<u64, Instant>::default();
+                let mut complete = None;
+                for index in 0..count {
+                    let mut part = vec![0; usize::from(mtu)];
+                    let n = plan.encode(index, &mut part).unwrap();
+                    part.truncate(n);
+                    if count == 1 {
+                        assert_eq!(part, expected);
+                        complete = Some(part);
+                    } else {
+                        let last = index + 1 == count;
+                        assert_eq!(
+                            &part[..4],
+                            &[
+                                opcode | 0x80,
+                                if index == 0 {
+                                    0
+                                } else if last {
+                                    2
+                                } else {
+                                    1
+                                },
+                                if index == 0 || last {
+                                    count as u8
+                                } else {
+                                    index as u8
+                                },
+                                0
+                            ]
+                        );
+                        // Independent slice includes the method handle once,
+                        // as part of the logical payload, not every fragment.
+                        assert_eq!(
+                            &part[4..],
+                            &expected[2 + index * payload
+                                ..(2 + (index + 1) * payload).min(expected.len())]
+                        );
+                        let decoded = assembly
+                            .receive(&part, mtu, true, 13, Instant::now(), deadline)
+                            .unwrap();
+                        assert_eq!(decoded.is_some(), last);
+                        if let Some(decoded) = decoded {
+                            assert_eq!(decoded.context, 13);
+                            assert_eq!(decoded.deadline, deadline);
+                            complete = Some(decoded.bytes);
+                        }
+                    }
+                }
+                packet.bytes = complete.unwrap();
+                assert_eq!(packet.bytes, expected);
+                let task = tokio::spawn(resolve_server(packet, db.clone(), wire.clone()));
+                let call = next(&mut calls).await;
+                assert_eq!(call.request.arguments, arguments);
+                assert_eq!(call.request.method, h);
+                assert_eq!(call.request.operation, opcode);
+                assert_eq!(call.request.request_id, id);
+                assert_eq!(call.request.deadline_ns, constraint.deadline_monotonic_ns);
+                assert_eq!(call.request.identity, (0, 7, 13, 1, 41, 0, 10, 10, 0));
+                assert_eq!(
+                    call.request.maximum_result_bytes,
+                    if command { 0 } else { 2045 }
+                );
+                let independent = if command {
+                    vec![]
+                } else {
+                    vec![0x5a, id as u8, 0]
+                };
+                call.reply.send((0, independent.clone())).unwrap();
+                let pending = finish(&wire, task.await.unwrap(), &db).unwrap();
+                if command {
+                    assert!(pending.is_none(), "command must not manufacture a reply");
+                } else {
+                    let pending = pending.unwrap();
+                    assert_eq!(pending.deadline, deadline);
+                    assert_eq!(pending.constraint, Some(constraint));
+                    assert_eq!(
+                        client_value_response(2047, &expected, &pending.bytes)
+                            .unwrap()
+                            .unwrap(),
+                        independent
+                    );
+                }
+                if count > 1 {
+                    assert!(matches!(
+                        fragments::Plan::new(&raw, mtu, false),
+                        Err(fragments::Error::Unsupported)
+                    ));
+                }
+            }
+        }
+    }
+    // Over-limit producer input fails atomically, before Provider invocation.
+    for command in [false, true] {
+        let arguments = vec![0x6b; 2044];
+        let value_request = if command {
+            ValuePdu::CallMethodCommand {
+                handle: h,
+                arguments: &arguments,
+            }
+        } else {
+            ValuePdu::CallMethod {
+                handle: h,
+                arguments: &arguments,
+            }
+        };
+        let mut raw = [0xcc; 2048];
+        assert_eq!(
+            value_request.encode(2047, &mut raw),
+            Err(slk_protocol::ssap::value::ValueError::Mtu)
+        );
+        assert!(raw.iter().all(|b| *b == 0xcc));
+        assert!(calls.try_recv().is_err());
+    }
+}

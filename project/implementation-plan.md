@@ -13,10 +13,14 @@
 既有生产函数长结果组合回归保留源码3305b98的限定范围；历史v1–v3不升级为v4。
 原始失败与全部资格身份保留，U#22的六条验收继续开放。
 
-下一步封存准确v4输入，取得真实发现／method短长结果及原路径保持证据。v3已准备
-输入仅保留历史用途，不能通过更换工具直接转授v4资格。K#15继续关联驻留固件、
-CLOSE完成触发及ACK发送；静态调用路径不能证明自然根因、实际drain或非人工恢复。
-不猜测wake、不绕过CLOSE、不重复未变化尝试。生命周期、数据和安全独立推进；
+准确v4输入已封存并通过现有准备链校验，无USB隔离VM启动检查通过；这是构建与
+准备范围，尚未取得真实发现／method短长结果和原路径保持的新资格。历史v1–v3
+身份不变。K#15的源码审计确认平台版本查询走BSLE后的queue9 bulk；直接前移可能
+消费启动／ACK消息，现有streaming内存观察也不能作启动前旁路。SDK固定文本和
+两类镜像相同版本返回值均不能证明精确驻留镜像。后续须先明确未匹配消息保留、
+原期限、queue／sequence所有权和stop/drain，再作有区别的受控VM诊断。
+静态审计不证明自然根因或非人工恢复；不猜测wake、不绕过CLOSE、不重复未变化
+尝试。生命周期、数据和安全独立推进；
 完整S0–S6/19WP/10FV/12DG、VM-only、UserHost P4和原验收不变。
 
 ## 有界 issue 清理结果与主线恢复
@@ -516,14 +520,14 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
   "offline_scope": "Actual Python executor/verifier with explicit process, negotiation and physical-packet fixtures. No actual VM, hardware, deployment, concurrency, firmware or formal qualification.",
   "formal_status": "NO_NEW_PROOF",
   "hardware_status": "NOT_RUN; previous exact qualifications and failures unchanged.",
-  "preparation_status": "NEW_V4_TOOLS_REQUIRE_FRESH_EXACT_INPUTS; V3_PREPARATION_NOT_UPGRADED",
-  "source_audit": "SDK110 E/U static paths separate CLOSE handler return from deferred status emission. Completion clears state after sender call; sender has early-return/failure-cleanup branches. ROM behavior and actual resident identity remain unverified; no root-cause/hardware/formal qualification.",
+  "preparation_status": "V4_EXACT_INPUTS_VALIDATED_NO_USB_VM_SMOKE_PASS; REAL_DELIVERY_PENDING",
+  "source_audit": "SDK GET_VERSION is distinct from chip query; fixed host text/shared static version cannot attest resident image. Native queue9 query runs after BSLE; moving it may consume unmatched boot/ACK messages. Streaming-only EP0 observation is not a pre-start fallback. Safe diagnosis must retain events, original deadlines, queue/sequence ownership and stop/drain. Root cause and natural recovery remain unverified.",
   "issue_sync": [
     {
       "repository": "linux",
       "number": 15,
       "state": "open",
-      "body_sha256": "f2b227c6a743e924aa4e3e0bfea2faeee0dc652c8efb1a322dde50311e1164c4",
+      "body_sha256": "508064c7175a6e17933b6dc2462f2eb2e479f90c2a32e43ffd8b62a70efbb9eb",
       "source_offline_only": true,
       "original_acceptance_unchanged": true
     },
@@ -531,7 +535,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
       "repository": "sparklink",
       "number": 22,
       "state": "open",
-      "body_sha256": "2500ac316c1d79493dc55c87d082419a7548efca5b4f0a2954269b920bf41710",
+      "body_sha256": "dfd70fab7c66c19aa2e3f384ce4cd9fbd8710c0926658fb2eca526df7fd9bd2f",
       "source_offline_only": true,
       "original_acceptance_unchanged": true
     }
@@ -543,7 +547,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Prepare accurate v4 artifacts and fresh inputs; real method discovery/short/long delivery remains pending startup diagnosis. No protocol/runtime behavior change."
+  "next": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently."
 }
 ```
 

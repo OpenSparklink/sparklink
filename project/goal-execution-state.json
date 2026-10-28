@@ -2027,14 +2027,14 @@
       "offline_scope": "Actual Python executor/verifier with explicit process, negotiation and physical-packet fixtures. No actual VM, hardware, deployment, concurrency, firmware or formal qualification.",
       "formal_status": "NO_NEW_PROOF",
       "hardware_status": "NOT_RUN; previous exact qualifications and failures unchanged.",
-      "preparation_status": "NEW_V4_TOOLS_REQUIRE_FRESH_EXACT_INPUTS; V3_PREPARATION_NOT_UPGRADED",
-      "source_audit": "SDK110 E/U static paths separate CLOSE handler return from deferred status emission. Completion clears state after sender call; sender has early-return/failure-cleanup branches. ROM behavior and actual resident identity remain unverified; no root-cause/hardware/formal qualification.",
+      "preparation_status": "V4_EXACT_INPUTS_VALIDATED_NO_USB_VM_SMOKE_PASS; REAL_DELIVERY_PENDING",
+      "source_audit": "SDK GET_VERSION is distinct from chip query; fixed host text/shared static version cannot attest resident image. Native queue9 query runs after BSLE; moving it may consume unmatched boot/ACK messages. Streaming-only EP0 observation is not a pre-start fallback. Safe diagnosis must retain events, original deadlines, queue/sequence ownership and stop/drain. Root cause and natural recovery remain unverified.",
       "issue_sync": [
         {
           "repository": "linux",
           "number": 15,
           "state": "open",
-          "body_sha256": "f2b227c6a743e924aa4e3e0bfea2faeee0dc652c8efb1a322dde50311e1164c4",
+          "body_sha256": "508064c7175a6e17933b6dc2462f2eb2e479f90c2a32e43ffd8b62a70efbb9eb",
           "source_offline_only": true,
           "original_acceptance_unchanged": true
         },
@@ -2042,7 +2042,7 @@
           "repository": "sparklink",
           "number": 22,
           "state": "open",
-          "body_sha256": "2500ac316c1d79493dc55c87d082419a7548efca5b4f0a2954269b920bf41710",
+          "body_sha256": "dfd70fab7c66c19aa2e3f384ce4cd9fbd8710c0926658fb2eca526df7fd9bd2f",
           "source_offline_only": true,
           "original_acceptance_unchanged": true
         }
@@ -2054,7 +2054,7 @@
         "Original scope retained for historical v1-v3",
         "Publish source/offline summary only"
       ],
-      "next": "Prepare accurate v4 artifacts and fresh inputs; real method discovery/short/long delivery remains pending startup diagnosis. No protocol/runtime behavior change."
+      "next": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently."
     },
     "selected_qualification": {
       "version": 1,
@@ -5309,7 +5309,7 @@
   },
   "artifact_preparation": {
     "authority": "project/qualification-records.json:batch",
-    "status": "NEW_V4_TOOLS_REQUIRE_FRESH_EXACT_INPUTS; V3_PREPARATION_NOT_UPGRADED"
+    "status": "V4_EXACT_INPUTS_VALIDATED_NO_USB_VM_SMOKE_PASS; REAL_DELIVERY_PENDING"
   },
   "startup_diagnostic_scope": {
     "authority": "project/qualification-records.json:batch",

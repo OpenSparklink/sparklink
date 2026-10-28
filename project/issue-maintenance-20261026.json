@@ -8402,6 +8402,27 @@
         }
       ],
       "scope": "Method v4 paired long-result gate, actual sequence receipts, shared fragment/cause/TX accounting, old versions retained; source/offline only."
+    },
+    {
+      "updates": [
+        {
+          "repository": "linux",
+          "number": 15,
+          "state": "open",
+          "body_sha256": "508064c7175a6e17933b6dc2462f2eb2e479f90c2a32e43ffd8b62a70efbb9eb",
+          "source_offline_only": true,
+          "original_acceptance_unchanged": true
+        },
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "state": "open",
+          "body_sha256": "dfd70fab7c66c19aa2e3f384ce4cd9fbd8710c0926658fb2eca526df7fd9bd2f",
+          "source_offline_only": true,
+          "original_acceptance_unchanged": true
+        }
+      ],
+      "scope": "Exact v4 preparation/no-USB smoke boundary and source audit of pre-CLOSE version-query constraints; no hardware/formal qualification or closure."
     }
   ],
   "current_disposition": {

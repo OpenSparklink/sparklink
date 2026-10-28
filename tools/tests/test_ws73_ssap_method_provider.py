@@ -148,24 +148,186 @@ def fixture_v3_discovery(phase=0):
     return row,matched,packets
 
 
+def sequence_negotiation(row):
+    row['ssap_exchange_contract']=2
+    row['ssap_receipts']=[]
+    for endpoint in row['owners']:
+        o,c=endpoint['owner'],endpoint['object']
+        row['ssap_receipts'].append(dict(args=['slctl'],exit=0,
+            stdout=f'SsapExchangeInfo: index={o["index"]} generation={o["generation"]} lifetime={c["lifetime"]} handle={c["handle"]} local_mtu=2042 negotiated_mtu=2042 request=0207fa07010204000000 peer_reply=0307fa07010204000000 peer_request=0207fa07010204000000 response=0307fa07010204000000\n'))
+
+
+def fixture_v4_long(phase=0):
+    from test_ws73_ssap_command import output
+    row,matched,packets=fixture_v3_discovery(phase)
+    row['ssap_method_provider_version']=4
+    sequence_negotiation(row)
+    record=40000
+    for item in row['ssap_method_provider_cases']:
+        source,target=row['owners'][item['sender']],row['owners'][item['target']]
+        value=bytes((n*73+phase*7+item['sender'])%256 for n in range(2045))
+        item['long_result']=value.hex()
+        step=copy.deepcopy(item['steps'][2]);step['mode']='value2045'
+        arguments=hashlib.sha256(f'{phase}/{item["sender"]}/long-arguments'.encode()).hexdigest()
+        step['arguments']=arguments;app=step['request'];old_value=app['ssap_expected']
+        app['args'][-2:]=[value.hex(),arguments];app['ssap_expected']=value.hex();app['ssap_arguments']=arguments
+        app['stdout']=app['stdout'].replace(old_value,value.hex())
+        start=item['steps'][-1]['processed_wall_ns']+1000000
+        app.update(start_wall_ns=start,ssap_released_wall_ns=start+100000,
+                   ssap_release_monotonic_ns=start+100000,end_wall_ns=start+1000000)
+        d=step['callback']['prompt'];d.update(token=6,request=item['steps'][-1]['callback']['prompt']['request']+1,
+                    arguments=arguments,deadline_ns=start+4900000000)
+        c=step['callback'];c.update(observed_wall_ns=start+200000,observed_monotonic_ns=start+200000,
+            reply_before_wall_ns=start+300000,reply_before_monotonic_ns=start+300000,
+            replied_wall_ns=start+310000,replied_monotonic_ns=start+310000,
+            supervisor_deadline_ns=start+7000100000)
+        step['reply_command']=f'provide p6 {value.hex()}'
+        item['steps'].append(step)
+        item['stdout']+=f'SsapAuthorizationDecision: request={d["request"]} property={item["handle"]} data_type=3 write=true security=0 approved=true; local policy only\n'
+        item['stdout']+=f'SsapMethodProviderPrompt: token=p6 request={d["request"]} index={d["index"]} generation={d["generation"]} lifetime={d["lifetime"]} handle={d["handle"]} epoch={d["epoch"]} security=0 local_tcid=10 remote_tcid=10 pi=0 method={item["handle"]} deadline_ns={d["deadline_ns"]} operation=19 arguments={arguments} maximum_result_bytes=2045; answer \'provide p6 HEX\' (\'-\' for empty) or \'provider-error p6 AF..FF\'\n'
+        item['stdout']+=f'SsapMethodProviderResult: request={d["request"]} method={item["handle"]} status=0 bytes=2045; application response only\n'
+        output(item)
+        # Independent literal two-part SSAP result; no production codec/helper.
+        request=b'\x13\x03'+item['handle'].to_bytes(2,'little')+bytes.fromhex(arguments)
+        pieces=[(source,'out',request,150000),(target,'in',request,160000),
+                (target,'out',b'\x94\0\x02\0'+value[:2038],400000),
+                (source,'in',b'\x94\0\x02\0'+value[:2038],410000),
+                (target,'out',b'\x94\x02\x02\0'+value[2038:],500000),
+                (source,'in',b'\x94\x02\x02\0'+value[2038:],510000)]
+        for owner,direction,pdu,offset in pieces:
+            frame=b'\x0a\0'+len(pdu).to_bytes(2,'little')+pdu
+            packet=dict(bus=owner['owner']['bus'],device=owner['owner']['device'],handle=owner['object']['handle'],
+                        direction=direction,data=frame.hex(),boundary=0,record=record,wall_ns=start+offset)
+            # TX/RX use different ACB cuts; only actual TX pieces count credit.
+            stride=250 if direction=='out' else 180
+            chunks=[frame[i:i+stride] for i in range(0,len(frame),stride)]
+            packet['fragments']=[]
+            for n,chunk in enumerate(chunks):
+                part=copy.deepcopy({k:v for k,v in packet.items() if k!='fragments'})
+                part.update(data=chunk.hex(),record=record,wall_ns=start+offset+n*100,
+                    boundary=0 if len(chunks)==1 else 1 if n==0 else 3 if n==len(chunks)-1 else 2)
+                record+=1;packet['fragments'].append(part)
+            packets.append(packet)
+    return row,matched,packets
+
+
 def summary(version=1):
     rows=[]
     for phase in (0,1):
-        row,matched,packets={1:fixture,2:fixture_v2_command,3:fixture_v3_discovery}[version](phase)
+        row,matched,packets={1:fixture,2:fixture_v2_command,3:fixture_v3_discovery,4:fixture_v4_long}[version](phase)
         items,credit=method.corroborate(row,matched,inventory=copy.deepcopy(packets))
         if packets:raise AssertionError('unconsumed fixture wire')
         rows.append(dict(phase=phase,owners=row['owners'],ssap_method_providers=items))
-        if credit!={0:{1:8,2:10,3:14}[version],1:{1:8,2:10,3:14}[version]}:raise AssertionError('actual TXs counted once, not both legs')
+        if credit!={0:{1:8,2:10,3:14,4:25}[version],1:{1:8,2:10,3:14,4:25}[version]}:raise AssertionError('actual TXs counted once, not both legs')
     return dict(proofs=rows)
 
 
 class MethodProviderEvidence(unittest.TestCase):
+    def test_v4_retains_short_discovery_command_and_independent_long_result(self):
+        proof=summary(4)
+        self.assertTrue(method.valid_summary(proof,version=4))
+        self.assertFalse(method.valid_summary(proof,version=3))
+        self.assertFalse(method.valid_summary(summary(3),version=4))
+        method.validate_rows([fixture_v4_long(p)[0] for p in (0,1)],True)
+        for row in proof['proofs']:
+            for item in row['ssap_method_providers']:
+                self.assertEqual(len(item['wire']),16)
+                result=item['wire'][13]
+                self.assertEqual(result['logical_pdu'],'1403'+item['long_result'])
+                self.assertEqual(len(result['tx']['ssap_fragments']),2)
+                self.assertEqual(len(result['tx']['ssap_fragments'][0]['fragments']),9)
+                self.assertEqual(len(result['rx']['ssap_fragments'][0]['fragments']),12)
+
+    def test_v4_fragment_payload_identity_order_and_missing_evidence_fail_closed(self):
+        for mutation in ('missing','duplicate','payload','header','endpoint','acb-endpoint','acb-order','ssap-order','deadline','before-answer','rx-before-prefix','missing-step','old-version','missing-inventory'):
+            row,matched,packets=fixture_v4_long();case=row['ssap_method_provider_cases'][0]
+            p=next(p for p in packets if p['record']==40002)
+            if mutation=='missing':packets.remove(p)
+            elif mutation=='duplicate':packets.append(copy.deepcopy(p))
+            elif mutation=='payload':p['data']=p['data'][:-2]+'ff'
+            elif mutation=='header':p['data']=p['data'][:10]+'03'+p['data'][12:]
+            elif mutation=='endpoint':p['device']=999
+            elif mutation=='acb-endpoint':p['fragments'][0]['handle']=999
+            elif mutation=='acb-order':p['fragments'].reverse()
+            elif mutation=='ssap-order':
+                later=next(q for q in packets if q['record']==40023)
+                later['record']=39999;later['fragments'][0]['record']=39999
+            elif mutation=='deadline':case['steps'][-1]['callback']['replied_monotonic_ns']=case['steps'][-1]['callback']['prompt']['deadline_ns']
+            elif mutation=='before-answer':
+                for f in [p,*p['fragments']]:f['wall_ns']=case['steps'][-1]['callback']['reply_before_wall_ns']-1
+            elif mutation=='rx-before-prefix':
+                p=next(p for p in packets if p['record']==40011)
+                for f in [p,*p['fragments']]:f['wall_ns']-=20000
+            elif mutation=='missing-step':case['steps'].pop()
+            elif mutation=='old-version':row['ssap_method_provider_version']=3
+            inventory=copy.deepcopy(packets)
+            if mutation=='missing-inventory':inventory.pop()
+            with self.subTest(mutation=mutation),self.assertRaises(CaptureError):
+                method.corroborate(row,matched,inventory=inventory)
+
+    def test_v4_requires_actual_both_way_sequence_negotiation(self):
+        for mode in ('missing','old-contract','no-sequence','small-mtu','old-lifetime'):
+            row,matched,packets=fixture_v4_long()
+            if mode=='missing':row['ssap_receipts'].pop()
+            elif mode=='old-contract':row['ssap_exchange_contract']=1
+            else:
+                line=row['ssap_receipts'][1]['stdout']
+                if mode=='no-sequence':line=line.replace('04000000','00000000')
+                elif mode=='small-mtu':line=line.replace('negotiated_mtu=2042','negotiated_mtu=249')
+                else:line=line.replace('lifetime=101','lifetime=999')
+                row['ssap_receipts'][1]['stdout']=line
+            with self.subTest(mode=mode),self.assertRaises(CaptureError):
+                method.corroborate(row,matched,inventory=copy.deepcopy(packets))
+
+    def test_v4_accepts_only_causal_overlapping_acb_prefixes(self):
+        row,matched,packets=fixture_v4_long()
+        tx=next(p for p in packets if p['record']==40002)
+        rx=next(p for p in packets if p['record']==40011)
+        consumed=0
+        for n,f in enumerate(rx['fragments']):
+            consumed+=len(bytes.fromhex(f['data']))
+            f['wall_ns']=tx['wall_ns']+((consumed+249)//250-1)*100+10+n
+        rx['wall_ns']=rx['fragments'][0]['wall_ns']
+        self.assertLess(rx['wall_ns'],tx['fragments'][-1]['wall_ns'])
+        proof,_=method.corroborate(row,matched,inventory=copy.deepcopy(packets))
+        self.assertEqual(len(proof),2)
+        self.assertFalse(packets)
+
+    def test_method_fragment_contract_is_explicit_and_not_inherited_by_old_gates(self):
+        from ws73_ssap_value import fragment_parts,valid_wire
+        pdu=b'\x14\x03'+bytes(range(256))*7+bytes(253)
+        self.assertEqual(len(pdu),2047)
+        with self.assertRaises(CaptureError):fragment_parts(pdu)
+        for value in (True,2,0):
+            with self.subTest(value=value),self.assertRaises(CaptureError):
+                fragment_parts(pdu,ssap_method_result_contract=value)
+        with self.assertRaises(CaptureError):fragment_parts(b'\x14\x07'+pdu[2:],ssap_method_result_contract=1)
+        leg=summary(4)['proofs'][0]['ssap_method_providers'][0]['wire'][13]
+        self.assertTrue(valid_wire(leg))
+        for value in (None,True,2):
+            bad=copy.deepcopy(leg)
+            if value is None:bad.pop('ssap_method_result_contract')
+            else:bad['ssap_method_result_contract']=value
+            with self.subTest(value=value):self.assertFalse(valid_wire(bad))
+
+    def test_v4_saved_long_evidence_and_scope_cannot_be_forged(self):
+        original=summary(4)
+        for mutation in ('missing-part','truncated','version','wrong-result','missing-window','missing-rx'):
+            proof=copy.deepcopy(original);item=proof['proofs'][0]['ssap_method_providers'][0]
+            if mutation=='missing-part':item['wire'][13]['tx']['ssap_fragments'].pop()
+            elif mutation=='truncated':item['case']['long_result']=item['long_result'][:-2]
+            elif mutation=='version':item['version']=3
+            elif mutation=='wrong-result':item['long_result']='00'*2045
+            elif mutation=='missing-window':item['command_window_packets'].pop()
+            else:item['wire'][13].pop('rx')
+            with self.subTest(mutation=mutation):self.assertFalse(method.valid_summary(proof,version=4))
+
     def test_v3_discovery_and_existing_methods_have_full_paired_evidence(self):
         proof=summary(3)
         self.assertTrue(method.valid_summary(proof,version=3))
         self.assertFalse(method.valid_summary(proof,version=2))
         self.assertFalse(method.valid_summary(summary(2),version=3))
-        method.validate_rows([fixture_v3_discovery(p)[0] for p in (0,1)],True)
+        method.validate_rows([fixture_v3_discovery(p)[0] for p in (0,1)],True,version=3)
         for row in proof['proofs']:
             for item in row['ssap_method_providers']:
                 self.assertEqual(len(item['discovery_window_packets']),8)
@@ -286,6 +448,7 @@ class MethodProviderEvidence(unittest.TestCase):
         # prompt/context/deadline checks run; no fixture return is a verdict.
         for corrupt in (False,True):
             template,_,_=fixture();row={k:copy.deepcopy(v) for k,v in template.items() if not k.startswith('ssap_method_provider_')}
+            sequence_negotiation(row)
             processes=[];active={};calls=[]
             @contextmanager
             def publisher(run,row,sender,policy,**kw):
@@ -301,8 +464,8 @@ class MethodProviderEvidence(unittest.TestCase):
                 calls.append(args);item=active['item'];target=row['owners'][item['target']];ordinal=len(item['steps'])
                 now=time.monotonic_ns();deadline=now+7_000_000_000
                 arguments='00'*32 if corrupt else args[3]
-                operation=19 if ordinal<=3 else 18
-                maximum=2045 if ordinal<=3 else 0
+                operation=18 if ordinal in (4,5) else 19
+                maximum=0 if ordinal in (4,5) else 2045
                 d=dict(token=ordinal,request=ordinal,index=target['owner']['index'],generation=target['owner']['generation'],lifetime=target['object']['lifetime'],handle=target['object']['handle'],epoch=1,method=17,deadline_ns=now+4_900_000_000)
                 active['text'].append(f'SsapMethodProviderPrompt: token=p{d["token"]} request={d["request"]} index={d["index"]} generation={d["generation"]} lifetime={d["lifetime"]} handle={d["handle"]} epoch=1 security=0 local_tcid=10 remote_tcid=10 pi=0 method=17 deadline_ns={d["deadline_ns"]} operation={operation} arguments={arguments} maximum_result_bytes={maximum}; answer \'provide p{d["token"]} HEX\' (\'-\' for empty) or \'provider-error p{d["token"]} AF..FF\'')
                 app={};after_start(app,deadline);return app
@@ -329,10 +492,13 @@ class MethodProviderEvidence(unittest.TestCase):
                     else:
                         method.execute(run,row)
                         self.assertEqual(row['ssap_method_provider_status'],method.PENDING)
-                        self.assertEqual(len(calls),10)
+                        self.assertEqual(len(calls),12)
                         for p in processes:
                             self.assertIn('provider-error p1 FF\n',p.stdin.getvalue())
                             self.assertIn('provide p2 -\n',p.stdin.getvalue())
+                            long_lines=[l for l in p.stdin.getvalue().splitlines() if l.startswith('provide p6 ')]
+                            self.assertEqual(len(long_lines),1)
+                            self.assertEqual(len(bytes.fromhex(long_lines[0].split()[2])),2045)
                             self.assertIn('provider-error p4 FF\n',p.stdin.getvalue())
                             self.assertIn('provide p5 -\n',p.stdin.getvalue())
                             self.assertTrue(p.stdin.getvalue().endswith('quit\n'))

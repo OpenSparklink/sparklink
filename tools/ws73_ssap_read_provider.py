@@ -320,9 +320,11 @@ def validate_paired_leg(row,sender,receiver,frame,window,leg):
     return leg
 
 
-def _wire(row, item, matched, exchanges, *, requests=None, write_version=1, one_way_opcode=None):
+def _wire(row, item, matched, exchanges, *, requests=None, write_version=1, one_way_opcode=None, method_version=None):
     from ws73_ssap_value import physical_sends
     if type(write_version)is not int or write_version not in (1,2,3):raise CaptureError('explicit WRITE capture version required')
+    if method_version is not None and (type(method_version)is not int or method_version!=4):
+        raise CaptureError('explicit method v4 fragment contract required')
     if one_way_opcode is not None and (type(one_way_opcode) is not int or one_way_opcode != 18):
         raise CaptureError('only explicit method command opcode18 is supported here')
     s, t, h = item['sender'], item['target'], item['handle']
@@ -337,11 +339,11 @@ def _wire(row, item, matched, exchanges, *, requests=None, write_version=1, one_
         legs=[(s,t,request)] if response is None else [(s,t,request),(t,s,response)]
         for sender, receiver, pdu in legs:
             frame = b'\x0a\0'+len(pdu).to_bytes(2, 'little')+pdu
-            if write_version==2:
+            if write_version==2 or method_version==4:
                 from ws73_ssap_value import pair_wire,fragment_parts
                 from ws73_ssap_value import physical_packets,wire_interval as interval
                 leg=pair_wire(row,matched,row['owners'][sender],row['owners'][receiver],pdu,window)
-                parts=fragment_parts(pdu) if len(pdu)>2042 else [pdu]
+                parts=fragment_parts(pdu,ssap_method_result_contract=1 if method_version==4 else None) if len(pdu)>2042 else [pdu]
                 for n,part in enumerate(parts):
                     physical={side:physical_packets(leg[side])[n] for side in ('tx','rx')}
                     validate_paired_leg(row,sender,receiver,b'\x0a\0'+len(part).to_bytes(2,'little')+part,window,physical)

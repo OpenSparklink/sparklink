@@ -130,10 +130,14 @@ def command_pdu(pdu):
     else:raise CaptureError('only command12 and confirmation Read8/9 are covered')
 
 
-def fragment_parts(pdu,*,ssap_write_command_contract=None):
+def fragment_parts(pdu,*,ssap_write_command_contract=None,ssap_method_result_contract=None):
     command=write_command_contract(dict(ssap_write_command_contract=ssap_write_command_contract))if ssap_write_command_contract is not None else False
     if command:command_pdu(pdu)
-    supported=(9,12)if command else(9,11,13,14,15,16)
+    method=ssap_method_result_contract is not None
+    if method and (type(ssap_method_result_contract)is not int or ssap_method_result_contract!=1
+                   or command or pdu[:2]!=b'\x14\x03'):
+        raise CaptureError('explicit independent method result fragmentation contract required')
+    supported=(20,)if method else(9,12)if command else(9,11,13,14,15,16)
     if not 2042<len(pdu)<=(2048 if pdu[0] in (15,16) else 2047) or pdu[0]not in supported or pdu[1]&3!=3:raise CaptureError('bounded fragmented logical value/update required')
     begin=(pdu[1]&~3)|(8 if pdu[0]in (12,13) else 0);end=(pdu[1]&~3)|2
     return [bytes([pdu[0]|128,begin,2,0])+pdu[2:2040],bytes([pdu[0]|128,end,2,0])+pdu[2040:]]
@@ -165,7 +169,10 @@ def valid_wire(leg):
         if command:
             expected=bytes.fromhex(leg['expected_pdu']);command_pdu(expected)
             if (len(expected)>2042 and pdu!=expected)or (len(expected)<=2042 and pdu is not None):return False
-        parts=fragment_parts(pdu,ssap_write_command_contract=1 if command else None)if pdu is not None else None
+        method=leg.get('ssap_method_result_contract')
+        if method is not None and (type(method)is not int or method!=1 or command or pdu is None):return False
+        parts=fragment_parts(pdu,ssap_write_command_contract=1 if command else None,
+                             ssap_method_result_contract=method)if pdu is not None else None
         for side in ['tx','rx']:
             packets=leg[side]['ssap_fragments']if parts is not None else[leg[side]]
             if parts is not None and len(packets)!=2:return False
@@ -206,9 +213,11 @@ def pair_wire(row,matched,source,destination,pdu,window):
     versioned_value=row.get('ssap_value_lengths_version',1)==4 and pdu[0] in (9,11,13,14)
     versioned_provider=type(row.get('ssap_sdk_write_provider_version')) is int and row['ssap_sdk_write_provider_version']==2 and pdu[0] in (13,14)
     versioned_update=row.get('ssap_update_delivery_version',1)==2 and pdu[0] in (9,11,13,14,15,16)
+    versioned_method=type(row.get('ssap_method_provider_version')) is int and row['ssap_method_provider_version']==4 and pdu[:2]==b'\x14\x03'
     limit=2048 if pdu[0] in (15,16) else 2047
-    if not(versioned_value or versioned_update or versioned_provider or command) or not 2042<len(pdu)<=limit or pdu[1]&3!=3:raise CaptureError('bounded actual negotiated sequence fragment contract required')
-    parts=fragment_parts(pdu,ssap_write_command_contract=1 if command else None)
+    if not(versioned_value or versioned_update or versioned_provider or versioned_method or command) or not 2042<len(pdu)<=limit or pdu[1]&3!=3:raise CaptureError('bounded actual negotiated sequence fragment contract required')
+    if versioned_method:extra['ssap_method_result_contract']=1
+    parts=fragment_parts(pdu,ssap_write_command_contract=1 if command else None,ssap_method_result_contract=1 if versioned_method else None)
     result=dict(tx=dict(ssap_fragments=[]),rx=dict(ssap_fragments=[]),logical_pdu=pdu.hex(),**extra)
     for part in parts:
         frame=b'\x0a\0'+len(part).to_bytes(2,'little')+part
@@ -313,7 +322,7 @@ def lengths_requested(args,*,passthrough):
     return value
 
 
-def length_mtu(row):
+def length_mtu(row,*,require_sequence=False):
     receipts=row.get('ssap_receipts',[])
     if len(receipts)!=2:raise CaptureError('both actual SSAP negotiation receipts required')
     pattern=r'^SsapExchangeInfo: index=(\d+) generation=(\d+) lifetime=(\d+) handle=(\d+) local_mtu=(\d+) negotiated_mtu=(\d+) request=([0-9a-f]+) peer_reply=([0-9a-f]+) peer_request=([0-9a-f]+) response=([0-9a-f]+)$'
@@ -323,6 +332,9 @@ def length_mtu(row):
         found=matches[0];identity=tuple(map(int,found[:4]))
         if identity!=(owner['owner']['index'],owner['owner']['generation'],owner['object']['lifetime'],owner['object']['handle']) or tuple(map(int,found[4:6]))!=(2042,2042):
             raise CaptureError('length gate requires exact current lifetime and actual negotiated2042')
+        if require_sequence and (type(row.get('ssap_exchange_contract'))is not int or row['ssap_exchange_contract']!=2
+                or tuple(found[6:])!=('0207fa07010204000000','0307fa07010204000000','0207fa07010204000000','0307fa07010204000000')):
+            raise CaptureError('actual current two-way sequence negotiation required')
     return 2042
 
 

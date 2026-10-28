@@ -702,7 +702,7 @@ def reject_unattributed_ssap(row, sdus):
         tracked += (1,12)
         current = True
     if row.get('ssap_method_provider_required',False):
-        if type(row.get('ssap_method_provider_version')) is not int or row['ssap_method_provider_version'] not in (1,2,3):
+        if type(row.get('ssap_method_provider_version')) is not int or row['ssap_method_provider_version'] not in (1,2,3,4):
             raise CaptureError('explicit method capture contract required')
         tracked += (1,18,19,20)
         current = True

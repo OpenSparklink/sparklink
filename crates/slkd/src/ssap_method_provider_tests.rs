@@ -376,3 +376,201 @@ async fn method_bus_signature_and_owner_exit_do_not_revive_other_registration() 
         [1, 0, 19, h as u8, (h >> 8) as u8, 4]
     );
 }
+
+/// Real private-bus Provider + production response/fragment/client functions.
+/// The negotiated budget and receipt identity are explicit fixtures; this does
+/// not exercise the actor scheduler, Native authorization, credit or RF.
+#[tokio::test]
+async fn method_long_results_cross_production_encoding_and_reassembly_without_truncation() {
+    let (_bus, state, _server, owner, _policy) = setup(true, Duration::ZERO).await;
+    let (tx, mut calls) = mpsc::channel(1);
+    owner
+        .object_server()
+        .at("/method", Provider(tx))
+        .await
+        .unwrap();
+    let (_, h) = register_method(&owner, 0).await;
+    bind(&owner, h).await.unwrap();
+    let db = store(&state).await;
+    let wire = wire();
+    for (id, size) in [0usize, 247, 248, 249, 250, 251, 252, 253, 254, 255, 2045]
+        .into_iter()
+        .enumerate()
+    {
+        let mut packet = request(h, false, id as u64 + 1);
+        packet.mtu = 2047; // Negotiated sequence support, not a physical MTU.
+        let deadline = packet.deadline;
+        let constraint = packet.constraint;
+        let request_bytes = packet.bytes.clone();
+        let task = tokio::spawn(resolve_server(packet, db.clone(), wire.clone()));
+        let call = next(&mut calls).await;
+        assert_eq!(call.request.maximum_result_bytes, 2045);
+        assert_eq!(
+            call.request.deadline_ns,
+            constraint.unwrap().deadline_monotonic_ns
+        );
+        // Deterministic nonuniform independent result, including zero bytes.
+        let value: Vec<u8> = (0..size).map(|n| (n.wrapping_mul(73) + id) as u8).collect();
+        call.reply.send((0, value.clone())).unwrap();
+        let pending = finish(&wire, task.await.unwrap(), &db).unwrap().unwrap();
+        assert_eq!(pending.deadline, deadline);
+        assert_eq!(pending.constraint, constraint);
+        assert_eq!(pending.sent, 0);
+        let expected: Vec<_> = [20, 3].into_iter().chain(value.iter().copied()).collect();
+        assert_eq!(pending.bytes, expected);
+        let plan = fragments::Plan::new(&pending.bytes, 249, true).unwrap();
+        assert_eq!(
+            plan.count(),
+            if size <= 247 { 1 } else { size.div_ceil(245) }
+        );
+        let mut assembly = fragments::Reassembly::<u64, Instant>::default();
+        let mut complete = None;
+        for index in 0..plan.count() {
+            let mut encoded = [0u8; 249];
+            let len = plan.encode(index, &mut encoded).unwrap();
+            if size <= 247 {
+                assert_eq!(&encoded[..len], expected);
+                complete = Some(encoded[..len].to_vec());
+            } else {
+                // Independent literal opcode/header and slicing oracle: do
+                // not accept a mutually compatible encoder/decoder mistake.
+                let last = index + 1 == plan.count();
+                assert_eq!(
+                    &encoded[..4],
+                    &[
+                        0x94,
+                        if index == 0 {
+                            0
+                        } else if last {
+                            2
+                        } else {
+                            1
+                        },
+                        if index == 0 || last {
+                            plan.count() as u8
+                        } else {
+                            index as u8
+                        },
+                        0
+                    ]
+                );
+                assert_eq!(
+                    &encoded[4..len],
+                    &value[index * 245..((index + 1) * 245).min(size)]
+                );
+                let decoded = assembly
+                    .receive(&encoded[..len], 249, true, 13, Instant::now(), deadline)
+                    .unwrap();
+                assert_eq!(decoded.is_some(), last);
+                if let Some(decoded) = decoded {
+                    assert_eq!(decoded.context, 13);
+                    assert_eq!(decoded.deadline, deadline);
+                    complete = Some(decoded.bytes);
+                }
+            }
+        }
+        let complete = complete.unwrap();
+        assert_eq!(complete, expected);
+        assert_eq!(
+            client_value_response(2047, &request_bytes, &complete)
+                .unwrap()
+                .unwrap(),
+            value
+        );
+        if size > 247 {
+            assert!(matches!(
+                fragments::Plan::new(&pending.bytes, 249, false),
+                Err(fragments::Error::Unsupported)
+            ));
+        }
+    }
+}
+
+#[tokio::test]
+async fn method_long_provider_overflow_refuses_whole_result_and_next_request_recovers() {
+    let (_bus, state, _server, owner, _policy) = setup(true, Duration::ZERO).await;
+    let (tx, mut calls) = mpsc::channel(1);
+    owner
+        .object_server()
+        .at("/method", Provider(tx))
+        .await
+        .unwrap();
+    let (_, h) = register_method(&owner, 0).await;
+    bind(&owner, h).await.unwrap();
+    let db = store(&state).await;
+    let wire = wire();
+    for (id, size) in [(1, 2046usize), (2, 2045)] {
+        let mut packet = request(h, false, id);
+        packet.mtu = 2047;
+        let task = tokio::spawn(resolve_server(packet, db.clone(), wire.clone()));
+        let call = next(&mut calls).await;
+        assert_eq!(call.request.maximum_result_bytes, 2045);
+        call.reply.send((0, vec![0x6a; size])).unwrap();
+        let bytes = finish(&wire, task.await.unwrap(), &db)
+            .unwrap()
+            .unwrap()
+            .bytes;
+        if id == 1 {
+            assert_eq!(bytes, [1, 0, 19, h as u8, (h >> 8) as u8, 0xaf]);
+        } else {
+            assert_eq!(bytes.len(), 2047);
+            assert_eq!(&bytes[..2], [20, 3]);
+            assert!(bytes[2..].iter().all(|b| *b == 0x6a));
+        }
+    }
+}
+
+#[tokio::test]
+async fn method_long_withdrawal_preserves_only_encoded_snapshot_and_original_deadline() {
+    let (_bus, state, _server, owner, _policy) = setup(true, Duration::ZERO).await;
+    let (tx, mut calls) = mpsc::channel(1);
+    owner
+        .object_server()
+        .at("/method", Provider(tx))
+        .await
+        .unwrap();
+    let (start, h) = register_method(&owner, 0).await;
+    bind(&owner, h).await.unwrap();
+    let (_, guard) = register(&owner, 0).await;
+    let db = store(&state).await;
+    let wire = wire();
+    let mut decisions = Vec::new();
+    for id in 1..=3 {
+        let mut packet = request(h, false, id);
+        packet.mtu = 2047;
+        let task = tokio::spawn(resolve_server(packet, db.clone(), wire.clone()));
+        next(&mut calls)
+            .await
+            .reply
+            .send((0, vec![0x5a; 2045]))
+            .unwrap();
+        decisions.push(task.await.unwrap());
+    }
+    let encoded = finish(&wire, decisions.remove(0), &db).unwrap().unwrap();
+    manager(&owner)
+        .await
+        .call::<_, _, ()>("UnregisterOwnedLocalService", &(start, owned_deadline()))
+        .await
+        .unwrap();
+    assert_eq!(
+        finish(&wire, decisions.remove(0), &db)
+            .unwrap()
+            .unwrap()
+            .bytes,
+        [1, 0, 19, h as u8, (h >> 8) as u8, 4]
+    );
+    assert_eq!(
+        encoded.bytes.len(),
+        2047,
+        "already encoded bytes are immutable, not retracted"
+    );
+    assert!(encoded.bytes[2..].iter().all(|b| *b == 0x5a));
+    let mut expired = decisions.remove(0);
+    // Explicit expired-clock boundary fixture; no sleep or renewed deadline.
+    expired.packet.deadline = Instant::now();
+    assert_eq!(
+        finish(&wire, expired, &db).err().unwrap().kind(),
+        io::ErrorKind::TimedOut
+    );
+    assert_eq!(db.lock().unwrap().local_read(guard).unwrap(), [7]);
+}

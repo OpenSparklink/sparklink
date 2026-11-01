@@ -25,8 +25,12 @@ USB依赖研究：nusb0.2.9固定源码审查、3项实际上游状态转换测�
 
 实验工具 [efb962c](https://github.com/OpenSparklink/sparklink/commit/efb962c575dbafa387ef79fb0120ac61c7d1fa85) 已接入现有 VM ROM 观察消费者，独立 nusb 锁文件；
 严格构建、输入 guard、46项 receipt/工具负对照及实际二进制无参数拒绝通过。
-没有执行 USB/VM 操作，无新的冷ROM、启动、自动恢复、Windows 或 UserHost 资格；
+上述离线检查不授予 USB/VM、冷ROM、启动、自动恢复、Windows 或 UserHost 资格；
 默认生产依赖与冻结产物不变，实验消费者不能升级上方完整路线状态。
+单次只读交换检查器 [22df37f](https://github.com/OpenSparklink/sparklink/commit/22df37f5b8bb4db479cf863811efe003b8c3d8f1) 的52项相关离线回归通过；它要求独立
+USB字节、顺序、身份及完整收据，并拒绝丢包和遗留IN。原三读/上传/HCC门禁未放宽。
+公开记录不包含本地实机详情，不据解析器通过宣布冷ROM、自动选镜像或完整Host可用。
+
 
 
 上表是源码及限定离线结果，不转授冻结v4产物或历史PASS；未新增形式化证明。AF_UNIX/私有D-Bus不是内核或空口资格。结构化来源为 `scope_extensions[].implementation_slices`，消费者/权限来源、stop/drain与依赖见[唯一计划](implementation-plan.md)。采用前c2642d7的nix结论保留为历史审计，当前差异以上表为准。

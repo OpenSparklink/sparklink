@@ -528282,6 +528282,42 @@
               "source_offline_only": true
             }
           ]
+        },
+        {
+          "id": "directusb-rom-corroborator-20261101",
+          "source_commit": "22df37f5b8bb4db479cf863811efe003b8c3d8f1",
+          "status": "OFFLINE_EVIDENCE_GATE_CHECKED_NOT_STARTUP_QUALIFICATION",
+          "source_sha256": {
+            "tools/tests/test_ws73_rom_chip_evidence.py": "1c6e1fca41b1a3b040b0c4e08ed3af7d8eaa5bdda314615340b8ceb81366fe7b",
+            "tools/ws73_boot_code_evidence.py": "17a6609950abe782c02cfd1846e3786b3db738e39d3ba0582d6c10aab64a8b3e",
+            "tools/ws73_rom_chip_evidence.py": "49a6e1d74a0a7cce8c88962958ecdec320d839e27245e965451f42e82675bf43"
+          },
+          "checks": {
+            "related_offline_tests": 52,
+            "receipt_and_raw_capture_fixtures": "passed; exact single command/response and failure controls",
+            "original_reset_upload_hcc_gate": "unchanged"
+          },
+          "scope": "Independent captured bytes versus executor report; no source or origin authentication by parser alone. No new Host, cold identification, cancellation/drain or recovery qualification. Public results contain fixtures only.",
+          "qualification_transfer": false,
+          "not_tested": [
+            "cold power and access-validity criteria",
+            "complete E/U model and HCC stability matrix",
+            "cancellation/disconnect/drain",
+            "controller isolation business",
+            "Native method v4 delivery",
+            "Windows runtime"
+          ],
+          "issue_sync": [
+            {
+              "repository": "sparklink",
+              "number": 24,
+              "state": "open",
+              "body_sha256": "6ee67756371b993d096339ed225b224f02a1b24ea68f91e921dac98bd0bade28",
+              "readback_verified": true,
+              "original_checklist_unchanged": true,
+              "source_offline_only": true
+            }
+          ]
         }
       ]
     }

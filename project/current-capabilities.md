@@ -14,6 +14,12 @@
 下方历史批次的“UserHost P4”指旧KernelPacket/厂商分支，不涵盖本次新增路线。以上扩展完整目标，原S0–S6/19WP/10FV/12DG、预算与VM-only保留。源码审计和规划完成不授功能资格。新路线的证据维度政策已登记，记录验证器接线仍待做；历史记录及全部失败不重写。依赖与退出仅维护于[唯一计划](implementation-plan.md)。
 
 
+## Native v4 的资格边界
+
+地址预配置中的 Setup/HCC 标记不等于 Ready；局部成功不能覆盖双设备整轮失败。
+准确编译产物和执行工具分别绑定，原method、长度和生命周期门禁不因新观察而削减。
+公开只维护源码/离线及未完成条件；实机执行详情以授权本地结构化索引为准。
+
 ## 平台与通道边界：限定离线通过
 
 | 生产范围／准确源码 | 已取得的检查 | 尚未取得 |
@@ -169,7 +175,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
   },
   "offline_scope": "Actual Python executor/verifier with explicit process, negotiation and physical-packet fixtures. No actual VM, hardware, deployment, concurrency, firmware or formal qualification.",
   "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "NOT_RUN; previous exact qualifications and failures unchanged.",
+  "hardware_status": "NO_PUBLIC_HARDWARE_VERDICT; exact execution attempts and outcomes are maintained in the authorized local registry; no new method qualification asserted",
   "preparation_status": "V4_EXACT_INPUTS_VALIDATED_NO_USB_VM_SMOKE_PASS; REAL_DELIVERY_PENDING",
   "source_audit": "SDK GET_VERSION is distinct from chip query; fixed host text/shared static version cannot attest resident image. Native queue9 query runs after BSLE; moving it may consume unmatched boot/ACK messages. Streaming-only EP0 observation is not a pre-start fallback. Safe diagnosis must retain events, original deadlines, queue/sequence ownership and stop/drain. Root cause and natural recovery remain unverified.",
   "issue_sync": [
@@ -177,7 +183,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
       "repository": "linux",
       "number": 15,
       "state": "open",
-      "body_sha256": "d95e72cdbabfe1100d999ead974713cf808ad3515da43e054b1cba76a8d8a489",
+      "body_sha256": "0c5848333e45b8009d65ad0adcc8fee5d6f51622094a45478a2f3c22074bd274",
       "original_checklist_unchanged": true,
       "source_offline_planning_only": true
     },
@@ -185,7 +191,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
       "repository": "sparklink",
       "number": 22,
       "state": "open",
-      "body_sha256": "d2a519b0b2841a9764acc4e8fb1ff82c7e773699b15a001069aa0be31d5a83b4",
+      "body_sha256": "6dcebf18732eef8ca4610ae0dc4bfa02a22262f2cd09e5c3f99d8df6e4992f08",
       "original_checklist_unchanged": true,
       "source_offline_planning_only": true
     }

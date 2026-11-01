@@ -781,6 +781,19 @@ U 为254字节/5 credit。普通通道预算和分片证据必须逐发送contro
 错误的另一端容量、未知或缺失元数据不允许通过；E的较大容量不放宽U的限长。
 
 
+## Native 地址预配置与启动阶段
+
+双设备运行期地址监督器先收集两只控制器的真实 Setup 元数据和 HCC 型号，再经原
+Native 命令路径读取两只原地址、保存原值，最后才发运行期 setter。日志
+`WS73_TARGET_ADDRESS_SETUP: slot=N` 仅表示该只已具备预配置所需元数据；现有逐叶
+runner 用它接入下一只，**不表示 daemon Ready、通道授权或业务可用**。
+
+任一只在这一步失败，整轮双设备业务门禁失败。必须检查 `commands`、`originals`、
+`setters` 的实际记录，不能把“准备设置”当成已经写入，也不能在未执行 setter 时
+声称执行了恢复原地址。单只的真实上传/HCC/Setup证据单独保留，不覆盖同行失败；
+method发现、短／长结果和原路径保持仍须真实双端应用完成。两端的编译身份、工具身份
+和启动来源分别记录；同一轮也可能一只是 ROM 下载，另一只是运行期初始化。
+
 ## ROM 型号候选的专用维护探针
 
 `ws73_vm_register_reset.py --rom-chip-expected E|U` 只用于专用QEMU scratch root；

@@ -75,6 +75,18 @@ Session仍缺失，U#24/#25/#27不关闭；Native method v4继续独立推进。
 与原生业务；USB单次字节对应不完成这些条件。取消/drain及同行业务亦未由顺利读取证明。
 不要求先做新Host全套控制竞争才继续Native method/data/SSAP。U#24及原冷ROM/恢复项保持开放。
 
+### Native v4 启动阶段与业务退出边界（2026-11-01）
+
+继续复用已封存 v4 输入和原 runner；Setup/HCC 观察标记只用于逐叶接入和地址预配置，
+不是 Ready。只有两只元数据齐全才开始真实地址读取和临时配置，之后才进入原 daemon、
+发现、连接和 method业务门禁。局部上传/型号/Setup不能覆盖整轮失败或授予新实机资格。
+精确实机尝试、失败及有限正向子证据仅在授权本地状态登记；公开入口只表达源码流程与
+剩余条件，不用“未公开”推导未执行或通过。无新的状态/输入/观测依据不重复暖态失败。
+
+下一主线仍为双端真实 method v4 交付及生命周期；启动 RCA/非人工恢复独立保持开放。
+可用的源码工作按原 U#22 继续标准event与操作矩阵核对、复用现有唯一Engine/codec和
+权限类型，不让硬件等待演变为新增Host或第二套SSAP旁路。
+
 ### ServiceChannel 生产调用审计与最小迁移（2026-11-01）
 
 源码 [92a7522](https://github.com/OpenSparklink/sparklink/commit/92a752223a770de139b8ffbc0b05c5113b4ace29) 复用 `ssap_engine::Wire`；没有新增Host/Engine/公共trait。所有快照和Session TX查询进入同一fd所有者，send/receive不再接收外部fd；send只依赖约束及片字节，不依赖Engine的Pending队列。现有检查时点、原期限和返回错误保留。
@@ -668,7 +680,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
   },
   "offline_scope": "Actual Python executor/verifier with explicit process, negotiation and physical-packet fixtures. No actual VM, hardware, deployment, concurrency, firmware or formal qualification.",
   "formal_status": "NO_NEW_PROOF",
-  "hardware_status": "NOT_RUN; previous exact qualifications and failures unchanged.",
+  "hardware_status": "NO_PUBLIC_HARDWARE_VERDICT; exact execution attempts and outcomes are maintained in the authorized local registry; no new method qualification asserted",
   "preparation_status": "V4_EXACT_INPUTS_VALIDATED_NO_USB_VM_SMOKE_PASS; REAL_DELIVERY_PENDING",
   "source_audit": "SDK GET_VERSION is distinct from chip query; fixed host text/shared static version cannot attest resident image. Native queue9 query runs after BSLE; moving it may consume unmatched boot/ACK messages. Streaming-only EP0 observation is not a pre-start fallback. Safe diagnosis must retain events, original deadlines, queue/sequence ownership and stop/drain. Root cause and natural recovery remain unverified.",
   "issue_sync": [
@@ -676,7 +688,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
       "repository": "linux",
       "number": 15,
       "state": "open",
-      "body_sha256": "d95e72cdbabfe1100d999ead974713cf808ad3515da43e054b1cba76a8d8a489",
+      "body_sha256": "0c5848333e45b8009d65ad0adcc8fee5d6f51622094a45478a2f3c22074bd274",
       "original_checklist_unchanged": true,
       "source_offline_planning_only": true
     },
@@ -684,7 +696,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
       "repository": "sparklink",
       "number": 22,
       "state": "open",
-      "body_sha256": "d2a519b0b2841a9764acc4e8fb1ff82c7e773699b15a001069aa0be31d5a83b4",
+      "body_sha256": "6dcebf18732eef8ca4610ae0dc4bfa02a22262f2cd09e5c3f99d8df6e4992f08",
       "original_checklist_unchanged": true,
       "source_offline_planning_only": true
     }

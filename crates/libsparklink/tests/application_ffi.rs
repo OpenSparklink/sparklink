@@ -5,6 +5,8 @@
 mod authorization;
 #[path = "application_ffi/discovery_requester.rs"]
 mod discovery_requester;
+#[path = "application_ffi/event_tools.rs"]
+mod event_tools;
 #[path = "application_ffi/method_provider.rs"]
 mod method_provider;
 #[path = "application_ffi/method_requester.rs"]
@@ -173,13 +175,26 @@ impl Link {
         let d = slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
             .unwrap();
         assert!(d.remaining().unwrap() <= std::time::Duration::from_secs(5));
-        if handle != 17 {
+        let tool_payload = self.3.event_payload.lock().unwrap().clone();
+        if handle != 17 && !(handle == 18 && tool_payload.as_ref() == Some(&value)) {
             return Err(zbus::fdo::Error::AccessDenied(
                 "foreign event fixture".into(),
             ));
         }
-        assert!(minimum <= 2 && value.len() <= 2042 && value.iter().all(|v| *v == 0x42));
-        let mut pdu = vec![if indication { 16 } else { 15 }, 7, 17, 0];
+        assert!(
+            minimum <= 2
+                && value.len() <= 2042
+                && (handle == 18 || value.iter().all(|v| *v == 0x42))
+        );
+        if handle == 18 {
+            self.3.event_sends.fetch_add(1, Ordering::SeqCst);
+        }
+        let mut pdu = vec![
+            if indication { 16 } else { 15 },
+            7,
+            handle as u8,
+            (handle >> 8) as u8,
+        ];
         pdu.extend_from_slice(&(value.len() as u16).to_le_bytes());
         pdu.extend_from_slice(&value);
         Ok(slk_contract::ssap::UpdateReceipt {
@@ -422,6 +437,15 @@ impl Link {
             .unwrap();
         self.1.fetch_add(1, Ordering::SeqCst);
         match (handle, minimum, value.as_slice()) {
+            (17, 0..=2, [0xcd]) if self.3.event_payload.lock().unwrap().is_some() => {
+                assert_eq!(
+                    *self.3.event_read_deadline.lock().unwrap(),
+                    Some(deadline),
+                    "read and reply must share original operation deadline"
+                );
+                self.3.event_writes.fetch_add(1, Ordering::SeqCst);
+                Ok(vec![0xcd])
+            }
             (17, 1, [0x56, 0x12]) => Ok(vec![0x90]),
             (17, 0, []) => Ok(vec![0x91]),
             (21, 0, [0x56, 0x12]) => Err(zbus::fdo::Error::Timeout(
@@ -501,6 +525,19 @@ impl OwnedServices {
         stamp: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> (u16, u16, Vec<u16>) {
+        if uuid == [8, 0] {
+            slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(stamp))
+                .unwrap();
+            assert_eq!(properties, [(vec![2, 0], 5, 0, vec![7, 8, 9])]);
+            assert!(methods.is_empty());
+            assert_eq!(events, [vec![6, 0]]);
+            assert_eq!(authorizer.as_str(), "/");
+            *self.0.owner.lock().unwrap() = h.sender().unwrap().to_string();
+            *self.0.value.lock().unwrap() = vec![7, 8, 9];
+            self.0.operations.store(5, Ordering::SeqCst);
+            self.0.registered.fetch_add(1, Ordering::SeqCst);
+            return (16, 18, vec![17, 18]);
+        }
         if uuid == [5, 0] {
             slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(stamp))
                 .unwrap();
@@ -798,6 +835,7 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         .arg(root.join("crates/libsparklink/src/ssap/provider/frontend.rs"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/value_update.rs"))
         .arg(root.join("crates/libsparklink/tests/application_ffi/subscription.rs"))
+        .arg(root.join("crates/libsparklink/tests/application_ffi/event_tools.rs"))
         .arg(root.join("bindings/python/sparklink/ssap_discovery.py"))
         .arg(root.join("crates/libsparklink/src/ffi_ssap_discovery.rs"))
         .arg(root.join("crates/libsparklink/src/ssap.rs"))
@@ -1733,6 +1771,16 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         37,
         "twenty request and ten command calls; invalid inputs and unreleased barriers never submit"
     );
+    event_tools::exercise(
+        &root,
+        &sdk_probe,
+        &runtime_library,
+        &directory,
+        &bus.address,
+        &subscriptions,
+        &lifetime,
+    )
+    .await?;
     let unchanged = Command::new("sha256sum")
         .arg("--check")
         .arg(directory.join("materials.sha256"))

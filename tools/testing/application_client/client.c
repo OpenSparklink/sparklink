@@ -494,16 +494,31 @@ static int owned_provider_answer(struct OwnedProviderPending *p,
         || result==-EINVAL || result==-EMSGSIZE ? 0 : result;
 }
 
+static int checked_update_payload(uint16_t handle,unsigned mode,const uint8_t *pdu,size_t pdu_n,const uint8_t *expected,size_t n,int event) {
+    uint8_t raw[2048];
+    if (n>2042) {errno=EMSGSIZE;return -1;}
+    raw[0]=mode==2?16:15;raw[1]=event?7:3;raw[2]=(uint8_t)handle;raw[3]=(uint8_t)(handle>>8);
+    raw[4]=(uint8_t)n;raw[5]=(uint8_t)(n>>8);memcpy(raw+6,expected,n);
+    if (pdu_n!=n+6 || memcmp(pdu,raw,n+6)) {errno=EBADMSG;return -1;}
+    return 0;
+}
+
 /* Actual Owned SDK publisher. No wire codec, database or callback simulation. */
 static int owned_mode(int argc,char **argv) {
-    int updates=!strcmp(argv[1],"owned-updates"),writing=!strcmp(argv[1],"owned-writeonly");
-    if ((updates && argc!=9) || (!updates && argc!=7 && argc!=8)) return 2;
-    int requests=updates || argc==8,allow=requests && !strcmp(argv[7],"allow"),ask=requests && !strcmp(argv[7],"ask");
+    int events=!strcmp(argv[1],"owned-events"),updates=!strcmp(argv[1],"owned-updates"),writing=!strcmp(argv[1],"owned-writeonly");
+    if ((events && argc!=10) || (updates && argc!=9) || (!events && !updates && argc!=7 && argc!=8)) return 2;
+    int requests=!events && (updates || argc==8),allow=requests && !strcmp(argv[7],"allow"),ask=requests && !strcmp(argv[7],"ask");
     if (requests && !allow && !ask && strcmp(argv[7],"deny")) return 2;
     uint64_t index=number(argv[2]),generation=number(argv[3]);
     uint8_t service[2042],property_uuid[2042],initial[2042];
     size_t service_n=bytes(argv[4],service),property_n=bytes(argv[5],property_uuid),initial_n=bytes(argv[6],initial);
     if (index>UINT16_MAX || !generation || (service_n!=2 && service_n!=16) || (property_n!=2 && property_n!=16)) return 2;
+    struct SlkServiceEvent event={0};uint64_t event_minimum=events?number(argv[9]):0;
+    if (events) {
+        uint8_t uuid[2042];size_t n=bytes(argv[8],uuid);
+        if ((n!=2 && n!=16) || event_minimum>2) return 2;
+        event.uuid_length=(uint8_t)n;memcpy(event.uuid,uuid,n);
+    }
     struct SlkServiceProperty property={.operations=updates?541:writing?6:!strcmp(argv[1],"owned-readonly")?1:5,.access=requests && !updates?36:0,.uuid_length=(uint8_t)property_n,.value_length=(uint16_t)initial_n};
     memcpy(property.uuid,property_uuid,property_n);memcpy(property.value,initial,initial_n);
     struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};
@@ -514,16 +529,20 @@ static int owned_mode(int argc,char **argv) {
     int provider_fd=-1,provider_attempted=0,owner_loss_hold=0,owner_loss_observations=0;
     struct OwnedPending pending={0};const uint64_t original=now_ns()+5000000000ULL;
     error=slk_client_open_system(original,&client);if (error) {errno=-error;goto done;}
-    error=slk_client_register_local_service(client,&id,service,service_n,&property,1,requests?SLK_SERVICE_AUTHORIZATION_REQUESTS:SLK_SERVICE_AUTHORIZATION_NONE,original,&view);if (error) {errno=-error;goto done;}
+    error=events?slk_client_register_local_entries(client,&id,service,service_n,&property,1,NULL,0,&event,1,SLK_SERVICE_AUTHORIZATION_NONE,original,&view)
+        :slk_client_register_local_service(client,&id,service,service_n,&property,1,requests?SLK_SERVICE_AUTHORIZATION_REQUESTS:SLK_SERVICE_AUTHORIZATION_NONE,original,&view);if (error) {errno=-error;goto done;}
     error=slk_local_service_receipt(view,&receipt);if (error) {errno=-error;goto done;}
-    if (receipt.controller.index!=id.index || receipt.controller.generation!=generation || receipt.property_count!=1 || receipt.method_count || receipt.event_count || receipt.reserved[0] || receipt.reserved[1] || receipt.reserved[2] || !receipt.start || receipt.handles[0]<=receipt.start || receipt.handles[0]>receipt.end) {errno=EPROTO;goto done;}
+    if (receipt.controller.index!=id.index || receipt.controller.generation!=generation || receipt.property_count!=1 || receipt.method_count || receipt.event_count!=(events?1:0) || receipt.reserved[0] || receipt.reserved[1] || receipt.reserved[2] || !receipt.start || receipt.handles[0]<=receipt.start || receipt.handles[0]>receipt.end) {errno=EPROTO;goto done;}
     if (requests) {error=slk_local_service_authorization_fd(view,&approval_fd);if (error) {errno=-error;goto done;}}
-    if (updates) {
-        error=slk_client_connection(client,&id,(const uint8_t *)argv[8],strlen(argv[8]),original,&link);
+    if (events && (receipt.handles[1]<=receipt.handles[0] || receipt.handles[1]>receipt.end)) {errno=EPROTO;goto done;}
+    if (updates || events) {
+        const char *path=argv[events?7:8];
+        error=slk_client_connection(client,&id,(const uint8_t *)path,strlen(path),original,&link);
         if (error) {errno=-error;goto done;}
     }
     slk_client_close(client);client=NULL;
     printf("SdkOwnedAPI: api=c client_closed=true\nSsapOwnedService: start=%u end=%u property=%u; local registration only\n",receipt.start,receipt.end,receipt.handles[0]);fflush(stdout);
+    if (events) {printf("SdkOwnedEventBinding: {\"version\":1,\"api\":\"c\",\"event\":%u,\"reply_property\":%u,\"minimum\":%"PRIu64"}\n",receipt.handles[1],receipt.handles[0],event_minimum);fflush(stdout);}
     created=now_ns();end=created+30000000000ULL;char line[2*2042+64];size_t used=0;
     for (;;) {
         /* Try next before sleeping;the duplicated eventfd is poll-only. */
@@ -674,6 +693,18 @@ static int owned_mode(int argc,char **argv) {
             error=slk_connection_ssap_owned_configuration(link,receipt.handles[0],&modes,deadline);
             if (error || modes>3) {errno=error?-error:EPROTO;goto done;}
             printf("SdkOwnedConfiguration: {\"api\":\"c\",\"handle\":%u,\"modes\":%u,\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",receipt.handles[0],modes,started,deadline,now_ns());fflush(stdout);
+        } else if (events && (!strncmp(line,"event-notify ",13) || !strncmp(line,"event-indicate ",15))) {
+            int indication=!strncmp(line,"event-indicate ",15);line[strlen(line)-1]='\0';
+            const char *argument=line+(indication?15:13);uint8_t value[2042];
+            size_t length=!strcmp(argument,"-")?0:bytes(argument,value);
+            struct SlkSsapUpdate result={0};uint64_t started=now_ns(),deadline=started+5000000000ULL;
+            if (deadline>end) deadline=end;
+            error=slk_connection_ssap_send_event(link,receipt.handles[1],(uint32_t)indication,value,length,(uint32_t)event_minimum,&result,deadline);
+            if (error || result.stage!=(indication?2U:1U) || result.pdu_length!=length+6 || result.pdu[1]!=7 || result.acknowledgement_length>3) {errno=error?-error:EPROTO;goto done;}
+            if (checked_update_payload(receipt.handles[1],indication?2:1,result.pdu,result.pdu_length,value,length,1)) goto done;
+            printf("SdkOwnedEvent: {\"version\":1,\"api\":\"c\",\"handle\":%u,\"minimum\":%"PRIu64",\"stage\":%u,\"pdu\":\"",receipt.handles[1],event_minimum,result.stage);hex_print(result.pdu,result.pdu_length);
+            printf("\",\"ack\":\"");hex_print(result.acknowledgement,result.acknowledgement_length);
+            printf("\",\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64"}\n",started,deadline,now_ns());fflush(stdout);
         } else if (updates && (!strcmp(line,"notify\n") || !strcmp(line,"indicate\n") || !strcmp(line,"indicate-deadline\n") || !strcmp(line,"indicate-observe\n"))) {
             int short_deadline=!strcmp(line,"indicate-deadline\n"),observe=short_deadline || !strcmp(line,"indicate-observe\n"),indication=strcmp(line,"notify\n")!=0;struct SlkSsapUpdate result={0};
             uint64_t started=now_ns(),deadline=started+(short_deadline?1000000000ULL:5000000000ULL);
@@ -734,15 +765,14 @@ done:
 /* Ordinary application actually verifies the complete random update,then writes
  * a distinct business reply through the same existing SSAP/physical Session. */
 static int checked_update_write(struct SlkConnection *link,uint16_t handle,unsigned mode,
-    const uint8_t *pdu,size_t pdu_n,const uint8_t *expected,size_t n,const uint8_t *reply,size_t r) {
-    uint8_t raw[2048],echo[2042];uintptr_t count=0;
-    raw[0]=mode==2?16:15;raw[1]=3;raw[2]=(uint8_t)handle;raw[3]=(uint8_t)(handle>>8);
-    raw[4]=(uint8_t)n;raw[5]=(uint8_t)(n>>8);memcpy(raw+6,expected,n);
-    if (pdu_n!=n+6 || memcmp(pdu,raw,n+6)) {errno=EBADMSG;return -1;}
-    int error=slk_connection_ssap_write(link,handle,2,reply,r,echo,sizeof echo,&count,now_ns()+5000000000ULL);
+    const uint8_t *pdu,size_t pdu_n,const uint8_t *expected,size_t n,const uint8_t *reply,size_t r,uint16_t reply_handle,uint32_t minimum,int event,uint64_t original) {
+    uint8_t echo[2042];uintptr_t count=0;
+    if (checked_update_payload(handle,mode,pdu,pdu_n,expected,n,event)) return -1;
+    int error=slk_connection_ssap_write(link,reply_handle,minimum,reply,r,echo,sizeof echo,&count,original?original:now_ns()+5000000000ULL);
     if (error || count!=r || memcmp(echo,reply,r)) {errno=error?-error:EBADMSG;return -1;}
     return 0;
 }
+
 static int update_peer_mode(int argc,char **argv) {
     if (argc!=9) return 2;
     const int retired=!strcmp(argv[1],"update-retired");
@@ -769,7 +799,7 @@ static int update_peer_mode(int argc,char **argv) {
     }
     if (error) {errno=-error;goto done;}
     if (result.stage!=3 || result.acknowledgement_length) {errno=EBADMSG;goto done;}
-    if (checked_update_write(link,(uint16_t)handle,(unsigned)mode,result.pdu,result.pdu_length,expected,n,reply,r)) goto done;
+    if (checked_update_write(link,(uint16_t)handle,(unsigned)mode,result.pdu,result.pdu_length,expected,n,reply,r,(uint16_t)handle,2,0,0)) goto done;
     printf("{\"stage\":\"ssap_update_checked_reply\",\"api\":\"c\",\"handle\":%"PRIu64",\"mode\":%"PRIu64",\"pdu\":\"",handle,mode);hex_print(result.pdu,result.pdu_length);
     printf("\",\"value\":\"");hex_print(expected,n);printf("\",\"reply\":\"");hex_print(reply,r);printf("\"}\n");fflush(stdout);status=0;
 done:
@@ -780,8 +810,11 @@ done:
 /* The same real SDK/Connection,not a second receiver or wire Engine. The
  * interactive finite commands are also used by isolated ABI contract tests. */
 static int subscription_mode(int argc,char **argv) {
-    if (argc!=8) return 2;
+    int event=!strcmp(argv[1],"event-subscription");
+    if (argc!=(event?10:8)) return 2;
     uint64_t index=number(argv[2]),generation=number(argv[3]),handle=number(argv[5]),modes=number(argv[6]),lease=number(argv[7]);
+    uint64_t minimum=event?number(argv[8]):2,reply_handle=event?number(argv[9]):handle;
+    if (minimum>2 || !reply_handle || reply_handle>UINT16_MAX || (event && reply_handle==handle)) return 2;
     if (index>UINT16_MAX || !generation || !handle || handle>UINT16_MAX || modes<1 || modes>3 || lease<250 || lease>60000) return 2;
     struct SlkControllerId id={.generation=generation,.index=(uint16_t)index};
     struct SlkClient *client=NULL;struct SlkConnection *link=NULL;struct SlkSsapSubscription *sub=NULL;
@@ -792,10 +825,12 @@ static int subscription_mode(int argc,char **argv) {
     if (error){errno=-error;goto done;}
     slk_client_close(client);client=NULL;
     uint64_t started=now_ns(),creation_deadline=started+5000000000ULL;
-    error=slk_connection_ssap_subscribe(link,&target,1,(uint32_t)modes,(uint32_t)lease,creation_deadline,&sub);
+    error=event?slk_connection_ssap_subscribe_events(link,&target,1,(uint32_t)modes,(uint32_t)minimum,(uint32_t)lease,creation_deadline,&sub)
+        :slk_connection_ssap_subscribe(link,&target,1,(uint32_t)modes,(uint32_t)lease,creation_deadline,&sub);
     if (error){errno=-error;goto done;}
     error=slk_ssap_subscription_info(sub,&info);if (error){errno=-error;goto done;}
-    printf("{\"stage\":\"ssap_subscription_active\",\"api\":\"c\",\"token\":%"PRIu64",\"epoch\":%"PRIu64",\"expires_ns\":%"PRIu64",\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64",\"client_closed\":true}\n",info.token,info.security_epoch,info.expires_ns,started,creation_deadline,now_ns());fflush(stdout);
+    if (event) {printf("{\"stage\":\"ssap_event_listener_ready\",\"version\":1,\"api\":\"c\",\"event\":%u,\"reply_property\":%"PRIu64",\"minimum\":%"PRIu64",\"token\":%"PRIu64",\"epoch\":%"PRIu64",\"expires_ns\":%"PRIu64",\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64",\"client_closed\":true}\n",target,reply_handle,minimum,info.token,info.security_epoch,info.expires_ns,started,creation_deadline,now_ns());fflush(stdout);}
+    else {printf("{\"stage\":\"ssap_subscription_active\",\"api\":\"c\",\"token\":%"PRIu64",\"epoch\":%"PRIu64",\"expires_ns\":%"PRIu64",\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64",\"client_closed\":true}\n",info.token,info.security_epoch,info.expires_ns,started,creation_deadline,now_ns());fflush(stdout);}
     char line[16384];
     while (fgets(line,sizeof line,stdin)) {
         if (!strchr(line,'\n')) {errno=EMSGSIZE;goto done;}
@@ -825,16 +860,17 @@ static int subscription_mode(int argc,char **argv) {
         }
         int from_cache=!strcmp(command,"check-cached"),check=from_cache || !strcmp(command,"check"),drain=!strcmp(command,"drain");
         if ((!check && !drain && strcmp(command,"read") && strcmp(command,"poll")) || (check?(!arg || !other || strtok(NULL," \n")):(arg!=NULL))) {errno=EINVAL;goto done;}
+        uint64_t check_started=now_ns(),check_deadline=check_started+5000000000ULL;
         uint8_t expected[2042],reply[2042];size_t n=0,r=0;
         if (check) {
-            n=bytes(arg,expected);r=bytes(other,reply);
+            n=event && !strcmp(arg,"-")?0:bytes(arg,expected);r=bytes(other,reply);
             if (!link || (n==r && !memcmp(expected,reply,n))) {errno=EINVAL;goto done;}
         }
         if (from_cache) {
             if(next>=cached){errno=ENODATA;goto done;}
         } else {
             if(next!=cached){errno=EBUSY;goto done;}
-            error=slk_ssap_subscription_read(sub,strcmp(command,"poll")!=0,&batch,now_ns()+5000000000ULL);
+            error=slk_ssap_subscription_read(sub,strcmp(command,"poll")!=0,&batch,event?check_deadline:now_ns()+5000000000ULL);
             if (error){errno=-error;goto done;}
             if (drain) {
                 if(!batch.count || batch.count>16){errno=EBADMSG;goto done;}
@@ -845,8 +881,9 @@ static int subscription_mode(int argc,char **argv) {
             if (!from_cache && batch.count!=1) {errno=EBADMSG;goto done;}
             const struct SlkSsapSubscriptionPacket *packet=from_cache?&cache.packets[next]:&batch.packets[0];
             if (checked_update_write(link,(uint16_t)handle,packet->indication?2:1,
-                packet->pdu,packet->pdu_length,expected,n,reply,r)) goto done;
-            printf("{\"stage\":\"ssap_subscription_checked_reply\",\"api\":\"c\",\"sequence\":%"PRIu64",\"value\":\"",packet->sequence);
+                packet->pdu,packet->pdu_length,expected,n,reply,r,(uint16_t)reply_handle,(uint32_t)minimum,event,event?check_deadline:0)) goto done;
+            if (event) printf("{\"stage\":\"ssap_event_checked_reply\",\"version\":1,\"api\":\"c\",\"event\":%u,\"reply_property\":%"PRIu64",\"minimum\":%"PRIu64",\"started_ns\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"returned_ns\":%"PRIu64",\"sequence\":%"PRIu64",\"value\":\"",target,reply_handle,minimum,check_started,check_deadline,now_ns(),packet->sequence);
+            else {printf("{\"stage\":\"ssap_subscription_checked_reply\",\"api\":\"c\",\"sequence\":%"PRIu64",\"value\":\"",packet->sequence);}
             hex_print(expected,n);printf("\",\"reply\":\"");hex_print(reply,r);printf("\"}\n");
             if(from_cache){next++;fflush(stdout);continue;}
         }
@@ -874,8 +911,8 @@ done:
 
 int main(int argc,char **argv) {
     if (argc>1 && !strcmp(argv[1],"ssap-find-method")) return ssap_find_method_mode(argc,argv);
-    if (argc>1 && !strcmp(argv[1],"subscription")) return subscription_mode(argc,argv);
-    if (argc>1 && (!strcmp(argv[1],"owned") || !strcmp(argv[1],"owned-readonly") || !strcmp(argv[1],"owned-writeonly") || !strcmp(argv[1],"owned-updates"))) return owned_mode(argc,argv);
+    if (argc>1 && (!strcmp(argv[1],"subscription") || !strcmp(argv[1],"event-subscription"))) return subscription_mode(argc,argv);
+    if (argc>1 && (!strcmp(argv[1],"owned") || !strcmp(argv[1],"owned-readonly") || !strcmp(argv[1],"owned-writeonly") || !strcmp(argv[1],"owned-updates") || !strcmp(argv[1],"owned-events"))) return owned_mode(argc,argv);
     if (argc>1 && (!strcmp(argv[1],"update-peer") || !strcmp(argv[1],"update-error") || !strcmp(argv[1],"update-retired"))) return update_peer_mode(argc,argv);
     if (argc>1 && !strcmp(argv[1],"discovery")) return discovery_mode(argc,argv);
     if (argc>1 && (!strcmp(argv[1],"ssap") || !strcmp(argv[1],"ssap-error"))) return ssap_mode(argc,argv);

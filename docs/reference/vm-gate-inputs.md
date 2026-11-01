@@ -1712,3 +1712,35 @@ USB证据、请求的应用字节数及对应DTAP字节数、原16项超限拒�
 
 这是摘要结构检查；完整捕获、应用载荷和构建／执行身份仍必须通过原始重放校验。
 历史报告保留原执行工具，使用修正后的判定器重放时另记判定器提交，不能改写原执行身份。
+
+## 标准事件的实际应用消费者入口
+
+这些是现有 `tools/testing/application_client/client.c`／`client.py` 的测试模式，
+复用同一 SDK、Owned 注册和订阅循环；源码接通及私有总线检查不等于新的 VM／实机门禁通过。
+真实控制器仍须 VM-only、准确 bundle 与原端口白名单，先完成连接和实际事件目录发现。
+Python 将以下程序名换为该脚本及其已安装 SDK；两种语言的参数位置相同。
+
+```text
+application-client-c owned-events INDEX GENERATION SERVICE_UUID REPLY_UUID INITIAL_HEX CONNECTION_PATH EVENT_UUID MINIMUM
+application-client-c event-subscription INDEX GENERATION CONNECTION_PATH EVENT_HANDLE MODES LEASE_MS MINIMUM REPLY_PROPERTY_HANDLE
+```
+
+- 发布端登记一个独立回复属性及一个事件，保留原 30 秒应用总预算；不配置事件 CPCD。
+  `SdkOwnedEventBinding` 是本地注册结果，不是远端发现或可发送资格。`event-notify HEX`
+  和 `event-indicate HEX` 调用现有 Owned event API；`-` 表示零字节，最大2042字节。
+  每次调用最多5秒且不得超过原应用总预算。`value` 读取原回复属性；`quit` 显式注销。
+- 接收端只在 `SubscribeSsapEvents` 返回后输出 `ssap_event_listener_ready`，并记录原
+  token、epoch、最低安全、期限、事件及独立回复属性。不得用固定等待或进程存在代替它。
+  modes1/2/3分别表示通知／指示／两者；minimum0..2由调用者明确指定，不能推导认证身份。
+- 接收端沿用 `read`、`poll`、`drain`、`check`、`check-cached`、`renew`、`release` 和
+  `parent-close`。`check EXPECTED_HEX REPLY_HEX` 先核对完整事件类型、句柄、长度及数据，
+  再向**不同的指定回复属性**执行 verified write，并核对返回值。读取、校验及回复共享
+  该操作最初的5秒期限；缓存后的检查是独立新操作，不改写缓存报文或租约原期限。
+  空期望事件写为`-`，回复必须非空且不同于事件载荷。错误或未检查缓存不能报告成功退出。
+- `SdkOwnedEvent` 的stage1/2仍是软件准入／协议ACK；`ssap_event_checked_reply`是应用
+  实际检查及回复调用结果。两者不能单独代替发送端对原回复属性的独立观察、双端USB/HCC
+  数据与完整运行证据。事件释放flags=1只确认本地监听清理，不声称远端停止业务。
+
+本模式的回复属性是受控测试协议，不代表标准Profile的START/STOP/RELEASE已经实现。
+新增输出使用独立事件stage及version1，原属性订阅输出和历史报告保持原含义。
+双端监督器、独立包判定、实际部署权限、真实随机交付及完整生命周期仍须按准确产物验收。

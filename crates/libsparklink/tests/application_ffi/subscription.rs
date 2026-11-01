@@ -6,6 +6,10 @@ use slk_contract::ssap::subscription as wire;
 #[derive(Default)]
 pub(super) struct Metadata {
     current: Mutex<Option<(String, wire::Info)>>,
+    pub(super) event_payload: Mutex<Option<Vec<u8>>>,
+    pub(super) event_sends: AtomicUsize,
+    pub(super) event_writes: AtomicUsize,
+    pub(super) event_read_deadline: Mutex<Option<slk_contract::Deadline>>,
     sequence: AtomicU64,
     reads: AtomicUsize,
     closes: AtomicUsize,
@@ -23,7 +27,11 @@ impl Metadata {
         let original =
             slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(stamp))
                 .map_err(|e| zbus::fdo::Error::InvalidArgs(e.to_string()))?;
-        if handles != [17] || modes != 2 || duration != 1000 || lifetime != 11 {
+        if !matches!(handles.as_slice(), [17] | [18])
+            || modes != 2
+            || duration != 1000
+            || lifetime != 11
+        {
             return Err(zbus::fdo::Error::InvalidArgs(
                 "exact finite subscription fixture required".into(),
             ));
@@ -64,6 +72,10 @@ impl Metadata {
         self.current.lock().unwrap().as_mut().unwrap().1 = info.clone();
         info
     }
+    pub(super) fn reset_event_fixture(&self, value: Vec<u8>) {
+        self.current.lock().unwrap().take();
+        *self.event_payload.lock().unwrap() = Some(value);
+    }
     fn get(&self, token: u64, caller: &str) -> zbus::fdo::Result<wire::Info> {
         let current = self.current.lock().unwrap();
         match current.as_ref() {
@@ -88,6 +100,23 @@ impl Metadata {
         self.reads.fetch_add(1, Ordering::SeqCst);
         let sequence = self.sequence.fetch_add(1, Ordering::SeqCst) + 1;
         let (kind, minimum) = (info.kind, info.minimum);
+        let target = info.handles[0];
+        if info.kind == wire::EVENT && target == 18 {
+            *self.event_read_deadline.lock().unwrap() = Some(stamp);
+        }
+        let payload = if kind == wire::EVENT && target == 18 {
+            self.event_payload
+                .lock()
+                .unwrap()
+                .clone()
+                .expect("explicit event tool fixture")
+        } else {
+            vec![0xab]
+        };
+        let mut pdu = vec![16, if kind == wire::EVENT { 7 } else { 3 }];
+        pdu.extend_from_slice(&target.to_le_bytes());
+        pdu.extend_from_slice(&(payload.len() as u16).to_le_bytes());
+        pdu.extend(payload);
         Ok(wire::Batch {
             info,
             last_sequence: sequence,
@@ -101,15 +130,7 @@ impl Metadata {
                 security_epoch: 13,
                 security_level: minimum as u32,
                 indication: true,
-                pdu: vec![
-                    16,
-                    if kind == wire::EVENT { 7 } else { 3 },
-                    17,
-                    0,
-                    1,
-                    0,
-                    0xab,
-                ],
+                pdu,
             }],
         })
     }

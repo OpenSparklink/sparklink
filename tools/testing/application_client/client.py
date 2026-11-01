@@ -23,8 +23,8 @@ def wait(fd, event, deadline):
 
 
 def main():
-    if sys.argv[1:2]==['subscription']:return subscription_mode()
-    if sys.argv[1:2] in (['owned'],['owned-readonly'],['owned-writeonly'],['owned-updates']):return owned_mode()
+    if sys.argv[1:2] in (['subscription'],['event-subscription']):return subscription_mode()
+    if sys.argv[1:2] in (['owned'],['owned-readonly'],['owned-writeonly'],['owned-updates'],['owned-events']):return owned_mode()
     if sys.argv[1:2] in (['update-peer'],['update-error'],['update-retired']):return update_peer_mode()
     if sys.argv[1:2] == ['ssap-find-method']:return ssap_find_method_mode()
     if sys.argv[1:2] == ['discovery']:return discovery_mode()
@@ -273,33 +273,40 @@ def owned_provider_command(line):
 
 
 def owned_mode():
-    from sparklink import LocalProperty, SsapOperations, SsapAccess
+    from sparklink import LocalProperty, LocalEvent, SsapOperations, SsapAccess
+    events=sys.argv[1]=='owned-events'
     updates=sys.argv[1]=='owned-updates'
     writing=sys.argv[1]=='owned-writeonly'
     provider_mode=writing or sys.argv[1]=='owned-readonly'
     provider_prefix='SdkWriteProvider' if writing else 'SdkReadProvider'
     applied=None
-    if len(sys.argv) not in ((9,) if updates else (7,8)):raise ValueError('owned index generation service property initial-hex [allow|deny|ask] [update-connection]')
-    policy=sys.argv[7] if len(sys.argv)>=8 else None
+    if len(sys.argv) not in ((10,) if events else (9,) if updates else (7,8)):raise ValueError('owned index generation service property initial-hex [allow|deny|ask] [update-connection]')
+    policy=sys.argv[7] if len(sys.argv)>=8 and not events else None
     if policy not in (None,'allow','deny','ask'):raise ValueError('explicit application test policy required')
     index,generation=int(sys.argv[2]),int(sys.argv[3])
     service,uuid,value=(bytes.fromhex(v) for v in sys.argv[4:7])
     identity=ControllerId(index,generation)
+    minimum=int(sys.argv[9]) if events else 0
+    if minimum not in (0,1,2):raise ValueError('minimum0..2 required')
     original=time.monotonic_ns()+5_000_000_000
     link=None
     with Client(deadline_ns=original) as client:
-        view=client.register_local_service(identity,service,
-            [LocalProperty(uuid,SsapOperations(541 if updates else 6 if writing else 1 if sys.argv[1]=='owned-readonly' else 5),SsapAccess(36 if policy and not updates else 0),value)],
-            deadline_ns=original,authorization='requests' if policy else 'none')
-        if updates:link=client.connection(identity,sys.argv[8],deadline_ns=original)
+        properties=[LocalProperty(uuid,SsapOperations(541 if updates else 6 if writing else 1 if sys.argv[1]=='owned-readonly' else 5),SsapAccess(36 if policy and not updates else 0),value)]
+        view=(client.register_local_entries(identity,service,properties,[],events=[LocalEvent(bytes.fromhex(sys.argv[8]))],deadline_ns=original)
+              if events else client.register_local_service(identity,service,properties,deadline_ns=original,authorization='requests' if policy else 'none'))
+        if updates or events:link=client.connection(identity,sys.argv[7 if events else 8],deadline_ns=original)
     observing=False;created=end=0
     try:
         with view:
             receipt=view.receipt
-            if len(receipt.handles)!=1:raise ValueError('one owned property required')
-            handle=receipt.handles[0]
+            if len(receipt.property_handles)!=1 or receipt.method_handles:raise ValueError('one owned property required')
+            handle=receipt.property_handles[0]
             print('SdkOwnedAPI: api=python client_closed=true',flush=True)
             print(f'SsapOwnedService: start={receipt.start} end={receipt.end} property={handle}; local registration only',flush=True)
+            if events:
+                if len(receipt.event_handles)!=1:raise ValueError('one distinct event required')
+                event_handle=receipt.event_handles[0]
+                print('SdkOwnedEventBinding: '+json.dumps(dict(version=1,api='python',event=event_handle,reply_property=handle,minimum=minimum)),flush=True)
             created=time.monotonic_ns();end=created+30_000_000_000
             fd=view.authorization_fd() if policy else None
             line=bytearray();poller=select.poll();poller.register(0,select.POLLIN)
@@ -515,6 +522,15 @@ def owned_mode():
                         modes=link.ssap().owned_configuration(handle,deadline_ns=deadline)
                         print('SdkOwnedConfiguration: '+json.dumps(dict(api='python',handle=handle,modes=modes,
                             started_ns=started,deadline_ns=deadline,returned_ns=time.monotonic_ns())),flush=True)
+                    elif events and (line.startswith(b'event-notify ') or line.startswith(b'event-indicate ')):
+                        parts=line.decode('ascii').split()
+                        if len(parts)!=2:raise ValueError('exact event payload required')
+                        value=b'' if parts[1]=='-' else bytes.fromhex(parts[1])
+                        if len(value)>2042:raise ValueError('event payload budget')
+                        started=time.monotonic_ns();deadline=min(end,started+5_000_000_000)
+                        result=link.ssap().send_owned_event(event_handle,value,indication=parts[0]=='event-indicate',minimum=minimum,deadline_ns=deadline)
+                        checked_update_payload(event_handle,2 if parts[0]=='event-indicate' else 1,result.pdu,value,event=True)
+                        print('SdkOwnedEvent: '+json.dumps(dict(version=1,api='python',handle=event_handle,minimum=minimum,stage=result.stage,pdu=result.pdu.hex(),ack=result.acknowledgement.hex(),started_ns=started,deadline_ns=deadline,returned_ns=time.monotonic_ns())),flush=True)
                     elif updates and line in (b'notify\n',b'indicate\n',b'indicate-deadline\n',b'indicate-observe\n'):
                         short_deadline=line==b'indicate-deadline\n';observe=short_deadline or line==b'indicate-observe\n'
                         started=time.monotonic_ns();deadline=started+(1_000_000_000 if short_deadline else 5_000_000_000)
@@ -586,10 +602,14 @@ def owned_mode():
         if observing:owned_lifecycle('cleanup_end',receipt,created,end,owned_exit_error())
 
 
-def checked_update_write(link,handle,mode,pdu,expected,reply):
-    exact=bytes([16 if mode==2 else 15,3])+handle.to_bytes(2,'little')+len(expected).to_bytes(2,'little')+expected
+def checked_update_payload(handle,mode,pdu,expected,*,event=False):
+    exact=bytes([16 if mode==2 else 15,7 if event else 3])+handle.to_bytes(2,'little')+len(expected).to_bytes(2,'little')+expected
     if pdu!=exact:raise ValueError('actual peer complete random update mismatch')
-    actual=link.ssap().write(handle,reply,minimum=2,deadline_ns=time.monotonic_ns()+5_000_000_000)
+
+
+def checked_update_write(link,handle,mode,pdu,expected,reply,*,reply_handle=None,minimum=2,event=False,deadline_ns=None):
+    checked_update_payload(handle,mode,pdu,expected,event=event)
+    actual=link.ssap().write(handle if reply_handle is None else reply_handle,reply,minimum=minimum,deadline_ns=deadline_ns if deadline_ns is not None else time.monotonic_ns()+5_000_000_000)
     if actual!=reply:raise ValueError('actual business reply result mismatch')
 
 
@@ -628,18 +648,25 @@ def update_peer_mode():
 
 
 def subscription_mode():
-    if len(sys.argv)!=8:raise ValueError('subscription index generation connection handle modes lease_ms')
+    event=sys.argv[1]=='event-subscription'
+    if len(sys.argv)!=(10 if event else 8):raise ValueError('subscription index generation connection handle modes lease_ms [minimum reply_property]')
     index,generation=int(sys.argv[2]),int(sys.argv[3]);path=sys.argv[4]
     handle,modes,duration_ms=map(int,sys.argv[5:8])
+    minimum,reply_handle=map(int,sys.argv[8:10]) if event else (2,handle)
+    if minimum not in (0,1,2) or not 1<=reply_handle<=65535 or event and reply_handle==handle:raise ValueError('explicit independent reply property required')
     with Client(deadline_ns=time.monotonic_ns()+5_000_000_000) as client:
         link=client.connection(ControllerId(index,generation),path,deadline_ns=time.monotonic_ns()+5_000_000_000)
     started=time.monotonic_ns();creation_deadline=started+5_000_000_000
-    with link,link.ssap().subscribe([handle],modes=modes,duration_ms=duration_ms,
-            deadline_ns=creation_deadline) as sub:
+    sub=(link.ssap().subscribe_events([handle],modes=modes,minimum=minimum,duration_ms=duration_ms,deadline_ns=creation_deadline)
+         if event else link.ssap().subscribe([handle],modes=modes,duration_ms=duration_ms,deadline_ns=creation_deadline))
+    with link,sub:
         info=sub.info();released=False;cache=();position=0
-        print(json.dumps(dict(stage='ssap_subscription_active',api='python',token=info.token,
-                              epoch=info.security_epoch,expires_ns=info.expires_ns,started_ns=started,
-                              deadline_ns=creation_deadline,returned_ns=time.monotonic_ns(),client_closed=True)),flush=True)
+        if event:
+            print(json.dumps(dict(stage='ssap_event_listener_ready',version=1,api='python',event=handle,reply_property=reply_handle,minimum=minimum,token=info.token,epoch=info.security_epoch,expires_ns=info.expires_ns,started_ns=started,deadline_ns=creation_deadline,returned_ns=time.monotonic_ns(),client_closed=True)),flush=True)
+        else:
+            print(json.dumps(dict(stage='ssap_subscription_active',api='python',token=info.token,
+                                  epoch=info.security_epoch,expires_ns=info.expires_ns,started_ns=started,
+                                  deadline_ns=creation_deadline,returned_ns=time.monotonic_ns(),client_closed=True)),flush=True)
         while True:
             line=sys.stdin.readline(16384)
             if not line:
@@ -671,27 +698,29 @@ def subscription_mode():
                 print(json.dumps(dict(stage='ssap_subscription_released',api='python',flags=batch.flags,
                                       discarded=batch.discarded_on_close)),flush=True)
                 continue
+            check_started=time.monotonic_ns();check_deadline=check_started+5_000_000_000
             from_cache=len(args)==3 and args[0]=='check-cached';check=from_cache or len(args)==3 and args[0]=='check'
             if not check and args not in (['read'],['poll'],['drain']):raise ValueError('unknown subscription operation')
             if check:
-                expected,reply=map(bytes.fromhex,args[1:])
-                if not 1<=len(expected)<=2042 or not 1<=len(reply)<=2042 or expected==reply:
+                expected=(b'' if event and args[1]=='-' else bytes.fromhex(args[1]));reply=bytes.fromhex(args[2])
+                if not (0 if event else 1)<=len(expected)<=2042 or not 1<=len(reply)<=2042 or expected==reply:
                     raise ValueError('independent bounded update/reply required')
                 link._live()
             if from_cache:
                 if position>=len(cache):raise OSError(errno.ENODATA,'no cached update')
             else:
                 if position!=len(cache):raise OSError(errno.EBUSY,'unchecked cached batch')
-                batch=sub.read(wait=args!=['poll'],deadline_ns=time.monotonic_ns()+5_000_000_000)
+                batch=sub.read(wait=args!=['poll'],deadline_ns=check_deadline if event else time.monotonic_ns()+5_000_000_000)
                 if args==['drain']:
                     if not 1<=len(batch.packets)<=16:raise ValueError('bounded nonempty batch required')
                     cache=batch.packets;position=0
             if check:
                 if not from_cache and len(batch.packets)!=1:raise ValueError('exact single complete update required')
                 packet=cache[position]if from_cache else batch.packets[0]
-                checked_update_write(link,handle,2 if packet.indication else 1,packet.pdu,expected,reply)
-                print(json.dumps(dict(stage='ssap_subscription_checked_reply',api='python',
-                    sequence=packet.sequence,value=expected.hex(),reply=reply.hex())),flush=True)
+                checked_update_write(link,handle,2 if packet.indication else 1,packet.pdu,expected,reply,reply_handle=reply_handle,minimum=minimum,event=event,deadline_ns=check_deadline if event else None)
+                checked=dict(stage='ssap_event_checked_reply' if event else 'ssap_subscription_checked_reply',api='python',sequence=packet.sequence,value=expected.hex(),reply=reply.hex())
+                if event:checked.update(version=1,event=handle,reply_property=reply_handle,minimum=minimum,started_ns=check_started,deadline_ns=check_deadline,returned_ns=time.monotonic_ns())
+                print(json.dumps(checked),flush=True)
                 if from_cache:
                     position+=1
                     continue

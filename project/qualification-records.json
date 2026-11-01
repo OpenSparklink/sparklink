@@ -43,7 +43,7 @@
         "repository": "sparklink",
         "number": 22,
         "state": "open",
-        "body_sha256": "a555e098d79002c3d9d759cabb5bde760f6ba4f37fac59706aff339d518d84a0",
+        "body_sha256": "af06b4da2840ae293f5552608b04245a44e9c3e6b66e06b5f9e6bb8cdba5c44a",
         "source_offline_only": true,
         "original_acceptance_unchanged": true
       }
@@ -85,6 +85,18 @@
         "argument_truncation_mutation": "REJECTED_SOURCE_RESTORED"
       },
       "scope": "Actual production functions/private bus. Native identity, negotiation and Wire transport explicit fixtures; not full method actor scheduling, Native credit/USB/peer RF or formal proof. cfg(test) only; original v4 compiled/prepared identities unchanged."
+    },
+    "actor_native_boundary_regression": {
+      "source_public": "c2642d7abc9e164f6b1d12495e42813be583a888",
+      "entry": "two actual exchange_loop actors, ClientAdmission and Native query, actual private-D-Bus Owned provider registration",
+      "scenarios": "method request19/command18, 2/2043byte arguments, 249physical MTU; actual negotiation followed by local Native query refusal; explicit peer injection then RX query refusal before policy/provider effects; remaining actor stop/join",
+      "result": "OFFLINE_SCOPED_PASS",
+      "checks": {
+        "engine_tests": 78,
+        "strict_clippy": "PASS",
+        "admission_query_removal_mutation": "REJECTED_SOURCE_RESTORED"
+      },
+      "scope": "AF_UNIX transport/capability fixtures; no successful Native receipt fabricated. Refusal integration, not positive method delivery, kernel concurrency/credit/USB/RF or formal proof. Existing Virtual backend is query-only; no additional Host/Engine. v4 compiled/prepared identities unchanged."
     }
   },
   "overall_required_records": [

@@ -8455,6 +8455,22 @@
         "public": "f6c2cf3c88154ba79a865cc55303b5fa464bd62f"
       },
       "scope": "Production method parameter boundaries with independent byte oracle and actual private-bus Provider; truncation negative control. No hardware/formal claim; original acceptance unchanged."
+    },
+    {
+      "updates": [
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "state": "open",
+          "body_sha256": "af06b4da2840ae293f5552608b04245a44e9c3e6b66e06b5f9e6bb8cdba5c44a",
+          "source_offline_only": true,
+          "original_acceptance_unchanged": true
+        }
+      ],
+      "sources": {
+        "public": "c2642d7abc9e164f6b1d12495e42813be583a888"
+      },
+      "scope": "Actual actor Native admission/RX refusal; 78 Engine regressions and admission-query-removal negative control. Correct stale current v3 issue text to existing v4. No positive method/hardware qualification; acceptance unchanged."
     }
   ],
   "current_disposition": {

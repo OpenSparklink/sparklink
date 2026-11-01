@@ -20,6 +20,8 @@ Clippy通过，参数截断负对照被拒绝。另保留226c31b的实际actor�
 范围；这些结果不能合并成完整method业务、Native权限／credit或实机隔离资格。
 原v4编译和执行身份不变。测试改动不改变公开契约或延后现有真实交付门禁。
 
+[c2642d7](https://github.com/OpenSparklink/sparklink/commit/c2642d7abc9e164f6b1d12495e42813be583a888)补实际双actor拒绝回归：协商完成不替代Native身份，method请求／命令在发送查询处拒绝；独立报文注入在接收查询处拒绝，不能调用策略／Provider。78项Engine及严格Clippy通过，删除发送准入查询的负对照失败。AF_UNIX／能力为显式fixture，结果仅属离线拒绝路径；不授正向method或内核／实机资格。Virtual仍仅支持查询，未扩展连接／ACB。原环境与测试假设失败保留，v4实机输入及退出门禁不变。
+
 准确v4输入已封存并通过现有准备链校验，无USB隔离VM启动检查通过；这是构建与
 准备范围，尚未取得真实发现／method短长结果和原路径保持的新资格。历史v1–v3
 身份不变。K#15的源码审计确认平台版本查询走BSLE后的queue9 bulk；直接前移可能
@@ -542,7 +544,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
       "repository": "sparklink",
       "number": 22,
       "state": "open",
-      "body_sha256": "a555e098d79002c3d9d759cabb5bde760f6ba4f37fac59706aff339d518d84a0",
+      "body_sha256": "af06b4da2840ae293f5552608b04245a44e9c3e6b66e06b5f9e6bb8cdba5c44a",
       "source_offline_only": true,
       "original_acceptance_unchanged": true
     }
@@ -584,6 +586,18 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
       "argument_truncation_mutation": "REJECTED_SOURCE_RESTORED"
     },
     "scope": "Actual production functions/private bus. Native identity, negotiation and Wire transport explicit fixtures; not full method actor scheduling, Native credit/USB/peer RF or formal proof. cfg(test) only; original v4 compiled/prepared identities unchanged."
+  },
+  "actor_native_boundary_regression": {
+    "source_public": "c2642d7abc9e164f6b1d12495e42813be583a888",
+    "entry": "two actual exchange_loop actors, ClientAdmission and Native query, actual private-D-Bus Owned provider registration",
+    "scenarios": "method request19/command18, 2/2043byte arguments, 249physical MTU; actual negotiation followed by local Native query refusal; explicit peer injection then RX query refusal before policy/provider effects; remaining actor stop/join",
+    "result": "OFFLINE_SCOPED_PASS",
+    "checks": {
+      "engine_tests": 78,
+      "strict_clippy": "PASS",
+      "admission_query_removal_mutation": "REJECTED_SOURCE_RESTORED"
+    },
+    "scope": "AF_UNIX transport/capability fixtures; no successful Native receipt fabricated. Refusal integration, not positive method delivery, kernel concurrency/credit/USB/RF or formal proof. Existing Virtual backend is query-only; no additional Host/Engine. v4 compiled/prepared identities unchanged."
   }
 }
 ```

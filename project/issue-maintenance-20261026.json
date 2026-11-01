@@ -8690,5 +8690,33 @@
       "qualification": "PLANNING_ONLY_NO_NEW_PASS",
       "scope": "Project UserHost/DirectUSB/Windows and application/QoS/ISO/audio/system routes; U#7 KernelPacket/vendor remains P4; no duplicate global tracker/goal"
     }
+  ],
+  "implementation_updates": [
+    {
+      "id": "protocol-portable-values-20261101",
+      "source_commit": "a72dd32ba08ab906023334d4e76937f2d82b5f08",
+      "issues": [
+        {
+          "repository": "sparklink",
+          "number": 26,
+          "state": "open",
+          "body_sha256": "8e67ed472c5f923337ca04f1c8c37da8cbec2e759cab45d4578d68ded281f002",
+          "original_checklist_unchanged": true,
+          "source_offline_only": true,
+          "readback_verified": true
+        },
+        {
+          "repository": "sparklink",
+          "number": 27,
+          "state": "open",
+          "body_sha256": "6f63a3fbbc5880fcdcb70cfb76a58692c1f2237004709e619498559d938272f9",
+          "original_checklist_unchanged": true,
+          "source_offline_only": true,
+          "readback_verified": true
+        }
+      ],
+      "closed": [],
+      "qualification": "SOURCE_OFFLINE_ONLY_NOT_WINDOWS_RUNTIME"
+    }
   ]
 }

@@ -28,9 +28,17 @@
 下一批B：复用已准备v4准确输入，在新的有效启动条件和占用核对后取得双端发现/method短长独立结果、命令无响应、原期限/退出及原路径保持；无新硬件条件不重复未变化失败。并行A/C/W：列出ServiceChannel所有实际入口、权限/元数据来源及平台依赖，选择最小纯逻辑边界，USB库锁定/取消审查先于实际设备适配，不能复制Engine。
 后续每批开工前写生产行为、不变量、离线与VM/实机门禁、退出及剩余条件；不无限追加控制面前置。
 
+### 已落实的最小平台边界（2026-11-01）
+
+源码 [a72dd32](https://github.com/OpenSparklink/sparklink/commit/a72dd32ba08ab906023334d4e76937f2d82b5f08) 将消息安全值校验改为类型化错误；`slk-channel` 映射回原 EPROTO/EINVAL/EACCES，Engine 和 slktest 两个生产调用者同步迁移。布局、校验条件、真实 Native 查询和授权检查不变。`slk-protocol` 的普通依赖不再含 nix；仅 Linux ioctl 编号测试保留目标限定 dev-dependency。
+
+Linux 严格构建/Clippy、协议/Channel/工具与78项Engine测试、生产依赖及负对照通过；Rust 1.96.1 对纯协议 crate 的 MSVC all-targets 编译检查通过。它不执行或链接 Windows 程序，不授 Windows SDK/Host/IPC 或新实机资格。采用前 c2642d7 审计中的 nix 结论是修改前快照，其余平台/Engine 缺口仍在。结构化范围记录为 `scope_extensions[].implementation_slices`。
+
+下一退出：核对所有 ServiceChannel 消费者的 snapshot/prepare/send/receive/capacity/tx/stop-drain 来源，选择有实际调用者的最小适配；保留 Native 严格验证，不用成功桩。DirectUSB 的库版本、实际提交/取消/drain 审查独立推进。当前 v4 冻结产物及其待完成实机门禁保持原身份；此新源码亦需准确 artifact 的 Native 回归，不转授历史 PASS。
+
 ### 本批生产入口与平台边界核对（非全接口资格）
 
-以本次采用前公开源码c2642d7的生产文件核对；后续仅计划/测试状态改动不授编译资格。此表是11类API的缺口导航，不代替逐方法标准条款/类型/权限/期限/终态映射；U#26/#27先补实际入口映射，不能据类名宣称完整。
+以下保留采用时公开源码c2642d7的生产文件审计快照；该规划批次不授编译资格，后续实现差异见上方当前批次。此表是11类API的缺口导航，不代替逐方法标准条款/类型/权限/期限/终态映射；U#26/#27先补实际入口映射，不能据类名宣称完整。
 
 | 类别 | 现有生产消费者／入口 | 当前边界与下一门禁 |
 |---|---|---|

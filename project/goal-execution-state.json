@@ -5401,7 +5401,8 @@
     "original_scope_preserved": true,
     "budget_unchanged": true,
     "execution_plan": "project/implementation-plan.md",
-    "status_source": "scope_extensions entry is authoritative; issue receipt in issue-maintenance registry"
+    "status_source": "scope_extensions entry is authoritative; issue receipt in issue-maintenance registry",
+    "implementation_status_ref": "scope_extensions[userhost-windows-20261101].implementation_slices"
   },
   "objective_unchanged_explanation": "Goal API objective has no edit operation; original objective text/budget retained. Effective scope formally extended by user instruction and canonical plan, not a duplicate goal."
 }

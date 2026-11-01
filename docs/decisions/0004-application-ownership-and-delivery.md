@@ -19,6 +19,8 @@ WS73 路径不变；KernelPacket/厂商仍 P4；自有UserHost/DirectUSB与Windo
 
 ## 决策
 
+纯值校验与平台错误映射分开：协议值返回类型化失败，Native边界保持原errno与真实查询。不可用类型正确替代权限/来源检查，也不因MSVC编译通过宣称Windows运行。此调整复用现有校验与Engine，不增加另一套状态。
+
 同步 C/Python 应用边界复用唯一 Rust Client；为持续运行 owner 观察而采用每客户端
 一个本地异步执行线程及有界请求队列，避免在未知调用者 runtime 中嵌套 block_on。
 这不是 Host/授权 actor，不持 Native lease，也不新增 Engine。绝对单调期限覆盖

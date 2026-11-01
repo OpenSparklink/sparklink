@@ -116,6 +116,8 @@ Unix/Named Pipe 写入成功仅说明 IPC 阶段。高级 submit 等待真实准
 
 Native 可在内核取出 RX 消息时重验；其后已开始的用户复制也不能笼统保证被追溯撤回。UserHost 一旦将明文成功送入应用 IPC 队列，就无法可靠撤回该字节。EAGAIN 后重试须重验。公共能力要带 authority origin / validation checkpoint；需要更强读取时检查语义时明确拒绝，不能由 SDK 自检冒充内核强制。
 
+值/codec层使用平台无关校验错误；Native适配层负责原errno映射。值校验成功不是fd/Grant或安全授权，不能省略实际查询。纯协议crate跨目标编译不等于整个SDK或Host可运行；实现范围由资格入口记录。
+
 ### UserHost 与设备传输选型
 
 - 每 controller 一个 Host 进程；一个串行 actor 拥有协议可变状态。先沿用现有 Tokio 锁定版本；简单执行模型，有界阻塞密码/初始化任务，不默认无限 spawn。

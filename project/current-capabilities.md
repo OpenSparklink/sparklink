@@ -14,6 +14,13 @@
 下方历史批次的“UserHost P4”指旧KernelPacket/厂商分支，不涵盖本次新增路线。以上扩展完整目标，原S0–S6/19WP/10FV/12DG、预算与VM-only保留。源码审计和规划完成不授功能资格。新路线的证据维度政策已登记，记录验证器接线仍待做；历史记录及全部失败不重写。依赖与退出仅维护于[唯一计划](implementation-plan.md)。
 
 
+## 纯协议平台边界：限定离线通过
+
+源码 [a72dd32](https://github.com/OpenSparklink/sparklink/commit/a72dd32ba08ab906023334d4e76937f2d82b5f08) 将消息安全值校验改为类型化错误；`slk-channel` 映射回原 EPROTO/EINVAL/EACCES，Engine 和 slktest 两个生产调用者同步迁移。布局、校验条件、真实 Native 查询和授权检查不变。`slk-protocol` 的普通依赖不再含 nix；仅 Linux ioctl 编号测试保留目标限定 dev-dependency。
+
+Linux 严格构建/Clippy、协议/Channel/工具与78项Engine测试、生产依赖及负对照通过；Rust 1.96.1 对纯协议 crate 的 MSVC all-targets 编译检查通过。它不执行或链接 Windows 程序，不授 Windows SDK/Host/IPC 或新实机资格。采用前 c2642d7 审计中的 nix 结论是修改前快照，其余平台/Engine 缺口仍在。结构化范围记录为 `scope_extensions[].implementation_slices`。
+
+
 ## 本批实现与验证边界
 
 长结果双端门禁v4源码为[1462159](https://github.com/OpenSparklink/sparklink/commit/14621593fe911b544634cd7097570a1fb5606d9c)。

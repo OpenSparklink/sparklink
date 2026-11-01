@@ -528114,7 +528114,63 @@
         "registry": "project/issue-maintenance-20261026.json",
         "pointer": "/scope_extensions/0",
         "sha256": "e89fe5afd18ce7db29af7864ab1ce43934ccc84f05af1cc305d74370ffd3e906"
-      }
+      },
+      "implementation_slices": [
+        {
+          "id": "protocol-portable-values-20261101",
+          "source_commit": "a72dd32ba08ab906023334d4e76937f2d82b5f08",
+          "source_sha256": {
+            ".github/workflows/tooling.yml": "2dd3f344683909261003ac75995cbc0db459e5c5fa32159aed8fa76a620ec7e7",
+            "crates/slk-channel/src/security.rs": "b9b91cb8baf753c0171c38a0d44d292d6950fddec67eb8d54868582640a8c1c9",
+            "crates/slk-protocol/Cargo.toml": "fcb1d487ebae5eba3f5e52668861a0cf6daacdb95412c36165810729bc32b919",
+            "crates/slk-protocol/src/message_security.rs": "2206600a3609ce9e072a4bd93a39b0ffe0628f8a785517f12e8d786aa61c33e9",
+            "crates/slk-protocol/src/tests.rs": "e1461c7b08c289bb25401d256b57ca07b05e20922950d3da0edc4bac87884829",
+            "crates/slkd/src/ssap_engine.rs": "1f87989b7ea12dea7e34a2f3708e893b5170ffd655f8abe46433ba237122f3d0",
+            "crates/slktest/src/channel.rs": "2766f264586226491550500b09c77802a4226bc5608cf344ce9bfdc051d5f180",
+            "docs/reference/interfaces.md": "f5604ae9daf0d3203367105e77a34af36336776ad5ea53f225e3d9d79e790cc5",
+            "tools/check_production_dependencies.py": "b4cf377d5828442656a07d50b8515735f8a320cb998cb860961f91c6c32e0400",
+            "tools/tests/test_production_dependencies.py": "b90a333c9ec0f2a9f8542fcaa42c92cd889b64d3d6bb167f9975e5680684a72b"
+          },
+          "status": "IMPLEMENTED_OFFLINE_CHECKED_NOT_WINDOWS_RUNTIME",
+          "toolchain": "Rust 1.96.1",
+          "target": "x86_64-pc-windows-msvc",
+          "checks": {
+            "linux_protocol_channel_tool_tests": "passed",
+            "linux_ssap_engine_tests": "passed",
+            "linux_clippy_all_targets_all_features": "passed",
+            "msvc_all_targets_type_check": "passed",
+            "production_dependency_guard_with_negative_controls": "passed"
+          },
+          "scope": "Actual protocol validation and Native errno mapping; unchanged layouts and predicates. MSVC cargo check does not link or execute. Existing Engine and Native query checks retained.",
+          "not_tested": [
+            "Windows runtime/linking/native CI",
+            "ServiceChannel/UserHost endpoint",
+            "new-source Native VM/hardware regression",
+            "formal proof"
+          ],
+          "qualification_transfer": false,
+          "issue_sync": [
+            {
+              "repository": "sparklink",
+              "number": 26,
+              "state": "open",
+              "body_sha256": "8e67ed472c5f923337ca04f1c8c37da8cbec2e759cab45d4578d68ded281f002",
+              "original_checklist_unchanged": true,
+              "source_offline_only": true,
+              "readback_verified": true
+            },
+            {
+              "repository": "sparklink",
+              "number": 27,
+              "state": "open",
+              "body_sha256": "6f63a3fbbc5880fcdcb70cfb76a58692c1f2237004709e619498559d938272f9",
+              "original_checklist_unchanged": true,
+              "source_offline_only": true,
+              "readback_verified": true
+            }
+          ]
+        }
+      ]
     }
   ],
   "qualification_dimensions_policy": {

@@ -33,6 +33,8 @@ async fn partial_update_caller_close_then_owner_exit_still_wakes() {
     .unwrap();
     let (reply, mut result) = oneshot::channel();
     let mut current = UpdateRequest {
+        kind: UpdateKind::Property,
+        minimum: 2,
         submitted_all: false,
         handle: 17,
         owner: owner.clone(),
@@ -98,6 +100,8 @@ async fn update_withdrawal_wakes_without_renewing_or_forgetting_admitted_work() 
             .unwrap();
             let (reply, mut result) = oneshot::channel();
             let mut current = UpdateRequest {
+                kind: UpdateKind::Property,
+                minimum: 2,
                 submitted_all: false,
                 handle: 17,
                 owner: owner.clone(),
@@ -1775,6 +1779,8 @@ async fn actual_update_wait_cancellation_keeps_admitted_identity_and_original_dr
     for admitted in [false, true] {
         let (reply, mut result) = oneshot::channel();
         let mut update = Some(UpdateRequest {
+            kind: UpdateKind::Property,
+            minimum: 2,
             submitted_all: admitted,
             handle,
             owner: owner.clone(),

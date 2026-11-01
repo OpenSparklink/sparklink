@@ -72,6 +72,14 @@ class Boundary:
     def slk_connection_ssap_send_owned(self, *args):
         return self._update(args, 2 if args[2] else 1)
 
+    def slk_connection_ssap_send_event(self,*args):
+        self.calls.append(('event',args[1],args[2],ctypes.string_at(args[3],args[4]),args[5],args[7]))
+        value=_SsapUpdate();raw=bytes([16 if args[2] else 15,7,17,0])+args[4].to_bytes(2,'little')+ctypes.string_at(args[3],args[4])
+        value.stage=2 if args[2] else 1;value.pdu_length=len(raw);value.pdu[:len(raw)]=raw
+        if args[2]:value.acknowledgement_length=3;value.acknowledgement[:]=[17,7,1]
+        ctypes.cast(args[6],ctypes.POINTER(_SsapUpdate))[0]=value
+        return 0
+
     def slk_connection_ssap_owned_configuration(self, *args):
         ctypes.cast(args[2], ctypes.POINTER(ctypes.c_uint8))[0] = 3
         return 0
@@ -85,6 +93,27 @@ def caller(bridge):
 
 
 class PythonConnectionBoundary(unittest.TestCase):
+    def test_event_sender_marshalling_bounds_and_kind_specific_ack(self):
+        bridge=Boundary()
+        with caller(bridge) as client,client.connection(ControllerId(2,7),'/fixture',deadline_ns=1) as link:
+            remote=link.ssap()
+            for n in (0,2042):
+                r=remote.send_owned_event(17,b'B'*n,minimum=1,indication=True,deadline_ns=1)
+                self.assertEqual(r.pdu[6:],b'B'*n)
+                self.assertEqual(r.acknowledgement,b'\x11\x07\x01')
+            with self.assertRaises(OSError) as caught:remote.send_owned_event(17,b'B'*2043,deadline_ns=1)
+            self.assertEqual(caught.exception.errno,errno.EMSGSIZE)
+            with self.assertRaises(TypeError):remote.send_owned_event(17,b'',deadline_ns=1,indication=1)
+            self.assertEqual(len(bridge.calls),2)
+            original=bridge.slk_connection_ssap_send_event
+            def corrupt(*args):
+                original(*args)
+                ctypes.cast(args[6],ctypes.POINTER(_SsapUpdate)).contents.acknowledgement[1]=3
+                return 0
+            bridge.slk_connection_ssap_send_event=corrupt
+            with self.assertRaises(OSError) as caught:remote.send_owned_event(17,b'',indication=True,deadline_ns=1)
+            self.assertEqual(caught.exception.errno,errno.EPROTO)
+
     def test_update_layout_marshalling_and_distinct_completion_stages(self):
         self.assertEqual((ctypes.sizeof(_SsapUpdate),_SsapUpdate.pdu.offset,
                           _SsapUpdate.acknowledgement.offset),(2064,8,2056))

@@ -198,6 +198,33 @@ int main(void) {
     assert(slk_connection_ssap_discover(link,find_uuid,2,4,deadline(),NULL)==-EINVAL);
     assert(slk_ssap_discovery_counts(NULL,&found,&pages)==-EINVAL);
 
+    /* Real exported event API over finite bus fixture, not peer delivery. */
+    const size_t event_lengths[]={0,1,243,244,249,250,253,254,255,2042};
+    uint8_t event_bytes[2043];memset(event_bytes,0x42,sizeof event_bytes);
+    SlkSsapUpdate update_event;
+    for(size_t i=0;i<sizeof event_lengths/sizeof event_lengths[0];i++) {
+        for(uint32_t indication=0;indication<2;indication++) {
+            memset(&update_event,0xff,sizeof update_event);
+            size_t n=event_lengths[i];
+            assert(slk_connection_ssap_send_event(link,17,indication,n?event_bytes:NULL,n,1,&update_event,deadline())==0);
+            assert(update_event.stage==(indication?2:1) && update_event.pdu_length==n+6);
+            assert(update_event.pdu[0]==(indication?16:15) && update_event.pdu[1]==7);
+            assert(memcmp(update_event.pdu+6,event_bytes,n)==0);
+            assert(update_event.acknowledgement_length==(indication?3:0));
+            if(indication) assert(memcmp(update_event.acknowledgement,(uint8_t[]){17,7,1},3)==0);
+        }
+    }
+    memset(&update_event,0xa5,sizeof update_event);
+    assert(slk_connection_ssap_send_event(link,17,0,event_bytes,2043,0,&update_event,deadline())==-EMSGSIZE);
+    assert(slk_connection_ssap_send_event(link,17,0,NULL,1,0,&update_event,deadline())==-EINVAL);
+    assert(slk_connection_ssap_send_event(link,17,2,NULL,0,0,&update_event,deadline())==-EINVAL);
+    assert(slk_connection_ssap_send_event(link,17,0,NULL,0,3,&update_event,deadline())==-EINVAL);
+    assert(slk_connection_ssap_send_event(link,0,0,NULL,0,0,&update_event,deadline())==-EINVAL);
+    assert(slk_connection_ssap_send_event(link,18,0,NULL,0,0,&update_event,deadline())==-EACCES);
+    assert(slk_connection_ssap_send_event(link,17,0,NULL,0,0,&update_event,0)==-ETIMEDOUT);
+    for(size_t i=0;i<sizeof update_event;i++)assert(((unsigned char*)&update_event)[i]==0xa5);
+    puts("EVENT_SEND_LANGUAGE_FIXTURE_PASS_NOT_RF");
+
     /* New setter on the actual retained C view; metadata fixture,not a peer. */
     const uint8_t text[]={0xe6,0x8f,0x8f,0xe8,0xbf,0xb0};
     uint8_t maximum_description[244],oversized_description[245];

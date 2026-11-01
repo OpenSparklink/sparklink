@@ -36,9 +36,15 @@ RegisterOwnedLocalService签名，CLI现有属性/method消费者传空事件表
 原期限、owner退出及另一owner服务保持；事件误用为属性/method拒绝；跨语言实际
 消费者和严格构建。每项离线结果及准确源码见结构化切片，不能授Native或Windows资格。
 
-下一事件切片：明确发送权限、协议event位及上层启停，沿原Update/Pending/RX/ACK接通
-真实事件通知/指示。离线检查预算/原期限/退出/错目标；准确Native产物双端实际校验和
-适用原路径保持单列，method v4和UserHost/Windows依赖继续并行。U#22/#26保持开放，
+当前事件发送切片：原始owner提供0–2042字节显式关联数据及minimum0–2，
+共用Update/Pending/fragment/ACK、原Native校验/提交票据和5秒期限，逐片复核owner。
+属性CPCD不用于事件；上层START/STOP策略独立。退出：严格构建、实际生产准备/ACK
+转换、原取消/drain回归、Rust/C/Python实际入口与错类型/载荷/期限负对照。
+不以这些检查宣称Native发送或事件接收已通过；准确结果由结构化切片记录。
+
+下一事件切片：复用唯一ReceiveTransaction/RX分流加入事件监听；明确有界收件、
+安全epoch及ACK时点，不能伪造属性CPCD。随后准确Native产物双端随机事件/应用回复、
+适用原路径保持单列；method v4与UserHost/Windows依赖并行。U#22/#26开放，
 不等待全控制面、不复制Engine；无新设备启动条件不重复未变化失败。
 
 ### DirectUSB候选审查与下一实现门禁（2026-11-01）

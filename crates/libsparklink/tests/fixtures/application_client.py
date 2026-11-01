@@ -136,6 +136,15 @@ with description_service:
 
 with connection:
     ssap = connection.ssap()
+    for length in (0,1,243,244,249,250,253,254,255,2042):
+        for indication in (False,True):
+            sent=ssap.send_owned_event(17,b'B'*length,minimum=1,indication=indication,deadline_ns=deadline())
+            assert sent.stage==(2 if indication else 1)
+            assert sent.pdu==bytes([16 if indication else 15,7,17,0])+length.to_bytes(2,'little')+b'B'*length
+            assert sent.acknowledgement==(bytes([17,7,1]) if indication else b'')
+    error(errno.EMSGSIZE,lambda:ssap.send_owned_event(17,b'B'*2043,deadline_ns=deadline()))
+    error(errno.EACCES,lambda:ssap.send_owned_event(18,b'',deadline_ns=deadline()))
+    print("EVENT_SEND_LANGUAGE_FIXTURE_PASS_NOT_RF")
     from sparklink import SsapDiscovery, SsapEntry
     from sparklink.ssap_discovery import _Entry
     import ctypes

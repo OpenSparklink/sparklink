@@ -952,6 +952,17 @@ impl Database {
             .ok_or(13u8)?;
         Ok((modes, owner.clone()))
     }
+    /// Event metadata belongs to the original live service owner. No property
+    /// configuration, stored value or invocation permission is inferred here.
+    pub(crate) fn owned_event(&self, handle: u16, caller: &str) -> Result<Arc<Owner>, String> {
+        self.services
+            .values()
+            .find(|s| s.events.contains_key(&handle))
+            .and_then(|s| s.owner.as_ref())
+            .filter(|o| o.current() && o.name == caller)
+            .cloned()
+            .ok_or_else(|| "event is not owned by caller".into())
+    }
     pub(crate) fn owned_update(
         &self,
         handle: u16,

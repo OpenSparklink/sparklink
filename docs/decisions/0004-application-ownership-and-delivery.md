@@ -647,9 +647,13 @@ Native取RX时检查与已开始用户复制的边界明确；UserHost明文进�
 数据库或 Engine。条目不保存事件关联数据。属性客户端配置描述符仅适用于属性，
 不因更新 codec 有 event 位就自动给事件创建 CPCD 或复用属性批准。
 
-当前只开放登记和发现：标准/自定义类别4/12，Primary成员bit8；属性读写、说明及
+当前登记和发现使用标准/自定义类别4/12、Primary成员bit8；属性读写、说明及
 READ/WRITE/method Provider拒绝事件handle。未发布 D-Bus/Rust/C/Python签名同批迁移，
-旧二进制重编，CLI现有属性/method消费者传空事件表。`ListLocalServices`的属性staging
-用途不变，不能据它推断完整远端目录。协议通知/指示、ACK、事件发送权限与上层启停
-留给下一条真实行为链路，复用原Update/Pending/RX及原身份/期限。离线登记/发现和
-owner退出不等于对端应用收到事件，也不授Native、UserHost或Windows资格。
+旧二进制重编。`ListLocalServices`属性staging用途不变。
+
+发送端沿同一Update/Pending/fragment/ACK增加Event输入：当前事件Owner、显式有限
+关联数据与最低安全机制。原始唯一调用者和活跃Owner均须通过；每片复核、原期限、
+Native约束和物理义务保持，不从上层取消退款，不将属性CPCD或批准套用到事件。
+通知只返回准入，指示只返回匹配event类型、epoch和minimum的队列ACK，均不是应用处理。
+接收监听与上层Profile启停另按同一Session扩展；当前接收API不能接事件。
+函数/私有总线/语言fixture检查不授双端Native、UserHost、Windows或形式化资格。

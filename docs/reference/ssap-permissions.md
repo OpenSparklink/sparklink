@@ -776,10 +776,27 @@ reserved明确检查。receipt大小160、event_count偏移24、handles偏移32�
 Python `LocalEvent(uuid)` 经 `Client.register_local_entries(...,events=[...])` 调用同一实现。
 CLI现有 `ssap-serve` 保留属性/method功能并传空事件列表，尚不提供事件发布交互。
 
-这些入口仅登记可发现的元数据，不授事件发送/订阅资格；更新发送/接收仍只开放已有
-属性路径。底层codec识别event位不代表Engine已接通事件业务。下一批明确事件发送
-权限与上层启停规则，复用同一Owner/Session及Update/Pending/RX路径完成通知、指示和ACK，
-不复用属性批准冒充事件授权。真正远端交付仍须用准确新artifact和对端应用验收。
+登记本身只创建元数据。新增 `SendOwnedSsapEvent(handle:q, indication:b, value:ay,
+minimum:u, deadline:(ttttt)) → (yayay)` 由原始唯一调用者发送自己的事件；
+`sparklink-services` 角色可调用，不因此获得 controller 管理权。必须仍拥有当前
+Connection 和事件 Owner；每片提交在原数据库锁下复核 Owner，并经过原 Native 查询、
+Grant/epoch/期限及提交票据。它不消费属性 CPCD，不授 Profile START/STOP 权限。
+上层业务启停和接收者策略须由相应服务定义，不能从发送成功推导。
+
+Rust `RemoteSsap::send_owned_event(handle, indication, value, minimum, deadline)`、
+C `slk_connection_ssap_send_event(connection, handle, indication, value, length,
+minimum, output, deadline_ns)`、Python `send_owned_event(handle, value,
+*, indication=False, minimum=0, deadline_ns=...)` 复用同一实现。
+载荷0–2042字节，minimum为0–2，原等待上限5秒；实际协商不支持分片时按物理MTU
+整体拒绝，支持时复用原分片队列，不截断、不重试、不续期。C空载荷可传NULL；
+失败不修改输出，超限EMSGSIZE、非法参数EINVAL，其他沿用应用错误映射。
+
+receipt stage1仅为全部片软件准入，stage2仅为对端接收队列ACK，不代表应用处理。
+ACK须为事件类型、原安全epoch、满足原minimum、位于原物理drain期限；属性ACK
+不能结算事件。原作者超时/退出后仍保留在途义务，晚到ACK不能恢复已结束请求。
+此切片接通发送端；现有接收API仍只接属性事务，事件接收/订阅、完整上层业务启停及
+准确Native双端事件交付尚未验收。离线函数、私有D-Bus和语言fixture结果不能代替
+实机、部署权限或Windows运行资格。
 
 ## Owned method 服务端
 

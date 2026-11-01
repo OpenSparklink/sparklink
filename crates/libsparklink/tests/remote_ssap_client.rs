@@ -271,6 +271,42 @@ impl Link {
             acknowledgement: if indication { vec![17, 3, 1] } else { vec![] },
         })
     }
+    fn send_owned_ssap_event(
+        &self,
+        handle: u16,
+        indication: bool,
+        value: Vec<u8>,
+        minimum: u32,
+        deadline: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<slk_contract::ssap::UpdateReceipt> {
+        let d = slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .unwrap();
+        assert!(d.remaining().unwrap() <= Duration::from_secs(5));
+        self.0.calls.fetch_add(1, Ordering::SeqCst);
+        if handle != 17 {
+            return Err(zbus::fdo::Error::AccessDenied(
+                "foreign fixture event".into(),
+            ));
+        }
+        assert!(minimum <= 2 && value.len() <= 2042);
+        let mut pdu = vec![if indication { 16 } else { 15 }, 7, 17, 0];
+        pdu.extend_from_slice(&(value.len() as u16).to_le_bytes());
+        pdu.extend_from_slice(&value);
+        let mut acknowledgement = if indication { vec![17, 7, 1] } else { vec![] };
+        let mut stage = if indication { 2 } else { 1 };
+        match self.0.malformed_update.load(Ordering::SeqCst) {
+            1 => pdu[1] = 3,
+            2 => pdu[6] ^= 1,
+            3 => acknowledgement[1] = 3,
+            4 => stage = 3,
+            _ => {}
+        }
+        Ok(slk_contract::ssap::UpdateReceipt {
+            stage,
+            pdu,
+            acknowledgement,
+        })
+    }
     fn get_owned_ssap_configuration(
         &self,
         handle: u16,
@@ -447,6 +483,11 @@ async fn actual_owned_update_rpc_has_literal_signatures_and_distinct_stages() ->
         (
             "SendOwnedSsapUpdate",
             vec!["q", "b", "(ttttt)"],
+            vec!["(yayay)"],
+        ),
+        (
+            "SendOwnedSsapEvent",
+            vec!["q", "b", "ay", "u", "(ttttt)"],
             vec!["(yayay)"],
         ),
         ("GetOwnedSsapConfiguration", vec!["q", "(ttttt)"], vec!["y"]),
@@ -780,5 +821,67 @@ async fn discovery_deadline_and_late_identity_are_checked_by_actual_sdk() -> any
     let (result, ()) =
         tokio::time::timeout(Duration::from_secs(5), async { tokio::join!(call, change) }).await?;
     assert!(matches!(result, Err(ApplicationError::Identity(_))));
+    Ok(())
+}
+
+#[tokio::test]
+async fn event_sender_checks_exact_payload_kind_ack_original_deadline_and_no_retry()
+-> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let (_server, caller, state) = fixture(&bus.address).await?;
+    let client = Client::from_connection(caller).await?;
+    let link = client.connection(BASE, PATH).await?;
+    let remote = link.ssap();
+    for length in [0, 1, 243, 244, 249, 250, 253, 254, 255, 2042] {
+        for indication in [false, true] {
+            let value = vec![0x42; length];
+            let r = remote
+                .send_owned_event(17, indication, value.clone(), 1, deadline())
+                .await?;
+            assert_eq!(r.stage, if indication { 2 } else { 1 });
+            assert_eq!(&r.pdu[6..], value);
+        }
+    }
+    assert_eq!(state.calls.load(Ordering::SeqCst), 20);
+    for kind in 1..=4 {
+        state.malformed_update.store(kind, Ordering::SeqCst);
+        assert!(matches!(
+            remote
+                .send_owned_event(17, true, vec![1], 1, deadline())
+                .await,
+            Err(ApplicationError::Identity(_))
+        ));
+    }
+    state.malformed_update.store(0, Ordering::SeqCst);
+    assert!(
+        remote
+            .send_owned_event(18, false, vec![], 0, deadline())
+            .await
+            .is_err()
+    );
+    for (handle, value, minimum) in [(0, vec![], 0), (17, vec![0; 2043], 0), (17, vec![], 3)] {
+        assert!(
+            remote
+                .send_owned_event(handle, false, value, minimum, deadline())
+                .await
+                .is_err()
+        );
+    }
+    let expired = libsparklink::Deadline::after(Duration::from_millis(1))?;
+    tokio::time::sleep(Duration::from_millis(5)).await;
+    assert!(
+        remote
+            .send_owned_event(17, false, vec![], 0, expired)
+            .await
+            .is_err()
+    );
+    state.role.store(1, Ordering::SeqCst);
+    assert!(matches!(
+        remote
+            .send_owned_event(17, false, vec![], 0, deadline())
+            .await,
+        Err(ApplicationError::Identity(_))
+    ));
+    assert_eq!(state.calls.load(Ordering::SeqCst), 25);
     Ok(())
 }

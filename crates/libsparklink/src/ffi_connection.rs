@@ -553,6 +553,63 @@ pub unsafe extern "C" fn slk_connection_ssap_send_owned(
         Err(error) => -error,
     }
 }
+/// Send0..2042 bytes for this original caller's owned event through the same
+/// Engine/Session. indication0/1; minimum0..2 must remain satisfied at submission.
+/// No CPCD or implicit profile enable. Original<=5s, no retry/downgrade. Stage1
+/// is software admission,stage2 peer queue ACK; neither is app processing.
+/// # Safety
+/// Same live connection/output/fork contract as ssap_receive. Nonempty value is
+/// a live initialized immutable region of length bytes; NULL only for empty.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_ssap_send_event(
+    connection: *const SlkConnection,
+    handle: u16,
+    indication: u32,
+    value: *const u8,
+    length: usize,
+    minimum: u32,
+    output: *mut SlkSsapUpdate,
+    deadline_ns: u64,
+) -> c_int {
+    if connection.is_null()
+        || handle == 0
+        || indication > 1
+        || minimum > 2
+        || output.is_null()
+        || (value.is_null() && length != 0)
+    {
+        return -nix::libc::EINVAL;
+    }
+    if length > slk_contract::ssap::MAX_EVENT_VALUE_BYTES {
+        return -nix::libc::EMSGSIZE;
+    }
+    let value = if length == 0 {
+        vec![]
+    } else {
+        unsafe { std::slice::from_raw_parts(value, length) }.to_vec()
+    };
+    let view = unsafe { &*connection };
+    let link = view.link.clone();
+    let result = Deadline::from_monotonic_ns(deadline_ns)
+        .and_then(|deadline| {
+            let (deadline, original) = deadline.protocol()?;
+            view.inner.call(deadline, move |_| async move {
+                link.ssap()
+                    .send_owned_event(handle, indication != 0, value, minimum, original)
+                    .await
+            })
+        })
+        .and_then(|value| {
+            SlkSsapUpdate::receipt(u32::from(value.stage), value.pdu, value.acknowledgement)
+        });
+    match result {
+        Ok(value) => {
+            unsafe { output.write(value) };
+            0
+        }
+        Err(error) => -error,
+    }
+}
 /// Observe only this caller's owned property configuration on the fixed lifetime.
 /// modes0..3 is not a Ready,Grant or application-delivery receipt;no enable/write.
 /// # Safety

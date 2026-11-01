@@ -823,6 +823,24 @@ int slk_connection_ssap_send_owned(const struct SlkConnection *connection,
                                    uint64_t deadline_ns);
 
 /**
+ * Send0..2042 bytes for this original caller's owned event through the same
+ * Engine/Session. indication0/1; minimum0..2 must remain satisfied at submission.
+ * No CPCD or implicit profile enable. Original<=5s, no retry/downgrade. Stage1
+ * is software admission,stage2 peer queue ACK; neither is app processing.
+ * # Safety
+ * Same live connection/output/fork contract as ssap_receive. Nonempty value is
+ * a live initialized immutable region of length bytes; NULL only for empty.
+ */
+int slk_connection_ssap_send_event(const struct SlkConnection *connection,
+                                   uint16_t handle,
+                                   uint32_t indication,
+                                   const uint8_t *value,
+                                   uintptr_t length,
+                                   uint32_t minimum,
+                                   struct SlkSsapUpdate *output,
+                                   uint64_t deadline_ns);
+
+/**
  * Observe only this caller's owned property configuration on the fixed lifetime.
  * modes0..3 is not a Ready,Grant or application-delivery receipt;no enable/write.
  * # Safety

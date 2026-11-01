@@ -10,6 +10,18 @@ use crate::{ApplicationConnection, ApplicationError};
 use slk_contract::{self as contract, ssap as wire};
 
 type Result<T> = std::result::Result<T, ApplicationError>;
+enum UpdateInput<'a> {
+    Property,
+    Event(&'a [u8], u32),
+}
+impl UpdateInput<'_> {
+    fn event_value(&self) -> Option<&[u8]> {
+        match self {
+            Self::Property => None,
+            Self::Event(value, _) => Some(value),
+        }
+    }
+}
 
 // One decoder and scope check for both the one-shot and leased receive views.
 // This validates a broker receipt; it does not grant Native security or delivery.
@@ -104,37 +116,87 @@ impl<'a> RemoteSsap<'a> {
         indication: bool,
         original: crate::Deadline,
     ) -> Result<wire::UpdateReceipt> {
+        self.send_owned(handle, indication, UpdateInput::Property, original)
+            .await
+    }
+    /// Send explicit event data owned by this original caller. No property CPCD
+    /// or implicit profile start/stop. minimum0..2 binds every actual submission.
+    /// Notification is admission only; indication is peer queue ACK, not app use.
+    pub async fn send_owned_event(
+        &self,
+        handle: u16,
+        indication: bool,
+        value: Vec<u8>,
+        minimum: u32,
+        original: crate::Deadline,
+    ) -> Result<wire::UpdateReceipt> {
+        if handle == 0 || minimum > 2 || value.len() > wire::MAX_EVENT_VALUE_BYTES {
+            return Err(ApplicationError::Invalid(
+                "event handle/minimum/payload budget",
+            ));
+        }
+        self.send_owned(
+            handle,
+            indication,
+            UpdateInput::Event(&value, minimum),
+            original,
+        )
+        .await
+    }
+    async fn send_owned(
+        &self,
+        handle: u16,
+        indication: bool,
+        input: UpdateInput<'_>,
+        original: crate::Deadline,
+    ) -> Result<wire::UpdateReceipt> {
         let original = original.capped(slk_channel::deadline::PROTOCOL_WAIT)?;
         let value = crate::client::bounded(
             &self.link.client,
             original,
             self.current(async {
-                let value: wire::UpdateReceipt = self
+                let proxy = self
                     .link
                     .client
                     .proxy(&self.link.path, contract::CONNECTION)
-                    .await?
-                    .call(
-                        wire::OWNED_UPDATE,
-                        &(
-                            handle,
-                            indication,
-                            contract::deadline_wire(original.stamp()),
-                        ),
-                    )
                     .await?;
+                let stamp = contract::deadline_wire(original.stamp());
+                let value: wire::UpdateReceipt = match input {
+                    UpdateInput::Property => {
+                        proxy
+                            .call(wire::OWNED_UPDATE, &(handle, indication, stamp))
+                            .await?
+                    }
+                    UpdateInput::Event(value, minimum) => {
+                        proxy
+                            .call(
+                                wire::OWNED_EVENT,
+                                &(handle, indication, value, minimum, stamp),
+                            )
+                            .await?
+                    }
+                };
+                let event = input.event_value().is_some();
                 if value.stage != if indication { 2 } else { 1 }
                     || value.pdu.len() > 2048
-                    || value.acknowledgement != if indication { vec![17, 3, 1] } else { vec![] }
+                    || value.acknowledgement
+                        != if indication {
+                            vec![17, if event { 7 } else { 3 }, 1]
+                        } else {
+                            vec![]
+                        }
                 {
                     return Err(ApplicationError::Identity("malformed owned update receipt"));
                 }
                 let decoded = slk_protocol::ssap::updates::Update::decode(2048, &value.pdu)
                     .map_err(|_| ApplicationError::Identity("malformed owned update PDU"))?;
-                if decoded.event
+                if decoded.event != event
                     || decoded.indication != indication
                     || decoded.items.len() != 1
                     || decoded.items[0].handle != handle
+                    || input
+                        .event_value()
+                        .is_some_and(|v| decoded.items[0].value != v)
                 {
                     return Err(ApplicationError::Identity("owned update receipt scope"));
                 }

@@ -186,6 +186,8 @@ pub mod ssap {
     pub const CACHED: &str = "GetCachedSsap";
     pub const RECEIVE: &str = "ReceiveSsapUpdate";
     pub const OWNED_UPDATE: &str = "SendOwnedSsapUpdate";
+    pub const OWNED_EVENT: &str = "SendOwnedSsapEvent";
+    pub const MAX_EVENT_VALUE_BYTES: usize = 2042;
     pub const OWNED_CONFIGURATION: &str = "GetOwnedSsapConfiguration";
     /// stage1: notification software admission only; stage2: indication accepted
     /// by the peer's protocol receive queue. Neither means application processing.

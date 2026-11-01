@@ -136,6 +136,34 @@ struct Link(
 );
 #[zbus::interface(name = "org.sparklink.Connection")]
 impl Link {
+    // Finite event receipt fixture for external SDK marshalling; no wire Engine.
+    fn send_owned_ssap_event(
+        &self,
+        handle: u16,
+        indication: bool,
+        value: Vec<u8>,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<slk_contract::ssap::UpdateReceipt> {
+        let d = slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        assert!(d.remaining().unwrap() <= std::time::Duration::from_secs(5));
+        if handle != 17 {
+            return Err(zbus::fdo::Error::AccessDenied(
+                "foreign event fixture".into(),
+            ));
+        }
+        assert!(minimum <= 2 && value.len() <= 2042 && value.iter().all(|v| *v == 0x42));
+        let mut pdu = vec![if indication { 16 } else { 15 }, 7, 17, 0];
+        pdu.extend_from_slice(&(value.len() as u16).to_le_bytes());
+        pdu.extend_from_slice(&value);
+        Ok(slk_contract::ssap::UpdateReceipt {
+            stage: if indication { 2 } else { 1 },
+            pdu,
+            acknowledgement: if indication { vec![17, 7, 1] } else { vec![] },
+        })
+    }
+
     fn discover_ssap(
         &self,
         uuid: Vec<u8>,
@@ -1096,6 +1124,8 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         assert!(
             String::from_utf8_lossy(&output.stdout)
                 .contains("OWNED_EVENT_LANGUAGE_FIXTURE_PASS_NOT_RF")
+                && String::from_utf8_lossy(&output.stdout)
+                    .contains("EVENT_SEND_LANGUAGE_FIXTURE_PASS_NOT_RF")
         );
         assert!(
             String::from_utf8_lossy(&output.stdout)

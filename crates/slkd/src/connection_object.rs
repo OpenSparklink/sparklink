@@ -702,6 +702,7 @@ impl ConnectionIface {
     }
     async fn owned_ssap_preflight(
         &self,
+        kind: crate::ssap_engine::UpdateKind,
         handle: u16,
         deadline: slk_contract::Deadline,
         header: &zbus::message::Header<'_>,
@@ -720,12 +721,18 @@ impl ConnectionIface {
                 ));
             }
             let store = self.state.lock().await.ssap_database.clone();
-            store
+            let db = store
                 .lock()
-                .map_err(|_| zbus::fdo::Error::Failed("database poisoned".into()))?
-                .owned_update(handle, caller.as_str())
-                .map(|_| ())
-                .map_err(zbus::fdo::Error::AccessDenied)
+                .map_err(|_| zbus::fdo::Error::Failed("database poisoned".into()))?;
+            match kind {
+                crate::ssap_engine::UpdateKind::Property => {
+                    db.owned_update(handle, caller.as_str()).map(|_| ())
+                }
+                crate::ssap_engine::UpdateKind::Event => {
+                    db.owned_event(handle, caller.as_str()).map(|_| ())
+                }
+            }
+            .map_err(zbus::fdo::Error::AccessDenied)
         })
         .await
         .map_err(|_| zbus::fdo::Error::Timeout("owned SSAP original preflight deadline".into()))?
@@ -1697,7 +1704,13 @@ impl ConnectionIface {
         #[zbus(header)] header: zbus::message::Header<'_>,
         #[zbus(connection)] connection: &zbus::Connection,
     ) -> zbus::fdo::Result<slk_contract::ssap::UpdateReceipt> {
-        self.owned_ssap_preflight(handle, deadline, &header).await?;
+        self.owned_ssap_preflight(
+            crate::ssap_engine::UpdateKind::Property,
+            handle,
+            deadline,
+            &header,
+        )
+        .await?;
         self.scoped_ssap_call(
             deadline,
             slk_channel::deadline::PROTOCOL_WAIT,
@@ -1705,7 +1718,61 @@ impl ConnectionIface {
             connection,
             |observer, caller, original| async move {
                 observer
-                    .update(caller, handle, indication, original)
+                    .update(
+                        crate::ssap_engine::UpdateSource::Property,
+                        caller,
+                        handle,
+                        indication,
+                        original,
+                    )
+                    .await
+                    .map_err(zbus::fdo::Error::Failed)
+            },
+        )
+        .await
+    }
+    /// Explicit event payload from its original service owner. No property
+    /// CPCD or implicit application start/stop protocol is manufactured.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "Five D-Bus wire fields plus connection/header and self"
+    )]
+    async fn send_owned_ssap_event(
+        &self,
+        handle: u16,
+        indication: bool,
+        value: Vec<u8>,
+        minimum: u32,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+        #[zbus(connection)] connection: &zbus::Connection,
+    ) -> zbus::fdo::Result<slk_contract::ssap::UpdateReceipt> {
+        if handle == 0 || minimum > 2 || value.len() > slk_contract::ssap::MAX_EVENT_VALUE_BYTES {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "event handle, minimum0..2, payload0..2042 required".into(),
+            ));
+        }
+        self.owned_ssap_preflight(
+            crate::ssap_engine::UpdateKind::Event,
+            handle,
+            deadline,
+            &header,
+        )
+        .await?;
+        self.scoped_ssap_call(
+            deadline,
+            slk_channel::deadline::PROTOCOL_WAIT,
+            header,
+            connection,
+            |observer, caller, original| async move {
+                observer
+                    .update(
+                        crate::ssap_engine::UpdateSource::Event { value, minimum },
+                        caller,
+                        handle,
+                        indication,
+                        original,
+                    )
                     .await
                     .map_err(zbus::fdo::Error::Failed)
             },
@@ -1720,7 +1787,13 @@ impl ConnectionIface {
         #[zbus(header)] header: zbus::message::Header<'_>,
         #[zbus(connection)] connection: &zbus::Connection,
     ) -> zbus::fdo::Result<u8> {
-        self.owned_ssap_preflight(handle, deadline, &header).await?;
+        self.owned_ssap_preflight(
+            crate::ssap_engine::UpdateKind::Property,
+            handle,
+            deadline,
+            &header,
+        )
+        .await?;
         self.scoped_ssap_call(
             deadline,
             slk_channel::deadline::PROTOCOL_WAIT,
@@ -2850,6 +2923,16 @@ mod grant_tests {
                 "ReadSsapByUuid",
                 vec!["q", "q", "y", "ay", "u"],
                 vec!["(a(qbqay)ayay)"],
+            ),
+            (
+                "SendOwnedSsapUpdate",
+                vec!["q", "b", "(ttttt)"],
+                vec!["(yayay)"],
+            ),
+            (
+                "SendOwnedSsapEvent",
+                vec!["q", "b", "ay", "u", "(ttttt)"],
+                vec!["(yayay)"],
             ),
             ("GetSsapInfo", vec![], vec!["(qttqqqayayayay)"]),
         ] {

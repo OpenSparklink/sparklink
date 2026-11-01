@@ -93,6 +93,8 @@ def _library():
             ctypes.c_void_p, ctypes.c_size_t, ctypes.c_uint64],
         "slk_connection_ssap_receive": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
                                         ctypes.POINTER(_SsapUpdate), ctypes.c_uint64],
+        "slk_connection_ssap_send_event": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
+            ctypes.c_void_p, ctypes.c_size_t, ctypes.c_uint32, ctypes.POINTER(_SsapUpdate), ctypes.c_uint64],
         "slk_connection_ssap_send_owned": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
                                            ctypes.POINTER(_SsapUpdate), ctypes.c_uint64],
         "slk_connection_ssap_owned_configuration": [ctypes.c_void_p, ctypes.c_uint16,
@@ -357,12 +359,16 @@ class RemoteSsap:
             fn = getattr(connection._lib, operation)
             _result(fn(connection._handle, handle, mode, ctypes.byref(output), deadline_ns))
         expected = 3 if operation == 'slk_connection_ssap_receive' else 2 if mode else 1
+        return self._decode_update(output, expected)
+
+    @staticmethod
+    def _decode_update(output, expected, *, event=False):
         ack = bytes(output.acknowledgement[:output.acknowledgement_length])
         if (output.stage != expected or not 6 <= output.pdu_length <= 2048
                 or output.acknowledgement_length > 3 or any(output.reserved)
                 or any(output.pdu[output.pdu_length:])
                 or any(output.acknowledgement[output.acknowledgement_length:])
-                or ack != (b'\x11\x03\x01' if expected == 2 else b'')):
+                or ack != (bytes([17, 7 if event else 3, 1]) if expected == 2 else b'')):
             import errno
             raise OSError(errno.EPROTO, 'invalid SSAP update ABI receipt')
         return SsapUpdate(output.stage, bytes(output.pdu[:output.pdu_length]), ack)
@@ -382,6 +388,24 @@ class RemoteSsap:
         if type(indication) is not bool:
             raise TypeError('indication must be boolean')
         return self._update('slk_connection_ssap_send_owned', handle, int(indication), deadline_ns)
+
+    def send_owned_event(self, handle, value, *, deadline_ns, indication=False, minimum=0):
+        """Explicit owned-event data;no CPCD,implicit profile enable or app receipt."""
+        if type(indication) is not bool:
+            raise TypeError('indication must be boolean')
+        deadline_ns = self._value_scope(handle, minimum, deadline_ns)
+        value = self._value_bytes(value)
+        if len(value) > 2042:
+            import errno
+            raise OSError(errno.EMSGSIZE, 'event payload exceeds2042 bytes')
+        connection = self._connection
+        output = _SsapUpdate()
+        connection._live()
+        with connection._lock:
+            connection._live()
+            _result(connection._lib.slk_connection_ssap_send_event(connection._handle,
+                handle, int(indication), value, len(value), minimum, ctypes.byref(output), deadline_ns))
+        return self._decode_update(output, 2 if indication else 1, event=True)
 
     def owned_configuration(self, handle, *, deadline_ns):
         """Read-only Session configuration for an original-caller owned property."""

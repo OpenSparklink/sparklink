@@ -87,6 +87,18 @@ Session仍缺失，U#24/#25/#27不关闭；Native method v4继续独立推进。
 可用的源码工作按原 U#22 继续标准event与操作矩阵核对、复用现有唯一Engine/codec和
 权限类型，不让硬件等待演变为新增Host或第二套SSAP旁路。
 
+### B 的事件发现调用链（2026-11-01）
+
+复用现有 `DiscoverSsap`、SDK和Engine分页；补kind5与层次成员bit8，不新增协议或RPC。
+本批退出是标准/自定义事件类别4/12、UUID查询、原期限、96页/80条总预算及完整失败
+传播贯穿Rust/C/Python/CLI；独立wire向量和实际私有D-Bus消费者分别检查，仍不授Native
+内核/固件或实机资格。默认数据库尚无event登记，查询无条目沿原错误响应，不伪造事件。
+
+下一批按同一U#22补事件条目的Owned登记、权限与配置，再经现有Update/Pending/RX路径
+推进payload、通知/指示及ACK；不得把属性更新改名为事件。保留现有method v4准确产物
+及真实交付出口，不以本批发现测试替代。固定NearLink Host客户端识别事件成员，其当前
+服务端单独event查找返回无条目；该参考不能充当完整event互通资格。
+
 ### ServiceChannel 生产调用审计与最小迁移（2026-11-01）
 
 源码 [92a7522](https://github.com/OpenSparklink/sparklink/commit/92a752223a770de139b8ffbc0b05c5113b4ace29) 复用 `ssap_engine::Wire`；没有新增Host/Engine/公共trait。所有快照和Session TX查询进入同一fd所有者，send/receive不再接收外部fd；send只依赖约束及片字节，不依赖Engine的Pending队列。现有检查时点、原期限和返回错误保留。

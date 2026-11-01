@@ -146,7 +146,7 @@ impl Link {
             .unwrap();
         assert!(d.remaining().unwrap() <= std::time::Duration::from_secs(5));
         self.8.fetch_add(1, Ordering::SeqCst);
-        if kind != 4 || !matches!(uuid.as_slice(), [1, 2] | [3, 4] | [5, 6] | [7, 8]) {
+        if !matches!(kind, 4 | 5) || !matches!(uuid.as_slice(), [1, 2] | [3, 4] | [5, 6] | [7, 8]) {
             return Err(zbus::fdo::Error::InvalidArgs(
                 "finite discovery fixture".into(),
             ));
@@ -163,9 +163,17 @@ impl Link {
             vec![0x80]
         };
         Ok((
-            vec![(3, 17, 17, vec![1, 2], 0, descriptors, 0)],
             vec![(
-                vec![6, 20, 1, 0, 255, 255, 1, 2],
+                if kind == 5 { 4 } else { 3 },
+                17,
+                17,
+                vec![1, 2],
+                0,
+                descriptors,
+                0,
+            )],
+            vec![(
+                vec![6, 16 | kind, 1, 0, 255, 255, 1, 2],
                 vec![7, 11, 1, 17, 0, 1, 2, 0, 0, 0, 0, 1, 0x80],
             )],
         ))
@@ -1079,8 +1087,8 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     }
     assert_eq!(
         discovery_calls.load(Ordering::SeqCst),
-        8,
-        "four discovery RPCs per actual language; no retry for local reads or invalid inputs"
+        10,
+        "five discovery RPCs per actual language; no retry for local reads or invalid inputs"
     );
     assert_eq!(
         description_reads.load(Ordering::SeqCst),

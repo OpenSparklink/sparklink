@@ -7,6 +7,7 @@ pub enum FindKind {
     Primary,
     Properties,
     Methods,
+    Events,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum EntryClass {
@@ -58,6 +59,7 @@ impl<'a> FindRequest<'a> {
             FindKind::Primary => 1,
             FindKind::Properties => 3,
             FindKind::Methods => 4,
+            FindKind::Events => 5,
         }) | match self.class {
             EntryClass::Standard => 0,
             EntryClass::Custom => 8,
@@ -102,6 +104,7 @@ impl<'a> FindRequest<'a> {
             1 => FindKind::Primary,
             3 => FindKind::Properties,
             4 => FindKind::Methods,
+            5 => FindKind::Events,
             _ => return Err(FindError::Unsupported),
         };
         let class = match raw[1] & 24 {
@@ -187,6 +190,7 @@ pub fn decode_page(
             FindKind::Primary => 0,
             FindKind::Properties => 2,
             FindKind::Methods => 3,
+            FindKind::Events => 4,
             FindKind::Structure => bytes(raw, &mut offset, 1)?[0],
         };
         if request.kind == FindKind::Structure {
@@ -280,7 +284,7 @@ pub fn encode_page(
         item.extend(e.handle.to_le_bytes());
         match request.kind {
             FindKind::Structure => {
-                if !matches!(e.category, 0 | 8 | 2 | 10 | 3 | 11) {
+                if !matches!(e.category, 0 | 8 | 2 | 10 | 3 | 11 | 4 | 12) {
                     return Err(FindError::Unsupported);
                 }
                 item.push(e.category);
@@ -298,6 +302,11 @@ pub fn encode_page(
             }
             FindKind::Methods => {
                 if !matches!(e.category, 3 | 11) {
+                    return Err(FindError::Metadata);
+                }
+            }
+            FindKind::Events => {
+                if !matches!(e.category, 4 | 12) {
                     return Err(FindError::Metadata);
                 }
             }
@@ -330,6 +339,93 @@ pub fn encode_page(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn event_discovery_vectors_keep_event_category_and_original_schema() {
+        let r = FindRequest {
+            kind: FindKind::Events,
+            class: EntryClass::Mixed,
+            start: 1,
+            end: 65535,
+            uuid: None,
+        };
+        let mut encoded = [0; 22];
+        assert_eq!(r.encode(249, &mut encoded).unwrap(), 6);
+        assert_eq!(&encoded[..6], &[4, 21, 1, 0, 255, 255]);
+        assert_eq!(FindRequest::decode(249, &encoded[..6]), Ok(r));
+        let u = [0x34, 0x12];
+        let by_uuid = FindRequest {
+            uuid: Some(&u),
+            ..r
+        };
+        assert_eq!(by_uuid.encode(249, &mut encoded).unwrap(), 8);
+        assert_eq!(&encoded[..8], &[6, 21, 1, 0, 255, 255, 0x34, 0x12]);
+        assert_eq!(FindRequest::decode(249, &encoded[..8]), Ok(by_uuid));
+        // Independent table61 single standard entry: no category on wire.
+        let raw = [5, 3, 17, 0, 0x34, 0x12, 0x10, 0, 0, 0, 1, 2];
+        let event = Entry {
+            category: 4,
+            handle: 17,
+            end: 17,
+            uuid: u.to_vec(),
+            operations: 0x10,
+            descriptors: vec![2],
+            members: 0,
+        };
+        assert_eq!(decode_page(r, 249, &raw), Ok(vec![event.clone()]));
+        for n in 0..raw.len() {
+            assert!(decode_page(r, 249, &raw[..n]).is_err());
+        }
+        let custom = Entry {
+            category: 12,
+            handle: 18,
+            end: 18,
+            uuid: vec![0xa5; 16],
+            ..event.clone()
+        };
+        for kind in [FindKind::Events, FindKind::Structure] {
+            let req = FindRequest { kind, ..r };
+            let (bytes, n) = encode_page(req, 249, &[event.clone(), custom.clone()]).unwrap();
+            assert_eq!(n, 2);
+            assert_eq!(
+                decode_page(req, 249, &bytes),
+                Ok(vec![event.clone(), custom.clone()])
+            );
+        }
+        assert_eq!(
+            encode_page(
+                r,
+                249,
+                &[Entry {
+                    category: 3,
+                    ..event.clone()
+                }]
+            ),
+            Err(FindError::Metadata)
+        );
+        assert_eq!(
+            encode_page(
+                FindRequest {
+                    kind: FindKind::Methods,
+                    ..r
+                },
+                249,
+                &[event]
+            ),
+            Err(FindError::Metadata)
+        );
+        assert_eq!(
+            decode_page(FindRequest { end: 16, ..r }, 249, &raw),
+            Err(FindError::Handle)
+        );
+        let mut bad = raw;
+        bad[6] = 0x80;
+        assert_eq!(decode_page(r, 249, &bad), Err(FindError::Reserved));
+        // Group promises two entries but only one follows; no partial success.
+        let mut bad = vec![5, 11, 2];
+        bad.extend_from_slice(&raw[2..]);
+        assert!(decode_page(r, 249, &bad).is_err());
+    }
+
     #[test]
     fn method_golden_requests_and_entries_keep_the_original_schema() {
         let request = FindRequest {

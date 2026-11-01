@@ -1362,7 +1362,7 @@ int slk_write_provider_request_value(const struct SlkWriteProviderRequest *reque
 
 /**
  * Perform one management-only SSAP discovery via the same SDK/daemon Engine.
- * kind0 structure,1 primary hierarchy,3 property,4 method; UUID empty/2/16bytes.
+ * kind0 structure,1 primary hierarchy,3 property,4 method,5 event; UUID empty/2/16bytes.
  * Original CLOCK_MONOTONIC deadline covers local queue/identity/daemon/pages;
  * five-second ceiling captured before queueing. Success returns one immutable
  * bounded result (80entries/96transactions); failure leaves output unchanged.

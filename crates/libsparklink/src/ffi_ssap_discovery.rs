@@ -45,7 +45,7 @@ impl SlkSsapEntry {
 }
 
 /// Perform one management-only SSAP discovery via the same SDK/daemon Engine.
-/// kind0 structure,1 primary hierarchy,3 property,4 method; UUID empty/2/16bytes.
+/// kind0 structure,1 primary hierarchy,3 property,4 method,5 event; UUID empty/2/16bytes.
 /// Original CLOCK_MONOTONIC deadline covers local queue/identity/daemon/pages;
 /// five-second ceiling captured before queueing. Success returns one immutable
 /// bounded result (80entries/96transactions); failure leaves output unchanged.
@@ -68,7 +68,7 @@ pub unsafe extern "C" fn slk_connection_ssap_discover(
         || output.is_null()
         || !matches!(uuid_length, 0 | 2 | 16)
         || (uuid_length != 0 && uuid.is_null())
-        || !matches!(kind, 0 | 1 | 3 | 4)
+        || !matches!(kind, 0 | 1 | 3 | 4 | 5)
     {
         return -nix::libc::EINVAL;
     }

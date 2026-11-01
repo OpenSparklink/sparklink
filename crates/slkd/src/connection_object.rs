@@ -1259,6 +1259,7 @@ impl ConnectionIface {
             1 => slk_protocol::ssap::discovery::FindKind::Primary,
             3 => slk_protocol::ssap::discovery::FindKind::Properties,
             4 => slk_protocol::ssap::discovery::FindKind::Methods,
+            5 => slk_protocol::ssap::discovery::FindKind::Events,
             _ => {
                 return Err(zbus::fdo::Error::NotSupported(
                     "find kind not supported".into(),

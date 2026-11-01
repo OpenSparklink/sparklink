@@ -156,6 +156,12 @@ int main(void) {
     trace_length=99;trace[0]=0xa5;
     assert(slk_ssap_discovery_trace(discovered,1,1,trace,sizeof trace,&trace_length)==-ENOENT && trace_length==99 && trace[0]==0xa5);
     assert(slk_ssap_discovery_trace(discovered,0,2,trace,sizeof trace,&trace_length)==-EINVAL && trace_length==99);
+    struct SlkSsapDiscoveryResult *events=NULL;
+    assert(slk_connection_ssap_discover(link,find_uuid,2,5,deadline(),&events)==0 && events);
+    assert(slk_ssap_discovery_entry(events,0,&entry)==0 && entry.category==4 && entry.handle==17);
+    assert(slk_ssap_discovery_trace(events,0,0,trace,sizeof trace,&trace_length)==0 && trace_length==8);
+    assert(!memcmp(trace,"\x06\x15\x01\x00\xff\xff\x01\x02",8));
+    slk_ssap_discovery_free(events);
     struct SlkSsapDiscoveryResult *failed=(void *)1;
     assert(slk_connection_ssap_discover(link,bad_uuid,2,4,deadline(),&failed)==-ESTALE && failed==(void *)1);
     assert(slk_connection_ssap_discover(link,refused_uuid,2,4,deadline(),&failed)==-EOPNOTSUPP && failed==(void *)1);

@@ -188,13 +188,21 @@ impl Link {
             self.0.entered.notify_one();
             self.0.release.notified().await;
         }
-        if !matches!(uuid.as_slice(), [1, 2] | [9, 9]) || !matches!(kind, 3 | 4) {
+        if !matches!(uuid.as_slice(), [1, 2] | [9, 9]) || !matches!(kind, 3..=5) {
             return Err(zbus::fdo::Error::NotSupported(
                 "unsupported fixture discovery".into(),
             ));
         }
         Ok((
-            vec![(3, 17, 18, vec![1, 2], 4, vec![0x80], 1)],
+            vec![(
+                if kind == 5 { 4 } else { 3 },
+                17,
+                18,
+                vec![1, 2],
+                4,
+                vec![0x80],
+                1,
+            )],
             vec![(vec![0x11], vec![0x22])],
         ))
     }
@@ -329,8 +337,16 @@ async fn actual_ssap_client_serializes_all_existing_methods_without_echo_or_fall
     );
     assert_eq!(methods, entries);
     assert_eq!(method_trace, trace);
+    let event_deadline = deadline();
+    let (events, event_trace) = remote.discover_until(vec![1, 2], 5, event_deadline).await?;
+    assert_eq!(events[0].0, 4);
+    assert_eq!(event_trace, trace);
+    assert_eq!(
+        state.discovery_stamps.lock().unwrap()[2],
+        slk_contract::deadline_wire(event_deadline.stamp())
+    );
     let before = state.calls.load(Ordering::SeqCst);
-    for kind in [2, 5, 6, 255] {
+    for kind in [2, 6, 255] {
         assert!(matches!(
             remote.discover(vec![1, 2], kind).await,
             Err(ApplicationError::Invalid(_))
@@ -351,13 +367,13 @@ async fn actual_ssap_client_serializes_all_existing_methods_without_echo_or_fall
     );
     assert_eq!(remote.exchange_info().await?.5, 240);
     assert_eq!(link.transport_status().await?.5, 1);
-    assert_eq!(state.calls.load(Ordering::SeqCst), 10); // No hidden retry, fallback or engine calls.
+    assert_eq!(state.calls.load(Ordering::SeqCst), 11); // No hidden retry, fallback or engine calls.
     state.role.store(1, Ordering::SeqCst);
     assert!(matches!(
         remote.read(17, 2, deadline()).await,
         Err(ApplicationError::Identity(_))
     ));
-    assert_eq!(state.calls.load(Ordering::SeqCst), 10);
+    assert_eq!(state.calls.load(Ordering::SeqCst), 11);
     Ok(())
 }
 #[tokio::test]

@@ -758,6 +758,14 @@ request/epoch/property、完整 32 字节随机值及原期限后才终止 Provi
 测试参数与证据要求见 [VM 门禁输入](vm-gate-inputs.md#待决-write-的连接-down-门禁)。
 
 
+## 事件目录与事件操作的边界
+
+事件发现使用现有管理角色的 `DiscoverSsap` kind5；标准/自定义事件分别为类别4/12，
+层次发现按服务成员bit8跟进，同一原期限及总预算。发现不会创建新的授权或订阅。
+默认Owned数据库尚无事件登记入口，更新发送/接收仍只开放已有属性路径；底层codec能
+识别event位不代表Engine已经接通事件业务。事件权限、客户端配置、通知/指示及ACK
+仍须沿同一Owner/Session/Grant逐项接通，不复用属性批准冒充事件授权。
+
 ## Owned method 服务端
 
 方法与属性使用同一个 Owned 服务登记和撤回生命周期，但方法不是存储值或 WRITE。

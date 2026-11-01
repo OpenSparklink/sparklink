@@ -297,7 +297,7 @@ index/generation和物理lifetime/handle/role/地址类型/地址。`connection.
 
 | Rust客户端方法 | 现有daemon方法／结果 | 限制 |
 |---|---|---|
-| `discover(uuid, kind)` | `DiscoverSsap`，条目及实际事务trace | structure=0、primary=1、property=3、method=4；不创建客户端缓存 |
+| `discover(uuid, kind)` | `DiscoverSsap`，条目及实际事务trace | structure=0、primary=1、property=3、method=4、event=5；不创建客户端缓存 |
 | `cached()` | `GetCachedSsap` | 该lifetime的建议性缓存，不能授予可用性/安全 |
 | `read(handle, minimum, Deadline)` | `ReadSsapValue` | 原机制要求；错误原样传播，无弱化fallback |
 | `read_description(handle, minimum, Deadline)` | `ReadSsapDescription` | 已发现的公开只读 type1；1..244 UTF-8 字节、无 NUL，非法成功响应 EPROTO，不回退属性值 |
@@ -619,17 +619,18 @@ WRITE_NO_RSP、descriptor、notify/indicate等声明明确NotSupported；共享�
 仍保留标准完整语义。此拒绝只有生产数据库/实际D-Bus离线门禁，不转授Ub5实机资格。
 
 `Connection.DiscoverSsap(uuid,kind,original_deadline)` 与 `GetCachedSsap` 按实际 SMTC 响应产生元数据；
-未知缓存失败。kind 为结构0、首要服务1、属性3或方法4，UUID为空或2/16字节。
+未知缓存失败。kind 为结构0、首要服务1、属性3、方法4或事件5，UUID为空或2/16字节。
 方法类别为标准3/自定义11，不能把属性类别2/10当作方法。空UUID+primary模式按
-服务成员位分别查询属性和方法，共用从调用者开始、最长5秒的原期限、96页及80条总预算。Rust `discover_until`
+服务成员位分别查询属性、方法和事件，共用从调用者开始、最长5秒的原期限、96页及80条总预算。Rust `discover_until`
 接收已开始的期限；`discover` 在身份预检前创建5秒期限。D-Bus新增 `(ttttt)`
 原期限参数（未发布接口，无旧签名兼容）；daemon预检、actor Info与所有分页不得续期。
 调用者退出终止等待，不抹去在途物理义务。`slctl` 连接获取与缓存核对亦使用同一期限。
 方法查询失败
 或跨类别重复handle使整次发现失败，不发布部分结果为完整缓存。
-`slctl ssap-discover CONNECTION method UUID_HEX` 使用同一SDK/daemon发现入口。
+`slctl ssap-discover CONNECTION method UUID_HEX` 与 `event UUID_HEX` 使用同一SDK/daemon发现入口。
+事件目录来自真实请求流程，协议通知/指示的event位并不授予订阅、发送或接收能力；这些生产接线尚未开放。
 本地method登记与D-Bus Provider已接入同一数据库/Engine；Rust/C/Python共享Dispatcher方法收件箱已接通，CLI方法服务端已接通，VM调用者和真实方法交付仍待验收。
-发现方法不表示调用成功、授权或安全资格。完整服务数据库快照、事件/引用发现及
+发现方法不表示调用成功、授权或安全资格。事件发现已接入kind5、类别4/12；这不开放事件登记、收发或ACK业务。完整服务数据库快照、引用发现及
 ServiceChanged一致性尚无承诺。C/Python发现封装已复用同一SDK，接口如下；新的准确实机资格仍待验收。
 普通服务从handle16分配，保留旧流量证据但不转授旧范围为标准合格。
 
@@ -638,7 +639,7 @@ ServiceChanged一致性尚无承诺。C/Python发现封装已复用同一SDK，�
 C `slk_connection_ssap_discover(connection, uuid, uuid_length, kind, deadline_ns, &result)`
 执行一次发现；Python为 `connection.ssap().discover(uuid, kind=4, deadline_ns=original)`。
 两者仍受管理角色策略约束，不能据SDK存在推导普通应用组已有权限。
-UUID为空/2/16字节，按原字节顺序传递；kind为0/1/3/4。C返回0或负errno，失败不改
+UUID为空/2/16字节，按原字节顺序传递；kind为0/1/3/4/5。C返回0或负errno，失败不改
 result。原单调时钟期限覆盖同步执行队列、身份预检、daemon及分页，5秒上限在入队前
 固定；Python在等待对象锁前固定并按同一期限结束锁等待。退出不能撤回已提交物理工作。
 

@@ -441,6 +441,9 @@ impl Observer {
                         if service.members & 4 != 0 {
                             ranges.push((FindKind::Methods, service.handle, service.end));
                         }
+                        if service.members & 8 != 0 {
+                            ranges.push((FindKind::Events, service.handle, service.end));
+                        }
                     }
                 }
                 entries.extend(page);
@@ -1153,7 +1156,9 @@ impl ClientAdmission<'_> {
             let _ = reply.send(Err("SSAP busy/not-ready/expired/oversize".into()));
             return false;
         }
-        let prepared = wire.snapshot().and_then(|_| wire.prepare(minimum, deadline));
+        let prepared = wire
+            .snapshot()
+            .and_then(|_| wire.prepare(minimum, deadline));
         let constraint = match prepared {
             Ok(c) => c,
             Err(e) => {
@@ -2607,6 +2612,88 @@ mod tests {
                 }
                 1 => assert!(result.unwrap_err().contains("method dependency refused")),
                 _ => assert!(result.unwrap_err().contains("duplicate remote handle")),
+            }
+            assert!(incoming.try_recv().is_err());
+        }
+    }
+
+    #[tokio::test]
+    async fn event_hierarchy_uses_original_deadline_and_never_succeeds_partially() {
+        use slk_protocol::ssap::discovery::FindKind;
+        // Actual Observer; peer queue replies are fixtures, not a Native actor.
+        for scenario in 0..4 {
+            let info: Info = (0, 7, 13, 1, 249, 249, vec![], vec![], vec![], vec![]);
+            let (_status, state) = watch::channel(Status::Negotiated(info.clone()));
+            let (queries, mut incoming) = mpsc::channel(8);
+            let observer = Observer { state, queries };
+            let original = Instant::now() + Duration::from_millis(300);
+            let task = tokio::spawn(observer.discover(None, FindKind::Primary, original));
+            let Some(Query::Info(reply)) = incoming.recv().await else {
+                panic!("info")
+            };
+            reply.send(Ok(info)).unwrap();
+            let cases = [
+                (
+                    vec![4, 17, 1, 0, 255, 255],
+                    vec![5, 11, 1, 16, 0, 18, 0, 1, 2, 8],
+                ),
+                (vec![4, 17, 19, 0, 255, 255], vec![1, 0, 4, 19, 0, 11]),
+                (
+                    vec![4, 21, 16, 0, 18, 0],
+                    vec![5, 3, 17, 0, 0x34, 0x12, 0x10, 0, 0, 0, 0],
+                ),
+                (vec![4, 21, 18, 0, 18, 0], vec![1, 0, 4, 18, 0, 11]),
+            ];
+            for (i, (expected, mut response)) in cases.into_iter().enumerate() {
+                let Some(Query::Value {
+                    bytes,
+                    deadline,
+                    minimum,
+                    reply,
+                }) = incoming.recv().await
+                else {
+                    panic!("event page")
+                };
+                assert_eq!(bytes, expected);
+                assert_eq!(deadline, original);
+                assert_eq!(minimum, 0);
+                if i == 2 && scenario == 1 {
+                    response.pop();
+                }
+                if i == 3 && scenario == 2 {
+                    tokio::time::sleep_until(original).await;
+                    let mut reply = reply;
+                    tokio::time::timeout(Duration::from_secs(1), reply.closed())
+                        .await
+                        .expect("original waiter terminates");
+                    assert!(reply.send(Ok(response)).is_err());
+                    break;
+                }
+                if i == 2 && scenario == 3 {
+                    reply.send(Err("event query refused".into())).unwrap();
+                    break;
+                }
+                reply.send(Ok(response)).unwrap();
+                if i == 2 && scenario == 1 {
+                    break;
+                }
+            }
+            let result = task.await.unwrap();
+            match scenario {
+                0 => {
+                    let (entries, trace) = result.unwrap();
+                    assert_eq!(
+                        entries
+                            .iter()
+                            .map(|e| (e.category, e.handle))
+                            .collect::<Vec<_>>(),
+                        [(0, 16), (4, 17)]
+                    );
+                    assert_eq!(trace.len(), 4);
+                }
+                1 => assert!(result.unwrap_err().contains("find response")),
+                2 => assert!(result.unwrap_err().contains("deadline")),
+                _ => assert!(result.unwrap_err().contains("event query refused")),
             }
             assert!(incoming.try_recv().is_err());
         }

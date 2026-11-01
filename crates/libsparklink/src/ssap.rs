@@ -191,7 +191,7 @@ impl<'a> RemoteSsap<'a> {
         kind: u8,
         original: crate::Deadline,
     ) -> Result<wire::Discovery> {
-        if !matches!(kind, 0 | 1 | 3 | 4) || !uuid.is_empty() && !matches!(uuid.len(), 2 | 16) {
+        if !matches!(kind, 0 | 1 | 3 | 4 | 5) || !uuid.is_empty() && !matches!(uuid.len(), 2 | 16) {
             return Err(ApplicationError::Invalid(
                 "unsupported SSAP discovery kind/UUID",
             ));

@@ -52,8 +52,8 @@ def _functions(lib):
 
 def discover(connection, uuid, kind, deadline_ns):
     from .client import _deadline, _result
-    if type(kind) is not int or kind not in (0, 1, 3, 4):
-        raise ValueError('SSAP discovery kind must be 0,1,3,4')
+    if type(kind) is not int or kind not in (0, 1, 3, 4, 5):
+        raise ValueError('SSAP discovery kind must be 0,1,3,4,5')
     if not isinstance(uuid, (bytes, bytearray, memoryview)):
         raise TypeError('UUID must be bytes-like')
     if (uuid.nbytes if isinstance(uuid, memoryview) else len(uuid)) not in (0, 2, 16):

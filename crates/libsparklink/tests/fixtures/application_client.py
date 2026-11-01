@@ -132,6 +132,9 @@ with connection:
     discovered = ssap.discover(b'\x01\x02',kind=4,deadline_ns=deadline())
     assert discovered == SsapDiscovery((SsapEntry(3,17,17,b'\x01\x02',0,b'\x80',0),),
         ((b'\x06\x14\x01\x00\xff\xff\x01\x02',b'\x07\x0b\x01\x11\x00\x01\x02\x00\x00\x00\x00\x01\x80'),))
+    events = ssap.discover(b'\x01\x02',kind=5,deadline_ns=deadline())
+    assert events.entries == (SsapEntry(4,17,17,b'\x01\x02',0,b'\x80',0),)
+    assert events.trace[0][0] == b'\x06\x15\x01\x00\xff\xff\x01\x02'
     error(errno.ESTALE,lambda:ssap.discover(b'\x03\x04',kind=4,deadline_ns=deadline()))
     error(errno.EOPNOTSUPP,lambda:ssap.discover(b'\x05\x06',kind=4,deadline_ns=deadline()))
     error(errno.ETIMEDOUT,lambda:ssap.discover(b'\x07\x08',kind=4,deadline_ns=deadline()))

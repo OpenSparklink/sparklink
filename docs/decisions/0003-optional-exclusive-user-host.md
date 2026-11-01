@@ -33,6 +33,15 @@ DirectUSB的固件/USB/HCC/BSLE在用户态设备适配；Native/KernelPacket在
 
 固定NearLink Host与libws73-usb版本保持；前者LOCAL_TEST数据stub不用于真实性依据。后者`ws73_evt_stop`在有限等待后继续free，超限时未强制pending为零；这是静态风险而非本项目实机UAF证据，不复制成成功drain。参考源码许可/封装分别核对，未导入其业务实现。SDK110 E/US与四叶白名单、VM-only不变。
 
+### 最小消费者边界
+
+独立 `tools/lab/ws73_directusb_rom` 是库审查后的实际实验消费者：复用现有 VM ROM
+观察流程、固定读命令和原 decoder，不作为默认 daemon 或 Host 后端。独立 Cargo.lock
+防止未接通依赖进入生产；禁止接管已有 driver、隐式扫描和失败回退。每次低层提交前
+核对原期限/无在途，取消后只收完成，超限记隔离；进程退出不证明 drain。
+先取得专用 VM 的真实提交与取消证据，再扩大到连续设备 actor、固件/HCC/BSLE和包接口。
+这项有界实验不会削减 controller 所有权、generation、命令/数据 credit 或正式实机门禁。
+
 ## 2026-10-13 原决定的保留部分（KernelPacket分支）
 
 下列源码审计是历史身份；包接管、租约、真实屏障及厂商适配原门禁保留，不代表最新实现或资格。术语UserHost在本历史分支中指KernelPacket用户态Host。

@@ -23,6 +23,12 @@
 
 USB依赖研究：nusb0.2.9固定源码审查、3项实际上游状态转换测试及MSVC库编译检查完成；仍是有条件原型候选，无项目DirectUSB实现或OS/USB/Windows运行资格。见[审计范围](reference/architecture/directusb-library-audit-20261101.json)及ADR0003。根生产依赖、冻结实机产物不变。
 
+实验工具 [efb962c](https://github.com/OpenSparklink/sparklink/commit/efb962c575dbafa387ef79fb0120ac61c7d1fa85) 已接入现有 VM ROM 观察消费者，独立 nusb 锁文件；
+严格构建、输入 guard、46项 receipt/工具负对照及实际二进制无参数拒绝通过。
+没有执行 USB/VM 操作，无新的冷ROM、启动、自动恢复、Windows 或 UserHost 资格；
+默认生产依赖与冻结产物不变，实验消费者不能升级上方完整路线状态。
+
+
 上表是源码及限定离线结果，不转授冻结v4产物或历史PASS；未新增形式化证明。AF_UNIX/私有D-Bus不是内核或空口资格。结构化来源为 `scope_extensions[].implementation_slices`，消费者/权限来源、stop/drain与依赖见[唯一计划](implementation-plan.md)。采用前c2642d7的nix结论保留为历史审计，当前差异以上表为准。
 
 ## 本批实现与验证边界

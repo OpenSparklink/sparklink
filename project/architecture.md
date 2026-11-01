@@ -228,7 +228,7 @@ Linux HID 初选 UHID，音频后续 PipeWire；Windows 系统 HID/音频单独�
 - 干净 VM 完成服务权限、普通用户、外部 C/Python、安装/升级/回滚/卸载、配置和凭据保留；签名和构建产物不等于合格发布。
 
 
-本次核对的官方参考：[nusb](https://github.com/kevinmehall/nusb)、[异步管道](https://learn.microsoft.com/en-us/windows/win32/ipc/synchronous-and-overlapped-input-and-output)、[WinUSB安装条件](https://learn.microsoft.com/en-us/windows-hardware/drivers/usbcon/automatic-installation-of-winusb)。库版本尚未锁定为项目依赖，接口/平台支持不等于WS73资格；选型必须审计锁定源码的提交/取消和缓冲区语义。
+本次核对的官方参考：[nusb](https://github.com/kevinmehall/nusb)、[异步管道](https://learn.microsoft.com/en-us/windows/win32/ipc/synchronous-and-overlapped-input-and-output)、[WinUSB安装条件](https://learn.microsoft.com/en-us/windows-hardware/drivers/usbcon/automatic-installation-of-winusb)。nusb0.2.9仅锁定在独立VM ROM实验工具，未进入默认生产依赖；接口/平台支持不等于WS73资格，完整设备适配仍须验证提交/取消和缓冲区语义。
 
 
 ## 连接级管理观察

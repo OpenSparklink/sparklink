@@ -44,6 +44,25 @@ python3 tools/build_resources.py --with-vm -- cargo +1.96.1 check --locked --off
 ```
 归档使用[固定官方来源](https://static.crates.io/crates/nusb/nusb-0.2.9.crate)并由工具核对hash；依赖首次须按归档Cargo.lock准备缓存，缺失不得记PASS。构建仍共用锁和总预算；无平台运行或生产资格推导。
 
+### C 的最小消费者：VM ROM 观察（2026-11-01）
+
+[源码 efb962c](https://github.com/OpenSparklink/sparklink/commit/efb962c575dbafa387ef79fb0120ac61c7d1fa85) 接通现有 `rom_observations` / scratch VM 打包器，
+独立未发布工具固定 nusb0.2.9，仅执行固定 READM。默认生产依赖及冻结 v4 产物不变。
+复用原型号解析与证据，不新增 Host、启动引擎或自动镜像选择。旧 usbfs 观察仅保留为
+现有诊断对照；显式选新执行器后绝不回退，完成 VM 对照后再决定旧传输分支退休。
+
+本批源码退出：显式 guest 拓扑和 VM/scratch guard、已有 driver 拒绝、两端点检查、
+单个在途、原 2 秒 I/O 期限、额外最多 1 秒取消完成观察；停止后不再提交，未知/未排空
+不宣布成功。原报告失败、短回复、晚到、hash变化和监督器超时保持失败。已通过严格
+Clippy、1项实际输入guard测试、46项工具/receipt/staging回归和实际二进制无参数拒绝；
+fixture不执行USB，新增独立锁定CI检查尚不能称在线运行通过。
+
+下一硬件退出：新产物/工具身份封存，核对占用和逐叶白名单后，仅专用VM比较明确E/U的
+读取/长度/字节序和现有原始USB证据；注入或自然取消/拔出分别验证completion/drain与
+同行隔离。当前没有执行USB，不具备该工具VM运行或冷ROM可读性资格。原软件复位流程
+不冒充冷断电；全零有效性未证明，不允许自动选U。Windows、包适配、启动、Host信用及
+Session仍缺失，U#24/#25/#27不关闭；Native method v4继续独立推进。
+
 ### ServiceChannel 生产调用审计与最小迁移（2026-11-01）
 
 源码 [92a7522](https://github.com/OpenSparklink/sparklink/commit/92a752223a770de139b8ffbc0b05c5113b4ace29) 复用 `ssap_engine::Wire`；没有新增Host/Engine/公共trait。所有快照和Session TX查询进入同一fd所有者，send/receive不再接收外部fd；send只依赖约束及片字节，不依赖Engine的Pending队列。现有检查时点、原期限和返回错误保留。

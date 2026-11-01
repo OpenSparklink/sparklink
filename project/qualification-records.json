@@ -528238,6 +528238,50 @@
               "source_offline_only": true
             }
           ]
+        },
+        {
+          "id": "directusb-rom-executor-20261101",
+          "source_commit": "efb962c575dbafa387ef79fb0120ac61c7d1fa85",
+          "source_sha256": {
+            ".github/workflows/tooling.yml": "49c3fb4d24986b2c0afbc93ecf973cac14acef79248db6ca6a1ead6febc93115",
+            "tools/lab/ws73_directusb_rom/Cargo.lock": "6aea084414806044c6faba616eb49767c703f2d823ae170eaca2ee96ce0b89e3",
+            "tools/lab/ws73_directusb_rom/Cargo.toml": "4977edb081ebf61cd6c167ec72f18b5029b740a01976892c8e1e13296c1741a6",
+            "tools/lab/ws73_directusb_rom/src/main.rs": "999ed9141d2aff7f42d360390512845d4a4c2a4cafa01bbfcf16641323b7029d",
+            "tools/tests/test_ws73_directusb_rom.py": "42fd789272c794d21580f8fb08082c040257ab9c6d1f9c7984e433b51d4c5d18",
+            "tools/tests/test_ws73_prepare_inputs.py": "5b27c28295208990fc898a55517d09c11ebf486eccb779d5075d3fe277dfeff8",
+            "tools/ws73_register_reset_init.sh": "e039890da922d90b956fc71df1732ebb1249f854cd49c61818b0bc72b8d9db6b",
+            "tools/ws73_rom_chip.py": "d6a765c270d4f052c4e925f0f743e590dbe984b9806613cc210d70b6188dfc41",
+            "tools/ws73_target.py": "797a59269f765d12a3361c3e3ea24584ddcf429aa0a6915b14d7dcaedca6846f",
+            "tools/ws73_vm_register_reset.py": "9d3f43c109a83da0155ec6998fd3ccd955c509f679c6e488b110dac2ddbeab56"
+          },
+          "status": "EXPERIMENTAL_CONSUMER_OFFLINE_CHECKED_NO_USB_EXECUTION",
+          "checks": {
+            "strict_clippy_all_targets": "passed",
+            "actual_guard_tests": 1,
+            "receipt_staging_and_existing_rom_tests": 46,
+            "actual_binary_usage_refusal": "passed; no USB open"
+          },
+          "scope": "Independent scratch VM ROM consumer; fixed READM and existing decoder. No production Host or firmware loader. Receipt tests use fixtures; actual OS submission/cancel/drain not exercised.",
+          "not_tested": [
+            "VM/USB execution",
+            "OS callback/cancel/drain and disconnect",
+            "cold ROM validity/automatic firmware selection",
+            "new artifact Native regression",
+            "Windows runtime",
+            "formal proof"
+          ],
+          "qualification_transfer": false,
+          "issue_sync": [
+            {
+              "repository": "sparklink",
+              "number": 24,
+              "state": "open",
+              "body_sha256": "6849243c9fc94399b8b1076a699cfcc110da7f3e55aac3c1c15726450436dcb9",
+              "readback_verified": true,
+              "original_checklist_unchanged": true,
+              "source_offline_only": true
+            }
+          ]
         }
       ]
     }

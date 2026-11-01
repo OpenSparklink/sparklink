@@ -14,6 +14,14 @@
 下方历史批次的“UserHost P4”指旧KernelPacket/厂商分支，不涵盖本次新增路线。以上扩展完整目标，原S0–S6/19WP/10FV/12DG、预算与VM-only保留。源码审计和规划完成不授功能资格。新路线的证据维度政策已登记，记录验证器接线仍待做；历史记录及全部失败不重写。依赖与退出仅维护于[唯一计划](implementation-plan.md)。
 
 
+## 事件发现：源码与限定离线范围
+
+[源码 c072b05](https://github.com/OpenSparklink/sparklink/commit/c072b059e7afe3f50c67874f3322f641402ed9ff) 打通kind5及层次event成员，复用同一Engine、Rust/C/Python与CLI；原期限和预算不变。
+独立codec向量、实际Observer、私有D-Bus SDK/CLI及外部C/Python消费者通过；负对照检出漏查。
+peer与服务为显式fixture，未取得新Native实机/形式化资格。Owned事件登记、权限/配置、
+通知/指示及ACK生产接线仍缺失，不能将目录发现或属性更新当作完整事件能力。
+精确源码/检查范围见结构化scope extension中的`ssap-event-discovery-20261101`，原method v4状态不变。
+
 ## Native v4 的资格边界
 
 地址预配置中的 Setup/HCC 标记不等于 Ready；局部成功不能覆盖双设备整轮失败。
@@ -191,7 +199,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
       "repository": "sparklink",
       "number": 22,
       "state": "open",
-      "body_sha256": "6dcebf18732eef8ca4610ae0dc4bfa02a22262f2cd09e5c3f99d8df6e4992f08",
+      "body_sha256": "372092987782a6a1e91cc83d7761c5bd02d84f13d04a83bfdb896ec434936def",
       "original_checklist_unchanged": true,
       "source_offline_planning_only": true
     }
@@ -203,7 +211,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently.",
+  "next": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently. Parallel U#22: event discovery is source/offline implemented; continue Owned event definitions/permissions/configuration and the same Engine update path. No new hardware qualification.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

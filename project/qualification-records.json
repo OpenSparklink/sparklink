@@ -43,7 +43,7 @@
         "repository": "sparklink",
         "number": 22,
         "state": "open",
-        "body_sha256": "6dcebf18732eef8ca4610ae0dc4bfa02a22262f2cd09e5c3f99d8df6e4992f08",
+        "body_sha256": "372092987782a6a1e91cc83d7761c5bd02d84f13d04a83bfdb896ec434936def",
         "original_checklist_unchanged": true,
         "source_offline_planning_only": true
       }
@@ -55,7 +55,7 @@
       "Original scope retained for historical v1-v3",
       "Publish source/offline summary only"
     ],
-    "next": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently.",
+    "next": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently. Parallel U#22: event discovery is source/offline implemented; continue Owned event definitions/permissions/configuration and the same Engine update path. No new hardware qualification.",
     "actor_obligation_regression": {
       "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
       "entry": "ssap_engine::exchange_loop",
@@ -528313,6 +528313,60 @@
               "number": 24,
               "state": "open",
               "body_sha256": "6ee67756371b993d096339ed225b224f02a1b24ea68f91e921dac98bd0bade28",
+              "readback_verified": true,
+              "original_checklist_unchanged": true,
+              "source_offline_only": true
+            }
+          ]
+        },
+        {
+          "id": "ssap-event-discovery-20261101",
+          "source_commit": "c072b059e7afe3f50c67874f3322f641402ed9ff",
+          "status": "IMPLEMENTED_OFFLINE_SCOPED_PASS_NATIVE_REAL_GATE_PENDING",
+          "source_sha256": {
+            "bindings/python/sparklink/ssap_discovery.py": "bf85d6f44a863806b82c4c776a3ea1958eb24d74a6ec62142ebe23d58beb7653",
+            "crates/libsparklink/include/sparklink.h": "47b5ff4dd7458f93bf394a66f73c8145a4a9081155ec74a8cf3ae98ccbff0756",
+            "crates/libsparklink/src/ffi_ssap_discovery.rs": "13091910da2bcb69080024a20c948b07e9763028ada83e9b737de98c7bb5fc03",
+            "crates/libsparklink/src/ssap.rs": "5f68a2912544ad1b02070c2091d41a55bd21a054abb22f2ab576211ea714330f",
+            "crates/libsparklink/tests/application_ffi.rs": "f8b4631a01858167c882ef33b7f875362104a9db31f1b92d85e6863cd868b298",
+            "crates/libsparklink/tests/fixtures/application_client.c": "aa93c90074e4dd6f21c836fbede89427fe7f730b789cd2d61d5351107e51b45e",
+            "crates/libsparklink/tests/fixtures/application_client.py": "c2903543533bc77c5c617c810273098a52f2118bb35680ae8b917977e68ea669",
+            "crates/libsparklink/tests/remote_ssap_client.rs": "7d479359e6f99c6c7440877dc113caf7e84f4d2b6820ea3ad9769c2a2cd79646",
+            "crates/slctl/src/commands.rs": "bfb5dc04e38ee40044504294b7e74a815ef8988af73113fd3d964922495378f2",
+            "crates/slctl/src/main.rs": "47f78df0ba9195f6b605476ecc2fb5abc09c4c40a81eefc3b9ef42d846e55569",
+            "crates/slctl/tests/application_ssap.rs": "1d4346020f05cb77940fe8036bc8a91c807e2a322dbd02264eabdfc6fc15166b",
+            "crates/slk-protocol/src/ssap/discovery.rs": "b2cea04d85b1ea57f3e4d78ab6e99e612c09db8605bc5f60e54b171830555f33",
+            "crates/slkd/src/connection_object.rs": "bd50cf5786282a087655d99f999aebd5caed92b9481d0e17aafedbee0df7b9fe",
+            "crates/slkd/src/ssap_engine.rs": "4fed43d099ffccc3a856d9d7f9aa872be332ad663bd4831dd14ad4b07fb66cbb",
+            "data/man/man1/slctl.1": "c18fd19024910fb4f094bf1ca2e03e3a3a110a305f66ce966704daf0003b4d90",
+            "docs/reference/interfaces.md": "1e2b637ea9a3119d40c4322fa46c78986623ba4627dab80255c60ed1efae241c",
+            "docs/reference/ssap-permissions.md": "954292bb3162263ef3ae14352212eceb8986017ecfdc7e20ef322fd822da1398"
+          },
+          "checks": {
+            "codec": 4,
+            "production_ssap": 111,
+            "rust_sdk_private_bus": 11,
+            "cli_private_bus": 2,
+            "actual_c_python_integration": "PASS; actual test-profile cdylib and both external consumers, finite bus fixture",
+            "clippy": "PASS -D warnings",
+            "generated_c_header": "byte-identical cbindgen0.29.4",
+            "strict_html": "PASS",
+            "negative_control": "remove actual Observer event-member branch: rejected; source restored"
+          },
+          "scope": "Same Discovery/Observer/codec and SDK paths: kind5, standard/custom event categories4/12, hierarchy memberbit8; original deadlines and budgets. Queued peer replies and private D-Bus service are fixtures; not a full Native actor, permissions deployment, USB, firmware, RF or formal proof.",
+          "qualification_transfer": false,
+          "not_tested": [
+            "Owned event registration/permissions/configuration",
+            "event notify/indicate payload and ACK lifecycle",
+            "exact new artifact Native VM/hardware discovery",
+            "event positive remote application delivery"
+          ],
+          "issue_sync": [
+            {
+              "repository": "sparklink",
+              "number": 22,
+              "state": "open",
+              "body_sha256": "372092987782a6a1e91cc83d7761c5bd02d84f13d04a83bfdb896ec434936def",
               "readback_verified": true,
               "original_checklist_unchanged": true,
               "source_offline_only": true

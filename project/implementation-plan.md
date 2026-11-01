@@ -708,7 +708,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
       "repository": "sparklink",
       "number": 22,
       "state": "open",
-      "body_sha256": "6dcebf18732eef8ca4610ae0dc4bfa02a22262f2cd09e5c3f99d8df6e4992f08",
+      "body_sha256": "372092987782a6a1e91cc83d7761c5bd02d84f13d04a83bfdb896ec434936def",
       "original_checklist_unchanged": true,
       "source_offline_planning_only": true
     }
@@ -720,7 +720,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently.",
+  "next": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently. Parallel U#22: event discovery is source/offline implemented; continue Owned event definitions/permissions/configuration and the same Engine update path. No new hardware qualification.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

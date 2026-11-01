@@ -820,6 +820,20 @@ USB配对/HCC/上传读器；运行期字节是guest观察，不宣称另一独�
 身份与同行隔离须在专用 VM 另验，尚不支持 Windows 执行器或完整 DirectUSB Host。
 
 
+### 单次只读 ROM 交换的离线证据检查
+
+`ws73_rom_chip_evidence.corroborate_directusb_read_only(capture, capture_stats,
+executor, guest)` 消费停机后封存的 pcap、完整零丢包统计、执行器 JSON 和明确 guest
+拓扑。它复用原 USB 配对读器，要求恰好一次固定命令及一次四字节回复、相同实际 USB
+身份和先 OUT 完成后 IN 的顺序；缺失、重复、错误、未完成 IN、短包、陈旧身份或改动
+载荷均拒绝。结果只是 `ISOLATED_ROM_EXCHANGE_CORROBORATED_NOT_IDENTIFICATION`。
+
+该入口与原“三读软件复位／上传／HCC”门禁分开，后者断言没有削减。单次读取不需要
+为了取得证据而写入或下载；也不能替代稳定性、冷断电、访问有效性、型号认证、取消排空
+或自动选择验收。全零仍为歧义。源码／编译工具、VM起源、物理端口、原始材料 hash及
+执行身份由外层记录绑定；捕获解析器本身不认证这些来源。公共源码只含合成负对照，
+受限实机原件及详情继续留授权本地索引。
+
 ### Owned SSAP 的有界真实门禁
 
 `run --qmp-hotplug --connection-verify --channel-socket-verify --ssap-owned-verify`

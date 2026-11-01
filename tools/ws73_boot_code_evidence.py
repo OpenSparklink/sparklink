@@ -16,7 +16,7 @@ from ws73_capture import CaptureError
 from ws73_firmware_upload_evidence import successful_out
 
 
-def successful_in(path):
+def successful_in(path, *, require_drained=False):
     pending = {}; rows = []
     with Path(path).open('rb') as stream:
         h = stream.read(24)
@@ -49,6 +49,8 @@ def successful_in(path):
                 rows.append(row)
     # Unrelated runtime URBs can be pending when capture is sealed. Selected
     # READM operations must independently have a complete exact response below.
+    if require_drained and pending:
+        raise CaptureError('unfinished IN in isolated ROM observation')
     return rows
 
 

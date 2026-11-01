@@ -30,6 +30,14 @@
 
 ## 应用、Native与共享契约
 
+`slk-protocol::message_security` 的结构值校验返回 `ValidationError`：
+`InvalidReceipt`、`InvalidConstraint`、`ReceiptRestriction`。它不查询设备或授予权限。
+Linux `slk_channel::security::validation_error` 分别映射回 `EPROTO`、`EINVAL`、`EACCES`；
+Native 准入、SCM 元数据及实际提交查询继续执行。未发布 Rust 调用者已同步迁移，C ABI 布局不变。
+协议 crate 的生产依赖不含 `nix`／D-Bus；Linux ioctl 编号一致性检查仅是目标限定的开发依赖。
+单个 crate 的 MSVC 交叉编译检查不代表 Windows SDK、Host、IPC 或真实设备已经可用。
+
+
 Rust `libsparklink::Client` 只通过实际slkd申请通道；保持调用者总线连接，绑定daemon
 唯一owner和controller generation/connection lifetime。注册列表只表达成员观察，不是Ready；
 选择连接及每次准入只重新核对自己的Generation，不查询同行属性作为前置条件。`open_channel`与动态staging

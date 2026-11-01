@@ -2391,7 +2391,7 @@ async fn exchange_loop(
                         if fragments::lane(wire_raw[0]).is_some_and(|lane|assemblies[lane].deadline().is_some()) {return Err(io::Error::other("complete SSAP value interleaves unfinished fragment lane"));}
                         wire_raw
                     };
-                    let constraint=receipt.map(|m|slk_protocol::SleSendConstraint::from_receipt(m,m.security,monotonic_deadline(reply_deadline)?)).transpose()?;
+                    let constraint=receipt.map(|m|slk_protocol::SleSendConstraint::from_receipt(m,m.security,monotonic_deadline(reply_deadline)?).map_err(slk_channel::security::validation_error)).transpose()?;
                     if !initial_done && Instant::now() >= original_deadline { return Err(io::Error::new(io::ErrorKind::TimedOut, "late SSAP reply")); }
                     if matches!(raw[0],15|16) {
                         if raw[0]==16 && pending.len()+server_load>=8{return Err(io::Error::other("SSAP ACK queue full"));}

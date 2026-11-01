@@ -26,6 +26,12 @@ class DependencyBoundary(unittest.TestCase):
         output='slk-channel v0.1.0\nslk-protocol v0.1.0\nnix v0.30.1\n'
         self.assertEqual(check_tree('slk-channel',output,self.internal),['slk-channel','slk-protocol'])
 
+    def test_protocol_values_cannot_regain_unix_or_dbus_normal_dependencies(self):
+        self.assertEqual(check_tree('slk-protocol', 'slk-protocol v0.1.0\nsha2 v0.10.9\n', self.internal), ['slk-protocol'])
+        for dependency in ['nix', 'zbus']:
+            with self.subTest(dependency=dependency), self.assertRaisesRegex(ValueError, 'platform/IPC'):
+                check_tree('slk-protocol', f'slk-protocol v0.1.0\n{dependency} v0.30.1\n', self.internal)
+
     def test_named_native_creator_regression_guard_does_not_claim_alias_analysis(self):
         check_native_creators([('policy.rs','slk_native::channel::open(args)'),('contract.rs','fn transport_info(v: Snapshot) { (v.controller,v.generation) }')])
         for text in ['nix::libc::socket(46,0,0)','libc::bind(fd,p,n)','nix::libc::connect(fd,p,n)',"nix::ioctl_read!(request,b'S',4,Value)"]:

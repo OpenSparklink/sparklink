@@ -6,7 +6,26 @@
 //! ```compile_fail
 //! use slk_protocol::message_security::{recv, send, prepare, deadline_at};
 //! ```
-use std::{io, mem};
+use std::{fmt, mem};
+
+/// Value validation only; never an operating-system error or authorization.
+/// Native adapters map these failures to their platform error contract.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ValidationError {
+    InvalidReceipt,
+    InvalidConstraint,
+    ReceiptRestriction,
+}
+impl fmt::Display for ValidationError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::InvalidReceipt => "invalid message security receipt",
+            Self::InvalidConstraint => "invalid send constraint",
+            Self::ReceiptRestriction => "receipt cannot satisfy send restriction",
+        })
+    }
+}
+impl std::error::Error for ValidationError {}
 
 pub const SOL_SPARKLINK: i32 = 288;
 pub const SCM_RX_SECURITY: i32 = 1;
@@ -32,7 +51,7 @@ pub struct SleMessageSecurity {
 const _: () = assert!(mem::size_of::<SleMessageSecurity>() == 40);
 
 impl SleMessageSecurity {
-    pub fn validate(&self) -> io::Result<()> {
+    pub fn validate(&self) -> Result<(), ValidationError> {
         let dynamic = (0x80..=0xdf).contains(&self.local_tcid)
             && (0x80..=0xdf).contains(&self.remote_tcid)
             && (241..=250).contains(&self.pi);
@@ -50,7 +69,7 @@ impl SleMessageSecurity {
             || self.flags & MESSAGE_SECURITY_KNOWN == 0 && (self.security != 0 || self.flags != 0)
             || self.flags & MESSAGE_SECURITY_KNOWN != 0 && self.security_epoch == 0
         {
-            return Err(io::Error::from_raw_os_error(nix::libc::EPROTO));
+            return Err(ValidationError::InvalidReceipt);
         }
         Ok(())
     }
@@ -77,7 +96,7 @@ pub struct SleSendConstraint {
 pub const SCM_TX_CONSTRAINT: i32 = 2;
 const _: () = assert!(mem::size_of::<SleSendConstraint>() == 48);
 impl SleSendConstraint {
-    pub fn validate(&self) -> io::Result<()> {
+    pub fn validate(&self) -> Result<(), ValidationError> {
         if self.version != 1
             || self.size != 48
             || self.minimum > 2
@@ -87,7 +106,7 @@ impl SleSendConstraint {
             || self.security_epoch == 0
             || self.deadline_monotonic_ns == 0
         {
-            return Err(io::Error::from_raw_os_error(nix::libc::EINVAL));
+            return Err(ValidationError::InvalidConstraint);
         }
         Ok(())
     }
@@ -97,10 +116,10 @@ impl SleSendConstraint {
         m: SleMessageSecurity,
         minimum: u32,
         deadline_monotonic_ns: u64,
-    ) -> io::Result<Self> {
+    ) -> Result<Self, ValidationError> {
         m.validate()?;
         if m.flags != (MESSAGE_SECURITY_KNOWN | MESSAGE_SECURITY_CURRENT) || minimum > m.security {
-            return Err(io::Error::from_raw_os_error(nix::libc::EACCES));
+            return Err(ValidationError::ReceiptRestriction);
         }
         let c = Self {
             version: 1,

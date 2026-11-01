@@ -42,6 +42,24 @@ permissions:
   contents: read
 
 jobs:
+  protocol-portability:
+    name: Protocol values/codecs Linux tests and MSVC cross-check (not Windows runtime)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Fixed protocol toolchain and cross target
+        run: |
+          rustup toolchain install 1.96.1 --profile minimal
+          rustup target add --toolchain 1.96.1 x86_64-pc-windows-msvc
+          rustc +1.96.1 -vV
+      - name: Actual protocol tests and MSVC type check
+        run: |
+          cargo +1.96.1 test --locked -p slk-protocol
+          cargo +1.96.1 check --locked -p slk-protocol --all-targets --target x86_64-pc-windows-msvc
+          python3 -m unittest discover -s tools/tests -p test_production_dependencies.py -v
+          python3 tools/check_production_dependencies.py
+
   tooling-test:
     name: WS73 tooling and evidence validation (no hardware)
     runs-on: ubuntu-24.04

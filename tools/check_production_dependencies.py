@@ -32,6 +32,8 @@ def check_tree(package,output,internal_names):
         match=re.match(r'^([a-zA-Z0-9_-]+) v[0-9]',row)
         if not match:raise ValueError(f'{package}: unrecognized Cargo tree line: {row!r}')
         names.add(match[1])
+    if package == 'slk-protocol' and names & {'nix', 'zbus'}:
+        raise ValueError('slk-protocol: platform/IPC library in normal dependency closure')
     forbidden=(names&internal_names)-ALLOWED[package]
     if forbidden:raise ValueError(f'{package}: forbidden internal normal dependency: {sorted(forbidden)}')
     return sorted(names&internal_names)

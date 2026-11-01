@@ -852,7 +852,8 @@ fn exercise_messages(
                     context,
                     context.security,
                     absolute,
-                )?;
+                )
+                .map_err(slk_channel::security::validation_error)?;
                 reject_stale_intents(&fd, intent, sequence)?;
                 loop {
                     wait(&fd, nix::libc::POLLOUT, deadline)?;

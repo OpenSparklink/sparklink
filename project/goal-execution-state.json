@@ -2024,7 +2024,7 @@
         "Original scope retained for historical v1-v3",
         "Publish source/offline summary only"
       ],
-      "next": "Event contract1 is wired through existing SDK publishers/lease receivers,VM selection,tool/input sealing and independent paired capture/verdict. Next freeze exact artifacts,verify dependencies/installed inputs and no-USB VM;check current owned-device topology/ROM and running tasks read-only,then accurate-artifact Native event/app-reply and ordinary baseline/lifecycle when startup conditions permit. Preserve existing method v4 failure,avoid unchanged warm retries,do not count manual/QMP/hub recovery. Extend lengths/full lifecycle/permissions separately without reducing original scope. Own UserHost/DirectUSB and Windows continue C/D/E/W;KernelPacket/vendor P4.",
+      "next": "Exact Native event artifact and installed inputs are sealed;no-USB isolated kernel/module smoke passed,but event daemon/apps were not exercised by that smoke. Next coordinate valid device startup conditions and run accurate-artifact Native event/application-reply plus original baseline/lifecycle;do not repeat unchanged warm startup failures. Event discovery/full lengths/lifetime/permissions remain pending. Preserve original hardware failures,identities and all acceptance;own UserHost/DirectUSB and Windows continue C/D/E/W,KernelPacket/vendor P4.",
       "actor_obligation_regression": {
         "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
         "entry": "ssap_engine::exchange_loop",

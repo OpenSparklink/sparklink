@@ -35,7 +35,8 @@ contract1覆盖两种连接角色、每角色两方向的32字节notify/indicate
 接收应用校验并写独立回复，发布端读回，双端原始窗口拒绝多余CPCD/ACK或缺包。
 133项相关工具检查与严格HTML通过；移除发送前Ready检查的负对照失败，恢复后完整重跑。
 该批进程/报文均为显式fixture，没有新增SDK私有总线、VM、Native、实机或形式化执行资格。
-下一批封存准确artifact、校验安装输入和无USB VM，再按实际白名单设备条件取得真实事件交付及原路径保持。
+准确新artifact及安装输入已封存，无USB隔离内核/module启动检查通过；该检查未执行事件daemon/应用。
+下一批按实际设备启动条件取得Native事件交付及原路径/生命周期回归，不重复未改变条件的暖启动失败。
 事件长度/分片、完整生命周期与部署权限仍缺，原method v4失败和历史资格身份保持。
 工具/门禁切片分别映射 `ssap-event-tools-20261101` 和 `ssap-event-gate-20261101`。
 Profile START/STOP、完整事件/生命周期仍缺；历史登记/发送/单次接收及method v4失败按原身份保留。
@@ -230,7 +231,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Event contract1 is wired through existing SDK publishers/lease receivers,VM selection,tool/input sealing and independent paired capture/verdict. Next freeze exact artifacts,verify dependencies/installed inputs and no-USB VM;check current owned-device topology/ROM and running tasks read-only,then accurate-artifact Native event/app-reply and ordinary baseline/lifecycle when startup conditions permit. Preserve existing method v4 failure,avoid unchanged warm retries,do not count manual/QMP/hub recovery. Extend lengths/full lifecycle/permissions separately without reducing original scope. Own UserHost/DirectUSB and Windows continue C/D/E/W;KernelPacket/vendor P4.",
+  "next": "Exact Native event artifact and installed inputs are sealed;no-USB isolated kernel/module smoke passed,but event daemon/apps were not exercised by that smoke. Next coordinate valid device startup conditions and run accurate-artifact Native event/application-reply plus original baseline/lifecycle;do not repeat unchanged warm startup failures. Event discovery/full lengths/lifetime/permissions remain pending. Preserve original hardware failures,identities and all acceptance;own UserHost/DirectUSB and Windows continue C/D/E/W,KernelPacket/vendor P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

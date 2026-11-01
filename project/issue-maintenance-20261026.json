@@ -8859,6 +8859,23 @@
       ],
       "closed": [],
       "qualification": "SOURCE_OFFLINE_ONLY_EXACT_ARTIFACT_VM_NATIVE_PENDING"
+    },
+    {
+      "id": "ssap-event-artifact-20261101",
+      "source_commit": "a2a26552a9be47549fc9de42033509c42fee8a9a",
+      "issues": [
+        {
+          "url": "https://github.com/OpenSparklink/sparklink/issues/22",
+          "state": "open",
+          "updated_at": "2026-11-01T10:42:24Z",
+          "body_sha256": "0dc99f74d1ca147d84b3fd9eda256a7950be2e058aea010f247ec7d8a1b742dc",
+          "scope": "source/offline only;hardware/compiled execution identities remain local",
+          "original_six_conditions_unchanged": true,
+          "all_checkboxes_unchanged": 10
+        }
+      ],
+      "closed": [],
+      "qualification": "OFFLINE_SEALED_INPUTS_AND_ISOLATED_NO_USB_ROOT_SMOKE_ONLY_NATIVE_EVENT_PENDING"
     }
   ]
 }

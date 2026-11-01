@@ -28,6 +28,24 @@
 下一批B：复用已准备v4准确输入，在新的有效启动条件和占用核对后取得双端发现/method短长独立结果、命令无响应、原期限/退出及原路径保持；无新硬件条件不重复未变化失败。并行A/C/W：列出ServiceChannel所有实际入口、权限/元数据来源及平台依赖，选择最小纯逻辑边界，USB库锁定/取消审查先于实际设备适配，不能复制Engine。
 后续每批开工前写生产行为、不变量、离线与VM/实机门禁、退出及剩余条件；不无限追加控制面前置。
 
+### ServiceChannel 生产调用审计与最小迁移（2026-11-01）
+
+源码 [92a7522](https://github.com/OpenSparklink/sparklink/commit/92a752223a770de139b8ffbc0b05c5113b4ace29) 复用 `ssap_engine::Wire`；没有新增Host/Engine/公共trait。所有快照和Session TX查询进入同一fd所有者，send/receive不再接收外部fd；send只依赖约束及片字节，不依赖Engine的Pending队列。现有检查时点、原期限和返回错误保留。
+
+| 目标职责 | 实际生产入口／权威来源 | 本批范围与仍缺条件 |
+|---|---|---|
+| snapshot | run初始化；ClientAdmission；Incoming/Info；期限检查；RX请求/更新→Wire.snapshot→真实Native ioctl | 相同fd/原查询时点；仍是Native ABI，尚无跨Host快照类型 |
+| prepare_send | Wire.prepare→真实Native prepare；server决定前后recheck；RX收据派生约束 | 保留security epoch/原期限；UserHost authority/checkpoint待独立实现 |
+| send_pdu | 唯一actor的有限Pending与fragment Plan→Wire.send→约束sendmsg | 去除外部fd/业务队列耦合；软件准入不等USB或对端交付 |
+| receive_pdu | 同一fd readable/try_io→Wire.receive→SCM及完整身份校验→原重组 | 保留截断/身份/安全拒绝；测试字节通道不授Native快照 |
+| wait_capacity | AsyncFd writable/try_io + 原Pending/期限select | 当前仍Unix readiness，尚无Windows完成队列适配 |
+| observe_tx | Query::Transport→Wire.session_tx_status→真实Native Session ioctl | 聚合状态及lifetime校验；不推导逐消息对端交付 |
+| stop/drain | Engine.stop信号、有限等待、必要abort后join；Drop仅fallback | 任务join不是USB/协议债务排空；Native内核继续拥有物理义务，跨Host清理收据待实现 |
+
+严格Clippy与78项实际Engine回归通过。将生产snapshot临时改为伪成功的负对照被真实测试拒绝；还原后78项再次通过。测试依赖AF_UNIX与私有D-Bus，不能授内核并发、空口或Native排空资格。当前v4冻结产物不含本改动；新artifact Native发现/连接/短长method、撤权/退出/同行隔离仍待VM实机。
+
+下一接口退出：建立与Native ABI明确区分的authority/validation-checkpoint与不可混用的准备约束，在有实际UserHost消费者时接入同一Engine；不得用默认成功的查询桩实现跨Host。DirectUSB库锁定及真实提交/取消/drain审查可并行。当前Native真实交付仍优先，不因该审计暂停。
+
 ### 已落实的最小平台边界（2026-11-01）
 
 源码 [a72dd32](https://github.com/OpenSparklink/sparklink/commit/a72dd32ba08ab906023334d4e76937f2d82b5f08) 将消息安全值校验改为类型化错误；`slk-channel` 映射回原 EPROTO/EINVAL/EACCES，Engine 和 slktest 两个生产调用者同步迁移。布局、校验条件、真实 Native 查询和授权检查不变。`slk-protocol` 的普通依赖不再含 nix；仅 Linux ioctl 编号测试保留目标限定 dev-dependency。

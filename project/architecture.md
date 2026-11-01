@@ -100,6 +100,8 @@
 
 提炼窄的 ServiceChannel：snapshot、prepare_send、send_pdu、receive_pdu、wait_capacity、observe_tx、stop_admission/drain。名字是设计占位，以现有实现命名为准。
 
+Native当前边界复用已有Wire持有同一fd，所有查询与I/O通过该owner；数据适配不持有SSAP业务队列。Engine任务stop/join和内核物理排空是不同证据，前者不释放后者的credit义务。此最小迁移不代表跨Host接口已完成。
+
 - prepare 不授永久资格、不直接分配可无限存续协议 credit。每次实际提交重验身份、Grant、期限、安全 revision 和 Ticket。
 - Native 适配保持真实查询、SCM/票据/安全元数据；UserHost 返回有来源的自身证明，不能伪装成内核 SleMessageSecurity。
 - Linux UserHost 数据通道初选每 Channel 一个 AF_UNIX SOCK_SEQPACKET；Windows 对应独立本地 Named Pipe。都有版本、kind、长度、request id 和有限预算；身份以服务端 binding 为准，不信任客户端自报字段。

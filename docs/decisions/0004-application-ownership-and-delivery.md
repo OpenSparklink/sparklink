@@ -19,6 +19,8 @@ WS73 路径不变；KernelPacket/厂商仍 P4；自有UserHost/DirectUSB与Windo
 
 ## 决策
 
+同一通道owner执行快照、准备、收发和发送状态观察，不由调用者另传fd；协议队列/片游标仍由Engine拥有。停止任务和物理排空分别记录，无法观察的完成阶段不得由本地join补成成功。
+
 纯值校验与平台错误映射分开：协议值返回类型化失败，Native边界保持原errno与真实查询。不可用类型正确替代权限/来源检查，也不因MSVC编译通过宣称Windows运行。此调整复用现有校验与Engine，不增加另一套状态。
 
 同步 C/Python 应用边界复用唯一 Rust Client；为持续运行 owner 观察而采用每客户端

@@ -8717,6 +8717,23 @@
       ],
       "closed": [],
       "qualification": "SOURCE_OFFLINE_ONLY_NOT_WINDOWS_RUNTIME"
+    },
+    {
+      "id": "native-service-channel-owner-20261101",
+      "source_commit": "92a752223a770de139b8ffbc0b05c5113b4ace29",
+      "issues": [
+        {
+          "repository": "sparklink",
+          "number": 26,
+          "body_sha256": "5d037847e88af62b3e2b9387ae505823453876442b60efe09cf4a587fef7451d",
+          "state": "open",
+          "readback_verified": true,
+          "original_checklist_unchanged": true,
+          "source_offline_only": true
+        }
+      ],
+      "closed": [],
+      "qualification": "SOURCE_OFFLINE_ONLY_NATIVE_VM_PENDING"
     }
   ]
 }

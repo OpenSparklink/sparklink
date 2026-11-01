@@ -528169,6 +528169,40 @@
               "readback_verified": true
             }
           ]
+        },
+        {
+          "id": "native-service-channel-owner-20261101",
+          "source_commit": "92a752223a770de139b8ffbc0b05c5113b4ace29",
+          "source_sha256": {
+            "crates/slkd/src/ssap_engine.rs": "b549ca5388e5ffeb2022cc8a67572da2a51e5ae4ad86148547e7da91a5c7dd1f"
+          },
+          "status": "IMPLEMENTED_OFFLINE_CHECKED_NATIVE_VM_PENDING",
+          "checks": {
+            "strict_clippy_all_targets_all_features": "passed",
+            "actual_engine_tests": {
+              "passed": 78,
+              "fixture": "AF_UNIX/private D-Bus, actual Engine/Provider; no Native kernel or USB"
+            },
+            "fabricated_snapshot_negative_control": "failed as expected; source restored; all 78 rerun passed"
+          },
+          "scope": "Existing Wire owns same fd for snapshot/prepare/send/receive/Session TX observation. Query timing, errno and original deadlines preserved; send no longer depends on Engine Pending. Not a completed portable ServiceChannel or UserHost implementation.",
+          "not_tested": [
+            "new-source Native VM/hardware regression",
+            "UserHost/Windows endpoint",
+            "Native drain or proof refinement"
+          ],
+          "qualification_transfer": false,
+          "issue_sync": [
+            {
+              "repository": "sparklink",
+              "number": 26,
+              "body_sha256": "5d037847e88af62b3e2b9387ae505823453876442b60efe09cf4a587fef7451d",
+              "state": "open",
+              "readback_verified": true,
+              "original_checklist_unchanged": true,
+              "source_offline_only": true
+            }
+          ]
         }
       ]
     }

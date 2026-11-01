@@ -55,7 +55,7 @@
       "Original scope retained for historical v1-v3",
       "Publish source/offline summary only"
     ],
-    "next": "Preserve failed v4 attempt and exact compiled identity; no unchanged warm retry. Continue Native delivery when startup conditions change. Owned event TX and single RX now source/offline scoped; next extend the same ReceiveTransaction/shared queue with event leases and explicit listener-ready receipt, bounded multi-caller read/close and original identity/deadline/ACK semantics. No property CPCD or sleep-based readiness. Then exact-artifact peer application delivery. Own UserHost/Windows continues in parallel; KernelPacket/vendor remains P4.",
+    "next": "Event leases/local Ready now source/offline scoped. Next reuse the actual C/Python application helper and SDK supervisor for event-listener Ready, randomized event payload plus independent application reply, and two-end capture verification; test negative controls before exact-artifact VM-only Native delivery and original-path/lifecycle preservation. No sleep readiness, CPCD event configuration or second Engine. Preserve failed method v4 and compiled identities; no unchanged warm retry. Own UserHost/DirectUSB and Windows continue by C/D/E/W; KernelPacket/vendor remains P4.",
     "actor_obligation_regression": {
       "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
       "entry": "ssap_engine::exchange_loop",
@@ -528564,6 +528564,72 @@
               "body_sha256": "87518243e48605287b20406ccb721e7cbe82641ed2b7092254cb072fe95a2ece",
               "source_commit": "4658a8298831cace1170b15cb557312440ad7b03",
               "scope": "public source/offline only; six original exit checks unchanged"
+            }
+          ]
+        },
+        {
+          "id": "ssap-event-lease-20261101",
+          "source_commit": "4f7f657bfa12525ebc5b12526279a2820cc3870b",
+          "status": "IMPLEMENTED_OFFLINE_SCOPED_PASS_NATIVE_EVENT_GATE_PENDING",
+          "source_sha256": {
+            "bindings/python/sparklink/client.py": "7f4eda743d32d80606dabc94ab1f25cea6258ed5c0607b7299a138b2d674b435",
+            "bindings/python/sparklink/ssap_subscription.py": "cb94d9adb4533734c8e77a8ae96c1bd136ce46ea04b68b7fb814d0f1ce3bfa3a",
+            "bindings/python/tests/test_ssap_subscription.py": "08dde676eb844ea77b63107527b7886ca70b643eb3178bfc698cefc412c30fe4",
+            "crates/libsparklink/include/sparklink.h": "9ebdcbda9e79b73e6ef490f1ebae8daadb00721cbd0d98900878de196f2f7333",
+            "crates/libsparklink/src/ffi_ssap_subscription.rs": "37f5f9154dbb7de991fe2ab118f60c0aacaf12313b7e84672d949ab175404422",
+            "crates/libsparklink/src/ssap.rs": "76a11cf7479aca5a8fa1fb48fa4b9439568e5cba2a86ac2bf3455f7c29945849",
+            "crates/libsparklink/src/ssap/subscription.rs": "cfa4844e61254dd7eb33c8023dd119a9a6d8c88aae4896469d4d6fdd810e9aec",
+            "crates/libsparklink/src/ssap/subscription_tests.rs": "70ff3b90ee08051cd899f00c51f3636e733c9874c76d0460dfffbda2ffb378ae",
+            "crates/libsparklink/tests/application_ffi.rs": "ebc538527be7d05a58e0469e9973cf90d098da6a23038833cb877f609103bfae",
+            "crates/libsparklink/tests/application_ffi/subscription.rs": "adb50cf263444b6cc74c7e2a62e843b18f3c26f6ade506dd48eb1d3bcdc8d6dc",
+            "crates/libsparklink/tests/fixtures/application_client.c": "ee0c9047abcabe8da6a720e460c9010d8143a83034c9d9a197d4ce899eef55a8",
+            "crates/libsparklink/tests/fixtures/application_client.py": "4d7e157a8400be3e606b24e5f1bd4ebe661632822cb4cd722ef8180e75ffe992",
+            "crates/slk-contract/src/lib.rs": "fa36893af5d38284a40d599a4c4e7efb4518e7328d63dab9bb83990912cee43b",
+            "crates/slkd/src/connection_object.rs": "d969768c5d92b3e8586e8e641e8456df46aab51adefe198179355ff4774edcb0",
+            "crates/slkd/src/ssap_engine.rs": "5e7a92271dcf2be6e4ec512636c1cee31933285171bc412d384469991bee94b4",
+            "crates/slkd/src/ssap_receive_transaction.rs": "d02f65029868cb7ca1beaea6abbed0af347104ee7eacec8d775ea75ad8a4b636",
+            "crates/slkd/src/ssap_subscription.rs": "145e8d5542cfb44c1ce6edcc4fede6c9ba8250f12cb2b8b277c9c6adda465058",
+            "data/dbus/sparklink.conf": "2e96a963efd8a78041566275e86407c4ef4044197f67ade159c188e4576ee9b3",
+            "tools/tests/test_ws73_observer_policy.py": "6d2ae3d991b5d5598bcffe28f96ffbfe05982a9cc2abc1c0a41bbcf998bebf8e",
+            "Cargo.lock": "0ea81523d90856719d5d764fde7367845b38553382d652b37a381dfac79be7b4",
+            "Cargo.toml": "af396f1d66b7681b82e88ab8b8d0491d2eba06ab799945526aca3eb5216d6844",
+            "crates/slk-protocol/src/message_security.rs": "2206600a3609ce9e072a4bd93a39b0ffe0628f8a785517f12e8d786aa61c33e9",
+            "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+            "crates/slk-protocol/src/ssap/fragments.rs": "f8534fab5b05b7a4cc3d1c37885fd397d8bc1659032b2931517730e1e70e2fea",
+            "crates/slk-channel/src/security.rs": "b9b91cb8baf753c0171c38a0d44d292d6950fddec67eb8d54868582640a8c1c9"
+          },
+          "checks": {
+            "production_ssap": 122,
+            "shared_contract": 12,
+            "cli_library_ssap": 10,
+            "sdk_unit": 75,
+            "sdk_owned_private_bus": 8,
+            "sdk_remote_private_bus": 13,
+            "python_subscription_boundaries": 7,
+            "python_connection_boundaries": 12,
+            "permission_qualification_docs": 77,
+            "existing_role_consumer_tools": 19,
+            "actual_c_python_integration": "PASS finite private-bus service;35 exact source/artifact materials",
+            "clippy": "PASS default and all-features -D warnings",
+            "strict_html": "PASS warnings-as-errors",
+            "negative_control": "shared caller RX route omission rejected; exact source restored and full daemon rerun"
+          },
+          "scope": "Continuous event leases through the sole ReceiveTransaction/CallerLease/Queue. Initial and shared caller Sink installation precedes local Ready. Info v2 kind/minimum scopes read/renew/close; event cleanup is local and never property REMOTE_RETAINED. Existing property CPCD obligations remain. Real caller watches and SDK/C/Python execute; Native receipts and finite private-bus service are explicit fixtures, not actual Native positive or peer delivery.",
+          "qualification_transfer": false,
+          "not_tested": [
+            "exact-artifact Native two-end event delivery and actual system-bus deployment permissions",
+            "event application helper/VM gate plus full original lifecycle matrix",
+            "Profile-defined START/STOP and complete operations",
+            "UserHost/Windows execution and new formal proof"
+          ],
+          "issue_sync": [
+            {
+              "url": "https://github.com/OpenSparklink/sparklink/issues/22",
+              "state": "open",
+              "body_sha256": "17016b50bbf10c4c443fb62deae299a71961472e776f97788c974ff3268b1ff2",
+              "updated_at": "2026-11-01T09:52:07Z",
+              "scope": "source/offline only; six original acceptance conditions unchanged; real-device details local",
+              "source_commit": "4f7f657bfa12525ebc5b12526279a2820cc3870b"
             }
           ]
         }

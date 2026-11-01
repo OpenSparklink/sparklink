@@ -8811,6 +8811,22 @@
       ],
       "closed": [],
       "qualification": "SOURCE_OFFLINE_ONLY_EVENT_LEASE_READY_AND_NATIVE_GATES_PENDING"
+    },
+    {
+      "id": "ssap-event-lease-20261101",
+      "source_commit": "4f7f657bfa12525ebc5b12526279a2820cc3870b",
+      "issues": [
+        {
+          "url": "https://github.com/OpenSparklink/sparklink/issues/22",
+          "state": "open",
+          "body_sha256": "17016b50bbf10c4c443fb62deae299a71961472e776f97788c974ff3268b1ff2",
+          "updated_at": "2026-11-01T09:52:07Z",
+          "scope": "source/offline only; six original acceptance conditions unchanged; real-device details local",
+          "source_commit": "4f7f657bfa12525ebc5b12526279a2820cc3870b"
+        }
+      ],
+      "closed": [],
+      "qualification": "SOURCE_OFFLINE_ONLY_NATIVE_EVENT_AND_DEPLOYED_PERMISSION_GATES_PENDING"
     }
   ]
 }

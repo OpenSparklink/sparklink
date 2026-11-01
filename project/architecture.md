@@ -984,6 +984,12 @@ controller、物理连接或已提交credit义务。未经实现/验收不得由
 
 ## SSAP、服务与Profile
 
+标准事件租约复用唯一接收事务及共享有界队列，Info类型区分属性配置和事件本地监听。
+初始及共享加入先安装该caller的RX路由，再发布本地就绪；就绪不是Native Ready、安全授权
+或远端Profile START。事件最终释放不发送CPCD，其本地清理收据不能被解释为远端停发。
+属性原配置与清理债务不变；具体接口/预算见[接口参考](../docs/reference/interfaces.md)。
+
+
 唯一生产SSAP Engine归slkd；内核提供完整通道PDU、归属、安全上下文和实际模式能力，不保留双数据库。
 
 Engine负责ExchangeInfo、MTU、扩展码、协商事务、SSAP分片、request-response、indication-ack、服务数据库、remote cache、handle分配、Profile路由。

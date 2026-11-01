@@ -241,6 +241,7 @@ def main():
     parser.add_argument('--ssap-requester-lifecycle-verify',action='store_true',help='actual C/Python requester exit/physical reply drain and CUTC while owner prompt held')
     parser.add_argument('--ssap-owned-verify',action='store_true',help='real owner authorization and exit cleanup;not complete SSAP or service-only policy qualification')
     parser.add_argument('--ssap-description-verify',action='store_true',help='with --ssap-owned-verify: actual public read-only description discovery and SDK read')
+    parser.add_argument('--ssap-event-delivery-verify',action='store_true',help='with --ssap-owned-verify: actual event lease, independent SDK reply and paired USB evidence')
     parser.add_argument('--ssap-method-provider-verify',action='store_true',help='with --ssap-owned-verify: actual method Provider and independent SDK result')
     parser.add_argument('--ssap-read-provider-verify',action='store_true',help='with --ssap-owned-verify: actual Owned dynamic read callback and peer SDK value comparison')
     parser.add_argument('--ssap-sdk-read-provider-verify',action='store_true',help='with --ssap-read-provider-verify: actual C/Python SDK Provider callbacks and opposite-language peer verification')
@@ -263,6 +264,9 @@ def main():
     parser.add_argument('--link-measurements',action='store_true',help='finite actual Managed RSSI/PHY queries before ordinary workloads')
     parser.add_argument('--connection-advertising',choices=['fixed-t','negotiable-t'],default='fixed-t')
     args=parser.parse_args()
+    from ws73_ssap_event_delivery import requested as event_delivery_requested
+    try:event_delivery_requested(args,passthrough=args.passthrough)
+    except ValueError as error:parser.error(str(error))
     from ws73_ssap_method_provider import requested as method_provider_requested
     try:method_provider_requested(args,passthrough=args.passthrough)
     except ValueError as error:parser.error(str(error))

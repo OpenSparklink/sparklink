@@ -415,7 +415,7 @@ def channel_pair(run, row):
             row.setdefault('end_wall_ns',time.time_ns());run.save()
 
 
-def owned_arguments(api,owner,service,uuid,initial,policy,*,read_only=False,update_connection=None,read_provider=False,write_provider=False):
+def owned_arguments(api,owner,service,uuid,initial,policy,*,read_only=False,update_connection=None,read_provider=False,write_provider=False,event_uuid=None,event_minimum=None):
     # Provider tests explicitly select READ-only or WRITE-only Owned consumers.
     # This chooses the entry only: actual bind/reply and peer evidence remain
     # separate gates, and historical callers retain their original restrictions.
@@ -426,6 +426,12 @@ def owned_arguments(api,owner,service,uuid,initial,policy,*,read_only=False,upda
             or (read_only and policy!='none' and not read_provider)):
         raise CaptureError('explicit SDK language and application policy required')
     prefix=['/bin/ws73-application-client-c'] if api=='c' else ['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
+    if event_uuid is not None or event_minimum is not None:
+        if (type(event_uuid)is not str or not re.fullmatch('[0-9a-f]{32}',event_uuid)
+                or type(event_minimum)is not int or event_minimum not in (0,1,2)
+                or policy!='none' or read_only or read_provider or write_provider or update_connection is not None):
+            raise CaptureError('explicit event SDK owner and independent reply property required')
+        return prefix+['owned-events',str(owner['owner']['index']),str(owner['owner']['generation']),service,uuid,initial,owner['object']['path'],event_uuid,str(event_minimum)]
     if update_connection is not None:
         if read_only or policy=='none' or update_connection!=owner['object']['path']:
             raise CaptureError('explicit original owned-update connection and policy required')

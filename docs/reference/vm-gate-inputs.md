@@ -1744,3 +1744,27 @@ application-client-c event-subscription INDEX GENERATION CONNECTION_PATH EVENT_H
 本模式的回复属性是受控测试协议，不代表标准Profile的START/STOP/RELEASE已经实现。
 新增输出使用独立事件stage及version1，原属性订阅输出和历史报告保持原含义。
 双端监督器、独立包判定、实际部署权限、真实随机交付及完整生命周期仍须按准确产物验收。
+
+### 事件双端门禁 contract 1
+
+`--ssap-event-delivery-verify` 选择独立的事件交付场景，依赖既有
+`--passthrough --channel-socket-verify --ssap-owned-verify`、原4轮61字节基线、
+两种连接角色和无安全Agent的基本通道。它与其他SSAP场景互斥；
+不放宽设备白名单、VM-only、固件选择或启动失败条件。
+
+每个连接角色中的两个方向都用实际 C/Python SDK 登记一个事件和独立回复属性，
+接收端订阅模式3、minimum0、10000ms租约。监督器核对实际租约Ready的API、句柄、
+期限与身份作用域后，分别发送32字节通知与指示。载荷含独立序号与随机字节，
+接收应用比较完整事件，再以不同内容verified写回复；发布应用还须读回该回复。
+这不是Profile的START/STOP，也不表示完整事件发现或部署权限已经验收。
+
+新增场景复用既有子进程输出预算、Owned清理、USB/ACB重组和匹配设施。
+两端每个物理片的设备、handle、方向、时间窗口和完整内容均须匹配；
+通知无ACK，指示ACK使用事件类型，应用写及响应分别核对。完整场景窗口不能含
+未归属SMTC包（包括额外CPCD/ACK）；丢包、重复、旧身份、超时、截断日志、
+未完成的进程/VM或缺少一侧材料均不能产生完整PASS。
+
+此入口目前为源码和限定离线验证范围。受控process/报文fixture只验证监督和判定逻辑；
+新编译artifact的无USB VM检查及真实双设备交付必须另行完成。
+事件长度/分片、完整租约退出组合、四设备、Profile及实际系统权限仍按原门禁推进；
+已有method或属性更新资格不转授本事件场景。

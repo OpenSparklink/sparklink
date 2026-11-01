@@ -128,7 +128,11 @@ def wait_text(process, path, pattern, deadline, min_count=1, *, max_count=16, co
 
 
 @contextmanager
-def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api=None,read_only=False,updates=False,application_uid=1000,operations=5,read_provider=False,write_provider=False,method_access=None):
+def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api=None,read_only=False,updates=False,application_uid=1000,operations=5,read_provider=False,write_provider=False,method_access=None,event_minimum=None):
+    if event_minimum is not None and (type(event_minimum)is not int or event_minimum not in (0,1,2)
+            or sdk_api not in ('c','python') or policy!='none' or read_only or updates or read_provider or write_provider
+            or operations!=5 or method_access is not None or application_uid!=1000):
+        raise CaptureError('explicit standalone actual SDK event owner required')
     if method_access is not None and (type(method_access)is not int or method_access!=4
             or sdk_api is not None or read_only or updates or read_provider or write_provider
             or operations!=5 or application_uid!=1000):
@@ -152,14 +156,16 @@ def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api
     if method_access is not None:
         args=[str(run.args.slctl),'--adapter',target['owner']['path'],'ssap-serve-method',service,uuid,str(method_access),policy]
     environment=None
+    event_uuid=secrets.token_hex(16)if event_minimum is not None else None
     if sdk_api is not None:
         from ws73_application_client import application_environment,owned_arguments
         args=owned_arguments(sdk_api,target,service,uuid,secret,policy,read_only=read_only,
-            update_connection=target['object']['path'] if updates else None,read_provider=read_provider,write_provider=write_provider)
+            update_connection=target['object']['path'] if updates else None,read_provider=read_provider,write_provider=write_provider,event_uuid=event_uuid,event_minimum=event_minimum)
         environment=application_environment()
     item=dict(sender=sender,target=1-sender,policy=policy,secret=secret,value=value,uuid=uuid,service=service,args=args,start_wall_ns=time.time_ns(),output_files=[str(out),str(err)])
     if operations!=5:item['operations']=operations
     if method_access is not None:item.update(entry_kind='method',method_access=method_access)
+    if event_uuid is not None:item.update(entry_kind='event',event_uuid=event_uuid,event_minimum=event_minimum)
     if sdk_api is not None:item.update(publisher_api=sdk_api,environment=environment)
     if read_provider:item['sdk_read_provider_contract_version']=1
     if write_provider:item['sdk_write_provider_contract_version']=1
@@ -178,6 +184,15 @@ def publisher(run,row,sender,policy,*,collection='ssap_owned',label=None,sdk_api
             if sdk_api is not None and output_text(process,out).splitlines()[0]!=f'SdkOwnedAPI: api={sdk_api} client_closed=true':
                 raise CaptureError('actual SDK original caller and parent-close barrier required')
             start,end,handle=map(int,matches[0]);item.update(start=start,end=end,handle=handle);run.save()
+            if event_uuid is not None:
+                values,_=wait_text(process,out,r'^SdkOwnedEventBinding: (.+)$',time.monotonic()+5,max_count=1)
+                if len(values)!=1:raise CaptureError('one actual event binding required')
+                binding=json.loads(values[0])
+                if (set(binding)!={'version','api','event','reply_property','minimum'} or binding['version']!=1
+                        or binding['api']!=sdk_api or binding['reply_property']!=handle or binding['minimum']!=event_minimum
+                        or type(binding['event'])is not int or not start<handle<binding['event']==end<=65535):
+                    raise CaptureError('distinct actual event and reply handles required')
+                item.update(event_handle=binding['event'],event_binding=binding,bound_wall_ns=time.time_ns());run.save()
             yield process,item
     finally:
         item['end_wall_ns']=time.time_ns();run.save()

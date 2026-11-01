@@ -1475,7 +1475,7 @@ impl ConnectionIface {
                         .await
                         .map_err(zbus::fdo::Error::Failed)?;
                 observer
-                    .subscribe(owner, handles, modes, duration_ms, original)
+                    .subscribe(None, owner, handles, modes, duration_ms, original)
                     .await
                     .map_err(zbus::fdo::Error::Failed)
             },
@@ -1485,6 +1485,52 @@ impl ConnectionIface {
             tracing::warn!(%error, generation=self.generation,
                 lifetime=self.reference.lifetime, "SSAP subscription acquisition refused");
         })
+    }
+    /// Ready means a local event route and finite queue are installed, not
+    /// remote Profile START or authenticated identity beyond Native mechanism.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "Explicit event lease wire inputs and original bus caller"
+    )]
+    async fn subscribe_ssap_events(
+        &self,
+        handles: Vec<u16>,
+        modes: u8,
+        minimum: u32,
+        duration_ms: u32,
+        deadline: slk_contract::Deadline,
+        #[zbus(connection)] connection: &zbus::Connection,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<slk_contract::ssap::subscription::Info> {
+        if minimum > 2
+            || !slk_contract::ssap::subscription::valid_request(&handles, modes, duration_ms)
+        {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "event lease handles/modes/minimum/duration".into(),
+            ));
+        }
+        self.scoped_ssap_call(
+            deadline,
+            slk_channel::deadline::PROTOCOL_WAIT,
+            header,
+            connection,
+            |observer, caller, original| async move {
+                self.validate_update_targets(&handles, modes, true).await?;
+                let slots = self.state.lock().await.ssap_subscription_slots.clone();
+                let slot = slots.try_acquire_owned().map_err(|_| {
+                    zbus::fdo::Error::LimitsExceeded("subscription owner budget".into())
+                })?;
+                let owner =
+                    crate::ssap_subscription::CallerLease::pin(connection, caller, slot, original)
+                        .await
+                        .map_err(zbus::fdo::Error::Failed)?;
+                observer
+                    .subscribe(Some(minimum), owner, handles, modes, duration_ms, original)
+                    .await
+                    .map_err(zbus::fdo::Error::Failed)
+            },
+        )
+        .await
     }
     async fn read_ssap_updates(
         &self,
@@ -2991,6 +3037,11 @@ mod grant_tests {
                 vec!["ay", "y", "(ttttt)"],
                 vec!["(a(yqqayuayy)a(ayay))"],
             ),
+            (
+                "SubscribeSsapEvents",
+                vec!["aq", "y", "u", "u", "(ttttt)"],
+                vec!["(uqttqtttaqyyqyy)"],
+            ),
             ("GetCachedSsap", vec![], vec!["a(yqqayuayy)"]),
             (
                 "ReceiveSsapEvent",
@@ -3003,24 +3054,29 @@ mod grant_tests {
                 vec!["(bay)"],
             ),
             (
+                "SubscribeSsapEvents",
+                vec!["aq", "y", "u", "u", "(ttttt)"],
+                vec!["(uqttqtttaqyyqyy)"],
+            ),
+            (
                 "SubscribeSsapUpdates",
                 vec!["aq", "y", "u", "(ttttt)"],
-                vec!["(uqttqtttaqyyq)"],
+                vec!["(uqttqtttaqyyqyy)"],
             ),
             (
                 "ReadSsapUpdates",
                 vec!["t", "b", "(ttttt)"],
-                vec!["((uqttqtttaqyyq)ttttuya(ttubay))"],
+                vec!["((uqttqtttaqyyqyy)ttttuya(ttubay))"],
             ),
             (
                 "RenewSsapSubscription",
                 vec!["t", "u", "(ttttt)"],
-                vec!["(uqttqtttaqyyq)"],
+                vec!["(uqttqtttaqyyqyy)"],
             ),
             (
                 "CloseSsapSubscription",
                 vec!["t", "(ttttt)"],
-                vec!["((uqttqtttaqyyq)ttttuya(ttubay))"],
+                vec!["((uqttqtttaqyyqyy)ttttuya(ttubay))"],
             ),
             (
                 "ReadSsapByUuid",

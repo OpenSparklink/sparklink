@@ -29,6 +29,29 @@ impl Subscription {
         duration_ms: u32,
         original: Deadline,
     ) -> Result<Self> {
+        Self::open_scoped(link, handles, modes, duration_ms, None, original).await
+    }
+    pub(super) async fn open_event(
+        link: ApplicationConnection,
+        handles: Vec<u16>,
+        modes: u8,
+        minimum: u32,
+        duration_ms: u32,
+        original: Deadline,
+    ) -> Result<Self> {
+        if minimum > 2 {
+            return Err(ApplicationError::Invalid("event subscription minimum0..2"));
+        }
+        Self::open_scoped(link, handles, modes, duration_ms, Some(minimum), original).await
+    }
+    async fn open_scoped(
+        link: ApplicationConnection,
+        handles: Vec<u16>,
+        modes: u8,
+        duration_ms: u32,
+        event_minimum: Option<u32>,
+        original: Deadline,
+    ) -> Result<Self> {
         if !wire::valid_request(&handles, modes, duration_ms) {
             return Err(ApplicationError::Invalid(
                 "subscription handles/modes/duration",
@@ -37,20 +60,23 @@ impl Subscription {
         let original = original.capped(slk_channel::deadline::PROTOCOL_WAIT)?;
         let info: Info = bounded(&link.client, original, async {
             link.live().await?;
-            let value = link
-                .client
-                .proxy(&link.path, contract::CONNECTION)
-                .await?
-                .call(
-                    wire::CREATE,
-                    &(
-                        &handles,
-                        modes,
-                        duration_ms,
-                        contract::deadline_wire(original.stamp()),
-                    ),
-                )
-                .await?;
+            let proxy = link.client.proxy(&link.path, contract::CONNECTION).await?;
+            let stamp = contract::deadline_wire(original.stamp());
+            let value = match event_minimum {
+                None => {
+                    proxy
+                        .call(wire::CREATE, &(&handles, modes, duration_ms, stamp))
+                        .await?
+                }
+                Some(minimum) => {
+                    proxy
+                        .call(
+                            wire::CREATE_EVENT,
+                            &(&handles, modes, minimum, duration_ms, stamp),
+                        )
+                        .await?
+                }
+            };
             link.live().await?;
             Ok(value)
         })
@@ -58,6 +84,8 @@ impl Subscription {
         if !Self::binding(&link, &info)
             || info.handles != handles
             || info.modes != modes
+            || info.kind != u8::from(event_minimum.is_some())
+            || u32::from(info.minimum) != event_minimum.unwrap_or(2)
             || info.state != wire::ACTIVE
             || info.token == 0
             || info.security_epoch == 0
@@ -85,13 +113,13 @@ impl Subscription {
             info.handle,
             info.capacity,
         ) == (
-            1,
+            2,
             link.controller.index,
             link.identity.0,
             link.identity.1,
             link.identity.2,
             wire::CAPACITY as u16,
-        )
+        ) && wire::valid_scope(info.kind, info.minimum)
     }
     fn bounded_expiry(value: u64, duration_ms: u32, original: Deadline) -> bool {
         value != 0
@@ -107,6 +135,8 @@ impl Subscription {
             && info.security_epoch == self.info.security_epoch
             && info.handles == self.info.handles
             && info.modes == self.info.modes
+            && info.kind == self.info.kind
+            && info.minimum == self.info.minimum
             && info.expires_ns != 0
     }
     /// Last validated observation, not an active authorization or Ready grant.
@@ -128,6 +158,7 @@ impl Subscription {
             || !(wire::ACTIVE..=wire::CLOSED).contains(&batch.info.state)
             || batch.flags & !(wire::CLEANUP_CONFIRMED | wire::REMOTE_RETAINED) != 0
             || batch.flags == wire::REMOTE_RETAINED
+            || self.info.kind == wire::EVENT && batch.flags & wire::REMOTE_RETAINED != 0
             || batch.last_sequence < self.sequence
             || batch.dropped_notifications < self.dropped
             || batch.refused_indications < self.refused
@@ -167,7 +198,8 @@ impl Subscription {
             if p.sequence <= sequence
                 || p.sequence > batch.last_sequence
                 || p.security_epoch != self.info.security_epoch
-                || p.security_level != 2
+                || p.security_level < u32::from(self.info.minimum)
+                || p.security_level > 2
                 || p.pdu.len() > 2048
                 || bytes > wire::BYTE_BUDGET
             {
@@ -180,7 +212,7 @@ impl Subscription {
                 self.info.modes,
                 p.indication,
                 &p.pdu,
-                false,
+                self.info.kind == wire::EVENT,
             )?;
             sequence = p.sequence;
         }

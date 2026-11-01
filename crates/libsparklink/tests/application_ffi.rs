@@ -249,6 +249,25 @@ impl Link {
             self.2.load(Ordering::SeqCst),
         )
     }
+    fn subscribe_ssap_events(
+        &self,
+        handles: Vec<u16>,
+        modes: u8,
+        minimum: u32,
+        duration_ms: u32,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<slk_contract::ssap::subscription::Info> {
+        let info = self.3.subscribe(
+            handles,
+            modes,
+            duration_ms,
+            deadline,
+            h.sender().unwrap().to_string(),
+            self.2.load(Ordering::SeqCst),
+        )?;
+        Ok(self.3.event_scope(info, minimum))
+    }
     fn read_ssap_updates(
         &self,
         token: u64,
@@ -1153,6 +1172,8 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
                     .contains("EVENT_SEND_LANGUAGE_FIXTURE_PASS_NOT_RF")
                 && String::from_utf8_lossy(&output.stdout)
                     .contains("EVENT_RECEIVE_LANGUAGE_FIXTURE_PASS_NOT_RF")
+                && String::from_utf8_lossy(&output.stdout)
+                    .contains("EVENT_LEASE_LANGUAGE_FIXTURE_PASS_NOT_RF")
         );
         assert!(
             String::from_utf8_lossy(&output.stdout)

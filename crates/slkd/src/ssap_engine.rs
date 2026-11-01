@@ -110,6 +110,7 @@ impl UpdateSource {
 }
 enum Query {
     Subscribe {
+        event_minimum: Option<u32>,
         owner: crate::ssap_subscription::CallerLease,
         handles: Vec<u16>,
         modes: u8,
@@ -285,6 +286,7 @@ pub(crate) struct Observer {
 impl Observer {
     pub(crate) async fn subscribe(
         &self,
+        event_minimum: Option<u32>,
         owner: crate::ssap_subscription::CallerLease,
         handles: Vec<u16>,
         modes: u8,
@@ -294,6 +296,7 @@ impl Observer {
         let (reply, result) = oneshot::channel();
         self.queries
             .try_send(Query::Subscribe {
+                event_minimum,
                 owner,
                 handles,
                 modes,
@@ -998,7 +1001,11 @@ pub(super) enum IncomingScope {
     Event(slk_protocol::SleSendConstraint),
 }
 impl IncomingScope {
-    fn accepts(self, event: bool, receipt: Option<slk_protocol::SleMessageSecurity>) -> bool {
+    pub(crate) fn accepts(
+        self,
+        event: bool,
+        receipt: Option<slk_protocol::SleMessageSecurity>,
+    ) -> bool {
         match self {
             Self::Property => !event,
             Self::Event(c) => {
@@ -2352,7 +2359,7 @@ async fn exchange_loop(
             }
             query = incoming.recv() => {
                 let Some(query)=query else { return Ok(()); };
-                if let Query::Subscribe {owner,handles,modes,duration_ms,deadline,reply}=query {
+                if let Query::Subscribe {event_minimum,owner,handles,modes,duration_ms,deadline,reply}=query {
                     if reply.is_closed(){continue;}
                     let prepared=(||{
                         if !initial_done || (receive.is_none()&&(client.is_some()||incoming_wait.is_some()))
@@ -2360,23 +2367,25 @@ async fn exchange_loop(
                             || !slk_contract::ssap::subscription::valid_request(&handles,modes,duration_ms){
                             return Err("subscription busy/not-ready/expired/invalid".to_string());
                         }
-                        let context=wire.prepare(2,deadline).map_err(|e|e.to_string())?.ok_or("Native subscription context required")?;
+                        let context=wire.prepare(event_minimum.unwrap_or(2),deadline).map_err(|e|e.to_string())?.ok_or("Native subscription context required")?;
                         let token=next_subscription;
                         next_subscription=next_subscription.checked_add(1).ok_or("subscription namespace exhausted")?;
                         let (expires,expires_ns)=crate::ssap_subscription::lease_expiration(Instant::now(),duration_ms)?;
-                        let info=slk_contract::ssap::subscription::Info{version:1,controller:capabilities.controller,
+                        let info=slk_contract::ssap::subscription::Info{version:2,kind:u8::from(event_minimum.is_some()),minimum:context.minimum as u8,controller:capabilities.controller,
                             generation:capabilities.generation,lifetime:capabilities.lifetime,handle:capabilities.handle,
                             security_epoch:context.security_epoch,token,expires_ns,
                             handles:handles.clone(),modes,state:slk_contract::ssap::subscription::STARTING,
                             capacity:slk_contract::ssap::subscription::CAPACITY as u16};
                         if receive.as_ref().is_some_and(|r|!r.can_join(&info)){return Err("subscription incompatible shared scope or capacity".into());}
-                        Ok((info,expires))
+                        Ok((info,expires,context))
                     })();
                     match prepared {
                         Err(error)=>{let _=reply.send(Err(error));},
-                        Ok((info,expires))=>{
-                            if let Some(current)=receive.as_mut(){current.join(owner,info,expires,deadline,reply);}
-                            else{receive=Some(crate::ssap_receive_transaction::ReceiveTransaction::new_stream(handles,modes,deadline,owner,info,expires,reply));}
+                        Ok((info,expires,context))=>{
+                            if let Some(current)=receive.as_mut(){current.join(owner,info,expires,deadline,reply,&mut incoming_wait);}
+                            else{receive=Some(if event_minimum.is_some(){
+                                crate::ssap_receive_transaction::ReceiveTransaction::new_event_stream(deadline,owner,info,expires,context,reply)
+                            }else{crate::ssap_receive_transaction::ReceiveTransaction::new_stream(handles,modes,deadline,owner,info,expires,reply)});}
                         },
                     }
                     continue;
@@ -2386,7 +2395,7 @@ async fn exchange_loop(
                     if let Some(current)=receive.as_mut().filter(|r|r.matches(&caller,token)) {
                         let valid=(||{
                             if Instant::now()>=deadline{return Err("subscription read original deadline".to_string());}
-                            let context=wire.prepare(2,deadline).map_err(|e|e.to_string())?.ok_or("Native context required")?;
+                            let context=wire.prepare(current.minimum(),deadline).map_err(|e|e.to_string())?.ok_or("Native context required")?;
                             if current.expected_epoch()!=Some(context.security_epoch){return Err("subscription original security changed".into());}
                             Ok(())
                         })();
@@ -2401,7 +2410,7 @@ async fn exchange_loop(
                     let result=(||{
                         if Instant::now()>=deadline{return Err("subscription renewal original deadline".to_string());}
                         let current=receive.as_mut().filter(|r|r.matches(&caller,token)).ok_or("subscription owner/token unavailable")?;
-                        let context=wire.prepare(2,deadline).map_err(|e|e.to_string())?.ok_or("Native context required")?;
+                        let context=wire.prepare(current.minimum(),deadline).map_err(|e|e.to_string())?.ok_or("Native context required")?;
                         if current.expected_epoch()!=Some(context.security_epoch){return Err("subscription original security changed".into());}
                         current.renew(&caller,token,duration_ms)
                     })();
@@ -4319,7 +4328,9 @@ mod tests {
         use slk_contract::ssap::subscription as stream;
         let expires = Instant::now() + Duration::from_secs(10);
         let info = stream::Info {
-            version: 1,
+            version: 2,
+            kind: 0,
+            minimum: 2,
             controller: 2,
             generation: 7,
             lifetime: 9,

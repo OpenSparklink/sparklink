@@ -13,7 +13,7 @@ from sparklink.ssap_subscription import SsapSubscription, _Info, _Packet, _Batch
 
 def info():
     value=_Info(generation=7,lifetime=11,security_epoch=13,token=17,expires_ns=100,
-                version=1,controller=2,handle=3,capacity=16,handle_count=1,modes=2,state=1)
+                version=2,kind=0,minimum=2,controller=2,handle=3,capacity=16,handle_count=1,modes=2,state=1)
     value.handles[0]=17
     return value
 
@@ -50,6 +50,21 @@ def connection(boundary):
 
 
 class SubscriptionBoundary(unittest.TestCase):
+    def test_event_scope_minimum_and_local_cleanup_are_explicit(self):
+        raw=batch();raw.info.kind=1;raw.info.minimum=1;raw.packets[0].security_level=1;raw.packets[0].pdu[1]=7
+        self.assertEqual(_batch(raw).info.kind,1)
+        raw.packets[0].security_level=0
+        with self.assertRaises(OSError):_batch(raw)
+        raw=_Batch(info=raw.info,flags=3,reason=1);raw.info.state=3
+        with self.assertRaises(OSError):_batch(raw)
+        raw.flags=1;self.assertEqual(_batch(raw).flags,1)
+        b=Boundary();parent=connection(b)
+        with patch('sparklink.ssap_subscription._configure'):
+            for minimum in [-1,3,True]:
+                with self.assertRaises((ValueError,TypeError)):
+                    parent.ssap().subscribe_events([17],minimum=minimum,deadline_ns=1)
+        self.assertEqual(b.calls,[]);parent.close()
+
     def test_generated_c_contract_native_and_i386_have_exact_fixed_layout(self):
         root=Path(__file__).resolve().parents[3]
         source='''#include <stddef.h>
@@ -136,7 +151,7 @@ _Static_assert(offsetof(struct SlkSsapSubscriptionBatch,packets)==160,"packets")
             raw=batch()
             if case==0:raw.count=17
             elif case==1:raw.info.handle_count=33
-            elif case==2:raw.info.reserved[0]=1
+            elif case==2:raw.info.kind=3
             elif case==3:raw.info.handles[31]=1
             elif case==4:raw.packets[0].pdu_length=2049
             elif case==5:raw.packets[0].pdu[2047]=1

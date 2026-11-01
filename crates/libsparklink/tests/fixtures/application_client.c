@@ -239,6 +239,25 @@ int main(void) {
     assert(slk_connection_ssap_receive_event(link,17,2,0,&update_event,0)==-ETIMEDOUT);
     for(size_t i=0;i<sizeof update_event;i++)assert(((unsigned char*)&update_event)[i]==0xa5);
     puts("EVENT_RECEIVE_LANGUAGE_FIXTURE_PASS_NOT_RF");
+    _Static_assert(offsetof(struct SlkSsapSubscriptionInfo,kind)==54,"subscription kind");
+    _Static_assert(offsetof(struct SlkSsapSubscriptionInfo,minimum)==55,"subscription minimum");
+    uint16_t event_target=17;struct SlkSsapSubscription *event_lease=NULL;
+    assert(slk_connection_ssap_subscribe_events(link,&event_target,1,2,3,1000,deadline(),&event_lease)==-EINVAL && !event_lease);
+    assert(slk_connection_ssap_subscribe_events(link,&event_target,1,2,0,1000,0,&event_lease)==-ETIMEDOUT && !event_lease);
+    for (unsigned minimum=0;minimum<3;minimum++) {
+        assert(slk_connection_ssap_subscribe_events(link,&event_target,1,2,minimum,1000,deadline(),&event_lease)==0);
+        struct SlkSsapSubscriptionInfo info;
+        struct SlkSsapSubscriptionBatch batch;
+        assert(slk_ssap_subscription_info(event_lease,&info)==0 && info.version==2 && info.kind==1 && info.minimum==minimum && info.state==1);
+        assert(slk_ssap_subscription_read(event_lease,0,&batch,deadline())==0 && batch.count==1);
+        assert(batch.packets[0].security_level==minimum && batch.packets[0].pdu_length==7 && !memcmp(batch.packets[0].pdu,"\x10\x07\x11\x00\x01\x00\xab",7));
+        assert(slk_ssap_subscription_renew(event_lease,2000,&info,deadline())==0 && info.kind==1 && info.minimum==minimum);
+        assert(slk_ssap_subscription_release(event_lease,&batch,deadline())==0 && batch.flags==1 && batch.info.state==3);
+        assert(slk_ssap_subscription_read(event_lease,0,&batch,deadline())<0);
+        slk_ssap_subscription_free(event_lease);event_lease=NULL;
+    }
+    puts("EVENT_LEASE_LANGUAGE_FIXTURE_PASS_NOT_RF");
+
 
     /* New setter on the actual retained C view; metadata fixture,not a peer. */
     const uint8_t text[]={0xe6,0x8f,0x8f,0xe8,0xbf,0xb0};

@@ -657,6 +657,15 @@ Native约束和物理义务保持，不从上层取消退款，不将属性CPCD�
 通知只返回准入，指示只返回匹配event类型、epoch和minimum的队列ACK，均不是应用处理。
 单次事件接收沿同一ReceiveTransaction安装原Native身份/epoch/minimum绑定的有限槽，
 跳过不适用事件的CPCD阶段；肯定ACK只在入槽后生成，取消只撤销本地监听。
-属性路径保持原配置/清理。持续事件租约、就绪与上层Profile启停继续同一Session扩展；
+属性路径保持原配置/清理。持续事件租约复用同一事务/共享队列，路由安装先于就绪结果；上层Profile启停继续同一Session扩展；
 单次接收不提供就绪屏障，不用固定sleep替代确定性启动验收。
 函数/私有总线/语言fixture检查不授双端Native、UserHost、Windows或形式化资格。
+
+### 事件租约就绪与属性配置分开
+
+复用 ReceiveTransaction/CallerLease/Queue；公开 Info v2 明确 kind/minimum。
+事件不产生 CPCD 债务，第一次监听及共享加入均在实际 Sink 安装后发布 ACTIVE。
+结束只清理自己的本地路由和队列，不能报告远端停发；属性原配置/清理义务不变。
+安全来源仍是真实 Native 查询及逐包收据，不由就绪结果授予。
+共享组只允许相同类型/身份/过滤/模式/minimum；未知范围拒绝，不用多实例 Engine 规避。
+限定离线/正式Native双端/上层Profile分别验收；保持全部原范围与失败证据。

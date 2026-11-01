@@ -69,6 +69,7 @@ impl Drop for CallerLease {
 }
 
 pub(crate) struct Queue {
+    pub native: Option<slk_protocol::SleSendConstraint>,
     pub info: wire::Info,
     pub expires: Instant,
     entries: VecDeque<wire::Packet>,
@@ -95,6 +96,7 @@ pub(crate) fn lease_expiration(now: Instant, duration_ms: u32) -> Result<(Instan
 impl Queue {
     pub fn new(info: wire::Info, expires: Instant) -> SharedQueue {
         Arc::new(Mutex::new(Self {
+            native: None,
             info,
             expires,
             entries: VecDeque::new(),
@@ -207,12 +209,14 @@ impl Sink {
             q.info.generation,
             q.info.lifetime,
             q.info.handle,
-            10,
-            10,
-            0,
+            q.native.map_or(10, |c| c.local_tcid),
+            q.native.map_or(10, |c| c.remote_tcid),
+            q.native.map_or(0, |c| c.pi),
             q.info.security_epoch,
         ) || m.flags != 3
-            || m.security < 2
+            || m.security < u32::from(q.info.minimum)
+            || !wire::valid_scope(q.info.kind, q.info.minimum)
+            || (q.info.kind == wire::EVENT && q.native.is_none())
         {
             return Err("subscription original Native identity/security changed".into());
         }
@@ -264,7 +268,9 @@ mod tests {
     fn queue(now: Instant) -> (Sink, watch::Sender<bool>, SleMessageSecurity) {
         let expires = now + Duration::from_secs(2);
         let info = wire::Info {
-            version: 1,
+            version: 2,
+            kind: 0,
+            minimum: 2,
             controller: 2,
             generation: 7,
             lifetime: 9,

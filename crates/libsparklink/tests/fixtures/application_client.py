@@ -152,6 +152,18 @@ with connection:
             assert received.pdu==bytes([15 if modes==1 else 16,7,17,0])+length.to_bytes(2,'little')+b'B'*length
     error(errno.EOPNOTSUPP,lambda:ssap.receive_event(18,deadline_ns=deadline()))
     print("EVENT_RECEIVE_LANGUAGE_FIXTURE_PASS_NOT_RF")
+    for minimum in range(3):
+        lease=ssap.subscribe_events([17],modes=2,minimum=minimum,duration_ms=1000,deadline_ns=deadline())
+        assert (lease.info().kind,lease.info().minimum,lease.info().state)==(1,minimum,1)
+        batch=lease.read(wait=False,deadline_ns=deadline())
+        assert len(batch.packets)==1 and batch.packets[0].security_level==minimum
+        assert batch.packets[0].pdu==b'\x10\x07\x11\x00\x01\x00\xab'
+        assert lease.renew(2000,deadline_ns=deadline()).minimum==minimum
+        assert lease.release(deadline_ns=deadline()).flags==1
+        error(errno.EINVAL,lambda:lease.read(deadline_ns=deadline()))
+        lease.close()
+    print("EVENT_LEASE_LANGUAGE_FIXTURE_PASS_NOT_RF")
+
     from sparklink import SsapDiscovery, SsapEntry
     from sparklink.ssap_discovery import _Entry
     import ctypes

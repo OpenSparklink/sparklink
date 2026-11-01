@@ -61,7 +61,9 @@ impl Broker {
             ));
         }
         let mut info = Info {
-            version: 1,
+            version: 2,
+            kind: 0,
+            minimum: 2,
             controller: 2,
             generation: 7,
             lifetime: 11,
@@ -77,6 +79,26 @@ impl Broker {
         *self.0.info.lock().unwrap() = Some(info.clone());
         if self.0.mode.load(Ordering::SeqCst) == 18 {
             info.state = wire::STARTING;
+        }
+        Ok(info)
+    }
+    fn subscribe_ssap_events(
+        &self,
+        handles: Vec<u16>,
+        modes: u8,
+        minimum: u32,
+        duration_ms: u32,
+        deadline: contract::Deadline,
+    ) -> zbus::fdo::Result<Info> {
+        let mut info = self.subscribe_ssap_updates(handles, modes, duration_ms, deadline)?;
+        info.kind = wire::EVENT;
+        info.minimum = minimum as u8;
+        *self.0.info.lock().unwrap() = Some(info.clone());
+        match self.0.mode.load(Ordering::SeqCst) {
+            23 => info.kind = wire::PROPERTY,
+            24 => info.minimum = 2,
+            25 => info.version = 1,
+            _ => {}
         }
         Ok(info)
     }
@@ -112,6 +134,10 @@ impl Broker {
                 pdu: vec![16, 3, 17, 0, 1, 0, 0xab],
             }],
         };
+        if b.info.kind == wire::EVENT {
+            b.packets[0].pdu[1] = 7;
+            b.packets[0].security_level = u32::from(b.info.minimum);
+        }
         match mode {
             1 => b.info.generation += 1,
             2 => b.info.security_epoch += 1,
@@ -130,6 +156,8 @@ impl Broker {
             12 => b.packets[0].security_level = 3,
             13 => b.packets[0].sequence = sequence + 1,
             14 => b.dropped_notifications = u64::MAX,
+            26 => b.packets[0].pdu[1] = 3,
+            27 => b.packets[0].security_level = 0,
             19 => {
                 b.info.state = wire::CLOSING;
                 b.reason = wire::EXPIRED;
@@ -456,4 +484,55 @@ async fn retained_remote_configuration_is_an_explicit_terminal_observation_not_r
         .unwrap();
     state.mode.store(22, Ordering::SeqCst);
     assert!(sub.close(until()).await.is_err());
+}
+
+#[tokio::test]
+async fn event_lease_uses_explicit_scope_and_local_release_contract() {
+    let (_bus, _server, link, state) = fixture().await;
+    let mut sub = link
+        .ssap()
+        .subscribe_events(vec![17], 2, 1, 1000, until())
+        .await
+        .unwrap();
+    assert_eq!(
+        (sub.info().version, sub.info().kind, sub.info().minimum),
+        (2, 1, 1)
+    );
+    drop(link);
+    let batch = sub.read(false, until()).await.unwrap();
+    assert_eq!(batch.packets[0].pdu, [16, 7, 17, 0, 1, 0, 0xab]);
+    sub.renew(2000, until()).await.unwrap();
+    state.mode.store(21, Ordering::SeqCst);
+    assert!(
+        sub.close(until()).await.is_err(),
+        "event cannot claim remote CPCD retained"
+    );
+}
+#[tokio::test]
+async fn event_lease_rejects_wrong_scope_wire_kind_and_security() {
+    for mode in [23, 24, 25, 26, 27] {
+        let (_bus, _server, link, state) = fixture().await;
+        if mode < 26 {
+            state.mode.store(mode, Ordering::SeqCst);
+        }
+        let opened = link
+            .ssap()
+            .subscribe_events(vec![17], 2, 1, 1000, until())
+            .await;
+        if mode < 26 {
+            assert!(opened.is_err());
+            continue;
+        }
+        let mut sub = opened.unwrap();
+        state.mode.store(mode, Ordering::SeqCst);
+        assert!(sub.read(false, until()).await.is_err());
+    }
+    let (_bus, _server, link, state) = fixture().await;
+    assert!(
+        link.ssap()
+            .subscribe_events(vec![17], 2, 3, 1000, until())
+            .await
+            .is_err()
+    );
+    assert!(state.info.lock().unwrap().is_none());
 }

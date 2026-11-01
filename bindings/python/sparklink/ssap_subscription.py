@@ -24,7 +24,7 @@ class _Info(ctypes.Structure):
                 ("controller", ctypes.c_uint16), ("handle", ctypes.c_uint16),
                 ("capacity", ctypes.c_uint16), ("handle_count", ctypes.c_uint16),
                 ("modes", ctypes.c_uint8), ("state", ctypes.c_uint8),
-                ("reserved", ctypes.c_uint8 * 2), ("handles", ctypes.c_uint16 * 32)]
+                ("kind",ctypes.c_uint8),("minimum",ctypes.c_uint8), ("handles", ctypes.c_uint16 * 32)]
 
 
 class _Packet(ctypes.Structure):
@@ -56,6 +56,8 @@ class SsapSubscriptionInfo:
     modes: int
     state: int
     capacity: int
+    kind: int
+    minimum: int
 
 
 @dataclass(frozen=True)
@@ -84,10 +86,11 @@ def _invalid():
 
 
 def _info(raw):
-    if (raw.version != 1 or not raw.generation or not raw.lifetime or not raw.security_epoch
+    if (raw.version != 2 or not raw.generation or not raw.lifetime or not raw.security_epoch
             or not raw.token or not raw.expires_ns or raw.capacity != 16
             or not 1 <= raw.handle_count <= 32 or raw.modes not in (1, 2, 3)
-            or raw.state not in (0, 1, 2, 3) or any(raw.reserved)
+            or raw.state not in (0, 1, 2, 3)
+            or not (raw.kind==0 and raw.minimum==2 or raw.kind==1 and raw.minimum<=2)
             or any(raw.handles[raw.handle_count:])):
         _invalid()
     handles = tuple(raw.handles[:raw.handle_count])
@@ -95,19 +98,20 @@ def _info(raw):
         _invalid()
     return SsapSubscriptionInfo(ControllerId(raw.controller, raw.generation), raw.lifetime,
                                 raw.handle, raw.security_epoch, raw.token, raw.expires_ns,
-                                handles, raw.modes, raw.state, raw.capacity)
+                                handles, raw.modes, raw.state, raw.capacity, raw.kind, raw.minimum)
 
 
 def _batch(raw):
     info = _info(raw.info)
     if (raw.count > 16 or raw.flags & ~(CLEANUP_CONFIRMED | REMOTE_RETAINED)
             or raw.flags == REMOTE_RETAINED
+            or info.kind==1 and raw.flags&REMOTE_RETAINED
             or raw.flags & REMOTE_RETAINED and (raw.info.state != 3 or raw.count != 0)
             or raw.reason > 4 or any(raw.reserved)):
         _invalid()
     packets = []
     for p in raw.packets[:raw.count]:
-        if (not p.sequence or not p.security_epoch or p.security_level != 2
+        if (not p.sequence or not p.security_epoch or not info.minimum<=p.security_level<=2
                 or not 6 <= p.pdu_length <= 2048 or p.indication > 1
                 or any(p.reserved) or any(p.pdu[p.pdu_length:])):
             _invalid()
@@ -137,6 +141,7 @@ def _configure(lib):
     if (ctypes.sizeof(_Info), _Info.handles.offset, ctypes.sizeof(_Packet), _Packet.pdu.offset,
             ctypes.sizeof(_Batch), _Batch.packets.offset) != (120, 56, 2072, 24, 33312, 160):
         _invalid()
+    signatures['slk_connection_ssap_subscribe_events']=[ctypes.c_void_p,ctypes.POINTER(ctypes.c_uint16),ctypes.c_size_t,ctypes.c_uint32,ctypes.c_uint32,ctypes.c_uint32,ctypes.c_uint64,ctypes.POINTER(ctypes.c_void_p)]
     for name, args in signatures.items():
         fn = getattr(lib, name)
         fn.argtypes = args
@@ -155,7 +160,10 @@ class SsapSubscription:
         raise TypeError('use Connection.ssap().subscribe')
 
     @classmethod
-    def _acquire(cls, connection, handles, modes, duration_ms, deadline_ns):
+    def _acquire(cls, connection, handles, modes, duration_ms, deadline_ns, event_minimum=None):
+        if event_minimum is not None:
+            _integer(event_minimum,32,"minimum")
+            if event_minimum>2:raise ValueError("minimum must be 0,1,2")
         handles = tuple(itertools.islice(handles, 33))
         if not 1 <= len(handles) <= 32:
             raise ValueError('1..32 unique handles required')
@@ -177,8 +185,10 @@ class SsapSubscription:
         values = (ctypes.c_uint16 * len(handles))(*handles)
         with connection._lock:
             connection._live()
-            _result(view._lib.slk_connection_ssap_subscribe(connection._handle, values,
-                len(handles), modes, duration_ms, deadline_ns, ctypes.byref(view._handle)))
+            if event_minimum is None:
+                _result(view._lib.slk_connection_ssap_subscribe(connection._handle,values,len(handles),modes,duration_ms,deadline_ns,ctypes.byref(view._handle)))
+            else:
+                _result(view._lib.slk_connection_ssap_subscribe_events(connection._handle,values,len(handles),modes,event_minimum,duration_ms,deadline_ns,ctypes.byref(view._handle)))
         if not view._handle:
             _invalid()
         return view

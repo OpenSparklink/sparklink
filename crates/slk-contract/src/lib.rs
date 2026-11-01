@@ -220,6 +220,12 @@ pub mod ssap {
     /// A protocol ACK means bounded queue acceptance,not application handling.
     pub mod subscription {
         pub const CREATE: &str = "SubscribeSsapUpdates";
+        pub const CREATE_EVENT: &str = "SubscribeSsapEvents";
+        pub const PROPERTY: u8 = 0;
+        pub const EVENT: u8 = 1;
+        pub fn valid_scope(kind: u8, minimum: u8) -> bool {
+            (kind == PROPERTY && minimum == 2) || (kind == EVENT && minimum <= 2)
+        }
         pub const READ: &str = "ReadSsapUpdates";
         pub const RENEW: &str = "RenewSsapSubscription";
         pub const CLOSE: &str = "CloseSsapSubscription";
@@ -234,7 +240,8 @@ pub mod ssap {
         pub const OWNER_LOST: u8 = 3;
         pub const INITIALIZATION_CANCELLED: u8 = 4;
         /// This lease's routing and configuration ownership are released.
-        /// Without REMOTE_RETAINED,the last remote configuration was verified off.
+        /// Property: without REMOTE_RETAINED,remote configuration was verified off.
+        /// Event: only this local route/queue ended;no remote START/STOP claim.
         pub const CLEANUP_CONFIRMED: u32 = 1;
         /// At this lease's terminal observation,other same-scope leases still
         /// owned the remote CPCD. Not a claim that it is currently enabled.
@@ -255,6 +262,8 @@ pub mod ssap {
             pub modes: u8,
             pub state: u8,
             pub capacity: u16,
+            pub kind: u8,
+            pub minimum: u8,
         }
         #[derive(
             Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize, zvariant::Type,

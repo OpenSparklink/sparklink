@@ -307,7 +307,8 @@ index/generation和物理lifetime/handle/role/地址类型/地址。`connection.
 | `call_method_without_response(handle, arguments, minimum, Deadline)` | `CallSsapMethodCommand`，空返回 | 仅全部片软件准入，无协议响应或对端处理保证 |
 | `read_by_uuid(start, end, data_type, uuid, minimum)` | `ReadSsapByUuid` | 返回每项结果及原trace；不是本地构造成功 |
 | `receive_update(handles, modes, wait_ms)` / `receive_until(..., Deadline)` | `ReceiveSsapUpdate` | 单次CPCD启用/接收/验证停用；需真实认证及拥有者授权；不覆盖已有配置 |
-| `subscribe(handles, modes, duration_ms, Deadline)` | `SubscribeSsapUpdates` | 持有原 caller／lifetime 的有限接收租约；读取、续租与关闭复用同一 Engine，当前一 actor 一个租约 |
+| `subscribe(handles, modes, duration_ms, Deadline)` | `SubscribeSsapEvents` | `handles:aq, modes:y, minimum:u, duration_ms:u, deadline:(ttttt)` | 同一有界租约；kind1、minimum0..2。实际 Native 查询和 RX 路由安装完成后返回本地监听就绪；不配置 CPCD、不启动远端 Profile |
+| `SubscribeSsapUpdates` | 持有原 caller／lifetime 的有限接收租约；读取、续租与关闭复用同一 Engine，当前同一 actor 共享相同类型／过滤／安全范围的有限租约 |
 | `send_owned_update(handle, indication, Deadline)` | `SendOwnedSsapUpdate` | 同一原caller拥有的本地属性；stage1软件准入，stage2对端接收队列ACK，均非应用处理 |
 | `owned_configuration(handle, Deadline)` | `GetOwnedSsapConfiguration` | 观察原caller属性在本Session的配置，不制造Ready、授权或新配置 |
 | `exchange_info()` | `GetSsapInfo` | 真实协商观察，核对返回完整身份；不是服务发现或安全资格 |
@@ -771,7 +772,7 @@ Rust 通过 `connection.ssap().subscribe(handles, modes, duration_ms, Deadline)`
 | 语言入口 | 结果与所有权 |
 | --- | --- |
 | C `slk_connection_ssap_subscribe` | 非零原句柄列表、modes1..3、租期250..60000ms；输出独占 `SlkSsapSubscription*`，父 Client／Connection 可先释放 |
-| C `slk_ssap_subscription_info/read/renew/release/free` | Info为120字节；Packet为2072字节；完整Batch为33312字节，最多16包；read无peek／长度查询或截断。release观察远端清理，free只释放本地；错误保留输出，当前并发操作返回EAGAIN |
+| C `slk_ssap_subscription_info/read/renew/release/free` | Info v2为120字节；Packet为2072字节；完整Batch为33312字节，最多16包；read无peek／长度查询或截断。release按kind观察配置或本地路由清理，free只释放本地；错误保留输出，当前并发操作返回EAGAIN |
 | Python `connection.ssap().subscribe(...)` | `read(deadline_ns=..., wait=True)`、`renew(duration_ms, deadline_ns=...)`、`release(deadline_ns=...)`；`close()`／context退出仅本地释放。禁止fork后使用；不另建D-Bus客户端或SSAP codec |
 
 C 输出须为完整、独占、正确对齐的结构区域；无效地址属于调用者违反 FFI 契约，不等同于
@@ -1368,3 +1369,25 @@ SDK `Controller.management().set_link_payload_preference(path,octets,timeout_ms)
 作者不符，`ESTALE`表示身份或epoch失效，`ETIMEDOUT`表示原期限结束，`ENOENT`表示
 结果缺失／淘汰。准确实机资格只由[能力入口](../../project/current-capabilities.md)授予；
 编译、ffi负向测试、有效线格式和命令 Complete 均不能替代对端应用交付或无线根因证据。
+
+### 持续标准事件监听（未发布 Info v2）
+
+Rust `connection.ssap().subscribe_events(handles, modes, minimum, duration_ms, Deadline)`、
+C `slk_connection_ssap_subscribe_events`、Python `connection.ssap().subscribe_events(...)`
+复用上述 Subscription 及 read/renew/release/free，不另建收发循环。Info v2 的 D-Bus
+签名为 `(uqttqtttaqyyqyy)`，末两项 kind/minimum；C 两字段位于字节54/55，替代旧保留位，
+Info/Packet/Batch大小保持120/2072/33312。旧未发布 v1 调用者须重新构建，不保留兼容门面。
+kind0 是属性配置租约且 minimum=2；kind1 是事件本地监听，minimum0..2。版本、类型或
+最低安全不匹配必须拒绝；名称或本地监听成功不表示认证、远端 START 或业务交付。
+
+创建原期限最多5秒，租期250..60000ms；最多8个相同类型／过滤／模式／最低安全的
+共享租约，每个16包/32768字节。已存在不同组时拒绝，不静默扩展过滤或动态重配。
+就绪返回之前必须安装该 caller 的 Sink，包括共享加入；不要求调用者额外sleep。
+收到报文仍按原完整Native身份和安全epoch检查，读取／续租重新查询原身份；
+新安全epoch不会自动续权。事件等待不占method/read请求序列。
+
+事件关闭／到期／owner退出撤回本地路由，丢弃计数保留，兄弟租约继续；flags=1仅确认
+本地清理，事件不得返回属性专用 REMOTE_RETAINED，也不声称远端已停发。
+ACK仍只表示至少一个合格队列准入；上层应用处理需要独立校验回复。
+单次事件接收继续不返回监听就绪；需要显式屏障者使用租约。
+本项源码和限定离线回归不等于实际系统总线权限、准确Native双端事件或Windows资格。

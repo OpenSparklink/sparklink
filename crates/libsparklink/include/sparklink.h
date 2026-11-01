@@ -29,7 +29,8 @@
 
 /**
  * This lease's routing and configuration ownership are released. Without
- * REMOTE_RETAINED, the last remote CPCD configuration was verified off.
+ * REMOTE_RETAINED, a property CPCD was verified off. Event kind1 only confirms
+ * local route/queue release;never remote Profile STOP or disable.
  */
 #define SLK_SSAP_SUBSCRIPTION_CLEANUP_CONFIRMED 1
 
@@ -462,7 +463,8 @@ typedef struct SlkSsapEntry {
 
 /**
  * Last validated lease observation; not Ready or future Native authorization.
- * Handles after handle_count and reserved bytes are zero. State0..3 follows
+ * Version2:kind0 property requires minimum2;kind1 event allows minimum0..2.
+ * Handles after handle_count are zero. State0..3 follows
  * the Rust lease; token is scoped to the original bus owner/physical lifetime.
  */
 typedef struct SPARKLINK_ALIGN(8) SlkSsapSubscriptionInfo {
@@ -478,7 +480,8 @@ typedef struct SPARKLINK_ALIGN(8) SlkSsapSubscriptionInfo {
     uint16_t handle_count;
     uint8_t modes;
     uint8_t state;
-    uint8_t reserved[2];
+    uint8_t kind;
+    uint8_t minimum;
     uint16_t handles[32];
 } SlkSsapSubscriptionInfo;
 
@@ -1491,6 +1494,23 @@ int slk_connection_ssap_subscribe(const struct SlkConnection *connection,
                                   uint32_t duration_ms,
                                   uint64_t deadline_ns,
                                   struct SlkSsapSubscription **output);
+
+/**
+ * Create an event lease. Success means the local Native-bound route/queue is
+ * installed;no CPCD,remote Profile START,app handling or lossless guarantee.
+ * minimum0..2, original creation<=5s; same bounded read/renew/release/free API.
+ * # Safety
+ * Same live connection/handles/exclusive output,fork and no concurrent close
+ * requirements as slk_connection_ssap_subscribe. Output unchanged on error.
+ */
+int slk_connection_ssap_subscribe_events(const struct SlkConnection *connection,
+                                         const uint16_t *handles,
+                                         uintptr_t count,
+                                         uint32_t modes,
+                                         uint32_t minimum,
+                                         uint32_t duration_ms,
+                                         uint64_t deadline_ns,
+                                         struct SlkSsapSubscription **output);
 
 /**
  * Last locally validated observation,without RPC or renewed authority. EAGAIN

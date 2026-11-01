@@ -127,6 +127,62 @@ impl ReceiveTransaction {
         }]);
         result
     }
+    pub(crate) fn new_event_stream(
+        original: Instant,
+        owner: CallerLease,
+        info: stream::Info,
+        expires: Instant,
+        context: slk_protocol::SleSendConstraint,
+        ready: oneshot::Sender<Result<stream::Info, String>>,
+    ) -> Self {
+        let mut result = Self::new_stream(
+            info.handles.clone(),
+            info.modes,
+            original,
+            owner,
+            info,
+            expires,
+            ready,
+        );
+        result.scope = IncomingScope::Event(context);
+        result.phase = Phase::Waiting;
+        result.stream.as_ref().unwrap()[0]
+            .queue
+            .lock()
+            .expect("new event queue")
+            .native = Some(context);
+        result
+    }
+    pub(crate) fn minimum(&self) -> u32 {
+        match self.scope {
+            IncomingScope::Property => 2,
+            IncomingScope::Event(c) => c.minimum,
+        }
+    }
+    fn publish_ready(&mut self) -> Result<(), String> {
+        if self.stream.is_some() && !self.installed {
+            return Err("subscription route not installed before Ready".into());
+        }
+        if let Some(streams) = self.stream.as_mut() {
+            for s in streams {
+                let mut q = s.queue.lock().map_err(|_| "subscription queue poisoned")?;
+                if s.owner.current() && Instant::now() < self.original && Instant::now() < q.expires
+                {
+                    // Only invoked after the route is installed, and for properties
+                    // after the actual final CPCD response was validated.
+                    q.active();
+                    if let Some(ready) = s.ready.take()
+                        && ready.send(Ok(q.info.clone())).is_err()
+                    {
+                        q.close(stream::INITIALIZATION_CANCELLED)?;
+                    }
+                } else {
+                    q.close(stream::INITIALIZATION_CANCELLED)?;
+                }
+            }
+        }
+        Ok(())
+    }
     pub(crate) fn owns_client_sequence(&self) -> bool {
         matches!(self.scope, IncomingScope::Property)
             && (self.stream.is_none() || !matches!(self.phase, Phase::Waiting) || self.closing())
@@ -174,6 +230,8 @@ impl ReceiveTransaction {
                         && Instant::now() < q.expires
                         && old == new
                         && q.info.modes == info.modes
+                        && q.info.kind == info.kind
+                        && q.info.minimum == info.minimum
                         && (
                             q.info.controller,
                             q.info.generation,
@@ -197,8 +255,12 @@ impl ReceiveTransaction {
         expires: Instant,
         original: Instant,
         ready: oneshot::Sender<Result<stream::Info, String>>,
+        waiter: &mut Option<IncomingWait>,
     ) {
-        if !self.can_join(&info)
+        if waiter
+            .as_ref()
+            .is_none_or(|w| !matches!(w.reply, IncomingDelivery::Stream(_)))
+            || !self.can_join(&info)
             || !owner.current()
             || Instant::now() >= original
             || Instant::now() >= expires
@@ -210,6 +272,9 @@ impl ReceiveTransaction {
         }
         info.state = stream::ACTIVE;
         let queue = Queue::new(info.clone(), expires);
+        if let IncomingScope::Event(context) = self.scope {
+            queue.lock().expect("new joined queue").native = Some(context);
+        }
         let group = self.stream.as_mut().expect("checked stream group");
         group.push(Stream {
             owner,
@@ -217,6 +282,18 @@ impl ReceiveTransaction {
             ready: None,
             read: None,
             close: vec![],
+        });
+        // Install this caller's sink before publishing acquisition success.
+        *waiter = Some(IncomingWait {
+            scope: self.scope,
+            handles: self.handles.clone(),
+            modes: self.modes,
+            deadline: group
+                .iter()
+                .map(|s| s.queue.lock().expect("checked group").expires)
+                .max()
+                .expect("nonempty group"),
+            reply: IncomingDelivery::Stream(group.iter().map(Stream::sink).collect()),
         });
         if ready.send(Ok(info)).is_err() {
             let _ = queue
@@ -351,6 +428,25 @@ impl ReceiveTransaction {
         {
             self.failure
                 .get_or_insert_with(|| "receive caller cancelled/original deadline".into());
+        }
+        if matches!(self.scope, IncomingScope::Event(_))
+            && matches!(self.phase, Phase::Waiting)
+            && !self.installed
+            && let Some(streams) = self.stream.as_ref()
+        {
+            *waiter = Some(IncomingWait {
+                scope: self.scope,
+                handles: self.handles.clone(),
+                modes: self.modes,
+                deadline: streams
+                    .iter()
+                    .map(|s| s.queue.lock().expect("new event queue").expires)
+                    .max()
+                    .expect("nonempty streams"),
+                reply: IncomingDelivery::Stream(streams.iter().map(Stream::sink).collect()),
+            });
+            self.installed = true;
+            self.publish_ready()?;
         }
         if let Some(streams) = self.stream.as_mut() {
             for s in streams.iter_mut() {
@@ -621,25 +717,8 @@ impl ReceiveTransaction {
                     }
                     Phase::Waiting => return Err("unexpected receive transaction reply".into()),
                 }
-                if matches!(self.phase, Phase::Waiting)
-                    && let Some(streams) = self.stream.as_mut()
-                {
-                    for s in streams {
-                        let mut q = s.queue.lock().map_err(|_| "subscription queue poisoned")?;
-                        if s.owner.current()
-                            && Instant::now() < self.original
-                            && Instant::now() < q.expires
-                        {
-                            q.active();
-                            if let Some(ready) = s.ready.take()
-                                && ready.send(Ok(q.info.clone())).is_err()
-                            {
-                                q.close(stream::INITIALIZATION_CANCELLED)?;
-                            }
-                        } else {
-                            q.close(stream::INITIALIZATION_CANCELLED)?;
-                        }
-                    }
+                if matches!(self.phase, Phase::Waiting) {
+                    self.publish_ready()?;
                 }
             }
         }
@@ -698,7 +777,7 @@ impl Stream {
             Some(error) => Err(error),
             None => {
                 let mut b = q.closed(true);
-                if retained {
+                if retained && q.info.kind == stream::PROPERTY {
                     b.flags |= stream::REMOTE_RETAINED;
                 }
                 Ok(b)
@@ -975,7 +1054,9 @@ mod tests {
         .await
         .unwrap();
         let info = stream::Info {
-            version: 1,
+            version: 2,
+            kind: 0,
+            minimum: 2,
             controller: 2,
             generation: 7,
             lifetime: 9,
@@ -1052,7 +1133,9 @@ mod tests {
         .await
         .unwrap();
         let info = stream::Info {
-            version: 1,
+            version: 2,
+            kind: 0,
+            minimum: 2,
             controller: 2,
             generation: 7,
             lifetime: 9,
@@ -1111,6 +1194,7 @@ mod tests {
     }
     async fn attach(
         t: &mut ReceiveTransaction,
+        waiter: &mut Option<IncomingWait>,
         service: &zbus::Connection,
         caller: &zbus::Connection,
         token: u64,
@@ -1125,6 +1209,7 @@ mod tests {
             expires,
             Instant::now() + Duration::from_secs(3),
             ready,
+            waiter,
         );
         assert_eq!(result.await.unwrap().unwrap().token, token);
     }
@@ -1134,7 +1219,7 @@ mod tests {
         let an = a.unique_name().unwrap().to_string();
         let bn = b.unique_name().unwrap().to_string();
         let (mut t, mut waiter) = shared_group(&service, &a).await;
-        attach(&mut t, &service, &b, 18, 30).await;
+        attach(&mut t, &mut waiter, &service, &b, 18, 30).await;
         t.maintain(&mut waiter, Instant::now()).unwrap();
         let (reply, released) = oneshot::channel();
         t.close(&an, 17, reply);
@@ -1154,7 +1239,7 @@ mod tests {
         assert!(!t.owns_client_sequence());
         assert!(t.renew(&an, 17, 30000).is_err());
         assert!(t.renew(&bn, 18, 30000).is_ok());
-        attach(&mut t, &service, &a, 19, 30).await;
+        attach(&mut t, &mut waiter, &service, &a, 19, 30).await;
         t.maintain(&mut waiter, Instant::now()).unwrap();
         let (reply, closed) = oneshot::channel();
         t.close(&an, 19, reply);
@@ -1184,7 +1269,7 @@ mod tests {
             let an = a.unique_name().unwrap().to_string();
             let bn = b.unique_name().unwrap().to_string();
             let (mut t, mut waiter) = shared_group(&service, &a).await;
-            attach(&mut t, &service, &b, 18, 10).await;
+            attach(&mut t, &mut waiter, &service, &b, 18, 10).await;
             t.maintain(&mut waiter, Instant::now()).unwrap();
             // Actual production Queue/Sink paths with declared Native metadata
             // fixture. One owner's retirement must discard only its own queue.
@@ -1263,7 +1348,7 @@ mod tests {
         let an = a.unique_name().unwrap().to_string();
         let bn = b.unique_name().unwrap().to_string();
         let (mut t, mut waiter) = shared_group(&service, &a).await;
-        attach(&mut t, &service, &b, 18, 30).await;
+        attach(&mut t, &mut waiter, &service, &b, 18, 30).await;
         t.maintain(&mut waiter, Instant::now()).unwrap();
         let (a_reply, a_wait) = oneshot::channel();
         let (b_reply, b_wait) = oneshot::channel();
@@ -1286,7 +1371,7 @@ mod tests {
     #[tokio::test]
     async fn shared_admission_checks_live_identity_filter_tokens_and_capacity() {
         let (_bus, service, a, b) = shared_bus().await;
-        let (mut t, _waiter) = shared_group(&service, &a).await;
+        let (mut t, mut waiter) = shared_group(&service, &a).await;
         let (_, info, _) = shared_owner(&service, &b, 18, 30).await;
         assert!(t.can_join(&info));
         for field in 0..10 {
@@ -1306,7 +1391,7 @@ mod tests {
             assert!(!t.can_join(&bad));
         }
         for token in 18..25 {
-            attach(&mut t, &service, &b, token, 30).await;
+            attach(&mut t, &mut waiter, &service, &b, token, 30).await;
         }
         let (_, next, _) = shared_owner(&service, &b, 25, 30).await;
         assert!(!t.can_join(&next));
@@ -1316,5 +1401,224 @@ mod tests {
         let (_, info, _) = shared_owner(&service, &b, 18, 30).await;
         t.stream.as_ref().unwrap()[0].queue.lock().unwrap().expires = Instant::now();
         assert!(!t.can_join(&info));
+    }
+    // Production transaction/queues with real caller watches. Native metadata is
+    // an explicit fixture; these checks do not prove kernel or peer delivery.
+    fn event_context() -> slk_protocol::SleSendConstraint {
+        slk_protocol::SleSendConstraint {
+            version: 1,
+            size: 48,
+            minimum: 1,
+            generation: 7,
+            lifetime: 9,
+            security_epoch: 13,
+            controller: 2,
+            handle: 11,
+            local_tcid: 10,
+            remote_tcid: 10,
+            pi: 0,
+            reserved: 0,
+            deadline_monotonic_ns: 1,
+        }
+    }
+    fn event_receipt() -> slk_protocol::SleMessageSecurity {
+        slk_protocol::SleMessageSecurity {
+            version: 1,
+            size: 40,
+            security: 1,
+            generation: 7,
+            lifetime: 9,
+            security_epoch: 13,
+            controller: 2,
+            handle: 11,
+            local_tcid: 10,
+            remote_tcid: 10,
+            pi: 0,
+            flags: 3,
+        }
+    }
+    async fn event_owner(
+        service: &zbus::Connection,
+        caller: &zbus::Connection,
+        token: u64,
+    ) -> (CallerLease, stream::Info, Instant) {
+        let (owner, mut info, expires) = shared_owner(service, caller, token, 30).await;
+        info.kind = stream::EVENT;
+        info.minimum = 1;
+        (owner, info, expires)
+    }
+    #[tokio::test]
+    async fn event_lease_ready_follows_route_and_shared_close_is_only_local() {
+        let (_bus, service, a, b) = shared_bus().await;
+        let (owner, info, expires) = event_owner(&service, &a, 17).await;
+        let (ready, mut result) = oneshot::channel();
+        let mut t = ReceiveTransaction::new_event_stream(
+            Instant::now() + Duration::from_secs(3),
+            owner,
+            info,
+            expires,
+            event_context(),
+            ready,
+        );
+        assert!(t.publish_ready().is_err());
+        assert!(matches!(
+            result.try_recv(),
+            Err(oneshot::error::TryRecvError::Empty)
+        ));
+        let mut waiter = None;
+        t.maintain(&mut waiter, Instant::now()).unwrap();
+        assert_eq!(result.await.unwrap().unwrap().state, stream::ACTIVE);
+        assert!(
+            matches!(waiter.as_ref().unwrap().reply,IncomingDelivery::Stream(ref s) if s.len()==1)
+        );
+        assert!(!t.owns_client_sequence());
+        assert!(t.possibly_enabled.is_empty());
+        assert!(t.next(&mut waiter).is_none());
+        let (owner, info, expires) = event_owner(&service, &b, 18).await;
+        for (kind, minimum) in [(0, 2), (1, 0), (1, 2)] {
+            assert!(!t.can_join(&stream::Info {
+                kind,
+                minimum,
+                ..info.clone()
+            }));
+        }
+        let (ready, result) = oneshot::channel();
+        t.join(
+            owner,
+            info,
+            expires,
+            Instant::now() + Duration::from_secs(3),
+            ready,
+            &mut waiter,
+        );
+        assert_eq!(result.await.unwrap().unwrap().token, 18);
+        // No extra maintain/poll/sleep may be required after Ready.
+        let IncomingDelivery::Stream(sinks) = &waiter.as_ref().unwrap().reply else {
+            panic!()
+        };
+        assert_eq!(sinks.len(), 2);
+        let sinks = sinks.clone();
+        let packet = (true, vec![16, 7, 19, 0, 1, 0, 71]);
+        for sink in &sinks {
+            let mut old = event_receipt();
+            old.security_epoch += 1;
+            assert_eq!(
+                sink.offer(packet.clone(), Some(old), Instant::now())
+                    .unwrap_err(),
+                "subscription original Native identity/security changed"
+            );
+            old = event_receipt();
+            old.security = 0;
+            assert_eq!(
+                sink.offer(packet.clone(), Some(old), Instant::now())
+                    .unwrap_err(),
+                "subscription original Native identity/security changed"
+            );
+            for _ in 0..16 {
+                assert!(
+                    sink.offer(packet.clone(), Some(event_receipt()), Instant::now())
+                        .unwrap()
+                );
+            }
+            assert!(
+                !sink
+                    .offer(packet.clone(), Some(event_receipt()), Instant::now())
+                    .unwrap()
+            );
+        }
+        let (reply, released) = oneshot::channel();
+        t.close(a.unique_name().unwrap(), 17, reply);
+        t.maintain(&mut waiter, Instant::now()).unwrap();
+        let closed = released.await.unwrap().unwrap();
+        assert_eq!(closed.flags, stream::CLEANUP_CONFIRMED);
+        assert_eq!(closed.discarded_on_close, 16);
+        assert!(
+            !sinks[0]
+                .offer(packet.clone(), Some(event_receipt()), Instant::now())
+                .unwrap()
+        );
+        let batch = sinks[1].queue.lock().unwrap().take_batch();
+        assert_eq!(batch.packets.len(), 16);
+        assert_eq!(batch.refused_indications, 1);
+        assert!(
+            sinks[1]
+                .offer(packet, Some(event_receipt()), Instant::now())
+                .unwrap()
+        );
+        assert!(t.renew(b.unique_name().unwrap(), 18, 1000).is_ok());
+        let (reply, last) = oneshot::channel();
+        t.close(b.unique_name().unwrap(), 18, reply);
+        t.maintain(&mut waiter, Instant::now()).unwrap();
+        assert!(waiter.is_none());
+        assert!(t.ready_to_finish(true));
+        assert!(t.next(&mut waiter).is_none());
+        let _ = t.finish();
+        assert_eq!(
+            last.await.unwrap().unwrap().flags,
+            stream::CLEANUP_CONFIRMED
+        );
+    }
+    #[tokio::test]
+    async fn event_lease_cancel_expire_and_owner_loss_never_publish_or_revive() {
+        for case in 0..4 {
+            let (_bus, service, a, _b) = shared_bus().await;
+            let (owner, info, expires) = event_owner(&service, &a, 17).await;
+            let (ready, mut result) = oneshot::channel();
+            let original = if case == 0 {
+                Instant::now()
+            } else {
+                Instant::now() + Duration::from_secs(3)
+            };
+            let mut t = ReceiveTransaction::new_event_stream(
+                original,
+                owner,
+                info,
+                expires,
+                event_context(),
+                ready,
+            );
+            if case == 1 {
+                result.close();
+            }
+            let mut waiter = None;
+            t.maintain(&mut waiter, Instant::now()).unwrap();
+            if case >= 2 {
+                assert_eq!(result.await.unwrap().unwrap().state, stream::ACTIVE);
+                if case == 2 {
+                    t.stream.as_ref().unwrap()[0].queue.lock().unwrap().expires = Instant::now();
+                } else {
+                    a.close().await.unwrap();
+                    let event = tokio::time::timeout(Duration::from_secs(2), t.event())
+                        .await
+                        .unwrap();
+                    assert!(matches!(event, Event::StreamOwnerLost(17)));
+                    t.apply(event).unwrap();
+                }
+                t.maintain(&mut waiter, Instant::now()).unwrap();
+            }
+            assert!(waiter.is_none());
+            assert!(t.ready_to_finish(true));
+            assert!(t.possibly_enabled.is_empty());
+            assert!(t.next(&mut waiter).is_none());
+            let terminal = t.finish();
+            assert_eq!(terminal.len(), 1);
+            if case == 0 {
+                assert_eq!(
+                    terminal[0].result.as_ref().unwrap_err(),
+                    "subscription original creation cancelled/deadline"
+                );
+            } else {
+                let terminal = terminal[0].result.as_ref().unwrap();
+                assert_eq!(terminal.flags, stream::CLEANUP_CONFIRMED);
+                assert_eq!(
+                    terminal.reason,
+                    match case {
+                        1 => stream::INITIALIZATION_CANCELLED,
+                        2 => stream::EXPIRED,
+                        _ => stream::OWNER_LOST,
+                    }
+                );
+            }
+        }
     }
 }

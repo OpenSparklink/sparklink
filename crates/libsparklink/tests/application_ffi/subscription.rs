@@ -38,7 +38,9 @@ impl Metadata {
             ));
         }
         let info = wire::Info {
-            version: 1,
+            version: 2,
+            kind: 0,
+            minimum: 2,
             controller: 2,
             generation: 7,
             lifetime,
@@ -54,6 +56,13 @@ impl Metadata {
         *current = Some((caller, info.clone()));
         self.sequence.store(0, Ordering::SeqCst);
         Ok(info)
+    }
+    pub(super) fn event_scope(&self, mut info: wire::Info, minimum: u32) -> wire::Info {
+        assert!(minimum <= 2);
+        info.kind = wire::EVENT;
+        info.minimum = minimum as u8;
+        self.current.lock().unwrap().as_mut().unwrap().1 = info.clone();
+        info
     }
     fn get(&self, token: u64, caller: &str) -> zbus::fdo::Result<wire::Info> {
         let current = self.current.lock().unwrap();
@@ -78,6 +87,7 @@ impl Metadata {
         }
         self.reads.fetch_add(1, Ordering::SeqCst);
         let sequence = self.sequence.fetch_add(1, Ordering::SeqCst) + 1;
+        let (kind, minimum) = (info.kind, info.minimum);
         Ok(wire::Batch {
             info,
             last_sequence: sequence,
@@ -89,9 +99,17 @@ impl Metadata {
             packets: vec![wire::Packet {
                 sequence,
                 security_epoch: 13,
-                security_level: 2,
+                security_level: minimum as u32,
                 indication: true,
-                pdu: vec![16, 3, 17, 0, 1, 0, 0xab],
+                pdu: vec![
+                    16,
+                    if kind == wire::EVENT { 7 } else { 3 },
+                    17,
+                    0,
+                    1,
+                    0,
+                    0xab,
+                ],
             }],
         })
     }
@@ -331,5 +349,8 @@ pub(super) async fn exercise(
     }
     assert_eq!(metadata.reads.load(Ordering::SeqCst), 12);
     assert_eq!(metadata.closes.load(Ordering::SeqCst), 2);
+    // Destroy finite failed-caller metadata before independent SDK consumers.
+    // This is fixture isolation,not production owner/drain qualification.
+    metadata.current.lock().unwrap().take();
     Ok(())
 }

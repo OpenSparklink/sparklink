@@ -350,6 +350,11 @@ class RemoteSsap:
         from .ssap_subscription import SsapSubscription
         return SsapSubscription._acquire(self._connection, handles, modes, duration_ms, deadline_ns)
 
+    def subscribe_events(self,handles,*,deadline_ns,modes=3,minimum=0,duration_ms=30000):
+        """Original Native-bound local route ready;no remote enable or Profile START."""
+        from .ssap_subscription import SsapSubscription
+        return SsapSubscription._acquire(self._connection,handles,modes,duration_ms,deadline_ns,minimum)
+
     def _update(self, operation, handle, mode, deadline_ns):
         _integer(handle, 16, "handle", nonzero=True)
         deadline_ns = _deadline(deadline_ns)

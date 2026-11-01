@@ -12,7 +12,8 @@ use std::{
 };
 
 /// This lease's routing and configuration ownership are released. Without
-/// REMOTE_RETAINED, the last remote CPCD configuration was verified off.
+/// REMOTE_RETAINED, a property CPCD was verified off. Event kind1 only confirms
+/// local route/queue release;never remote Profile STOP or disable.
 pub const SLK_SSAP_SUBSCRIPTION_CLEANUP_CONFIRMED: u32 = 1;
 /// Other same-scope leases retained the remote CPCD at this terminal
 /// observation. Only valid with CLEANUP_CONFIRMED, not a current-state claim.
@@ -21,7 +22,8 @@ const _: () = assert!(SLK_SSAP_SUBSCRIPTION_CLEANUP_CONFIRMED == wire::CLEANUP_C
 const _: () = assert!(SLK_SSAP_SUBSCRIPTION_REMOTE_RETAINED == wire::REMOTE_RETAINED);
 
 /// Last validated lease observation; not Ready or future Native authorization.
-/// Handles after handle_count and reserved bytes are zero. State0..3 follows
+/// Version2:kind0 property requires minimum2;kind1 event allows minimum0..2.
+/// Handles after handle_count are zero. State0..3 follows
 /// the Rust lease; token is scoped to the original bus owner/physical lifetime.
 #[repr(C, align(8))]
 #[derive(Clone, Copy, Debug, Default)]
@@ -38,7 +40,8 @@ pub struct SlkSsapSubscriptionInfo {
     pub handle_count: u16,
     pub modes: u8,
     pub state: u8,
-    pub reserved: [u8; 2],
+    pub kind: u8,
+    pub minimum: u8,
     pub handles: [u16; 32],
 }
 impl SlkSsapSubscriptionInfo {
@@ -56,6 +59,8 @@ impl SlkSsapSubscriptionInfo {
             handle_count: info.handles.len() as u16,
             modes: info.modes,
             state: info.state,
+            kind: info.kind,
+            minimum: info.minimum,
             ..Self::default()
         };
         out.handles[..info.handles.len()].copy_from_slice(&info.handles);
@@ -185,6 +190,66 @@ pub unsafe extern "C" fn slk_connection_ssap_subscribe(
     deadline_ns: u64,
     output: *mut *mut SlkSsapSubscription,
 ) -> c_int {
+    unsafe {
+        subscribe_scoped(
+            connection,
+            handles,
+            count,
+            modes,
+            None,
+            duration_ms,
+            deadline_ns,
+            output,
+        )
+    }
+}
+/// Create an event lease. Success means the local Native-bound route/queue is
+/// installed;no CPCD,remote Profile START,app handling or lossless guarantee.
+/// minimum0..2, original creation<=5s; same bounded read/renew/release/free API.
+/// # Safety
+/// Same live connection/handles/exclusive output,fork and no concurrent close
+/// requirements as slk_connection_ssap_subscribe. Output unchanged on error.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_ssap_subscribe_events(
+    connection: *const SlkConnection,
+    handles: *const u16,
+    count: usize,
+    modes: u32,
+    minimum: u32,
+    duration_ms: u32,
+    deadline_ns: u64,
+    output: *mut *mut SlkSsapSubscription,
+) -> c_int {
+    if minimum > 2 {
+        return -nix::libc::EINVAL;
+    }
+    unsafe {
+        subscribe_scoped(
+            connection,
+            handles,
+            count,
+            modes,
+            Some(minimum),
+            duration_ms,
+            deadline_ns,
+            output,
+        )
+    }
+}
+#[expect(
+    clippy::too_many_arguments,
+    reason = "One common checked C acquisition with explicit bounded inputs"
+)]
+unsafe fn subscribe_scoped(
+    connection: *const SlkConnection,
+    handles: *const u16,
+    count: usize,
+    modes: u32,
+    event_minimum: Option<u32>,
+    duration_ms: u32,
+    deadline_ns: u64,
+    output: *mut *mut SlkSsapSubscription,
+) -> c_int {
     if connection.is_null()
         || handles.is_null()
         || output.is_null()
@@ -203,9 +268,18 @@ pub unsafe extern "C" fn slk_connection_ssap_subscribe(
     let result = Deadline::from_monotonic_ns(deadline_ns).and_then(|deadline| {
         let (deadline, original) = deadline.protocol()?;
         view.inner.call(deadline, move |_| async move {
-            link.ssap()
-                .subscribe(handles, modes as u8, duration_ms, original)
-                .await
+            match event_minimum {
+                None => {
+                    link.ssap()
+                        .subscribe(handles, modes as u8, duration_ms, original)
+                        .await
+                }
+                Some(minimum) => {
+                    link.ssap()
+                        .subscribe_events(handles, modes as u8, minimum, duration_ms, original)
+                        .await
+                }
+            }
         })
     });
     match result {

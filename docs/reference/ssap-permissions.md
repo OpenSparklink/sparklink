@@ -794,7 +794,7 @@ minimum, output, deadline_ns)`、Python `send_owned_event(handle, value,
 receipt stage1仅为全部片软件准入，stage2仅为对端接收队列ACK，不代表应用处理。
 ACK须为事件类型、原安全epoch、满足原minimum、位于原物理drain期限；属性ACK
 不能结算事件。原作者超时/退出后仍保留在途义务，晚到ACK不能恢复已结束请求。
-发送与单次事件接收均已接通源码；持续事件订阅、完整上层业务启停及准确Native双端
+发送、单次接收及持续事件租约已接通源码；完整上层业务启停及准确Native双端
 事件交付尚未验收。离线函数、私有D-Bus和语言fixture不能代替实机、部署权限或Windows运行资格。
 
 `ReceiveSsapEvent(handles:aq, modes:y, minimum:u, deadline:(ttttt)) → (bay)`
@@ -820,7 +820,7 @@ C/Python仍使用2064字节receipt，stage4表示本地接收到事件，无CPCD
 
 此接口没有单独的“监听已准备”返回，也不重放安装前的事件。需要确定性启动或连续消费的
 应用仍须等待后续同一事务的租约/就绪接口及真实门禁，不能用固定sleep代替启动证据。
-超限/畸形报文、分片和队列预算沿用现有Engine；此源码切片不授完整持续订阅资格。
+超限/畸形报文、分片和队列预算沿用现有Engine；完整持续租约契约见[接口参考](interfaces.md)，其离线结果仍不授实机资格。
 
 ## Owned method 服务端
 

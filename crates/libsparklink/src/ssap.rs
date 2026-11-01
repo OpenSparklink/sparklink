@@ -102,6 +102,26 @@ impl<'a> RemoteSsap<'a> {
         subscription::Subscription::open(self.link.clone(), handles, modes, duration_ms, original)
             .await
     }
+    /// Ready is the original Native identity-bound local event route/queue.
+    /// No remote Profile START or property CPCD operation is implied.
+    pub async fn subscribe_events(
+        &self,
+        handles: Vec<u16>,
+        modes: u8,
+        minimum: u32,
+        duration_ms: u32,
+        original: crate::Deadline,
+    ) -> Result<subscription::Subscription> {
+        subscription::Subscription::open_event(
+            self.link.clone(),
+            handles,
+            modes,
+            minimum,
+            duration_ms,
+            original,
+        )
+        .await
+    }
     // All calls use the same production identity checks. No late reply can
     // silently be relabelled as a replacement daemon/connection observation.
     async fn current<T>(

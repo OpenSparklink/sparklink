@@ -157,6 +157,7 @@ enum Query {
         reply: oneshot::Sender<Result<slk_protocol::SleSessionTxStatus, String>>,
     },
     Incoming {
+        event_minimum: Option<u32>,
         handles: Vec<u16>,
         modes: u8,
         deadline: Instant,
@@ -537,6 +538,7 @@ impl Observer {
     /// One bounded receive transaction: baseline, enable, receive, disable.
     pub(crate) async fn incoming(
         self,
+        event_minimum: Option<u32>,
         handles: Vec<u16>,
         modes: u8,
         deadline: Instant,
@@ -554,6 +556,7 @@ impl Observer {
         let (reply, result) = oneshot::channel();
         self.queries
             .try_send(Query::Incoming {
+                event_minimum,
                 handles,
                 modes,
                 deadline,
@@ -987,7 +990,49 @@ impl IncomingDelivery {
         }
     }
 }
+/// Property setup pins its own CPCD transaction. An event listener instead pins
+/// the actual Native mechanism before installing a local receive slot.
+#[derive(Clone, Copy)]
+pub(super) enum IncomingScope {
+    Property,
+    Event(slk_protocol::SleSendConstraint),
+}
+impl IncomingScope {
+    fn accepts(self, event: bool, receipt: Option<slk_protocol::SleMessageSecurity>) -> bool {
+        match self {
+            Self::Property => !event,
+            Self::Event(c) => {
+                event
+                    && receipt.is_some_and(|m| {
+                        m.validate().is_ok()
+                            && m.flags == 3
+                            && m.security >= c.minimum
+                            && (
+                                m.controller,
+                                m.generation,
+                                m.lifetime,
+                                m.handle,
+                                m.local_tcid,
+                                m.remote_tcid,
+                                m.pi,
+                                m.security_epoch,
+                            ) == (
+                                c.controller,
+                                c.generation,
+                                c.lifetime,
+                                c.handle,
+                                c.local_tcid,
+                                c.remote_tcid,
+                                c.pi,
+                                c.security_epoch,
+                            )
+                    })
+            }
+        }
+    }
+}
 pub(super) struct IncomingWait {
+    pub(super) scope: IncomingScope,
     pub(super) handles: Vec<u16>,
     pub(super) modes: u8,
     pub(super) deadline: Instant,
@@ -1008,7 +1053,7 @@ fn incoming_packet(
     let eligible = waiter.as_ref().is_some_and(|w| {
         !w.reply.is_closed()
             && Instant::now() < w.deadline
-            && !packet.event
+            && w.scope.accepts(packet.event, receipt)
             && w.modes & if packet.indication { 2 } else { 1 } != 0
             && packet
                 .items
@@ -2168,7 +2213,7 @@ async fn exchange_loop(
             for closed in current.take_closed() {
                 remember_subscription(&mut last_subscription, closed);
             }
-            if current.finished() && client.is_none() {
+            if current.ready_to_finish(client.is_some()) {
                 for closed in receive.take().expect("finished transaction").finish() {
                     remember_subscription(&mut last_subscription, closed);
                 }
@@ -2404,11 +2449,21 @@ async fn exchange_loop(
                     }
                     continue;
                 }
-                if let Query::Incoming{handles,modes,deadline,reply}=query {
+                if let Query::Incoming{event_minimum,handles,modes,deadline,reply}=query {
                     if reply.is_closed(){continue;}
                     if receive.is_some() || client.is_some() || incoming_wait.is_some() || !initial_done || Instant::now()>=deadline || handles.is_empty() || handles.len()>32 || modes==0 || modes&!3!=0 || handles.contains(&0) || handles.iter().enumerate().any(|(i,h)|handles[..i].contains(h)) {let _=reply.send(Err("SSAP receive busy/not-ready/invalid/expired".into()));continue;}
                     wire.snapshot()?;
-                    receive=Some(crate::ssap_receive_transaction::ReceiveTransaction::new(handles,modes,deadline,reply));continue;
+                    receive=Some(match event_minimum {
+                        None=>crate::ssap_receive_transaction::ReceiveTransaction::new(handles,modes,deadline,reply),
+                        Some(minimum)=>{
+                            let context=match wire.prepare(minimum,deadline){
+                                Ok(Some(c))=>c,
+                                other=>{let _=reply.send(Err(format!("event listener needs actual Native mechanism: {other:?}")));continue;}
+                            };
+                            crate::ssap_receive_transaction::ReceiveTransaction::new_event(handles,modes,deadline,context,reply)
+                                .map_err(io::Error::other)?
+                        }
+                    });continue;
                 }
                 if let Query::Value{bytes,deadline,minimum,reply}=query {
                     if receive.as_ref().is_some_and(|r|r.owns_client_sequence()) {let _=reply.send(Err("SSAP client sequence owned by receive transaction".into()));continue;}
@@ -4063,6 +4118,7 @@ mod tests {
             let (reply, rx) = oneshot::channel();
             (
                 Some(IncomingWait {
+                    scope: IncomingScope::Property,
                     handles,
                     modes,
                     deadline: Instant::now() + Duration::from_secs(1),
@@ -4280,6 +4336,7 @@ mod tests {
         let b = Queue::new(stream::Info { token: 18, ..info }, expires);
         let (_alive, observed) = watch::channel(true);
         let mut w = Some(IncomingWait {
+            scope: IncomingScope::Property,
             handles: vec![19],
             modes: 3,
             deadline: expires,

@@ -559,7 +559,12 @@ impl ConnectionOwner {
 }
 
 impl ConnectionIface {
-    async fn validate_update_targets(&self, handles: &[u16], modes: u8) -> zbus::fdo::Result<()> {
+    async fn validate_update_targets(
+        &self,
+        handles: &[u16],
+        modes: u8,
+        event: bool,
+    ) -> zbus::fdo::Result<()> {
         let cache = self.remote_services.lock().await;
         let entries = cache.as_ref().ok_or_else(|| {
             zbus::fdo::Error::NotSupported(
@@ -570,13 +575,17 @@ impl ConnectionIface {
         if handles.iter().any(|handle| {
             !entries.iter().any(|e| {
                 e.handle == *handle
-                    && e.category & 7 == 2
-                    && e.operations & required == required
-                    && e.descriptors.contains(&2)
+                    && if event {
+                        matches!(e.category, 4 | 12)
+                    } else {
+                        e.category & 7 == 2
+                            && e.operations & required == required
+                            && e.descriptors.contains(&2)
+                    }
             })
         }) {
             return Err(zbus::fdo::Error::NotSupported(
-                "peer has not advertised requested property update capabilities".into(),
+                "peer has not advertised requested update target/capabilities".into(),
             ));
         }
         Ok(())
@@ -1386,9 +1395,49 @@ impl ConnectionIface {
             header,
             connection,
             |observer, _caller, original| async move {
-                self.validate_update_targets(&handles, modes).await?;
+                self.validate_update_targets(&handles, modes, false).await?;
                 observer
-                    .incoming(handles, modes, original)
+                    .incoming(None, handles, modes, original)
+                    .await
+                    .map_err(zbus::fdo::Error::Failed)
+            },
+        )
+        .await
+    }
+    /// One local event slot, not a property configuration or Profile enable.
+    async fn receive_ssap_event(
+        &self,
+        handles: Vec<u16>,
+        modes: u8,
+        minimum: u32,
+        deadline: slk_contract::Deadline,
+        #[zbus(connection)] connection: &zbus::Connection,
+        #[zbus(header)] header: zbus::message::Header<'_>,
+    ) -> zbus::fdo::Result<crate::ssap_engine::Incoming> {
+        if handles.is_empty()
+            || handles.len() > 32
+            || handles.contains(&0)
+            || handles
+                .iter()
+                .enumerate()
+                .any(|(i, h)| handles[..i].contains(h))
+            || modes == 0
+            || modes & !3 != 0
+            || minimum > 2
+        {
+            return Err(zbus::fdo::Error::InvalidArgs(
+                "1..32 unique event handles, modes1..3, minimum0..2".into(),
+            ));
+        }
+        self.scoped_ssap_call(
+            deadline,
+            std::time::Duration::from_secs(10),
+            header,
+            connection,
+            |observer, _caller, original| async move {
+                self.validate_update_targets(&handles, modes, true).await?;
+                observer
+                    .incoming(Some(minimum), handles, modes, original)
                     .await
                     .map_err(zbus::fdo::Error::Failed)
             },
@@ -1416,7 +1465,7 @@ impl ConnectionIface {
             header,
             connection,
             |observer, caller, original| async move {
-                self.validate_update_targets(&handles, modes).await?;
+                self.validate_update_targets(&handles, modes, false).await?;
                 let slots = self.state.lock().await.ssap_subscription_slots.clone();
                 let slot = slots.try_acquire_owned().map_err(|_| {
                     zbus::fdo::Error::LimitsExceeded("subscription owner budget".into())
@@ -2857,6 +2906,55 @@ mod grant_tests {
     }
 
     #[tokio::test]
+    async fn actual_ssap_event_target_cache_rejects_properties_unknown_and_foreign_handles() {
+        let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
+            slk_native::Adapter::open("/dev/null").unwrap(),
+            crate::config::DaemonConfig::default(),
+            crate::bonding::BondingStore::new(
+                std::path::Path::new("/tmp"),
+                "event-target-metadata",
+            ),
+            crate::profile::ProfileRegistry::new(),
+        )));
+        let iface = ConnectionIface::new(state, 7, SleLinkInfo::default(), 0);
+        assert!(iface.validate_update_targets(&[17], 3, true).await.is_err());
+        let entry = slk_protocol::ssap::discovery::Entry {
+            category: 4,
+            handle: 17,
+            end: 17,
+            uuid: vec![4, 0],
+            operations: 0,
+            descriptors: vec![],
+            members: 0,
+        };
+        *iface.remote_services.lock().await = Some(vec![entry.clone()]);
+        assert!(iface.validate_update_targets(&[17], 3, true).await.is_ok());
+        assert!(
+            iface
+                .validate_update_targets(&[17], 3, false)
+                .await
+                .is_err()
+        );
+        assert!(iface.validate_update_targets(&[18], 3, true).await.is_err());
+        let custom = slk_protocol::ssap::discovery::Entry {
+            category: 12,
+            ..entry.clone()
+        };
+        *iface.remote_services.lock().await = Some(vec![custom]);
+        assert!(iface.validate_update_targets(&[17], 3, true).await.is_ok());
+        let property = slk_protocol::ssap::discovery::Entry {
+            category: 2,
+            operations: 536,
+            descriptors: vec![2],
+            ..entry
+        };
+        *iface.remote_services.lock().await = Some(vec![property]);
+        assert!(iface.validate_update_targets(&[17], 3, true).await.is_err());
+        assert!(iface.validate_update_targets(&[17], 3, false).await.is_ok());
+        // Metadata checks only; /dev/null supplies no Native authority.
+    }
+
+    #[tokio::test]
     async fn actual_ssap_interface_keeps_independent_wire_signatures() {
         let state = Arc::new(Mutex::new(crate::state::AdapterState::new(
             slk_native::Adapter::open("/dev/null").unwrap(),
@@ -2894,6 +2992,11 @@ mod grant_tests {
                 vec!["(a(yqqayuayy)a(ayay))"],
             ),
             ("GetCachedSsap", vec![], vec!["a(yqqayuayy)"]),
+            (
+                "ReceiveSsapEvent",
+                vec!["aq", "y", "u", "(ttttt)"],
+                vec!["(bay)"],
+            ),
             (
                 "ReceiveSsapUpdate",
                 vec!["aq", "y", "(ttttt)"],

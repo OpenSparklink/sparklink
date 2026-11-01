@@ -185,6 +185,7 @@ pub mod ssap {
     pub const DISCOVER: &str = "DiscoverSsap";
     pub const CACHED: &str = "GetCachedSsap";
     pub const RECEIVE: &str = "ReceiveSsapUpdate";
+    pub const RECEIVE_EVENT: &str = "ReceiveSsapEvent";
     pub const OWNED_UPDATE: &str = "SendOwnedSsapUpdate";
     pub const OWNED_EVENT: &str = "SendOwnedSsapEvent";
     pub const MAX_EVENT_VALUE_BYTES: usize = 2042;

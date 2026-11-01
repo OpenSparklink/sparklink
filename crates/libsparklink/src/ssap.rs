@@ -25,10 +25,16 @@ impl UpdateInput<'_> {
 
 // One decoder and scope check for both the one-shot and leased receive views.
 // This validates a broker receipt; it does not grant Native security or delivery.
-fn validate_update(handles: &[u16], modes: u8, indication: bool, raw: &[u8]) -> Result<()> {
+fn validate_update(
+    handles: &[u16],
+    modes: u8,
+    indication: bool,
+    raw: &[u8],
+    event: bool,
+) -> Result<()> {
     let packet = slk_protocol::ssap::updates::Update::decode(2048, raw)
         .map_err(|_| ApplicationError::Identity("malformed received SSAP update"))?;
-    if packet.event
+    if packet.event != event
         || packet.indication != indication
         || modes & (if indication { 2 } else { 1 }) == 0
         || packet
@@ -314,6 +320,31 @@ impl<'a> RemoteSsap<'a> {
         modes: u8,
         original: crate::Deadline,
     ) -> Result<wire::Incoming> {
+        self.receive_scoped(handles, modes, None, original).await
+    }
+    /// One event packet in a local listener slot, without property CPCD writes.
+    /// Pin the existing Native mechanism; ACK means local queue acceptance only.
+    /// This call has no remote START/STOP or public listener-ready guarantee.
+    pub async fn receive_event(
+        &self,
+        handles: Vec<u16>,
+        modes: u8,
+        minimum: u32,
+        original: crate::Deadline,
+    ) -> Result<wire::Incoming> {
+        if minimum > 2 {
+            return Err(ApplicationError::Invalid("event minimum0..2"));
+        }
+        self.receive_scoped(handles, modes, Some(minimum), original)
+            .await
+    }
+    async fn receive_scoped(
+        &self,
+        handles: Vec<u16>,
+        modes: u8,
+        event_minimum: Option<u32>,
+        original: crate::Deadline,
+    ) -> Result<wire::Incoming> {
         let original = original.capped(std::time::Duration::from_secs(10))?;
         if handles.is_empty()
             || handles.len() > 32
@@ -332,20 +363,24 @@ impl<'a> RemoteSsap<'a> {
             &self.link.client,
             original,
             self.current(async {
-                Ok(self
+                let proxy = self
                     .link
                     .client
                     .proxy(&self.link.path, contract::CONNECTION)
-                    .await?
-                    .call(
-                        wire::RECEIVE,
-                        &(handles, modes, contract::deadline_wire(original.stamp())),
-                    )
-                    .await?)
+                    .await?;
+                let stamp = contract::deadline_wire(original.stamp());
+                Ok(match event_minimum {
+                    None => proxy.call(wire::RECEIVE, &(handles, modes, stamp)).await?,
+                    Some(minimum) => {
+                        proxy
+                            .call(wire::RECEIVE_EVENT, &(handles, modes, minimum, stamp))
+                            .await?
+                    }
+                })
             }),
         )
         .await?;
-        validate_update(&expected, modes, value.0, &value.1)?;
+        validate_update(&expected, modes, value.0, &value.1, event_minimum.is_some())?;
         Ok(value)
     }
     pub async fn read_by_uuid(

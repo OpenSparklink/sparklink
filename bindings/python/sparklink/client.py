@@ -38,7 +38,8 @@ class _SsapUpdate(ctypes.Structure):
 
 @dataclass(frozen=True)
 class SsapUpdate:
-    """stage1 software admission;2 peer queue ACK;3 received/disabled.
+    """stage1 software admission;2 peer queue ACK;3 property received/disabled;
+    4 event locally received without remote configuration.
 
     None of these stages means a peer application processed the business value.
     pdu is the complete existing SSAP packet;this binding has no wire Engine.
@@ -93,6 +94,7 @@ def _library():
             ctypes.c_void_p, ctypes.c_size_t, ctypes.c_uint64],
         "slk_connection_ssap_receive": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
                                         ctypes.POINTER(_SsapUpdate), ctypes.c_uint64],
+        "slk_connection_ssap_receive_event": [ctypes.c_void_p,ctypes.c_uint16,ctypes.c_uint32,ctypes.c_uint32,ctypes.POINTER(_SsapUpdate),ctypes.c_uint64],
         "slk_connection_ssap_send_event": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
             ctypes.c_void_p, ctypes.c_size_t, ctypes.c_uint32, ctypes.POINTER(_SsapUpdate), ctypes.c_uint64],
         "slk_connection_ssap_send_owned": [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_uint32,
@@ -382,6 +384,18 @@ class RemoteSsap:
         if type(modes) is not int or modes not in (1, 2, 3):
             raise ValueError('modes must be 1,2,3')
         return self._update('slk_connection_ssap_receive', handle, modes, deadline_ns)
+
+    def receive_event(self,handle,*,deadline_ns,modes=3,minimum=0):
+        """One local event slot<=10s;no CPCD,implicit remote enable or ready barrier."""
+        if type(modes) is not int or modes not in (1,2,3):
+            raise ValueError('modes must be 1,2,3')
+        deadline_ns=self._value_scope(handle,minimum,deadline_ns)
+        connection=self._connection;output=_SsapUpdate();connection._live()
+        with connection._lock:
+            connection._live()
+            _result(connection._lib.slk_connection_ssap_receive_event(connection._handle,
+                handle,modes,minimum,ctypes.byref(output),deadline_ns))
+        return self._decode_update(output,4,event=True)
 
     def send_owned_update(self, handle, *, deadline_ns, indication=False):
         """Only this original caller's active owned DB property;<=5s,no retry."""

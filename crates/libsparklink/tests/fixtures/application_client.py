@@ -145,6 +145,13 @@ with connection:
     error(errno.EMSGSIZE,lambda:ssap.send_owned_event(17,b'B'*2043,deadline_ns=deadline()))
     error(errno.EACCES,lambda:ssap.send_owned_event(18,b'',deadline_ns=deadline()))
     print("EVENT_SEND_LANGUAGE_FIXTURE_PASS_NOT_RF")
+    for minimum,length in enumerate((0,243,2042)):
+        for modes in (1,2,3):
+            received=ssap.receive_event(17,modes=modes,minimum=minimum,deadline_ns=deadline())
+            assert received.stage==4 and received.acknowledgement==b''
+            assert received.pdu==bytes([15 if modes==1 else 16,7,17,0])+length.to_bytes(2,'little')+b'B'*length
+    error(errno.EOPNOTSUPP,lambda:ssap.receive_event(18,deadline_ns=deadline()))
+    print("EVENT_RECEIVE_LANGUAGE_FIXTURE_PASS_NOT_RF")
     from sparklink import SsapDiscovery, SsapEntry
     from sparklink.ssap_discovery import _Entry
     import ctypes

@@ -479,3 +479,213 @@ async fn owned_event_ack_is_kind_epoch_floor_and_original_obligation_bound() {
         }
     }
 }
+
+fn event_receipt() -> slk_protocol::SleMessageSecurity {
+    slk_protocol::SleMessageSecurity {
+        version: 1,
+        size: 40,
+        security: 1,
+        controller: 2,
+        generation: 7,
+        lifetime: 11,
+        handle: 3,
+        local_tcid: 31,
+        remote_tcid: 31,
+        pi: 241,
+        security_epoch: 41,
+        flags: 3,
+    }
+}
+#[tokio::test]
+async fn event_listener_actual_transaction_has_one_slot_no_cpcd_and_identity_bound_ack() {
+    use crate::ssap_receive_transaction::ReceiveTransaction;
+    // Context is an explicit Native-receipt fixture. No ioctl/USB/RF success.
+    let valid = event_receipt();
+    let deadline = Instant::now() + Duration::from_secs(3);
+    let context = slk_protocol::SleSendConstraint::from_receipt(valid, 1, 1).unwrap();
+    for length in [0, 1, 243, 244, 249, 250, 253, 254, 255, 2042] {
+        for indication in [false, true] {
+            let (reply, result) = oneshot::channel();
+            let mut transaction =
+                ReceiveTransaction::new_event(vec![17], 3, deadline, context, reply).unwrap();
+            assert!(
+                !transaction.owns_client_sequence(),
+                "event wait must allow the existing method request lane"
+            );
+            let mut slot = None;
+            assert!(
+                transaction.next(&mut slot).is_none(),
+                "event cannot issue property configuration"
+            );
+            assert!(slot.is_some());
+            let mut raw = vec![if indication { 16 } else { 15 }, 7, 17, 0];
+            raw.extend_from_slice(&(length as u16).to_le_bytes());
+            raw.extend(vec![0x42; length]);
+            let ack = incoming_packet(249, 2048, &raw, Some(valid), &mut slot).unwrap();
+            assert_eq!(ack, if indication { vec![17, 7, 1] } else { vec![] });
+            assert!(slot.is_none());
+            assert_eq!(
+                incoming_packet(249, 2048, &raw, Some(valid), &mut slot).unwrap(),
+                if indication { vec![17, 7, 0] } else { vec![] },
+                "one slot cannot accept a duplicate packet"
+            );
+            let event = transaction.event().await;
+            transaction.apply(event).unwrap();
+            transaction.maintain(&mut slot, Instant::now()).unwrap();
+            assert!(transaction.next(&mut slot).is_none());
+            assert!(transaction.finished());
+            transaction.finish();
+            assert_eq!(result.await.unwrap().unwrap(), (indication, raw));
+        }
+    }
+    for fault in [
+        "epoch",
+        "controller",
+        "generation",
+        "lifetime",
+        "handle",
+        "local",
+        "remote",
+        "pi",
+        "unknown",
+        "minimum",
+        "invalid",
+        "missing",
+        "property",
+        "target",
+        "mode",
+    ] {
+        let (reply, mut result) = oneshot::channel();
+        let mut transaction =
+            ReceiveTransaction::new_event(vec![17], 2, deadline, context, reply).unwrap();
+        let mut slot = None;
+        transaction.next(&mut slot);
+        let mut receipt = Some(valid);
+        let mut raw = vec![16, 7, 17, 0, 0, 0];
+        match fault {
+            "epoch" => receipt.as_mut().unwrap().security_epoch += 1,
+            "controller" => receipt.as_mut().unwrap().controller += 1,
+            "generation" => receipt.as_mut().unwrap().generation += 1,
+            "lifetime" => receipt.as_mut().unwrap().lifetime += 1,
+            "handle" => receipt.as_mut().unwrap().handle += 1,
+            "local" => receipt.as_mut().unwrap().local_tcid += 1,
+            "remote" => receipt.as_mut().unwrap().remote_tcid += 1,
+            "pi" => receipt.as_mut().unwrap().pi += 1,
+            "unknown" => receipt.as_mut().unwrap().flags = 1,
+            "minimum" => receipt.as_mut().unwrap().security = 0,
+            "invalid" => receipt.as_mut().unwrap().size = 0,
+            "missing" => receipt = None,
+            "property" => raw[1] = 3,
+            "target" => raw[2] = 18,
+            "mode" => raw[0] = 15,
+            _ => unreachable!(),
+        }
+        assert_eq!(
+            incoming_packet(249, 249, &raw, receipt, &mut slot).unwrap(),
+            if fault == "mode" {
+                vec![]
+            } else {
+                vec![17, if fault == "property" { 3 } else { 7 }, 0]
+            },
+            "{fault}"
+        );
+        assert!(matches!(
+            result.try_recv(),
+            Err(oneshot::error::TryRecvError::Empty)
+        ));
+        assert!(slot.is_some());
+        // A rejected packet has not consumed the listener. Next legal input works.
+        let raw = [16, 7, 17, 0, 0, 0];
+        assert_eq!(
+            incoming_packet(249, 249, &raw, Some(valid), &mut slot).unwrap(),
+            [17, 7, 1]
+        );
+        let event = transaction.event().await;
+        transaction.apply(event).unwrap();
+        transaction.maintain(&mut slot, Instant::now()).unwrap();
+        assert!(transaction.finished());
+        assert!(!transaction.owns_client_sequence());
+        assert!(
+            transaction.ready_to_finish(true),
+            "unrelated client request cannot hold event cleanup"
+        );
+        transaction.finish();
+        assert!(result.await.unwrap().is_ok());
+    }
+}
+#[tokio::test]
+async fn event_listener_cancel_expiry_and_accepted_then_author_exit_do_not_fabricate_cleanup() {
+    use crate::ssap_receive_transaction::{Event, ReceiveTransaction};
+    let receipt = event_receipt();
+    let context = slk_protocol::SleSendConstraint::from_receipt(receipt, 1, 1).unwrap();
+    let raw = [16, 7, 17, 0, 0, 0];
+    for case in ["cancel", "expiry", "accepted_then_cancel"] {
+        let original = Instant::now() + Duration::from_secs(1);
+        let (reply, mut result) = oneshot::channel();
+        let mut transaction =
+            ReceiveTransaction::new_event(vec![17], 2, original, context, reply).unwrap();
+        let mut slot = None;
+        transaction.next(&mut slot);
+        if case == "accepted_then_cancel" {
+            assert_eq!(
+                incoming_packet(249, 249, &raw, Some(receipt), &mut slot).unwrap(),
+                [17, 7, 1]
+            );
+            let event = transaction.event().await;
+            transaction.apply(event).unwrap();
+        }
+        if case != "expiry" {
+            result.close();
+            transaction.apply(Event::Cancelled).unwrap();
+        }
+        transaction
+            .maintain(
+                &mut slot,
+                if case == "expiry" {
+                    original
+                } else {
+                    Instant::now()
+                },
+            )
+            .unwrap();
+        assert!(slot.is_none());
+        assert!(transaction.next(&mut slot).is_none());
+        assert!(transaction.finished());
+        assert!(!transaction.owns_client_sequence());
+        assert!(
+            transaction.ready_to_finish(true),
+            "unrelated client request cannot hold event cleanup"
+        );
+        transaction.finish();
+        assert!(!matches!(result.await, Ok(Ok(_))));
+        assert_eq!(
+            incoming_packet(249, 249, &raw, Some(receipt), &mut slot).unwrap(),
+            [17, 7, 0]
+        );
+    }
+}
+
+#[tokio::test]
+async fn event_and_property_client_lane_ownership_keeps_real_configuration_debt_separate() {
+    use crate::ssap_receive_transaction::{Event, ReceiveTransaction};
+    let original = Instant::now() + Duration::from_secs(1);
+    let (reply, _result) = oneshot::channel();
+    let mut property = ReceiveTransaction::new(vec![17], 2, original, reply);
+    assert!(property.owns_client_sequence());
+    property.apply(Event::Cancelled).unwrap();
+    assert!(property.finished());
+    assert!(!property.ready_to_finish(true));
+    assert!(property.ready_to_finish(false));
+    let (reply, _result) = oneshot::channel();
+    let context = slk_protocol::SleSendConstraint::from_receipt(event_receipt(), 1, 1).unwrap();
+    let mut event = ReceiveTransaction::new_event(vec![17], 2, original, context, reply).unwrap();
+    assert!(!event.owns_client_sequence());
+    let mut slot = None;
+    assert!(event.next(&mut slot).is_none());
+    assert!(slot.is_some());
+    event.apply(Event::Cancelled).unwrap();
+    event.maintain(&mut slot, Instant::now()).unwrap();
+    assert!(!event.owns_client_sequence());
+    assert!(event.ready_to_finish(true));
+    assert!(slot.is_none());
+}

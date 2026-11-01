@@ -66,6 +66,12 @@ class Boundary:
         ctypes.cast(args[3], ctypes.POINTER(_SsapUpdate))[0] = v
         return 0
 
+    def slk_connection_ssap_receive_event(self,*args):
+        self.calls.append(('receive_event',args[1],args[2],args[3],args[5]))
+        value=_SsapUpdate();value.stage=4;value.pdu_length=6;value.pdu[:6]=[16,7,17,0,0,0]
+        ctypes.cast(args[4],ctypes.POINTER(_SsapUpdate))[0]=value
+        return 0
+
     def slk_connection_ssap_receive(self, *args):
         return self._update(args, 3)
 
@@ -93,6 +99,20 @@ def caller(bridge):
 
 
 class PythonConnectionBoundary(unittest.TestCase):
+    def test_event_receive_has_distinct_stage_and_bounded_parameters(self):
+        bridge=Boundary()
+        with caller(bridge) as client,client.connection(ControllerId(2,7),'/fixture',deadline_ns=1) as link:
+            remote=link.ssap();self.assertEqual(remote.receive_event(17,deadline_ns=1,modes=2,minimum=1).stage,4)
+            self.assertEqual(bridge.calls,[('receive_event',17,2,1,1)])
+            for modes in (0,4,True):
+                with self.assertRaises(ValueError):remote.receive_event(17,deadline_ns=1,modes=modes)
+            original=bridge.slk_connection_ssap_receive_event
+            def corrupt(*args):
+                original(*args);ctypes.cast(args[4],ctypes.POINTER(_SsapUpdate)).contents.stage=3;return 0
+            bridge.slk_connection_ssap_receive_event=corrupt
+            with self.assertRaises(OSError) as caught:remote.receive_event(17,deadline_ns=1)
+            self.assertEqual(caught.exception.errno,errno.EPROTO)
+
     def test_event_sender_marshalling_bounds_and_kind_specific_ack(self):
         bridge=Boundary()
         with caller(bridge) as client,client.connection(ControllerId(2,7),'/fixture',deadline_ns=1) as link:

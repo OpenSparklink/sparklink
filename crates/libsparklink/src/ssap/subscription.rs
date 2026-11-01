@@ -175,7 +175,13 @@ impl Subscription {
                     "subscription packet identity/sequence/budget",
                 ));
             }
-            super::validate_update(&self.info.handles, self.info.modes, p.indication, &p.pdu)?;
+            super::validate_update(
+                &self.info.handles,
+                self.info.modes,
+                p.indication,
+                &p.pdu,
+                false,
+            )?;
             sequence = p.sequence;
         }
         Ok(())

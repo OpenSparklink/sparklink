@@ -224,6 +224,21 @@ int main(void) {
     assert(slk_connection_ssap_send_event(link,17,0,NULL,0,0,&update_event,0)==-ETIMEDOUT);
     for(size_t i=0;i<sizeof update_event;i++)assert(((unsigned char*)&update_event)[i]==0xa5);
     puts("EVENT_SEND_LANGUAGE_FIXTURE_PASS_NOT_RF");
+    const size_t receive_event_lengths[]={0,243,2042};
+    for(uint32_t minimum=0;minimum<3;minimum++) for(uint32_t modes=1;modes<4;modes++) {
+        assert(slk_connection_ssap_receive_event(link,17,modes,minimum,&update_event,deadline())==0);
+        size_t n=receive_event_lengths[minimum];assert(update_event.stage==4 && update_event.pdu_length==n+6);
+        assert(update_event.pdu[0]==(modes==1?15:16)&&update_event.pdu[1]==7);
+        assert(update_event.acknowledgement_length==0 && memcmp(update_event.pdu+6,event_bytes,n)==0);
+    }
+    memset(&update_event,0xa5,sizeof update_event);
+    assert(slk_connection_ssap_receive_event(link,18,2,0,&update_event,deadline())==-EOPNOTSUPP);
+    assert(slk_connection_ssap_receive_event(link,17,0,0,&update_event,deadline())==-EINVAL);
+    assert(slk_connection_ssap_receive_event(link,17,2,3,&update_event,deadline())==-EINVAL);
+    assert(slk_connection_ssap_receive_event(link,0,2,0,&update_event,deadline())==-EINVAL);
+    assert(slk_connection_ssap_receive_event(link,17,2,0,&update_event,0)==-ETIMEDOUT);
+    for(size_t i=0;i<sizeof update_event;i++)assert(((unsigned char*)&update_event)[i]==0xa5);
+    puts("EVENT_RECEIVE_LANGUAGE_FIXTURE_PASS_NOT_RF");
 
     /* New setter on the actual retained C view; metadata fixture,not a peer. */
     const uint8_t text[]={0xe6,0x8f,0x8f,0xe8,0xbf,0xb0};

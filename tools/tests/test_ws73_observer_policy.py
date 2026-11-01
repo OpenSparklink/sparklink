@@ -87,6 +87,7 @@ class ObserverPolicyTests(unittest.TestCase):
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'CallSsapMethod'},
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'CallSsapMethodCommand'},
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'ReceiveSsapUpdate'},
+            {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'ReceiveSsapEvent'},
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'SubscribeSsapUpdates'},
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'ReadSsapUpdates'},
             {'send_destination':'org.sparklink','send_type':'method_call','send_interface':'org.sparklink.Connection','send_member':'RenewSsapSubscription'},

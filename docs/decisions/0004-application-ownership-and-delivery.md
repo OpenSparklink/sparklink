@@ -655,5 +655,8 @@ READ/WRITE/method Provider拒绝事件handle。未发布 D-Bus/Rust/C/Python签�
 关联数据与最低安全机制。原始唯一调用者和活跃Owner均须通过；每片复核、原期限、
 Native约束和物理义务保持，不从上层取消退款，不将属性CPCD或批准套用到事件。
 通知只返回准入，指示只返回匹配event类型、epoch和minimum的队列ACK，均不是应用处理。
-接收监听与上层Profile启停另按同一Session扩展；当前接收API不能接事件。
+单次事件接收沿同一ReceiveTransaction安装原Native身份/epoch/minimum绑定的有限槽，
+跳过不适用事件的CPCD阶段；肯定ACK只在入槽后生成，取消只撤销本地监听。
+属性路径保持原配置/清理。持续事件租约、就绪与上层Profile启停继续同一Session扩展；
+单次接收不提供就绪屏障，不用固定sleep替代确定性启动验收。
 函数/私有总线/语言fixture检查不授双端Native、UserHost、Windows或形式化资格。

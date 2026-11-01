@@ -226,6 +226,33 @@ impl Link {
         }
         Ok((vec![(17, true, 0, vec![0xab])], vec![0x12], vec![0x34]))
     }
+    fn receive_ssap_event(
+        &self,
+        handles: Vec<u16>,
+        modes: u8,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<slk_contract::ssap::Incoming> {
+        self.0.calls.fetch_add(1, Ordering::SeqCst);
+        let d = slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        assert!(d.remaining().unwrap() <= Duration::from_secs(10));
+        if handles != [17] || modes != 2 || minimum != 1 {
+            return Err(zbus::fdo::Error::NotSupported(
+                "finite event RX fixture".into(),
+            ));
+        }
+        let mut raw = vec![16, 7, 17, 0, 1, 0, 0xab];
+        let mut indication = true;
+        match self.0.malformed_update.load(Ordering::SeqCst) {
+            1 => raw[1] = 3,
+            2 => raw[2] = 18,
+            3 => indication = false,
+            4 => raw[4] = 2,
+            _ => {}
+        }
+        Ok((indication, raw))
+    }
     fn receive_ssap_update(
         &self,
         handles: Vec<u16>,
@@ -491,6 +518,11 @@ async fn actual_owned_update_rpc_has_literal_signatures_and_distinct_stages() ->
             vec!["(yayay)"],
         ),
         ("GetOwnedSsapConfiguration", vec!["q", "(ttttt)"], vec!["y"]),
+        (
+            "ReceiveSsapEvent",
+            vec!["aq", "y", "u", "(ttttt)"],
+            vec!["(bay)"],
+        ),
         ("WriteSsapCommand", vec!["q", "ay", "u", "(ttttt)"], vec![]),
         ("ReadSsapDescription", vec!["q", "u", "(ttttt)"], vec!["ay"]),
         (
@@ -883,5 +915,56 @@ async fn event_sender_checks_exact_payload_kind_ack_original_deadline_and_no_ret
         Err(ApplicationError::Identity(_))
     ));
     assert_eq!(state.calls.load(Ordering::SeqCst), 25);
+    Ok(())
+}
+
+#[tokio::test]
+async fn actual_event_receiver_checks_kind_mode_scope_and_deadline_without_retry()
+-> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let (_server, caller, state) = fixture(&bus.address).await?;
+    let client = Client::from_connection(caller).await?;
+    let link = client.connection(BASE, PATH).await?;
+    let remote = link.ssap();
+    assert_eq!(
+        remote.receive_event(vec![17], 2, 1, deadline()).await?,
+        (true, vec![16, 7, 17, 0, 1, 0, 0xab])
+    );
+    for kind in 1..=4 {
+        state.malformed_update.store(kind, Ordering::SeqCst);
+        assert!(matches!(
+            remote.receive_event(vec![17], 2, 1, deadline()).await,
+            Err(ApplicationError::Identity(_))
+        ));
+    }
+    assert!(
+        remote
+            .receive_event(vec![18], 2, 1, deadline())
+            .await
+            .is_err()
+    );
+    for (handles, modes, minimum) in [
+        (vec![], 2, 1),
+        (vec![0], 2, 1),
+        (vec![17, 17], 2, 1),
+        (vec![17], 0, 1),
+        (vec![17], 2, 3),
+    ] {
+        assert!(
+            remote
+                .receive_event(handles, modes, minimum, deadline())
+                .await
+                .is_err()
+        );
+    }
+    let expired = libsparklink::Deadline::after(Duration::from_millis(1))?;
+    tokio::time::sleep(Duration::from_millis(5)).await;
+    assert!(remote.receive_event(vec![17], 2, 1, expired).await.is_err());
+    state.role.store(1, Ordering::SeqCst);
+    assert!(matches!(
+        remote.receive_event(vec![17], 2, 1, deadline()).await,
+        Err(ApplicationError::Identity(_))
+    ));
+    assert_eq!(state.calls.load(Ordering::SeqCst), 6);
     Ok(())
 }

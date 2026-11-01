@@ -42,10 +42,16 @@ RegisterOwnedLocalService签名，CLI现有属性/method消费者传空事件表
 转换、原取消/drain回归、Rust/C/Python实际入口与错类型/载荷/期限负对照。
 不以这些检查宣称Native发送或事件接收已通过；准确结果由结构化切片记录。
 
-下一事件切片：复用唯一ReceiveTransaction/RX分流加入事件监听；明确有界收件、
-安全epoch及ACK时点，不能伪造属性CPCD。随后准确Native产物双端随机事件/应用回复、
-适用原路径保持单列；method v4与UserHost/Windows依赖并行。U#22/#26开放，
-不等待全控制面、不复制Engine；无新设备启动条件不重复未变化失败。
+事件监听不占客户端method/read请求序列，本地结束不取消/等待无关请求；属性配置债务原样保留。
+当前接收切片复用唯一ReceiveTransaction/RX分流：先真实Native查询，再安装原身份/
+epoch/minimum绑定的单报文槽；事件无CPCD读写，ACK只表示入槽。原单次属性与持续
+属性订阅不变。退出：实际生产事务/过滤/ACK的身份、类型、预算、重复、取消及原期限
+回归；Rust/C/Python实际入口、独立signature和严格构建；未运行实机不授资格。
+
+下一事件切片：沿同一事务/共享队列增加事件租约与明确监听就绪，定义多调用者预算、
+读取/关闭和上层启停；单次接收无就绪返回，不能用sleep冒充启动屏障。随后准确Native
+双端随机事件/应用回复、原路径保持分别验收；method v4与UserHost/Windows并行。
+U#22/#26开放，不等待全控制面、不复制Engine；无新设备启动条件不重复未变化失败。
 
 ### DirectUSB候选审查与下一实现门禁（2026-11-01）
 

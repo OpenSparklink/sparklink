@@ -443,7 +443,8 @@ pub unsafe extern "C" fn slk_connection_ssap_call_method_command(
 
 /// One bounded SSAP update receipt,not proof of application processing.
 /// stage1=notification software admission;2=indication peer receive-queue ACK;
-/// 3=received packet and verified remote CPCD disable. Unused bytes are zero.
+/// 3=property received and verified remote CPCD disable;4=event received locally,
+/// with no remote configuration or application-processing claim. Unused bytes are zero.
 #[repr(C)]
 pub struct SlkSsapUpdate {
     pub stage: u32,
@@ -490,6 +491,45 @@ pub unsafe extern "C" fn slk_connection_ssap_receive(
     output: *mut SlkSsapUpdate,
     deadline_ns: u64,
 ) -> c_int {
+    unsafe { receive_result(connection, handle, modes, None, output, deadline_ns) }
+}
+/// Receive one event with no remote CPCD enable/disable. Same10s ceiling and
+/// one-slot queue. Stage4 means local receipt; no implicit Profile START/STOP,
+/// replay or ready barrier. minimum0..2 pins Native security before listening.
+/// # Safety
+/// Same live connection, exclusive output, fork and no-concurrent-close contract
+/// as slk_connection_ssap_receive. Output is unchanged on failure.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn slk_connection_ssap_receive_event(
+    connection: *const SlkConnection,
+    handle: u16,
+    modes: u32,
+    minimum: u32,
+    output: *mut SlkSsapUpdate,
+    deadline_ns: u64,
+) -> c_int {
+    if minimum > 2 {
+        return -nix::libc::EINVAL;
+    }
+    unsafe {
+        receive_result(
+            connection,
+            handle,
+            modes,
+            Some(minimum),
+            output,
+            deadline_ns,
+        )
+    }
+}
+unsafe fn receive_result(
+    connection: *const SlkConnection,
+    handle: u16,
+    modes: u32,
+    event_minimum: Option<u32>,
+    output: *mut SlkSsapUpdate,
+    deadline_ns: u64,
+) -> c_int {
     if connection.is_null() || handle == 0 || !(1..=3).contains(&modes) || output.is_null() {
         return -nix::libc::EINVAL;
     }
@@ -499,12 +539,23 @@ pub unsafe extern "C" fn slk_connection_ssap_receive(
         .and_then(|deadline| {
             let (deadline, original) = deadline.bounded(std::time::Duration::from_secs(10))?;
             view.inner.call(deadline, move |_| async move {
-                link.ssap()
-                    .receive_until(vec![handle], modes as u8, original)
-                    .await
+                match event_minimum {
+                    None => {
+                        link.ssap()
+                            .receive_until(vec![handle], modes as u8, original)
+                            .await
+                    }
+                    Some(minimum) => {
+                        link.ssap()
+                            .receive_event(vec![handle], modes as u8, minimum, original)
+                            .await
+                    }
+                }
             })
         })
-        .and_then(|(_, raw)| SlkSsapUpdate::receipt(3, raw, vec![]));
+        .and_then(|(_, raw)| {
+            SlkSsapUpdate::receipt(if event_minimum.is_some() { 4 } else { 3 }, raw, vec![])
+        });
     match result {
         Ok(value) => {
             unsafe { output.write(value) };

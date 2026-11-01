@@ -136,6 +136,31 @@ struct Link(
 );
 #[zbus::interface(name = "org.sparklink.Connection")]
 impl Link {
+    // Finite already-received bus result, no packet injection or native fixture.
+    fn receive_ssap_event(
+        &self,
+        handles: Vec<u16>,
+        modes: u8,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<slk_contract::ssap::Incoming> {
+        let d = slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
+            .unwrap();
+        assert!(d.remaining().unwrap() <= std::time::Duration::from_secs(10));
+        if handles != [17] {
+            return Err(zbus::fdo::Error::NotSupported(
+                "finite event RX target".into(),
+            ));
+        }
+        assert!((1..=3).contains(&modes) && minimum <= 2);
+        let length = [0usize, 243, 2042][minimum as usize];
+        let indication = modes != 1;
+        let mut raw = vec![if indication { 16 } else { 15 }, 7, 17, 0];
+        raw.extend_from_slice(&(length as u16).to_le_bytes());
+        raw.extend(vec![0x42; length]);
+        Ok((indication, raw))
+    }
+
     // Finite event receipt fixture for external SDK marshalling; no wire Engine.
     fn send_owned_ssap_event(
         &self,
@@ -1126,6 +1151,8 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
                 .contains("OWNED_EVENT_LANGUAGE_FIXTURE_PASS_NOT_RF")
                 && String::from_utf8_lossy(&output.stdout)
                     .contains("EVENT_SEND_LANGUAGE_FIXTURE_PASS_NOT_RF")
+                && String::from_utf8_lossy(&output.stdout)
+                    .contains("EVENT_RECEIVE_LANGUAGE_FIXTURE_PASS_NOT_RF")
         );
         assert!(
             String::from_utf8_lossy(&output.stdout)

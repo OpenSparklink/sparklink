@@ -794,9 +794,33 @@ minimum, output, deadline_ns)`、Python `send_owned_event(handle, value,
 receipt stage1仅为全部片软件准入，stage2仅为对端接收队列ACK，不代表应用处理。
 ACK须为事件类型、原安全epoch、满足原minimum、位于原物理drain期限；属性ACK
 不能结算事件。原作者超时/退出后仍保留在途义务，晚到ACK不能恢复已结束请求。
-此切片接通发送端；现有接收API仍只接属性事务，事件接收/订阅、完整上层业务启停及
-准确Native双端事件交付尚未验收。离线函数、私有D-Bus和语言fixture结果不能代替
-实机、部署权限或Windows运行资格。
+发送与单次事件接收均已接通源码；持续事件订阅、完整上层业务启停及准确Native双端
+事件交付尚未验收。离线函数、私有D-Bus和语言fixture不能代替实机、部署权限或Windows运行资格。
+
+`ReceiveSsapEvent(handles:aq, modes:y, minimum:u, deadline:(ttttt)) → (bay)`
+接收一个完整事件报文；1–32个非零且不重复的事件handle，modes1/2/3为通知/指示/任一，
+minimum0–2，原等待上限10秒。当前Session已有真实发现缓存必须包含这些类别4/12条目；
+缓存不是授权，实际Native查询仍须成功。发现当前的管理权限限制不因此放开。
+该方法加入现有普通应用白名单，不授controller管理权。
+
+Rust `RemoteSsap::receive_event(handles, modes, minimum, deadline)`、C
+`slk_connection_ssap_receive_event(connection, handle, modes, minimum, output, deadline_ns)`、
+Python `receive_event(handle, *, modes=3, minimum=0, deadline_ns=...)` 复用同一事务和解码器。
+C/Python仍使用2064字节receipt，stage4表示本地接收到事件，无CPCD操作；stage3继续仅指
+属性接收且完成远端配置清理。失败不修改C输出，非法参数EINVAL、超时ETIMEDOUT，
+其余沿用应用错误；方法不存在或目标未发现不回退成属性接收。
+
+事件监听不占用客户端method/read请求序列；本地监听结束也不取消或等待无关请求。
+只安装一个本地完整报文槽，与当前属性事务/订阅互斥；不隐式开启或停止远端业务。
+槽在实际Native机制查询后绑定controller/generation/lifetime/handle/TCID/PI/epoch及minimum。
+错类型、身份、安全或目标不消耗槽；无槽、槽已关闭/过期或已消费的指示返回否定ACK，
+通知没有协议回复。肯定ACK在成功进入槽之后生成；若应用随后退出、期限届满或daemon
+故障，不能据已生成ACK推导应用实际处理。已入队ACK继续走原提交/credit/Ticket流程。
+取消/超时撤销本地槽，不制造远端disable或物理drain成功。
+
+此接口没有单独的“监听已准备”返回，也不重放安装前的事件。需要确定性启动或连续消费的
+应用仍须等待后续同一事务的租约/就绪接口及真实门禁，不能用固定sleep代替启动证据。
+超限/畸形报文、分片和队列预算沿用现有Engine；此源码切片不授完整持续订阅资格。
 
 ## Owned method 服务端
 

@@ -237,7 +237,8 @@ typedef struct SlkControllerId {
 /**
  * One bounded SSAP update receipt,not proof of application processing.
  * stage1=notification software admission;2=indication peer receive-queue ACK;
- * 3=received packet and verified remote CPCD disable. Unused bytes are zero.
+ * 3=property received and verified remote CPCD disable;4=event received locally,
+ * with no remote configuration or application-processing claim. Unused bytes are zero.
  */
 typedef struct SlkSsapUpdate {
     uint32_t stage;
@@ -806,6 +807,21 @@ int slk_connection_ssap_receive(const struct SlkConnection *connection,
                                 uint32_t modes,
                                 struct SlkSsapUpdate *output,
                                 uint64_t deadline_ns);
+
+/**
+ * Receive one event with no remote CPCD enable/disable. Same10s ceiling and
+ * one-slot queue. Stage4 means local receipt; no implicit Profile START/STOP,
+ * replay or ready barrier. minimum0..2 pins Native security before listening.
+ * # Safety
+ * Same live connection, exclusive output, fork and no-concurrent-close contract
+ * as slk_connection_ssap_receive. Output is unchanged on failure.
+ */
+int slk_connection_ssap_receive_event(const struct SlkConnection *connection,
+                                      uint16_t handle,
+                                      uint32_t modes,
+                                      uint32_t minimum,
+                                      struct SlkSsapUpdate *output,
+                                      uint64_t deadline_ns);
 
 /**
  * Submit this original caller's owned property through the same Engine/Session.

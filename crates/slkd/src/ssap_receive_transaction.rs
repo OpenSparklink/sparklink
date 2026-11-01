@@ -1,8 +1,8 @@
 //! One call-owned receive transaction inside the existing physical SSAP actor.
 //! This is phase/ownership bookkeeping, not another wire loop or codec. The
 //! actor's sole ClientRequest performs every real read/write and keeps debt.
-use super::ssap_engine::IncomingDelivery;
 use super::ssap_engine::{ClientFailure, Incoming, IncomingWait};
+use super::ssap_engine::{IncomingDelivery, IncomingScope};
 use crate::ssap_subscription::{CallerLease, Closed, Queue, SharedQueue, Sink};
 use slk_contract::ssap::subscription as stream;
 use std::time::Duration;
@@ -34,6 +34,7 @@ struct Stream {
     close: Vec<oneshot::Sender<Result<stream::Batch, String>>>,
 }
 pub(crate) struct ReceiveTransaction {
+    scope: IncomingScope,
     handles: Vec<u16>,
     modes: u8,
     original: Instant,
@@ -60,6 +61,7 @@ impl ReceiveTransaction {
     ) -> Self {
         let (data_send, data) = oneshot::channel();
         Self {
+            scope: IncomingScope::Property,
             handles,
             modes,
             original,
@@ -76,6 +78,23 @@ impl ReceiveTransaction {
             data_send: Some(data_send),
             data: Some(data),
         }
+    }
+    /// No remote setting is created: one local slot under the same transaction.
+    /// The actor supplies this context only after actual Native prepare succeeds.
+    pub(crate) fn new_event(
+        handles: Vec<u16>,
+        modes: u8,
+        original: Instant,
+        context: slk_protocol::SleSendConstraint,
+        reply: oneshot::Sender<Result<Incoming, String>>,
+    ) -> Result<Self, String> {
+        context
+            .validate()
+            .map_err(|e| format!("invalid event listener context: {e:?}"))?;
+        let mut result = Self::new(handles, modes, original, reply);
+        result.scope = IncomingScope::Event(context);
+        result.phase = Phase::Waiting;
+        Ok(result)
     }
     fn closing(&self) -> bool {
         self.failure.is_some()
@@ -109,7 +128,8 @@ impl ReceiveTransaction {
         result
     }
     pub(crate) fn owns_client_sequence(&self) -> bool {
-        self.stream.is_none() || !matches!(self.phase, Phase::Waiting) || self.closing()
+        matches!(self.scope, IncomingScope::Property)
+            && (self.stream.is_none() || !matches!(self.phase, Phase::Waiting) || self.closing())
     }
     pub(crate) fn expected_epoch(&self) -> Option<u64> {
         self.stream
@@ -424,6 +444,7 @@ impl ReceiveTransaction {
                     && !self.installed
                 {
                     *waiter = Some(IncomingWait {
+                        scope: self.scope,
                         handles: self.handles.clone(),
                         modes: self.modes,
                         deadline: streams
@@ -437,6 +458,7 @@ impl ReceiveTransaction {
                 }
                 if self.data_send.is_some() {
                     *waiter = Some(IncomingWait {
+                        scope: self.scope,
                         handles: self.handles.clone(),
                         modes: self.modes,
                         deadline: self.original,
@@ -449,7 +471,19 @@ impl ReceiveTransaction {
                 }
                 Some((self.handles[index], Some([self.modes, 0]), self.original))
             }
-            Phase::Waiting => None,
+            Phase::Waiting => {
+                if let Some(reply) = self.data_send.take() {
+                    *waiter = Some(IncomingWait {
+                        scope: self.scope,
+                        handles: self.handles.clone(),
+                        modes: self.modes,
+                        deadline: self.original,
+                        reply: reply.into(),
+                    });
+                    self.installed = true;
+                }
+                None
+            }
             Phase::Disable => self.possibly_enabled.first().map(|handle| {
                 (
                     *handle,
@@ -472,6 +506,11 @@ impl ReceiveTransaction {
     }
     pub(crate) fn finished(&self) -> bool {
         self.closing() && self.possibly_enabled.is_empty() && self.wire.is_none()
+    }
+    /// Event listeners own no client wire transaction. Their local completion
+    /// must not wait for or cancel an unrelated method/read request.
+    pub(crate) fn ready_to_finish(&self, client_pending: bool) -> bool {
+        self.finished() && (!client_pending || matches!(self.scope, IncomingScope::Event(_)))
     }
     pub(crate) fn finish(mut self) -> Vec<Closed> {
         if let Some(streams) = self.stream.take() {

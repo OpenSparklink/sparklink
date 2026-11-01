@@ -55,7 +55,7 @@
       "Original scope retained for historical v1-v3",
       "Publish source/offline summary only"
     ],
-    "next": "Preserve all attempts and v4 compiled artifact; no unchanged warm retry. When startup conditions change, resume accurate Native method/data delivery. Event UUID registration/discovery now source/offline scoped; next define event send authority and upper-layer start/stop, reuse Update/Pending/RX/ACK, and validate actual peer delivery. Property CPCD is not automatically event configuration. Full UserHost/Windows route remains parallel.",
+    "next": "Preserve failed v4 attempt and compiled identity; no unchanged warm retry. Continue accurate Native delivery when startup conditions change. Owned event TX now source/offline scoped; next extend the sole ReceiveTransaction/RX dispatcher with bounded event listening and original epoch/deadline/ACK semantics, without property CPCD. Then exact-artifact peer application delivery. Full own UserHost/Windows continues in parallel; KernelPacket/vendor remains P4.",
     "actor_obligation_regression": {
       "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
       "entry": "ssap_engine::exchange_loop",
@@ -528441,6 +528441,64 @@
               "readback_verified": true,
               "original_checklist_unchanged": true,
               "source_offline_only": true
+            }
+          ]
+        },
+        {
+          "id": "ssap-owned-event-send-20261101",
+          "source_commit": "0d5a62bfcaadf8a7ef1f0515485e3c1a5101d563",
+          "status": "IMPLEMENTED_OFFLINE_SCOPED_PASS_RX_AND_NATIVE_REAL_GATE_PENDING",
+          "source_sha256": {
+            "bindings/python/sparklink/client.py": "d2b518f87e9faa9fdd0abf75a727ebe6b939a5b35ee7342fa810371345668f89",
+            "bindings/python/tests/test_client_connection.py": "87ea8913123ef93c368bc9fe2b36e95597fc56804e820117b7d7663428ce019b",
+            "crates/libsparklink/include/sparklink.h": "5973f56a2327e1f8c5c901bc49126a90b5358baec0ccf1f7d093df3de7716a2b",
+            "crates/libsparklink/src/ffi_connection.rs": "211051d90fc60b0b8e469b23f4136a507ebfb415cd71beb3eaedd152b7df877c",
+            "crates/libsparklink/src/ssap.rs": "c8eaec34c066359e729656afd5e7019e4384ed929bf5c5581f71417d4c70956d",
+            "crates/libsparklink/tests/application_ffi.rs": "d0e9e7d653d798a961db5843821e62f9a0ae460578ef42b5cc9c8aada9239650",
+            "crates/libsparklink/tests/fixtures/application_client.c": "99daa6adc172efe547b7cc0ab25ab35b16a0e654cbbc73856c57fc68367a009f",
+            "crates/libsparklink/tests/fixtures/application_client.py": "074bc5319a89e5bc600ee80fba619c9ae8f2ff6f40d6b850b90867c6a3efdd4b",
+            "crates/libsparklink/tests/remote_ssap_client.rs": "53cc7063f44ac3ba83ff36adc36e52199c7c67d1de7f1a916a3225c799e3ac5c",
+            "crates/slk-contract/src/lib.rs": "d55b1752678b7d6df52b652338fa0302ce85811b84de79f7543ca2cd6c94e9f0",
+            "crates/slkd/src/connection_object.rs": "c3b704bfd3160b556ac46b8964dd6e9d3cfbd09558278377ed219a2222f86d0c",
+            "crates/slkd/src/ssap_authorization_tests.rs": "129239e3ee56850016003fd7f7c8b292a15c04a97958fabe17b768646766c441",
+            "crates/slkd/src/ssap_database.rs": "853939e74bbdc63a09647f4cd9527719005c702e51e9f169e11b44c1aa02fba5",
+            "crates/slkd/src/ssap_engine.rs": "b28b2d19259d9b1b569bd348afe5b564ba4208370a2b5cf26ae8dd6f29c8323d",
+            "crates/slkd/src/ssap_event_registration_tests.rs": "1bfc634aaa76347aee5e4dfbd7c7bb4efce7ad74871a06bdd65fad5729e04b3f",
+            "data/dbus/sparklink.conf": "329008bd809747e04fccd342df7338481c1e6956d9c26fe9cc54c8a87588934e",
+            "Cargo.lock": "0ea81523d90856719d5d764fde7367845b38553382d652b37a381dfac79be7b4",
+            "Cargo.toml": "af396f1d66b7681b82e88ab8b8d0491d2eba06ab799945526aca3eb5216d6844"
+          },
+          "checks": {
+            "production_ssap": 116,
+            "shared_contract": 12,
+            "cli_private_bus": 4,
+            "sdk_unit": 73,
+            "sdk_owned_private_bus": 8,
+            "sdk_remote_private_bus": 12,
+            "python_boundaries": 11,
+            "actual_c_python_integration": "PASS finite private-bus service; frozen cdylib/consumer identity",
+            "clippy": "PASS -D warnings",
+            "generated_c_header": "cbindgen0.29.4",
+            "strict_html": "PASS warnings-as-errors",
+            "negative_control": "actual ACK original epoch omission rejected; source restored"
+          },
+          "scope": "Owned event TX only: explicit payload/minimum, original unique owner, Update/Pending/fragment/Native submission and kind/epoch-bound ACK. Shared property path retained. Production preparation/ACK tests use Native receipt/Ready fixtures; SDK uses finite private-bus peers, not actual wire execution.",
+          "qualification_transfer": false,
+          "not_tested": [
+            "event listener/RX and upper-layer start/stop service policy",
+            "accurate new Native peer delivery and deployment permissions",
+            "UserHost and Windows execution",
+            "new formal proof"
+          ],
+          "issue_sync": [
+            {
+              "repo": "OpenSparklink/sparklink",
+              "number": 22,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/22",
+              "state": "open",
+              "body_sha256": "9ed4a1460ba1567c5e911751b2876322d59749493ef1de016dbf9c087653ac60",
+              "source_commit": "0d5a62bfcaadf8a7ef1f0515485e3c1a5101d563",
+              "scope": "public source/offline only; six original exit checks unchanged"
             }
           ]
         }

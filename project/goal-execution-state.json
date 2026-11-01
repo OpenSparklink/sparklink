@@ -2024,7 +2024,7 @@
         "Original scope retained for historical v1-v3",
         "Publish source/offline summary only"
       ],
-      "next": "Preserve all attempts and v4 compiled artifact; no unchanged warm retry. When startup conditions change, resume accurate Native method/data delivery. Event UUID registration/discovery now source/offline scoped; next define event send authority and upper-layer start/stop, reuse Update/Pending/RX/ACK, and validate actual peer delivery. Property CPCD is not automatically event configuration. Full UserHost/Windows route remains parallel.",
+      "next": "Preserve failed v4 attempt and compiled identity; no unchanged warm retry. Continue accurate Native delivery when startup conditions change. Owned event TX now source/offline scoped; next extend the sole ReceiveTransaction/RX dispatcher with bounded event listening and original epoch/deadline/ACK semantics, without property CPCD. Then exact-artifact peer application delivery. Full own UserHost/Windows continues in parallel; KernelPacket/vendor remains P4.",
       "actor_obligation_regression": {
         "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
         "entry": "ssap_engine::exchange_loop",

@@ -746,7 +746,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Preserve failed v4 attempt and compiled identity; no unchanged warm retry. Continue accurate Native delivery when startup conditions change. Owned event TX now source/offline scoped; next extend the sole ReceiveTransaction/RX dispatcher with bounded event listening and original epoch/deadline/ACK semantics, without property CPCD. Then exact-artifact peer application delivery. Full own UserHost/Windows continues in parallel; KernelPacket/vendor remains P4.",
+  "next": "Preserve failed v4 attempt and exact compiled identity; no unchanged warm retry. Continue Native delivery when startup conditions change. Owned event TX and single RX now source/offline scoped; next extend the same ReceiveTransaction/shared queue with event leases and explicit listener-ready receipt, bounded multi-caller read/close and original identity/deadline/ACK semantics. No property CPCD or sleep-based readiness. Then exact-artifact peer application delivery. Own UserHost/Windows continues in parallel; KernelPacket/vendor remains P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

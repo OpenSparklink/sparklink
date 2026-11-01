@@ -8794,6 +8794,23 @@
       ],
       "closed": [],
       "qualification": "SOURCE_OFFLINE_ONLY_EVENT_RX_AND_NATIVE_GATES_PENDING"
+    },
+    {
+      "id": "ssap-event-receive-20261101",
+      "source_commit": "4658a8298831cace1170b15cb557312440ad7b03",
+      "issues": [
+        {
+          "repo": "OpenSparklink/sparklink",
+          "number": 22,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/22",
+          "state": "open",
+          "body_sha256": "87518243e48605287b20406ccb721e7cbe82641ed2b7092254cb072fe95a2ece",
+          "source_commit": "4658a8298831cace1170b15cb557312440ad7b03",
+          "scope": "public source/offline only; six original exit checks unchanged"
+        }
+      ],
+      "closed": [],
+      "qualification": "SOURCE_OFFLINE_ONLY_EVENT_LEASE_READY_AND_NATIVE_GATES_PENDING"
     }
   ]
 }

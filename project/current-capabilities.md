@@ -14,18 +14,19 @@
 下方历史批次的“UserHost P4”指旧KernelPacket/厂商分支，不涵盖本次新增路线。以上扩展完整目标，原S0–S6/19WP/10FV/12DG、预算与VM-only保留。源码审计和规划完成不授功能资格。新路线的证据维度政策已登记，记录验证器接线仍待做；历史记录及全部失败不重写。依赖与退出仅维护于[唯一计划](implementation-plan.md)。
 
 
-## 事件目录、Owned登记及发送：源码与限定离线范围
+## 事件目录、Owned发送与单次接收：限定离线范围
 
-[Owned登记 c8838ce](https://github.com/OpenSparklink/sparklink/commit/c8838ce6e9055d5fdd34b826f8d3aaeca24660d2) 的历史范围保留；
-[发送 0d5a62b](https://github.com/OpenSparklink/sparklink/commit/0d5a62bfcaadf8a7ef1f0515485e3c1a5101d563) 接通原owner提供的0–2042字节/minimum0–2，
-共用Update/Pending/分片/Native提交及原期限；逐片复核owner、ACK绑定event类型和原epoch。
-不创建属性CPCD，不从准入或对端队列ACK推导应用处理。Rust/C/Python与服务角色策略同步。
-116项相关daemon SSAP、12项契约、4项CLI、73项SDK库/8项Owned/12项远端调用、实际C/Python
-集成与11项Python边界检查通过；严格Clippy、生成头、HTML与ACK epoch负对照通过。
-Native receipt/Ready和语言服务分别为显式fixture，不是完整正向Native actor或部署权限。
-事件接收/监听、上层业务启停、准确新产物真实对端交付、Windows和新形式化证明仍缺失。
-不能以发送入口或属性更新替代完整事件能力。准确检查映射见结构化scope extension
-`ssap-owned-event-send-20261101`；历史资格与method v4产物/失败不升级、不覆盖。
+[发送0d5a62b](https://github.com/OpenSparklink/sparklink/commit/0d5a62bfcaadf8a7ef1f0515485e3c1a5101d563) 保留原源码及结果；
+[单次接收4658a82](https://github.com/OpenSparklink/sparklink/commit/4658a8298831cace1170b15cb557312440ad7b03) 沿同一ReceiveTransaction/RX安装一个槽，
+实际Native查询后固定完整身份/epoch/minimum，无CPCD；事件不占method/read客户端序列，
+本地结束不取消或等待无关请求。ACK只表示入槽，C/Python stage4区分本地事件与属性清理。
+120项相关daemon SSAP、12项契约、4项CLI、73项SDK库/8项Owned/13项远端调用、实际C/Python
+集成及12项Python边界检查通过；77项权限/资格/文档检查、严格Clippy/HTML和接收epoch负对照通过。
+SDK运行后只修改daemon序列归属并单独重新构建/回归，35项捕获SDK材料hash保持一致。
+Native receipt/目录及语言服务为显式fixture，不是完整Native正向actor、部署权限或实机交付。
+持续事件租约、明确就绪/上层启停、准确Native对端应用处理、Windows和新形式化证明仍缺失。
+单次接收不承诺监听已准备，不用sleep替代启动门禁。准确映射见scope extension
+`ssap-event-receive-20261101`；历史发送/登记/发现及method v4产物/失败保留，不转授资格。
 
 ## Native v4 的资格边界
 
@@ -216,7 +217,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Preserve failed v4 attempt and compiled identity; no unchanged warm retry. Continue accurate Native delivery when startup conditions change. Owned event TX now source/offline scoped; next extend the sole ReceiveTransaction/RX dispatcher with bounded event listening and original epoch/deadline/ACK semantics, without property CPCD. Then exact-artifact peer application delivery. Full own UserHost/Windows continues in parallel; KernelPacket/vendor remains P4.",
+  "next": "Preserve failed v4 attempt and exact compiled identity; no unchanged warm retry. Continue Native delivery when startup conditions change. Owned event TX and single RX now source/offline scoped; next extend the same ReceiveTransaction/shared queue with event leases and explicit listener-ready receipt, bounded multi-caller read/close and original identity/deadline/ACK semantics. No property CPCD or sleep-based readiness. Then exact-artifact peer application delivery. Own UserHost/Windows continues in parallel; KernelPacket/vendor remains P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

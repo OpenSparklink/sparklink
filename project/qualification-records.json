@@ -55,7 +55,7 @@
       "Original scope retained for historical v1-v3",
       "Publish source/offline summary only"
     ],
-    "next": "Preserve failed v4 attempt and compiled identity; no unchanged warm retry. Continue accurate Native delivery when startup conditions change. Owned event TX now source/offline scoped; next extend the sole ReceiveTransaction/RX dispatcher with bounded event listening and original epoch/deadline/ACK semantics, without property CPCD. Then exact-artifact peer application delivery. Full own UserHost/Windows continues in parallel; KernelPacket/vendor remains P4.",
+    "next": "Preserve failed v4 attempt and exact compiled identity; no unchanged warm retry. Continue Native delivery when startup conditions change. Owned event TX and single RX now source/offline scoped; next extend the same ReceiveTransaction/shared queue with event leases and explicit listener-ready receipt, bounded multi-caller read/close and original identity/deadline/ACK semantics. No property CPCD or sleep-based readiness. Then exact-artifact peer application delivery. Own UserHost/Windows continues in parallel; KernelPacket/vendor remains P4.",
     "actor_obligation_regression": {
       "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
       "entry": "ssap_engine::exchange_loop",
@@ -528498,6 +528498,71 @@
               "state": "open",
               "body_sha256": "9ed4a1460ba1567c5e911751b2876322d59749493ef1de016dbf9c087653ac60",
               "source_commit": "0d5a62bfcaadf8a7ef1f0515485e3c1a5101d563",
+              "scope": "public source/offline only; six original exit checks unchanged"
+            }
+          ]
+        },
+        {
+          "id": "ssap-event-receive-20261101",
+          "source_commit": "4658a8298831cace1170b15cb557312440ad7b03",
+          "status": "IMPLEMENTED_OFFLINE_SCOPED_PASS_EVENT_LEASE_AND_NATIVE_REAL_GATE_PENDING",
+          "source_sha256": {
+            "bindings/python/sparklink/client.py": "b5642889b027534b6313ac1565cdfbf0b01efdb415a2a36541d812ae3b1ccf6c",
+            "bindings/python/tests/test_client_connection.py": "b04ccab15a013fbfd35df451952bd540052ed95b10b2969d9ff514304c0100af",
+            "crates/libsparklink/include/sparklink.h": "b47fcd5717f77c655989962ef78240e6599e103005939fd0b822c60539bf316e",
+            "crates/libsparklink/src/ffi_connection.rs": "4290f57dc75fc096d2683fe0a4a0ba888a41878b4fc3f08d7cf7c53ed2106c14",
+            "crates/libsparklink/src/ssap.rs": "7fdcf13fe679f925260f78f8ea7db1b363ce389d09f89992ab1ffb1135337af0",
+            "crates/libsparklink/src/ssap/subscription.rs": "7255245bc8d6547c773d430c84a720737224c0b55741b55f33c9d57861830f0a",
+            "crates/libsparklink/tests/application_ffi.rs": "8c87412789818472282360afbf20b32a6c4c99005550089e059d92e9b2ab2645",
+            "crates/libsparklink/tests/fixtures/application_client.c": "9eea1e39bcaa27684b30247589cd6cd748fcf72c49e6d123e142d038cddb0bdb",
+            "crates/libsparklink/tests/fixtures/application_client.py": "568ce8962e3ac49133a8bf2745a2f647f2295303ab5d9292c150edc38571a22e",
+            "crates/libsparklink/tests/remote_ssap_client.rs": "1757e3c07d05d187ec173fea8ad2d49b02b3aa04122960c86453a8db54bd3a3c",
+            "crates/slk-contract/src/lib.rs": "a047a364295610673f469a56b5d7f8e153b461d52a57fbcfda831e071a41a5a4",
+            "crates/slkd/src/connection_object.rs": "588b91bc163b82b80ef45a802cb6cbfd85709783de964add3f24128c69688981",
+            "crates/slkd/src/ssap_engine.rs": "45d6c3ee078ade2996125eac26ef845e7efb8b788b326c6d4737a12133a0d512",
+            "crates/slkd/src/ssap_event_registration_tests.rs": "dc7febc8499f46e18eb890eb71283f91e5f1bb7b90cbc59e1b466e9ca684115e",
+            "crates/slkd/src/ssap_receive_transaction.rs": "d5e01963c97fb310a30eed6f6f85402121ebd882c54bd0c3eb5f072c4b4e0dad",
+            "data/dbus/sparklink.conf": "bb8aef6656e137a82131f4c4f5596eff92692a87512b1732cb118404e7ce5bf8",
+            "tools/tests/test_ws73_observer_policy.py": "9782465701ac1d82579ed5797bca7e4941d364d158a63e97067c6ad6180c9dcb",
+            "Cargo.lock": "0ea81523d90856719d5d764fde7367845b38553382d652b37a381dfac79be7b4",
+            "Cargo.toml": "af396f1d66b7681b82e88ab8b8d0491d2eba06ab799945526aca3eb5216d6844",
+            "crates/slk-protocol/src/message_security.rs": "2206600a3609ce9e072a4bd93a39b0ffe0628f8a785517f12e8d786aa61c33e9",
+            "crates/slk-protocol/src/ssap/updates.rs": "a28bbefd55a922740c9cd372aac50a8804b83a1e6f45724c8070e02435125d86",
+            "crates/slk-protocol/src/ssap/fragments.rs": "f8534fab5b05b7a4cc3d1c37885fd397d8bc1659032b2931517730e1e70e2fea",
+            "crates/slk-channel/src/security.rs": "b9b91cb8baf753c0171c38a0d44d292d6950fddec67eb8d54868582640a8c1c9",
+            "crates/slkd/src/ssap_subscription.rs": "889bbbe87b8ecd7ccc911559dec5f8777589492ac74a19110b54b892ed6227a3"
+          },
+          "checks": {
+            "production_ssap_final": 120,
+            "shared_contract": 12,
+            "cli_private_bus": 4,
+            "sdk_unit": 73,
+            "sdk_owned_private_bus": 8,
+            "sdk_remote_private_bus": 13,
+            "python_boundaries": 12,
+            "permission_qualification_docs": 77,
+            "actual_c_python_integration": "PASS finite private-bus service;35 frozen material hashes still match",
+            "clippy": "PASS -D warnings",
+            "generated_c_header": "cbindgen0.29.4",
+            "strict_html": "PASS warnings-as-errors",
+            "negative_control": "actual incoming epoch omission rejected; source restored"
+          },
+          "scope": "Single event receive via the sole ReceiveTransaction/RX. Native-query-derived full identity, epoch and minimum pinned before installing one slot; ACK is queue acceptance only. Events own no property configuration or client request sequence. Rust/C/Python share codec/SDK; stage4 is local event receipt. Native receipt/cache and private-bus peers are explicit fixtures, not real wire execution.",
+          "qualification_transfer": false,
+          "not_tested": [
+            "continuous event leases, listener-ready barrier and upper-layer service start/stop",
+            "accurate new Native peer delivery and actual deployed permissions",
+            "UserHost and Windows execution",
+            "new formal proof"
+          ],
+          "issue_sync": [
+            {
+              "repo": "OpenSparklink/sparklink",
+              "number": 22,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/22",
+              "state": "open",
+              "body_sha256": "87518243e48605287b20406ccb721e7cbe82641ed2b7092254cb072fe95a2ece",
+              "source_commit": "4658a8298831cace1170b15cb557312440ad7b03",
               "scope": "public source/offline only; six original exit checks unchanged"
             }
           ]

@@ -30,9 +30,14 @@ default/all-features严格Clippy和HTML通过。实际共享RX路由遗漏负对
 实际SDK/私有总线检查32次发送、16次校验回复、6个拒绝场景；输入0/1/249/250/253/254/255/2042字节。
 36项捕获源码/artifact一致，25项工具/策略、75项资格/文档/策略、严格GCC/Clang、default/all-features Clippy通过。
 该有限fixture不授Native/USB/实机资格；Python收据分类错误及首次严格构建失败保留。
-下一批接通现有VM监督器及独立双端捕获，核对实际就绪、事件与独立回复和发布端读回；
-再取得准确Native对端应用校验回复，未运行的实机/部署权限/完整生命周期保持缺失。
-工具切片结构化映射为 `ssap-event-tools-20261101`。
+[事件门禁a2a2655](https://github.com/OpenSparklink/sparklink/commit/a2a26552a9be47549fc9de42033509c42fee8a9a)进一步接通既有VM/guest/输入封存与最终判定。
+contract1覆盖两种连接角色、每角色两方向的32字节notify/indicate；真实租约Ready检查后才发送，
+接收应用校验并写独立回复，发布端读回，双端原始窗口拒绝多余CPCD/ACK或缺包。
+133项相关工具检查与严格HTML通过；移除发送前Ready检查的负对照失败，恢复后完整重跑。
+该批进程/报文均为显式fixture，没有新增SDK私有总线、VM、Native、实机或形式化执行资格。
+下一批封存准确artifact、校验安装输入和无USB VM，再按实际白名单设备条件取得真实事件交付及原路径保持。
+事件长度/分片、完整生命周期与部署权限仍缺，原method v4失败和历史资格身份保持。
+工具/门禁切片分别映射 `ssap-event-tools-20261101` 和 `ssap-event-gate-20261101`。
 Profile START/STOP、完整事件/生命周期仍缺；历史登记/发送/单次接收及method v4失败按原身份保留。
 结构化映射为 `scope_extensions[].implementation_slices` 的 `ssap-event-lease-20261101`。
 
@@ -225,7 +230,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Actual C/Python Owned event sender and event-lease receiver now source/offline scoped. Next connect these existing helpers to the existing SDK supervisor and independent two-end packet verifier: real lease Ready, randomized event, checked independent reply and publisher readback, complete original deadlines,negative controls and retained failures. Then exact-artifact VM-only Native delivery and original-path/lifecycle preservation. No second Engine,sleep Ready or CPCD event configuration. Preserve method v4 failure/compiled identities; no unchanged warm retry. Own UserHost/DirectUSB and Windows advance C/D/E/W; KernelPacket/vendor remains P4.",
+  "next": "Event contract1 is wired through existing SDK publishers/lease receivers,VM selection,tool/input sealing and independent paired capture/verdict. Next freeze exact artifacts,verify dependencies/installed inputs and no-USB VM;check current owned-device topology/ROM and running tasks read-only,then accurate-artifact Native event/app-reply and ordinary baseline/lifecycle when startup conditions permit. Preserve existing method v4 failure,avoid unchanged warm retries,do not count manual/QMP/hub recovery. Extend lengths/full lifecycle/permissions separately without reducing original scope. Own UserHost/DirectUSB and Windows continue C/D/E/W;KernelPacket/vendor P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

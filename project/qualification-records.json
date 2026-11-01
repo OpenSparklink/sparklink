@@ -55,7 +55,7 @@
       "Original scope retained for historical v1-v3",
       "Publish source/offline summary only"
     ],
-    "next": "Actual C/Python Owned event sender and event-lease receiver now source/offline scoped. Next connect these existing helpers to the existing SDK supervisor and independent two-end packet verifier: real lease Ready, randomized event, checked independent reply and publisher readback, complete original deadlines,negative controls and retained failures. Then exact-artifact VM-only Native delivery and original-path/lifecycle preservation. No second Engine,sleep Ready or CPCD event configuration. Preserve method v4 failure/compiled identities; no unchanged warm retry. Own UserHost/DirectUSB and Windows advance C/D/E/W; KernelPacket/vendor remains P4.",
+    "next": "Event contract1 is wired through existing SDK publishers/lease receivers,VM selection,tool/input sealing and independent paired capture/verdict. Next freeze exact artifacts,verify dependencies/installed inputs and no-USB VM;check current owned-device topology/ROM and running tasks read-only,then accurate-artifact Native event/app-reply and ordinary baseline/lifecycle when startup conditions permit. Preserve existing method v4 failure,avoid unchanged warm retries,do not count manual/QMP/hub recovery. Extend lengths/full lifecycle/permissions separately without reducing original scope. Own UserHost/DirectUSB and Windows continue C/D/E/W;KernelPacket/vendor P4.",
     "actor_obligation_regression": {
       "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
       "entry": "ssap_engine::exchange_loop",
@@ -528668,6 +528668,47 @@
               "updated_at": "2026-11-01T10:13:34Z",
               "scope": "source/offline only; six original acceptance conditions unchanged; real-device details local",
               "source_commit": "f070cf81abda2ca3c7acbde209845c5d96e183eb"
+            }
+          ]
+        },
+        {
+          "id": "ssap-event-gate-20261101",
+          "source_commit": "a2a26552a9be47549fc9de42033509c42fee8a9a",
+          "status": "IMPLEMENTED_OFFLINE_SCOPED_PASS_ARTIFACT_NATIVE_EVENT_PENDING",
+          "source_sha256": {
+            "tools/ws73_application_client.py": "e3402800154ede40864d8627d2041857768306bae7608fa4e20e3a2bb89efecf",
+            "tools/ws73_channel_socket.py": "2b43f0d524e6668ec3c4ab2a82ccbcd9d96d13f74f9f7f3fef2c4478c10d1cb4",
+            "tools/ws73_ssap_owned.py": "f7ce1e3dc0d05a9606e5aa4273389fab99daba02b42cade8980f51d1fed43065",
+            "tools/ws73_target.py": "4b5bd4f8dbe910421875c03e5b575a27202289019d7d291d444930b0274d64e0",
+            "tools/ws73_target_control.py": "800240dcef6b3a73d15f8c6eb8cdba2224077f1aee8cd8ee9ea42a0dbd27cc88",
+            "tools/ws73_target_guest.py": "7ecdd0cefd7d210e3a41366619ad7bfc46ce37cd831e4976b05ba28c5f5a097c",
+            "tools/ws73_target_init.sh": "f54494ea215b187e2bfa584c9d853fbc2e7c312811b8846e05610efb294e16fe",
+            "tools/tests/test_ws73_ssap_event_delivery.py": "11a84d4bfbddf82bd39f3bb2a3873726e77b7ebc75967c9154d35a9441df666c",
+            "tools/ws73_ssap_event_delivery.py": "4cbbe1e8775bdd472cb4cbddb46c9f698359c129dea00d6d6e69cd8e369b39ff"
+          },
+          "checks": {
+            "related_tool_tests": 133,
+            "scope": "7 event tests with explicit process/ACB fixtures plus existing method,Owned,application,channel,target and property-update tests;not real SDK/Native execution this batch",
+            "negative_control": "omitting pre-send actual Ready scope validation fails wrong-ready test;exact source restored and all133 rerun",
+            "syntax": "Python modules compiled and guest shell sh -n passed",
+            "strict_html": "PASS warnings-as-errors"
+          },
+          "scope": "Finite contract1 event scenario in existing VM runner/publisher/bounded process supervisor and independent ACB matching. Two connection roles,two directions each,32-byte notification/indication,actual SDK lease Ready checked before send,independent verified application reply and publisher readback. Complete two-end windows,physical identity,ACK/reply causality,new token/original epoch,original deadlines and local cleanup. Code wired;all execution evidence this batch uses explicit process and wire fixtures.",
+          "qualification_transfer": false,
+          "not_tested": [
+            "exact new artifact/input sealing and no-USB VM smoke",
+            "Native real two-end application event/reply and ordinary baseline/lifecycle regression",
+            "event discovery/full lengths/fragments,lifetime/permissions/four-device/Profile matrix",
+            "new formal proof,UserHost/Windows runtime qualification"
+          ],
+          "issue_sync": [
+            {
+              "url": "https://github.com/OpenSparklink/sparklink/issues/22",
+              "state": "open",
+              "body_sha256": "b28fa13f69bf5b6f1159b014c1001182db7abe226a5222f8b4c45f65e23f4818",
+              "updated_at": "2026-11-01T10:32:07Z",
+              "scope": "source/offline only;six original acceptance conditions unchanged;hardware details local",
+              "source_commit": "a2a26552a9be47549fc9de42033509c42fee8a9a"
             }
           ]
         }

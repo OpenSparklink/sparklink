@@ -25,7 +25,14 @@
 default/all-features严格Clippy和HTML通过。实际共享RX路由遗漏负对照被拒绝，恢复后重跑完整daemon；
 35项捕获SDK源码/artifact保持一致。Native收据和有限私有总线服务是显式fixture，
 不证明实际内核授权、系统总线部署、固件/RF、Windows或新形式化性质。
-下一批接通现有应用工具的事件Ready与双端判定，再取得准确Native对端应用校验回复。
+[应用工具f070cf8](https://github.com/OpenSparklink/sparklink/commit/f070cf81abda2ca3c7acbde209845c5d96e183eb)已复用C/Python Owned及租约循环，
+增加事件发送/接收、显式本地Ready、独立回复属性及同一读/回复原期限。
+实际SDK/私有总线检查32次发送、16次校验回复、6个拒绝场景；输入0/1/249/250/253/254/255/2042字节。
+36项捕获源码/artifact一致，25项工具/策略、75项资格/文档/策略、严格GCC/Clang、default/all-features Clippy通过。
+该有限fixture不授Native/USB/实机资格；Python收据分类错误及首次严格构建失败保留。
+下一批接通现有VM监督器及独立双端捕获，核对实际就绪、事件与独立回复和发布端读回；
+再取得准确Native对端应用校验回复，未运行的实机/部署权限/完整生命周期保持缺失。
+工具切片结构化映射为 `ssap-event-tools-20261101`。
 Profile START/STOP、完整事件/生命周期仍缺；历史登记/发送/单次接收及method v4失败按原身份保留。
 结构化映射为 `scope_extensions[].implementation_slices` 的 `ssap-event-lease-20261101`。
 
@@ -218,7 +225,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Event leases/local Ready now source/offline scoped. Next reuse the actual C/Python application helper and SDK supervisor for event-listener Ready, randomized event payload plus independent application reply, and two-end capture verification; test negative controls before exact-artifact VM-only Native delivery and original-path/lifecycle preservation. No sleep readiness, CPCD event configuration or second Engine. Preserve failed method v4 and compiled identities; no unchanged warm retry. Own UserHost/DirectUSB and Windows continue by C/D/E/W; KernelPacket/vendor remains P4.",
+  "next": "Actual C/Python Owned event sender and event-lease receiver now source/offline scoped. Next connect these existing helpers to the existing SDK supervisor and independent two-end packet verifier: real lease Ready, randomized event, checked independent reply and publisher readback, complete original deadlines,negative controls and retained failures. Then exact-artifact VM-only Native delivery and original-path/lifecycle preservation. No second Engine,sleep Ready or CPCD event configuration. Preserve method v4 failure/compiled identities; no unchanged warm retry. Own UserHost/DirectUSB and Windows advance C/D/E/W; KernelPacket/vendor remains P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

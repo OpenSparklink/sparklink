@@ -8827,6 +8827,22 @@
       ],
       "closed": [],
       "qualification": "SOURCE_OFFLINE_ONLY_NATIVE_EVENT_AND_DEPLOYED_PERMISSION_GATES_PENDING"
+    },
+    {
+      "id": "ssap-event-tools-20261101",
+      "source_commit": "f070cf81abda2ca3c7acbde209845c5d96e183eb",
+      "issues": [
+        {
+          "url": "https://github.com/OpenSparklink/sparklink/issues/22",
+          "state": "open",
+          "body_sha256": "87b367fc374537f26d7d558bc36dcebfa327cee23857232669fcafa206fb99ae",
+          "updated_at": "2026-11-01T10:13:34Z",
+          "scope": "source/offline only; six original acceptance conditions unchanged; real-device details local",
+          "source_commit": "f070cf81abda2ca3c7acbde209845c5d96e183eb"
+        }
+      ],
+      "closed": [],
+      "qualification": "SOURCE_OFFLINE_ONLY_NATIVE_EVENT_VM_GATE_AND_DEPLOYED_PERMISSIONS_PENDING"
     }
   ]
 }

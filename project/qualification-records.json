@@ -55,7 +55,7 @@
       "Original scope retained for historical v1-v3",
       "Publish source/offline summary only"
     ],
-    "next": "Event leases/local Ready now source/offline scoped. Next reuse the actual C/Python application helper and SDK supervisor for event-listener Ready, randomized event payload plus independent application reply, and two-end capture verification; test negative controls before exact-artifact VM-only Native delivery and original-path/lifecycle preservation. No sleep readiness, CPCD event configuration or second Engine. Preserve failed method v4 and compiled identities; no unchanged warm retry. Own UserHost/DirectUSB and Windows continue by C/D/E/W; KernelPacket/vendor remains P4.",
+    "next": "Actual C/Python Owned event sender and event-lease receiver now source/offline scoped. Next connect these existing helpers to the existing SDK supervisor and independent two-end packet verifier: real lease Ready, randomized event, checked independent reply and publisher readback, complete original deadlines,negative controls and retained failures. Then exact-artifact VM-only Native delivery and original-path/lifecycle preservation. No second Engine,sleep Ready or CPCD event configuration. Preserve method v4 failure/compiled identities; no unchanged warm retry. Own UserHost/DirectUSB and Windows advance C/D/E/W; KernelPacket/vendor remains P4.",
     "actor_obligation_regression": {
       "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
       "entry": "ssap_engine::exchange_loop",
@@ -528630,6 +528630,44 @@
               "updated_at": "2026-11-01T09:52:07Z",
               "scope": "source/offline only; six original acceptance conditions unchanged; real-device details local",
               "source_commit": "4f7f657bfa12525ebc5b12526279a2820cc3870b"
+            }
+          ]
+        },
+        {
+          "id": "ssap-event-tools-20261101",
+          "source_commit": "f070cf81abda2ca3c7acbde209845c5d96e183eb",
+          "status": "IMPLEMENTED_OFFLINE_SCOPED_PASS_EVENT_VM_GATE_PENDING",
+          "source_sha256": {
+            "crates/libsparklink/tests/application_ffi.rs": "2d40927cf0220551a4ec8aa258dd690410156507362c684ea1d5359751d6eccd",
+            "crates/libsparklink/tests/application_ffi/subscription.rs": "e1c45496b851925c6afa09a5970284173500ec5c4da3075d6b994560b3401dae",
+            "tools/testing/application_client/client.c": "cc9098df783b6c1ee286dbf197b002f2075c7973814e1c30664c940767375ad6",
+            "tools/testing/application_client/client.py": "497740804ced578b7f77dcfdcadf54d5f0983692b3c2bec119296c11a9caee0b",
+            "crates/libsparklink/tests/application_ffi/event_tools.rs": "7716af1d06f922b2dde51d2ab7e33838f7b6558673edb393db18c3bfefa8c62d"
+          },
+          "checks": {
+            "actual_c_python": "PASS: real SDK/cdylib processes;32 event sends,16 checked replies,6 rejected payload/cache cases,36 unchanged source/artifact materials",
+            "original_deadline": "read and verified reply stamps compared independently by finite private-bus fixture",
+            "existing_application_tools_and_service_policy": 25,
+            "qualification_docs_service_policy": 75,
+            "strict_compile": "GCC/Clang -Wall -Wextra -Werror,Python py_compile;Rust default/all-features Clippy -D warnings",
+            "strict_html": "PASS before source commit; final revisions separately checked"
+          },
+          "scope": "Existing C/Python Owned and subscription loops consume production event SDK calls. Local lease Ready precedes a checked event and a distinct verified reply property; same original read/reply deadline. The finite private-bus fixture supplies explicit Native/peer outcomes,not a production Engine or Native positive integration. 0,1,249,250,253,254,255,2042-byte event inputs; notification/indication send receipts and indication receive,not every protocol/state combination.",
+          "qualification_transfer": false,
+          "not_tested": [
+            "two-ended VM supervisor and independent packet/evidence closure for new event helper modes",
+            "accurate Native artifact peer application delivery and actual system-bus deployment permissions",
+            "complete notification/indication/lifecycle and Profile START/STOP matrix",
+            "new formal proof,UserHost or Windows execution"
+          ],
+          "issue_sync": [
+            {
+              "url": "https://github.com/OpenSparklink/sparklink/issues/22",
+              "state": "open",
+              "body_sha256": "87b367fc374537f26d7d558bc36dcebfa327cee23857232669fcafa206fb99ae",
+              "updated_at": "2026-11-01T10:13:34Z",
+              "scope": "source/offline only; six original acceptance conditions unchanged; real-device details local",
+              "source_commit": "f070cf81abda2ca3c7acbde209845c5d96e183eb"
             }
           ]
         }

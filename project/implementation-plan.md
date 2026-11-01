@@ -746,7 +746,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Event leases/local Ready now source/offline scoped. Next reuse the actual C/Python application helper and SDK supervisor for event-listener Ready, randomized event payload plus independent application reply, and two-end capture verification; test negative controls before exact-artifact VM-only Native delivery and original-path/lifecycle preservation. No sleep readiness, CPCD event configuration or second Engine. Preserve failed method v4 and compiled identities; no unchanged warm retry. Own UserHost/DirectUSB and Windows continue by C/D/E/W; KernelPacket/vendor remains P4.",
+  "next": "Actual C/Python Owned event sender and event-lease receiver now source/offline scoped. Next connect these existing helpers to the existing SDK supervisor and independent two-end packet verifier: real lease Ready, randomized event, checked independent reply and publisher readback, complete original deadlines,negative controls and retained failures. Then exact-artifact VM-only Native delivery and original-path/lifecycle preservation. No second Engine,sleep Ready or CPCD event configuration. Preserve method v4 failure/compiled identities; no unchanged warm retry. Own UserHost/DirectUSB and Windows advance C/D/E/W; KernelPacket/vendor remains P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

@@ -984,6 +984,10 @@ controller、物理连接或已提交credit义务。未经实现/验收不得由
 
 ## SSAP、服务与Profile
 
+事件应用验收复用同一Owned/租约SDK调用链；本地监听就绪、协议ACK、接收应用校验、
+独立回复及发送应用读回分别记录。测试回复属性只用于业务交付判定，不是Profile的
+START/STOP或第二套事件协议；具体工具与未完成双端门禁见[VM输入参考](../docs/reference/vm-gate-inputs.md)。
+
 标准事件租约复用唯一接收事务及共享有界队列，Info类型区分属性配置和事件本地监听。
 初始及共享加入先安装该caller的RX路由，再发布本地就绪；就绪不是Native Ready、安全授权
 或远端Profile START。事件最终释放不发送CPCD，其本地清理收据不能被解释为远端停发。

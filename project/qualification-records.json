@@ -55,7 +55,7 @@
       "Original scope retained for historical v1-v3",
       "Publish source/offline summary only"
     ],
-    "next": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently. Parallel U#22: event discovery is source/offline implemented; continue Owned event definitions/permissions/configuration and the same Engine update path. No new hardware qualification.",
+    "next": "Preserve all attempts and v4 compiled artifact; no unchanged warm retry. When startup conditions change, resume accurate Native method/data delivery. Event UUID registration/discovery now source/offline scoped; next define event send authority and upper-layer start/stop, reuse Update/Pending/RX/ACK, and validate actual peer delivery. Property CPCD is not automatically event configuration. Full UserHost/Windows route remains parallel.",
     "actor_obligation_regression": {
       "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
       "entry": "ssap_engine::exchange_loop",
@@ -528367,6 +528367,77 @@
               "number": 22,
               "state": "open",
               "body_sha256": "372092987782a6a1e91cc83d7761c5bd02d84f13d04a83bfdb896ec434936def",
+              "readback_verified": true,
+              "original_checklist_unchanged": true,
+              "source_offline_only": true
+            }
+          ]
+        },
+        {
+          "id": "ssap-owned-events-20261101",
+          "source_commit": "c8838ce6e9055d5fdd34b826f8d3aaeca24660d2",
+          "status": "IMPLEMENTED_OFFLINE_SCOPED_PASS_NATIVE_REAL_GATE_PENDING",
+          "source_sha256": {
+            "bindings/python/sparklink/__init__.py": "50ecf0015d334965167e43ffd7fa01fd8c69201419becd0fdf2134b1c0a0440b",
+            "bindings/python/sparklink/client.py": "d029cbe74d2356efa1a998ad36eabf0cdba7f605b227ff678a24aca84e11aa0f",
+            "bindings/python/sparklink/local_services.py": "69c261990349a65e74d28236996957bff3479d8d2a3f8955c507e5cc8f3038f8",
+            "bindings/python/tests/test_event_registration.py": "6006ac20166ed8c63f47df6fbb6dcf9199ea0c7d6ede480e45041b6d25b59974",
+            "bindings/python/tests/test_local_services.py": "00a4d5a34807b50cf859568bf206972b81fbf3c169a16fb1c8a74325c80b8c32",
+            "bindings/python/tests/test_method_provider.py": "23339c47cea0fcfe90be00d7ce8b8555a5d46b0f851fd7aadfb3d4c60318b0d8",
+            "crates/libsparklink/include/sparklink.h": "bd7dce033c4bc63b926c5b63c85b871ce0429b0125c14c52696ed09ad792a105",
+            "crates/libsparklink/src/ffi_local_services.rs": "a87ab7aa85fd58b8b2ea7c49583427282185654d471cc4c1d2eaf06b5cc90465",
+            "crates/libsparklink/src/ssap/authorization/inbox.rs": "6aa5d4b51c8448c64ec402dac246e4a184d2f2101b99df1d5292caac88bd6860",
+            "crates/libsparklink/src/ssap/local.rs": "64f41e1baf6d248f9eb9733ca005ab2f68d64e0a3775aabd09d133070798cc56",
+            "crates/libsparklink/src/ssap/provider/frontend.rs": "5403904c3d1941d6ebfc345939a3463d4b292f5ba88b15dcb54bb0c98e7f63de",
+            "crates/libsparklink/src/sync_client/local_services_tests.rs": "264b6609161b2680c10a4ffe91c52e9256c31217d2dcb290806f635fce95021d",
+            "crates/libsparklink/tests/application_ffi.rs": "0c2afb3a44b84c52b2b0458734486ceffeb6dd600ceac2d36e405dbcb2c78b12",
+            "crates/libsparklink/tests/fixtures/application_client.c": "4c708b6f9f5c9515950537559b2d99d359dfe76c8cecacdeb4673cc258308dd8",
+            "crates/libsparklink/tests/fixtures/application_client.py": "420849623c4ce53f2f8375d601767cb78c591445ec5d552dc7a2d4696e3fe7b6",
+            "crates/libsparklink/tests/fixtures/method_provider.c": "8253f0c5dfec8c551d46d4b706c90b1d53acd500f6d1029aac0fa6650d11c159",
+            "crates/libsparklink/tests/owned_client.rs": "785ee1e49ffeefb73703381c53c1477afa5f9fe56e5b1fb1a42ca76dc0e37f1e",
+            "crates/libsparklink/tests/owned_client/method_provider.rs": "7723e16a984d253c7aed7b6a3b740519a9075d2a15bc9dc938e866cfb15762af",
+            "crates/slctl/examples/bus_policy_probe.rs": "5436bf30b217fa2abe5374c32b455b2e2b3a423a59a4038049b9f0884293ce8f",
+            "crates/slctl/src/ssap_server.rs": "82b67cd9c206796b39a984894dec5ec605b727f1c3d20c6d13b96d65db339739",
+            "crates/slctl/tests/owned_local.rs": "998a2ea65db65a1870fb3f5527b9bfc3f894bed00385e6a95fbd4a2988f0ed72",
+            "crates/slk-contract/src/lib.rs": "2dfbf4bb90ed5d3a737f5f96b13ac8b49777f32214ad97ab70fde611b4b2083d",
+            "crates/slkd/src/service.rs": "82f8f73150e8950047983756caf0cf1e1b8e68b15795844cdf0728b4117fc187",
+            "crates/slkd/src/ssap_authorization_tests.rs": "8506421292cba50a9326ab2ac72271dea51448586c9929bbb6fc3031e7f4155e",
+            "crates/slkd/src/ssap_database.rs": "8ba82b469fb9b80748d21e9c77aa1cd628325612a3b135dec65723105c57467e",
+            "crates/slkd/src/ssap_event_registration_tests.rs": "478b7f8eea43b2dae9c7fd051f54713ade43123bb490c7eb3578c53a2171295f",
+            "crates/slkd/src/ssap_method_provider_tests.rs": "ab83783f03337154d622a3c200be2e1516d43eb030dd71ab0752e1ef7bac78d9",
+            "tools/testing/application_client/client.c": "439cd7964f156639c3f255250c3ce470552a58e569ac91f539cd6579837c2978",
+            "Cargo.lock": "0ea81523d90856719d5d764fde7367845b38553382d652b37a381dfac79be7b4",
+            "Cargo.toml": "af396f1d66b7681b82e88ab8b8d0491d2eba06ab799945526aca3eb5216d6844"
+          },
+          "checks": {
+            "production_ssap": 114,
+            "shared_contract": 12,
+            "cli_private_bus": 4,
+            "sdk_unit": 73,
+            "sdk_owned_private_bus": 8,
+            "sdk_remote_private_bus": 11,
+            "python_boundaries": 13,
+            "actual_c_python_integration": "PASS; frozen actual cdylib/consumer hashes; finite private-bus service fixture",
+            "clippy": "PASS -D warnings",
+            "generated_c_header": "byte-identical cbindgen0.29.4",
+            "strict_html": "PASS warnings-as-errors",
+            "negative_control": "production event discovery branch removed: rejected; source restored"
+          },
+          "scope": "UUID-only Owned events through the sole manager/DB/Owner/discovery, shared capacities/non-reused handles/deadline and withdrawal. Rust/C/Python/CLI consumers migrated. Production daemon fixtures replace Native Ready/lease; SDK finite bus fixture is not a daemon Engine or RF peer.",
+          "qualification_transfer": false,
+          "not_tested": [
+            "event TX permission and upper-layer start/stop",
+            "event notify/indicate payload, RX, ACK and application delivery",
+            "accurate new Native VM hardware gates and deployment permissions",
+            "UserHost and Windows runtime integration",
+            "new formal proof"
+          ],
+          "issue_sync": [
+            {
+              "repository": "sparklink",
+              "number": 22,
+              "state": "open",
+              "body_sha256": "fd92e44b864c8df25d8ea53e22abb8cb9c3f8c33eaccfb38ff155170cc23d553",
               "readback_verified": true,
               "original_checklist_unchanged": true,
               "source_offline_only": true

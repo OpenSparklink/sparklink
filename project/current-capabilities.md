@@ -14,13 +14,19 @@
 下方历史批次的“UserHost P4”指旧KernelPacket/厂商分支，不涵盖本次新增路线。以上扩展完整目标，原S0–S6/19WP/10FV/12DG、预算与VM-only保留。源码审计和规划完成不授功能资格。新路线的证据维度政策已登记，记录验证器接线仍待做；历史记录及全部失败不重写。依赖与退出仅维护于[唯一计划](implementation-plan.md)。
 
 
-## 事件发现：源码与限定离线范围
+## 事件目录与 Owned 登记：源码与限定离线范围
 
-[源码 c072b05](https://github.com/OpenSparklink/sparklink/commit/c072b059e7afe3f50c67874f3322f641402ed9ff) 打通kind5及层次event成员，复用同一Engine、Rust/C/Python与CLI；原期限和预算不变。
-独立codec向量、实际Observer、私有D-Bus SDK/CLI及外部C/Python消费者通过；负对照检出漏查。
-peer与服务为显式fixture，未取得新Native实机/形式化资格。Owned事件登记、权限/配置、
-通知/指示及ACK生产接线仍缺失，不能将目录发现或属性更新当作完整事件能力。
-精确源码/检查范围见结构化scope extension中的`ssap-event-discovery-20261101`，原method v4状态不变。
+[发现 c072b05](https://github.com/OpenSparklink/sparklink/commit/c072b059e7afe3f50c67874f3322f641402ed9ff) 与
+[Owned登记 c8838ce](https://github.com/OpenSparklink/sparklink/commit/c8838ce6e9055d5fdd34b826f8d3aaeca24660d2) 复用同一DB/Owner/发现路径。
+事件仅存UUID，共用成员预算、handle、原期限及撤回；不存payload，不创建属性CPCD，
+属性读写及各类Provider拒绝事件handle。Rust/C/Python/CLI调用者同批迁移未发布签名。
+114项daemon SSAP、12项契约、4项CLI、73项SDK库/8项Owned/11项远端调用、实际C/Python
+集成和13项Python边界检查通过；严格Clippy、生成头、HTML与生产分支负对照通过。
+这些是准确源码的限定离线结果；Native Ready/lease、peer与语言服务分别为显式fixture。
+未取得新Native实机、Windows或形式化资格；事件发送权限/上层启停、通知/指示、RX/ACK
+及对端应用交付仍缺失。不能以登记、发现或属性更新替代完整事件能力。
+准确检查映射仅见结构化scope extension的`ssap-owned-events-20261101`；历史发现切片保留
+原范围/失败，method v4编译产物、真实门禁及原尝试不变。
 
 ## Native v4 的资格边界
 
@@ -211,7 +217,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently. Parallel U#22: event discovery is source/offline implemented; continue Owned event definitions/permissions/configuration and the same Engine update path. No new hardware qualification.",
+  "next": "Preserve all attempts and v4 compiled artifact; no unchanged warm retry. When startup conditions change, resume accurate Native method/data delivery. Event UUID registration/discovery now source/offline scoped; next define event send authority and upper-layer start/stop, reuse Update/Pending/RX/ACK, and validate actual peer delivery. Property CPCD is not automatically event configuration. Full UserHost/Windows route remains parallel.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

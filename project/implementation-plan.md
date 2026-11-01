@@ -734,7 +734,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently. Parallel U#22: event discovery is source/offline implemented; continue Owned event definitions/permissions/configuration and the same Engine update path. No new hardware qualification.",
+  "next": "Preserve all attempts and v4 compiled artifact; no unchanged warm retry. When startup conditions change, resume accurate Native method/data delivery. Event UUID registration/discovery now source/offline scoped; next define event send authority and upper-layer start/stop, reuse Update/Pending/RX/ACK, and validate actual peer delivery. Property CPCD is not automatically event configuration. Full UserHost/Windows route remains parallel.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

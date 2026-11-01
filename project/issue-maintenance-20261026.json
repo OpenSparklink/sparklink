@@ -8760,6 +8760,23 @@
       ],
       "closed": [],
       "qualification": "DEPENDENCY_AUDIT_ONLY_NO_DEVICE_QUALIFICATION"
+    },
+    {
+      "id": "ssap-owned-events-20261101",
+      "source_commit": "c8838ce6e9055d5fdd34b826f8d3aaeca24660d2",
+      "issues": [
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "state": "open",
+          "body_sha256": "fd92e44b864c8df25d8ea53e22abb8cb9c3f8c33eaccfb38ff155170cc23d553",
+          "readback_verified": true,
+          "original_checklist_unchanged": true,
+          "source_offline_only": true
+        }
+      ],
+      "closed": [],
+      "qualification": "SOURCE_OFFLINE_ONLY_EVENT_TX_RX_AND_NATIVE_GATES_PENDING"
     }
   ]
 }

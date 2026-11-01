@@ -35,17 +35,17 @@
         "repository": "linux",
         "number": 15,
         "state": "open",
-        "body_sha256": "508064c7175a6e17933b6dc2462f2eb2e479f90c2a32e43ffd8b62a70efbb9eb",
-        "source_offline_only": true,
-        "original_acceptance_unchanged": true
+        "body_sha256": "d95e72cdbabfe1100d999ead974713cf808ad3515da43e054b1cba76a8d8a489",
+        "original_checklist_unchanged": true,
+        "source_offline_planning_only": true
       },
       {
         "repository": "sparklink",
         "number": 22,
         "state": "open",
-        "body_sha256": "af06b4da2840ae293f5552608b04245a44e9c3e6b66e06b5f9e6bb8cdba5c44a",
-        "source_offline_only": true,
-        "original_acceptance_unchanged": true
+        "body_sha256": "d2a519b0b2841a9764acc4e8fb1ff82c7e773699b15a001069aa0be31d5a83b4",
+        "original_checklist_unchanged": true,
+        "source_offline_planning_only": true
       }
     ],
     "exit_conditions": [
@@ -527943,5 +527943,202 @@
         "scope": "Actual private D-Bus and production Provider/Database/response/fragments/reassembly/client functions. Negotiated budget and Native identity/transport explicitly supplied fixtures; no actor-loop, syscall authorization, credit, USB, RF, deployment, formal or hardware qualification."
       }
     }
-  ]
+  ],
+  "scope_extensions": [
+    {
+      "id": "userhost-windows-20261101",
+      "version": 1,
+      "source_sha256": "d0ff6f757eb59af63725441e66a502beb8c6e215d271a2da0d85add22222877e",
+      "decision": "docs/decisions/0003-optional-exclusive-user-host.md",
+      "original_scope_preserved": true,
+      "effective_scope_extended": true,
+      "budget_unchanged": true,
+      "status": "ADOPTED_PLAN_NOT_IMPLEMENTED_OR_QUALIFIED",
+      "routes": [
+        {
+          "key": "directusb",
+          "number": 24,
+          "id": 6144296479,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/24"
+        },
+        {
+          "key": "host",
+          "number": 25,
+          "id": 6144296831,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/25"
+        },
+        {
+          "key": "endpoint",
+          "number": 26,
+          "id": 6144297101,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/26"
+        },
+        {
+          "key": "windows",
+          "number": 27,
+          "id": 6144297393,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/27"
+        },
+        {
+          "key": "iso",
+          "number": 28,
+          "id": 6144297714,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/28"
+        },
+        {
+          "key": "audio",
+          "number": 29,
+          "id": 6144297985,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/29"
+        },
+        {
+          "key": "system",
+          "number": 30,
+          "id": 6144298282,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/30"
+        }
+      ],
+      "priority": {
+        "native_current": "P1 current method v4/data/security/SSAP",
+        "project_userhost_directusb": "P2 future vertical delivery",
+        "windows": "P2 platform audit parallel; implementation depends on C/D/E",
+        "qos_iso_pcm_system": "P3; capability audit may proceed independently",
+        "kernelpacket_vendor": "P4 optional, not C/D/W prerequisite"
+      },
+      "not_prerequisite_for_current_native": true,
+      "wp_mapping": {
+        "A": [
+          0,
+          5,
+          6,
+          8,
+          16,
+          18
+        ],
+        "B": [
+          5,
+          8,
+          10,
+          12,
+          16,
+          17
+        ],
+        "C": [
+          11,
+          13,
+          14,
+          17
+        ],
+        "D": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          14,
+          17
+        ],
+        "E": [
+          8,
+          9,
+          10,
+          14,
+          16,
+          17
+        ],
+        "W": [
+          13,
+          14,
+          16,
+          17,
+          18
+        ],
+        "F": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          17
+        ],
+        "G": [
+          10,
+          13,
+          15,
+          16,
+          17
+        ],
+        "H": [
+          13,
+          14,
+          17
+        ],
+        "I": [
+          11,
+          15,
+          16,
+          17,
+          18
+        ]
+      },
+      "dependencies": {
+        "D": [
+          "C",
+          "minimum identity/credit/channel contracts"
+        ],
+        "E": [
+          "D",
+          "existing unique SSAP Engine"
+        ],
+        "W": [
+          "C/D/E minimum platform contracts"
+        ],
+        "G": [
+          "actual firmware capability",
+          "SSAP standard method/event",
+          "qualified data path"
+        ],
+        "H": [
+          "independent P4 state barrier, not prerequisite"
+        ]
+      },
+      "next_exit": "Keep v4 compiled inputs; real positive method short/long result plus lifecycle and preserved paths. In parallel audit actual ServiceChannel/IPC/USB boundary without replacing Engine or forging Native receipts.",
+      "parent_readback_verified": true,
+      "issue_sync_ref": {
+        "registry": "project/issue-maintenance-20261026.json",
+        "pointer": "/scope_extensions/0",
+        "sha256": "e89fe5afd18ce7db29af7864ab1ce43934ccc84f05af1cc305d74370ffd3e906"
+      }
+    }
+  ],
+  "qualification_dimensions_policy": {
+    "version": 1,
+    "status": "POLICY_ADOPTED_FUTURE_RECORD_ENFORCEMENT_PENDING",
+    "fields": [
+      "host_mode",
+      "os_platform",
+      "endpoint_type",
+      "board_firmware",
+      "interop_pair"
+    ],
+    "allowed_host_modes": [
+      "Native",
+      "UserHostDirectUSB",
+      "UserHostKernelPacket"
+    ],
+    "rules": [
+      "Bind production source, compiled artifact, execution tools, configuration/firmware, gates, result and limitations separately",
+      "Historical absent dimensions remain unknown; no automatic cross-mode/platform qualification transfer",
+      "Future record and raw report dimensions must agree, with two endpoint identities for interop",
+      "Do not accept new-mode qualifications before validator negative controls for missing/mismatched dimensions",
+      "Native query/SCM evidence and UserHost authority-origin/checkpoint are distinct; no fabricated kernel security metadata"
+    ],
+    "legacy_records_unchanged": true
+  }
 }

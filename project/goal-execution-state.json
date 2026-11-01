@@ -3,25 +3,13 @@
   "thread_id": "01a120fe-1165-7c50-9d9f-56e0b8355c3c",
   "goal_status": "active",
   "objective_unchanged": "完整实现 https://github.com/OpenSparklink/sparklink/issues/8 中的 SparkLink/Linux 联合方案及两个仓库全部关联 issues：按 S0–S6 依赖顺序持续开发，自行维护 issues 与验收证据，完成 WS73 原生 USB/SLE/DLI/RF、per-controller Backend/Host/生命周期、事件与权限、用户态 SSAP/Profile、配对加密/Bond/PHY policy、slk-vendord Proxy 和故障/PM/兼容/发布矩阵；仅全部原验收条件满足后关闭对应 issue，并在完整目标真正达成时标记 goal complete。",
-  "budget_unchanged": {
-    "token_budget": null,
-    "remaining_tokens": null,
-    "budgeted": false
-  },
+  "budget_unchanged": true,
   "goal_api_objective_edit_available": false,
   "sync_method": "Original goal scope restored after API returned no goal; canonical plan and generated qualification_view remain execution/qualification authority.",
   "canonical_plan": "project/implementation-plan.md",
   "capabilities": "project/current-capabilities.md",
   "adoption": "history/architecture/architecture-adoption-20261013.json",
-  "scope_unchanged": [
-    "S0",
-    "S1",
-    "S2",
-    "S3",
-    "S4",
-    "S5",
-    "S6"
-  ],
+  "scope_unchanged": false,
   "original_issue_count": 28,
   "hardware_constraint": {
     "historical_snapshot": {
@@ -254,7 +242,7 @@
       ],
       "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
       "completion": false,
-      "status": "DEFERRED_PLANNING_ONLY: optional exclusive UserHost + separate vendor Host adaptation replaces fixed vendord/native Proxy; not implemented/proven/VM accepted; not a current WS73/lifecycle/SSAP prerequisite.",
+      "status": "Planning adopted: project Host/DirectUSB/ServiceChannel/Windows C/D/E/W P2; KernelPacket/vendor H P4. None newly implemented or qualified.",
       "priority": "P4"
     },
     {
@@ -320,47 +308,29 @@
   "original_issues_open": true,
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
-  "effective_task_scope": "完整实现 https://github.com/OpenSparklink/sparklink/issues/8 中的 SparkLink/Linux 联合方案及两个仓库全部关联 issues：按 S0–S6 依赖顺序持续开发，自行维护 issues 与验收证据，完成 WS73 原生 USB/SLE/DLI/RF、per-controller Backend/Host/生命周期、事件与权限、用户态 SSAP/Profile、配对加密/Bond/PHY policy、可选UserHost接管及厂商Host适配（P4延期） 和故障/PM/兼容/发布矩阵；仅全部原验收条件满足后关闭对应 issue，并在完整目标真正达成时标记 goal complete。",
-  "goal_api_scope_amendment_record": "Existing active goal API objective is immutable; user-authorized WP14 adjustment is authoritative in canonical plan/ADR0003 and this effective scope. No duplicate goal, completion or budget change.",
+  "effective_task_scope": "完整实现 https://github.com/OpenSparklink/sparklink/issues/8 中的 SparkLink/Linux 联合方案及两个仓库全部关联 issues：按 S0–S6 依赖顺序持续开发，自行维护 issues 与验收证据，完成 WS73 原生 USB/SLE/DLI/RF、per-controller Backend/Host/生命周期、事件与权限、用户态 SSAP/Profile、配对加密/Bond/PHY policy、可选UserHost接管及厂商Host适配（P4延期） 和故障/PM/兼容/发布矩阵；仅全部原验收条件满足后关闭对应 issue，并在完整目标真正达成时标记 goal complete。 2026-11-01正式增量：完成面向应用的完整服务API、自有跨平台UserHost/DirectUSB、Windows 11 x64/MSVC、同一服务核心/SSAP/DB/Profile、安全策略、QoS/ISO/数字PCM及平台系统集成；KernelPacket/厂商Host单独P4。原范围和预算保留，完整完成需原与正式新增适用验收全部满足。",
+  "goal_api_scope_amendment_record": "Existing active goal objective API cannot edit description. User 2026-11-01 formally extends effective_task_scope per canonical architecture/ADR0003/plan. Original scope and budget preserved; new scope is additional, no duplicate goal or premature completion.",
   "userhost_planning": {
-    "priority": "P4 low, deferred, planning-only this round",
     "decision": "docs/decisions/0003-optional-exclusive-user-host.md",
-    "audit": "docs/evidence/userhost-planning-audit-20261013.json",
-    "implemented": false,
-    "formal_proven": false,
-    "vm_real_accepted": false,
-    "not_prerequisite_for": [
-      "Current WS73 data loop",
-      "Lifecycle remediation",
-      "Native userspace SSAP",
-      "WP02-WP08"
-    ],
-    "preserved_requirements": [
-      "permissions/LSM/library ABI/path",
-      "per-controller isolation",
-      "finite resources/partial/EAGAIN/fault/crash/stale",
-      "benchmark/real evidence"
-    ],
-    "future_scope": [
-      "mutually exclusive Native/UserHost",
-      "shared DeviceRuntime vs NativeHostRuntime",
-      "typed bounded packet socket/lease",
-      "idle-only switching/verified hardware barriers",
-      "new Native generation/reinit/no inherited link-credit-key",
-      "SDK packet compatibility and slctl/slkd adaptation separately audited"
-    ],
-    "code_changed_or_deleted": false,
-    "issue_updates": {
-      "count": 14,
-      "readback_verified": true,
-      "receipt": "docs/evidence/userhost-issues-scope-20261013.json",
-      "vendor_scope_adjusted_as_authorized": true,
-      "native_scope_history_preserved": true,
-      "issues_open": true
-    }
+    "kernelpacket_vendor": {
+      "priority": "P4",
+      "implemented": false,
+      "formal_proven": false,
+      "vm_real_accepted": false,
+      "issue": "U#7"
+    },
+    "project_host_directusb_windows": {
+      "priority": "P2 staged future; audit parallel",
+      "implemented": false,
+      "formal_proven": false,
+      "vm_real_accepted": false,
+      "routes_ref": "qualification-records.json#/scope_extensions (userhost-windows-20261101)"
+    },
+    "not_prerequisite_for_current_native": true,
+    "scope_ref": "effective_scope_extension"
   },
   "deferred_work": [
-    "WP14 optional UserHost/vendor Host adaptation: low priority, not started this round."
+    "WP14-H KernelPacket/vendor Host adaptation: P4; not prerequisite for project UserHost/DirectUSB/Windows."
   ],
   "documentation_workstream": {
     "status": "partial; physical source migration and exact local/browser/documentation-CI gates passed; content extraction and publishing remain open",
@@ -800,9 +770,9 @@
       ]
     }
   },
-  "execution_phase": "FOLLOW_qualification_view.current_batch_FULL_ORIGINAL_SCOPE_OPEN",
+  "execution_phase": "FOLLOW_qualification_view.current_batch_WITH_20261101_FORMAL_SCOPE_EXTENSION",
   "next_resume_tasks": [
-    "Follow qualification_view.current_batch.next; retain the full S0-S6/19WP/10FV/12DG and original acceptance scope.",
+    "Follow qualification_view.current_batch.next for Native method v4 and parallel existing work; implement adopted effective_scope_extension by C→D→E with Windows audit in parallel. Retain original plus formally added acceptance; KernelPacket/vendor H remains P4.",
     "Recheck source, dirty changes, actual artifacts, tool identities, per-leaf device ownership and shared build budget before VM-only work."
   ],
   "issue_sync_status": "BOUNDED_28_BODY_UPDATES_7_CHILDREN_VERIFIED_ORIGINALS_OPEN",
@@ -2034,17 +2004,17 @@
           "repository": "linux",
           "number": 15,
           "state": "open",
-          "body_sha256": "508064c7175a6e17933b6dc2462f2eb2e479f90c2a32e43ffd8b62a70efbb9eb",
-          "source_offline_only": true,
-          "original_acceptance_unchanged": true
+          "body_sha256": "d95e72cdbabfe1100d999ead974713cf808ad3515da43e054b1cba76a8d8a489",
+          "original_checklist_unchanged": true,
+          "source_offline_planning_only": true
         },
         {
           "repository": "sparklink",
           "number": 22,
           "state": "open",
-          "body_sha256": "af06b4da2840ae293f5552608b04245a44e9c3e6b66e06b5f9e6bb8cdba5c44a",
-          "source_offline_only": true,
-          "original_acceptance_unchanged": true
+          "body_sha256": "d2a519b0b2841a9764acc4e8fb1ff82c7e773699b15a001069aa0be31d5a83b4",
+          "original_checklist_unchanged": true,
+          "source_offline_planning_only": true
         }
       ],
       "exit_conditions": [
@@ -5252,14 +5222,15 @@
   },
   "next_batch_contract": {
     "work_package": "WP08/U#22",
-    "production_behavior": "Accurate v3 inputs are staged. Audit matching SDK110 firmware EP0/CLOSE behavior and original successful/failed traces before a controlled distinct hardware action; then perform v3 discovery/method and original-path regression using the existing VM-only startup. Long-result/lifetime/data/security work remains parallel; no guessed wake, CLOSE bypass or unchanged retry.",
+    "production_behavior": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently.",
     "exit_conditions": [
       "Original owned method handle/operation/arguments/security/deadline reach same shared Provider Dispatcher",
       "Method request returns independently produced application result; command has no protocol reply",
       "Wrong owner/handle, expiry, cancellation, owner exit and bounded queues have definite failure; no implicit effect retry",
       "Accurate signed source gets real dual-device new-behavior and original preservation gates"
     ],
-    "not_prerequisite": "Full unrelated control-plane matrix, UserHost, Bond/release or complete recovery"
+    "not_prerequisite": "Full unrelated control-plane matrix, UserHost, Bond/release or complete recovery",
+    "authority_ref": "qualification-records.json#/batch/next"
   },
   "validation_reference_history": [
     {
@@ -5363,5 +5334,74 @@
   "startup_diagnostic_scope": {
     "authority": "project/qualification-records.json:batch",
     "state": "STATIC_CALL_PATH_AUDITED_RESIDENT_IDENTITY_AND_ROM_BEHAVIOR_UNVERIFIED"
-  }
+  },
+  "effective_scope_history": [
+    {
+      "date": "2026-11-01",
+      "effective_task_scope": "完整实现 https://github.com/OpenSparklink/sparklink/issues/8 中的 SparkLink/Linux 联合方案及两个仓库全部关联 issues：按 S0–S6 依赖顺序持续开发，自行维护 issues 与验收证据，完成 WS73 原生 USB/SLE/DLI/RF、per-controller Backend/Host/生命周期、事件与权限、用户态 SSAP/Profile、配对加密/Bond/PHY policy、可选UserHost接管及厂商Host适配（P4延期） 和故障/PM/兼容/发布矩阵；仅全部原验收条件满足后关闭对应 issue，并在完整目标真正达成时标记 goal complete。",
+      "userhost_planning": {
+        "priority": "P4 low, deferred, planning-only this round",
+        "decision": "docs/decisions/0003-optional-exclusive-user-host.md",
+        "audit": "docs/evidence/userhost-planning-audit-20261013.json",
+        "implemented": false,
+        "formal_proven": false,
+        "vm_real_accepted": false,
+        "not_prerequisite_for": [
+          "Current WS73 data loop",
+          "Lifecycle remediation",
+          "Native userspace SSAP",
+          "WP02-WP08"
+        ],
+        "preserved_requirements": [
+          "permissions/LSM/library ABI/path",
+          "per-controller isolation",
+          "finite resources/partial/EAGAIN/fault/crash/stale",
+          "benchmark/real evidence"
+        ],
+        "future_scope": [
+          "mutually exclusive Native/UserHost",
+          "shared DeviceRuntime vs NativeHostRuntime",
+          "typed bounded packet socket/lease",
+          "idle-only switching/verified hardware barriers",
+          "new Native generation/reinit/no inherited link-credit-key",
+          "SDK packet compatibility and slctl/slkd adaptation separately audited"
+        ],
+        "code_changed_or_deleted": false,
+        "issue_updates": {
+          "count": 14,
+          "readback_verified": true,
+          "receipt": "docs/evidence/userhost-issues-scope-20261013.json",
+          "vendor_scope_adjusted_as_authorized": true,
+          "native_scope_history_preserved": true,
+          "issues_open": true
+        }
+      },
+      "next_batch_contract": {
+        "work_package": "WP08/U#22",
+        "production_behavior": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently.",
+        "exit_conditions": [
+          "Original owned method handle/operation/arguments/security/deadline reach same shared Provider Dispatcher",
+          "Method request returns independently produced application result; command has no protocol reply",
+          "Wrong owner/handle, expiry, cancellation, owner exit and bounded queues have definite failure; no implicit effect retry",
+          "Accurate signed source gets real dual-device new-behavior and original preservation gates"
+        ],
+        "not_prerequisite": "Full unrelated control-plane matrix, UserHost, Bond/release or complete recovery",
+        "authority_ref": "qualification-records.json#/batch/next"
+      },
+      "reason": "Formal user-authorized scope extension; prior status retained, not completion"
+    }
+  ],
+  "original_scope_preserved": true,
+  "effective_scope_extension": {
+    "registry": "project/qualification-records.json",
+    "id": "userhost-windows-20261101",
+    "decision": "docs/decisions/0003-optional-exclusive-user-host.md",
+    "source_sha256": "d0ff6f757eb59af63725441e66a502beb8c6e215d271a2da0d85add22222877e",
+    "effective_scope_extended": true,
+    "original_scope_preserved": true,
+    "budget_unchanged": true,
+    "execution_plan": "project/implementation-plan.md",
+    "status_source": "scope_extensions entry is authoritative; issue receipt in issue-maintenance registry"
+  },
+  "objective_unchanged_explanation": "Goal API objective has no edit operation; original objective text/budget retained. Effective scope formally extended by user instruction and canonical plan, not a duplicate goal."
 }

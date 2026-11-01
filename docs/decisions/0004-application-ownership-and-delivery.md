@@ -1,7 +1,7 @@
 # ADR 0004：应用资源、管理权限与交付阶段
 
 状态：采用；实现和验收范围独立记录。完整 S0–S6、drivers/net/slkd、VM-only 和
-WS73 路径不变；UserHost 仍 P4 规划，不是数据或安全 relay 的前置条件。
+WS73 路径不变；KernelPacket/厂商仍 P4；自有UserHost/DirectUSB与Windows按ADR0003修订推进，不是数据或安全 relay 的前置条件。
 
 ## 依据与适用范围
 
@@ -628,3 +628,11 @@ Rust SDK 增加薄绑定及复用原授权准入/等待的 provider helper，实
 仍缺；既有 C/Python 远端读取可消费动态值。源码契约见
 [动态只读值参考](../reference/ssap-permissions.md#owned-read-only-provider)。
 本批实现中，离线及实机待验；完整服务、多应用、生命周期、自然根因与恢复范围不缩减。
+
+## 2026-11-01 增量：ConnectionUse、端点与交付检查点
+
+复用DiscoverySession，核对PublicationSession资源与调度；最小ConnectionUse释放只是放弃使用，不越权断共享Session。originating owner/ConnectionUse/Channel/Grant epoch及原期限绑定派生别名；独立委托要新scope，fd/HANDLE复制不自动新授权，排队引用、最终释放、owner失联、管理撤权分别处理。当前Native行为须逐入口核对迁移，不能仅改目标文字宣称达成。
+
+UserHost IPC准入不等于Host准入，更不等于USB、controller或peer应用完成；Operation预留有限结果槽，未知结果OutcomeUnknown，未观察阶段NotObservable，取消不抹物理债务。prepare不授永久资格，实际提交重验；短缓冲完整消息/所需长度、有限内部暂存和平台底层语义分别公开。
+
+Native取RX时检查与已开始用户复制的边界明确；UserHost明文进入应用IPC后不能追溯撤回，EAGAIN重试仍检查。authority origin/validation checkpoint区别于安全等级，严格读取时保证无实现则拒绝。Windows ACL/Token/SID/会话和Unix凭据各自验收，不将自报PID或SDK检查当内核强制。全部目标门禁归唯一计划及新增端点子项，不改变已有资格。

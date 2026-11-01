@@ -1,5 +1,72 @@
 # SparkLink / Linux 联合实施方案
 
+## 2026-11-01 正式增量范围与执行顺序
+
+本节是唯一计划的范围修订，不替代原19WP/10FV/12DG和S0–S6。完整服务API、自有UserHost/DirectUSB、Windows、QoS/ISO/PCM和系统集成作为正式增量；原预算和原验收不减。
+历史段落的“UserHost P4”只解释为KernelPacket/厂商适配；自有Host/DirectUSB与Windows已排入后续交付，不永久延期，也不成为当前Native前置。架构和信任差异见[唯一架构](architecture.md)及修订ADR0003/0004。
+
+优先级：B当前Native method v4及数据/安全/SSAP真实交付优先；A只做本批必要接口收敛；C/D/E/W为其后的P2纵向增量，C库审查与W编译边界可并行；F原数据/安全范围持续；G数字业务及系统集成为P3；H明确P4；I随功能分批部署，最终整体发布仍须原要求及新增适用范围全部满足。
+
+| 批次 | 交付 | 最小退出 | WP 映射 |
+| --- | --- | --- | --- |
+| A 架构/接口收敛 | 三视图、状态所有权、平台边界、ServiceChannel/ConnectionUse 契约 | 合入唯一规划/ADR/issues/goal；现有调用链不退化，无第二Engine | 00/05/06/08/16/18 |
+| B 当前 Native 服务 | 复用现有 method/发现/长结果、Provider，补标准event等缺口 | 准确新artifact真实正向交付、退出与原路径保持 | 05/08/10/12/16/17 |
+| C DirectUSB 设备层 | 锁定USB库、独占、启动、类型化包、stop/drain | E/US显式固件与HCC核验；USB线性化/取消；不伪授Host资格 | 11/13/14/17 |
+| D UserHost 最小链路 | DLI/credit/连接/Session/基本通道 | 普通用户随机短消息对端校验回复、交换角色、撤权/断链/同行隔离 | 01–06/14/17 |
+| E 共用服务 | 同一SSAP在UserHost运行，Profile消费同一契约 | 实际读写/方法/event、Native↔UserHost；不复制Engine | 08–10/14/16/17 |
+| W Windows | 编译和平台边界先行；WinUSB/Service/IPC/SDK逐步接通 | Windows VM双设备与Linux↔Windows真实应用互通、权限和退出 | 13/14/16/17/18 |
+| F 数据/安全扩展 | 长包、多通道、四设备、安全/Bond | 保留原边界/组合/压力/安全门禁 | 02–11/17 |
+| G QoS/ISO/PCM | 能力→协商→实际SDU→标准音频 | 时间误差、数字内容、标准方法/event、STOP/RELEASE和退出 | 10/13/15–17 |
+| H KernelPacket/厂商 | 独占内核包接管与所选厂商适配 | 状态屏障、权限、切换失败、重新Native、互通和隔离 | 13/14/17；P4 |
+| I 发布/长期 | 部署、SDK消费、性能/资源、自然恢复 | 全部适用原条件，非人工恢复独立闭合 | 11/15–18 |
+
+依赖：A 与 B 的最小接口修改结合；C 的可行性研究和 Windows 编译可并行，D 不等待完整Profile/Bond/ISO。E 依赖 D 与既有 Engine，W 平台实现随 C/D 推进。ISO能力分析可提前，不阻塞普通通道。H不是C/D/W前置。现有Native主线持续，不全面停工迁移。
+
+### 本轮与下一批退出
+
+本轮只合入采用决策、在线子项/分界、资格维度政策及goal有效范围，保留全部原验收；无Host/Windows/QoS/ISO实现或实机PASS。源码依赖审计核对现有Native查询、Unix/DBus耦合与标准event缺口；不得先删除严格Native检查以让AF_UNIX假装成功。
+下一批B：复用已准备v4准确输入，在新的有效启动条件和占用核对后取得双端发现/method短长独立结果、命令无响应、原期限/退出及原路径保持；无新硬件条件不重复未变化失败。并行A/C/W：列出ServiceChannel所有实际入口、权限/元数据来源及平台依赖，选择最小纯逻辑边界，USB库锁定/取消审查先于实际设备适配，不能复制Engine。
+后续每批开工前写生产行为、不变量、离线与VM/实机门禁、退出及剩余条件；不无限追加控制面前置。
+
+### 本批生产入口与平台边界核对（非全接口资格）
+
+以本次采用前公开源码c2642d7的生产文件核对；后续仅计划/测试状态改动不授编译资格。此表是11类API的缺口导航，不代替逐方法标准条款/类型/权限/期限/终态映射；U#26/#27先补实际入口映射，不能据类名宣称完整。
+
+| 类别 | 现有生产消费者／入口 | 当前边界与下一门禁 |
+|---|---|---|
+| CORE | libsparklink Client、slkd Manager/目录 | Linux D-Bus已有；服务核心与平台前端仍需分离 |
+| DISC | discovery、DiscoverySession | 复用现有租约；PublicationSession要求与硬件预算需核对 |
+| CONN | ApplicationConnection、Peer/Connection对象 | 真实Native身份；ConnectionUse与派生Grant契约待逐入口收敛 |
+| SEC | Agent/security、Native relay | 现有机制和限定证据；完整Bond/UserHost安全/Windows来源分别待验 |
+| SSAP | 唯一ssap_engine、DB、Owned/Provider及C/Python | method已实现，v4真实新交付待验；标准event及完整组合缺口保留 |
+| QOS | 现有PHY偏好不等QoS | U#28设计真实协商/生效revision，无虚构支持 |
+| DATA | slk-channel严格AF/SCM/ioctl，slktest | Native已实现；UserHostEndpoint单独实现，不移除Native检查 |
+| ISO | 普通ACB通道不等ISO | U#28实际能力/ICB/SDU/时钟与安全均待验 |
+| PROFILE | 当前实验模型非生产Profile | U#23标准业务；U#29音频，U#30系统集成分别验收 |
+| OBS | controller_events、独立订阅/snoop | 保留来源/丢失；跨模式authority/checkpoint待接，不授自报Ready |
+| ADAPT | slk-native、Native驱动 | U#24/25/27新增；U#7 KernelPacket/厂商P4 |
+
+核对发现：`slk-protocol/Cargo.toml`仍直接依赖`nix`，不得称整个crate已平台无关；`libsparklink`当前导出`slk_channel::Channel`（OwnedFd）且Client依赖D-Bus。Engine中准入、接收、状态与安全元数据仍有真实Native查询；不能通过成功桩接通跨平台。`Cargo.lock`尚无nusb，新库审计/锁定未完成。当前发送更新显式`event:false`，标准event不由notify覆盖。上述都是后续最小迁移入口，不在本规划批次改生产路径。
+
+### 增量证明与资格映射
+
+沿FV01–10增加模式、IPC/USB执行边界，不另起证明框架；重点为reserve→revoke/Down/deadline→实际提交→晚到Complete/NOCP→reuse、通知/休眠/drain、引用与有界结果能力。Kani/CBMC直接生产纯转换，TLC/LKMM有源码/锁/引用映射，安全用原安全模型；记录假设、版本、空间、反例和实现回归，不声明整套OS/库/固件已证明。
+DG01–12按Native↔Native、UserHost↔UserHost、Native↔UserHost、Linux↔Windows、E/US和适用固件扩展场景。标准event/ISO/PCM与平台系统设备是独立新增业务条件，不能用普通通道或本地登记代替。
+结构化记录新增模式/平台/端点/板型固件/互通维度政策；历史记录原样保留，未声明维度=未知，不是任意平台通用PASS。落实未来record/report维度一致性门禁之前，不接纳新增模式资格。
+
+### 在线职责索引
+
+- [U#24](https://github.com/OpenSparklink/sparklink/issues/24)：directusb。
+- [U#25](https://github.com/OpenSparklink/sparklink/issues/25)：host。
+- [U#26](https://github.com/OpenSparklink/sparklink/issues/26)：endpoint。
+- [U#27](https://github.com/OpenSparklink/sparklink/issues/27)：windows。
+- [U#28](https://github.com/OpenSparklink/sparklink/issues/28)：iso。
+- [U#29](https://github.com/OpenSparklink/sparklink/issues/29)：audio。
+- [U#30](https://github.com/OpenSparklink/sparklink/issues/30)：system。
+
+这些是U#8下独立生产交付子项，不是新总跟踪。U#7仍只管KernelPacket/厂商P4；U#3/#22唯一SSAP，U#23原Battery/DeviceInfo/HID不等待新增音频。K#1/#5/#6/#17原Native权限/Session/Channel继续按自身scope验收，Windows服务不塞进内核issue。自然根因/非人工恢复及未满足整项继续开放。
+
+
 ## 当前批次：方法长结果双端门禁v4
 
 长结果双端门禁v4源码为[1462159](https://github.com/OpenSparklink/sparklink/commit/14621593fe911b544634cd7097570a1fb5606d9c)。
@@ -536,17 +603,17 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
       "repository": "linux",
       "number": 15,
       "state": "open",
-      "body_sha256": "508064c7175a6e17933b6dc2462f2eb2e479f90c2a32e43ffd8b62a70efbb9eb",
-      "source_offline_only": true,
-      "original_acceptance_unchanged": true
+      "body_sha256": "d95e72cdbabfe1100d999ead974713cf808ad3515da43e054b1cba76a8d8a489",
+      "original_checklist_unchanged": true,
+      "source_offline_planning_only": true
     },
     {
       "repository": "sparklink",
       "number": 22,
       "state": "open",
-      "body_sha256": "af06b4da2840ae293f5552608b04245a44e9c3e6b66e06b5f9e6bb8cdba5c44a",
-      "source_offline_only": true,
-      "original_acceptance_unchanged": true
+      "body_sha256": "d2a519b0b2841a9764acc4e8fb1ff82c7e773699b15a001069aa0be31d5a83b4",
+      "original_checklist_unchanged": true,
+      "source_offline_planning_only": true
     }
   ],
   "exit_conditions": [
@@ -1537,7 +1604,11 @@ slkd；受控failure/QMP仍不当自然恢复。接动态pending/fault对象及�
 - 测试：core USB=n/m、明确支持的driver组合；Virtual热插拔和模块unload；真WS73回归。
 - 退出：删除enum/active swap/内置重复Virtual调用路径；没有模型不降级PASS。
 
-### WP14：可选独占UserHost及厂商Host适配（P4，S5/S6，延期；本轮只规划）
+### WP14：项目自有Host与设备接入；KernelPacket/厂商独立P4
+
+2026-11-01扩展：C/D/E/W按本计划开头批次推进，新增自有Host/DirectUSB与Windows；既有纯转换/codec先核对复用，执行/权限适配分别证明，服务层只用一个SSAP Engine。跨平台应用端点与ServiceChannel由WP05/06/08/16配合，原19WP不增删。
+
+#### WP14-H：KernelPacket与厂商Host适配（原P4条件保留）
 
 [ADR0003](../docs/decisions/0003-optional-exclusive-user-host.md)取代固定BackendProxy/slk-vendord架构。
 审计K88372a9b7cbc/Ub967674：无vendord服务、Proxy/UserHost UAPI或Host adapter实现；共同Native
@@ -1545,7 +1616,7 @@ Backend及D-Bus代理不是它们。此次范围调整不表示U#7/K#1/#5或其�
 
 - 接口包：共享设备层与NativeHostRuntime分离，UserHost独占有类型/方向/长度界限的controller包。
   内核保留驱动/FW/USB/HCC/BSLE、传输限额与权限；用户Host独占DLI、协议credit、connection、
-  DTAP、SSAP及协议安全。不是Native Backend，不消费Native事件/credit或自报原生Ready/link/security。
+  DTAP及协议安全；SSAP归同一服务核心。不是Native Backend，不消费Native事件/credit或自报原生Ready/link/security。
 - 所有权包：停用后接管；连接/在途事务/准入或未结清发送/work引用未清理时拒绝，不做热迁移。
   每controller独占，socket对象+必要lease/epoch，dup/fork/SCM载体排队引用/最终释放与进程死亡/
   管理撤权明确区分；实际提交重新核对。monitor仅复制；接管授权不等普通业务Channel Grant。
@@ -1557,7 +1628,7 @@ Backend及D-Bus代理不是它们。此次范围调整不表示U#7/K#1/#5或其�
   保留可信库映射、ABI/symbol/hash/许可证/架构libc校验、LSM/service account/systemd隔离、缺库、
   partial/EAGAIN/坏包/预算/卡死/hangup/crash/restart/stale/permission及benchmark门禁；不伪Complete。
 - 依赖：WP03身份/submit生命周期、WP05权限、WP11真实清理/状态屏障、WP12模式观察、WP13共享设备
-  与driver引用。只要求将来使用的最小接口，不等待整项互关；**WP14不是当前WS73、生命周期整改、
+  与driver引用。只要求将来使用的最小接口，不等待整项互关；**WP14-H不是当前WS73、生命周期整改、
   WP02–08数据/SSAP、安全或Native发布主线的前置依赖**。本轮不实现接口、模型、适配或实机矩阵。
 - 未来形式化：纳入FV04/05/06/10及codec/安全适用范围，所有权FSM/双owner/旧gen与epoch/切换失败/
   fd最终ref/取消/cleanup/提交与回调。TLC+实际pure代码Kani/CBMC+LKMM及KCSAN/lockdep；记录hash、
@@ -2329,7 +2400,7 @@ flowchart LR
 5. WP04 K3c8da4fac302/Ud1f9dde Runtime Session/唯一RX与fd分离已接通，真实40/249及dup/last-close/rebind拒绝子门禁通过；继续旧RX/在途关闭、动态TCID/关闭协议与完整引用资格。以此推进WP05可撤销Grant，其他控制组合与自然RCA并行。
 6. WP05 K3ee1a60bf06f接通Host lease epoch、软件TX准入和USB提交、v2绑定；精确U2a977的新VM40短/249保持回归与离线限定证明通过，Kf1034577ecc1/Ud570819授权RX取包新40短/249与actual C/限定LKMM通过，release/last-management-fd/dup两角色六实机子门禁已通过，Kbf8663/Udfb8636 Binding canonical scope/方向、最终发布与IRQ-save通过新40/249及六撤销/两方向门禁；protected明确拒绝，直接继续SCM_RIGHTS/daemon owner-death、S5可信安全与在途隔离，方向/安全仍缺。WP06文件语义并行。
 7. 根据实际能力扩展长包/模式，然后WP07多通道和四设备；WP08最小真实SSAP在其必要接口就绪后并行推进。
-8. WP09/10完成安全、Bond和标准Profile，WP13/14/15完成其他NativeBackend/PM；WP14 UserHost低优先级独立延期。
+8. WP09/10完成安全、Bond和标准Profile，WP13/14/15完成其他NativeBackend/PM；WP14-H KernelPacket/厂商低优先级；WP14-C/D/E/W按新增依赖推进。
 
 WP11自然恢复、WP12事件和WP18清理在每批保持独立子任务和证据，不用长期控制面排列阻塞步骤3–7。
 

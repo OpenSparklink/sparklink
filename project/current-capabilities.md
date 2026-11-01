@@ -1,5 +1,19 @@
 # 当前能力与资格
 
+## 正式新增路线：设计已采用，资格未取得（2026-11-01）
+
+| 路线 | 当前状态 | 必须取得的独立证据 |
+|---|---|---|
+| Linux Native及现有method/发现/Provider | 已有生产实现；准确资格仍由下方结构化记录表达 | v4准确产物真实method短长交付/生命周期待完成；旧PASS不转授 |
+| 项目自有UserHost＋DirectUSB | 规划采用，未实现/未证明/未取得离线集成或实机资格 | USB库提交/取消、SDK110 E/US、Host信用/Session、双端应用 |
+| ServiceChannel共用服务与UserHost端点 | 目标契约，现有Engine仍有Native查询和元数据依赖 | 原Native回归、独立authority/检查点、同一Engine互通 |
+| Windows 11 x64/MSVC | 首个目标平台，未实现/未验收 | 原生构建与IPC、WinUSB、Service/SDK、VM与跨系统业务 |
+| 标准event完整矩阵、QoS/ISO/PCM及系统HID/音频 | 未完成；不能用现有method/普通通道/SDK符号推导 | 按标准版本、实际能力、双端SDU/应用及系统设备分别验收 |
+| KernelPacket、所选厂商Host | P4规划，未实现/未证明/未验收 | 独占/切换屏障/权限/库适配/Native重初始化 |
+
+下方历史批次的“UserHost P4”指旧KernelPacket/厂商分支，不涵盖本次新增路线。以上扩展完整目标，原S0–S6/19WP/10FV/12DG、预算与VM-only保留。源码审计和规划完成不授功能资格。新路线的证据维度政策已登记，记录验证器接线仍待做；历史记录及全部失败不重写。依赖与退出仅维护于[唯一计划](implementation-plan.md)。
+
+
 ## 本批实现与验证边界
 
 长结果双端门禁v4源码为[1462159](https://github.com/OpenSparklink/sparklink/commit/14621593fe911b544634cd7097570a1fb5606d9c)。
@@ -142,17 +156,17 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
       "repository": "linux",
       "number": 15,
       "state": "open",
-      "body_sha256": "508064c7175a6e17933b6dc2462f2eb2e479f90c2a32e43ffd8b62a70efbb9eb",
-      "source_offline_only": true,
-      "original_acceptance_unchanged": true
+      "body_sha256": "d95e72cdbabfe1100d999ead974713cf808ad3515da43e054b1cba76a8d8a489",
+      "original_checklist_unchanged": true,
+      "source_offline_planning_only": true
     },
     {
       "repository": "sparklink",
       "number": 22,
       "state": "open",
-      "body_sha256": "af06b4da2840ae293f5552608b04245a44e9c3e6b66e06b5f9e6bb8cdba5c44a",
-      "source_offline_only": true,
-      "original_acceptance_unchanged": true
+      "body_sha256": "d2a519b0b2841a9764acc4e8fb1ff82c7e773699b15a001069aa0be31d5a83b4",
+      "original_checklist_unchanged": true,
+      "source_offline_planning_only": true
     }
   ],
   "exit_conditions": [

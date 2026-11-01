@@ -1,13 +1,24 @@
-# ADR 0003：可选 controller 独占 UserHost
+# ADR 0003：Host模式、设备接入与唯一服务核心
 
-日期：2026-10-13。状态：**采纳目标规划；P4/低优先级，本轮不实现、不删代码。**
-本决定调整WP14的固定`UserspaceProxyBackend → slk-vendord`方案，不表示原issue完成。
-ARCHITECTURE仍定义目标分层，IMPLEMENTATION_PLAN仍为唯一执行计划，CURRENT_CAPABILITIES
-仍是唯一资格入口。完整S0–S6、19工作包/10类形式化/12组数据门禁保留；Native WS73数据、
-生命周期整改及用户态SSAP不依赖UserHost完成。本ADR只替换厂商代理分支的所有权设计，
-不追溯扩大旧证据、不恢复旧SSAP wire Engine。
+原决定：2026-10-13；修订采用：2026-11-01。状态：架构采用，新增实现/证明/资格未完成。
 
-## 最新源码及参考边界
+## 2026-11-01 修订及理由
+
+原P4独占接管/厂商分支保留，现命名KernelPacket；不再将全部用户态Host延期。正式新增项目自有Rust UserHost＋DirectUSB（Linux usbfs、Windows WinUSB），Windows首个目标11 x64/MSVC。完整Host由Host进程与服务核心共同组成；Host负责DLI/协议credit/连接/CMTC/DTAP/协议安全，SSAP/DB/Profile/Agent/Bond策略复用同一服务核心，不复制Engine。每controller一个Host进程，单controller仅一owner，活动路径不竞争两套状态机。
+
+DirectUSB的固件/USB/HCC/BSLE在用户态设备适配；Native/KernelPacket在内核设备层。原“内核始终负责固件”和“UserHost拥有SSAP”概括被本修订替代。Native查询/SCM/授权不因跨平台而放宽；UserHost独立证明来源和提交/读取检查点，明文入IPC队列后不可追溯撤回。库drop/取消/重枚举不证明控制器状态清除；Native返回仍要求真实屏障和新身份。
+
+服务核心不依赖自己的SDK；Linux D-Bus/Windows本地IPC只是同一handler前端。窄ServiceChannel及ConnectionUse按现有实际调用逐批收敛，拒绝机械拆crate、通用万能Adapter或成功依赖桩。Windows权限/HANDLE/IOCP、系统HID/音频分别验收；纯用户态Host不意味着系统集成无驱动。
+
+采用原因：完整服务与Windows需要与内核机制分开的执行适配；DirectUSB无需先完成KernelPacket。复用生产纯逻辑能减少分叉，但锁/引用/USB/取消不等价，必须映射实测。nusb低层Endpoint为候选，先锁版本审查隐藏提交队列与drain；未完成前不承诺撤销后无物理提交。
+
+完整三视图/状态所有权/安全差异见[唯一架构](../../project/architecture.md)，批次A–I/W、WP映射和新增验收见[唯一计划](../../project/implementation-plan.md)；本ADR不复制第二套规划。原S0–S6/19WP/10FV/12DG/预算和VM-only保留，有效范围明确增加；当前Native method v4不等待本扩展，U#7仅原KernelPacket/厂商scope，新增子项归U#8。
+
+## 2026-10-13 原决定的保留部分（KernelPacket分支）
+
+下列源码审计是历史身份；包接管、租约、真实屏障及厂商适配原门禁保留，不代表最新实现或资格。术语UserHost在本历史分支中指KernelPacket用户态Host。
+
+### 历史源码及参考边界
 
 审计K`88372a9b7cbcea7fcbca4f34cc9d5707488be46e`、U`b967674dede65884ac7fe0248fe6195bc082badd`，
 两仓库clean。Cargo workspace无slk-vendord/Host-adapter crate；Kernel ControllerBackend
@@ -28,7 +39,7 @@ user channel绑定要求权限与设备状态检查、设置独占标志，最�
 |---|---|---|
 | DLI命令/事件、协议credit | 内核Native Host | 唯一用户态Host |
 | connection/DTAP/TCID/协议安全 | 内核Native Host与Session | 用户态Host |
-| SSAP/Profile/业务策略 | slkd/用户态；应用每逻辑通道socket | 用户态Host及独立上层适配 |
+| SSAP/Profile/业务策略 | slkd/用户态；应用每逻辑通道socket | 同一服务核心/唯一SSAP Engine |
 | 固件、USB/HCC/BSLE、传输资源/访问权限 | 共享内核设备/驱动层 | 同一共享内核设备/驱动层 |
 | 可信原生Ready/link/security | 内核真实Native状态 | 不发布；用户态声明不得冒充原生可信状态 |
 

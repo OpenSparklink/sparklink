@@ -1,4 +1,230 @@
 # SparkLink 架构
+## 2026-11-01 有效架构修订：完整服务、两种 Host 与跨平台路线
+
+用户正式采用交接输入（SHA256 `d0ff6f757eb59af63725441e66a502beb8c6e215d271a2da0d85add22222877e`），合入本唯一架构；交接不是第二套计划或资格报告。
+原 S0–S6、19WP、10FV、12DG、预算和全部原验收保留，**有效目标新增**自有 UserHost/DirectUSB、Windows及QoS/ISO/音频/系统集成，不能再笼统称scope完全未变。
+本节修订早期“所有UserHost均P4、内核始终负责固件/HCC、Host含SSAP”的概括；历史批次中的UserHost P4仅指旧KernelPacket/厂商分支。当前Native路径和未提交工作不被替换。
+状态：已采用设计；新增路线未实现、未证明、未取得平台或实机资格。当前method/发现/Provider/VM v4及唯一Engine已有实现，复用而不重做。
+批次及可关闭范围以[唯一计划](implementation-plan.md)与各子项为准；权限、锁、系统调用及USB执行适配不能因共享codec而宣称等价。
+
+### 核心决策及相对旧规划的变化
+
+目标是：**一套面向应用的服务系统、两种 Host 执行模式、三种设备接入组合，支持 Linux 与 Windows。**
+
+| 组合 | Host 协议机制 | 设备传输 / 固件 | 上层服务 | 定位 |
+| --- | --- | --- | --- | --- |
+| Linux Native | 内核 net/sparklink | 内核 driver / USB / HCC / BSLE | slkd | 保留主路径 |
+| UserHost + DirectUSB | 项目自有 Rust 用户态 Host | 用户态设备适配，Linux usbfs / Windows WinUSB | 同一服务核心、同一 SSAP Engine | 正式新增路线 |
+| UserHost + KernelPacket | 同一用户态 Host | Linux 内核共享 DeviceRuntime，独占类型化包接口 | 同一服务核心 | P4 可选，非 DirectUSB 前置 |
+
+完整用户态协议栈由 Host 进程与服务进程共同组成，不要求所有协议挤进一个进程。“纯用户态”不意味着操作系统完全没有 USB 内核支持。
+
+本次对旧 ADR0003 笼统表述的修订：
+
+1. 项目自有 UserHost 负责 DLI、协议 credit、连接、CMTC/DTAP 和协议安全机制；**不内置第二份 SSAP / 数据库 / Profile**。这些继续由服务核心负责。
+2. “内核始终负责固件和 HCC”仅适用于 Native / KernelPacket；DirectUSB 将这些移到用户态设备适配层。
+3. 厂商完整 Host 是否能暴露合格包／通道边界、停用自身 SSAP、兼容服务层，必须单独审核；不能把不透明 SDK 自动接成 Native Backend 或承诺兼容。
+4. 一个 controller 同时只能有一个 Host；一个物理连接只有一个权威 Session；一个协议职责不能在同一活动路径由两套状态机竞争。
+5. Native 与 UserHost 的执行、引用、锁、USB 和权限机制不同，不能声称全部实现可零成本复用。尽量共享生产纯逻辑与 codec，分别验证执行适配。
+
+### 三个视图：依赖、应用接口、运行路径
+
+#### 组件依赖
+
+- 公共业务类型与 codec 尽可能不依赖 D-Bus、nix、系统调用或内核对象。
+- 服务核心包含 SSAP / DB / Provider / Profile / Agent / Bond 策略，接受类型化请求，不依赖自己的应用客户端。
+- Linux D-Bus 与 Windows 本地 IPC 是同一服务核心的前端，不各写一套业务实现。
+- 应用 SDK 包装同一公开契约；默认不暴露 Native 管理逃生口。
+- Native Channel 保持严格 AF_SPARKLINK 校验；UserHostEndpoint 单独实现，通过明确的应用 Channel facade 共用。
+- Host 协议核心不依赖 Profile 或应用 SDK；设备适配不承担连接、SSAP 或安全成功状态。
+- 不为整齐机械拆 crate。先按职责收敛模块和导出，有真实复用／生命周期边界再拆。
+
+#### 应用接口
+
+统一覆盖 CORE / DISC / CONN / SEC / SSAP / QOS / DATA / ISO / PROFILE / OBS / ADAPT。每项维护：标准版本与条款 → Rust/C/Python/IPC 入口 → 生产处理者 → 内核或 Host / Controller 入口 → 身份／权限／资源所有者 → 准入与终态 → 证据与缺口。
+
+每项状态至少区分：接口已有且实现完整待验收、接口已有路径不完整、需要设计实现、平台不支持或待确认。能力查询同时表达实现、当前模式、固件能力、限制与准确资格；函数存在不能推出硬件支持。
+
+#### 运行路径
+
+```text
+应用 / slctl / slktest / Rust-C-Python SDK
+  ├─ Linux D-Bus / Windows 本地 IPC → 服务核心（管理、授权、SSAP、Profile）
+  └─ 授权业务 Channel → Native AF_SPARKLINK 或 UserHost 数据端点
+
+服务核心的唯一 SSAP Engine → ServiceChannel
+  ├─ Native Channel → 内核 Host → 内核设备驱动 → WS73
+  └─ UserHost Channel → 每 controller Host 进程
+       ├─ DirectUSB → 用户态 HCC/BSLE/固件 → nusb → usbfs / WinUSB
+       └─ 延后 KernelPacket → 内核共享设备层 → WS73
+```
+
+管理不逐包参与业务收发；诊断工具不参与正常协议决策。
+
+### 模块状态与所有权
+
+| 模块 | 权威状态 / 职责 | 禁止承担 |
+| --- | --- | --- |
+| Client / SDK | 客户端 owner、请求、语言生命周期、事件消费 | 自造 Ready/安全状态、归还协议 credit |
+| 服务资源协调 | Discovery/Publication 租约、ConnectionUse、服务所有权、策略 | 用缓存制造底层完成 |
+| Controller 目录 | 实例、观测快照、能力来源和有效性 | 与 Host 并存第二套运行状态 |
+| HostRuntime | generation、命令事务、协议 credit、设备故障 | SSAP DB 和 Profile |
+| ConnectionSession | 物理 lifetime、CMTC、协商、通道表、唯一 RX 分流 | 应用 fd 的唯一所有权 |
+| Channel | local/remote TCID、PI、模式、MTU/MPS、队列、关闭 | controller 管理权 |
+| EndpointBinding | fd/HANDLE 引用、Grant、撤权、最终释放 | 隐式决定共享物理连接断开 |
+| Ticket/CreditLedger | 提交资格、线性化、债务、真实完成记账 | 超时即猜测物理义务消失 |
+| SSAP Engine | codec、ExchangeInfo、事务、发现、读写、方法、事件、分片 | USB、DLI、controller credit |
+| DB/Provider | 本地服务、成员/权限、handle、回调和撤回 | 本地 staging 等同远端发布 |
+| Profile | 标准业务状态与路由 | 新的收发循环或授权状态机 |
+| QoS 协调 | 请求、候选、策略准入；消费实际协商 | 伪造硬件生效保证 |
+| ISO | Group/Member/Connection/DataPath、SDU 与时间生命周期 | 普通通道简单改名为 ISO |
+| 安全机制 | 协议状态、proof、实际安装及链路安全 | Agent 批准即认证 |
+| Agent/Bond | 用户决策、凭据持久化与撤销策略 | 暴露密钥给普通应用、旧元数据升级可信 Bond |
+| 设备层 | 固件、USB/HCC/BSLE、传输预算、cancel/drain | 协议 credit、连接成功 |
+| 观测/资格 | 有界事件、丢失统计、证据身份、聚合 | 用日志代替业务收到 |
+
+身份链采用 ControllerInstance → generation → host incarnation → connection lifetime → channel incarnation → Grant epoch → Operation / original deadline，并带 daemon owner、协商／安全 revision。USB 选择身份、协议地址、安全身份分开；handle、地址、对象路径或型号不是认证。
+
+### 多应用连接、发现与授权
+
+- 复用现有 DiscoverySession；共享硬件扫描但每应用独立过滤、预算、期限、取消、结果与丢失计数。
+- 补齐或核对 PublicationSession：硬件不足就拒绝或明确给出可接受调度，不静默混合广播要求。
+- 引入最小 ConnectionUse 语义：应用申请/复用物理连接的使用权，关闭 view 或释放需求不越权断开其他使用者。
+- 物理 Session 可由多个使用者及服务引用；只有引用、资源和物理义务满足条件后策略才可空闲断链。管理者强制断链独立权限。
+- 地址修改、停用和 Host 切换属于管理行为，不能普通应用借通道授权调用。
+- 目标默认 Grant 与 originating application owner、ConnectionUse、Channel、epoch 和期限绑定；原 owner 撤销影响派生别名。现有 Native 具体契约先核对，变更需迁移和验收，不直接覆盖。
+- dup/fork/SCM_RIGHTS 或 Windows handle 复制不自动创建新使用权。独立委托需新 owner/scope；不能宣称 fd/HANDLE 不可传递或仅靠凭据查询阻止所有委托。
+- 排队中的 fd/HANDLE 引用、最终释放、进程死亡、管理撤权、owner 连接丢失分别建模。
+
+### ServiceChannel、应用端点与结果契约
+
+提炼窄的 ServiceChannel：snapshot、prepare_send、send_pdu、receive_pdu、wait_capacity、observe_tx、stop_admission/drain。名字是设计占位，以现有实现命名为准。
+
+- prepare 不授永久资格、不直接分配可无限存续协议 credit。每次实际提交重验身份、Grant、期限、安全 revision 和 Ticket。
+- Native 适配保持真实查询、SCM/票据/安全元数据；UserHost 返回有来源的自身证明，不能伪装成内核 SleMessageSecurity。
+- Linux UserHost 数据通道初选每 Channel 一个 AF_UNIX SOCK_SEQPACKET；Windows 对应独立本地 Named Pipe。都有版本、kind、长度、request id 和有限预算；身份以服务端 binding 为准，不信任客户端自报字段。
+- 公共 SDK 用 Client/Channel/Operation/EventStream 等对象；原始 Linux fd / Windows HANDLE 仅在明确平台扩展暴露。C 使用不透明句柄、Python 共用 Rust 路径，不维护第二套状态机。
+- 高级 receive 保留完整消息语义，短缓冲明确返回所需长度；内部暂存同样有界。底层 PEEK/TRUNC/EFAULT/poll/epoll 或 Windows 完成语义单独说明。
+
+发送阶段：IngressQueued（UserHost IPC）→ HostAccepted（真实软件准入）→ TransportSubmitted → TransportCompleted → ControllerAccounted → PeerProtocolAcknowledged（若定义）→ PeerApplicationProcessed（真实应用结果）。
+
+Unix/Named Pipe 写入成功仅说明 IPC 阶段。高级 submit 等待真实准入或返回待完成 Operation。NOCP handle/count 无可靠逐 SDU 映射时只能提供聚合记账；未观察阶段明确 NotObservable。
+
+每个已接受操作预留有界结果能力；结果丢失/服务死亡可以 OutcomeUnknown，不隐式重试可能已有远端副作用的操作。取消作者只结束应用等待或阻止未提交工作，不能抹去物理义务。原始期限跨 SDK/IPC/队列保持；租约、等待、协议与清理期限分别表示。
+
+#### 必须公开的安全差异
+
+Native 可在内核取出 RX 消息时重验；其后已开始的用户复制也不能笼统保证被追溯撤回。UserHost 一旦将明文成功送入应用 IPC 队列，就无法可靠撤回该字节。EAGAIN 后重试须重验。公共能力要带 authority origin / validation checkpoint；需要更强读取时检查语义时明确拒绝，不能由 SDK 自检冒充内核强制。
+
+### UserHost 与设备传输选型
+
+- 每 controller 一个 Host 进程；一个串行 actor 拥有协议可变状态。先沿用现有 Tokio 锁定版本；简单执行模型，有界阻塞密码/初始化任务，不默认无限 spawn。
+- 回调只返回带身份的输入；完成、撤权、故障通知保留容量，不被数据队列挤死。事件和最早原期限唤醒；每轮包/字节/时间预算与公平性，credit 不足不空转。
+- Linux 私有控制可复用现有 zbus p2p；Windows 采用本地私有管道。协议核心不绑定 RPC 库，且不新造业务 Engine。
+- USB 首选评估 nusb 的锁定版本低层 Endpoint；libusb 异步接口作为有实际依据的后备。rusb 常用高层阻塞接口不直接作为高负载异步方案；首版不手写 usbfs。
+- 选型门禁包括库接收请求与实际内核 USB 提交之间的隐藏队列、提交线性化、cancel、晚完成、buffer 所有权和 pending drain。未证实前不能宣称撤销后不再发生物理提交。
+- cancel 请求、等待超时、库 drop、设备重枚举都不等于协议状态清除。软件回调 drain 与固件链接/密钥/credit 清除分开。
+- 每个传输结果区别确定未提交、已经提交、不确定失败；与现有 Ticket/debt 一致。
+- controller 包位于 HCC/BSLE 解封装后、Host DLI 语义前：Command/Event/ACB/ICB（能力确认后）。设备层仅校验方向、类型、长度、epoch、预算及传输状态。
+- HCC 传输流控和 USB 资源属于设备层；DLI 命令/数据 credit 属于当前 Host。TransportReady、HostReady、连接、安全状态不能互相替代。
+- 当前 driver 启动与 DLI 查询应在未来 KernelPacket 分离；接管后停止全部 Native 协议消费者，不留隐藏命令/NOCP 处理。
+- 协议纯状态和 codec 尽量复用生产源；内核锁、work、引用不能直接机械搬到 Tokio。允许经过许可核对的既有 C codec，纯用户态不等于必须重写为 Rust。
+
+### credit / RX / 调度 / 模式切换
+
+- 独立记账命令 credit、controller ACB/ICB 资源（是否共享由实际能力决定）、peer DTAP 流控、软件队列与 USB/HCC 预算。
+- Reserved 在确定未提交时按规则撤回；Submitted/Uncertain 保留义务。USB 成功不归还协议 credit；作者退出/期限不凭空退款。
+- 无线上身份可区分的 opcode/handle 不通过本地编号假装解决，需串行、旧债务、隔离或可靠屏障。
+- Session 唯一 RX 重组和 TCID/PI 分流，Channel 各自有限队列。PB 无法区分的分片不错误交错。
+- 性能沿既有 slktest、事件驱动、有限连续发送推进。先测单 RX 请求 completion→处理→重提交空窗，再决定多请求；多 RX 须定义提交序/完成序、取消缺口、generation 与 buffer 归属。
+- 多在途 TX、HCC 聚合、mmap/共享内存不默认开启；收益与短包尾延迟、公平性和 stop/drain 各自测量。
+- 首版启动时选择模式。活动连接、事务、已准入或未结清发送时拒绝切换；无热迁移。
+- 退出需停止新提交、撤权、drain 和真实状态屏障；不确定则 Fault/Quarantined，不 Free/Ready。
+- 返回 Native 更新身份并重初始化，不继承旧连接、密钥和 credit。KernelPacket 监控只复制，不成为第二 owner。
+
+### SSAP 与标准业务完整路线
+
+继续复用唯一 Engine、Owned 注册、DB、权限类型、Provider Dispatcher 和 Channel；禁止恢复旧内核 SSAP、method echo、伪通知成功和全局 dead_code 掩盖。
+
+逐项矩阵：服务/成员发现，属性/描述符读写，method request/response 与 command，标准 event，notify/indicate 与 ACK，ExchangeInfo/MTU、长值/分片、事务并发、原期限、服务变更/缓存失效、取消/owner退出/Down/重连。
+
+当前已实现 method 路径优先取得真实新行为资格；不要重做。标准 event 不由属性通知替代。Provider 收件箱有界，等待 fd/HANDLE 仅通知，请求对象携带唯一回复权、原身份和期限；callback 生命周期结束之前不 Free。动态可读可写组合等缺口按当前源码修复，不依据旧快照机械扩展。
+
+Profile 顺序：DeviceInfo / Battery / HID 实际远端业务，再扩展音频服务。Profile 使用现有服务/通道，不能导入密钥、自造 trust 或另一套发送路径。本地登记、远端发现、远端协议完成、应用处理分别验收。
+
+### 安全与 Bond
+
+- Connected / Paired / Authenticated / Encrypted / Bonded / Authorized 独立表达。Agent 同意只代表策略决策。
+- Native 机制留内核；UserHost 执行对应协议机制。密码任务使用不可变 identity/stage/revision/deadline ticket，回到 actor 重验后才推动状态，过期结果清理。
+- 用户态密码库初选经过审查的 RustCrypto P-256/AES-CMAC 等与 OS 随机源；标准向量、错误 proof/key、重放、随机失败、安装失败、revoke/重连必须验证。不把库存在写成安全审计通过。
+- slkd/共享服务核心拥有 Bond 策略与新版本凭据存储。旧元数据隔离，禁止自动升级可信凭据。
+- 首版可选简单版本化原子记录存储，不为少量键值先引入数据库框架；平台适配权限/原子替换/持久化。Pending/Active/Revoked、tombstone、磁盘满、损坏、进程被杀和撤销一致性有测试。
+- 协议、controller、磁盘不是原子事务。安装和持久化未满足时不能宣布可恢复 Bond；中断允许明确重新配对。
+- Windows 系统密钥保护和 Linux 文件/适用密钥服务分别实现，不能将加密 blob 跨平台复制即视为可用凭据。跨模式 Bond 互通需独立验收。
+- Host 与 USB 库属于受信任基础。相同 UID 的独立进程只提供故障隔离，不宣称抵御恶意 Host 的强隔离。已打开设备句柄不因 chmod/租约布尔值自动撤销。
+
+### QoS / ISO / 音频
+
+QoS 表达 Requested → Feasible/Candidate → Negotiated → Effective(revision/evidence)。应用给周期、最大 SDU、时限、可靠性/重传、安全和可接受替代；策略由服务层协调，真实机制由 Host 执行。PHY/MCS/载荷偏好不冒充完整 QoS，无保证时拒绝或提供显式候选，不静默降级。
+
+ISO 对象：controller generation → IsoGroup incarnation → Member → IsoConnection lifetime → Tx/RxDataPath Grant；适用时绑定基础 Session 和真实安全上下文。不能把普通 Channel 改名为 ISO。
+
+SDU 边界包括 stream/direction、序号与扩展回绕、原期限、presentation time、clock domain/mapping epoch/uncertainty、丢失/迟到状态。队列按条数、字节数和可预排时间跨度限制。host/controller/audio 时钟分别映射；无可靠同步不发布精确单向时延或 RTT/2。
+
+实际接入门禁：固件能力/缓冲 → 配置和建立事件 → 输入输出路径 → ICB/HCC 封装及 credit → 双端 SDU → 迟到/丢失/关闭/安全。SDK 中 A4/ICB 符号不足以证明可用；无线 ISO 不等于 USB isochronous。
+
+音频使用标准方法和事件。OPEN 关联满足要求的已有或新通道；STOP 停传但不必解除关联；RELEASE 解除关联。内部状态不能伪装为标准不存在的“ISO ready”事件。
+
+首个候选数字 PCM：16kHz、16bit、单声道、10ms，原始采样320B/SDU；实际格式、字节序、布局、可选时间戳和封装需协商实测。先数字样本序号/hash/时间，再声卡、编解码与声学处理。
+
+标准映射须分别核对音频流配置与传输管理、服务质量管理、DLI 的明确版本及条款；旧音频表格引用与新 DLI 编号不混用。受限标准、原始摘录及本地 hash 留授权来源索引，不复制公开站点。
+
+Linux HID 初选 UHID，音频后续 PipeWire；Windows 系统 HID/音频单独适配。应用层数据/PCM 成功不代表成为系统设备。
+
+### Windows 正式平台路线
+
+先以 Windows 11 x64 / MSVC 为首个支持目标；ARM64/更多版本按需求与证据扩展，不提前承诺。
+
+| 边界 | Linux | Windows | 共享内容 |
+| --- | --- | --- | --- |
+| 公共管理/服务前端 | D-Bus | 本地 Named Pipe RPC | 类型化 handler、错误、期限 |
+| UserHost 数据 | Unix seqpacket | 每通道异步本地 Named Pipe | 消息、预算、Grant、提交阶段 |
+| 后台服务 | systemd | Windows Service | 服务核心与清理逻辑 |
+| 身份 | UID/凭据/owner | Token/SID/登录会话/连接实例 | Principal/Owner/Grant 语义 |
+| I/O | fd/epoll/运行时 | HANDLE/Overlapped/IOCP | 异步操作和原期限 |
+| USB | nusb/usbfs | nusb/WinUSB | 固件/HCC/BSLE/包契约 |
+| 存储 | 权限与适用密钥保护 | ACL 与适用系统密钥保护 | schema/状态/撤销 |
+
+- Windows 不强制部署 D-Bus。服务核心去除 Unix/D-Bus 类型依赖，但不复制协议或服务逻辑。
+- nusb Windows 使用 WinUSB。ROM 和运行期接口是否都正确绑定、描述符是否支持自动安装、是否需要 INF/catalog、是否与厂商驱动冲突分别验证；不承诺当前设备即插即用。
+- 一 Host 独占 USB、多应用经服务共享。接口 claim 不自动证明整个 controller 的 EP0/reset 排他；不能未经同意重绑厂商或其他线程设备。
+- Windows IPC 必须 local-only、显式 ACL、真实客户端凭据和独立 owner incarnation；服务端不信任自报 SID/PID。进程 PID 可复用，不作唯一身份。
+- 不用 PIPE_NOWAIT 冒充异步 I/O；选择 Overlapped/IOCP，并验证取消后完成、引用与 buffer drain。
+- 跨平台公共 API 用对象而非 int fd；C/Python 包装同一路径。Windows handle 复制/继承与 Unix SCM/fork 不等价，各自验收。
+- Agent 在用户交互会话中运行，服务不直接在 Session 0 弹框。会话切换、注销、Agent退出/替换和迟到批准撤权。
+- 系统 HID 的 VHF 路线涉及独立驱动；虚拟音频设备也单独设计签名、安装和生命周期。协议栈可在用户态，不等于所有系统集成都无驱动。
+- Linux Native、Linux UserHost、Windows UserHost 的权限强度与能力分别公开；不宣称 Native AF_SPARKLINK 在 Windows 存在。
+
+### 故障、性能、验证和部署
+
+- 应用退出只清理自己的租约、服务、Grant 和通道；物理共享连接由资源协调决定。
+- 一 Host 进程死亡只影响其 controller；slkd/服务核心死亡是更大的共享故障域，不能用 per-controller actor 掩盖。
+- UserHost 首版控制 owner 丢失后停准入、撤权、清理，不做连接热接任；新服务/Host 必须新 incarnation 和状态屏障。
+- drain 超时/状态不明进入隔离，软件callback排空与固件链接/密钥/credit清除分开。
+- slktest 继续唯一应用通道正确性/时延/吞吐/背压工具，按明确模式和实际端点运行；不把抓包、形式化和资格汇总塞进去。
+- 相同设备/固件/参数/负载/计时与捕获条件比较 Native / UserHost，先稳定基线后设阈值，不预判用户态更快或更慢。
+- 捕获缺失、身份错配、超时、坏序号、丢结果、SKIP、监督器异常均不能生成完整 PASS；已知失败不被后跑覆盖。
+- 实机矩阵逐步覆盖 Native↔Native、UserHost↔UserHost、Native↔UserHost、Linux↔Windows、E/U 组合，后续参考 Host 跨实现互通另记。
+- 安全向量、生产 codec fuzz、状态序列、真实接口 fuzz、调试 VM、压力、长期资源和自然恢复继续原范围。
+- Kani/CBMC 直接验证生产纯逻辑；TLC/LKMM 映射到真实对象/锁/引用/线性化；模型通过不声称执行环境 refinement 完成。unsupported/timeout/未展开/假设无依据保留未证明。
+- 新重点：reserve→revoke/Down/deadline→实际提交→晚到Complete/NOCP→reuse；USB库提交/取消；IPC授权/慢消费者；event/sleep/drain交错。
+- 每份证明记录源码hash、版本、性质、空间边界、假设、反例和回归；NOCP准确性、callback排空、固件清除、调度公平性单独验证。
+- Windows 原生构建/测试 CI 与交叉编译区分；编译通过、离线IPC、虚拟集成、VM真实硬件分别记录。复用 Cargo.lock/uv.lock、--locked 和现有 fail-closed 报告。
+- 干净 VM 完成服务权限、普通用户、外部 C/Python、安装/升级/回滚/卸载、配置和凭据保留；签名和构建产物不等于合格发布。
+
+
+本次核对的官方参考：[nusb](https://github.com/kevinmehall/nusb)、[异步管道](https://learn.microsoft.com/en-us/windows/win32/ipc/synchronous-and-overlapped-input-and-output)、[WinUSB安装条件](https://learn.microsoft.com/en-us/windows-hardware/drivers/usbcon/automatic-installation-of-winusb)。库版本尚未锁定为项目依赖，接口/平台支持不等于WS73资格；选型必须审计锁定源码的提交/取消和缓冲区语义。
+
 
 ## 连接级管理观察
 
@@ -124,7 +350,7 @@ flowchart TB
     Core[net/sparklink：Runtime、Host、Session、Channel、credit、安全机制]
     Driver[drivers/sparklink：总线、固件、HCC/BSLE、URB、硬件恢复]
     Hw[真实 WS73 / 后续硬件]
-    User[可选用户态 Host：低优先级]
+    User[KernelPacket Host：P4可选接管]
     Device[共享设备层：驱动引用、所有权、传输预算]
     Observe[独立事件 / snoop / slkmon / slkdump]
     App -->|管理与服务 API| Daemon
@@ -178,7 +404,7 @@ C／Python观察视图复用同一Rust stream和Client执行器，保留一条�
 | 共享设备层（目标，待分离） | 驱动/硬件generation、互斥所有权、传输资源/提交gate、权限与故障 | UserHost时继续处理原生协议credit或伪造Ready |
 | slkd | Managed 策略、授权、SSAP Engine、Agent、trust、Bond store、Profile | USB/HCC 直接操作、伪造内核安全状态 |
 | 应用 | 业务协议和 UI；使用授权 fd 或服务 API | raw DLI、隐式全局 adapter、私有 transport |
-| UserHost（未来可选） | 用户态独占DLI/credit/连接/DTAP/SSAP/协议安全；厂商Host适配另核对 | 伪装Native Backend、把自报状态变为原生可信状态或默认承诺SDK兼容 |
+| UserHost（未来可选） | 用户态独占DLI/credit/连接/DTAP/协议安全；同一服务核心拥有SSAP，厂商适配另核对 | 伪装Native Backend、把自报状态变为原生可信状态或默认承诺SDK兼容 |
 | 观察工具 | 独立订阅和诊断 | 抢占协议 RX、隐式修改硬件 |
 
 ### 采用的关键决策
@@ -198,21 +424,15 @@ C／Python观察视图复用同一Rust stream和Client执行器，保留一条�
 | AD-11 | core 不依赖 USB=y，driver 可注册 | Native/Virtual driver共同注册；UserHost独占包接口另行分离 |
 | AD-12 | 未发布 UAPI 同步替换 | 不引入长期双实现和无意义兼容负担 |
 
-| AD-13 | 可选UserHost与Native互斥；停用后接管，真实状态屏障后返Native | WP14低优先级规划替代固定vendord代理；本轮不实现 |
+| AD-13 | 可选UserHost与Native互斥；停用后接管，真实状态屏障后返Native | WP14分自有Host/DirectUSB与KernelPacket/厂商P4；采用20261101修订 |
 
 AD-01–AD-13已采用并映射ADR0001/0002/0003；不新建重复决定，目标实现状态以能力入口为准。
 
 
-### 可选UserHost：当前只规划（AD-13 / WP14，P4）
+### KernelPacket独占接管（AD-13 / WP14-H，P4）
 
-Native主线保持：内核Host拥有DLI/协议credit/connection/DTAP/security机制，slkd用户态SSAP/Profile/策略，
-应用用每逻辑通道socket。UserHost拥有完整协议Host，内核仅保留共享设备/固件/USB/HCC/BSLE、
-传输预算和访问强制；两模式互斥，其他controller不中断，不复用Native Backend来代理用户Host。
-当前未实现DeviceRuntime分离/UserHost UAPI/slk-vendord/厂商Host adapter；代码中的D-Bus Proxy不算它们。
-首版先停用，拒绝连接/在途/未结清发送；socket对象与租约/epoch持权、dup/fork/SCM及最后引用分别处理，
-撤权/join/实际控制器状态屏障后才返Native新身份并重初始化，不继承credit/link/key，也不把自报状态当Ready。
-[唯一契约及未来门禁](../docs/decisions/0003-optional-exclusive-user-host.md)记录细节和未决ABI评审项；
-[源码审计](../docs/evidence/userhost-planning-audit-20261013.json)区分存在代码与未来任务。WP14不成为当前主线前置。
+仅本分支要求内核共享DeviceRuntime、独占包接口、socket/lease及经过验证的状态屏障；不伪装Native Backend。Native与UserHost互斥，返Native新身份并重初始化，旧连接/密钥/credit不继承。活动连接/在途/debt拒绝切换，不确定留Fault/Quarantined；原dup/fork/SCM、权限、callback/drain及隔离门禁完整保留于[ADR0003](../docs/decisions/0003-optional-exclusive-user-host.md)。
+自有DirectUSB不依赖本接口；用户态Host不内置第二份SSAP。当前三条新增接入/平台路线均未取得资格；20261013审计是历史输入，不代表本日源码身份。
 
 ## 固定版本参考的使用边界
 

@@ -1153,8 +1153,7 @@ impl ClientAdmission<'_> {
             let _ = reply.send(Err("SSAP busy/not-ready/expired/oversize".into()));
             return false;
         }
-        let prepared = slk_channel::query(wire.fd.get_ref().as_raw_fd())
-            .and_then(|_| wire.prepare(minimum, deadline));
+        let prepared = wire.snapshot().and_then(|_| wire.prepare(minimum, deadline));
         let constraint = match prepared {
             Ok(c) => c,
             Err(e) => {
@@ -1745,6 +1744,14 @@ struct Wire {
     fixture: bool,
 }
 impl Wire {
+    // Always query the owned Native binding, including in fixture tests.
+    // Packet fixtures supply bytes only, never Native authority or completion.
+    fn snapshot(&self) -> io::Result<SleChannelInfo> {
+        slk_channel::query(self.fd.get_ref().as_raw_fd())
+    }
+    fn session_tx_status(&self) -> io::Result<slk_protocol::SleSessionTxStatus> {
+        slk_channel::query_session_tx_status(self.fd.get_ref().as_raw_fd())
+    }
     fn native(fd: AsyncFd<OwnedFd>) -> Self {
         Self {
             fd: std::sync::Arc::new(fd),
@@ -1761,16 +1768,15 @@ impl Wire {
     }
     fn receive(
         &self,
-        fd: &OwnedFd,
         bytes: &mut [u8],
         cap: SleChannelInfo,
     ) -> io::Result<(usize, Option<slk_protocol::SleMessageSecurity>)> {
         #[cfg(test)]
         if self.fixture {
-            return receive_fixture(fd, bytes).map(|n| (n, None));
+            return receive_fixture(self.fd.get_ref(), bytes).map(|n| (n, None));
         }
         let (size, m, flags) = slk_channel::security::recv(
-            fd.as_raw_fd(),
+            self.fd.get_ref().as_raw_fd(),
             bytes,
             nix::libc::MSG_DONTWAIT | nix::libc::MSG_TRUNC,
         )?;
@@ -1825,17 +1831,21 @@ impl Wire {
         )
         .map(Some)
     }
-    fn send(&self, fd: &OwnedFd, packet: &Pending, bytes: &[u8]) -> io::Result<()> {
+    fn send(
+        &self,
+        constraint: Option<&slk_protocol::SleSendConstraint>,
+        bytes: &[u8],
+    ) -> io::Result<()> {
         #[cfg(test)]
         if self.fixture {
-            return send(fd, bytes);
+            return send(self.fd.get_ref(), bytes);
         }
-        if let Some(c) = packet.constraint {
+        if let Some(c) = constraint {
             let count = slk_channel::security::send(
-                fd.as_raw_fd(),
+                self.fd.get_ref().as_raw_fd(),
                 bytes,
                 nix::libc::MSG_DONTWAIT | nix::libc::MSG_NOSIGNAL,
-                &c,
+                c,
             )?;
             if count != bytes.len() {
                 return Err(io::Error::other("partial SSAP constrained admission"));
@@ -1931,13 +1941,14 @@ async fn run(
             "SSAP initialization original deadline",
         ));
     }
+    let wire = Wire::native(fd);
     let capabilities = loop {
         tokio::select! {
             _ = &mut stopped => return Ok(()),
             _ = tokio::time::sleep_until(original_deadline) => return Err(io::Error::new(io::ErrorKind::TimedOut, "SMTC capability deadline")),
-            ready = fd.writable() => {
+            ready = wire.fd.writable() => {
                 let mut ready = ready?;
-                match ready.try_io(|fd| slk_channel::query(fd.get_ref().as_raw_fd())) {
+                match ready.try_io(|_| wire.snapshot()) {
                     Ok(info) => break info?, Err(_) => continue,
                 }
             }
@@ -1964,7 +1975,7 @@ async fn run(
         return Err(io::Error::other("SMTC binding identity mismatch"));
     }
     exchange_loop(
-        Wire::native(fd),
+        wire,
         capabilities,
         original_deadline,
         &mut stopped,
@@ -2156,7 +2167,7 @@ async fn exchange_loop(
                 if (!initial_done && Instant::now() >= original_deadline) || pending.iter().any(|p| Instant::now() >= p.deadline) || client.as_ref().is_some_and(|v|Instant::now()>=v.obligation_deadline()) || server.as_ref().is_some_and(|v|Instant::now()>=v.0) || server_queue.iter().any(|v|Instant::now()>=v.deadline) {
                     return Err(io::Error::new(io::ErrorKind::TimedOut, "original SSAP obligation deadline"));
                 }
-                slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
+                wire.snapshot()?;
             }
             query = incoming.recv() => {
                 let Some(query)=query else { return Ok(()); };
@@ -2265,7 +2276,7 @@ async fn exchange_loop(
                 if let Query::Incoming{handles,modes,deadline,reply}=query {
                     if reply.is_closed(){continue;}
                     if receive.is_some() || client.is_some() || incoming_wait.is_some() || !initial_done || Instant::now()>=deadline || handles.is_empty() || handles.len()>32 || modes==0 || modes&!3!=0 || handles.contains(&0) || handles.iter().enumerate().any(|(i,h)|handles[..i].contains(h)) {let _=reply.send(Err("SSAP receive busy/not-ready/invalid/expired".into()));continue;}
-                    slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
+                    wire.snapshot()?;
                     receive=Some(crate::ssap_receive_transaction::ReceiveTransaction::new(handles,modes,deadline,reply));continue;
                 }
                 if let Query::Value{bytes,deadline,minimum,reply}=query {
@@ -2278,7 +2289,7 @@ async fn exchange_loop(
                     let result=if Instant::now()>=deadline {
                         Err("transport observation original deadline".into())
                     } else {
-                        slk_channel::query_session_tx_status(wire.fd.get_ref().as_raw_fd())
+                        wire.session_tx_status()
                             .map_err(|error|error.to_string()).and_then(|current| {
                                 if (current.controller,current.generation,current.lifetime,current.handle)
                                     != (capabilities.controller,capabilities.generation,capabilities.lifetime,capabilities.handle) {
@@ -2290,7 +2301,7 @@ async fn exchange_loop(
                 }
                 let Query::Info(reply)=query else {unreachable!()};
                 let result=match state.borrow().clone() {
-                    Status::Negotiated(info) => slk_channel::query(wire.fd.get_ref().as_raw_fd()).map_err(|e|e.to_string()).and_then(|current| {
+                    Status::Negotiated(info) => wire.snapshot().map_err(|e|e.to_string()).and_then(|current| {
                         if current != capabilities { Err("SMTC capability/lifetime changed".into()) } else { Ok(info) }
                     }),
                     Status::Starting => Err("SSAP response obligation pending".into()),
@@ -2335,8 +2346,8 @@ async fn exchange_loop(
                         if let Some(mut current)=update.take() && let Some(reply)=current.reply.take() {let _=reply.send(Err("update owner/configuration withdrawn before admission".into()));}
                         pending.pop_front();continue;
                     }
-                    ready.try_io(|fd| wire.send(fd.get_ref(), packet, &fragment))
-                } else {ready.try_io(|fd| wire.send(fd.get_ref(), packet, &fragment))};
+                    ready.try_io(|_| wire.send(packet.constraint.as_ref(), &fragment))
+                } else {ready.try_io(|_| wire.send(packet.constraint.as_ref(), &fragment))};
                 if let Ok(result) = outcome {
                     result?;
                     let packet=pending.front_mut().expect("guarded queue");
@@ -2369,7 +2380,7 @@ async fn exchange_loop(
             }
             ready = wire.fd.readable() => {
                 let mut ready = ready?;
-                if let Ok(result) = ready.try_io(|fd| wire.receive(fd.get_ref(), &mut buffer, capabilities)) {
+                if let Ok(result) = ready.try_io(|_| wire.receive(&mut buffer, capabilities)) {
                     let (size, mut receipt) = result?;
                     let mut reply_deadline = if initial_done { Instant::now()+Duration::from_secs(5) } else { original_deadline };
 
@@ -2396,7 +2407,7 @@ async fn exchange_loop(
                     if matches!(raw[0],15|16) {
                         if raw[0]==16 && pending.len()+server_load>=8{return Err(io::Error::other("SSAP ACK queue full"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
-                        slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
+                        wire.snapshot()?;
                         if let Some(current)=receive.as_mut() {
                             current.maintain(&mut incoming_wait,Instant::now()).map_err(io::Error::other)?;
                         }
@@ -2421,7 +2432,7 @@ async fn exchange_loop(
                         if !initial_done {return Err(io::Error::other("SSAP value/discovery before ExchangeInfo completion"));}
                         if pending.len()+server_load>=8 {return Err(io::Error::other("SSAP response obligation queue full"));}
                         let negotiated=capabilities.mtu.min(peer_reply.as_ref().and_then(|(p,_)|p.mtu).unwrap_or(capabilities.mtu));
-                        slk_channel::query(wire.fd.get_ref().as_raw_fd())?;
+                        wire.snapshot()?;
                         next_server_id=next_server_id.checked_add(1).ok_or_else(||io::Error::other("SSAP original request namespace exhausted"))?;
                         server_queue.push_back(ServerPacket {bytes:raw.to_vec(),deadline:reply_deadline,constraint,mtu:if matches!(raw[0],8|10|12|13|18|19) && ExchangeInfo::decode(capabilities.mtu,&peer_request).is_ok_and(|p|sequenced(&p)){fragments::LOGICAL_MTU}else{negotiated},level:receipt.map_or(0,|m|m.security),request_id:next_server_id});
                     } else if matches!(raw[0],1|5|7|9|11|14|20) {
@@ -3405,7 +3416,7 @@ mod tests {
             let mut part = vec![0; 249];
             let n = plan.encode(packet.sent, &mut part).unwrap();
             part.truncate(n);
-            match wire.send(wire.fd.get_ref(), &packet, &part) {
+            match wire.send(packet.constraint.as_ref(), &part) {
                 Ok(()) => {
                     packet.sent += 1;
                     current.admit_part(
@@ -3466,7 +3477,7 @@ mod tests {
             let mut part = vec![0; 249];
             let n = plan.encode(packet.sent, &mut part).unwrap();
             part.truncate(n);
-            wire.send(wire.fd.get_ref(), packet, &part).unwrap();
+            wire.send(packet.constraint.as_ref(), &part).unwrap();
             packet.sent += 1;
             current.admit_part(
                 first + Duration::from_millis(200),
@@ -3747,7 +3758,7 @@ mod tests {
         let mut bytes = [0u8; 64];
         assert_eq!(
             native
-                .receive(native.fd.get_ref(), &mut bytes, fixture_capabilities(0))
+                .receive(&mut bytes, fixture_capabilities(0))
                 .unwrap_err()
                 .raw_os_error(),
             Some(nix::libc::EAFNOSUPPORT)
@@ -3756,8 +3767,18 @@ mod tests {
             fixture: true,
             ..native
         };
+        // Even an explicit packet fixture must not fake Native snapshots or
+        // physical drain. These are real ioctls on the exact owned AF_UNIX fd.
+        assert_eq!(
+            fixture.snapshot().unwrap_err().raw_os_error(),
+            Some(nix::libc::ENOTTY)
+        );
+        assert_eq!(
+            fixture.session_tx_status().unwrap_err().raw_os_error(),
+            Some(nix::libc::ENOTTY)
+        );
         let (count, context) = fixture
-            .receive(fixture.fd.get_ref(), &mut bytes, fixture_capabilities(0))
+            .receive(&mut bytes, fixture_capabilities(0))
             .unwrap();
         assert_eq!(&bytes[..count], b"fixture-only");
         assert!(context.is_none());

@@ -12,7 +12,7 @@
 | 当前资格 | [CURRENT_CAPABILITIES](../../project/current-capabilities.md) | 区分源码、离线、模型、实机与未决条件 |
 | 目标设计 | [ARCHITECTURE](../../project/architecture.md) 与 ADR | 不代表接口已接通 |
 
-可选 UserHost 目前属于低优先级延期规划。旧 SSAP 业务入口的移除，也不意味着
+KernelPacket／厂商 Host 适配仍属低优先级；项目自有 UserHost／DirectUSB 与 Windows 已纳入正式路线，尚无运行资格。旧 SSAP 业务入口的移除，也不意味着
 新的用户态 SSAP Engine 已完整实现。错误和 NotSupported 行为以当前源码及资格为准。
 
 

@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "status": "CONDITIONAL_CANDIDATE_SOURCE_AUDIT_NOT_DEVICE_QUALIFICATION",
+  "tool_source": "95ba0262a08636da9811e34f897a23277529b2a3",
+  "package": {
+    "name": "nusb",
+    "version": "0.2.9",
+    "crate_sha256": "1de8b6d15f559f50760dad6c1b56fde4041f99dc96a08e55c2b41f44c7417ad9",
+    "git": "5dfee4c1f82a1fdf019c3b5935ee4cd887908093",
+    "license": "Apache-2.0 OR MIT",
+    "root_cargo_lock_changed": false,
+    "source_sha256": {
+      "src/device.rs": "c2953d62ab05de6ab7d9956d706c00e96725dd70890b4ce210c0a04cd2aec92a",
+      "src/transfer/internal.rs": "0d09b562e6805f760be05ff9e449ce71f4306e7005c21c2cedaa18bd322f72a8",
+      "src/transfer/buffer.rs": "032d73a85281115aada917dd8ab046dc47b86593d4ace33248d074abdbc15e1a",
+      "src/platform/linux_usbfs/device.rs": "bbd632feb64e970d4f7780c4b81f1cd48116ccf38fcd2a59cc46e151c9c923be",
+      "src/platform/linux_usbfs/events.rs": "41bb15c95986744c66d8c14863c16a8266d144818306e55fe4b41f86365efa46",
+      "src/platform/windows_winusb/device.rs": "4e96b7da7a055d6c4d9581c36c9c7f43e8e922fe2c182c879d98b5f06a2b9c97",
+      "src/platform/windows_winusb/transfer.rs": "edc9936990cdd3be01506fe3444b9ca3e09e2fbee7bfeebfddce6baf25ba95c6",
+      "src/io/write.rs": "5277f2ea5b4363ab0f1b13aeb5531ce26fe7fbe45e87966572656194cdaf4141",
+      "Cargo.lock": "07d4009ee41986bd90c5f7f13d9f0fdb71239ab5d2b754e05a20bd5f450d595b",
+      "LICENSE-MIT": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+      "LICENSE-APACHE": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+    }
+  },
+  "checks": {
+    "upstream_production_state_tests": {
+      "passed": 3,
+      "fixture": "manual exactly-once completion with drop counters; no OS or USB",
+      "scope": [
+        "abandoned pending payload retained until completion",
+        "submission-order completion queue",
+        "control future eagerly calls submit and drop does not drain"
+      ]
+    },
+    "msvc_lib_check": "passed, no linking/runtime",
+    "invalid_archive": "rejected before staging",
+    "existing_run": "not overwritten",
+    "first_offline_build": "failed: locked Tokio 1.54.1 absent locally; preserved separately",
+    "locked_offline_replay": "passed after locked dependency fetch"
+  },
+  "assumptions": [
+    "OS stops accessing transfer/buffer before its single completion callback",
+    "syscall publication ordering and callback release/acquire require OS-specific review, not proved by these tests",
+    "event loop/Windows callbacks eventually scheduled; cancel need not win",
+    "buffer lengths/pool/queue limits enforced by future adapter; dependency queue alone is not a bound"
+  ],
+  "gaps": [
+    "no SparkLink DirectUSB production adapter",
+    "no OS callback/drain/refinement proof",
+    "no Windows queue policy readback or VM runtime",
+    "no USB/firmware/RF qualification",
+    "no protocol credit refund based on USB status"
+  ],
+  "references": {
+    "nearlink_host": "f0872dfaac33ffa99b80b352f6c05fba2df6414e",
+    "libws73_usb": "f4d85d0e95af2d0043432e1301fd2f6b660a4906",
+    "libws73_stop_path": "src/ws73_usb_evt.c: ws73_evt_stop bounded pending wait then free; pending-zero not enforced after limit, do not inherit as proven drain",
+    "nearlink_test_stub": "services/stack/src/dli/sapi/src/dli_data_stub.c guarded by NEARLINK_SERVICE_STACK_LOCAL_TEST; not transport delivery evidence"
+  },
+  "hardware_actions": false
+}

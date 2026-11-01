@@ -8734,6 +8734,32 @@
       ],
       "closed": [],
       "qualification": "SOURCE_OFFLINE_ONLY_NATIVE_VM_PENDING"
+    },
+    {
+      "id": "directusb-library-audit-20261101",
+      "source_commit": "95ba0262a08636da9811e34f897a23277529b2a3",
+      "issues": [
+        {
+          "repository": "sparklink",
+          "number": 24,
+          "state": "open",
+          "body_sha256": "f33f087c2a954ff3bcaa0f8e5538e2d73443efd5fbc037a6b668656c3a2703f7",
+          "readback_verified": true,
+          "original_checklist_unchanged": true,
+          "source_offline_only": true
+        },
+        {
+          "repository": "sparklink",
+          "number": 27,
+          "state": "open",
+          "body_sha256": "bef9a8841435f49c990136fcd658cccbdbfddd907e60db2092aa1ca5f55a3d0a",
+          "readback_verified": true,
+          "original_checklist_unchanged": true,
+          "source_offline_only": true
+        }
+      ],
+      "closed": [],
+      "qualification": "DEPENDENCY_AUDIT_ONLY_NO_DEVICE_QUALIFICATION"
     }
   ]
 }

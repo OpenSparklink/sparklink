@@ -528203,6 +528203,41 @@
               "source_offline_only": true
             }
           ]
+        },
+        {
+          "id": "directusb-library-audit-20261101",
+          "source_commit": "95ba0262a08636da9811e34f897a23277529b2a3",
+          "status": "DEPENDENCY_AUDIT_NOT_IMPLEMENTATION_QUALIFICATION",
+          "report": "project/reference/architecture/directusb-library-audit-20261101.json",
+          "report_sha256": "595db2b59682785b0521d43788a5c9d1103f855a3af2d24baa7d543da4323bfb",
+          "not_tested": [
+            "no SparkLink DirectUSB production adapter",
+            "no OS callback/drain/refinement proof",
+            "no Windows queue policy readback or VM runtime",
+            "no USB/firmware/RF qualification",
+            "no protocol credit refund based on USB status"
+          ],
+          "qualification_transfer": false,
+          "issue_sync": [
+            {
+              "repository": "sparklink",
+              "number": 24,
+              "state": "open",
+              "body_sha256": "f33f087c2a954ff3bcaa0f8e5538e2d73443efd5fbc037a6b668656c3a2703f7",
+              "readback_verified": true,
+              "original_checklist_unchanged": true,
+              "source_offline_only": true
+            },
+            {
+              "repository": "sparklink",
+              "number": 27,
+              "state": "open",
+              "body_sha256": "bef9a8841435f49c990136fcd658cccbdbfddd907e60db2092aa1ca5f55a3d0a",
+              "readback_verified": true,
+              "original_checklist_unchanged": true,
+              "source_offline_only": true
+            }
+          ]
         }
       ]
     }

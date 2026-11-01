@@ -14,6 +14,25 @@ DirectUSB的固件/USB/HCC/BSLE在用户态设备适配；Native/KernelPacket在
 
 完整三视图/状态所有权/安全差异见[唯一架构](../../project/architecture.md)，批次A–I/W、WP映射和新增验收见[唯一计划](../../project/implementation-plan.md)；本ADR不复制第二套规划。原S0–S6/19WP/10FV/12DG/预算和VM-only保留，有效范围明确增加；当前Native method v4不等待本扩展，U#7仅原KernelPacket/厂商scope，新增子项归U#8。
 
+## DirectUSB库版本与提交边界审查（2026-11-01）
+
+固定候选nusb **0.2.9**，归档SHA256 `1de8b6d15f559f50760dad6c1b56fde4041f99dc96a08e55c2b41f44c7417ad9`，上游提交[5dfee4c](https://github.com/kevinmehall/nusb/tree/5dfee4c1f82a1fdf019c3b5935ee4cd887908093)，双许可Apache-2.0/MIT。这是下一适配原型的审计pin，不是默认生产依赖；根Cargo.lock未改，未宣称完整依赖漏洞/许可或发布审查完成。文件hash、实际测试边界见[结构化审计](../../project/reference/architecture/directusb-library-audit-20261101.json)。
+
+| 源码事实 | 实施约束／未证明项 |
+|---|---|
+| `Endpoint::submit`→Linux `USBDEVFS_SUBMITURB`／Windows `WinUsb_ReadPipe/WritePipe`，当前低层调用栈直接提交；错误延迟至Completion | actor持最终提交gate；调用后不能仅凭普通错误/零字节确认“从未提交”。OS请求提交与RF发送不是同一阶段 |
+| control `TransferFuture::new`构造即调用submit，未poll也发生 | 权限、generation、原期限检查必须先于control方法调用；不能预建future后才检查，drop不能取消/证明排空 |
+| Endpoint pending队列保留提交顺序；只取队首完成；没有项目预算 | 每controller明确包/字节/在途上限，初期单TX；排队头阻塞不解释为空口重排；单RX/多RX取舍须实测 |
+| `cancel_all`仅请求取消；Endpoint drop发取消后Pending可转ABANDONED，payload留给completion释放 | 停准入、保留身份和buffer、逐个收取completion；期限耗尽隔离并保留义务，不宣布Free，不用drop/re-enumeration替代drain |
+| WinUSB仅IN尝试RAW_IO，设置失败仅warn；OUT不能套用该策略 | 必须核对每方向实际OS队列语义及策略生效，当前不能宣称Windows无隐藏排队或取消总成功 |
+| `transfer_blocking`超时后仍循环等待完成；reader/writer有额外缓冲 | 不作为有界actor执行路径；用低层Endpoint和原期限监督，明确请求结束与资源排空分离 |
+
+优先继续低层Endpoint原型；libusb异步API保留备选，其submit返回值能提供另一种同步错误观测，但尚未完成固定版本后端源码审计，不能据API说明自动授予更强语义。Microsoft明确CancelIoEx不等待完成、可能正常完成，OVERLAPPED完成前不可释放；RAW_IO只适用IN且影响WinUSB排队。[取消契约](https://learn.microsoft.com/en-us/windows/win32/api/ioapiset/nf-ioapiset-cancelioex)、[管道策略](https://learn.microsoft.com/en-us/windows-hardware/drivers/usbcon/winusb-functions-for-pipe-policy-modification)、[libusb异步接口](https://libusb.sourceforge.io/api-1.0/group__libusb__asyncio.html)。
+
+只在适配器预校验拒绝、尚未调用提交时确认NotSubmitted。已经调用且提交/执行失败无法区分时保留Unknown/物理义务，USB成功也不归还DLI credit。当前公开API不提供细粒度提交来源；需要更强分类则扩展可审查的适配或上游接口，不能用errno猜测。完成一次、OS不再访问buffer、内存序、调度及故障下最终回调都是信任基础/待验证条件，三项顺序离线测试不是并发或硬件证明。
+
+固定NearLink Host与libws73-usb版本保持；前者LOCAL_TEST数据stub不用于真实性依据。后者`ws73_evt_stop`在有限等待后继续free，超限时未强制pending为零；这是静态风险而非本项目实机UAF证据，不复制成成功drain。参考源码许可/封装分别核对，未导入其业务实现。SDK110 E/US与四叶白名单、VM-only不变。
+
 ## 2026-10-13 原决定的保留部分（KernelPacket分支）
 
 下列源码审计是历史身份；包接管、租约、真实屏障及厂商适配原门禁保留，不代表最新实现或资格。术语UserHost在本历史分支中指KernelPacket用户态Host。

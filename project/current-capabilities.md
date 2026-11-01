@@ -21,6 +21,8 @@
 | [a72dd32](https://github.com/OpenSparklink/sparklink/commit/a72dd32ba08ab906023334d4e76937f2d82b5f08)：类型化值校验、Native原errno；纯协议普通依赖不含nix，Linux编号测试保留dev依赖 | Linux严格构建/Clippy、协议/Channel/工具与Engine回归；Rust1.96.1纯协议MSVC all-targets cargo check | Windows链接/运行、原生CI、SDK/Host/IPC、实机资格 |
 | [92a7522](https://github.com/OpenSparklink/sparklink/commit/92a752223a770de139b8ffbc0b05c5113b4ace29)：Wire同fd快照/收发/Session TX；send与Pending解耦，保留Native查询/原期限 | 严格Clippy、78项Engine回归；伪快照负对照拒绝，还原重跑通过 | 完整ServiceChannel/UserHost、Native排空证明、新artifact VM实机回归 |
 
+USB依赖研究：nusb0.2.9固定源码审查、3项实际上游状态转换测试及MSVC库编译检查完成；仍是有条件原型候选，无项目DirectUSB实现或OS/USB/Windows运行资格。见[审计范围](reference/architecture/directusb-library-audit-20261101.json)及ADR0003。根生产依赖、冻结实机产物不变。
+
 上表是源码及限定离线结果，不转授冻结v4产物或历史PASS；未新增形式化证明。AF_UNIX/私有D-Bus不是内核或空口资格。结构化来源为 `scope_extensions[].implementation_slices`，消费者/权限来源、stop/drain与依赖见[唯一计划](implementation-plan.md)。采用前c2642d7的nix结论保留为历史审计，当前差异以上表为准。
 
 ## 本批实现与验证边界

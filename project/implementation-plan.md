@@ -28,6 +28,22 @@
 下一批B：复用已准备v4准确输入，在新的有效启动条件和占用核对后取得双端发现/method短长独立结果、命令无响应、原期限/退出及原路径保持；无新硬件条件不重复未变化失败。并行A/C/W：列出ServiceChannel所有实际入口、权限/元数据来源及平台依赖，选择最小纯逻辑边界，USB库锁定/取消审查先于实际设备适配，不能复制Engine。
 后续每批开工前写生产行为、不变量、离线与VM/实机门禁、退出及剩余条件；不无限追加控制面前置。
 
+### DirectUSB候选审查与下一实现门禁（2026-11-01）
+
+工具源码 [95ba026](https://github.com/OpenSparklink/sparklink/commit/95ba0262a08636da9811e34f897a23277529b2a3) 只准备校验固定归档并注入测试到**实际上游生产模块**，不复制简化状态机，不枚举或打开USB。选择nusb0.2.9为有条件原型候选；提交、控制future提前执行、取消/drain及Windows策略差异见[ADR0003](../docs/decisions/0003-optional-exclusive-user-host.md)。根生产Cargo.lock不新增未接通库。
+
+离线实际状态转换3项通过，MSVC库编译检查通过，损坏归档/覆盖已有证据负对照通过。首轮离线缺少锁定依赖失败保留；固定依赖fetch后重放成功。原生OS、USB/固件、形式化、Windows运行和项目DirectUSB均未通过。
+
+下一批C退出：接入唯一per-controller设备适配的实际消费者，明确类型化包、身份/原期限、有限在途和最终submit gate；control调用前检查，成功/未知/确定未提交分别记账；停止准入后显式收取completion，超限隔离不Free。先Linux适配及无设备/非法输入回归，再在占用与显式SDK110镜像条件满足时逐叶VM验证；Windows RAW_IO/实际队列与取消独立门禁，不阻塞当前Native。固件/HCC/BSLE复用现有封装语义，不能重造Host/SSAP。U#24/#27持续开放。
+
+可重放准备（只操作公开源码及临时构建目录）：
+```sh
+python3 tools/prepare_nusb_lifecycle_audit.py --archive /path/to/nusb-0.2.9.crate --output /path/to/new-audit
+python3 tools/build_resources.py --with-vm -- cargo +1.96.1 test --locked --offline --manifest-path /path/to/new-audit/nusb-0.2.9/Cargo.toml --lib sparklink_audit
+python3 tools/build_resources.py --with-vm -- cargo +1.96.1 check --locked --offline --manifest-path /path/to/new-audit/nusb-0.2.9/Cargo.toml --lib --target x86_64-pc-windows-msvc
+```
+归档使用[固定官方来源](https://static.crates.io/crates/nusb/nusb-0.2.9.crate)并由工具核对hash；依赖首次须按归档Cargo.lock准备缓存，缺失不得记PASS。构建仍共用锁和总预算；无平台运行或生产资格推导。
+
 ### ServiceChannel 生产调用审计与最小迁移（2026-11-01）
 
 源码 [92a7522](https://github.com/OpenSparklink/sparklink/commit/92a752223a770de139b8ffbc0b05c5113b4ace29) 复用 `ssap_engine::Wire`；没有新增Host/Engine/公共trait。所有快照和Session TX查询进入同一fd所有者，send/receive不再接收外部fd；send只依赖约束及片字节，不依赖Engine的Pending队列。现有检查时点、原期限和返回错误保留。

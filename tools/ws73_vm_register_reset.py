@@ -236,6 +236,13 @@ def run(args):
         raise ValueError('dedicated QEMU scratch root required')
     if ctypes.sizeof(Bulk)!=24 or ctypes.sizeof(Control)!=24:raise ValueError('qualified 64-bit usbfs ABI required')
     rom_model=getattr(args,'rom_chip_expected',None)
+    directusb=getattr(args,'directusb_rom',False)
+    tokens=Path('/proc/cmdline').read_text().split()
+    if (type(directusb)is not bool or
+            [v for v in tokens if v.startswith('ws73.directusb_rom=')] != (['ws73.directusb_rom=1'] if directusb else []) or
+            directusb and rom_model is None or
+            not directusb and any(v.startswith('ws73.directusb_guest=') for v in tokens)):
+        raise ValueError('explicit DirectUSB ROM mode with known board required')
     if rom_model is not None:
         tokens=Path('/proc/cmdline').read_text().split()
         if (rom_model not in ('E','U') or 'ws73.rom_chip_probe=1' not in tokens or
@@ -379,10 +386,15 @@ def run(args):
                 if (interface/'driver').exists():raise ValueError('ROM read must precede driver ownership/download')
                 node=Path('/dev/bus/usb')/f'{int((device/"busnum").read_text()):03}'/f'{int((device/"devnum").read_text()):03}'
                 record['rom_node']=str(node);save()
-                fd=os.open(node,os.O_RDWR|os.O_CLOEXEC)
-                fcntl.ioctl(fd,0x8004550f,bytearray((0).to_bytes(4,'little')))
-                rom_observations(fd,record,save,rom_model)
-                os.close(fd);fd=None
+                if directusb:
+                    if [v for v in tokens if v.startswith('ws73.directusb_guest=')]!=[f'ws73.directusb_guest={device.name}']:
+                        raise ValueError('explicit DirectUSB guest topology mismatch')
+                    rom_observations(None,record,save,rom_model,directusb=device.name)
+                else:
+                    fd=os.open(node,os.O_RDWR|os.O_CLOEXEC)
+                    fcntl.ioctl(fd,0x8004550f,bytearray((0).to_bytes(4,'little')))
+                    rom_observations(fd,record,save,rom_model)
+                    os.close(fd);fd=None
         elif not route:
             record.update(register_write_not_requested=True,wakeup_only_experiment=True);save()
             os.close(fd);fd=None
@@ -433,4 +445,4 @@ def run(args):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--guest-usb-reset-before-read',action='store_true');p.add_argument('--sdk-wakeup-before-read',action='store_true');p.add_argument('--async-read-only',action='store_true');p.add_argument('--usb-credit-read-only',action='store_true');p.add_argument('--runtime-route-before-module',action='store_true');p.add_argument('--guest-set-interface-before-route',action='store_true');p.add_argument('--guest-clear-halt-before-route',action='store_true');p.add_argument('--guest-clear-halt-before-register-read',action='store_true');p.add_argument('--rom-chip-expected',choices=['E','U']);run(p.parse_args())
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--guest-usb-reset-before-read',action='store_true');p.add_argument('--sdk-wakeup-before-read',action='store_true');p.add_argument('--async-read-only',action='store_true');p.add_argument('--usb-credit-read-only',action='store_true');p.add_argument('--runtime-route-before-module',action='store_true');p.add_argument('--guest-set-interface-before-route',action='store_true');p.add_argument('--guest-clear-halt-before-route',action='store_true');p.add_argument('--guest-clear-halt-before-register-read',action='store_true');p.add_argument('--rom-chip-expected',choices=['E','U']);p.add_argument('--directusb-rom',action='store_true');run(p.parse_args())

@@ -40,7 +40,9 @@ if grep -q 'ws73.usb_credit_lab=1' /proc/cmdline; then credit_arg='--usb-credit-
 rom_arg=''
 if grep -q 'ws73.rom_chip_expected=E' /proc/cmdline; then rom_arg='--rom-chip-expected E'; fi
 if grep -q 'ws73.rom_chip_expected=U' /proc/cmdline; then rom_arg='--rom-chip-expected U'; fi
-/bin/python3 /usr/share/sparklink/tools/ws73_vm_register_reset.py $rom_arg $credit_arg $reset_arg $wake_arg $async_arg $route_arg $interface_arg $clear_halt_arg --output /evidence/maintenance/reset > /evidence/maintenance/probe.log 2>&1
+directusb_arg=''
+if grep -q 'ws73.directusb_rom=1' /proc/cmdline; then directusb_arg='--directusb-rom'; fi
+/bin/python3 /usr/share/sparklink/tools/ws73_vm_register_reset.py $directusb_arg $rom_arg $credit_arg $reset_arg $wake_arg $async_arg $route_arg $interface_arg $clear_halt_arg --output /evidence/maintenance/reset > /evidence/maintenance/probe.log 2>&1
 result=$?
 dmesg > /evidence/maintenance/kernel.log
 for interface in /sys/bus/usb/devices/*:*; do

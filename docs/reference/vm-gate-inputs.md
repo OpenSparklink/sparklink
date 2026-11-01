@@ -797,6 +797,29 @@ IN请求512字节，实际回复必须恰好4字节；短/长/错误/型号不�
 USB配对/HCC/上传读器；运行期字节是guest观察，不宣称另一独立寄存器decoder。
 
 
+### 实验 DirectUSB ROM 执行器（尚无 USB 运行资格）
+
+`prepare --directusb-rom-probe /path/to/ws73-directusb-rom` 只为上述 scratch Native
+维护载体加入独立 Rust 二进制及 hash；不进入 daemon、普通安装或冻结 carrier 的覆盖模式。
+构建入口是 `tools/lab/ws73_directusb_rom/Cargo.toml`，有独立锁文件并固定 nusb 0.2.9；
+仍由 `tools/build_resources.py` 串行限额构建，根生产 Cargo.lock 不变。
+
+选择本路径还必须显式给出 `ws73.directusb_rom=1` 和恰好一个
+`ws73.directusb_guest=<guest拓扑>`。该 guest 拓扑必须与现有监督器核对的设备一致；
+主机四叶白名单和占用锁继续由原 VM runner 强制，guest 参数不是宿主授权。
+无这些选择时原 ROM 诊断路径保持；一旦选择，失败绝不回退。
+
+工具拒绝已有 driver、非 QEMU/scratch、非精确两端点 ROM 接口；不 detach/reset，
+只发固定只读 READM，再由原 Python 解析器判读。单次最多一个在途请求；每次收发原
+2 秒期限，超时请求取消并最多再观察 1 秒 completion。未排空保留隔离状态，不能
+把进程退出、Endpoint drop 或接口 release 称为固件清除、恢复、HostReady。
+外层 15 秒监督超时同样记失败且不证明排空。短/长/晚到/错误/hash变化都终止该轮。
+
+本路径仍只覆盖软件复位后的观察流程，不证明首次冷下载识别、全零读有效或安全型号
+认证。离线 receipt fixture、参数拒绝和严格构建不运行 USB；实际提交/取消/排空、逐叶
+身份与同行隔离须在专用 VM 另验，尚不支持 Windows 执行器或完整 DirectUSB Host。
+
+
 ### Owned SSAP 的有界真实门禁
 
 `run --qmp-hotplug --connection-verify --channel-socket-verify --ssap-owned-verify`

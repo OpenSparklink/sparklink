@@ -102,7 +102,7 @@ class PrepareInputs(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             _, _, _, allocation, args = fixture(Path(tmp))
             for field in ('board_model', 'firmware_dir', 'kernel_build', 'tcpdump', 'python', 'native_service_bundle',
-                          'native_channel_fd_probe', 'controller_directory_clients',
+                          'native_channel_fd_probe', 'directusb_rom_probe', 'controller_directory_clients',
                           'native_runtime_only'):
                 bad = copy.copy(args); setattr(bad, field, 'U')
                 with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'refuses'):

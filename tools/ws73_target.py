@@ -144,7 +144,7 @@ def prepare_from_carrier(args):
     ordinary_identity()
     exclusive = ('kernel_build', 'qemu', 'busybox', 'dbus_daemon', 'tcpdump', 'python', 'firmware_dir',
                  'runtime_config_dir', 'board_model', *native_vm.OPTIONS,
-                 'native_return_probe', 'native_channel_fd_probe',
+                 'native_return_probe', 'native_channel_fd_probe', 'directusb_rom_probe',
                  'acb_probe_module', 'controller_directory_clients', 'discovery_lifetime_probe',
                  'native_return_fixture')
     if any(getattr(args, n, None) for n in exclusive) or getattr(args, 'native_runtime_only', False):
@@ -380,6 +380,10 @@ def prepare_locked(args, build_fd):
         if getattr(args,'native_channel_fd_probe',None) is not None:
             if not module_profile:raise ValueError('daemon fd client requires native VM profile')
             inputs.append(args.native_channel_fd_probe)
+        if getattr(args,'directusb_rom_probe',None) is not None:
+            if not module_profile:raise ValueError('DirectUSB ROM executor requires explicit scratch native VM carrier')
+            inputs.append(args.directusb_rom_probe)
+            inputs.extend(HERE/'lab/ws73_directusb_rom'/name for name in ['Cargo.toml','Cargo.lock','src/main.rs'])
         manifest['inputs'] = [file_record(p) for p in inputs]
         for name in FIRMWARE_EVIDENCE_HELPERS:
             entry = file_record(HERE/name)
@@ -584,6 +588,10 @@ def prepare_locked(args, build_fd):
             (root/'bin/ws73-channel-fd-probe').chmod(0o755)
             if file_record(probe)!=before:raise ValueError('fd client changed during staging')
             manifest['native_channel_fd_probe']=before
+
+        if getattr(args,'directusb_rom_probe',None) is not None:
+            from ws73_rom_chip import stage_directusb
+            stage_directusb(args.directusb_rom_probe,root,manifest,copy_elf)
 
         if getattr(args,'controller_directory_clients',False):
             source=HERE/native_vm.STAGED_PYTHON_CLIENTS['ws73_controller_directory_client.py'];target=root/'usr/share/sparklink/tools/ws73_controller_directory_client.py'
@@ -3942,6 +3950,7 @@ def main():
     pack.add_argument('--native-return-probe',type=Path,help='explicit gdbus executable staged only for direct original-owner retirement observation')
     pack.add_argument('--native-event-retry-test',type=Path,help='explicit compiled test manifest; ignored actual Native receiver VM test only')
     pack.add_argument('--native-channel-fd-probe',type=Path,help='explicit isolated real D-Bus fd client binary; native VM only')
+    pack.add_argument('--directusb-rom-probe',type=Path,help='explicit fixed READM nusb executor; scratch VM maintenance only, no automatic selection')
     pack.add_argument('--acb-probe-module',type=Path,help='explicit signed external selftest; never ordinary socket qualification')
     pack.add_argument('--native-discovery-config', type=Path,
                       help='freeze a private slkd TOML config in the native VM; checked by staged slkd, no RF qualification')

@@ -320,8 +320,17 @@ typedef struct SlkServiceMethod {
 } SlkServiceMethod;
 
 /**
+ * UUID-only event metadata. No stored payload, property CPCD or provider.
+ */
+typedef struct SlkServiceEvent {
+    uint8_t uuid_length;
+    uint8_t reserved[3];
+    uint8_t uuid[16];
+} SlkServiceEvent;
+
+/**
  * Immutable local receipt, not remote publication, Ready or authorization.
- * Handles are properties first, then methods; only their combined count is meaningful.
+ * Handles are properties, then methods, then events; only their combined count is meaningful.
  */
 typedef struct SlkServiceReceipt {
     struct SlkControllerId controller;
@@ -329,6 +338,8 @@ typedef struct SlkServiceReceipt {
     uint16_t end;
     uint16_t property_count;
     uint16_t method_count;
+    uint16_t event_count;
+    uint16_t reserved[3];
     uint16_t handles[64];
 } SlkServiceReceipt;
 
@@ -975,8 +986,9 @@ int slk_client_register_local_service(const struct SlkClient *client,
                                       struct SlkLocalService **output);
 
 /**
- * Register properties and/or distinct methods through the same owner and
- * absolute deadline. Combined count1..64; receipt orders properties then methods.
+ * Register properties, distinct methods and/or event UUIDs through the same owner and
+ * absolute deadline. Combined count1..64; receipt orders properties, methods, events. Event registration alone does
+ * not enable event transmission or property configuration.
  * Authorization rules and uncertainty are identical to property registration.
  * Method access is0..7; approval requirements cannot be disabled.0/-errno.
  * # Safety
@@ -991,6 +1003,8 @@ int slk_client_register_local_entries(const struct SlkClient *client,
                                       uintptr_t count,
                                       const struct SlkServiceMethod *methods,
                                       uintptr_t method_count,
+                                      const struct SlkServiceEvent *events,
+                                      uintptr_t event_count,
                                       uint32_t authorization,
                                       uint64_t deadline_ns,
                                       struct SlkLocalService **output);

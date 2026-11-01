@@ -187,11 +187,11 @@ class Client:
         from .local_services import LocalService
         return LocalService._register(self, controller, uuid, properties, deadline_ns, authorization)
 
-    def register_local_entries(self, controller, uuid, properties, methods, *, deadline_ns, authorization="none"):
-        """One owner registration for1..64 distinct properties/methods; no RF publication."""
+    def register_local_entries(self, controller, uuid, properties, methods, *, events=(), deadline_ns, authorization="none"):
+        """One owner registration for1..64 distinct properties/methods/events; no RF publication."""
         from .local_services import LocalService
         return LocalService._register(self, controller, uuid, properties, deadline_ns,
-                                      authorization, methods=methods, entries=True)
+                                      authorization, methods=methods, events=events, entries=True)
 
     def discover(self, controller, *, prefix=b"", minimum_rssi=-128, duration_ms=20000, deadline_ns):
         """Acquire a caller discovery lease; see DiscoverySession for release semantics."""

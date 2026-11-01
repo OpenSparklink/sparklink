@@ -24,7 +24,8 @@ class _Property(ctypes.Structure):
 class _Receipt(ctypes.Structure):
     _fields_ = [('controller', _ControllerId), ('start', ctypes.c_uint16),
                 ('end', ctypes.c_uint16), ('property_count', ctypes.c_uint16),
-                ('method_count', ctypes.c_uint16), ('handles', ctypes.c_uint16 * 64)]
+                ('method_count', ctypes.c_uint16), ('event_count', ctypes.c_uint16),
+                ('reserved', ctypes.c_uint16 * 3), ('handles', ctypes.c_uint16 * 64)]
 
 
 @dataclass(frozen=True)
@@ -74,6 +75,27 @@ class LocalMethod:
         return method
 
 
+class _Event(ctypes.Structure):
+    _fields_ = [('uuid_length', ctypes.c_uint8), ('reserved', ctypes.c_uint8 * 3),
+                ('uuid', ctypes.c_uint8 * 16)]
+
+
+@dataclass(frozen=True)
+class LocalEvent:
+    """UUID-only event entry; not a stored value or property configuration."""
+    uuid: bytes
+
+    def __post_init__(self):
+        if not isinstance(self.uuid, bytes) or len(self.uuid) not in (2, 16) or not any(self.uuid):
+            raise ValueError('nonzero 2/16-byte event UUID required')
+
+    def _encode(self):
+        event = _Event()
+        event.uuid_length = len(self.uuid)
+        event.uuid[:len(self.uuid)] = self.uuid
+        return event
+
+
 @dataclass(frozen=True)
 class LocalServiceReceipt:
     controller: ControllerId
@@ -81,10 +103,11 @@ class LocalServiceReceipt:
     end: int
     handles: tuple[int, ...]
     method_handles: tuple[int, ...] = ()
+    event_handles: tuple[int, ...] = ()
 
     @property
     def property_handles(self):
-        return self.handles[:len(self.handles) - len(self.method_handles)]
+        return self.handles[:len(self.handles) - len(self.method_handles) - len(self.event_handles)]
 
 
 def _configure(lib):
@@ -94,7 +117,7 @@ def _configure(lib):
             ctypes.c_uint32, ctypes.c_uint64, ctypes.POINTER(ctypes.c_void_p)],
         'slk_client_register_local_entries': [ctypes.c_void_p, ctypes.POINTER(_ControllerId),
             ctypes.c_void_p, ctypes.c_size_t, ctypes.POINTER(_Property), ctypes.c_size_t,
-            ctypes.POINTER(_Method), ctypes.c_size_t, ctypes.c_uint32, ctypes.c_uint64, ctypes.POINTER(ctypes.c_void_p)],
+            ctypes.POINTER(_Method), ctypes.c_size_t, ctypes.POINTER(_Event), ctypes.c_size_t, ctypes.c_uint32, ctypes.c_uint64, ctypes.POINTER(ctypes.c_void_p)],
         'slk_local_service_receipt': [ctypes.c_void_p, ctypes.POINTER(_Receipt)],
         'slk_local_service_read': [ctypes.c_void_p, ctypes.c_uint16, ctypes.c_void_p,
             ctypes.c_size_t, ctypes.POINTER(ctypes.c_size_t), ctypes.c_uint64],
@@ -137,14 +160,17 @@ class LocalService:
             self.close()
 
     @classmethod
-    def _register(cls, client, controller, uuid, properties, deadline_ns, authorization, *, methods=(), entries=False):
+    def _register(cls, client, controller, uuid, properties, deadline_ns, authorization, *, methods=(), events=(), entries=False):
         if not isinstance(controller, ControllerId):
             raise TypeError('immutable ControllerId required')
         if not isinstance(uuid, bytes) or len(uuid) not in (2, 16) or not any(uuid):
             raise ValueError('nonzero 2/16-byte service UUID required')
         if (not isinstance(properties, (tuple, list)) or not isinstance(methods, (tuple, list))
-                or not 1 <= len(properties) + len(methods) <= 64):
-            raise ValueError('1..64 combined property/method definitions required')
+                or not isinstance(events, (tuple, list))
+                or not 1 <= len(properties) + len(methods) + len(events) <= 64):
+            raise ValueError('1..64 combined property/method/event definitions required')
+        if any(not isinstance(e, LocalEvent) for e in events):
+            raise TypeError("LocalEvent definitions required")
         if any(not isinstance(m, LocalMethod) for m in methods):
             raise TypeError('LocalMethod definitions required')
         if any(not isinstance(p, LocalProperty) for p in properties):
@@ -154,6 +180,7 @@ class LocalService:
         deadline_ns = _deadline(deadline_ns)
         values = (_Property * len(properties))(*(p._encode() for p in properties))
         method_values = (_Method * len(methods))(*(m._encode() for m in methods))
+        event_values = (_Event * len(events))(*(e._encode() for e in events))
         identity = _ControllerId(controller.generation, controller.index)
         output = ctypes.c_void_p()
         client._live()
@@ -164,7 +191,7 @@ class LocalService:
             function = client._lib.slk_client_register_local_service
             if entries:
                 function = client._lib.slk_client_register_local_entries
-                arguments += [method_values, len(method_values)]
+                arguments += [method_values, len(method_values), event_values, len(event_values)]
             arguments += [1 if authorization == 'requests' else 0, deadline_ns, ctypes.byref(output)]
             _result(function(*arguments))
             if not output.value:
@@ -175,17 +202,20 @@ class LocalService:
             try:
                 raw = _Receipt()
                 _result(self._lib.slk_local_service_receipt(self._handle, ctypes.byref(raw)))
-                total = raw.property_count + raw.method_count
+                total = raw.property_count + raw.method_count + raw.event_count
                 handles = tuple(raw.handles[:total])
                 if (raw.controller.index != controller.index
                         or raw.controller.generation != controller.generation
-                        or any(raw.controller.reserved) or raw.method_count != len(methods)
+                        or any(raw.controller.reserved) or any(raw.reserved)
+                        or raw.event_count != len(events) or raw.method_count != len(methods)
                         or not 0 < raw.start < raw.end or raw.property_count != len(properties)
                         or total > 64 or any(raw.handles[total:])
                         or any(not raw.start < h <= raw.end for h in handles)
                         or any(a >= b for a, b in zip(handles, handles[1:]))):
                     raise OSError(errno.EPROTO, 'invalid local-service receipt ABI')
-                self._receipt = LocalServiceReceipt(controller, raw.start, raw.end, handles, handles[len(properties):])
+                self._receipt = LocalServiceReceipt(controller, raw.start, raw.end, handles,
+                    handles[len(properties):len(properties) + len(methods)],
+                    handles[len(properties) + len(methods):])
             except BaseException:
                 self.close()
                 raise

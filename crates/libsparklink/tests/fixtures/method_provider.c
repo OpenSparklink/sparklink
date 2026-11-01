@@ -10,7 +10,7 @@
 #include <time.h>
 #include <unistd.h>
 _Static_assert(sizeof(struct SlkServiceMethod)==24,"method input ABI");
-_Static_assert(sizeof(struct SlkServiceReceipt)==152,"receipt ABI");
+_Static_assert(sizeof(struct SlkServiceReceipt)==160,"receipt ABI");
 _Static_assert(offsetof(struct SlkServiceReceipt,method_count)==22,"method count ABI");
 _Static_assert(sizeof(struct SlkAuthorizationRequestInfo)==2120,"authorization ABI");
 _Static_assert(sizeof(((struct SlkAuthorizationRequestInfo *)0)->value)==2043,"method argument budget");
@@ -34,10 +34,10 @@ int main(void) {
         if (bad==1) invalid.reserved[0]=1;
         if (bad==2) invalid.uuid_length=3;
         if (bad==3) memset(invalid.uuid,0,sizeof invalid.uuid);
-        assert(slk_client_register_local_entries(client,&controller,uuid,2,NULL,0,&invalid,1,1,deadline(),&service)==-EINVAL && !service);
+        assert(slk_client_register_local_entries(client,&controller,uuid,2,NULL,0,&invalid,1,NULL,0,1,deadline(),&service)==-EINVAL && !service);
     }
-    assert(slk_client_register_local_entries(client,&controller,uuid,2,NULL,0,&method,1,0,deadline(),&service)==-EOPNOTSUPP && !service);
-    assert(slk_client_register_local_entries(client,&controller,uuid,2,NULL,0,&method,1,1,deadline(),&service)==0);
+    assert(slk_client_register_local_entries(client,&controller,uuid,2,NULL,0,&method,1,NULL,0,0,deadline(),&service)==-EOPNOTSUPP && !service);
+    assert(slk_client_register_local_entries(client,&controller,uuid,2,NULL,0,&method,1,NULL,0,1,deadline(),&service)==0);
     struct SlkServiceReceipt receipt={0};assert(slk_local_service_receipt(service,&receipt)==0);
     assert(receipt.property_count==0 && receipt.method_count==1 && receipt.handles[0]==17);
     struct SlkMethodProvider *provider=NULL;assert(slk_local_service_bind_method_provider(service,17,deadline(),&provider)==0);

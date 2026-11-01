@@ -23,9 +23,9 @@ _Static_assert(sizeof(struct SlkSsapSubscriptionPacket)==2072,"subscription pack
 _Static_assert(offsetof(struct SlkSsapSubscriptionPacket,pdu)==24,"subscription PDU ABI");
 _Static_assert(sizeof(struct SlkSsapSubscriptionBatch)==33312,"subscription batch ABI");
 _Static_assert(offsetof(struct SlkSsapSubscriptionBatch,packets)==160,"subscription packets ABI");
-_Static_assert(sizeof(struct SlkServiceReceipt)==152,"Owned receipt ABI");
+_Static_assert(sizeof(struct SlkServiceReceipt)==160,"Owned receipt ABI");
 _Static_assert(offsetof(struct SlkServiceProperty,value)==32,"Owned value ABI");
-_Static_assert(offsetof(struct SlkServiceReceipt,handles)==24,"Owned handles ABI");
+_Static_assert(offsetof(struct SlkServiceReceipt,handles)==32,"Owned handles ABI");
 _Static_assert(sizeof(struct SlkReadProviderRequestInfo)==80,"Provider context ABI");
 _Static_assert(offsetof(struct SlkReadProviderRequestInfo,token)==16,"Provider token ABI");
 _Static_assert(offsetof(struct SlkReadProviderRequestInfo,maximum_bytes)==64,"Provider budget ABI");
@@ -516,7 +516,7 @@ static int owned_mode(int argc,char **argv) {
     error=slk_client_open_system(original,&client);if (error) {errno=-error;goto done;}
     error=slk_client_register_local_service(client,&id,service,service_n,&property,1,requests?SLK_SERVICE_AUTHORIZATION_REQUESTS:SLK_SERVICE_AUTHORIZATION_NONE,original,&view);if (error) {errno=-error;goto done;}
     error=slk_local_service_receipt(view,&receipt);if (error) {errno=-error;goto done;}
-    if (receipt.controller.index!=id.index || receipt.controller.generation!=generation || receipt.property_count!=1 || !receipt.start || receipt.handles[0]<=receipt.start || receipt.handles[0]>receipt.end) {errno=EPROTO;goto done;}
+    if (receipt.controller.index!=id.index || receipt.controller.generation!=generation || receipt.property_count!=1 || receipt.method_count || receipt.event_count || receipt.reserved[0] || receipt.reserved[1] || receipt.reserved[2] || !receipt.start || receipt.handles[0]<=receipt.start || receipt.handles[0]>receipt.end) {errno=EPROTO;goto done;}
     if (requests) {error=slk_local_service_authorization_fd(view,&approval_fd);if (error) {errno=-error;goto done;}}
     if (updates) {
         error=slk_client_connection(client,&id,(const uint8_t *)argv[8],strlen(argv[8]),original,&link);

@@ -61,6 +61,7 @@ async fn method_uses_original_registration_and_shared_inbox_for_independent_resu
             vec![1, 0],
             vec![(vec![2, 0], 1, 32, vec![0xab])],
             vec![(vec![3, 0], 4)],
+            Vec::new(),
             "/test/authorizer".try_into()?,
             deadline(),
         )
@@ -235,6 +236,7 @@ async fn method_original_deadline_and_owner_loss_revoke_held_reply() -> anyhow::
                 vec![1, 0],
                 vec![(vec![2, 0], 5, 36, vec![0xab])],
                 vec![(vec![3, 0], 4)],
+                Vec::new(),
                 "/test/authorizer".try_into()?,
                 deadline(),
             )

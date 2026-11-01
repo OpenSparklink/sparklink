@@ -65,23 +65,33 @@ impl LocalServices {
         authorizer: zbus::zvariant::OwnedObjectPath,
         original: Deadline,
     ) -> Result<ServiceRegistration> {
-        self.register_entries(uuid, properties, Vec::new(), authorizer, original)
-            .await
+        self.register_entries(
+            uuid,
+            properties,
+            Vec::new(),
+            Vec::new(),
+            authorizer,
+            original,
+        )
+        .await
     }
-    /// Register distinct properties and methods using one owner receipt and
-    /// original deadline. Receipt handles are properties first, then methods.
+    /// Register distinct properties, methods and event UUIDs using one owner receipt and
+    /// original deadline. Receipt handles are properties, then methods, then events.
+    /// Event registration has no stored payload, provider or property CPCD.
     /// This is local staging, not remote publication or execution.
     pub async fn register_entries(
         &self,
         uuid: Vec<u8>,
         properties: Vec<wire::PropertyDefinition>,
         methods: Vec<wire::MethodDefinition>,
+        events: Vec<wire::EventDefinition>,
         authorizer: zbus::zvariant::OwnedObjectPath,
         original: Deadline,
     ) -> Result<ServiceRegistration> {
         let expected = properties
             .len()
             .checked_add(methods.len())
+            .and_then(|n| n.checked_add(events.len()))
             .ok_or(ApplicationError::Invalid("owned-service entry count"))?;
         if !(1..=MAX_OWNED_ENTRIES).contains(&expected) {
             return Err(ApplicationError::Invalid("owned-service entry count"));
@@ -109,6 +119,7 @@ impl LocalServices {
                     .map_err(|_| ApplicationError::Invalid("invalid method access"))?,
             ));
         }
+        requirements.extend(events.iter().map(|_| EntryRequirements::Event));
         let mut received = None;
         let result = bounded(&self.controller.client, original, async {
             self.controller.client.check_generation(id).await?;
@@ -124,6 +135,7 @@ impl LocalServices {
                         uuid,
                         properties,
                         methods,
+                        events,
                         authorizer,
                         slk_contract::deadline_wire(original.stamp()),
                     ),
@@ -175,12 +187,14 @@ fn valid_receipt(value: &wire::Registration, expected: usize) -> bool {
 pub(crate) enum EntryRequirements {
     Property(SsapOperations, SsapAccess),
     Method(MethodAccess),
+    Event,
 }
 impl EntryRequirements {
     pub(crate) fn needs_local_authorization(self) -> bool {
         match self {
             Self::Property(_, access) => access.needs_local_authorization(),
             Self::Method(access) => access.needs_local_authorization(),
+            Self::Event => false,
         }
     }
 }
@@ -231,7 +245,7 @@ impl ServiceRegistration {
             .iter()
             .position(|h| *h == handle)
             .ok_or(ApplicationError::Invalid("foreign service handle"))?;
-        if matches!(self.requirements[index], EntryRequirements::Method(_)) {
+        if !matches!(self.requirements[index], EntryRequirements::Property(..)) {
             return Err(std::io::Error::from_raw_os_error(nix::libc::EOPNOTSUPP).into());
         }
         Ok(())

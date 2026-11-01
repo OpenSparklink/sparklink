@@ -32,15 +32,21 @@ struct State {
 struct Services(Arc<Mutex<State>>);
 #[zbus::interface(name = "org.sparklink.ServiceManager")]
 impl Services {
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "Independent flat D-Bus fixture: six wire fields, injected header and self"
+    )]
     fn register_owned_local_service(
         &self,
         uuid: Vec<u8>,
         properties: Vec<(Vec<u8>, u32, u32, Vec<u8>)>,
         methods: Vec<slk_contract::ssap::local::MethodDefinition>,
+        events: Vec<slk_contract::ssap::local::EventDefinition>,
         authorizer: zbus::zvariant::OwnedObjectPath,
         deadline: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> (u16, u16, Vec<u16>) {
+        assert!(events.is_empty());
         libsparklink::Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).unwrap();
         if uuid == [4, 0] {
             assert!(properties.is_empty());

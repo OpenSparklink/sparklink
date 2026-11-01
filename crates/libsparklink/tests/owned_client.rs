@@ -42,15 +42,21 @@ impl Adapter {
 struct Services(Arc<State>);
 #[zbus::interface(name = "org.sparklink.ServiceManager")]
 impl Services {
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "Independent flat D-Bus fixture: six wire fields, injected header and self"
+    )]
     async fn register_owned_local_service(
         &self,
         uuid: Vec<u8>,
         properties: Vec<(Vec<u8>, u32, u32, Vec<u8>)>,
         methods: Vec<slk_contract::ssap::local::MethodDefinition>,
+        events: Vec<slk_contract::ssap::local::EventDefinition>,
         authorizer: OwnedObjectPath,
         deadline: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> zbus::fdo::Result<(u16, u16, Vec<u16>)> {
+        assert!(events.is_empty());
         slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
             .unwrap();
         if self.0.method_entry.load(Ordering::SeqCst) {

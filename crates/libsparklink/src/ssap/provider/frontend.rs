@@ -560,14 +560,15 @@ impl Queue {
             && r.kind().supports(self.requirements)
             && self.open()
     }
-    fn context(&self, s: &State) -> ProviderContext<'_> {
+    fn context(&self, s: &State) -> Option<ProviderContext<'_>> {
         let target = if s.closed || self.scope.closed.load(Ordering::Acquire) {
             None
         } else {
             Some(self.property)
         };
         let owner_lost = *self.lost.borrow() || self.lost.has_changed().is_err();
-        match self.requirements {
+        Some(match self.requirements {
+            EntryRequirements::Event => return None,
             EntryRequirements::Property(operations, access) => {
                 ProviderContext::Property(AuthorizationContext {
                     daemon_owner: &self.daemon,
@@ -587,7 +588,7 @@ impl Queue {
                     access,
                 })
             }
-        }
+        })
     }
     fn notify(&self, s: &mut State, ready: bool) -> io::Result<()> {
         if s.signaled != ready {
@@ -629,7 +630,10 @@ impl Queue {
                 .state
                 .lock()
                 .map_err(|_| zbus::fdo::Error::Failed("provider inbox poisoned".into()))?;
-            let Some(original) = request.admit(&self.context(&s), sender)? else {
+            let Some(context) = self.context(&s) else {
+                return Ok(CallbackOutcome::unavailable());
+            };
+            let Some(original) = request.admit(&context, sender)? else {
                 return Ok(CallbackOutcome::unavailable());
             };
             if s.pending.is_some() {
@@ -673,7 +677,10 @@ impl Queue {
             .state
             .lock()
             .map_err(|_| zbus::fdo::Error::Failed("provider inbox poisoned".into()))?;
-        let reportable = data.request.admit(&self.context(&s), sender)?.is_some();
+        let reportable = match self.context(&s) {
+            Some(context) => data.request.admit(&context, sender)?.is_some(),
+            None => false,
+        };
         Ok(CallbackOutcome {
             reply: if reportable {
                 reply
@@ -815,10 +822,14 @@ impl RequestCore {
         if self.data.original <= Instant::now() {
             return Err(io_error(nix::libc::ETIMEDOUT));
         }
+        let context = self
+            .queue
+            .context(s)
+            .ok_or_else(|| io_error(nix::libc::ESTALE))?;
         if self
             .data
             .request
-            .admit(&self.queue.context(s), Some(&self.queue.daemon))
+            .admit(&context, Some(&self.queue.daemon))
             .ok()
             .flatten()
             .is_none()

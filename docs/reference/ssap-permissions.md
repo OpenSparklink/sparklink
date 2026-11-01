@@ -154,7 +154,7 @@ Grant 或安全资格。它仅接受原 unique daemon、当前 controller/genera
 CLI 退出时先停止本地审批准入，再异步撤回登记；撤回失败不重新开放审批。
 这不表示远端清理已经完成，也不自动接通 C/Python callback、provider 或通知。
 
-`RegisterOwnedLocalService(uuid:ay, properties:a(ayuuay), methods:a(ayu), authorizer:o, deadline:(ttttt))` 的 properties
+`RegisterOwnedLocalService(uuid:ay, properties:a(ayuuay), methods:a(ayu), events:aay, authorizer:o, deadline:(ttttt))` 的 properties
 沿用上述四字段（实际 D-Bus 签名 `a(ayuuay)`），返回 `(start:q,end:q,handles:aq)`。
 登记者来自真实消息 sender 的 unique name，不能指定其他 owner。`authorizer=/`
 表示不提供审批；带授权位的登记此时返回 NotSupported。服务登记仍只表示本地配置。
@@ -216,7 +216,7 @@ SLK_SERVICE_AUTHORIZATION_NONE(0) 时拒绝授权位；REQUESTS(1) 显式启用�
 未知模式 EOPNOTSUPP，不能隐式批准。未发布 C 签名已迁移，不保留旧无模式调用形状。
 加密／认证需求继续由现有 Engine 与真实 RX 机制状态核对。
 
-`SlkServiceProperty` 大小2076，value偏移32；`SlkServiceReceipt`大小152，handles偏移24。
+`SlkServiceProperty` 大小2076，value偏移32；`SlkServiceReceipt`大小160，handles偏移32。
 整个输入需初始化，reserved/tail必须为零。UUID／value只有指定长度部分有意义。
 输出回执的未用字段归零，只是不可变本地身份；不表示 Ready、仍存续或远端发布。
 C函数返回0／负errno，失败不改输出。读值容量0..2042，ENOBUFS仅更新所需长度，不改
@@ -762,16 +762,31 @@ request/epoch/property、完整 32 字节随机值及原期限后才终止 Provi
 
 事件发现使用现有管理角色的 `DiscoverSsap` kind5；标准/自定义事件分别为类别4/12，
 层次发现按服务成员bit8跟进，同一原期限及总预算。发现不会创建新的授权或订阅。
-默认Owned数据库尚无事件登记入口，更新发送/接收仍只开放已有属性路径；底层codec能
-识别event位不代表Engine已经接通事件业务。事件权限、客户端配置、通知/指示及ACK
-仍须沿同一Owner/Session/Grant逐项接通，不复用属性批准冒充事件授权。
+Owned 事件登记复用同一 `RegisterOwnedLocalService`，`events:aay` 每项仅为非零
+2/16字节UUID。与属性/方法共用16服务、64成员及不复用handle的数据库预算，原owner、
+原期限、撤回和owner退出语义不变。事件关联数据不存储于条目；当前事件发现的
+operations=0、描述符列表为空，Primary成员bit8与Structure类别4/12分别编码。
+属性的客户端配置描述符不能自动套给事件。属性读写、说明和READ/WRITE/method Provider
+拒绝事件handle，不把事件伪装成属性值。`ListLocalServices`仍是属性staging视图。
+
+Rust `LocalServices::register_entries` 新增events参数；C `slk_client_register_local_entries`
+在methods/count后新增events/count，`SlkServiceEvent`大小20、UUID偏移4；UUID长度和
+reserved明确检查。receipt大小160、event_count偏移24、handles偏移32，reserved为零。
+未发布接口同步迁移，无旧签名兼容期；旧二进制必须重新编译，不能与新共享库混用。
+Python `LocalEvent(uuid)` 经 `Client.register_local_entries(...,events=[...])` 调用同一实现。
+CLI现有 `ssap-serve` 保留属性/method功能并传空事件列表，尚不提供事件发布交互。
+
+这些入口仅登记可发现的元数据，不授事件发送/订阅资格；更新发送/接收仍只开放已有
+属性路径。底层codec识别event位不代表Engine已接通事件业务。下一批明确事件发送
+权限与上层启停规则，复用同一Owner/Session及Update/Pending/RX路径完成通知、指示和ACK，
+不复用属性批准冒充事件授权。真正远端交付仍须用准确新artifact和对端应用验收。
 
 ## Owned method 服务端
 
 方法与属性使用同一个 Owned 服务登记和撤回生命周期，但方法不是存储值或 WRITE。
 `RegisterOwnedLocalService` 的 `methods:a(ayu)` 每项为 UUID 与调用权限位；现有只登记
-属性的 SDK 调用传空 methods。receipt 的 handles 先按属性输入顺序、再按方法顺序返回。
-服务总数上限16，属性加方法共享64项上限；handle在同一数据库生命周期内不复用。
+属性的 SDK 调用传空 methods/events。receipt 的 handles 按属性、方法、事件输入顺序返回。
+服务总数上限16，属性、方法、事件共享64项上限；handle在同一数据库生命周期内不复用。
 `ListLocalServices` 仍是本地属性 staging 视图，不是完整方法目录；远端发现使用同一
 Engine 的 kind4、类别3/11和服务成员bit4。方法不接受本地属性读写或描述符绑定。
 
@@ -794,7 +809,7 @@ opcode、arguments及maximum_result_bytes；返回 `(status:y, result:ay)`。
 当前接线包含 daemon/类型化 D-Bus 服务端和 Rust 共享 Dispatcher 方法收件箱。
 C/Python方法收件箱复用同一Dispatcher；CLI方法服务端已接通；VM调用者及真实方法交付未验收。
 
-Rust `LocalServices::register_entries(uuid, properties, methods, authorizer, Deadline)`
+Rust `LocalServices::register_entries(uuid, properties, methods, events, authorizer, Deadline)`
 复用原登记和清理流程；`register_service`继续只登记属性。方法使用`MethodAccess`，
 不伪装成属性操作位；同一receipt按属性、方法顺序给出handle。属性读值、替换、说明
 及READ/WRITE绑定入口拒绝方法handle，方法绑定拒绝属性handle。
@@ -820,8 +835,8 @@ Rust `LocalServices::register_entries(uuid, properties, methods, authorizer, Dea
 C `slk_client_register_local_entries` 与 Python `Client.register_local_entries` 接受
 独立的属性和方法数组，总数1–64。`SlkServiceMethod`/`LocalMethod` 使用方法权限，
 不能把属性操作位当作权限；需要本地批准却未开启请求收件箱时返回不支持。
-原仅属性登记入口继续复用相同实现。receipt明确property_count/method_count；
-handles依次为属性和方法，Python另提供property_handles/method_handles。
+原仅属性登记入口继续复用相同实现。receipt明确property_count/method_count/event_count；
+handles依次为属性、方法、事件，Python提供property_handles/method_handles/event_handles。
 
 `slk_local_service_bind_method_provider`/`LocalService.bind_method_provider` 返回
 原owner的方法收件箱。C的fd/next/info/arguments/reply/free及Python的

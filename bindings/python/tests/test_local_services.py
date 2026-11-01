@@ -37,7 +37,7 @@ def definition():return LocalProperty(b'\x02\0',SsapOperations(5),SsapAccess(0),
 class LocalServicesBoundary(unittest.TestCase):
     def test_layouts_and_parent_close_explicit_unregister_local_free(self):
         self.assertEqual((ctypes.sizeof(_Property),_Property.value.offset),(2076,32))
-        self.assertEqual((ctypes.sizeof(_Receipt),_Receipt.handles.offset),(152,24))
+        self.assertEqual((ctypes.sizeof(_Receipt),_Receipt.handles.offset),(160,32))
         b=Boundary()
         with patch('sparklink.local_services._configure'),caller(b) as c:
             v=c.register_local_service(ControllerId(2,7),b'\x01\0',[definition()],deadline_ns=1)

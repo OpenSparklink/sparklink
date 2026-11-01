@@ -28,6 +28,19 @@
 下一批B：复用已准备v4准确输入，在新的有效启动条件和占用核对后取得双端发现/method短长独立结果、命令无响应、原期限/退出及原路径保持；无新硬件条件不重复未变化失败。并行A/C/W：列出ServiceChannel所有实际入口、权限/元数据来源及平台依赖，选择最小纯逻辑边界，USB库锁定/取消审查先于实际设备适配，不能复制Engine。
 后续每批开工前写生产行为、不变量、离线与VM/实机门禁、退出及剩余条件；不无限追加控制面前置。
 
+### Owned事件登记切片与下一门禁（2026-11-01）
+
+复用唯一DB/Owner、成员预算、handle分配和发现codec，SDK/C/Python同批迁移未发布
+RegisterOwnedLocalService签名，CLI现有属性/method消费者传空事件表。事件只存UUID，
+不存关联数据、不继承属性CPCD或Provider。此批退出：真实私有总线登记/发现/撤回、
+原期限、owner退出及另一owner服务保持；事件误用为属性/method拒绝；跨语言实际
+消费者和严格构建。每项离线结果及准确源码见结构化切片，不能授Native或Windows资格。
+
+下一事件切片：明确发送权限、协议event位及上层启停，沿原Update/Pending/RX/ACK接通
+真实事件通知/指示。离线检查预算/原期限/退出/错目标；准确Native产物双端实际校验和
+适用原路径保持单列，method v4和UserHost/Windows依赖继续并行。U#22/#26保持开放，
+不等待全控制面、不复制Engine；无新设备启动条件不重复未变化失败。
+
 ### DirectUSB候选审查与下一实现门禁（2026-11-01）
 
 工具源码 [95ba026](https://github.com/OpenSparklink/sparklink/commit/95ba0262a08636da9811e34f897a23277529b2a3) 只准备校验固定归档并注入测试到**实际上游生产模块**，不复制简化状态机，不枚举或打开USB。选择nusb0.2.9为有条件原型候选；提交、控制future提前执行、取消/drain及Windows策略差异见[ADR0003](../docs/decisions/0003-optional-exclusive-user-host.md)。根生产Cargo.lock不新增未接通库。
@@ -92,10 +105,11 @@ Session仍缺失，U#24/#25/#27不关闭；Native method v4继续独立推进。
 复用现有 `DiscoverSsap`、SDK和Engine分页；补kind5与层次成员bit8，不新增协议或RPC。
 本批退出是标准/自定义事件类别4/12、UUID查询、原期限、96页/80条总预算及完整失败
 传播贯穿Rust/C/Python/CLI；独立wire向量和实际私有D-Bus消费者分别检查，仍不授Native
-内核/固件或实机资格。默认数据库尚无event登记，查询无条目沿原错误响应，不伪造事件。
+内核/固件或实机资格。该发现切片提交时数据库尚无event登记，无条目沿原错误响应；
+后续登记实现和当前退出见上方Owned事件切片，不将历史缺口当作当前事实。
 
-下一批按同一U#22补事件条目的Owned登记、权限与配置，再经现有Update/Pending/RX路径
-推进payload、通知/指示及ACK；不得把属性更新改名为事件。保留现有method v4准确产物
+同一U#22的下一发送切片明确事件权限与上层启停；属性CPCD不隐式用于事件。经现有
+Update/Pending/RX路径推进payload、通知/指示及ACK；不得把属性更新改名为事件。保留现有method v4准确产物
 及真实交付出口，不以本批发现测试替代。固定NearLink Host客户端识别事件成员，其当前
 服务端单独event查找返回无条目；该参考不能充当完整event互通资格。
 

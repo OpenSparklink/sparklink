@@ -630,7 +630,8 @@ WRITE_NO_RSP、descriptor、notify/indicate等声明明确NotSupported；共享�
 `slctl ssap-discover CONNECTION method UUID_HEX` 与 `event UUID_HEX` 使用同一SDK/daemon发现入口。
 事件目录来自真实请求流程，协议通知/指示的event位并不授予订阅、发送或接收能力；这些生产接线尚未开放。
 本地method登记与D-Bus Provider已接入同一数据库/Engine；Rust/C/Python共享Dispatcher方法收件箱已接通，CLI方法服务端已接通，VM调用者和真实方法交付仍待验收。
-发现方法不表示调用成功、授权或安全资格。事件发现已接入kind5、类别4/12；这不开放事件登记、收发或ACK业务。完整服务数据库快照、引用发现及
+发现方法不表示调用成功、授权或安全资格。事件发现已接入kind5、类别4/12；Owned事件UUID已接入同一登记/撤回，
+见[事件契约](ssap-permissions.md#事件目录与事件操作的边界)。这不开放事件收发或ACK业务。完整服务数据库快照、引用发现及
 ServiceChanged一致性尚无承诺。C/Python发现封装已复用同一SDK，接口如下；新的准确实机资格仍待验收。
 普通服务从handle16分配，保留旧流量证据但不转授旧范围为标准合格。
 

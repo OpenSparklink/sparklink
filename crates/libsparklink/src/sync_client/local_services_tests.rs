@@ -98,15 +98,21 @@ impl Services {
         }
         Ok(())
     }
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "Independent flat D-Bus fixture: six wire fields, injected header and self"
+    )]
     async fn register_owned_local_service(
         &self,
         uuid: Vec<u8>,
         properties: Vec<slk_contract::ssap::local::PropertyDefinition>,
         methods: Vec<slk_contract::ssap::local::MethodDefinition>,
+        events: Vec<slk_contract::ssap::local::EventDefinition>,
         authorizer: zbus::zvariant::OwnedObjectPath,
         deadline: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> zbus::fdo::Result<(u16, u16, Vec<u16>)> {
+        assert!(events.is_empty());
         self.0.registrations.fetch_add(1, Ordering::SeqCst);
         assert!(methods.is_empty());
         assert_eq!(uuid, [1, 0]);
@@ -538,6 +544,7 @@ async fn actual_rust_owned_registration_bounds_metadata_before_broker_call() {
                 vec![1, 0],
                 vec![property.clone(); properties],
                 vec![(vec![3, 0], 0); methods],
+                Vec::new(),
                 zbus::zvariant::OwnedObjectPath::try_from("/").unwrap(),
                 Deadline::after(Duration::from_secs(2)).unwrap(),
             )

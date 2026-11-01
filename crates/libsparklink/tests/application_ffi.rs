@@ -399,6 +399,7 @@ impl Link {
 #[derive(Default)]
 struct OwnedMetadata {
     method_entry: AtomicBool,
+    events_registered: AtomicUsize,
     owner: Mutex<String>,
     authorizer: Mutex<String>,
     provider: Mutex<String>,
@@ -414,15 +415,31 @@ struct OwnedMetadata {
 struct OwnedServices(Arc<OwnedMetadata>);
 #[zbus::interface(name = "org.sparklink.ServiceManager")]
 impl OwnedServices {
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "Independent flat D-Bus fixture: six wire fields, injected header and self"
+    )]
     fn register_owned_local_service(
         &self,
         uuid: Vec<u8>,
         properties: Vec<slk_contract::ssap::local::PropertyDefinition>,
         methods: Vec<slk_contract::ssap::local::MethodDefinition>,
+        events: Vec<slk_contract::ssap::local::EventDefinition>,
         authorizer: zbus::zvariant::OwnedObjectPath,
         stamp: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> (u16, u16, Vec<u16>) {
+        if uuid == [5, 0] {
+            slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(stamp))
+                .unwrap();
+            assert!(properties.is_empty() && methods.is_empty());
+            assert_eq!(events, [vec![6, 0], vec![7; 16]]);
+            assert_eq!(authorizer.as_str(), "/");
+            *self.0.owner.lock().unwrap() = h.sender().unwrap().to_string();
+            self.0.events_registered.fetch_add(1, Ordering::SeqCst);
+            return (16, 18, vec![17, 18]);
+        }
+        assert!(events.is_empty());
         slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(stamp)).unwrap();
         self.0.method_entry.store(uuid == [4, 0], Ordering::SeqCst);
         if uuid == [4, 0] {
@@ -1078,6 +1095,10 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         );
         assert!(
             String::from_utf8_lossy(&output.stdout)
+                .contains("OWNED_EVENT_LANGUAGE_FIXTURE_PASS_NOT_RF")
+        );
+        assert!(
+            String::from_utf8_lossy(&output.stdout)
                 .contains("CURRENT_APPLICATION_CLIENT_NEGATIVE_BUS_PASS")
         );
         assert!(
@@ -1085,6 +1106,11 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
                 .contains("CURRENT_CONTROLLER_DIRECTORY_LANGUAGE_FIXTURE_PASS_NOT_RF")
         );
     }
+    assert_eq!(
+        owned.events_registered.load(Ordering::SeqCst),
+        2,
+        "C and Python event registrations; invalid inputs never reach the bus"
+    );
     assert_eq!(
         discovery_calls.load(Ordering::SeqCst),
         10,

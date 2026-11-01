@@ -640,3 +640,16 @@ Rust SDK 增加薄绑定及复用原授权准入/等待的 provider helper，实
 UserHost IPC准入不等于Host准入，更不等于USB、controller或peer应用完成；Operation预留有限结果槽，未知结果OutcomeUnknown，未观察阶段NotObservable，取消不抹物理债务。prepare不授永久资格，实际提交重验；短缓冲完整消息/所需长度、有限内部暂存和平台底层语义分别公开。
 
 Native取RX时检查与已开始用户复制的边界明确；UserHost明文进入应用IPC后不能追溯撤回，EAGAIN重试仍检查。authority origin/validation checkpoint区别于安全等级，严格读取时保证无实现则拒绝。Windows ACL/Token/SID/会话和Unix凭据各自验收，不将自报PID或SDK检查当内核强制。全部目标门禁归唯一计划及新增端点子项，不改变已有资格。
+
+### Owned 事件条目与属性配置分开（2026-11-01）
+
+事件 UUID 进入现有 Owned 服务、数据库预算、handle 分配与 owner 撤回；不另建事件
+数据库或 Engine。条目不保存事件关联数据。属性客户端配置描述符仅适用于属性，
+不因更新 codec 有 event 位就自动给事件创建 CPCD 或复用属性批准。
+
+当前只开放登记和发现：标准/自定义类别4/12，Primary成员bit8；属性读写、说明及
+READ/WRITE/method Provider拒绝事件handle。未发布 D-Bus/Rust/C/Python签名同批迁移，
+旧二进制重编，CLI现有属性/method消费者传空事件表。`ListLocalServices`的属性staging
+用途不变，不能据它推断完整远端目录。协议通知/指示、ACK、事件发送权限与上层启停
+留给下一条真实行为链路，复用原Update/Pending/RX及原身份/期限。离线登记/发现和
+owner退出不等于对端应用收到事件，也不授Native、UserHost或Windows资格。

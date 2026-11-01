@@ -3,7 +3,7 @@ import errno
 import os
 import threading
 import time
-from sparklink import Client, ControllerId, LocalProperty, SsapOperations, SsapAccess
+from sparklink import Client, ControllerId, LocalEvent, LocalProperty, SsapOperations, SsapAccess
 
 PATH = "/org/sparklink/slk2_g7/peer_t01_010203040506/link_000000000000000b"
 def deadline():
@@ -95,6 +95,17 @@ with Client(deadline_ns=deadline()) as client:
     error(errno.ETIMEDOUT, lambda: client.connection(ControllerId(2, 7), PATH, deadline_ns=1))
     error(errno.ESTALE, lambda: client.connection(ControllerId(2, 8), PATH, deadline_ns=deadline()))
     connection = client.connection(ControllerId(2, 7), PATH, deadline_ns=deadline())
+    with client.register_local_entries(ControllerId(2,7), b'\x05\0', [], [],
+            events=[LocalEvent(b'\x06\0'), LocalEvent(bytes([7])*16)], deadline_ns=deadline()) as event_service:
+        assert event_service.receipt.property_handles == ()
+        assert event_service.receipt.method_handles == ()
+        assert event_service.receipt.event_handles == (17,18)
+        error(errno.EOPNOTSUPP, lambda: event_service.read_local(17,deadline_ns=deadline()))
+        error(errno.EOPNOTSUPP, lambda: event_service.replace_local(17,b'x',deadline_ns=deadline()))
+        error(errno.EOPNOTSUPP, lambda: event_service.set_description(17,'no',deadline_ns=deadline()))
+        error(errno.EOPNOTSUPP, lambda: event_service.bind_method_provider(17,deadline_ns=deadline()))
+        event_service.unregister(deadline_ns=deadline())
+    print("OWNED_EVENT_LANGUAGE_FIXTURE_PASS_NOT_RF")
     description_service=client.register_local_service(ControllerId(2,7),b'\x01\0',
         [LocalProperty(b'\x02\0',SsapOperations(5),SsapAccess(0),b'\x07\x08\x09')],deadline_ns=deadline())
 client.close()

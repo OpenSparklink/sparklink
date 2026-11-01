@@ -237,6 +237,7 @@ impl Queue {
         };
         let owner_lost = *self.lost.borrow() || self.lost.has_changed().is_err();
         match self.entries[position] {
+            EntryRequirements::Event => Ok(None),
             EntryRequirements::Property(operations, access) => admit(
                 &AuthorizationContext {
                     daemon_owner: &self.daemon,

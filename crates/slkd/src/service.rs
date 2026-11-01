@@ -88,13 +88,14 @@ impl SsapManagerIface {
     /// separately controls who may register services, not controller rights.
     #[expect(
         clippy::too_many_arguments,
-        reason = "Five D-Bus wire fields plus injected connection/header and self; keep the independently checked flat wire contract"
+        reason = "Six D-Bus wire fields plus injected connection/header and self; keep the independently checked flat wire contract"
     )]
     async fn register_owned_local_service(
         &self,
         uuid: Vec<u8>,
         properties: Vec<crate::ssap_database::PropertyDefinition>,
         methods: Vec<slk_contract::ssap::local::MethodDefinition>,
+        events: Vec<slk_contract::ssap::local::EventDefinition>,
         authorizer: zbus::zvariant::OwnedObjectPath,
         deadline: slk_contract::Deadline,
         #[zbus(connection)] connection: &zbus::Connection,
@@ -104,8 +105,8 @@ impl SsapManagerIface {
             Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).map_err(deadline_error)?;
         owned_request(original, async {
             // Bounded validation precedes watches and allocation of a service.
-            if properties.is_empty() && methods.is_empty()
-                || properties.len() + methods.len() > 64
+            if properties.is_empty() && methods.is_empty() && events.is_empty()
+                || properties.len() + methods.len() + events.len() > 64
                 || !matches!(uuid.len(), 2 | 16)
                 || !uuid.iter().any(|b| *b != 0)
             {
@@ -147,6 +148,12 @@ impl SsapManagerIface {
                         "method authorizer required".into(),
                     ));
                 }
+            }
+            if events
+                .iter()
+                .any(|uuid| !matches!(uuid.len(), 2 | 16) || !uuid.iter().any(|b| *b != 0))
+            {
+                return Err(zbus::fdo::Error::InvalidArgs("invalid event UUID".into()));
             }
             let sender = crate::security_policy::sender(&header)?;
             let (database, lease, generation, slots) = {
@@ -201,7 +208,7 @@ impl SsapManagerIface {
                 .map_err(|_| zbus::fdo::Error::Failed("database poisoned".into()))?;
             original.remaining().map_err(deadline_error)?;
             database
-                .register_owned_entries(uuid, properties, methods, owner)
+                .register_owned_entries(uuid, properties, methods, events, owner)
                 .map_err(zbus::fdo::Error::InvalidArgs)
         })
         .await
@@ -512,7 +519,7 @@ mod validation_tests {
         for (name, expected) in [
             (
                 "RegisterOwnedLocalService",
-                vec!["ay", "a(ayuuay)", "a(ayu)", "o", "(ttttt)"],
+                vec!["ay", "a(ayuuay)", "a(ayu)", "aay", "o", "(ttttt)"],
             ),
             ("ReadOwnedLocalValue", vec!["q", "(ttttt)"]),
             ("ReplaceOwnedLocalValue", vec!["q", "ay", "(ttttt)"]),

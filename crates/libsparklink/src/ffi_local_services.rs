@@ -32,8 +32,16 @@ pub struct SlkServiceMethod {
     pub reserved: [u8; 3],
     pub uuid: [u8; 16],
 }
+/// UUID-only event metadata. No stored payload, property CPCD or provider.
+#[repr(C)]
+#[derive(Clone, Copy)]
+pub struct SlkServiceEvent {
+    pub uuid_length: u8,
+    pub reserved: [u8; 3],
+    pub uuid: [u8; 16],
+}
 /// Immutable local receipt, not remote publication, Ready or authorization.
-/// Handles are properties first, then methods; only their combined count is meaningful.
+/// Handles are properties, then methods, then events; only their combined count is meaningful.
 #[repr(C)]
 #[derive(Clone, Copy)]
 pub struct SlkServiceReceipt {
@@ -42,6 +50,8 @@ pub struct SlkServiceReceipt {
     pub end: u16,
     pub property_count: u16,
     pub method_count: u16,
+    pub event_count: u16,
+    pub reserved: [u16; 3],
     pub handles: [u16; 64],
 }
 /// Retains the original caller executor. Explicit unregister and local free
@@ -128,6 +138,8 @@ pub unsafe extern "C" fn slk_client_register_local_service(
             count,
             std::ptr::null(),
             0,
+            std::ptr::null(),
+            0,
             authorization,
             deadline_ns,
             output,
@@ -135,8 +147,9 @@ pub unsafe extern "C" fn slk_client_register_local_service(
     }
 }
 
-/// Register properties and/or distinct methods through the same owner and
-/// absolute deadline. Combined count1..64; receipt orders properties then methods.
+/// Register properties, distinct methods and/or event UUIDs through the same owner and
+/// absolute deadline. Combined count1..64; receipt orders properties, methods, events. Event registration alone does
+/// not enable event transmission or property configuration.
 /// Authorization rules and uncertainty are identical to property registration.
 /// Method access is0..7; approval requirements cannot be disabled.0/-errno.
 /// # Safety
@@ -152,6 +165,8 @@ pub unsafe extern "C" fn slk_client_register_local_entries(
     count: usize,
     methods: *const SlkServiceMethod,
     method_count: usize,
+    events: *const SlkServiceEvent,
+    event_count: usize,
     authorization: u32,
     deadline_ns: u64,
     output: *mut *mut SlkLocalService,
@@ -161,9 +176,11 @@ pub unsafe extern "C" fn slk_client_register_local_entries(
         || uuid.is_null()
         || (properties.is_null() && count != 0)
         || (methods.is_null() && method_count != 0)
+        || (events.is_null() && event_count != 0)
         || !matches!(uuid_length, 2 | 16)
         || !count
             .checked_add(method_count)
+            .and_then(|n| n.checked_add(event_count))
             .is_some_and(|n| (1..=64).contains(&n))
     {
         return -nix::libc::EINVAL;
@@ -203,6 +220,24 @@ pub unsafe extern "C" fn slk_client_register_local_entries(
                 Ok((uuid.to_vec(), access.bits()))
             })
             .collect::<Result<Vec<_>, i32>>()?;
+        let events = if event_count == 0 {
+            &[]
+        } else {
+            unsafe { std::slice::from_raw_parts(events, event_count) }
+        };
+        let events = events
+            .iter()
+            .map(|e| {
+                if e.reserved != [0; 3] || !matches!(e.uuid_length, 2 | 16) {
+                    return Err(nix::libc::EINVAL);
+                }
+                let uuid = &e.uuid[..usize::from(e.uuid_length)];
+                if !uuid.iter().any(|b| *b != 0) {
+                    return Err(nix::libc::EINVAL);
+                }
+                Ok(uuid.to_vec())
+            })
+            .collect::<Result<Vec<_>, i32>>()?;
         let deadline = Deadline::from_monotonic_ns(deadline_ns)?;
         let original = deadline.request()?;
         let executor = unsafe { &*client }.inner.clone();
@@ -222,6 +257,7 @@ pub unsafe extern "C" fn slk_client_register_local_entries(
                     .expect("validated method access"),
             )
         }));
+        requirements.extend(events.iter().map(|_| EntryRequirements::Event));
         let approvals = match authorization {
             0 if requirements.iter().any(|p| p.needs_local_authorization()) => {
                 return Err(nix::libc::EOPNOTSUPP);
@@ -239,6 +275,7 @@ pub unsafe extern "C" fn slk_client_register_local_entries(
                     uuid,
                     definitions,
                     methods,
+                    events,
                     zbus::zvariant::OwnedObjectPath::try_from(if policy.is_some() {
                         crate::ssap::authorization::inbox::PATH
                     } else {
@@ -271,6 +308,8 @@ pub unsafe extern "C" fn slk_client_register_local_entries(
             end: value.1,
             property_count: count as u16,
             method_count: method_count as u16,
+            event_count: event_count as u16,
+            reserved: [0; 3],
             handles: [0; 64],
         };
         receipt.handles[..value.2.len()].copy_from_slice(&value.2);

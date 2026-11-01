@@ -20,7 +20,8 @@ class MethodBoundary(Boundary):
         self.corrupt = lambda receipt: None
 
     def slk_client_register_local_entries(self, client, identity, uuid, size,
-            properties, count, methods, method_count, authorization, deadline, output):
+            properties, count, methods, method_count, events, event_count, authorization, deadline, output):
+        assert event_count == 0
         self.request = (count, method_count, methods[0].access, authorization, deadline)
         output._obj.value = 123
         return 0
@@ -38,7 +39,7 @@ class MethodBoundary(Boundary):
 class MethodBoundaryTests(unittest.TestCase):
     def test_layout_and_distinct_access(self):
         self.assertEqual((ctypes.sizeof(_Method), _Method.uuid.offset), (24, 8))
-        self.assertEqual((ctypes.sizeof(_Receipt), _Receipt.method_count.offset), (152, 22))
+        self.assertEqual((ctypes.sizeof(_Receipt), _Receipt.method_count.offset), (160, 22))
         self.assertEqual((ctypes.sizeof(_MethodInfo), _MethodInfo.method.offset), (80, 62))
         self.assertEqual((ctypes.sizeof(AuthorizationRaw), AuthorizationRaw.value.offset), (2120, 72))
         self.assertEqual(len(AuthorizationRaw().value), 2043)

@@ -505,6 +505,7 @@ async fn service_policy(path: &str, role: &str, start: u16, handle: u16) -> anyh
         vec![1u8, 2],
         vec![(vec![3u8, 4], 5u32, 0u32, vec![7u8])],
         Vec::<slk_contract::ssap::local::MethodDefinition>::new(),
+        Vec::<slk_contract::ssap::local::EventDefinition>::new(),
         zbus::zvariant::OwnedObjectPath::try_from("/")?,
         owned_deadline()?,
     );
@@ -523,7 +524,7 @@ async fn service_policy(path: &str, role: &str, start: u16, handle: u16) -> anyh
         let mut expired = owned_deadline()?;
         expired.0 = 1;
         let mut expired_definition = definition.clone();
-        expired_definition.4 = expired;
+        expired_definition.5 = expired;
         let mut rejected = vec![(
             "register",
             connection

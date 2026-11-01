@@ -19,7 +19,7 @@ pub(crate) enum LocalValueError {
 }
 
 pub(crate) use slk_contract::ssap::local::{
-    MethodDefinition, PropertyDefinition, ServiceRecord as LocalService,
+    EventDefinition, MethodDefinition, PropertyDefinition, ServiceRecord as LocalService,
 };
 enum ValueSource {
     Stored(Vec<u8>),
@@ -56,6 +56,7 @@ struct Service {
     uuid: Vec<u8>,
     properties: BTreeMap<u16, Property>,
     methods: BTreeMap<u16, Method>,
+    events: BTreeMap<u16, EventDefinition>,
     owner: Option<Arc<Owner>>,
 }
 pub(crate) struct Database {
@@ -93,7 +94,7 @@ impl Database {
         uuid: Vec<u8>,
         definitions: Vec<PropertyDefinition>,
     ) -> Result<(u16, u16, Vec<u16>), String> {
-        self.register_inner(uuid, definitions, vec![], None)
+        self.register_inner(uuid, definitions, vec![], vec![], None)
     }
     pub(crate) fn register_owned(
         &mut self,
@@ -104,39 +105,43 @@ impl Database {
         if !owner.current() {
             return Err("service owner retired".into());
         }
-        self.register_inner(uuid, definitions, vec![], Some(owner))
+        self.register_inner(uuid, definitions, vec![], vec![], Some(owner))
     }
     pub(crate) fn register_owned_entries(
         &mut self,
         uuid: Vec<u8>,
         properties: Vec<PropertyDefinition>,
         methods: Vec<MethodDefinition>,
+        events: Vec<EventDefinition>,
         owner: Arc<Owner>,
     ) -> Result<(u16, u16, Vec<u16>), String> {
-        if methods.is_empty() {
+        if methods.is_empty() && events.is_empty() {
             return self.register_owned(uuid, properties, owner);
         }
-        self.register_inner(uuid, properties, methods, Some(owner))
+        self.register_inner(uuid, properties, methods, events, Some(owner))
     }
     fn register_inner(
         &mut self,
         uuid: Vec<u8>,
         definitions: Vec<PropertyDefinition>,
         methods: Vec<MethodDefinition>,
+        events: Vec<EventDefinition>,
         owner: Option<Arc<Owner>>,
     ) -> Result<(u16, u16, Vec<u16>), String> {
         fn uuid_valid(v: &[u8]) -> bool {
             matches!(v.len(), 2 | 16) && v.iter().any(|b| *b != 0)
         }
-        if !uuid_valid(&uuid) || definitions.is_empty() && methods.is_empty() {
+        if !uuid_valid(&uuid) || definitions.is_empty() && methods.is_empty() && events.is_empty() {
             return Err("invalid UUID or empty service".into());
         }
         let count: usize = self
             .services
             .values()
-            .map(|s| s.properties.len() + s.methods.len())
+            .map(|s| s.properties.len() + s.methods.len() + s.events.len())
             .sum();
-        if self.services.len() >= 16 || count + definitions.len() + methods.len() > 64 {
+        if self.services.len() >= 16
+            || count + definitions.len() + methods.len() + events.len() > 64
+        {
             return Err("local database capacity".into());
         }
         for (uuid, bits) in &methods {
@@ -148,6 +153,9 @@ impl Database {
             {
                 return Err("invalid method UUID/owner/authorization".into());
             }
+        }
+        if events.iter().any(|uuid| !uuid_valid(uuid)) || !events.is_empty() && owner.is_none() {
+            return Err("invalid event UUID/owner".into());
         }
         let mut added = 0;
         for (uuid, ops, access, value) in &definitions {
@@ -178,7 +186,7 @@ impl Database {
             return Err("local database byte budget".into());
         }
         let property_count = definitions.len();
-        let end = self.next + (property_count + methods.len()) as u32;
+        let end = self.next + (property_count + methods.len() + events.len()) as u32;
         if end > u32::from(u16::MAX) {
             return Err("local handle namespace exhausted".into());
         }
@@ -200,6 +208,7 @@ impl Database {
                 )
             })
             .collect::<BTreeMap<_, _>>();
+        let method_count = methods.len();
         let methods = methods
             .into_iter()
             .enumerate()
@@ -214,7 +223,22 @@ impl Database {
                 )
             })
             .collect::<BTreeMap<_, _>>();
-        let handles = properties.keys().chain(methods.keys()).copied().collect();
+        let events = events
+            .into_iter()
+            .enumerate()
+            .map(|(i, uuid)| {
+                (
+                    (self.next + 1 + property_count as u32 + method_count as u32 + i as u32) as u16,
+                    uuid,
+                )
+            })
+            .collect::<BTreeMap<_, _>>();
+        let handles = properties
+            .keys()
+            .chain(methods.keys())
+            .chain(events.keys())
+            .copied()
+            .collect();
         // Final owned-registration admission, after validation/allocation and
         // under the same DB lock as removal/value admission. No await follows.
         if owner.as_ref().is_some_and(|o| !o.can_register()) {
@@ -227,6 +251,7 @@ impl Database {
                 uuid,
                 properties,
                 methods,
+                events,
                 owner,
             },
         );
@@ -726,7 +751,8 @@ impl Database {
                     operations: 0,
                     descriptors: vec![],
                     members: (u8::from(!service.properties.is_empty()) * 2)
-                        | (u8::from(!service.methods.is_empty()) * 4),
+                        | (u8::from(!service.methods.is_empty()) * 4)
+                        | (u8::from(!service.events.is_empty()) * 8),
                 });
             }
             if matches!(request.kind, FindKind::Properties | FindKind::Structure) {
@@ -777,6 +803,28 @@ impl Database {
                             handle: *handle,
                             end: *handle,
                             uuid: method.uuid.clone(),
+                            operations: 0,
+                            descriptors: vec![],
+                            members: 0,
+                        });
+                    }
+                }
+            }
+            if matches!(request.kind, FindKind::Events | FindKind::Structure) {
+                for (handle, uuid) in &service.events {
+                    let included = matched
+                        || request.kind == FindKind::Events
+                            && request.uuid.is_some_and(|u| u == uuid);
+                    if included
+                        && *handle >= request.start
+                        && *handle <= request.end
+                        && request.accepts(uuid)
+                    {
+                        entries.push(Entry {
+                            category: if uuid.len() == 16 { 12 } else { 4 },
+                            handle: *handle,
+                            end: *handle,
+                            uuid: uuid.clone(),
                             operations: 0,
                             descriptors: vec![],
                             members: 0,

@@ -163,6 +163,8 @@ pub mod ssap {
         pub type PropertyDefinition = (Vec<u8>, u32, u32, Vec<u8>);
         /// UUID and invocation access bits0..2; no stored argument or result.
         pub type MethodDefinition = (Vec<u8>, u32);
+        /// Event UUID only: associated event data is not stored in this entry.
+        pub type EventDefinition = Vec<u8>;
         pub type PropertyRecord = (u16, Vec<u8>, u32, u32);
         pub type ServiceRecord = (u16, u16, Vec<u8>, Vec<PropertyRecord>);
         pub type Registration = (u16, u16, Vec<u16>);
@@ -170,6 +172,7 @@ pub mod ssap {
             Vec<u8>,
             Vec<PropertyDefinition>,
             Vec<MethodDefinition>,
+            Vec<EventDefinition>,
             zvariant::OwnedObjectPath,
             crate::Deadline,
         );
@@ -631,7 +634,7 @@ mod owned_deadline_contract {
     fn owned_requests_have_one_original_stamp_and_no_legacy_shape() {
         assert_eq!(
             super::ssap::local::OwnedRegistrationRequest::SIGNATURE.to_string(),
-            "(aya(ayuuay)a(ayu)o(ttttt))"
+            "(aya(ayuuay)a(ayu)aayo(ttttt))"
         );
         assert_eq!(
             super::ssap::local::OwnedHandleRequest::SIGNATURE.to_string(),

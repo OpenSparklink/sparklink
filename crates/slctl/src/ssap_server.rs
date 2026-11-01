@@ -543,6 +543,7 @@ pub(crate) async fn serve(
             service,
             properties,
             methods,
+            Vec::new(),
             authorizer_path,
             registration_deadline,
         )

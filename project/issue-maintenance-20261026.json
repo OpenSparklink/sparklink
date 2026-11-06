@@ -8927,6 +8927,25 @@
       ],
       "closed": [],
       "qualification": "SOURCE_OFFLINE_ARTIFACT_AND_SCOPED_NOUSB_ONLY_NATIVE_PENDING"
+    },
+    {
+      "id": "ssap-discovery-direct-proof-20261107",
+      "source_commit": "6ac0ba24ab8670ace393fe1ccf0cff71e49f0194",
+      "followup_commit": "5f41b99cc09066a8ae4c6c116c469fe7fd88ab7d",
+      "issues": [
+        {
+          "repository": "OpenSparklink/sparklink",
+          "issue": 22,
+          "state": "open",
+          "updated_at": "2026-11-06T20:25:17Z",
+          "body_sha256": "6536d954661a277046fb25741e24c4c020c3a9012ecfb36b31c79dd2d5e3277f",
+          "original_checklist_unchanged": true,
+          "source_offline_only": true,
+          "closed": false
+        }
+      ],
+      "closed": [],
+      "qualification": "SOURCE_OFFLINE_ONLY_FORMAL_NOT_PROVEN_NO_NEW_NATIVE"
     }
   ]
 }

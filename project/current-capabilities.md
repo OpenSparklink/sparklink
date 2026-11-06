@@ -35,6 +35,18 @@ contract2文件已与Btrfs镜像只读提取结果独立对照，内容/模式/�
 结构化切片 `ssap-event-discovery-gate-v2-20261107` 关联源码、边界及检查，原登记/发送/单次/租约/工具切片保留。
 完整长度/分片、退出/权限、Profile START/STOP、自然根因及非人工恢复保持开放；后续只由生成的batch.next维护。
 
+## 生产发现 codec：验证入口完成，形式化未证明
+
+[源码 6ac0ba2](https://github.com/OpenSparklink/sparklink/commit/6ac0ba24ab8670ace393fe1ccf0cff71e49f0194)直接调用同一FindRequest/发现页codec；
+[身份修复 5f41b99](https://github.com/OpenSparklink/sparklink/commit/5f41b99cc09066a8ae4c6c116c469fe7fd88ab7d)固定已审阅的展开输入，拒绝合法语法但未知的符号或变化上界。
+5项封存生产codec固定回归、14项报告/配置检查及严格Clippy通过；不改变Engine、Native Runtime或ABI。
+
+三个正式harness均为 **NOT_PROVEN**。请求/接收页虽有Kani成功摘要，严格项目判定仍拒绝未接受的unsupported项；
+单成员往返含分配/OOM/未分配指针模型Error，必要性质未完成。指定错误opcode反例存在，但严格聚合未接受完整负对照。
+不通过忽略警告、缩小原输入、替换parser或假定分配成功升级PASS。首轮180秒超时、8GiB耗尽、原比较路径失败与反例均保留。
+来源为结构化切片 `ssap-discovery-direct-proof-20261107`；[重放与边界](../formal/README.md)说明0–22/0–32字节及单成员范围，
+不是完整页/allocator/OS、Native并发或实机证明，也不阻塞原纵向业务。完整原验收与历史资格不变。
+
 ## Native v4 的资格边界
 
 地址预配置中的 Setup/HCC 标记不等于 Ready；局部成功不能覆盖双设备整轮失败。
@@ -224,7 +236,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Contract2 input/image closure and staged SDK absent-bus rejection are verified;isolated noUSB kernel/module boot passed but guest SDK/daemon did not run. Next use exact retained inputs for Native method/event discovery,actual listener and independent app reply plus original baseline/lifecycle when valid startup conditions change;do not repeat unchanged warm failures or treat five endpoints,staged firmware,USB completion/manual/QMP/hub actions as recovery. Preserve all earlier failure identities and full length/pressure/permissions/four-device/Profile gates. In parallel advance existing ServiceChannel/C/D/E/W responsibilities without another Engine or waiting full control combinations;KernelPacket/vendor P4.",
+  "next": "Native method v4 and event contract2:retain exact prepared inputs and complete real discovery/listener/independent peer application reply plus original baseline/lifecycle when valid startup conditions change;do not repeat unchanged warm failures or infer recovery from staged firmware,five endpoints,USB completion,manual/QMP/hub actions. Parallel discovery codec proof stays NOT_PROVEN:resolve exact pinned-tool property semantics and real allocation/pointer model errors without success stubs,input reduction or warning suppression;not a new full-control prerequisite. Continue existing ServiceChannel/C/D/E/W delivery without another Engine;all lengths/pressure/permissions/four-device/Profile and natural/nonmanual recovery gates remain,KernelPacket/vendor P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

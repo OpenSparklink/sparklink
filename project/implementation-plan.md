@@ -133,6 +133,19 @@ Update/Pending/RX路径推进payload、通知/指示及ACK；不得把属性更�
 及真实交付出口，不以本批发现测试替代。固定NearLink Host客户端识别事件成员，其当前
 服务端单独event查找返回无条目；该参考不能充当完整event互通资格。
 
+### 发现 codec 的直接生产验证接入（2026-11-07）
+
+复用原FV Codec/重组入口和生产模块，不新增验证专用实现；源码[6ac0ba2](https://github.com/OpenSparklink/sparklink/commit/6ac0ba24ab8670ace393fe1ccf0cff71e49f0194)及
+展开身份修复[5f41b99](https://github.com/OpenSparklink/sparklink/commit/5f41b99cc09066a8ae4c6c116c469fe7fd88ab7d)映射WP00/08/17、U#22。
+检查原请求schema/句柄/类别/预算、编码拒绝原子性和单成员全字段/字节往返；原输入域及默认安全/展开检查保持。
+已交付5项实际封存codec回归、14项报告/配置检查及严格Clippy；三项正式harness仍NOT_PROVEN，严格负对照也未接受。
+请求/接收页的工具成功摘要不能覆盖unsupported，往返的分配/OOM/未分配指针Error不能当已发现实机或生产缺陷。
+原180秒超时、8GiB耗尽、比较表达式失败和指定错误opcode反例保留；源码/工具/边界/假设及全部原始结果留准确本地索引。
+
+后续证明出口：核对固定Kani属性与实际callsite可达性，给实际编码/Vec分配/OOM模型建立最小生产复现，保持完整声明域；
+不使用成功桩、不忽略警告或把未执行/未展开记PASS。该未证明项与Native method/event真实交付及C/D/E/W并行，
+不是控制面全集或新的数据前置。默认生产代码未变，实机、完整分页/长值/生命周期与恢复各按原门禁，U#22六条条件保持开放。
+
 ### ServiceChannel 生产调用审计与最小迁移（2026-11-01）
 
 源码 [92a7522](https://github.com/OpenSparklink/sparklink/commit/92a752223a770de139b8ffbc0b05c5113b4ace29) 复用 `ssap_engine::Wire`；没有新增Host/Engine/公共trait。所有快照和Session TX查询进入同一fd所有者，send/receive不再接收外部fd；send只依赖约束及片字节，不依赖Engine的Pending队列。现有检查时点、原期限和返回错误保留。
@@ -754,7 +767,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Contract2 input/image closure and staged SDK absent-bus rejection are verified;isolated noUSB kernel/module boot passed but guest SDK/daemon did not run. Next use exact retained inputs for Native method/event discovery,actual listener and independent app reply plus original baseline/lifecycle when valid startup conditions change;do not repeat unchanged warm failures or treat five endpoints,staged firmware,USB completion/manual/QMP/hub actions as recovery. Preserve all earlier failure identities and full length/pressure/permissions/four-device/Profile gates. In parallel advance existing ServiceChannel/C/D/E/W responsibilities without another Engine or waiting full control combinations;KernelPacket/vendor P4.",
+  "next": "Native method v4 and event contract2:retain exact prepared inputs and complete real discovery/listener/independent peer application reply plus original baseline/lifecycle when valid startup conditions change;do not repeat unchanged warm failures or infer recovery from staged firmware,five endpoints,USB completion,manual/QMP/hub actions. Parallel discovery codec proof stays NOT_PROVEN:resolve exact pinned-tool property semantics and real allocation/pointer model errors without success stubs,input reduction or warning suppression;not a new full-control prerequisite. Continue existing ServiceChannel/C/D/E/W delivery without another Engine;all lengths/pressure/permissions/four-device/Profile and natural/nonmanual recovery gates remain,KernelPacket/vendor P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

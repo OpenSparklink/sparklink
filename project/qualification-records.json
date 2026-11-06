@@ -55,7 +55,7 @@
       "Original scope retained for historical v1-v3",
       "Publish source/offline summary only"
     ],
-    "next": "Contract2 input/image closure and staged SDK absent-bus rejection are verified;isolated noUSB kernel/module boot passed but guest SDK/daemon did not run. Next use exact retained inputs for Native method/event discovery,actual listener and independent app reply plus original baseline/lifecycle when valid startup conditions change;do not repeat unchanged warm failures or treat five endpoints,staged firmware,USB completion/manual/QMP/hub actions as recovery. Preserve all earlier failure identities and full length/pressure/permissions/four-device/Profile gates. In parallel advance existing ServiceChannel/C/D/E/W responsibilities without another Engine or waiting full control combinations;KernelPacket/vendor P4.",
+    "next": "Native method v4 and event contract2:retain exact prepared inputs and complete real discovery/listener/independent peer application reply plus original baseline/lifecycle when valid startup conditions change;do not repeat unchanged warm failures or infer recovery from staged firmware,five endpoints,USB completion,manual/QMP/hub actions. Parallel discovery codec proof stays NOT_PROVEN:resolve exact pinned-tool property semantics and real allocation/pointer model errors without success stubs,input reduction or warning suppression;not a new full-control prerequisite. Continue existing ServiceChannel/C/D/E/W delivery without another Engine;all lengths/pressure/permissions/four-device/Profile and natural/nonmanual recovery gates remain,KernelPacket/vendor P4.",
     "actor_obligation_regression": {
       "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
       "entry": "ssap_engine::exchange_loop",
@@ -528831,6 +528831,45 @@
               "source_commit": "9e7a37c5307d566aadebce35d2f1d96cc7900b4e",
               "original_six_conditions_unchanged": true,
               "scope": "source/offline preparation and noUSB scope only;private artifact/execution identities and hardware details local"
+            }
+          ]
+        },
+        {
+          "id": "ssap-discovery-direct-proof-20261107",
+          "source_commit": "6ac0ba24ab8670ace393fe1ccf0cff71e49f0194",
+          "source_followup_commit": "5f41b99cc09066a8ae4c6c116c469fe7fd88ab7d",
+          "status": "SOURCE_AND_OFFLINE_REGRESSION_ONLY_FORMAL_NOT_PROVEN_NATIVE_PENDING",
+          "scope": "Verification entry and fixed production codec/report regression only;all3 direct Kani harnesses remain NOT_PROVEN. Tool summary or a specified counterexample cannot override strict unsupported/incomplete results. No Engine,Native Runtime,ABI,firmware,VM or USB change.",
+          "checks": {
+            "production_codec": "5 actual frozen host production discovery tests pass;not kernel/VM/RF",
+            "offline": "14 report/config checks and strict all-targets slk-protocol Clippy pass",
+            "formal": "NOT_PROVEN;3 explicit required harnesses,none accepted;negative control not accepted by strict aggregator",
+            "raw_results": "request/page Kani summaries successful but project rejects unresolved unsupported properties;roundtrip has actual tool allocation/OOM/pointer model Error results",
+            "scope": "request0..22,page0..32,single2/16-byte UUID member with0..4 descriptor bytes;all original inputs preserved,no stubs",
+            "loop_input": "exact production/harness/tool and reviewed symbol/limit mapping pinned;changed/unknown symbols,source mismatch,missing harness,limits or disabling flags rejected",
+            "failures": "original180s timeouts,8GiB solver exhaustion,unsupported,Error and specified wrong-opcode counterexample retained;not confirmed production defect",
+            "qualification": "NO_NEW_FORMAL_NATIVE_OR_RECOVERY_QUALIFICATION"
+          },
+          "formal_result": "NOT_PROVEN",
+          "accepted_proof": false,
+          "accepted_negative_control": false,
+          "not_tested": [
+            "pinned Kani property/callsite reachability audit without blanket allowances;allocation/OOM/unallocated-pointer production reproducer without success stubs",
+            "full original method/event discovery,listener and independent peer application reply plus baseline/lifecycle under changed valid startup conditions",
+            "full length/fragment/permissions/four-device/Profile and adopted ServiceChannel/Host/Windows scope",
+            "natural startup root cause and nonmanual recovery remain open"
+          ],
+          "qualification_transfer": false,
+          "issue_sync": [
+            {
+              "repository": "OpenSparklink/sparklink",
+              "issue": 22,
+              "state": "open",
+              "updated_at": "2026-11-06T20:25:17Z",
+              "body_sha256": "6536d954661a277046fb25741e24c4c020c3a9012ecfb36b31c79dd2d5e3277f",
+              "original_checklist_unchanged": true,
+              "source_offline_only": true,
+              "closed": false
             }
           ]
         }

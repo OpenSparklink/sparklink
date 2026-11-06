@@ -125,6 +125,8 @@ mod local_value_negative_control {
 #[path = "../../../crates/slk-protocol/src/ssap.rs"]
 pub mod ssap;
 #[cfg(kani)]
+mod discovery_proofs;
+#[cfg(kani)]
 mod configuration_proofs {
     #[kani::proof]
     #[kani::unwind(2050)]

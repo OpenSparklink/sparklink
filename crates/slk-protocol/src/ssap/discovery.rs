@@ -340,6 +340,34 @@ pub fn encode_page(
 mod tests {
     use super::*;
     #[test]
+    fn uuid_queries_reject_unfiltered_response_opcode_and_reverse() {
+        // Independent single-member vector. A shared response opcode does not
+        // identify method/event; the original request owns that schema.
+        let page = [5, 3, 17, 0, 0x34, 0x12, 0, 0, 0, 0, 0];
+        for kind in [FindKind::Methods, FindKind::Events] {
+            for uuid in [None, Some(&[0x34, 0x12][..]), Some(&[0xa5; 16][..])] {
+                let request = FindRequest {
+                    kind,
+                    class: EntryClass::Mixed,
+                    start: 1,
+                    end: u16::MAX,
+                    uuid,
+                };
+                let mut reply = page;
+                reply[0] = request.opcode() + 1;
+                let entry = decode_page(request, 249, &reply).unwrap();
+                assert_eq!(entry.len(), 1);
+                assert_eq!(
+                    entry[0].category,
+                    if kind == FindKind::Events { 4 } else { 3 }
+                );
+                reply[0] = if uuid.is_some() { 5 } else { 7 };
+                assert_eq!(decode_page(request, 249, &reply), Err(FindError::Metadata));
+            }
+        }
+    }
+
+    #[test]
     fn event_discovery_vectors_keep_event_category_and_original_schema() {
         let r = FindRequest {
             kind: FindKind::Events,

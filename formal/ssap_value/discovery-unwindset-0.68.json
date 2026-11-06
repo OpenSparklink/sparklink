@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "kani_version": "0.68.0",
+  "sources": {
+    "crates/slk-protocol/src/ssap.rs": "0b139fa20978fdab8fe3a4008ce7ef3ec405241d705600f139d36ae8b26e7c4d",
+    "crates/slk-protocol/src/ssap/discovery.rs": "d99d5906076bd4a65475e453b8e936779ba568edc45309ad1934547ad0744898",
+    "formal/ssap_value/src/discovery_proofs.rs": "feca98e3d0e180129db9fdc3a510ea6bbb68a2de8b2ab3e890a610a2234410f6"
+  },
+  "harnesses": {
+    "discovery_proofs::actual_find_request_preserves_bytes_and_refuses_atomically": {},
+    "discovery_proofs::actual_member_page_binds_original_schema_range_and_budget": {
+      "_RNvNtNtCs5W3Ohlx9Gn9_37sparklink_production_ssap_value_proof4ssap9discovery11decode_page.0": 5,
+      "_RINvNtCs8xvirJzNMvV_4core3ptr9drop_glueSNtNtNtCs5W3Ohlx9Gn9_37sparklink_production_ssap_value_proof4ssap9discovery5EntryEBI_.0": 4,
+      "_RNvNtCs5W3Ohlx9Gn9_37sparklink_production_ssap_value_proof16discovery_proofs57actual_member_page_binds_original_schema_range_and_budget.0": 4
+    },
+    "discovery_proofs::actual_member_page_roundtrip_or_exact_capacity_refusal": {
+      "_RNvNtNtCs5W3Ohlx9Gn9_37sparklink_production_ssap_value_proof4ssap9discovery11decode_page.0": 3,
+      "_RNvNtNtCs5W3Ohlx9Gn9_37sparklink_production_ssap_value_proof4ssap9discovery11encode_page.0": 2,
+      "_RINvNtCs8xvirJzNMvV_4core3ptr9drop_glueSNtNtNtCs5W3Ohlx9Gn9_37sparklink_production_ssap_value_proof4ssap9discovery5EntryEBI_.0": 2
+    }
+  },
+  "bound_rationale": {
+    "request": "global26;full legal request22 and output22.",
+    "page": "32-byte input:minimum successful member9 bytes,at most3 published entries and one failed tail;parser5,Entry iteration/drop4. No assumptions on packet bytes.",
+    "roundtrip": "One valid generated member:encoder/drop2,decoder3;fixed byte comparison loops global40. All original u16 MTU/handle,operation bits,UUID2/16 and descriptor0..4 retained. Field/byte equality avoids an additional expected Vec allocation and unsupported Entry pointer comparison without dropping any field.",
+    "checks": "Default safety and unwinding assertions stay enabled;too-small bounds must fail,not truncate. Exact symbols inspected in compiled Kani0.68 programs;source changes require regenerating/reviewing this input."
+  }
+}

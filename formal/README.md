@@ -1,5 +1,47 @@
 # SparkLink 验证边界与可复现入口
 
+## 当前 method／event 发现 codec 的直接有界检查
+
+沿用现有 `ssap_value` runner，直接编译生产 `ssap.rs` 及其 discovery 模块，
+没有替代 parser、成功依赖桩或第二个 Engine：
+
+```sh
+python3 formal/ssap_value/check.py --discovery --discovery-unwindset formal/ssap_value/discovery-unwindset-0.68.json --budget-seconds 180 --output /path/to/new-discovery-check
+python3 formal/ssap_value/check.py --negative-discovery --budget-seconds 180 --output /path/to/new-discovery-negative
+```
+
+输出必须是新目录。runner 使用全局构建锁和既有预算，锁定的独立 manifest
+没有外部依赖，Cargo 仅用离线缓存；源码、lock 和报告 hash 分别保存。
+每项必要断言必须为实际可达的 Success；未知、缺失、展开失败、超时仍未证明。
+负对照只接受真实 decoder 对错误 opcode 的指定断言反例，不能把任意崩溃当作成功。
+请求及负对照仅逐项接受三种已审阅的标准库不可达安全检查（literal formatting、
+合法常量 alignment、unsigned abs_diff）。接收页另列真实 Entry 的非零 stride、
+grow size 和两个已核对的 decoder 安全分支；页往返尚无 opt-in。必要业务
+断言一律不能不可达。原始编译警告不屏蔽：Kani 对不可达 unsupported 代码的规则
+见[官方说明](https://model-checking.github.io/kani/rust-feature-support.html#code-generation-for-unsupported-features)，
+实际可达 unsupported、未知检查或不完整输出仍拒绝；不宣称整个 crate 已证明。
+Kani/CBMC、其标准库模型及编译链属于受信任基础，不证明实际分配器、OOM unwind、
+操作系统或固件；结果状态语义见[官方文档](https://model-checking.github.io/kani/verification-results.html)。
+
+| 检查 | 输入与生产映射 | 不包含 |
+|---|---|---|
+| 请求往返／拒绝原子性 | `FindRequest::decode/encode`，任意 0–22 字节、u16 MTU、0–22 输出容量；成功保持精确字节及尾部，拒绝不修改输出 | IPC 原期限、取消、调用者退出、allocator/OS 实现正确性 |
+| 接收页原请求 schema | `decode_page`，任意 0–32 字节、method/event、三种 UUID 类别、u16 MTU 和句柄范围；检查顺序、类别、有效 metadata 及有限输出 | 完整 80 条目或最大 MTU、UUID 查询的服务/成员匹配语义、旧回复归属与对端语义真实性 |
+| 发送页往返／容量 | `encode_page/decode_page`，单条合法非零句柄、2/16 字节任意 UUID、合法 operation bits、0–4 任意描述符字节和 u16 MTU | 完整分页、所有描述符长度或业务权限策略 |
+
+method/event 的响应 opcode 可以相同；页中省略的类别由原请求解释。
+因此“保留原请求 schema”不等于证明远端确实执行了该操作，也不证明迟到回复
+与新请求可区分。唯一 actor 的原请求、事务串行、原期限及 Native 生命周期仍需
+各自实现回归和真实双设备校验。unwind26/40 是显式边界，不关闭展开断言。
+可选 loop-bound 输入绑定准确生产/harness 源码及 Kani0.68 的实际编译符号。
+32字节页最多三个成功成员；parser5、Entry迭代/drop4，单条往返的encoder/drop2、
+parser3减少无用展开，其他循环保留global40。输入域未缩小，过小上界必须由展开
+断言拒绝；旧源码、缺harness、非正整数和任何关闭检查的参数均在运行前拒绝。
+不提供该输入时仍按原global40运行，超时不记通过；源码变更后须重新核对符号和hash。
+
+本节说明可重放范围，不声明当前 PASS；实际结果、反例和未证明项从唯一资格
+入口的源码映射读取。工具、模型或字节检查不能替代真实对端应用交付。
+
 ## SSAP 客户端部分准入与作者终态
 
 `tools/run_formal.py --ssap-client-only --output NEW_DIRECTORY` 使用现有 TLC

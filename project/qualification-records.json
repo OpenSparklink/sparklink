@@ -55,7 +55,7 @@
       "Original scope retained for historical v1-v3",
       "Publish source/offline summary only"
     ],
-    "next": "Method/event actual C/Python SDK discovery consumers now share exact original deadlines and typed result checks. Next extend existing paired event gate to require UUID/category/handle discovery before actual lease Ready/send,retain contract1 and independent full-window capture/verdict,then seal exact new tools/artifact. Native method/event app delivery and original baseline/lifecycle need changed valid startup conditions;retained startup attempts stay failures,no unchanged warm retry or manual/QMP/hub recovery qualification. Continue event lengths/lifetime/permissions and C/D/E/W without waiting full control combinations;KernelPacket/vendor P4.",
+    "next": "Event contract2 now requires actual SDK discovery before listener/send,independent paired pages,physical sends and whole publisher window;contract1 scope preserved. Next seal exact contract2 helper/verifier/dependency/artifact inputs and applicable no-USB VM checks,then Native method/event app delivery with original baseline/lifecycle only when valid startup conditions change. Current allocated-leaf readonly observation is not Ready/firmware/cold-power proof;retain earlier failed attempts,no unchanged warm retry or manual/QMP/hub recovery qualification. Continue full lengths/lifetime/permissions,four-device and C/D/E/W without waiting full control combinations;KernelPacket/vendor P4.",
     "actor_obligation_regression": {
       "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
       "entry": "ssap_engine::exchange_loop",
@@ -528747,6 +528747,47 @@
               "scope": "source/offline only;actual hardware failures and execution identities stay local",
               "original_six_conditions_unchanged": true,
               "source_commit": "e53b65222eb9586e1d084d9e9ef9db423b0231fe"
+            }
+          ]
+        },
+        {
+          "id": "ssap-event-discovery-gate-v2-20261107",
+          "source_commit": "9e7a37c5307d566aadebce35d2f1d96cc7900b4e",
+          "status": "IMPLEMENTED_OFFLINE_SCOPED_PASS_CONTRACT2_ARTIFACT_NATIVE_PENDING",
+          "source_sha256": {
+            "tools/tests/test_ws73_application_client.py": "28a538148a5845f127410edef7137f56933ad27be1f290b6af49f883924cf6b8",
+            "tools/tests/test_ws73_ssap_event_delivery.py": "88dfe700f6bdc1489d12c38e9a659ecdc559cfdac6db0621f8be2bc4ba7fa160",
+            "tools/ws73_application_client.py": "eee97e931945e202a2ac03a9c4c4270cd0cd368acb131ec4c06e8e83b2e658cb",
+            "tools/ws73_channel_socket.py": "6b8bdd11553567f9ef50a5d5d9a29794e3c3c2b8d193d590036923e46e21d27b",
+            "tools/ws73_ssap_event_delivery.py": "7b0dfb8882b9a3bb67db7001639cc7e8852cc2dd3999e2d50164a943a6667b54",
+            "tools/ws73_target.py": "255f02e3a4617e4dbc0e3387642cf38e070b2a4ec7d1c17a3b2c90da9987495d"
+          },
+          "scope": "Event contract2 reuses existing C/Python SDK supervisor and typed receipt:kind5/category12/custom16-byte UUID/handle and original5s must match actual publisher before listener/send. Independent causal two-page/two-end discovery,physical fragment identity,credit count,full publisher window including gaps plus original event/ACK/application reply/readback/cleanup. Historical contract1 remains separate.",
+          "checks": {
+            "related_tools": 160,
+            "production_codec_golden": 4,
+            "negative_controls": "publisher binding and whole publisher-window check omitted separately;both fail;source restored and all160 rerun",
+            "historical_contract1": "old synthetic fixture and new fixture produce byte-identical canonical evidence;accepted as1,rejected as2;not real historical capture replay",
+            "syntax": "Python modules and guest sh -n passed",
+            "strict_html": "PASS both trees",
+            "scope": "All new supervisor I/O and raw ACB inputs are explicit fixtures;codec tests execute production pure code.No new actual SDK/privatebus,VM,Native,RF or formal qualification."
+          },
+          "qualification_transfer": false,
+          "not_tested": [
+            "fresh exact contract2 artifact,dependency sealing and applicable no-USB VM checks",
+            "Native actual discovered event/listener/application reply and original baseline/lifecycle",
+            "full lengths,fragment/lifetime/permissions/four-device/Profile",
+            "natural startup RCA and nonmanual recovery;new formal and adopted Host/Windows scope"
+          ],
+          "issue_sync": [
+            {
+              "url": "https://github.com/OpenSparklink/sparklink/issues/22",
+              "state": "open",
+              "updated_at": "2026-11-06T18:57:04Z",
+              "body_sha256": "11b129d900b8e01b7276b0c3a5ac20f6092b4f4dad43be75efb7481afdd04307",
+              "source_commit": "9e7a37c5307d566aadebce35d2f1d96cc7900b4e",
+              "original_six_conditions_unchanged": true,
+              "scope": "source/offline only;private hardware/execution identities remain local"
             }
           ]
         }

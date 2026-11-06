@@ -16,37 +16,20 @@
 
 ## 事件发送、单次接收与持续租约：限定离线范围
 
-[持续租约4f7f657](https://github.com/OpenSparklink/sparklink/commit/4f7f657bfa12525ebc5b12526279a2820cc3870b)复用同一ReceiveTransaction/CallerLease/Queue；
-初始及共享加入先安装RX路由再返回本地ACTIVE。Info v2显式kind/minimum，Rust/C/Python同迁，
-原Native身份/epoch和有限队列保持。事件关闭flags=1只确认本地清理，不是远端STOP；
-属性CPCD债务和单次接收语义不变，ACK仍不等于应用处理。
-122项daemon SSAP、12项共享契约、10项CLI库、75项SDK库/8项Owned/13项远端调用、
-实际C/Python共享库消费者及19项Python边界通过；77项权限/资格/文档、19项现有角色/消费者工具、
-default/all-features严格Clippy和HTML通过。实际共享RX路由遗漏负对照被拒绝，恢复后重跑完整daemon；
-35项捕获SDK源码/artifact保持一致。Native收据和有限私有总线服务是显式fixture，
-不证明实际内核授权、系统总线部署、固件/RF、Windows或新形式化性质。
-[应用工具f070cf8](https://github.com/OpenSparklink/sparklink/commit/f070cf81abda2ca3c7acbde209845c5d96e183eb)已复用C/Python Owned及租约循环，
-增加事件发送/接收、显式本地Ready、独立回复属性及同一读/回复原期限。
-实际SDK/私有总线检查32次发送、16次校验回复、6个拒绝场景；输入0/1/249/250/253/254/255/2042字节。
-36项捕获源码/artifact一致，25项工具/策略、75项资格/文档/策略、严格GCC/Clang、default/all-features Clippy通过。
-该有限fixture不授Native/USB/实机资格；Python收据分类错误及首次严格构建失败保留。
-[事件门禁a2a2655](https://github.com/OpenSparklink/sparklink/commit/a2a26552a9be47549fc9de42033509c42fee8a9a)进一步接通既有VM/guest/输入封存与最终判定。
-contract1覆盖两种连接角色、每角色两方向的32字节notify/indicate；真实租约Ready检查后才发送，
-接收应用校验并写独立回复，发布端读回，双端原始窗口拒绝多余CPCD/ACK或缺包。
-133项相关工具检查与严格HTML通过；移除发送前Ready检查的负对照失败，恢复后完整重跑。
-该批进程/报文均为显式fixture，没有新增SDK私有总线、VM、Native、实机或形式化执行资格。
-准确新artifact及安装输入已封存，无USB隔离内核/module启动检查通过；该检查未执行事件daemon/应用。
-下一批按实际设备启动条件取得Native事件交付及原路径/生命周期回归，不重复未改变条件的暖启动失败。
-事件长度/分片、完整生命周期与部署权限仍缺，原method v4失败和历史资格身份保持。
-工具/门禁切片分别映射 `ssap-event-tools-20261101` 和 `ssap-event-gate-20261101`。
-[事件发现消费者e53b652](https://github.com/OpenSparklink/sparklink/commit/e53b65222eb9586e1d084d9e9ef9db423b0231fe)共用method/event的C/Python SDK路径，
-kind/category严格区分；60个实际进程场景、32次发现RPC，2/16字节UUID及错误类型/身份/畸形/拒绝/期限均检查。
-非法输入/未释放屏障无RPC；36项实际源码/artifact一致，51项工具、严格GCC/Clang/Clippy及HTML通过。
-有限私有总线fixture不授Native事件发现或交付。首轮17字节UUID失败保留；现有contract1尚未前置事件发现。
-后续退出由生成的batch.next维护；准确实机尝试及失败只按授权本地索引核对，不转授新工具。
-切片映射 `ssap-event-discovery-consumers-20261107`。
-Profile START/STOP、完整事件/生命周期仍缺；历史登记/发送/单次接收及method v4失败按原身份保留。
-结构化映射为 `scope_extensions[].implementation_slices` 的 `ssap-event-lease-20261101`。
+| 范围 | 已实现／限定检查 | 剩余资格 |
+|---|---|---|
+| Owned登记、发送和单次接收 | 唯一DB/Owner、Update/Pending/ACK、ReceiveTransaction及原Native校验；[发送0d5a62b](https://github.com/OpenSparklink/sparklink/commit/0d5a62bfcaadf8a7ef1f0515485e3c1a5101d563)、[接收4658a82](https://github.com/OpenSparklink/sparklink/commit/4658a8298831cace1170b15cb557312440ad7b03)及原切片检查保留 | 单次入口不授监听Ready；完整操作矩阵与准确Native交付仍待验 |
+| 持续租约／本地Ready | [4f7f657](https://github.com/OpenSparklink/sparklink/commit/4f7f657bfa12525ebc5b12526279a2820cc3870b)：先装共享RX路由后ACTIVE，原身份/epoch/minimum/有限队列；本地关闭flags1、无事件CPCD | ACK/ACTIVE/关闭均不等应用处理或远端STOP；完整部署和生命周期仍待验 |
+| 实际应用消费者 | [f070cf8](https://github.com/OpenSparklink/sparklink/commit/f070cf81abda2ca3c7acbde209845c5d96e183eb)事件发送/监听/独立回复；[e53b652](https://github.com/OpenSparklink/sparklink/commit/e53b65222eb9586e1d084d9e9ef9db423b0231fe)共用method/event发现。有限实际C/Python私有总线结果保留原身份；0..2042事件、2/16字节UUID及拒绝/原期限分别记录 | 有限fixture不授Native/USB/RF、系统总线角色或上层Profile资格；旧失败保留 |
+| contract1 | [a2a2655](https://github.com/OpenSparklink/sparklink/commit/a2a26552a9be47549fc9de42033509c42fee8a9a)：两角色/双方向32字节notify/indicate、实际监听Ready、独立应用回复及发布端读回；历史准确输入和无USB内核/module smoke按原范围保留 | 未前置事件发现；原通过/失败、产物/执行身份不升级contract2或当前镜像 |
+| 当前contract2 | [9e7a37c](https://github.com/OpenSparklink/sparklink/commit/9e7a37c5307d566aadebce35d2f1d96cc7900b4e)：先SDK发现原随机16字节UUID/category12/handle，再监听/发送；原5秒、两页双端因果、实际物理TX计数及完整发布者窗口 | 新工具输入/artifact尚待封存；准确Native发现/事件/应用回复及原基线/生命周期仍待验 |
+
+本批160项工具回归、4项现有生产发现codec golden和严格HTML通过；进程I/O与报文为显式fixture。
+移除发布者绑定或完整窗口检查的两个源码变异均被拒绝，恢复后160项再次通过。
+原contract1合成证据在新检查器下字节一致，只能按version1核对；这不是历史实机重放。
+本批没有新增实际SDK私有总线、VM/Native/RF或形式化执行资格。准确实机尝试与失败仅在授权本地索引核对。
+结构化切片 `ssap-event-discovery-gate-v2-20261107` 关联源码、边界及检查，原登记/发送/单次/租约/工具切片保留。
+完整长度/分片、退出/权限、Profile START/STOP、自然根因及非人工恢复保持开放；后续只由生成的batch.next维护。
 
 ## Native v4 的资格边界
 
@@ -237,7 +220,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Method/event actual C/Python SDK discovery consumers now share exact original deadlines and typed result checks. Next extend existing paired event gate to require UUID/category/handle discovery before actual lease Ready/send,retain contract1 and independent full-window capture/verdict,then seal exact new tools/artifact. Native method/event app delivery and original baseline/lifecycle need changed valid startup conditions;retained startup attempts stay failures,no unchanged warm retry or manual/QMP/hub recovery qualification. Continue event lengths/lifetime/permissions and C/D/E/W without waiting full control combinations;KernelPacket/vendor P4.",
+  "next": "Event contract2 now requires actual SDK discovery before listener/send,independent paired pages,physical sends and whole publisher window;contract1 scope preserved. Next seal exact contract2 helper/verifier/dependency/artifact inputs and applicable no-USB VM checks,then Native method/event app delivery with original baseline/lifecycle only when valid startup conditions change. Current allocated-leaf readonly observation is not Ready/firmware/cold-power proof;retain earlier failed attempts,no unchanged warm retry or manual/QMP/hub recovery qualification. Continue full lengths/lifetime/permissions,four-device and C/D/E/W without waiting full control combinations;KernelPacket/vendor P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

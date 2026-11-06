@@ -51,8 +51,11 @@ epoch/minimum绑定的单报文槽；事件无CPCD读写，ACK只表示入槽。
 持续事件租约、本地实际Ready及contract1双端场景已接通原事务/共享队列；准确资格见能力入口。
 事件发现消费者[e53b652](https://github.com/OpenSparklink/sparklink/commit/e53b65222eb9586e1d084d9e9ef9db423b0231fe)复用method发现的SDK调用/原5秒屏障/完整输出，
 两语言2/16字节UUID、类型/身份/期限拒绝及实际私有总线检查已退出该有限切片；不是Native交付。
-下一事件切片在现有双端场景中先实际发现事件UUID/category/handle，再建立租约/发送；
-保留contract1、独立双端捕获/完整窗口及原基线，封存准确输入后再按实际启动条件运行Native。
+事件双端contract2[9e7a37c](https://github.com/OpenSparklink/sparklink/commit/9e7a37c5307d566aadebce35d2f1d96cc7900b4e)已接通先SDK发现UUID/category/handle、再租约/发送，
+原5秒、两页双端因果、全部物理TX及完整发布者窗口检查；160项工具、4项生产codec和两个源码负对照通过。
+进程/报文是显式fixture，无新Native/实机/形式化资格；contract1合成证据保持字节和原范围。
+下一退出：封存准确contract2输入/artifact及依赖、核对适用无USB VM，再按有效设备启动条件取得
+真实发现/事件/独立应用回复及原基线/生命周期；保留全部原长度、退出和恢复门槛。
 上层START/STOP、完整长度/生命周期/权限另验；method v4与UserHost/Windows并行。
 U#22/#26开放，不等待全控制面、不复制Engine；无新设备启动条件不重复未变化失败。
 
@@ -749,7 +752,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Method/event actual C/Python SDK discovery consumers now share exact original deadlines and typed result checks. Next extend existing paired event gate to require UUID/category/handle discovery before actual lease Ready/send,retain contract1 and independent full-window capture/verdict,then seal exact new tools/artifact. Native method/event app delivery and original baseline/lifecycle need changed valid startup conditions;retained startup attempts stay failures,no unchanged warm retry or manual/QMP/hub recovery qualification. Continue event lengths/lifetime/permissions and C/D/E/W without waiting full control combinations;KernelPacket/vendor P4.",
+  "next": "Event contract2 now requires actual SDK discovery before listener/send,independent paired pages,physical sends and whole publisher window;contract1 scope preserved. Next seal exact contract2 helper/verifier/dependency/artifact inputs and applicable no-USB VM checks,then Native method/event app delivery with original baseline/lifecycle only when valid startup conditions change. Current allocated-leaf readonly observation is not Ready/firmware/cold-power proof;retain earlier failed attempts,no unchanged warm retry or manual/QMP/hub recovery qualification. Continue full lengths/lifetime/permissions,four-device and C/D/E/W without waiting full control combinations;KernelPacket/vendor P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

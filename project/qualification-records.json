@@ -55,7 +55,7 @@
       "Original scope retained for historical v1-v3",
       "Publish source/offline summary only"
     ],
-    "next": "Event contract2 now requires actual SDK discovery before listener/send,independent paired pages,physical sends and whole publisher window;contract1 scope preserved. Next seal exact contract2 helper/verifier/dependency/artifact inputs and applicable no-USB VM checks,then Native method/event app delivery with original baseline/lifecycle only when valid startup conditions change. Current allocated-leaf readonly observation is not Ready/firmware/cold-power proof;retain earlier failed attempts,no unchanged warm retry or manual/QMP/hub recovery qualification. Continue full lengths/lifetime/permissions,four-device and C/D/E/W without waiting full control combinations;KernelPacket/vendor P4.",
+    "next": "Contract2 input/image closure and staged SDK absent-bus rejection are verified;isolated noUSB kernel/module boot passed but guest SDK/daemon did not run. Next use exact retained inputs for Native method/event discovery,actual listener and independent app reply plus original baseline/lifecycle when valid startup conditions change;do not repeat unchanged warm failures or treat five endpoints,staged firmware,USB completion/manual/QMP/hub actions as recovery. Preserve all earlier failure identities and full length/pressure/permissions/four-device/Profile gates. In parallel advance existing ServiceChannel/C/D/E/W responsibilities without another Engine or waiting full control combinations;KernelPacket/vendor P4.",
     "actor_obligation_regression": {
       "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
       "entry": "ssap_engine::exchange_loop",
@@ -528788,6 +528788,49 @@
               "source_commit": "9e7a37c5307d566aadebce35d2f1d96cc7900b4e",
               "original_six_conditions_unchanged": true,
               "scope": "source/offline only;private hardware/execution identities remain local"
+            }
+          ]
+        },
+        {
+          "id": "ssap-event-contract2-artifact-20261107",
+          "source_commit": "9e7a37c5307d566aadebce35d2f1d96cc7900b4e",
+          "depends_on": "ssap-event-discovery-gate-v2-20261107",
+          "status": "OFFLINE_IMAGE_INPUT_CLOSURE_AND_SCOPED_NOUSB_VM_PASS_NATIVE_PENDING",
+          "scope": "Contract2 exact input/artifact closure,independent image extraction,staged SDK transport-rejection and isolated kernel/module smoke only. Existing actual SDK/Engine/Runtime remain unchanged. No Native discovered event/application reply,guest SDK,RF or recovery qualification.",
+          "checks": {
+            "input_closure": {
+              "inputs": 165,
+              "userspace_sources": 215,
+              "guest_files": 943,
+              "artifacts": 4,
+              "native_runtime_libraries": 2
+            },
+            "staged_event_tools": 8,
+            "image_comparison": "Read-only btrfs restore:943 regular files and30 links,content/mode/link metadata match retained staging tree;input image hash unchanged",
+            "negative_controls": "stale scenario source,missing Python discovery dependency,wrong tool hash,wrong carrier file hash all rejected by existing validators",
+            "staged_sdk": "C/Python method/event entries execute on host against an explicit absent bus:4 exit1/no-success-output rejections;tree unchanged",
+            "isolated_vm": "existing KVM/Btrfs/NVMe boot path;matching signed module load/unload twice,taint0,normal exit;no USB/network/host disks",
+            "guest_sdk": "NOT_RUN;isolated smoke does not run prepared event daemon/SDK",
+            "firmware": "explicit SDK110 E three images/board files verified as inputs only;no firmware I/O,HCC model or runtime qualification",
+            "formal": "NO_NEW_PROOF"
+          },
+          "qualification_transfer": false,
+          "not_tested": [
+            "Native method/event discovery/listener/application reply and original baseline/lifetime under changed valid startup conditions",
+            "SDK/daemon positive behavior in actual deployed VM/system-bus permission environment",
+            "full lengths/fragment/lifetime/permissions/four-device/Profile gates",
+            "natural startup root cause and nonmanual recovery",
+            "full adopted UserHost/Windows and original S0-S6 scope"
+          ],
+          "issue_sync": [
+            {
+              "url": "https://github.com/OpenSparklink/sparklink/issues/22",
+              "state": "open",
+              "updated_at": "2026-11-06T19:28:28Z",
+              "body_sha256": "54708bcfd907200ed32b8d080a007f3d8da961f9da287c3d685a15a7ed8f8714",
+              "source_commit": "9e7a37c5307d566aadebce35d2f1d96cc7900b4e",
+              "original_six_conditions_unchanged": true,
+              "scope": "source/offline preparation and noUSB scope only;private artifact/execution identities and hardware details local"
             }
           ]
         }

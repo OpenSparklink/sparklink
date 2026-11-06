@@ -54,8 +54,10 @@ epoch/minimum绑定的单报文槽；事件无CPCD读写，ACK只表示入槽。
 事件双端contract2[9e7a37c](https://github.com/OpenSparklink/sparklink/commit/9e7a37c5307d566aadebce35d2f1d96cc7900b4e)已接通先SDK发现UUID/category/handle、再租约/发送，
 原5秒、两页双端因果、全部物理TX及完整发布者窗口检查；160项工具、4项生产codec和两个源码负对照通过。
 进程/报文是显式fixture，无新Native/实机/形式化资格；contract1合成证据保持字节和原范围。
-下一退出：封存准确contract2输入/artifact及依赖、核对适用无USB VM，再按有效设备启动条件取得
-真实发现/事件/独立应用回复及原基线/生命周期；保留全部原长度、退出和恢复门槛。
+contract2准备切片已完成准确输入/依赖闭包、独立Btrfs提取对照、staged SDK宿主缺总线拒绝及无USB内核/module smoke。
+该VM未运行事件daemon/SDK，不授Native或恢复资格；旧包装路径与init路径失败保留，修正后未改动镜像/放宽断言。
+下一退出：按有效设备启动条件/占用核对，使用准确输入取得真实发现/监听/事件/独立应用回复及原基线/生命周期；
+保留全部原长度、退出、权限和恢复门槛。暖CLOSE收包/寄存器既有路径继续审阅，无证据不改端点、不猜wake、不跳过CLOSE。
 上层START/STOP、完整长度/生命周期/权限另验；method v4与UserHost/Windows并行。
 U#22/#26开放，不等待全控制面、不复制Engine；无新设备启动条件不重复未变化失败。
 
@@ -752,7 +754,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Event contract2 now requires actual SDK discovery before listener/send,independent paired pages,physical sends and whole publisher window;contract1 scope preserved. Next seal exact contract2 helper/verifier/dependency/artifact inputs and applicable no-USB VM checks,then Native method/event app delivery with original baseline/lifecycle only when valid startup conditions change. Current allocated-leaf readonly observation is not Ready/firmware/cold-power proof;retain earlier failed attempts,no unchanged warm retry or manual/QMP/hub recovery qualification. Continue full lengths/lifetime/permissions,four-device and C/D/E/W without waiting full control combinations;KernelPacket/vendor P4.",
+  "next": "Contract2 input/image closure and staged SDK absent-bus rejection are verified;isolated noUSB kernel/module boot passed but guest SDK/daemon did not run. Next use exact retained inputs for Native method/event discovery,actual listener and independent app reply plus original baseline/lifecycle when valid startup conditions change;do not repeat unchanged warm failures or treat five endpoints,staged firmware,USB completion/manual/QMP/hub actions as recovery. Preserve all earlier failure identities and full length/pressure/permissions/four-device/Profile gates. In parallel advance existing ServiceChannel/C/D/E/W responsibilities without another Engine or waiting full control combinations;KernelPacket/vendor P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

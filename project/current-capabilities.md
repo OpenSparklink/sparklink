@@ -22,12 +22,16 @@
 | 持续租约／本地Ready | [4f7f657](https://github.com/OpenSparklink/sparklink/commit/4f7f657bfa12525ebc5b12526279a2820cc3870b)：先装共享RX路由后ACTIVE，原身份/epoch/minimum/有限队列；本地关闭flags1、无事件CPCD | ACK/ACTIVE/关闭均不等应用处理或远端STOP；完整部署和生命周期仍待验 |
 | 实际应用消费者 | [f070cf8](https://github.com/OpenSparklink/sparklink/commit/f070cf81abda2ca3c7acbde209845c5d96e183eb)事件发送/监听/独立回复；[e53b652](https://github.com/OpenSparklink/sparklink/commit/e53b65222eb9586e1d084d9e9ef9db423b0231fe)共用method/event发现。有限实际C/Python私有总线结果保留原身份；0..2042事件、2/16字节UUID及拒绝/原期限分别记录 | 有限fixture不授Native/USB/RF、系统总线角色或上层Profile资格；旧失败保留 |
 | contract1 | [a2a2655](https://github.com/OpenSparklink/sparklink/commit/a2a26552a9be47549fc9de42033509c42fee8a9a)：两角色/双方向32字节notify/indicate、实际监听Ready、独立应用回复及发布端读回；历史准确输入和无USB内核/module smoke按原范围保留 | 未前置事件发现；原通过/失败、产物/执行身份不升级contract2或当前镜像 |
-| 当前contract2 | [9e7a37c](https://github.com/OpenSparklink/sparklink/commit/9e7a37c5307d566aadebce35d2f1d96cc7900b4e)：先SDK发现原随机16字节UUID/category12/handle，再监听/发送；原5秒、两页双端因果、实际物理TX计数及完整发布者窗口 | 新工具输入/artifact尚待封存；准确Native发现/事件/应用回复及原基线/生命周期仍待验 |
+| 当前contract2 | [9e7a37c](https://github.com/OpenSparklink/sparklink/commit/9e7a37c5307d566aadebce35d2f1d96cc7900b4e)：先SDK发现原随机16字节UUID/category12/handle，再监听/发送；原5秒、两页双端因果、实际物理TX计数及完整发布者窗口 | 输入/镜像闭包与隔离无USB内核检查完成；SDK只在宿主验证缺总线拒绝，准确Native发现/事件/应用回复及原基线/生命周期仍待验 |
 
 本批160项工具回归、4项现有生产发现codec golden和严格HTML通过；进程I/O与报文为显式fixture。
 移除发布者绑定或完整窗口检查的两个源码变异均被拒绝，恢复后160项再次通过。
 原contract1合成证据在新检查器下字节一致，只能按version1核对；这不是历史实机重放。
-本批没有新增实际SDK私有总线、VM/Native/RF或形式化执行资格。准确实机尝试与失败仅在授权本地索引核对。
+上述源码切片没有新增实际SDK私有总线、VM/Native/RF或形式化资格；后续准备批次按独立范围登记。
+contract2文件已与Btrfs镜像只读提取结果独立对照，内容/模式/链接一致；缺依赖、旧源码、错误清单hash均拒绝。
+无USB KVM仅验证相同内核/签名模块两次加载卸载，未运行事件daemon/SDK；staged C/Python在宿主缺总线时正确失败。
+这些检查不授Native/固件/RF或恢复资格。脚本旧路径失败保留，准确私有编译/执行身份和实机尝试只在授权本地索引核对。
+准备切片 `ssap-event-contract2-artifact-20261107` 与源码/历史资格分开，全部原实机条件保持。
 结构化切片 `ssap-event-discovery-gate-v2-20261107` 关联源码、边界及检查，原登记/发送/单次/租约/工具切片保留。
 完整长度/分片、退出/权限、Profile START/STOP、自然根因及非人工恢复保持开放；后续只由生成的batch.next维护。
 
@@ -220,7 +224,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Event contract2 now requires actual SDK discovery before listener/send,independent paired pages,physical sends and whole publisher window;contract1 scope preserved. Next seal exact contract2 helper/verifier/dependency/artifact inputs and applicable no-USB VM checks,then Native method/event app delivery with original baseline/lifecycle only when valid startup conditions change. Current allocated-leaf readonly observation is not Ready/firmware/cold-power proof;retain earlier failed attempts,no unchanged warm retry or manual/QMP/hub recovery qualification. Continue full lengths/lifetime/permissions,four-device and C/D/E/W without waiting full control combinations;KernelPacket/vendor P4.",
+  "next": "Contract2 input/image closure and staged SDK absent-bus rejection are verified;isolated noUSB kernel/module boot passed but guest SDK/daemon did not run. Next use exact retained inputs for Native method/event discovery,actual listener and independent app reply plus original baseline/lifecycle when valid startup conditions change;do not repeat unchanged warm failures or treat five endpoints,staged firmware,USB completion/manual/QMP/hub actions as recovery. Preserve all earlier failure identities and full length/pressure/permissions/four-device/Profile gates. In parallel advance existing ServiceChannel/C/D/E/W responsibilities without another Engine or waiting full control combinations;KernelPacket/vendor P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

@@ -282,7 +282,7 @@ service free/unregister 停止它们的本地准入，原 daemon 丢失使旧请
 request 的不可变快照仍可读取。Python 可选等待最多30秒，只限制本地 poll，
 不更新 callback 的原期限；取出、答复和释放不排入 SyncClient 的 RPC 队列。
 每个 inbox 仅有一个待决请求，容量保持至请求释放且 callback 结束。
-完整预算与 Pending 响应边界见[动态只读值](ssap-permissions.md#owned-read-only-provider)。
+完整预算与 Pending 响应边界见[动态只读值](ssap-permissions.md#owned-read-provider)。
 
 CLI `ssap-serve` 通过 `provider` 显式绑定、`provide pTOKEN HEX|-` 或
 `provider-error pTOKEN AF..FF` 处理实际请求；审批与提供值独立。已实现入口、离线
@@ -1121,7 +1121,7 @@ ws73/wifi_cali/btc_cali原SHA头与组合hash。HCC尚未运行的ROM两端点�
 每义务动态返回值累计最多2042字节，UUID 多项共享；静态数据库预算及最终 PDU/MTU
 检查独立。绑定后本地读取/替换 NotSupported，type1 说明不受影响。审批先于 provider，
 响应前重核原 Native 上下文及同一登记绑定；详情见
-[动态只读值契约](ssap-permissions.md#owned-read-only-provider)。
+[动态只读值契约](ssap-permissions.md#owned-read-provider)。
 已经编码为 Pending 的不可变响应不会因随后 unregister 被撤回，实际发送仍受原
 Native 上下文及期限限制；注销不承诺原已接受响应未交付。
 

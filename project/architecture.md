@@ -1468,7 +1468,7 @@ Owned type1 说明以原属性 handle 定位，由原 caller 显式设置为公�
 的不可变字节，发送仍受原 Native 上下文及期限约束。Rust SDK 提供薄绑定及共享
 准入/等待，CLI frontend 以独立槽位等候显式值，完整 C/Python Provider
 收件箱、动态写入及相关完整生命周期仍缺。精确契约见
-[动态只读值](../docs/reference/ssap-permissions.md#owned-read-only-provider)，
+[动态只读值](../docs/reference/ssap-permissions.md#owned-read-provider)，
 架构决策见 ADR0004；此扩展不建立新的协议 Engine 或安全状态来源。
 
 

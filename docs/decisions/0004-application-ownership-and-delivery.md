@@ -647,7 +647,7 @@ Rust SDK 增加薄绑定及复用原授权准入/等待的 provider helper，实
 分别以一个槽位等待审批和显式值，不让批准隐含提供值。进程内 token 不复用，退出
 先停止共享 handle 和本地答复，再尝试撤回并移除端点。完整 C/Python Provider 收件箱、动态写入和其他目标
 仍缺；既有 C/Python 远端读取可消费动态值。源码契约见
-[动态只读值参考](../reference/ssap-permissions.md#owned-read-only-provider)。
+[动态只读值参考](../reference/ssap-permissions.md#owned-read-provider)。
 本批实现中，离线及实机待验；完整服务、多应用、生命周期、自然根因与恢复范围不缩减。
 
 ## 2026-11-01 增量：ConnectionUse、端点与交付检查点

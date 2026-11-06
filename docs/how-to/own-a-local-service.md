@@ -101,7 +101,7 @@ frontend，仍由 daemon 中唯一的 SSAP Engine 处理协议。审批请求的
 属性操作位必须恰为 READ。绑定消耗原初值且在该登记内不可更换或解除，之后本地
 读取与替换返回 NotSupported，没有缓存回退；公开 type1 说明仍独立处理。
 绑定期限只约束这次绑定，不是后续请求的期限。准确边界见
-[动态只读值契约](../reference/ssap-permissions.md#owned-read-only-provider)。
+[动态只读值契约](../reference/ssap-permissions.md#owned-read-provider)。
 
 下面示例登记一个不要求本地审批的 READ 属性，接到实际请求后由应用显式选择
 返回值。保存为 `read_provider.py`，传入当前 `INDEX`、`GENERATION`。十六进制输入

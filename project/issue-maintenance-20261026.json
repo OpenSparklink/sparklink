@@ -9057,6 +9057,39 @@
       ],
       "closed": [],
       "qualification": "PREPARATION_LIMITED_OFFLINE_ONLY_NO_NEW_REAL_DEVICE_OR_RECOVERY"
+    },
+    {
+      "id": "owned-read-write-provider-composition-20261107",
+      "source_commit": "17f837db25824e7bb97703b74f6152f141bc4f27",
+      "validation_source_commit": "73e655d9396220d43c90add3419d8245a1f64379",
+      "issues": [
+        {
+          "repository": "sparklink",
+          "number": 3,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/3",
+          "state": "open",
+          "before_sha256": "959b81bbbe9fe32a100b6a72666d4bf1838d7ad54bcb21c4d79b3edc0ba9e4fd",
+          "body_sha256": "f48fed9e8229c19caaba757208ed2a1b4dded560067c7436ea603cb4d2cf6d70",
+          "updated_at": "2026-11-06T23:38:56Z",
+          "original_scope_preserved": true,
+          "source_offline_only": true,
+          "private_execution_details_published": false
+        },
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/22",
+          "state": "open",
+          "before_sha256": "6536d954661a277046fb25741e24c4c020c3a9012ecfb36b31c79dd2d5e3277f",
+          "body_sha256": "61b25edafb616457fdb4851547a6f32c3cc1d1eb68e3c9d081d1a32b19cc725f",
+          "updated_at": "2026-11-06T23:38:58Z",
+          "original_scope_preserved": true,
+          "source_offline_only": true,
+          "private_execution_details_published": false
+        }
+      ],
+      "closed": [],
+      "qualification": "SOURCE_LIMITED_OFFLINE_ONLY_TWO_NATIVE_VM_GAPS_NO_NEW_REAL_DEVICE_OR_RECOVERY"
     }
   ]
 }

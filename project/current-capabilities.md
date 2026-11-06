@@ -47,6 +47,13 @@ contract2文件已与Btrfs镜像只读提取结果独立对照，内容/模式/�
 来源为结构化切片 `ssap-discovery-direct-proof-20261107`；[重放与边界](../formal/README.md)说明0–22/0–32字节及单成员范围，
 不是完整页/allocator/OS、Native并发或实机证明，也不阻塞原纵向业务。完整原验收与历史资格不变。
 
+## 同属性 READ/WRITE Provider：实现与限定离线范围
+
+源码[17f837d](https://github.com/OpenSparklink/sparklink/commit/17f837db25824e7bb97703b74f6152f141bc4f27)使同一Owned type0属性的READ/WRITE分别绑定一次，任意顺序，沿原Owner/数据库/Engine/权限和原期限。首次消费staging一次，第二方向不退款；未绑定方向拒绝，原值不回退。SDK按种类分流及记录尝试，两个inbox共用16槽，关闭一个不关闭另一个，撤回仍停止两者；C/Python同批迁移，生成头ABI tokens不变。
+379项相关默认回归和workspace/all-features严格Clippy通过；2项真实Native VM用例未执行，不计PASS。实际私有D-Bus/生产转换、零与同行staging、操作位/Owner/期限/注销/晚到、两种绑定顺序及外部C/Python应用写后读/关闭隔离通过；Native/RX/安全和broker元数据是明确fixture，不能授内核/USB/RF或真实系统权限资格。
+三种生产源码变异运行拒绝，恢复正向通过；原errno判定、下溢变异未接受报告、旧mixed-mode失败及工具环境/编译失败保留。新预算输入补充同行staging，原零预算用例不删除。监督器[73e655d](https://github.com/OpenSparklink/sparklink/commit/73e655d9396220d43c90add3419d8245a1f64379)在执行中封存自身并在COMPLETE前复核材料，旧不完整记录不升级。
+唯一结构化切片 `owned-read-write-provider-composition-20261107` 维护来源；执行材料留授权本地，源码/限定离线不转授Native组合、原READ-only资格、完整更新/类型/生命周期、形式化或自然恢复。完整范围与下一步由生成的batch.next维护。
+
 ## 同源 Native 准备：不转授实机资格
 
 结构化切片 `native-coherent-artifact-20261107` 记录现有构建/准备链的限定结果，不改变生产实现。
@@ -258,7 +265,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Native B remains method v4/event contract2 positive independent peer delivery plus original baseline,length and lifecycle. Coherent current full kernel/modules and fresh bounded OS archive are prepared through original validators;private noUSB execution stays separate from real-device qualification.No new real USB operation in this preparation slice. Per-interface BSLE prefix and raw observation can support a distinct finite experiment only with new valid startup conditions;do not repeat unchanged U2 failure,guess wake,reroute endpoints or bypass CLOSE. Resolve resident identity,configuration TX failure and final drain without interpreting partial ACK/USB completion as Ready or recovery. Continue independent existing ServiceChannel/typed DirectUSB/own UserHost/Windows increments without another Engine or whole-control prerequisite. Discovery Kani remains NOT_PROVEN. Preserve S0-S6/19WP/10FV/12DG,budget,VM-only,all original/adopted acceptance;natural roots/nonmanual recovery,original warnings/failures and all remaining data/security/four-device/Profile/release stay open;only KernelPacket/vendor P4.",
+  "next": "Native B remains exact-artifact real methodv4/eventcontract2 and original baseline,length,lifecycle/peer business;new Owned READ/WRITE composition is implemented and limited offline only,requires accurate userspace artifact and realNative combination gate. No new device operation or qualification transfer. Do not repeat unchanged U2 startup;new finite BSLE experiment needs valid new conditions,resident identity and actual per-attempt evidence without CLOSE bypass/guessed wake. Continue sameEngine ServiceChannel,typed DirectUSB/ownHost/Windows and remaining provider/update/descriptor/long-data/security/four-device/Profile work without a whole-control prerequisite. Preserve all original S0-S6/19WP/10FV/12DG,budget,VM-only and adopted scope;discoveryKani remains NOT_PROVEN,2realNative test gaps and natural roots/nonmanual recovery stay open;only KernelPacket/vendor P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

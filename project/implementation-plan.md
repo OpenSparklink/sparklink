@@ -31,6 +31,13 @@
 启动诊断出口：按每次尝试分别关联 BSP、CLOSE ACK、配置 TX、HCC、Ready 的真实输入与原期限；不能由最终错误阶段概括此前各步。保持现有有限重试、正确板型三镜像、独立端口和 stop/drain；恢复根因未闭合时不重复未变化尝试。门禁判定与私有执行索引分离，部分 ACK、USB completion 或取消 callback 不替代固件身份、最终 drain、Ready 或对端业务。U#3、K#17/#19 的旧笼统 UserHost P4 用语已同步为仅 KernelPacket/厂商；原 checklist 与整项 OPEN 保留。
 
 
+### Owned READ/WRITE组合纵向切片（2026-11-07）
+
+映射WP08/09/16/17、U#3/#22，复用原DB/Owner/Provider/Engine；源码[17f837d](https://github.com/OpenSparklink/sparklink/commit/17f837db25824e7bb97703b74f6152f141bc4f27)接通同属性两方向各一次、首次消费staging、缺方向拒绝、按种类分流和共16槽。权限/实际opcode/原期限/撤回不放宽；C/Python及ABI注释同步，无新Engine或未接通门面。
+本批相关退出：379项默认检查、严格workspace/all-featuresClippy、真实私有D-Bus及外部C/Python、三项实际源码变异/恢复正向、零与同行staging预算及晚到/注销完成；2项Native VM用例未执行。测试中的metadata/Native上下文是fixture，不授系统权限、内核/USB/RF、形式化或当前生产设备资格。监督器与材料封存由[73e655d](https://github.com/OpenSparklink/sparklink/commit/73e655d9396220d43c90add3419d8245a1f64379)补齐，只适用于其新执行；原失败/未接受结果及不完整身份保留。
+
+剩余门禁仍为准确新用户态产物的真实Native组合、原发现/连接/普通通道/method/event/长度/生命周期及同行业务，后续动态更新/描述符等组合继续沿同一Engine；不能从局部READ或本地RPC交付转授。Native启动须有效新条件，不原样重试既有失败；ServiceChannel/C/D/E/W并行，原完整范围、预算、VM-only和自然根因/非人工恢复开放不变。唯一状态切片 `owned-read-write-provider-composition-20261107`，不增加全控制面前置。
+
 ### 同源 Native 产物准备出口（2026-11-07）
 
 映射WP11/13/17、K#15/#19，复用原构建、签名模块、bundle及逐设备准备链；切片 `native-coherent-artifact-20261107` 只完成准确产物与限定离线检查，不新增协议实现或实机资格。
@@ -786,7 +793,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Native B remains method v4/event contract2 positive independent peer delivery plus original baseline,length and lifecycle. Coherent current full kernel/modules and fresh bounded OS archive are prepared through original validators;private noUSB execution stays separate from real-device qualification.No new real USB operation in this preparation slice. Per-interface BSLE prefix and raw observation can support a distinct finite experiment only with new valid startup conditions;do not repeat unchanged U2 failure,guess wake,reroute endpoints or bypass CLOSE. Resolve resident identity,configuration TX failure and final drain without interpreting partial ACK/USB completion as Ready or recovery. Continue independent existing ServiceChannel/typed DirectUSB/own UserHost/Windows increments without another Engine or whole-control prerequisite. Discovery Kani remains NOT_PROVEN. Preserve S0-S6/19WP/10FV/12DG,budget,VM-only,all original/adopted acceptance;natural roots/nonmanual recovery,original warnings/failures and all remaining data/security/four-device/Profile/release stay open;only KernelPacket/vendor P4.",
+  "next": "Native B remains exact-artifact real methodv4/eventcontract2 and original baseline,length,lifecycle/peer business;new Owned READ/WRITE composition is implemented and limited offline only,requires accurate userspace artifact and realNative combination gate. No new device operation or qualification transfer. Do not repeat unchanged U2 startup;new finite BSLE experiment needs valid new conditions,resident identity and actual per-attempt evidence without CLOSE bypass/guessed wake. Continue sameEngine ServiceChannel,typed DirectUSB/ownHost/Windows and remaining provider/update/descriptor/long-data/security/four-device/Profile work without a whole-control prerequisite. Preserve all original S0-S6/19WP/10FV/12DG,budget,VM-only and adopted scope;discoveryKani remains NOT_PROVEN,2realNative test gaps and natural roots/nonmanual recovery stay open;only KernelPacket/vendor P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

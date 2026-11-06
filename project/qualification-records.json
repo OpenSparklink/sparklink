@@ -55,7 +55,7 @@
       "Original scope retained for historical v1-v3",
       "Publish source/offline summary only"
     ],
-    "next": "Native B remains method v4/event contract2 positive independent peer delivery plus original baseline,length and lifecycle. Coherent current full kernel/modules and fresh bounded OS archive are prepared through original validators;private noUSB execution stays separate from real-device qualification.No new real USB operation in this preparation slice. Per-interface BSLE prefix and raw observation can support a distinct finite experiment only with new valid startup conditions;do not repeat unchanged U2 failure,guess wake,reroute endpoints or bypass CLOSE. Resolve resident identity,configuration TX failure and final drain without interpreting partial ACK/USB completion as Ready or recovery. Continue independent existing ServiceChannel/typed DirectUSB/own UserHost/Windows increments without another Engine or whole-control prerequisite. Discovery Kani remains NOT_PROVEN. Preserve S0-S6/19WP/10FV/12DG,budget,VM-only,all original/adopted acceptance;natural roots/nonmanual recovery,original warnings/failures and all remaining data/security/four-device/Profile/release stay open;only KernelPacket/vendor P4.",
+    "next": "Native B remains exact-artifact real methodv4/eventcontract2 and original baseline,length,lifecycle/peer business;new Owned READ/WRITE composition is implemented and limited offline only,requires accurate userspace artifact and realNative combination gate. No new device operation or qualification transfer. Do not repeat unchanged U2 startup;new finite BSLE experiment needs valid new conditions,resident identity and actual per-attempt evidence without CLOSE bypass/guessed wake. Continue sameEngine ServiceChannel,typed DirectUSB/ownHost/Windows and remaining provider/update/descriptor/long-data/security/four-device/Profile work without a whole-control prerequisite. Preserve all original S0-S6/19WP/10FV/12DG,budget,VM-only and adopted scope;discoveryKani remains NOT_PROVEN,2realNative test gaps and natural roots/nonmanual recovery stay open;only KernelPacket/vendor P4.",
     "actor_obligation_regression": {
       "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
       "entry": "ssap_engine::exchange_loop",
@@ -529025,6 +529025,57 @@
               "before_sha256": "5f282f72fc679c0555876896bdf2a93792b709f7c7d045c2a86f61cb4ab54b5c",
               "body_sha256": "2453b3813792b38b82bb6a4537f7f42e606c64b39e1c16d748588d088a90b0a9",
               "updated_at": "2026-11-06T22:33:41Z",
+              "original_scope_preserved": true,
+              "source_offline_only": true,
+              "private_execution_details_published": false
+            }
+          ]
+        },
+        {
+          "id": "owned-read-write-provider-composition-20261107",
+          "source_commit": "17f837db25824e7bb97703b74f6152f141bc4f27",
+          "validation_source_commit": "73e655d9396220d43c90add3419d8245a1f64379",
+          "status": "IMPLEMENTED_LIMITED_OFFLINE_NATIVE_COMBINATION_PENDING",
+          "scope": "Actual production OwnedDB/Provider/SDK composition with real host private D-Bus and external C/Python consumers;Native/RX/security and broker metadata are explicit fixtures. Not new deployed permissions,kernel/USB/RF,formal or recovery qualification.",
+          "checks": {
+            "ownership": "One property/Owner/DB/Engine;once per READ/WRITE kind,one staging release,no fallback;missingdirection rejects,opcode permissions preserved",
+            "dispatch": "Exact operation-kind routing and registration attempts;two finite queues share original16capacity,one close isolated,withdrawal stopsboth;original deadlines/reply/drain stay distinct",
+            "default_tests": "379 pass across14related targets;2realNative VM cases ignored and unqualified",
+            "strict": "workspace/all-targets/all-features -Dwarnings passes;capture-only followup strict check passes;generated header ABI tokens unchanged",
+            "runtime_negative_controls": "No-kind filter,handle-only attempt and double staging refund each rejected by actual running production tests;restored positives pass. Firstverdict parser/underflow gaps retained without upgrading their failed whole reports",
+            "cross_language": "Real C/Python both bind orders,applicationwrite-read and one-inbox close via same SDK/actual private D-Bus;metadata fixture cannot prove production daemon/kernel/real delivery",
+            "evidence": "Executing supervisor snapshotted,new consumers/admission sources pinned,materials rechecked beforeCOMPLETE;older incomplete execution identity not retroactively repaired"
+          },
+          "qualification_transfer": false,
+          "new_real_device_qualification": false,
+          "new_accepted_proof": false,
+          "not_tested": [
+            "Accurate new artifact realNative combinedProvider,original discovery/connect/channel/method/event/length/lifecycle and peer business preservation",
+            "2existing realNative subscription VM cases;actual deployed systembus/group permissions",
+            "Dynamic update/descriptor combinations,full type/longvalue/lifecycle matrix and actual kernel/USB finaldrain",
+            "Full adopted ServiceChannel/ownHost/DirectUSB/Windows and original security/four-device/Profile/recovery/release scope"
+          ],
+          "issue_sync": [
+            {
+              "repository": "sparklink",
+              "number": 3,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/3",
+              "state": "open",
+              "before_sha256": "959b81bbbe9fe32a100b6a72666d4bf1838d7ad54bcb21c4d79b3edc0ba9e4fd",
+              "body_sha256": "f48fed9e8229c19caaba757208ed2a1b4dded560067c7436ea603cb4d2cf6d70",
+              "updated_at": "2026-11-06T23:38:56Z",
+              "original_scope_preserved": true,
+              "source_offline_only": true,
+              "private_execution_details_published": false
+            },
+            {
+              "repository": "sparklink",
+              "number": 22,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/22",
+              "state": "open",
+              "before_sha256": "6536d954661a277046fb25741e24c4c020c3a9012ecfb36b31c79dd2d5e3277f",
+              "body_sha256": "61b25edafb616457fdb4851547a6f32c3cc1d1eb68e3c9d081d1a32b19cc725f",
+              "updated_at": "2026-11-06T23:38:58Z",
               "original_scope_preserved": true,
               "source_offline_only": true,
               "private_execution_details_published": false

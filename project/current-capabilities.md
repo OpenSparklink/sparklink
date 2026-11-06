@@ -47,6 +47,15 @@ contract2文件已与Btrfs镜像只读提取结果独立对照，内容/模式/�
 来源为结构化切片 `ssap-discovery-direct-proof-20261107`；[重放与边界](../formal/README.md)说明0–22/0–32字节及单成员范围，
 不是完整页/allocator/OS、Native并发或实机证明，也不阻塞原纵向业务。完整原验收与历史资格不变。
 
+## 同源 Native 准备：不转授实机资格
+
+结构化切片 `native-coherent-artifact-20261107` 记录现有构建/准备链的限定结果，不改变生产实现。
+完整内核与模块来自同一干净源码，固定O/共享锁/合计8路/FIFO jobserver；本次构建0编译器、0make、0未知警告，旧模块构建的警告原样保留。
+新OS归档内的模块逐字节对应新暂存树，未自动装入SparkLink模块；正式准备链继续核对启动证明、工具、服务bundle与显式逐设备E/US全套输入。
+镜像文件/模式/链接闭包、四项旧源码/缺依赖/hash负对照、暂存C/Python缺总线拒绝通过；这些不是服务执行或对端业务通过。
+首版归档遗漏压缩线程上限而不选用，后续受限归档替换；归档工具警告及审计路径/Python缓存失败保留，未放宽闭包断言。
+准确编译、VM执行与设备材料留授权本地索引，当前源码/准备/离线状态不授新probe、BSLE、Ready、最终drain或恢复资格。原真实失败、限定历史资格及全部未执行门禁不变。
+
 ## BSLE 尝试观察：已实现与限定离线范围
 
 内核[796b11f7bc73](https://github.com/OpenSparklink/linux/commit/796b11f7bc734367494efbc456ed5ac9f1cbfcfe)在原sequencer外保留每USB接口前8次已完成调用的模式、原阶段/errno、单调时间和发送序号；满后饱和计数，不覆盖早期前缀。
@@ -249,7 +258,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Native B remains real method v4/event contract2 independent peer delivery plus original baseline,length and lifecycle. Read new per-interface BSLE prefix alongside raw USB when valid new startup conditions permit a distinct bounded experiment;diagnostics,partial CLOSE/USB completion and noUSB module smoke do not supply Ready,firmware identity,final drain or recovery. No unchanged U2 retry,guessed wake,endpoint reroute or CLOSE bypass. Continue existing ServiceChannel/typed DirectUSB/own UserHost/Windows increments in parallel without duplicate Engine or whole-control prerequisite. Discovery Kani remains NOT_PROVEN. Preserve S0-S6/19WP/10FV/12DG,budget,VM-only,all original/adopted acceptance;natural roots/nonmanual recovery,style/build warnings and remaining data/security/four-device/Profile/release stay open;only KernelPacket/vendor P4.",
+  "next": "Native B remains method v4/event contract2 positive independent peer delivery plus original baseline,length and lifecycle. Coherent current full kernel/modules and fresh bounded OS archive are prepared through original validators;private noUSB execution stays separate from real-device qualification.No new real USB operation in this preparation slice. Per-interface BSLE prefix and raw observation can support a distinct finite experiment only with new valid startup conditions;do not repeat unchanged U2 failure,guess wake,reroute endpoints or bypass CLOSE. Resolve resident identity,configuration TX failure and final drain without interpreting partial ACK/USB completion as Ready or recovery. Continue independent existing ServiceChannel/typed DirectUSB/own UserHost/Windows increments without another Engine or whole-control prerequisite. Discovery Kani remains NOT_PROVEN. Preserve S0-S6/19WP/10FV/12DG,budget,VM-only,all original/adopted acceptance;natural roots/nonmanual recovery,original warnings/failures and all remaining data/security/four-device/Profile/release stay open;only KernelPacket/vendor P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

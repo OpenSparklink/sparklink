@@ -9024,6 +9024,39 @@
       ],
       "closed": [],
       "qualification": "LIMITED_OFFLINE_ONLY_NO_NEW_REAL_DEVICE_OR_RECOVERY"
+    },
+    {
+      "id": "native-coherent-artifact-20261107",
+      "source_commit": "6d56be09084293ecc7c87f51ba3320d4edb6764e",
+      "kernel_source_commit": "796b11f7bc734367494efbc456ed5ac9f1cbfcfe",
+      "issues": [
+        {
+          "repository": "linux",
+          "number": 15,
+          "url": "https://github.com/OpenSparklink/linux/issues/15",
+          "state": "open",
+          "before_sha256": "48c5b556d03e17411595defd9c48fbbb4324ca3fbba58261dc5612263ebc20e0",
+          "body_sha256": "6d5752f80d6c24d3373e9b5fef179332af554972ec91ddeb36baff2a9cefe706",
+          "updated_at": "2026-11-06T22:33:39Z",
+          "original_scope_preserved": true,
+          "source_offline_only": true,
+          "private_execution_details_published": false
+        },
+        {
+          "repository": "linux",
+          "number": 19,
+          "url": "https://github.com/OpenSparklink/linux/issues/19",
+          "state": "open",
+          "before_sha256": "5f282f72fc679c0555876896bdf2a93792b709f7c7d045c2a86f61cb4ab54b5c",
+          "body_sha256": "2453b3813792b38b82bb6a4537f7f42e606c64b39e1c16d748588d088a90b0a9",
+          "updated_at": "2026-11-06T22:33:41Z",
+          "original_scope_preserved": true,
+          "source_offline_only": true,
+          "private_execution_details_published": false
+        }
+      ],
+      "closed": [],
+      "qualification": "PREPARATION_LIMITED_OFFLINE_ONLY_NO_NEW_REAL_DEVICE_OR_RECOVERY"
     }
   ]
 }

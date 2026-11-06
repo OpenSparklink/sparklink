@@ -308,6 +308,7 @@ Owned通知/指示源码契约见[接口参考](interfaces.md#客户端配置与
 开始有效撤回后，SDK登记进入Withdrawing：后续本地替换被拒绝，即使撤回答复不确定；
 仍可观察本地值或显式重试原对象清理。Removed后不再读取/替换，不因新caller复活。
 
+(owned-read-only-provider)=
 ### Owned READ Provider
 
 本节描述唯一 Engine 已接通的源码契约；准确产物的验证范围由资格记录维护，不继承旧存储值或
@@ -463,6 +464,7 @@ SSAP stdin 管道单行上限4160字节，含换行。终端输入须少于4096�
 先读取数据库并提交响应，再通知应用。内部可选值字段不是公开动态 provider 契约。
 本实现据此区分授权与提供值，未将参考 Host 当作标准裁判，也不宣称完整符合性。
 
+(owned-write-only-provider)=
 ### Owned WRITE Provider（源码接线，待新产物实机验收）
 
 这一路径复用唯一 Engine、原 Owned 登记和同一连接的有界服务端义务队列。

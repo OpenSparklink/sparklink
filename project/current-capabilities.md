@@ -52,6 +52,8 @@ contract2文件已与Btrfs镜像只读提取结果独立对照，内容/模式/�
 地址预配置中的 Setup/HCC 标记不等于 Ready；局部成功不能覆盖双设备整轮失败。
 准确编译产物和执行工具分别绑定，原method、长度和生命周期门禁不因新观察而削减。
 公开只维护源码/离线及未完成条件；实机执行详情以授权本地结构化索引为准。
+启动门禁逐项区分 BSP、真实 CLOSE ACK、配置 TX、型号、Ready 与业务交付；任一局部观察不替代后续状态。
+来源为结构化切片 `native-startup-gate-boundaries-20261107`；未完成项和下一步由生成的 `batch.next` 维护，不据规划或准备产物授资格。
 
 ## 平台与通道边界：限定离线通过
 
@@ -236,7 +238,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Native method v4 and event contract2:retain exact prepared inputs and complete real discovery/listener/independent peer application reply plus original baseline/lifecycle when valid startup conditions change;do not repeat unchanged warm failures or infer recovery from staged firmware,five endpoints,USB completion,manual/QMP/hub actions. Parallel discovery codec proof stays NOT_PROVEN:resolve exact pinned-tool property semantics and real allocation/pointer model errors without success stubs,input reduction or warning suppression;not a new full-control prerequisite. Continue existing ServiceChannel/C/D/E/W delivery without another Engine;all lengths/pressure/permissions/four-device/Profile and natural/nonmanual recovery gates remain,KernelPacket/vendor P4.",
+  "next": "Native B:complete exact-artifact method v4 and event contract2 discovery/listener/independent application reply plus original baseline,lengths and applicable lifecycle only after valid startup/ownership checks. Distinguish per-attempt BSP,CLOSE ACK,configuration TX,HCC identity and Ready;no unchanged hardware retry,no guessed wake/endpoint reroute/CLOSE bypass. Private execution index retains original attempts and failures without public details or qualification transfer. A/C/W may continue existing ServiceChannel and typed DirectUSB/Windows boundaries in parallel,without another Host/Engine or the whole control race matrix as prerequisite. Discovery Kani remains NOT_PROVEN;resolve pinned properties/real allocation models without success stubs or weakened verdicts. Preserve original S0-S6/19WP/10FV/12DG,budget,VM-only and all remaining length/pressure/permissions/four-device/security/Profile/recovery/release gates;only KernelPacket/vendor P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

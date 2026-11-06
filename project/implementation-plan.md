@@ -28,6 +28,9 @@
 下一批B：复用已准备v4准确输入，在新的有效启动条件和占用核对后取得双端发现/method短长独立结果、命令无响应、原期限/退出及原路径保持；无新硬件条件不重复未变化失败。并行A/C/W：列出ServiceChannel所有实际入口、权限/元数据来源及平台依赖，选择最小纯逻辑边界，USB库锁定/取消审查先于实际设备适配，不能复制Engine。
 后续每批开工前写生产行为、不变量、离线与VM/实机门禁、退出及剩余条件；不无限追加控制面前置。
 
+启动诊断出口：按每次尝试分别关联 BSP、CLOSE ACK、配置 TX、HCC、Ready 的真实输入与原期限；不能由最终错误阶段概括此前各步。保持现有有限重试、正确板型三镜像、独立端口和 stop/drain；恢复根因未闭合时不重复未变化尝试。门禁判定与私有执行索引分离，部分 ACK、USB completion 或取消 callback 不替代固件身份、最终 drain、Ready 或对端业务。U#3、K#17/#19 的旧笼统 UserHost P4 用语已同步为仅 KernelPacket/厂商；原 checklist 与整项 OPEN 保留。
+
+
 ### Owned事件登记切片与下一门禁（2026-11-01）
 
 复用唯一DB/Owner、成员预算、handle分配和发现codec，SDK/C/Python同批迁移未发布
@@ -767,7 +770,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Native method v4 and event contract2:retain exact prepared inputs and complete real discovery/listener/independent peer application reply plus original baseline/lifecycle when valid startup conditions change;do not repeat unchanged warm failures or infer recovery from staged firmware,five endpoints,USB completion,manual/QMP/hub actions. Parallel discovery codec proof stays NOT_PROVEN:resolve exact pinned-tool property semantics and real allocation/pointer model errors without success stubs,input reduction or warning suppression;not a new full-control prerequisite. Continue existing ServiceChannel/C/D/E/W delivery without another Engine;all lengths/pressure/permissions/four-device/Profile and natural/nonmanual recovery gates remain,KernelPacket/vendor P4.",
+  "next": "Native B:complete exact-artifact method v4 and event contract2 discovery/listener/independent application reply plus original baseline,lengths and applicable lifecycle only after valid startup/ownership checks. Distinguish per-attempt BSP,CLOSE ACK,configuration TX,HCC identity and Ready;no unchanged hardware retry,no guessed wake/endpoint reroute/CLOSE bypass. Private execution index retains original attempts and failures without public details or qualification transfer. A/C/W may continue existing ServiceChannel and typed DirectUSB/Windows boundaries in parallel,without another Host/Engine or the whole control race matrix as prerequisite. Discovery Kani remains NOT_PROVEN;resolve pinned properties/real allocation models without success stubs or weakened verdicts. Preserve original S0-S6/19WP/10FV/12DG,budget,VM-only and all remaining length/pressure/permissions/four-device/security/Profile/recovery/release gates;only KernelPacket/vendor P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

@@ -8946,6 +8946,50 @@
       ],
       "closed": [],
       "qualification": "SOURCE_OFFLINE_ONLY_FORMAL_NOT_PROVEN_NO_NEW_NATIVE"
+    },
+    {
+      "id": "native-startup-gate-boundaries-20261107",
+      "source_commit": "2f8aac4bc3df2fb98a3a558d55a5d337aae68c12",
+      "issues": [
+        {
+          "repository": "sparklink",
+          "number": 3,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/3",
+          "state": "open",
+          "before_sha256": "e28ecc0cbed09022a2b2015d2925b846fb17b4a7c4a5449b13bc79d72092bbc8",
+          "body_sha256": "959b81bbbe9fe32a100b6a72666d4bf1838d7ad54bcb21c4d79b3edc0ba9e4fd",
+          "updated_at": "2026-11-06T21:13:56Z",
+          "original_checklist_unchanged": true,
+          "source_offline_planning_only": true,
+          "private_hardware_details_published": false
+        },
+        {
+          "repository": "linux",
+          "number": 17,
+          "url": "https://github.com/OpenSparklink/linux/issues/17",
+          "state": "open",
+          "before_sha256": "ab2f148d73e2cb6757660f18833ae34847b4de39e9f5deb404164c963da722be",
+          "body_sha256": "274941efc471f8dd5a390637fd5247fdf3e62ef9ee43c5cc9120a96cf5a955f3",
+          "updated_at": "2026-11-06T21:13:58Z",
+          "original_checklist_unchanged": true,
+          "source_offline_planning_only": true,
+          "private_hardware_details_published": false
+        },
+        {
+          "repository": "linux",
+          "number": 19,
+          "url": "https://github.com/OpenSparklink/linux/issues/19",
+          "state": "open",
+          "before_sha256": "3a70d230643778093e05d07da742b03b852e37a154955b6a211f12ed68c82dab",
+          "body_sha256": "1892f92c02bf8c87ab10c304ac224de44f1fb133f37b72e83d64ad49774a6120",
+          "updated_at": "2026-11-06T21:14:00Z",
+          "original_checklist_unchanged": true,
+          "source_offline_planning_only": true,
+          "private_hardware_details_published": false
+        }
+      ],
+      "closed": [],
+      "qualification": "SOURCE_PLANNING_ONLY_NATIVE_PENDING_NO_PRIVATE_PUBLICATION"
     }
   ]
 }

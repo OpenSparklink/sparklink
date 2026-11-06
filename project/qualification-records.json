@@ -55,7 +55,7 @@
       "Original scope retained for historical v1-v3",
       "Publish source/offline summary only"
     ],
-    "next": "Native method v4 and event contract2:retain exact prepared inputs and complete real discovery/listener/independent peer application reply plus original baseline/lifecycle when valid startup conditions change;do not repeat unchanged warm failures or infer recovery from staged firmware,five endpoints,USB completion,manual/QMP/hub actions. Parallel discovery codec proof stays NOT_PROVEN:resolve exact pinned-tool property semantics and real allocation/pointer model errors without success stubs,input reduction or warning suppression;not a new full-control prerequisite. Continue existing ServiceChannel/C/D/E/W delivery without another Engine;all lengths/pressure/permissions/four-device/Profile and natural/nonmanual recovery gates remain,KernelPacket/vendor P4.",
+    "next": "Native B:complete exact-artifact method v4 and event contract2 discovery/listener/independent application reply plus original baseline,lengths and applicable lifecycle only after valid startup/ownership checks. Distinguish per-attempt BSP,CLOSE ACK,configuration TX,HCC identity and Ready;no unchanged hardware retry,no guessed wake/endpoint reroute/CLOSE bypass. Private execution index retains original attempts and failures without public details or qualification transfer. A/C/W may continue existing ServiceChannel and typed DirectUSB/Windows boundaries in parallel,without another Host/Engine or the whole control race matrix as prerequisite. Discovery Kani remains NOT_PROVEN;resolve pinned properties/real allocation models without success stubs or weakened verdicts. Preserve original S0-S6/19WP/10FV/12DG,budget,VM-only and all remaining length/pressure/permissions/four-device/security/Profile/recovery/release gates;only KernelPacket/vendor P4.",
     "actor_obligation_regression": {
       "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
       "entry": "ssap_engine::exchange_loop",
@@ -528870,6 +528870,63 @@
               "original_checklist_unchanged": true,
               "source_offline_only": true,
               "closed": false
+            }
+          ]
+        },
+        {
+          "id": "native-startup-gate-boundaries-20261107",
+          "source_commit": "2f8aac4bc3df2fb98a3a558d55a5d337aae68c12",
+          "status": "NATIVE_DELIVERY_PENDING_NO_QUALIFICATION_TRANSFER",
+          "scope": "Existing Native startup and method/event exit contract only;no production code or ABI change and no new Native/firmware/peer/recovery qualification. Private execution outcomes stay in authorized local index.",
+          "checks": {
+            "state": "BSP,CLOSE ACK,configuration TX,model query,Ready and peer delivery are separate conditions;partial observations do not complete another condition",
+            "resource": "Original per-controller attempts/deadlines,explicit E/US inputs,per-leaf whitelist and shared build budget retained",
+            "scope_correction": "U3/K17/K19 stale blanket UserHost P4 wording corrected/read back;only KernelPacket/vendor remains P4;original checklists and all three OPEN states retained"
+          },
+          "qualification_transfer": false,
+          "new_accepted_proof": false,
+          "not_tested": [
+            "Accurate artifact full method v4 and event contract2 Native delivery with independent peer application replies and original baseline/lifecycle",
+            "Resident identity and validated startup/cleanup state before repeated hardware attempts",
+            "Natural fault root cause and nonmanual recovery",
+            "Complete ServiceChannel/DirectUSB/UserHost/Windows/Profile and all original gates"
+          ],
+          "issue_sync": [
+            {
+              "repository": "sparklink",
+              "number": 3,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/3",
+              "state": "open",
+              "before_sha256": "e28ecc0cbed09022a2b2015d2925b846fb17b4a7c4a5449b13bc79d72092bbc8",
+              "body_sha256": "959b81bbbe9fe32a100b6a72666d4bf1838d7ad54bcb21c4d79b3edc0ba9e4fd",
+              "updated_at": "2026-11-06T21:13:56Z",
+              "original_checklist_unchanged": true,
+              "source_offline_planning_only": true,
+              "private_hardware_details_published": false
+            },
+            {
+              "repository": "linux",
+              "number": 17,
+              "url": "https://github.com/OpenSparklink/linux/issues/17",
+              "state": "open",
+              "before_sha256": "ab2f148d73e2cb6757660f18833ae34847b4de39e9f5deb404164c963da722be",
+              "body_sha256": "274941efc471f8dd5a390637fd5247fdf3e62ef9ee43c5cc9120a96cf5a955f3",
+              "updated_at": "2026-11-06T21:13:58Z",
+              "original_checklist_unchanged": true,
+              "source_offline_planning_only": true,
+              "private_hardware_details_published": false
+            },
+            {
+              "repository": "linux",
+              "number": 19,
+              "url": "https://github.com/OpenSparklink/linux/issues/19",
+              "state": "open",
+              "before_sha256": "3a70d230643778093e05d07da742b03b852e37a154955b6a211f12ed68c82dab",
+              "body_sha256": "1892f92c02bf8c87ab10c304ac224de44f1fb133f37b72e83d64ad49774a6120",
+              "updated_at": "2026-11-06T21:14:00Z",
+              "original_checklist_unchanged": true,
+              "source_offline_planning_only": true,
+              "private_hardware_details_published": false
             }
           ]
         }

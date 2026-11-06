@@ -763,6 +763,10 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     // Failure diagnostics and the actual executed ELF must survive even when
     // the caller omitted explicit artifact retention. COMPLETE is written last.
     let mut cleanup = Cleanup(directory.clone(), false);
+    // Preserve the actual supervisor ELF while this process still runs; a
+    // later build at the same Cargo path is not its execution identity.
+    let supervisor = directory.join("application-ffi-supervisor");
+    std::fs::copy(std::env::current_exe()?, &supervisor)?;
     // The compiled file has its real installed ABI SONAME. Supply only that
     // runtime name in this private directory, with the exact compiled bytes.
     let runtime_library = directory.join("libsparklink.so.0");
@@ -832,6 +836,13 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     // Explicit qualification retention keeps the actual executable and outputs;
     // recompiling a consumer later cannot reconstruct its execution identity.
     let identities = Command::new("sha256sum")
+        .arg(&supervisor)
+        .arg(root.join("crates/libsparklink/tests/application_ffi/provider_composition.rs"))
+        .arg(root.join("crates/libsparklink/tests/fixtures/provider_composition.c"))
+        .arg(root.join("crates/libsparklink/tests/fixtures/provider_composition.py"))
+        .arg(root.join("crates/libsparklink/src/ssap/provider/frontend.rs"))
+        .arg(root.join("crates/libsparklink/src/ssap/provider.rs"))
+        .arg(root.join("crates/slk-contract/src/lib.rs"))
         .arg(&library)
         .arg(&runtime_library)
         .arg(&c)
@@ -1827,6 +1838,15 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
         "executed artifact changed during test"
     );
     pending_owner::check(&root, &directory, &runtime_library, &sdk_probe).await?;
+    let verified = Command::new("sha256sum")
+        .args(["--check", "--strict"])
+        .arg(directory.join("materials.sha256"))
+        .output()?;
+    std::fs::write(directory.join("materials-recheck.log"), &verified.stdout)?;
+    anyhow::ensure!(
+        verified.status.success(),
+        "executed SDK fixture materials changed; retained recheck log"
+    );
     std::fs::write(
         directory.join("COMPLETE"),
         b"CURRENT_APPLICATION_CLIENT_NEGATIVE_BUS_PASS\n",

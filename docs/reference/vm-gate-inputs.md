@@ -106,7 +106,7 @@ hex trace。方法UUID、category和handle必须与提供方预期相符；失�
 复用相同SDK发现、原期限、屏障和完整输出逻辑；调用kind5并要求事件category4/12，
 成功行是 `ssap_event_discovered`。方法继续kind4/category3/11；两者不能互相替代。
 事件发现只返回目录，不能授监听Ready、通知/指示交付或Profile启停。
-事件入口尚未并入contract1双端场景；当前门禁仍由发布端明确传递事件handle。
+历史contract1由发布端明确传递事件handle；当前contract2先实际发现，详见下方事件门禁。
 这是SDK观察收据，不是method调用成功、部署权限或真实双端USB证明。管理角色限制保持；
 新模式已接入实际C/Python私有总线测试。method runner v4 复用现有监督器，保留
 v3 自定义16字节方法的完整双端发现，以及应用错误、空结果、32字节独立结果、
@@ -1750,7 +1750,31 @@ application-client-c event-subscription INDEX GENERATION CONNECTION_PATH EVENT_H
 新增输出使用独立事件stage及version1，原属性订阅输出和历史报告保持原含义。
 双端监督器、独立包判定、实际部署权限、真实随机交付及完整生命周期仍须按准确产物验收。
 
+### 事件双端门禁 contract 2
+
+当前 `--ssap-event-delivery-verify` 选择contract2，boot token为
+`ws73.ssap_event_delivery=2`。仍要求原Owned、4轮61字节普通通道、两种连接角色、
+每角色双向32字节通知/指示、实际监听Ready、独立应用校验回复及发布端读回。
+
+每个发布者绑定后，接收侧先用实际C/Python SDK执行`ssap-find-event`，随机16字节
+UUID必须唯一匹配category12、原handle和空metadata；该有限场景要求handle小于65535以核对终止页。
+原5秒期限覆盖父Client/Connection、
+显式start屏障和两页发现；目录返回不表示监听已安装。核对发布者后才创建原事件租约。
+保留完整条目、分页trace、原进程/凭据、完整连接身份及释放/返回时刻。
+
+独立双端判定新增两笔发现请求/回复：核对kind5、内容页及终止错误、每个物理ACB片、
+原身份/窗口、实际释放后提交、请求接收后回复及前一页回复后下一请求。四个发现PDU
+与原事件/ACK/独立回复都计入实际发送数量。完整发布者窗口（含发现前后空隙、监听和注销）
+不允许缺失或多余SSAP报文；SDK结果或正向包对子集都不足以通过。
+
+新产物必须封存当前helper/verifier和Python`ssap_discovery.py`等依赖。contract2
+不能由contract1摘要改版本获得；当前guest不执行旧boot token。历史contract1仅按原范围
+和原源码/产物身份核对。此切片不扩充长度、完整生命周期、系统权限或Profile启停资格；
+准确新artifact的Native发现/事件及原路径保持仍需独立VM-only实机验收。
+
 ### 事件双端门禁 contract 1
+
+以下保留原范围；当前选择器按上方contract2执行，不能据此重放或升级历史产物。
 
 `--ssap-event-delivery-verify` 选择独立的事件交付场景，依赖既有
 `--passthrough --channel-socket-verify --ssap-owned-verify`、原4轮61字节基线、

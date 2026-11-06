@@ -1241,7 +1241,7 @@ def _run(args):
     m['ssap_event_delivery_requested']=event_delivery
     m['ssap_event_delivery_acceptance']=False
     if event_delivery:
-        from ws73_ssap_event_delivery import VERSION as event_version
+        from ws73_ssap_event_delivery import VERSION as event_version,TOKEN as event_token
         m['ssap_event_delivery_version']=event_version
         m['ssap_event_delivery_verifier']=file_record(HERE/'ws73_ssap_event_delivery.py')
     m['ssap_method_provider_requested']=method_provider
@@ -1758,7 +1758,7 @@ def _run(args):
                      (' ws73.ssap_owned=1' if ssap_owned else '')+
                      (' ws73.ssap_description=1' if description else '')+
                      (' ws73.ssap_read_provider=1' if read_provider else '')+
-                     (' ws73.ssap_event_delivery=1' if event_delivery else '')+
+                     (' '+event_token if event_delivery else '')+
                      (' ws73.ssap_method_provider=1' if method_provider else '')+
                      (' ws73.ssap_sdk_read_provider=1' if sdk_read_provider else '')+
                      (' ws73.ssap_sdk_write_provider=1' if sdk_write_provider else '')+
@@ -2432,7 +2432,7 @@ def _run(args):
                         if event_delivery:
                             from ws73_ssap_event_delivery import valid_summary as event_summary,validate_tools as event_tools
                             for row in control['channel_socket']:event_tools(row['ssap_event_delivery_tools'],args.prepared/'root',package['guest_files'])
-                            if file_record(HERE/'ws73_ssap_event_delivery.py')!=m['ssap_event_delivery_verifier']or not event_summary(m['channel_socket_corroboration']):
+                            if file_record(HERE/'ws73_ssap_event_delivery.py')!=m['ssap_event_delivery_verifier']or not event_summary(m['channel_socket_corroboration'],version=m['ssap_event_delivery_version']):
                                 raise ValueError('exact event verifier and complete paired SDK/USB evidence required')
                         m['ssap_event_delivery_acceptance']=event_delivery
                         if sdk_read_provider:

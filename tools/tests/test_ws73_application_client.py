@@ -277,9 +277,15 @@ class ApplicationClientEvidence(unittest.TestCase):
         # Only Popen/credentials are fixtures; plan, barrier, release, receipt
         # validation and finally/drain are the production supervisor functions.
         from test_ws73_ssap_method_provider import fixture_v3_discovery
-        for phase in (0,1):
-            fixture_row,_,_=fixture_v3_discovery(phase)
-            entry=fixture_row['owners'][0];original=fixture_row['ssap_method_provider_cases'][0]['discovery']
+        for operation,phase in [(kind,phase)for kind in ('method','event')for phase in (0,1)]:
+            if operation=='method':
+                fixture_row,_,_=fixture_v3_discovery(phase)
+                original=fixture_row['ssap_method_provider_cases'][0]['discovery']
+            else:
+                from test_ws73_ssap_event_delivery import fixture
+                fixture_row,_,_=fixture(phase)
+                original=fixture_row['ssap_event_delivery_cases'][0]['discovery']
+            entry=fixture_row['owners'][0]
             for failure in (None,'exit','barrier'):
                 children=[];test=self
                 class Child:
@@ -306,7 +312,7 @@ class ApplicationClientEvidence(unittest.TestCase):
                 with self.subTest(api=original['api'],failure=failure),tempfile.TemporaryDirectory() as directory:
                     row=dict(phase=phase,owners=[entry]);run=SimpleNamespace(output=Path(directory),data={},save=lambda:None)
                     with patch('ws73_application_client.subprocess.Popen',side_effect=Child),patch('ws73_application_client.process_identity',return_value=(original['credentials'],'fixture process identity')):
-                        args=['ssap-find-method',entry['object']['path'],str(original['ssap_handle']),original['ssap_expected']]
+                        args=[original['ssap_operation'],entry['object']['path'],str(original['ssap_handle']),original['ssap_expected']]
                         def invoke():return ssap_commands(run,row,[(entry,args,bytes.fromhex(original['ssap_expected']))],api=original['api'],expected_size=16)
                         if failure:
                             with self.assertRaises(CaptureError):invoke()

@@ -27,13 +27,18 @@ def finish(item,lines):
     item['captured_bytes']=dict(stdout=len(item['stdout'].encode()),stderr=0)
 
 
-def fixture(phase=0):
+def fixture(phase=0,version=2):
     owners=[dict(owner=dict(index=i,generation=4,bus=1,device=10+i,path=f'/a{i}'),
             object=dict(generation=4,lifetime=100+phase*2+i,handle=3+i,path=f'/a{i}/peer_0/link_{100+phase*2+i}'))for i in (0,1)]
     row=dict(phase=phase,owners=owners,ssap_receipts=[dict(args=['slctl'])],ssap_owned_required=True,
         ssap_owned=[dict(sender=s,policy=p)for s in (0,1)for p in ('allow','deny')],ssap_event_delivery_required=True,
-        ssap_event_delivery_version=1,ssap_event_delivery_status=gate.PENDING,ssap_event_delivery_tools={},ssap_event_delivery_cases=[])
+        ssap_event_delivery_version=version,ssap_event_delivery_status=gate.PENDING,ssap_event_delivery_tools={},ssap_event_delivery_cases=[])
     capture=dict(acb_packets=[],native_events=[])
+    def add(a,z,payload,stamp,separation=1_000_000):
+        frame=b'\x0a\0'+len(payload).to_bytes(2,'little')+payload
+        for leg,(endpoint,direction)in enumerate(((a,'out'),(z,'in'))):
+            record=len(capture['acb_packets'])+1
+            capture['acb_packets'].append(dict(bus=1,device=10+endpoint,handle=3+endpoint,direction=direction,data=frame.hex(),boundary=0,record=record,wall_ns=stamp+leg*separation))
     caps=dict(uids=[1000]*4,capabilities={k:'0'for k in ('CapEff','CapPrm','CapAmb','CapInh')})
     for s in (0,1):
         t=1-s;api='c'if(phase+s)%2==0 else'python';other='python'if api=='c'else'c'
@@ -45,6 +50,21 @@ def fixture(phase=0):
         item['args']=owned_arguments(api,owners[t],item['service'],item['uuid'],item['secret'],'none',event_uuid=item['event_uuid'],event_minimum=0)
         binding=dict(version=1,api=api,event=18,reply_property=17,minimum=0);item['event_binding']=binding
         lines=[f'SdkOwnedAPI: api={api} client_closed=true','SsapOwnedService: start=16 end=18 property=17; local registration only','SdkOwnedEventBinding: '+json.dumps(binding)]
+        if version==2:
+            # Literal category12 and kind5/two-page trace; no production encoder.
+            u=item['event_uuid'];trace=[dict(request='06150100ffff'+u,response='070b811200'+u+'0000000000'),
+                                      dict(request='06151300ffff'+u,response='01000613000b')]
+            mono=10**9;prefix=['/bin/ws73-application-client-c']if other=='c'else['/bin/python3','/usr/share/sparklink/tools/ws73-application-client.py']
+            app=dict(api=other,pid=500+s,position=s,args=prefix+['ssap-find-event',str(s),'4',owners[s]['object']['path'],u,'18'],
+                environment=application_environment(),credentials=copy.deepcopy(caps),ssap_operation='ssap-find-event',ssap_path=owners[s]['object']['path'],ssap_handle=18,ssap_expected=u,
+                start_wall_ns=stamp(3),start_barrier_wall_ns=stamp(4),ssap_release_before_wall_ns=stamp(4),ssap_released_wall_ns=stamp(5),end_wall_ns=stamp(9),ssap_release_monotonic_ns=mono+100)
+            barrier=dict(stage='ssap_discovery_start_barrier',schema_version=1,api=other,client_closed=True,deadline_ns=mono+5_000_000_000)
+            result=dict(stage='ssap_event_discovered',schema_version=1,api=other,index=s,generation=4,deadline_ns=barrier['deadline_ns'],call_ns=mono+200,returned_ns=mono+90000,
+                        category=12,handle=18,end=18,uuid=u,operations=0,descriptors='',members=0,trace=trace)
+            finish(app,[json.dumps(barrier),json.dumps(result)]);item['discovery']=app
+            for ordinal,page in enumerate(trace):
+                add(s,t,bytes.fromhex(page['request']),stamp(6)+ordinal*20_000,1000)
+                add(t,s,bytes.fromhex(page['response']),stamp(6)+ordinal*20_000+10_000,1000)
         for ordinal,mode in enumerate((1,2)):
             seq=phase*4+s*2+ordinal;b=stamp(10+ordinal*200);at=lambda n:b+n*1_000_000;mono=10**9+seq*10**8
             value=(seq.to_bytes(4,'little')+bytes.fromhex(seed(f'value{mode}'))[4:]).hex()
@@ -64,10 +84,7 @@ def fixture(phase=0):
             item['cases'].append(case);lines+=['SdkOwnedEvent: '+json.dumps(receipt),f'SsapOwnedValue: handle=17 value={reply}']
             expected=[(t,s,pdu)]+([(s,t,b'\x11\x07\x01')]if mode==2 else[])+[(s,t,b'\x0d\x23\x11\0\0'+bytes.fromhex(reply)),(t,s,b'\x0e\x03\x11\0\0'+bytes.fromhex(reply))]
             for n,(a,z,payload) in enumerate(expected):
-                frame=b'\x0a\0'+len(payload).to_bytes(2,'little')+payload
-                for leg,(endpoint,direction)in enumerate(((a,'out'),(z,'in'))):
-                    record=len(capture['acb_packets'])+1
-                    capture['acb_packets'].append(dict(bus=1,device=10+endpoint,handle=3+endpoint,direction=direction,data=frame.hex(),boundary=0,record=record,wall_ns=at(10+n*4+leg)))
+                add(a,z,payload,at(10+n*4))
         lines.append(f'SdkOwnedRemoved: api={api} start=16');finish(item,lines)
         item['cleanup']=dict(exit=0,stderr='',stdout='SsapLocalServices: []\n',args=['slctl','--adapter',owners[t]['owner']['path'],'ssap-list'],start_wall_ns=stamp(900),end_wall_ns=stamp(901))
         row['ssap_event_delivery_cases'].append(item)
@@ -80,11 +97,11 @@ def fixture(phase=0):
     return row,matched,packets
 
 
-def summary():
+def summary(version=2):
     rows=[]
     for phase in (0,1):
-        row,matched,packets=fixture(phase);proof,credit=gate.corroborate(row,matched,inventory=copy.deepcopy(packets))
-        assert credit=={0:7,1:7}and not packets
+        row,matched,packets=fixture(phase,version);proof,credit=gate.corroborate(row,matched,inventory=copy.deepcopy(packets))
+        assert credit==({0:7,1:7}if version==1 else{0:11,1:11})and not packets
         rows.append(dict(phase=phase,owners=row['owners'],ssap_event_deliveries=proof))
     return dict(status='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED',proofs=rows)
 
@@ -131,6 +148,58 @@ class EventEvidence(unittest.TestCase):
                 elif mutation=='early-cleanup':item['case']['cleanup']['start_wall_ns']=case['start_wall_ns']
                 self.assertFalse(gate.valid_summary(value))
 
+    def test_discovery_receipt_binding_chronology_and_whole_window(self):
+        from ws73_application_client import discovery_receipt
+        original=summary()
+        for mutation in ('missing','kind','category','uuid','handle','late','extra-page','no-terminal','wrong-process','wrong-position','before-bind','after-listen','missing-leg','gap-packet'):
+            with self.subTest(mutation=mutation):
+                value=copy.deepcopy(original);proof=value['proofs'][0]['ssap_event_deliveries'][0];item=proof['case'];app=item['discovery']
+                first,result=[json.loads(x)for x in app['stdout'].splitlines()]
+                if mutation=='missing':item.pop('discovery')
+                elif mutation=='kind':app['ssap_operation']='ssap-find-method'
+                elif mutation=='category':result['category']=11
+                elif mutation=='uuid':result['uuid']='11'*16
+                elif mutation=='handle':result['handle']=19
+                elif mutation=='late':result['returned_ns']=result['deadline_ns']
+                elif mutation=='extra-page':result['trace'].append(copy.deepcopy(result['trace'][0]))
+                elif mutation=='no-terminal':result['trace'].pop()
+                elif mutation=='wrong-process':app['pid']=0
+                elif mutation=='wrong-position':app['position']=True
+                elif mutation=='before-bind':app['start_wall_ns']=item['bound_wall_ns']-1
+                elif mutation=='after-listen':app['end_wall_ns']=item['cases'][0]['start_wall_ns']+1
+                elif mutation=='missing-leg':proof['wire'].pop(2)
+                else:
+                    packet=copy.deepcopy(proof['window_packets'][0]);packet['wall_ns']=item['bound_wall_ns']+1;packet['data']='0a000200110701';proof['window_packets'].append(packet)
+                if mutation in ('category','uuid','handle','late','extra-page','no-terminal'):finish(app,[json.dumps(first),json.dumps(result)])
+                self.assertFalse(gate.valid_summary(value))
+        row,_,_=fixture();item=row['ssap_event_delivery_cases'][0];app=item['discovery'];peer=row['owners'][0]
+        self.assertEqual(discovery_receipt(app,peer,operation='ssap-find-event')['category'],12)
+        with self.assertRaises(CaptureError):discovery_receipt(app,peer)
+        with self.assertRaises(CaptureError):discovery_receipt(app,peer,operation='other')
+
+    def test_historical_contract1_does_not_inherit_discovery_or_contract2(self):
+        old=summary(version=1);self.assertTrue(gate.valid_summary(old,version=1));self.assertFalse(gate.valid_summary(old,version=2))
+        self.assertTrue(all('discovery'not in item['case']and 'ssap_event_delivery_version'not in item['context']for row in old['proofs']for item in row['ssap_event_deliveries']))
+        record=dict(ssap_event_delivery_requested=True,ssap_event_delivery_version=1,ssap_event_delivery_acceptance=True,ssap_owned_requested=True,ssap_owned_acceptance=True,ordinary_channel_socket_acceptance=True,status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,qemu_args=['ws73.ssap_event_delivery=1 ws73.ssap_owned=1'],channel_socket_corroboration=old)
+        self.assertTrue(gate.valid_manifest(record))
+        self.assertFalse(gate.valid_manifest(dict(record,ssap_event_delivery_version=2)))
+        self.assertFalse(gate.valid_manifest(dict(record,channel_socket_corroboration=summary())))
+        with self.assertRaises(ValueError):gate.boot_requested(['ws73.ssap_event_delivery=1','ws73.ssap_owned=1'])
+        self.assertTrue(gate.boot_requested(['ws73.ssap_event_delivery=1','ws73.ssap_owned=1'],version=1))
+        upgraded=copy.deepcopy(old);upgraded['proofs'][0]['ssap_event_deliveries'][0]['version']=2
+        self.assertFalse(gate.valid_summary(upgraded))
+        mixed=summary();mixed['proofs'][0]=old['proofs'][0];self.assertFalse(gate.valid_summary(mixed))
+        poisoned=copy.deepcopy(old);poisoned['proofs'][0]['ssap_event_deliveries'][0]['case']['discovery']={}
+        self.assertFalse(gate.valid_summary(poisoned))
+
+    def test_residual_discovery_sdu_rejected_only_by_new_contract(self):
+        from ws73_channel_socket import reject_unattributed_ssap
+        row=dict(start_wall_ns=1,end_wall_ns=100,ssap_event_delivery_required=True,ssap_event_delivery_version=2)
+        for opcode in (1,6,7):
+            packet=dict(data='0a000100'+bytes([opcode]).hex(),wall_ns=2)
+            with self.subTest(opcode=opcode),self.assertRaises(CaptureError):reject_unattributed_ssap(row,[packet])
+            reject_unattributed_ssap(dict(row,ssap_event_delivery_version=1),[packet])
+
     def test_raw_missing_duplicate_or_foreign_packet_rejected(self):
         for change in ('missing','duplicate','foreign','unrelated-owner'):
             row,matched,packets=fixture();inventory=copy.deepcopy(packets)
@@ -148,7 +217,7 @@ class EventEvidence(unittest.TestCase):
             with self.subTest(k=k),self.assertRaises(ValueError):gate.requested(args)
         for tokens in ([gate.TOKEN],[gate.TOKEN,gate.TOKEN,'ws73.ssap_owned=1'],['ws73.ssap_event_delivery=0']):
             with self.assertRaises(ValueError):gate.boot_requested(tokens)
-        proof=summary();record=dict(ssap_event_delivery_requested=True,ssap_event_delivery_version=1,ssap_event_delivery_acceptance=True,ssap_owned_requested=True,ssap_owned_acceptance=True,ordinary_channel_socket_acceptance=True,status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,qemu_args=[gate.TOKEN+' ws73.ssap_owned=1'],channel_socket_corroboration=proof)
+        proof=summary();record=dict(ssap_event_delivery_requested=True,ssap_event_delivery_version=2,ssap_event_delivery_acceptance=True,ssap_owned_requested=True,ssap_owned_acceptance=True,ordinary_channel_socket_acceptance=True,status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,qemu_args=[gate.TOKEN+' ws73.ssap_owned=1'],channel_socket_corroboration=proof)
         self.assertTrue(gate.valid_manifest(record));self.assertTrue(gate.valid_manifest({}))
         for k,v in [('qemu_exit',True),('qemu_exit',1),('qemu_args',[]),('ssap_event_delivery_version',True),('ssap_event_delivery_acceptance',False),('ssap_owned_acceptance',False),('status','FAILED')]:
             with self.subTest(k=k):self.assertFalse(gate.valid_manifest(dict(record,**{k:v})))
@@ -175,7 +244,7 @@ class EventEvidence(unittest.TestCase):
         # Only process I/O/state and the wire are fixtures. Exercise the actual
         # supervisor branch, command order, save-on-failure and pending verdict.
         import time
-        for failure in (None,'missing-ready','wrong-ready','bad-exit'):
+        for failure in (None,'missing-discovery','wrong-discovery','missing-ready','wrong-ready','bad-exit'):
             with self.subTest(failure=failure),tempfile.TemporaryDirectory()as tmp:
                 original,_,_=fixture();row={k:copy.deepcopy(v)for k,v in original.items()if not k.startswith('ssap_event_delivery_')}
                 run=SimpleNamespace(output=Path(tmp),save=lambda:trace.append('save'));trace=[];active={}
@@ -204,16 +273,32 @@ class EventEvidence(unittest.TestCase):
                         trace.append('ready');return [json.dumps(ready)],''
                     trace.append('checked');return [json.dumps({'stage':'ssap_event_checked_reply'})],''
                 def send(owner,item,command,prefix):
-                    self.assertTrue(any(isinstance(x,tuple)and x[0]=='peer'and x[1].startswith('check ')for x in trace));self.assertIn('ready',trace)
+                    self.assertTrue(any(isinstance(x,tuple)and x[0]=='peer'and x[1].startswith('check ')for x in trace));self.assertIn('ready',trace);self.assertIn('discovery',trace)
                     trace.append('send');return dict(start_monotonic_ns=time.monotonic_ns())
+                def discover(run,row,calls,*,api,expected_size):
+                    item=active['item'];peer=row['owners'][active['sender']]
+                    self.assertEqual(calls,[(peer,['ssap-find-event',peer['object']['path'],str(item['event_handle']),item['event_uuid']],bytes.fromhex(item['event_uuid']))])
+                    self.assertEqual(expected_size,16);self.assertFalse(active['item']['cases'])
+                    trace.append('discovery')
+                    if failure=='missing-discovery':raise CaptureError('missing actual discovery fixture')
+                    app=copy.deepcopy(item['discovery'])
+                    if failure=='wrong-discovery':
+                        # A valid receipt for a different UUID still cannot
+                        # start this publisher's listener or any event send.
+                        first,result=[json.loads(x)for x in app['stdout'].splitlines()];old=app['ssap_expected'];new='11'*16
+                        app['ssap_expected']=new;app['args'][-2]=new;result['uuid']=new
+                        for page in result['trace']:
+                            for k in ('request','response'):page[k]=page[k].replace(old,new)
+                        finish(app,[json.dumps(first),json.dumps(result)])
+                    return [app]
                 def wait_end(child,timeout):child.returncode=1 if failure=='bad-exit'and child is active.get('child')else 0
                 with patch.multiple(gate,publisher=publish,observed_process=observe,wait_text=wait,command_receipt=send,wait_output=wait_end,
-                        value_snapshot=lambda *a,**kw:trace.append('readback'),await_removed=lambda *a:{},tool_records=lambda:{}),patch('ws73_channel_socket.credentials',return_value={}):
+                        value_snapshot=lambda *a,**kw:trace.append('readback'),await_removed=lambda *a:{},tool_records=lambda:{},ssap_commands=discover),patch('ws73_channel_socket.credentials',return_value={}):
                     if failure:
                         with self.assertRaises(CaptureError):gate.execute(run,row)
                         self.assertNotIn('ssap_event_delivery_status',row)
-                        self.assertTrue(row['ssap_event_delivery_cases'][0]['cases'][0]['application']['error_fixture_retained'])
-                        if failure in ('missing-ready','wrong-ready'):self.assertNotIn('send',trace)
+                        if failure not in ('missing-discovery','wrong-discovery'):self.assertTrue(row['ssap_event_delivery_cases'][0]['cases'][0]['application']['error_fixture_retained'])
+                        if failure in ('missing-discovery','wrong-discovery','missing-ready','wrong-ready'):self.assertNotIn('send',trace)
                     else:
                         gate.execute(run,row);self.assertEqual(row['ssap_event_delivery_status'],gate.PENDING)
                         self.assertEqual(trace.count('send'),4);self.assertEqual(trace.count('readback'),4)

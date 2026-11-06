@@ -710,7 +710,8 @@ def reject_unattributed_ssap(row, sdus):
         tracked += (1,18,19,20)
         current = True
     if row.get('ssap_event_delivery_required',False):
-        if type(row.get('ssap_event_delivery_version'))is not int or row['ssap_event_delivery_version']!=1:raise CaptureError('explicit event capture contract required')
+        if type(row.get('ssap_event_delivery_version'))is not int or row['ssap_event_delivery_version']not in (1,2):raise CaptureError('explicit event capture contract required')
+        if row['ssap_event_delivery_version']==2:tracked+=(1,6,7)
         current=True
     if current:
         tracked += (15,16,17)

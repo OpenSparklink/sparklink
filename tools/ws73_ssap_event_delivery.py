@@ -15,16 +15,16 @@ import secrets
 import subprocess
 import time
 from ws73_capture import CaptureError,packet_interval
-from ws73_application_client import application_environment,owned_arguments,_ssap_process_receipt
+from ws73_application_client import application_environment,owned_arguments,_ssap_process_receipt,ssap_commands,discovery_receipt
 from ws73_ssap_owned import publisher,observed_process,wait_text,wait_output,value_snapshot,await_removed,verify_output
 from ws73_ssap_update_delivery import command_receipt
 
-VERSION=1
-TOKEN='ws73.ssap_event_delivery=1'
+VERSION=2
+TOKEN='ws73.ssap_event_delivery=2'
 PENDING='EVENT_APPLICATION_REPLY_PENDING_PAIRED_USB'
 STATUS='EVENT_APPLICATION_REPLY_PAIRED_USB'
 LEASE_MS=10000
-EXTRA_TOOLS=('/usr/share/sparklink/python/sparklink/ssap_subscription.py',)
+EXTRA_TOOLS=('/usr/share/sparklink/python/sparklink/ssap_subscription.py','/usr/share/sparklink/python/sparklink/ssap_discovery.py')
 
 
 def requested(args,*,passthrough=None):
@@ -39,10 +39,11 @@ def requested(args,*,passthrough=None):
     return True
 
 
-def boot_requested(tokens):
+def boot_requested(tokens,*,version=VERSION):
+    if type(version)is not int or version not in (1,2):raise ValueError('explicit event contract version required')
     if type(tokens)not in (list,tuple)or any(type(t)is not str for t in tokens):raise ValueError('original boot tokens required')
     selected=[t for t in tokens if t=='ws73.ssap_event_delivery'or t.startswith('ws73.ssap_event_delivery=')]
-    if selected not in ([],[TOKEN])or selected and tokens.count('ws73.ssap_owned=1')!=1:raise ValueError('one event selector and Owned dependency required')
+    if selected not in ([],[f'ws73.ssap_event_delivery={version}'])or selected and tokens.count('ws73.ssap_owned=1')!=1:raise ValueError('one event selector and Owned dependency required')
     return bool(selected)
 
 
@@ -68,7 +69,8 @@ def validate_tools(records,root,manifest):
         if len(found)!=1 or found[0]['sha256']!=value['sha256']:raise CaptureError('event tool absent from build manifest')
 
 
-def validate_rows(rows,selected):
+def validate_rows(rows,selected,*,version=VERSION):
+    if type(version)is not int or version not in (1,2):raise CaptureError('explicit event rows version required')
     if type(selected)is not bool or type(rows)is not list or selected and len(rows)!=2:raise CaptureError('two event phases and explicit selection required')
     for phase,row in enumerate(rows):
         actual=row.get('ssap_event_delivery_required',False)
@@ -76,7 +78,7 @@ def validate_rows(rows,selected):
         if not selected:
             if any(k.startswith('ssap_event_delivery_')for k in row if k!='ssap_event_delivery_required'):raise CaptureError('unrequested event evidence')
         elif (type(row.get('phase'))is not int or row['phase']!=phase
-                or type(row.get('ssap_event_delivery_version'))is not int or row['ssap_event_delivery_version']!=VERSION
+                or type(row.get('ssap_event_delivery_version'))is not int or row['ssap_event_delivery_version']!=version
                 or row.get('ssap_owned_required')is not True or len(row.get('ssap_owned',[]))!=4
                 or {(v['sender'],v['policy'])for v in row['ssap_owned']}!={(s,p)for s in (0,1)for p in ('allow','deny')}
                 or type(row.get('ssap_event_delivery_tools'))is not dict
@@ -97,6 +99,13 @@ def execute(run,row):
         api='c'if(row['phase']+sender)%2==0 else'python';other='python'if api=='c'else'c'
         with publisher(run,row,sender,'none',collection='ssap_event_delivery_cases',label='event',sdk_api=api,event_minimum=0)as(owner,item):
             item['cases']=[];run.save()
+            item['discovery']=ssap_commands(run,row,[(peer,
+                ['ssap-find-event',peer['object']['path'],str(item['event_handle']),item['event_uuid']],
+                bytes.fromhex(item['event_uuid']))],api=other,expected_size=16)[0]
+            run.save()
+            found=discovery_receipt(item['discovery'],peer,operation='ssap-find-event')
+            if found['uuid']!=item['event_uuid']or found['handle']!=item['event_handle']:
+                raise CaptureError('actual event discovery must identify this publisher before listening')
             for ordinal,mode in enumerate((1,2)):
                 sequence=row['phase']*4+sender*2+ordinal
                 value=(sequence.to_bytes(4,'little')+secrets.token_bytes(28)).hex()
@@ -147,6 +156,8 @@ def validate_ready(ready,api,event,reply):
 
 
 def _case(row,item,matched,inventory):
+    version=row.get('ssap_event_delivery_version',1)
+    if type(version)is not int or version not in (1,2):raise CaptureError('explicit event evidence version required')
     from ws73_ssap_command import _identity
     from ws73_ssap_value import pair_wire,physical_sends,valid_wire
     owners=row['owners'];identities=[_identity(o)for o in owners]
@@ -173,6 +184,20 @@ def _case(row,item,matched,inventory):
         validate_paired_leg(row,a,b,b'\x0a\0'+len(pdu).to_bytes(2,'little')+pdu,window,leg)
         if not valid_wire(leg)or packet_interval(leg['tx'])[1]>packet_interval(leg['rx'])[0]:raise CaptureError('valid causal paired event USB legs required')
         legs.append(leg);credit[a]+=physical_sends(leg['tx']);return leg
+    if version==2:
+        app=item['discovery'];found=discovery_receipt(app,peer,operation='ssap-find-event')
+        if (app['api']!=other or type(app['pid'])is not int or app['pid']<=0 or type(app['position'])is not int or app['position']!=s or found['uuid']!=item['event_uuid']or found['handle']!=e
+                or any(type(app[k])is not int or app[k]<=0 for k in ('start_wall_ns','start_barrier_wall_ns','ssap_release_before_wall_ns','ssap_released_wall_ns','end_wall_ns'))
+                or not item['bound_wall_ns']<=app['start_wall_ns']<=app['start_barrier_wall_ns']<=app['ssap_release_before_wall_ns']<=app['ssap_released_wall_ns']<=app['end_wall_ns']<=item['cases'][0]['start_wall_ns']):
+            raise CaptureError('actual event discovery before listener and exact publisher binding required')
+        for page in found['trace']:
+            request=exchange(s,t,bytes.fromhex(page['request']),app)
+            response=exchange(t,s,bytes.fromhex(page['response']),app)
+            if (packet_interval(request['tx'])[0]<app['ssap_released_wall_ns']
+                    or packet_interval(request['rx'])[1]>packet_interval(response['tx'])[0]
+                    or len(legs)>2 and packet_interval(legs[-3]['rx'])[1]>packet_interval(request['tx'])[0]):
+                raise CaptureError('causal original discovery release/request/response/terminal order required')
+    elif 'discovery'in item:raise CaptureError('historical contract1 cannot claim event discovery')
     for ordinal,case in enumerate(item['cases']):
         mode=ordinal+1;seq=row['phase']*4+s*2+ordinal
         if type(case['mode'])is not int or type(case['sequence'])is not int or (case['mode'],case['sequence'])!=(mode,seq):raise CaptureError('exact event sequence required')
@@ -225,7 +250,18 @@ def _case(row,item,matched,inventory):
     if (not item['cases'][-1]['end_wall_ns']<=cleanup['start_wall_ns']<=cleanup['end_wall_ns']<=item['end_wall_ns']
             or type(cleanup['exit'])is not int or cleanup['exit']!=0 or cleanup['stderr']or len(lists)!=1 or any(x[0]==item['start']for x in json.loads(lists[0]))
             or cleanup['args']!=[row['ssap_receipts'][0]['args'][0],'--adapter',server['owner']['path'],'ssap-list']):raise CaptureError('actual owner removal required')
-    return dict(status=STATUS,version=VERSION,sender=s,target=t,wire=legs,window_packets=observed,case=copy.deepcopy(item),context=copy.deepcopy({k:row[k]for k in ('phase','owners','ssap_receipts')})),credit
+    context={k:row[k]for k in ('phase','owners','ssap_receipts')}
+    if version==2:
+        context['ssap_event_delivery_version']=version
+        # Include the whole publisher lifetime window, also the gaps before
+        # discovery/listening/cleanup. No unmatched SSAP or hidden CPCD/ACK.
+        endpoints={(v['bus'],v['device'],v['handle'])for v in identities}
+        observed=[p for p in inventory if (p['bus'],p['device'],p['handle'])in endpoints
+                  and item['start_wall_ns']<=p['wall_ns']<=item['end_wall_ns']and p['data'].startswith('0a00')]
+        expected=[leg[side]for leg in legs for side in ('tx','rx')]
+        canonical=lambda xs:sorted(json.dumps(p,sort_keys=True)for p in xs)
+        if canonical(observed)!=canonical(expected):raise CaptureError('complete discovery/event owner window required')
+    return dict(status=STATUS,version=version,sender=s,target=t,wire=legs,window_packets=copy.deepcopy(observed),case=copy.deepcopy(item),context=copy.deepcopy(context)),credit
 
 
 def corroborate(row,matched,*,inventory=None):
@@ -234,7 +270,7 @@ def corroborate(row,matched,*,inventory=None):
     if not selected:
         if any(k.startswith('ssap_event_delivery_')for k in row if k!='ssap_event_delivery_required'):raise CaptureError('unrequested event evidence')
         return [],{0:0,1:0}
-    if (type(row.get('ssap_event_delivery_version'))is not int or row['ssap_event_delivery_version']!=VERSION
+    if (type(row.get('ssap_event_delivery_version'))is not int or row['ssap_event_delivery_version']not in (1,2)
             or row.get('ssap_event_delivery_status')!=PENDING or type(inventory)is not list
             or [x['sender']for x in row.get('ssap_event_delivery_cases',[])]!=[0,1]):raise CaptureError('complete event evidence and raw inventory required')
     proof=[];credit={0:0,1:0}
@@ -244,14 +280,16 @@ def corroborate(row,matched,*,inventory=None):
     return proof,credit
 
 
-def valid_summary(proof):
+def valid_summary(proof,*,version=None):
+    if version is not None and (type(version)is not int or version not in (1,2)):return False
     try:
         if proof.get('status')!='ORDINARY_CHANNEL_SOCKET_USB_CORROBORATED'or len(proof['proofs'])!=2:return False
-        fresh=set()
+        fresh=set();versions=set()
         for phase,row in enumerate(proof['proofs']):
             if type(row['phase'])is not int or row['phase']!=phase or [i['sender']for i in row['ssap_event_deliveries']]!=[0,1]:return False
             for item in row['ssap_event_deliveries']:
-                if item['status']!=STATUS or type(item['version'])is not int or item['version']!=VERSION or item['context']['phase']!=phase or item['context']['owners']!=row['owners']:return False
+                if item['status']!=STATUS or type(item['version'])is not int or item['version']not in (1,2)or version is not None and item['version']!=version or item['context']['phase']!=phase or item['context']['owners']!=row['owners']:return False
+                versions.add(item['version'])
                 packets=copy.deepcopy([p for leg in item['wire']for p in (leg['tx'],leg['rx'])])
                 def matched(owner,direction,payload,window):
                     key=(owner['owner']['bus'],owner['owner']['device'],owner['object']['handle'],direction,payload.hex())
@@ -264,18 +302,19 @@ def valid_summary(proof):
                     for k in ('value','reply'):
                         if c[k]in fresh:return False
                         fresh.add(c[k])
-        return True
+        return len(versions)==1
     except (KeyError,AttributeError,TypeError,ValueError,IndexError):return False
 
 
 def valid_manifest(record):
     try:
         selected=record.get('ssap_event_delivery_requested',False)
-        if type(selected)is not bool or boot_requested([t for arg in record.get('qemu_args',[])for t in arg.split()])!=selected:return False
+        version=record.get('ssap_event_delivery_version',VERSION)
+        if type(selected)is not bool or boot_requested([t for arg in record.get('qemu_args',[])for t in arg.split()],version=version)!=selected:return False
         proof=record.get('channel_socket_corroboration',{})
         if not selected:return record.get('ssap_event_delivery_acceptance',False)is False and 'ssap_event_delivery_version'not in record and not any('ssap_event_deliveries'in r for r in proof.get('proofs',[]))
-        return(type(record.get('ssap_event_delivery_version'))is int and record['ssap_event_delivery_version']==VERSION
+        return(type(record.get('ssap_event_delivery_version'))is int and record['ssap_event_delivery_version']in (1,2)
                and record.get('ssap_event_delivery_acceptance')is True and record.get('ssap_owned_requested')is True
                and record.get('ssap_owned_acceptance')is True and record.get('ordinary_channel_socket_acceptance')is True
-               and record.get('status')=='PASSTHROUGH_SUPPORT_PASS'and type(record.get('qemu_exit'))is int and record['qemu_exit']==0 and valid_summary(proof))
+               and record.get('status')=='PASSTHROUGH_SUPPORT_PASS'and type(record.get('qemu_exit'))is int and record['qemu_exit']==0 and valid_summary(proof,version=version))
     except (KeyError,AttributeError,TypeError,ValueError):return False

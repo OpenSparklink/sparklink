@@ -136,8 +136,9 @@ done:
     slk_connection_close(link);slk_client_close(client);return status;
 }
 /* Independent command mode: no response parser or fabricated peer value. */
-/* One expected remote method in this finite scenario, not arbitrary discovery. */
-static int ssap_find_method_mode(int argc,char **argv) {
+/* One expected remote entry in this finite scenario, not arbitrary discovery. */
+static int ssap_find_entry_mode(int argc,char **argv) {
+    int event=!strcmp(argv[1],"ssap-find-event");
     if (argc!=7 || !*argv[4] || strlen(argv[4])>256) return 2;
     uint64_t index=number(argv[2]),generation=number(argv[3]),handle=number(argv[6]);
     if (index>UINT16_MAX || !generation || !handle || handle>UINT16_MAX) return 2;
@@ -155,7 +156,7 @@ static int ssap_find_method_mode(int argc,char **argv) {
     char start[6];
     if (wait_fd(STDIN_FILENO,POLLIN,deadline) || read(STDIN_FILENO,start,sizeof start)!=(ssize_t)sizeof start || memcmp(start,"start\n",sizeof start)) {errno=EPROTO;goto done;}
     uint64_t called=now_ns();
-    error=slk_connection_ssap_discover(link,uuid,uuid_n,4,deadline,&result);
+    error=slk_connection_ssap_discover(link,uuid,uuid_n,event?5:4,deadline,&result);
     uint64_t returned=now_ns();
     if (error || returned>=deadline) {errno=error?-error:ETIMEDOUT;goto done;}
     uintptr_t entries=0,pages=0;struct SlkSsapEntry entry;
@@ -163,7 +164,7 @@ static int ssap_find_method_mode(int argc,char **argv) {
     if (error || entries!=1 || !pages || pages>96) {errno=EPROTO;goto done;}
     error=slk_ssap_discovery_entry(result,0,&entry);
     if (error || entry.handle!=handle || entry.uuid_length!=uuid_n ||
-        memcmp(entry.uuid,uuid,uuid_n) || entry.category!=(uuid_n==2?3:11)) {errno=EPROTO;goto done;}
+        memcmp(entry.uuid,uuid,uuid_n) || entry.category!=((event?4:3)+(uuid_n==16?8:0))) {errno=EPROTO;goto done;}
     /* Read every trace before emitting a success-shaped row. No partial PASS. */
     uint8_t requests[96][22],replies[96][2048];uintptr_t request_n[96],reply_n[96];
     for (uintptr_t i=0;i<pages;++i) {
@@ -171,7 +172,7 @@ static int ssap_find_method_mode(int argc,char **argv) {
         if (!error) error=slk_ssap_discovery_trace(result,i,1,replies[i],sizeof replies[i],&reply_n[i]);
         if (error) {errno=-error;goto done;}
     }
-    printf("{\"stage\":\"ssap_method_discovered\",\"schema_version\":1,\"api\":\"c\",\"index\":%"PRIu64",\"generation\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"call_ns\":%"PRIu64",\"returned_ns\":%"PRIu64",\"category\":%u,\"handle\":%u,\"end\":%u,\"uuid\":\"",index,generation,deadline,called,returned,entry.category,entry.handle,entry.end);
+    printf("{\"stage\":\"ssap_%s_discovered\",\"schema_version\":1,\"api\":\"c\",\"index\":%"PRIu64",\"generation\":%"PRIu64",\"deadline_ns\":%"PRIu64",\"call_ns\":%"PRIu64",\"returned_ns\":%"PRIu64",\"category\":%u,\"handle\":%u,\"end\":%u,\"uuid\":\"",event?"event":"method",index,generation,deadline,called,returned,entry.category,entry.handle,entry.end);
     hex_print(entry.uuid,entry.uuid_length);printf("\",\"operations\":%u,\"descriptors\":\"",entry.operations);
     hex_print(entry.descriptors,entry.descriptor_length);printf("\",\"members\":%u,\"trace\":[",entry.members);
     for (uintptr_t i=0;i<pages;++i) {
@@ -180,7 +181,7 @@ static int ssap_find_method_mode(int argc,char **argv) {
     }
     printf("]}\n");fflush(stdout);status=0;
  done:
-    if (status) perror("SSAP method discovery");
+    if (status) perror("SSAP entry discovery");
     slk_ssap_discovery_free(result);slk_connection_close(link);slk_client_close(client);return status;
 }
 
@@ -910,7 +911,7 @@ done:
 }
 
 int main(int argc,char **argv) {
-    if (argc>1 && !strcmp(argv[1],"ssap-find-method")) return ssap_find_method_mode(argc,argv);
+    if (argc>1 && (!strcmp(argv[1],"ssap-find-method") || !strcmp(argv[1],"ssap-find-event"))) return ssap_find_entry_mode(argc,argv);
     if (argc>1 && (!strcmp(argv[1],"subscription") || !strcmp(argv[1],"event-subscription"))) return subscription_mode(argc,argv);
     if (argc>1 && (!strcmp(argv[1],"owned") || !strcmp(argv[1],"owned-readonly") || !strcmp(argv[1],"owned-writeonly") || !strcmp(argv[1],"owned-updates") || !strcmp(argv[1],"owned-events"))) return owned_mode(argc,argv);
     if (argc>1 && (!strcmp(argv[1],"update-peer") || !strcmp(argv[1],"update-error") || !strcmp(argv[1],"update-retired"))) return update_peer_mode(argc,argv);

@@ -26,7 +26,7 @@ def main():
     if sys.argv[1:2] in (['subscription'],['event-subscription']):return subscription_mode()
     if sys.argv[1:2] in (['owned'],['owned-readonly'],['owned-writeonly'],['owned-updates'],['owned-events']):return owned_mode()
     if sys.argv[1:2] in (['update-peer'],['update-error'],['update-retired']):return update_peer_mode()
-    if sys.argv[1:2] == ['ssap-find-method']:return ssap_find_method_mode()
+    if sys.argv[1:2] in (['ssap-find-method'],['ssap-find-event']):return ssap_find_entry_mode()
     if sys.argv[1:2] == ['discovery']:return discovery_mode()
     if sys.argv[1:2] in (['ssap'], ['ssap-error']):return ssap_mode()
     if sys.argv[1:2] in (['ssap-command'],['ssap-command-reject'],['ssap-method-command']):return ssap_command_mode()
@@ -112,13 +112,15 @@ def ssap_mode():
         print(f'SsapPeerValue: operation={operation} path={path} handle={handle} value={actual.hex()}',flush=True)
 
 
-def ssap_find_method_mode():
-    if len(sys.argv)!=7:raise ValueError('ssap-find-method index generation path uuid-hex expected-handle')
+def ssap_find_entry_mode():
+    event=sys.argv[1]=='ssap-find-event'
+    entry_kind='event' if event else 'method'
+    if len(sys.argv)!=7:raise ValueError('ssap-find-{method|event} index generation path uuid-hex expected-handle')
     index,generation=int(sys.argv[2]),int(sys.argv[3]);path=sys.argv[4]
     raw=sys.argv[5]
     if len(raw) not in (4,32) or any(c not in '0123456789abcdef' for c in raw):raise ValueError('exact2/16byte lowercase UUID')
     uuid=bytes.fromhex(raw);handle=int(sys.argv[6])
-    if not 1<=handle<=65535:raise ValueError('nonzero expected method handle')
+    if not 1<=handle<=65535:raise ValueError('nonzero expected entry handle')
     deadline=time.monotonic_ns()+5_000_000_000
     with Client(deadline_ns=deadline) as client:
         link=client.connection(ControllerId(index,generation),path,deadline_ns=deadline)
@@ -128,13 +130,13 @@ def ssap_find_method_mode():
         wait(0,select.POLLIN,deadline)
         if os.read(0,6)!=b'start\n':raise ValueError('explicit original start barrier required')
         called=time.monotonic_ns()
-        result=link.ssap().discover(uuid,kind=4,deadline_ns=deadline)
+        result=link.ssap().discover(uuid,kind=5 if event else 4,deadline_ns=deadline)
         returned=time.monotonic_ns()
     if returned>=deadline:raise TimeoutError('original discovery deadline')
-    if len(result.entries)!=1:raise ValueError('one matching remote method required for this scenario')
+    if len(result.entries)!=1:raise ValueError('one matching remote entry required for this scenario')
     e=result.entries[0]
-    if (e.category,e.handle,e.uuid)!=(3 if len(uuid)==2 else 11,handle,uuid):raise ValueError('actual remote method differs from publisher')
-    print(json.dumps(dict(stage='ssap_method_discovered',schema_version=1,api='python',
+    if (e.category,e.handle,e.uuid)!=((4 if event else 3)+(8 if len(uuid)==16 else 0),handle,uuid):raise ValueError('actual remote entry differs from publisher')
+    print(json.dumps(dict(stage=f'ssap_{entry_kind}_discovered',schema_version=1,api='python',
         index=index,generation=generation,deadline_ns=deadline,call_ns=called,returned_ns=returned,
         category=e.category,handle=e.handle,end=e.end,uuid=e.uuid.hex(),operations=e.operations,
         descriptors=e.descriptors.hex(),members=e.members,

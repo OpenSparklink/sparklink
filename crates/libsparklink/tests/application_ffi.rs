@@ -214,7 +214,12 @@ impl Link {
             .unwrap();
         assert!(d.remaining().unwrap() <= std::time::Duration::from_secs(5));
         self.8.fetch_add(1, Ordering::SeqCst);
-        if !matches!(kind, 4 | 5) || !matches!(uuid.as_slice(), [1, 2] | [3, 4] | [5, 6] | [7, 8]) {
+        if !matches!(kind, 4 | 5)
+            || !(matches!(
+                uuid.as_slice(),
+                [1, 2] | [3, 4] | [5, 6] | [7, 8] | [9, 10] | [11, 12]
+            ) || uuid == [0x42; 16])
+        {
             return Err(zbus::fdo::Error::InvalidArgs(
                 "finite discovery fixture".into(),
             ));
@@ -230,20 +235,27 @@ impl Link {
         } else {
             vec![0x80]
         };
+        // Finite serialized metadata and trace fixture, not a daemon/peer.
+        // Wrong kind/UUID are deliberate refusals by the real SDK consumer.
+        let custom = uuid.len() == 16;
+        let category = (if (kind == 5) != (uuid == [9, 10]) {
+            4
+        } else {
+            3
+        }) + if custom { 8 } else { 0 };
+        let returned_uuid = if uuid == [11, 12] {
+            vec![1, 2]
+        } else {
+            uuid.clone()
+        };
+        let mut request = vec![6, 16 | kind, 1, 0, 255, 255];
+        request.extend_from_slice(&uuid);
+        let mut response = vec![7, if custom { 25 } else { 11 }, 1, 17, 0];
+        response.extend_from_slice(&returned_uuid);
+        response.extend_from_slice(&[0, 0, 0, 0, 1, 0x80]);
         Ok((
-            vec![(
-                if kind == 5 { 4 } else { 3 },
-                17,
-                17,
-                vec![1, 2],
-                0,
-                descriptors,
-                0,
-            )],
-            vec![(
-                vec![6, 16 | kind, 1, 0, 255, 255, 1, 2],
-                vec![7, 11, 1, 17, 0, 1, 2, 0, 0, 0, 0, 1, 0x80],
-            )],
+            vec![(category, 17, 17, returned_uuid, 0, descriptors, 0)],
+            vec![(request, response)],
         ))
     }
 

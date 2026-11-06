@@ -102,6 +102,11 @@ handle或枚举顺序选择对象。先发 `ssap_discovery_start_barrier`（sche
 但保留原Connection，等待 `start\n`；连接获取、屏障及实际发现共用原5秒期限。
 成功行 `ssap_method_discovered` 包含原期限、调用/返回单调时刻、完整条目及每笔请求/回复
 hex trace。方法UUID、category和handle必须与提供方预期相符；失败无成功行。
+同一消费者还接受 `ssap-find-event INDEX GENERATION CONNECTION UUID_HEX HANDLE`，
+复用相同SDK发现、原期限、屏障和完整输出逻辑；调用kind5并要求事件category4/12，
+成功行是 `ssap_event_discovered`。方法继续kind4/category3/11；两者不能互相替代。
+事件发现只返回目录，不能授监听Ready、通知/指示交付或Profile启停。
+事件入口尚未并入contract1双端场景；当前门禁仍由发布端明确传递事件handle。
 这是SDK观察收据，不是method调用成功、部署权限或真实双端USB证明。管理角色限制保持；
 新模式已接入实际C/Python私有总线测试。method runner v4 复用现有监督器，保留
 v3 自定义16字节方法的完整双端发现，以及应用错误、空结果、32字节独立结果、

@@ -67,7 +67,7 @@ class DiscoveryProofVerdict(unittest.TestCase):
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes((real / file).read_bytes())
             path = root / 'bounds.json'
-            for mutation in ['valid', 'source', 'tool', 'missing', 'flag', 'zero', 'bool']:
+            for mutation in ['valid', 'source', 'tool', 'missing', 'flag', 'zero', 'bool', 'unknown', 'bound']:
                 bad = copy.deepcopy(value)
                 harness = next(k for k, v in bad['harnesses'].items() if v)
                 loop = next(iter(bad['harnesses'][harness]))
@@ -77,6 +77,8 @@ class DiscoveryProofVerdict(unittest.TestCase):
                 if mutation == 'flag': bad['harnesses'][harness]['--no-unwinding-checks'] = 1
                 if mutation == 'zero': bad['harnesses'][harness][loop] = 0
                 if mutation == 'bool': bad['harnesses'][harness][loop] = True
+                if mutation == 'unknown': bad['harnesses'][harness]['_Unknown.0'] = 4
+                if mutation == 'bound': bad['harnesses'][harness][loop] = 1
                 path.write_text(json.dumps(bad))
                 if mutation == 'valid': self.assertEqual(RUNNER.discovery_unwindset(path, root)[1], value)
                 else:

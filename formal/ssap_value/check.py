@@ -39,6 +39,7 @@ DISCOVERY={
   'member encoder admits one exact bounded entry','member roundtrip preserves entry count','member roundtrip preserves all scalar metadata and lengths','member roundtrip preserves every UUID byte','member roundtrip preserves every descriptor byte','valid member is refused only for exact capacity'],
 }
 DISCOVERY_NEGATIVE={'discovery_proofs::wrong_claim_page_for_unfiltered_request_completes_uuid_query':[]}
+DISCOVERY_LOOP_INPUT_SHA256='981c6e9e2f064420ba0fce84369587c19c42303fde1e98e0a28e175a01ee4dfa'
 DISCOVERY_SCOPE='Actual production FindRequest decoder/encoder over arbitrary0..22 bytes,all u16 MTU/output0..22;method/event page decoder over arbitrary0..32 bytes,all u16 range/MTU and three entry classes;single member encode/decode over arbitrary2/16-byte UUID,0..4 descriptor bytes,valid operation bits and nonzero handle. Unwind26/40;no stubs. Not full MTU/page80 exploration,peer semantic truth,UUID-query matching semantics,actor/allocator/OS/USB/refinement/RF proof;same response opcode is interpreted under original schema,not proof of peer intent.'
 # Exact Kani0.68 standard-library safety branches already reviewed in the
 # fragment scope: no overflowing subtraction in unsigned abs_diff,constant
@@ -78,6 +79,11 @@ def discovery_unwindset(path,root=ROOT):
  """
  path=path.resolve(strict=True);relative=str(path.relative_to(root))
  value=json.loads(path.read_text())
+ # Only the reviewed symbol/limit mapping,not merely any syntactically valid
+ # function name. Revisit this pin with its actual compiled symbol evidence
+ # when the production source,harness,compiler or bound contract changes.
+ if hashlib.sha256(json.dumps(value,sort_keys=True,separators=(',',':')).encode()).hexdigest()!=DISCOVERY_LOOP_INPUT_SHA256:
+  raise ValueError('reviewed discovery loop mapping required;unknown or changed symbols refused')
  if(set(value)!={'version','kani_version','sources','harnesses','bound_rationale'}or value['version']!=1 or value['kani_version']!='0.68.0'
     or set(value['sources'])!={'crates/slk-protocol/src/ssap.rs','crates/slk-protocol/src/ssap/discovery.rs','formal/ssap_value/src/discovery_proofs.rs'}
     or any(hashlib.sha256((root/f).read_bytes()).hexdigest()!=h for f,h in value['sources'].items())

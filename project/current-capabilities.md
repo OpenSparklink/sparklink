@@ -47,6 +47,17 @@ contract2文件已与Btrfs镜像只读提取结果独立对照，内容/模式/�
 来源为结构化切片 `ssap-discovery-direct-proof-20261107`；[重放与边界](../formal/README.md)说明0–22/0–32字节及单成员范围，
 不是完整页/allocator/OS、Native并发或实机证明，也不阻塞原纵向业务。完整原验收与历史资格不变。
 
+## BSLE 尝试观察：已实现与限定离线范围
+
+内核[796b11f7bc73](https://github.com/OpenSparklink/linux/commit/796b11f7bc734367494efbc456ed5ac9f1cbfcfe)在原sequencer外保留每USB接口前8次已完成调用的模式、原阶段/errno、单调时间和发送序号；满后饱和计数，不覆盖早期前缀。
+现有phase mutex保护追加与快照，忙读EAGAIN，无USB动作；重试、原期限、固件、CLOSE与Ready决策不变。
+工具[6905999](https://github.com/OpenSparklink/sparklink/commit/690599983c627a532380350216890e216f490755)复用Ready/恢复/失败封存，原始文本和读errno分别保留，不制造状态。
+实际wrapper/getter的sanitizer与6个运行变异、既有BSLE/DLI/型号/eFuse/ACB/恢复及ticket/RX/输入回归、两个工作树各164项工具/状态检查通过，依赖fixture和未覆盖范围显式记录。
+CI[9abd9cb](https://github.com/OpenSparklink/sparklink/commit/9abd9cb7d8b20edb2d4fd8f162860a6c738bd32d)沿原RX/HCC checkout接通本项，精确sparse离线重放通过，在线CI另记。
+KCFLAGS=-Werror模块构建通过，保留1条子make警告；checkpatch为0errors/2warnings（维护归属提示和测试golden长行），未记全日志/格式零警告。
+源码/限定离线通过不授新实机资格；模块/VM执行身份与范围留授权本地索引，旧基线内核与新driver分开，不授probe、并发、最终drain或根因/恢复证明。
+来源为结构化切片 `ws73-bsle-attempt-history-20261107`；完整Native method/event及原数据/生命周期门禁仍待准确产物实测，原资格与失败不转授。
+
 ## Native v4 的资格边界
 
 地址预配置中的 Setup/HCC 标记不等于 Ready；局部成功不能覆盖双设备整轮失败。
@@ -238,7 +249,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Native B:complete exact-artifact method v4 and event contract2 discovery/listener/independent application reply plus original baseline,lengths and applicable lifecycle only after valid startup/ownership checks. Distinguish per-attempt BSP,CLOSE ACK,configuration TX,HCC identity and Ready;no unchanged hardware retry,no guessed wake/endpoint reroute/CLOSE bypass. Private execution index retains original attempts and failures without public details or qualification transfer. A/C/W may continue existing ServiceChannel and typed DirectUSB/Windows boundaries in parallel,without another Host/Engine or the whole control race matrix as prerequisite. Discovery Kani remains NOT_PROVEN;resolve pinned properties/real allocation models without success stubs or weakened verdicts. Preserve original S0-S6/19WP/10FV/12DG,budget,VM-only and all remaining length/pressure/permissions/four-device/security/Profile/recovery/release gates;only KernelPacket/vendor P4.",
+  "next": "Native B remains real method v4/event contract2 independent peer delivery plus original baseline,length and lifecycle. Read new per-interface BSLE prefix alongside raw USB when valid new startup conditions permit a distinct bounded experiment;diagnostics,partial CLOSE/USB completion and noUSB module smoke do not supply Ready,firmware identity,final drain or recovery. No unchanged U2 retry,guessed wake,endpoint reroute or CLOSE bypass. Continue existing ServiceChannel/typed DirectUSB/own UserHost/Windows increments in parallel without duplicate Engine or whole-control prerequisite. Discovery Kani remains NOT_PROVEN. Preserve S0-S6/19WP/10FV/12DG,budget,VM-only,all original/adopted acceptance;natural roots/nonmanual recovery,style/build warnings and remaining data/security/four-device/Profile/release stay open;only KernelPacket/vendor P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

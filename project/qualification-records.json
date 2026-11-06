@@ -55,7 +55,7 @@
       "Original scope retained for historical v1-v3",
       "Publish source/offline summary only"
     ],
-    "next": "Native B:complete exact-artifact method v4 and event contract2 discovery/listener/independent application reply plus original baseline,lengths and applicable lifecycle only after valid startup/ownership checks. Distinguish per-attempt BSP,CLOSE ACK,configuration TX,HCC identity and Ready;no unchanged hardware retry,no guessed wake/endpoint reroute/CLOSE bypass. Private execution index retains original attempts and failures without public details or qualification transfer. A/C/W may continue existing ServiceChannel and typed DirectUSB/Windows boundaries in parallel,without another Host/Engine or the whole control race matrix as prerequisite. Discovery Kani remains NOT_PROVEN;resolve pinned properties/real allocation models without success stubs or weakened verdicts. Preserve original S0-S6/19WP/10FV/12DG,budget,VM-only and all remaining length/pressure/permissions/four-device/security/Profile/recovery/release gates;only KernelPacket/vendor P4.",
+    "next": "Native B remains real method v4/event contract2 independent peer delivery plus original baseline,length and lifecycle. Read new per-interface BSLE prefix alongside raw USB when valid new startup conditions permit a distinct bounded experiment;diagnostics,partial CLOSE/USB completion and noUSB module smoke do not supply Ready,firmware identity,final drain or recovery. No unchanged U2 retry,guessed wake,endpoint reroute or CLOSE bypass. Continue existing ServiceChannel/typed DirectUSB/own UserHost/Windows increments in parallel without duplicate Engine or whole-control prerequisite. Discovery Kani remains NOT_PROVEN. Preserve S0-S6/19WP/10FV/12DG,budget,VM-only,all original/adopted acceptance;natural roots/nonmanual recovery,style/build warnings and remaining data/security/four-device/Profile/release stay open;only KernelPacket/vendor P4.",
     "actor_obligation_regression": {
       "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
       "entry": "ssap_engine::exchange_loop",
@@ -528927,6 +528927,58 @@
               "original_checklist_unchanged": true,
               "source_offline_planning_only": true,
               "private_hardware_details_published": false
+            }
+          ]
+        },
+        {
+          "id": "ws73-bsle-attempt-history-20261107",
+          "source_commit": "690599983c627a532380350216890e216f490755",
+          "kernel_source_commit": "796b11f7bc734367494efbc456ed5ac9f1cbfcfe",
+          "ci_source_commit": "9abd9cb7d8b20edb2d4fd8f162860a6c738bd32d",
+          "status": "IMPLEMENTED_LIMITED_OFFLINE_NATIVE_RECOVERY_PENDING",
+          "scope": "Implemented read-only per-interface BSLE attempt prefix and existing evidence consumers only. Explicit synchronous dependencies in function tests;not real USB/BSLE,Native peer delivery,concurrency,final drain or recovery qualification.",
+          "checks": {
+            "diagnostic": "First8 immutable completed BSLE invocations,kind/phase/originalerrno/time/sequence;saturated omitted;phase-lock coherent busyEAGAIN;newinterface starts empty",
+            "functions": "Actual wrapper/getter ASAN/UBSAN/LSAN and6 runtime mutation controls pass;clock/lock/sequencer/sysfs explicit fixtures,not actual kernel/USB",
+            "tools": "164 related tool/state tests each tree and shell syntax pass;optional raw history/readerrno cannot manufacture Ready or delay original bootstrap failure",
+            "CI": "Existing RX/HCC sparse checkout pinned to exact driver;new boot observation test/negative controls and failed artifact retention wired. Exact sparse offline replay passes;GitHub result separate",
+            "build": "KCFLAGS=-Werror module compile passes;0compiler/1make warning retained,not whole-image or zero-warning qualification",
+            "style": "checkpatch not clean:0errors/2warnings,new-file maintainer advisory and109-column test golden string retained",
+            "ABI": "All3 actual UAPI headers match existing tooling/SDK CI pin;no needless ABI pin bump"
+          },
+          "qualification_transfer": false,
+          "new_real_device_qualification": false,
+          "new_accepted_proof": false,
+          "not_tested": [
+            "New driver real BSLE/probe/teardown and accurate-artifact Native baseline/method v4/event contract2 peer delivery",
+            "Kernel lock/ref/callback concurrency and final USB/Host drain",
+            "Resident image/state-clear barrier and natural failure root causes/nonmanual recovery",
+            "Complete adopted Host/ServiceChannel/Windows and original long-data/security/four-device/Profile/release scope"
+          ],
+          "issue_sync": [
+            {
+              "repository": "linux",
+              "number": 15,
+              "url": "https://github.com/OpenSparklink/linux/issues/15",
+              "state": "open",
+              "before_sha256": "0c5848333e45b8009d65ad0adcc8fee5d6f51622094a45478a2f3c22074bd274",
+              "body_sha256": "48c5b556d03e17411595defd9c48fbbb4324ca3fbba58261dc5612263ebc20e0",
+              "updated_at": "2026-11-06T21:50:58Z",
+              "original_scope_preserved": true,
+              "source_offline_only": true,
+              "private_execution_details_published": false
+            },
+            {
+              "repository": "linux",
+              "number": 19,
+              "url": "https://github.com/OpenSparklink/linux/issues/19",
+              "state": "open",
+              "before_sha256": "1892f92c02bf8c87ab10c304ac224de44f1fb133f37b72e83d64ad49774a6120",
+              "body_sha256": "5f282f72fc679c0555876896bdf2a93792b709f7c7d045c2a86f61cb4ab54b5c",
+              "updated_at": "2026-11-06T21:51:01Z",
+              "original_scope_preserved": true,
+              "source_offline_only": true,
+              "private_execution_details_published": false
             }
           ]
         }

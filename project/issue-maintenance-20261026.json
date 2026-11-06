@@ -8990,6 +8990,40 @@
       ],
       "closed": [],
       "qualification": "SOURCE_PLANNING_ONLY_NATIVE_PENDING_NO_PRIVATE_PUBLICATION"
+    },
+    {
+      "id": "ws73-bsle-attempt-history-20261107",
+      "source_commit": "690599983c627a532380350216890e216f490755",
+      "kernel_source_commit": "796b11f7bc734367494efbc456ed5ac9f1cbfcfe",
+      "ci_source_commit": "9abd9cb7d8b20edb2d4fd8f162860a6c738bd32d",
+      "issues": [
+        {
+          "repository": "linux",
+          "number": 15,
+          "url": "https://github.com/OpenSparklink/linux/issues/15",
+          "state": "open",
+          "before_sha256": "0c5848333e45b8009d65ad0adcc8fee5d6f51622094a45478a2f3c22074bd274",
+          "body_sha256": "48c5b556d03e17411595defd9c48fbbb4324ca3fbba58261dc5612263ebc20e0",
+          "updated_at": "2026-11-06T21:50:58Z",
+          "original_scope_preserved": true,
+          "source_offline_only": true,
+          "private_execution_details_published": false
+        },
+        {
+          "repository": "linux",
+          "number": 19,
+          "url": "https://github.com/OpenSparklink/linux/issues/19",
+          "state": "open",
+          "before_sha256": "1892f92c02bf8c87ab10c304ac224de44f1fb133f37b72e83d64ad49774a6120",
+          "body_sha256": "5f282f72fc679c0555876896bdf2a93792b709f7c7d045c2a86f61cb4ab54b5c",
+          "updated_at": "2026-11-06T21:51:01Z",
+          "original_scope_preserved": true,
+          "source_offline_only": true,
+          "private_execution_details_published": false
+        }
+      ],
+      "closed": [],
+      "qualification": "LIMITED_OFFLINE_ONLY_NO_NEW_REAL_DEVICE_OR_RECOVERY"
     }
   ]
 }

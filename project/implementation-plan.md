@@ -48,9 +48,12 @@ epoch/minimum绑定的单报文槽；事件无CPCD读写，ACK只表示入槽。
 属性订阅不变。退出：实际生产事务/过滤/ACK的身份、类型、预算、重复、取消及原期限
 回归；Rust/C/Python实际入口、独立signature和严格构建；未运行实机不授资格。
 
-下一事件切片：沿同一事务/共享队列增加事件租约与明确监听就绪，定义多调用者预算、
-读取/关闭和上层启停；单次接收无就绪返回，不能用sleep冒充启动屏障。随后准确Native
-双端随机事件/应用回复、原路径保持分别验收；method v4与UserHost/Windows并行。
+持续事件租约、本地实际Ready及contract1双端场景已接通原事务/共享队列；准确资格见能力入口。
+事件发现消费者[e53b652](https://github.com/OpenSparklink/sparklink/commit/e53b65222eb9586e1d084d9e9ef9db423b0231fe)复用method发现的SDK调用/原5秒屏障/完整输出，
+两语言2/16字节UUID、类型/身份/期限拒绝及实际私有总线检查已退出该有限切片；不是Native交付。
+下一事件切片在现有双端场景中先实际发现事件UUID/category/handle，再建立租约/发送；
+保留contract1、独立双端捕获/完整窗口及原基线，封存准确输入后再按实际启动条件运行Native。
+上层START/STOP、完整长度/生命周期/权限另验；method v4与UserHost/Windows并行。
 U#22/#26开放，不等待全控制面、不复制Engine；无新设备启动条件不重复未变化失败。
 
 ### DirectUSB候选审查与下一实现门禁（2026-11-01）
@@ -746,7 +749,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Exact Native event artifact and installed inputs are sealed;no-USB isolated kernel/module smoke passed,but event daemon/apps were not exercised by that smoke. Next coordinate valid device startup conditions and run accurate-artifact Native event/application-reply plus original baseline/lifecycle;do not repeat unchanged warm startup failures. Event discovery/full lengths/lifetime/permissions remain pending. Preserve original hardware failures,identities and all acceptance;own UserHost/DirectUSB and Windows continue C/D/E/W,KernelPacket/vendor P4.",
+  "next": "Method/event actual C/Python SDK discovery consumers now share exact original deadlines and typed result checks. Next extend existing paired event gate to require UUID/category/handle discovery before actual lease Ready/send,retain contract1 and independent full-window capture/verdict,then seal exact new tools/artifact. Native method/event app delivery and original baseline/lifecycle need changed valid startup conditions;retained startup attempts stay failures,no unchanged warm retry or manual/QMP/hub recovery qualification. Continue event lengths/lifetime/permissions and C/D/E/W without waiting full control combinations;KernelPacket/vendor P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

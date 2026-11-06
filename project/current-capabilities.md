@@ -39,6 +39,12 @@ contract1覆盖两种连接角色、每角色两方向的32字节notify/indicate
 下一批按实际设备启动条件取得Native事件交付及原路径/生命周期回归，不重复未改变条件的暖启动失败。
 事件长度/分片、完整生命周期与部署权限仍缺，原method v4失败和历史资格身份保持。
 工具/门禁切片分别映射 `ssap-event-tools-20261101` 和 `ssap-event-gate-20261101`。
+[事件发现消费者e53b652](https://github.com/OpenSparklink/sparklink/commit/e53b65222eb9586e1d084d9e9ef9db423b0231fe)共用method/event的C/Python SDK路径，
+kind/category严格区分；60个实际进程场景、32次发现RPC，2/16字节UUID及错误类型/身份/畸形/拒绝/期限均检查。
+非法输入/未释放屏障无RPC；36项实际源码/artifact一致，51项工具、严格GCC/Clang/Clippy及HTML通过。
+有限私有总线fixture不授Native事件发现或交付。首轮17字节UUID失败保留；现有contract1尚未前置事件发现。
+后续退出由生成的batch.next维护；准确实机尝试及失败只按授权本地索引核对，不转授新工具。
+切片映射 `ssap-event-discovery-consumers-20261107`。
 Profile START/STOP、完整事件/生命周期仍缺；历史登记/发送/单次接收及method v4失败按原身份保留。
 结构化映射为 `scope_extensions[].implementation_slices` 的 `ssap-event-lease-20261101`。
 
@@ -231,7 +237,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Exact Native event artifact and installed inputs are sealed;no-USB isolated kernel/module smoke passed,but event daemon/apps were not exercised by that smoke. Next coordinate valid device startup conditions and run accurate-artifact Native event/application-reply plus original baseline/lifecycle;do not repeat unchanged warm startup failures. Event discovery/full lengths/lifetime/permissions remain pending. Preserve original hardware failures,identities and all acceptance;own UserHost/DirectUSB and Windows continue C/D/E/W,KernelPacket/vendor P4.",
+  "next": "Method/event actual C/Python SDK discovery consumers now share exact original deadlines and typed result checks. Next extend existing paired event gate to require UUID/category/handle discovery before actual lease Ready/send,retain contract1 and independent full-window capture/verdict,then seal exact new tools/artifact. Native method/event app delivery and original baseline/lifecycle need changed valid startup conditions;retained startup attempts stay failures,no unchanged warm retry or manual/QMP/hub recovery qualification. Continue event lengths/lifetime/permissions and C/D/E/W without waiting full control combinations;KernelPacket/vendor P4.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

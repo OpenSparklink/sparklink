@@ -8876,6 +8876,23 @@
       ],
       "closed": [],
       "qualification": "OFFLINE_SEALED_INPUTS_AND_ISOLATED_NO_USB_ROOT_SMOKE_ONLY_NATIVE_EVENT_PENDING"
+    },
+    {
+      "id": "ssap-event-discovery-consumers-20261107",
+      "source_commit": "e53b65222eb9586e1d084d9e9ef9db423b0231fe",
+      "issues": [
+        {
+          "url": "https://github.com/OpenSparklink/sparklink/issues/22",
+          "state": "open",
+          "updated_at": "2026-11-06T18:35:21Z",
+          "body_sha256": "a8e316efdbb1c5f83efc4bfd7668c8903b1e37124046dafea704689935fc4aff",
+          "scope": "source/offline only;actual hardware failures and execution identities stay local",
+          "original_six_conditions_unchanged": true,
+          "source_commit": "e53b65222eb9586e1d084d9e9ef9db423b0231fe"
+        }
+      ],
+      "closed": [],
+      "qualification": "SOURCE_OFFLINE_SDK_FIXTURE_ONLY_NATIVE_EVENT_DISCOVERY_PENDING"
     }
   ]
 }

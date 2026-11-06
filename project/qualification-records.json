@@ -55,7 +55,7 @@
       "Original scope retained for historical v1-v3",
       "Publish source/offline summary only"
     ],
-    "next": "Exact Native event artifact and installed inputs are sealed;no-USB isolated kernel/module smoke passed,but event daemon/apps were not exercised by that smoke. Next coordinate valid device startup conditions and run accurate-artifact Native event/application-reply plus original baseline/lifecycle;do not repeat unchanged warm startup failures. Event discovery/full lengths/lifetime/permissions remain pending. Preserve original hardware failures,identities and all acceptance;own UserHost/DirectUSB and Windows continue C/D/E/W,KernelPacket/vendor P4.",
+    "next": "Method/event actual C/Python SDK discovery consumers now share exact original deadlines and typed result checks. Next extend existing paired event gate to require UUID/category/handle discovery before actual lease Ready/send,retain contract1 and independent full-window capture/verdict,then seal exact new tools/artifact. Native method/event app delivery and original baseline/lifecycle need changed valid startup conditions;retained startup attempts stay failures,no unchanged warm retry or manual/QMP/hub recovery qualification. Continue event lengths/lifetime/permissions and C/D/E/W without waiting full control combinations;KernelPacket/vendor P4.",
     "actor_obligation_regression": {
       "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
       "entry": "ssap_engine::exchange_loop",
@@ -528709,6 +528709,44 @@
               "updated_at": "2026-11-01T10:32:07Z",
               "scope": "source/offline only;six original acceptance conditions unchanged;hardware details local",
               "source_commit": "a2a26552a9be47549fc9de42033509c42fee8a9a"
+            }
+          ]
+        },
+        {
+          "id": "ssap-event-discovery-consumers-20261107",
+          "source_commit": "e53b65222eb9586e1d084d9e9ef9db423b0231fe",
+          "status": "IMPLEMENTED_OFFLINE_SDK_SCOPED_PASS_NATIVE_DISCOVERY_PENDING",
+          "source_sha256": {
+            "crates/libsparklink/tests/application_ffi.rs": "c2198f4200b380038f3272d1404aa441ac197311fcf1e6541c6962fcda70e8f2",
+            "crates/libsparklink/tests/application_ffi/discovery_requester.rs": "3a43d742aaf398ecc0688b509498893b5c0b795020216833031cdc5ddf44e3e7",
+            "tools/testing/application_client/client.c": "cd635a9d8b265e4d61204f5bcf894a8943556141d8a7947ac6719f0dc3442b2f",
+            "tools/testing/application_client/client.py": "286b14f88cb5274982c22c9a6b993e1af23a7ce3301f0157ca95843ecb4d8133"
+          },
+          "checks": {
+            "actual_sdk_bus": "PASS;60 subprocess cases,32 real discovery RPCs,invalid inputs/barrier expiry no RPC;36 execution materials captured/hash-checked",
+            "tools": 51,
+            "strict_gcc_clang": "PASS",
+            "clippy": "PASS libsparklink application_ffi -D warnings",
+            "strict_html": "PASS both source trees",
+            "scope": "Explicit finite D-Bus metadata fixture;no Native/USB/event delivery qualification"
+          },
+          "scope": "Actual C/Python SDK consumers share one method/event discovery path per language;exact kind/category,2/16-byte UUID,handle,original5s barrier/deadline and complete metadata/trace. Finite private-bus fixture,not daemon Engine or Native delivery.",
+          "qualification_transfer": false,
+          "not_tested": [
+            "event discovery before listener/send in paired VM gate",
+            "fresh exact artifact Native event discovery/application reply and original paths/lifecycle",
+            "full event lengths/fragments/permissions/four-device matrix",
+            "new formal/UserHost/Windows qualification"
+          ],
+          "issue_sync": [
+            {
+              "url": "https://github.com/OpenSparklink/sparklink/issues/22",
+              "state": "open",
+              "updated_at": "2026-11-06T18:35:21Z",
+              "body_sha256": "a8e316efdbb1c5f83efc4bfd7668c8903b1e37124046dafea704689935fc4aff",
+              "scope": "source/offline only;actual hardware failures and execution identities stay local",
+              "original_six_conditions_unchanged": true,
+              "source_commit": "e53b65222eb9586e1d084d9e9ef9db423b0231fe"
             }
           ]
         }

@@ -299,6 +299,22 @@ root fd 可能不可见，不能把只读进程快照称作绝对独占证明。
 不得修改旧 manifest 来绕过检查。
 板级 `bsle_custom.bin`／`pm_config.bin` 仍须显式提供并记录，型号匹配不证明板级资格。
 
+### BSLE 启动尝试观察
+
+新驱动的只读 `bsle_attempts` 保留同一 USB 接口实例前 8 次已完成的 BSLE 调用，
+满后 `omitted` 饱和计数，不覆盖早期记录。`kind` 为初次启动 0、warm 接管恢复 1、
+已准入的后续协议恢复 2；`phase` 是该调用返回时原驱动阶段，`result` 为原 errno。
+`start_ms/end_ms` 仅用内核单调时钟包围调用；发送序号不是 credit 或控制器接收证明。
+原 `failure_diagnostics` 继续表达最后失败，两者不可互相替代。
+
+每设备 phase mutex 保护追加和快照；忙时返回 `EAGAIN`，不等待整个启动或返回部分记录。
+读取不发 USB、不准入重试、不改变原期限。新 USB 接口实例从空记录开始，不继承旧
+generation；这不是跨重枚举历史。输入文件校验之前或调用之前的失败仍看原诊断。
+
+现有 Ready／恢复观察及失败封存收集该原始文本；忙或读取失败的 errno 单独保留，
+旧镜像缺属性允许缺记录。缺失、空记录、成功返回或 CLOSE 回复均不授 Ready、执行中
+固件身份、状态清除、最终 drain、业务交付或自动恢复资格，不替代原门禁与原始捕获。
+
 ### 每设备 OS 输入配置
 
 新 `ws73_native_service_bundle.py` 要求 `--board-model U|E`，输入暂存于

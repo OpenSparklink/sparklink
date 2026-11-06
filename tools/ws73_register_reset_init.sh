@@ -48,8 +48,8 @@ dmesg > /evidence/maintenance/kernel.log
 for interface in /sys/bus/usb/devices/*:*; do
     [ -f "$interface/boot_stage" ] || continue
     name=${interface##*/}
-    for attribute in boot_stage boot_error warm_recovery recovery_budget failure_diagnostics native_runtime controller_information; do
-        cat "$interface/$attribute" > "/evidence/maintenance/$name-$attribute.txt"
+    for attribute in boot_stage boot_error warm_recovery recovery_budget failure_diagnostics bsle_attempts native_runtime controller_information; do
+        [ -f "$interface/$attribute" ] && cat "$interface/$attribute" > "/evidence/maintenance/$name-$attribute.txt"
     done
 done
 kill -INT "$capture"

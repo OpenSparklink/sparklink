@@ -99,7 +99,7 @@ fail() {
     for interface in /sys/bus/usb/devices/*:*; do
         [ -f "$interface/boot_stage" ] || continue
         name=${interface##*/}
-        for attribute in boot_stage boot_error warm_recovery recovery_budget failure_diagnostics runtime_transport metadata_valid native_runtime controller_information chip_information sle_address_source; do
+        for attribute in boot_stage boot_error warm_recovery recovery_budget failure_diagnostics bsle_attempts runtime_transport metadata_valid native_runtime controller_information chip_information sle_address_source; do
             [ -f "$interface/$attribute" ] && cat "$interface/$attribute" > "/evidence/device-failure/$name-$attribute.txt"
         done
     done

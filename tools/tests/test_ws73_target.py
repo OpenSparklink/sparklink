@@ -178,6 +178,8 @@ class TargetEnvironment(unittest.TestCase):
                                    'warm_recovery':'attempts=1 limit=1 cause=-110 result=-5 started_ms=10001'}.items():
                     (interface/name).write_text(value+'\n')
                 if diagnostics is not None:(interface/'failure_diagnostics').write_text(diagnostics+'\n')
+                attempts='version=1 count=1 capacity=8 omitted=0\nattempt=1 kind=0 phase=4 result=-110 start_ms=1 end_ms=10001 sequence_start=0 sequence_end=0'
+                (interface/'bsle_attempts').write_text(attempts+'\n')
                 def path(value):return usb if value=='/sys/bus/usb/devices' else Path(value)
                 with patch.object(guest,'Path',side_effect=path),patch.object(guest,'EVIDENCE',evidence),\
                      patch.object(guest.time,'sleep') as sleep,patch.object(guest,'application') as app:
@@ -187,6 +189,51 @@ class TargetEnvironment(unittest.TestCase):
                 self.assertEqual((saved['boot_stage'],saved['boot_error']),('failed',-5))
                 self.assertEqual(saved.get('failure_diagnostics'),diagnostics)
                 self.assertEqual(saved['warm_recovery'],'attempts=1 limit=1 cause=-110 result=-5 started_ms=10001')
+                self.assertEqual(saved['bsle_attempts'],attempts)
+
+    def test_bsle_attempt_observation_is_raw_optional_and_records_read_errors(self):
+        from ws73_target_recovery import RecoveryRun
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);interface=root/'1-1/1-1:1.0';interface.mkdir(parents=True)
+            original=Path.read_text
+            result={};guest.observe_bsle_attempts(interface,result)
+            self.assertEqual(result,{})
+            raw='version=1 count=1 capacity=8 omitted=0\nattempt=1 kind=1 phase=5 result=-110 start_ms=1 end_ms=3001 sequence_start=0 sequence_end=1'
+            (interface/'bsle_attempts').write_text(raw+'\n')
+            guest.observe_bsle_attempts(interface,result);self.assertEqual(result,{'bsle_attempts':raw})
+            for code in [errno.EAGAIN,errno.EACCES,errno.EIO]:
+                def read(path,*args,**kwargs):
+                    if path.name=='bsle_attempts':raise OSError(code,'fixture read failure')
+                    return original(path,*args,**kwargs)
+                with self.subTest(code=code),patch.object(Path,'read_text',read):
+                    result={};guest.observe_bsle_attempts(interface,result)
+                    self.assertEqual(result,{'bsle_attempts_errno':code})
+            # The recovery observer consumes the same helper;no parsing grants state.
+            def path(value):return root if value=='/sys/bus/usb/devices' else Path(value)
+            run=object.__new__(RecoveryRun)
+            with patch('ws73_target_recovery.Path',side_effect=path):result=run.diagnostics('1-1')
+            self.assertEqual(result['bsle_attempts'],raw)
+
+    def test_busy_bsle_diagnostics_does_not_delay_bootstrap_failure(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);usb=root/'usb';interface=usb/'1-1/1-1:1.0';interface.mkdir(parents=True)
+            evidence=root/'evidence';evidence.mkdir()
+            for name,value in {'native_runtime':'id=-1 generation=0 streaming=0 broken=1',
+                               'boot_stage':'failed','boot_error':'-110','bsle_attempts':''}.items():
+                (interface/name).write_text(value+'\n')
+            original=Path.read_text
+            def read(path,*args,**kwargs):
+                if path.name=='bsle_attempts':raise BlockingIOError(errno.EAGAIN,'busy fixture')
+                return original(path,*args,**kwargs)
+            def path(value):return usb if value=='/sys/bus/usb/devices' else Path(value)
+            with patch.object(guest,'Path',side_effect=path),patch.object(Path,'read_text',read),\
+                 patch.object(guest,'EVIDENCE',evidence),patch.object(guest.time,'sleep')as sleep,\
+                 patch.object(guest,'application')as app:
+                with self.assertRaisesRegex(ValueError,'native bootstrap failed: -110'):guest.ready(0)
+            sleep.assert_not_called();app.assert_not_called()
+            saved=json.loads((evidence/'ready-progress-0.json').read_text())
+            self.assertEqual(saved['bsle_attempts_errno'],errno.EAGAIN)
+            self.assertNotIn('bsle_attempts',saved)
 
     def test_initialization_failure_retains_raw_status_without_waiting(self):
         with tempfile.TemporaryDirectory() as d:

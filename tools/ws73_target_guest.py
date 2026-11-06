@@ -24,6 +24,15 @@ def application(*command, user='ws73', **kwargs):
     return subprocess.run(['/bin/su',user,'-s','/bin/sh','-c',shlex.join(command)],text=True,**kwargs)
 
 
+def observe_bsle_attempts(interface, progress):
+    """Optional raw diagnostics only;busy/missing records never grant Ready."""
+    try:
+        progress['bsle_attempts']=(interface/'bsle_attempts').read_text().strip()
+    except OSError as error:
+        if error.errno != errno.ENOENT:
+            progress['bsle_attempts_errno']=error.errno
+
+
 def ready(slot):
     port=f'1-{slot+1}'
     deadline=time.monotonic()+90
@@ -57,6 +66,7 @@ def ready(slot):
                 if recovery.exists():progress['warm_recovery']=recovery.read_text().strip()
                 budget=p/'recovery_budget'
                 if budget.exists():progress['recovery_budget']=budget.read_text().strip()
+                observe_bsle_attempts(p,progress)
                 if progress['boot_stage']=='failed':
                     (EVIDENCE/f'ready-progress-{slot}.json').write_text(json.dumps(progress,indent=2)+'\n')
                     raise ValueError(f'{port}: native bootstrap failed: {progress["boot_error"]}')

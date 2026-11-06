@@ -25,16 +25,32 @@ enum ValueSource {
     Stored(Vec<u8>),
     Provider(Arc<crate::ssap_read_provider::Binding>),
     Writer(Arc<crate::ssap_write_provider::Binding>),
+    ReadWrite {
+        reader: Arc<crate::ssap_read_provider::Binding>,
+        writer: Arc<crate::ssap_write_provider::Binding>,
+    },
 }
 impl ValueSource {
     fn stored(&self) -> Option<&[u8]> {
         match self {
             Self::Stored(value) => Some(value),
-            Self::Provider(_) | Self::Writer(_) => None,
+            Self::Provider(_) | Self::Writer(_) | Self::ReadWrite { .. } => None,
         }
     }
     fn bytes(&self) -> usize {
         self.stored().map_or(0, <[u8]>::len)
+    }
+    fn reader(&self) -> Option<&Arc<crate::ssap_read_provider::Binding>> {
+        match self {
+            Self::Provider(reader) | Self::ReadWrite { reader, .. } => Some(reader),
+            _ => None,
+        }
+    }
+    fn writer(&self) -> Option<&Arc<crate::ssap_write_provider::Binding>> {
+        match self {
+            Self::Writer(writer) | Self::ReadWrite { writer, .. } => Some(writer),
+            _ => None,
+        }
     }
 }
 struct Property {
@@ -499,23 +515,27 @@ impl Database {
             return Err(LocalValueError::Length);
         }
         let property = service.properties.get_mut(&handle).expect("owned property");
-        if property.operations != SsapOperations::READ {
+        if !slk_contract::ssap::local::read_provider_supported(property.operations) {
             return Err(LocalValueError::Unsupported);
         }
-        let size = property
-            .value
-            .stored()
-            .ok_or(LocalValueError::Unsupported)?
-            .len();
-        property.value = ValueSource::Provider(Arc::new(crate::ssap_read_provider::Binding {
+        let (size, writer) = match &property.value {
+            ValueSource::Stored(value) => (value.len(), None),
+            ValueSource::Writer(writer) => (0, Some(writer.clone())),
+            _ => return Err(LocalValueError::Unsupported),
+        };
+        let reader = Arc::new(crate::ssap_read_provider::Binding {
             owner: service.owner.as_ref().expect("owned service").clone(),
             path,
-        }));
+        });
+        property.value = match writer {
+            Some(writer) => ValueSource::ReadWrite { reader, writer },
+            None => ValueSource::Provider(reader),
+        };
         self.bytes -= size;
         Ok(())
     }
-    /// A write-only property delegates effects to its original owner. Consume
-    /// staging once; no read fallback, rebinding or automatic local mutation.
+    /// Delegate writes to the original owner, independently from READ. Consume
+    /// staging only on the first binding; no fallback or automatic mutation.
     pub(crate) fn bind_owned_write_provider(
         &mut self,
         handle: u16,
@@ -536,19 +556,22 @@ impl Database {
             return Err(LocalValueError::Length);
         }
         let property = service.properties.get_mut(&handle).expect("owned property");
-        let supported = SsapOperations::WRITE_WITH_RSP | SsapOperations::WRITE_NO_RSP;
-        if property.operations.bits() == 0 || !supported.contains(property.operations) {
+        if !slk_contract::ssap::local::write_provider_supported(property.operations) {
             return Err(LocalValueError::Unsupported);
         }
-        let size = property
-            .value
-            .stored()
-            .ok_or(LocalValueError::Unsupported)?
-            .len();
-        property.value = ValueSource::Writer(Arc::new(crate::ssap_write_provider::Binding {
+        let (size, reader) = match &property.value {
+            ValueSource::Stored(value) => (value.len(), None),
+            ValueSource::Provider(reader) => (0, Some(reader.clone())),
+            _ => return Err(LocalValueError::Unsupported),
+        };
+        let writer = Arc::new(crate::ssap_write_provider::Binding {
             owner: service.owner.as_ref().expect("owned service").clone(),
             path,
-        }));
+        });
+        property.value = match reader {
+            Some(reader) => ValueSource::ReadWrite { reader, writer },
+            None => ValueSource::Writer(writer),
+        };
         self.bytes -= size;
         Ok(())
     }
@@ -1101,9 +1124,7 @@ impl Database {
         {
             return None;
         }
-        let ValueSource::Provider(binding) = &property.value else {
-            return None;
-        };
+        let binding = property.value.reader()?;
         binding
             .owner
             .current()
@@ -1135,8 +1156,11 @@ impl Database {
     ) -> Result<&'a [u8], u16> {
         match &self.property(handle).ok_or(4u16)?.value {
             ValueSource::Stored(value) => Ok(value),
-            ValueSource::Writer(_) => Err(6),
-            ValueSource::Provider(binding) => {
+            ValueSource::Writer(_) => Err(slk_contract::ssap::PROVIDER_UNAVAILABLE),
+            ValueSource::Provider(binding)
+            | ValueSource::ReadWrite {
+                reader: binding, ..
+            } => {
                 if !binding.owner.current() {
                     return Err(4);
                 }
@@ -1231,9 +1255,7 @@ impl Database {
         let property = self
             .write_access(handle, data_type, operation, level, approvals)
             .ok()?;
-        let ValueSource::Writer(binding) = &property.value else {
-            return None;
-        };
+        let binding = property.value.writer()?;
         binding
             .owner
             .current()
@@ -1274,7 +1296,7 @@ impl Database {
         {
             return Err(16);
         }
-        if let ValueSource::Writer(binding) = &property.value {
+        if let Some(binding) = property.value.writer() {
             let unavailable = slk_contract::ssap::PROVIDER_UNAVAILABLE as u8;
             let result = result.ok_or(unavailable)?;
             let opcode = if matches!(request, ValuePdu::WriteCommand { .. }) {
@@ -1306,7 +1328,11 @@ impl Database {
         }
         let next = budget::replacement_bytes(
             self.bytes,
-            property.value.stored().ok_or(7u8)?.len(),
+            property
+                .value
+                .stored()
+                .ok_or(slk_contract::ssap::PROVIDER_UNAVAILABLE as u8)?
+                .len(),
             value.len(),
         )
         .ok_or(5u8)?;
@@ -1446,6 +1472,106 @@ impl Database {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[tokio::test]
+    async fn combined_provider_binding_releases_staging_once_and_removal_reclaims_the_budget() {
+        provider_binding_budget_fixture(0).await;
+    }
+    #[tokio::test]
+    async fn combined_provider_binding_preserves_unrelated_staging_budget() {
+        provider_binding_budget_fixture(4).await;
+    }
+    async fn provider_binding_budget_fixture(unrelated_bytes: usize) {
+        let bus = crate::event_loop::tests::PrivateBus::start();
+        let server = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let caller = zbus::connection::Builder::address(bus.address.as_str())
+            .unwrap()
+            .build()
+            .await
+            .unwrap();
+        let store = Arc::new(std::sync::Mutex::new(Database::default()));
+        let slots = Arc::new(tokio::sync::Semaphore::new(16));
+        let name = caller.unique_name().unwrap().to_string();
+        let sentinel = if unrelated_bytes == 0 {
+            None
+        } else {
+            let (start, _, handles) = store
+                .lock()
+                .unwrap()
+                .register(
+                    vec![9, 0],
+                    vec![(vec![8, 0], 1, 0, vec![0x55; unrelated_bytes])],
+                )
+                .unwrap();
+            Some((start, handles[0]))
+        };
+        for operations in [3, 5, 7] {
+            for reader_first in [false, true] {
+                let owner = Owner::pin(
+                    &server,
+                    name.clone(),
+                    "/authorizer".try_into().unwrap(),
+                    &store,
+                    slots.clone().try_acquire_owned().unwrap(),
+                    tokio::time::Instant::now() + std::time::Duration::from_secs(5),
+                )
+                .await
+                .unwrap();
+                let mut db = store.lock().unwrap();
+                let (start, _, handles) = db
+                    .register_owned(
+                        vec![1, 0],
+                        vec![(vec![2, 0], operations, 0, vec![7, 8, 9])],
+                        owner,
+                    )
+                    .unwrap();
+                let h = handles[0];
+                let before = db.bytes;
+                if reader_first {
+                    db.bind_owned_read_provider(h, &name, "/reader".try_into().unwrap())
+                        .unwrap();
+                } else {
+                    db.bind_owned_write_provider(h, &name, "/writer".try_into().unwrap())
+                        .unwrap();
+                }
+                assert_eq!(db.bytes, before - 3);
+                if reader_first {
+                    db.bind_owned_write_provider(h, &name, "/writer".try_into().unwrap())
+                        .unwrap();
+                } else {
+                    db.bind_owned_read_provider(h, &name, "/reader".try_into().unwrap())
+                        .unwrap();
+                }
+                assert_eq!(
+                    db.bytes,
+                    before - 3,
+                    "second direction cannot refund staging again"
+                );
+                assert_eq!(
+                    db.bind_owned_read_provider(h, &name, "/another".try_into().unwrap()),
+                    Err(LocalValueError::Unsupported)
+                );
+                assert_eq!(
+                    db.bind_owned_write_provider(h, &name, "/another".try_into().unwrap()),
+                    Err(LocalValueError::Unsupported)
+                );
+                assert_eq!(db.bytes, before - 3);
+                assert_eq!(db.local_read(h), Err(LocalValueError::Unsupported));
+                db.remove_owned(start, &name).unwrap();
+                assert_eq!(db.bytes, unrelated_bytes);
+                if let Some((_, handle)) = sentinel {
+                    assert_eq!(db.local_read(handle).unwrap(), vec![0x55; unrelated_bytes]);
+                }
+            }
+        }
+        if let Some((start, _)) = sentinel {
+            store.lock().unwrap().remove(start).unwrap();
+        }
+        assert_eq!(store.lock().unwrap().bytes, 0);
+    }
     #[test]
     fn command_and_request_permissions_do_not_authorize_each_other() {
         for operations in [1, 3, 5, 7] {

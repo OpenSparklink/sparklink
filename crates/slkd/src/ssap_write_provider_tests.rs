@@ -4,9 +4,9 @@ use super::*;
 use slk_contract::ssap::{WriteProviderReply, WriteProviderRequest};
 
 pub(super) struct Call {
-    request: WriteProviderRequest,
+    pub(super) request: WriteProviderRequest,
     policy_calls: usize,
-    reply: oneshot::Sender<WriteProviderReply>,
+    pub(super) reply: oneshot::Sender<WriteProviderReply>,
 }
 pub(super) struct Provider {
     pub(super) calls: mpsc::Sender<Call>,
@@ -37,12 +37,12 @@ impl WrongReply {
         true
     }
 }
-fn wire() -> Wire {
+pub(super) fn wire() -> Wire {
     let (socket, _peer) = std::os::unix::net::UnixDatagram::pair().unwrap();
     socket.set_nonblocking(true).unwrap();
     Wire::fixture(AsyncFd::new(socket.into()).unwrap())
 }
-async fn bind_writer(owner: &Connection, handle: u16, path: &str) -> zbus::Result<()> {
+pub(super) async fn bind_writer(owner: &Connection, handle: u16, path: &str) -> zbus::Result<()> {
     manager(owner)
         .await
         .call(
@@ -55,13 +55,13 @@ async fn bind_writer(owner: &Connection, handle: u16, path: &str) -> zbus::Resul
         )
         .await
 }
-async fn next(f: &mut Fixture) -> Call {
+pub(super) async fn next(f: &mut Fixture) -> Call {
     tokio::time::timeout(Duration::from_secs(1), f.write_calls.recv())
         .await
         .unwrap()
         .unwrap()
 }
-fn write(handle: u16, command: bool, verify: bool, id: u64) -> ServerPacket {
+pub(super) fn write(handle: u16, command: bool, verify: bool, id: u64) -> ServerPacket {
     let value = &[0x93, 0x17];
     packet(
         if command {
@@ -83,7 +83,7 @@ fn write(handle: u16, command: bool, verify: bool, id: u64) -> ServerPacket {
         Duration::from_secs(2),
     )
 }
-fn finish(wire: &Wire, d: ServerDecision, db: &Store) -> io::Result<Option<Pending>> {
+pub(super) fn finish(wire: &Wire, d: ServerDecision, db: &Store) -> io::Result<Option<Pending>> {
     complete_server(
         wire,
         d,
@@ -388,7 +388,7 @@ async fn engine_stop_drains_pending_write_without_reviving_it_or_stopping_anothe
 }
 
 #[tokio::test]
-async fn write_binding_rejects_foreign_mixed_and_rebind_without_consuming_staging() {
+async fn write_binding_rejects_foreign_update_modes_and_rebind_without_consuming_staging() {
     let f = Fixture::new().await;
     let db = store(&f.state).await;
     let stranger = zbus::connection::Builder::address(f.bus.address.as_str())
@@ -397,7 +397,15 @@ async fn write_binding_rejects_foreign_mixed_and_rebind_without_consuming_stagin
         .await
         .unwrap();
     // Update properties require their existing CPCD capability at registration.
-    for operations in [1, 3, 5, 7, 8 | 512, 16 | 512] {
+    for operations in [
+        1,
+        8 | 512,
+        16 | 512,
+        1 | 8 | 512,
+        1 | 16 | 512,
+        4 | 8 | 512,
+        4 | 16 | 512,
+    ] {
         let (_, h) = register_operations(&f.owner, 0, operations).await;
         let before = db.lock().unwrap().local_read(h);
         assert!(bind_writer(&f.owner, h, "/writer").await.is_err());

@@ -40,19 +40,19 @@ pub(crate) struct RegistrationScope {
 }
 #[derive(Default)]
 struct ScopeState {
-    attempted: Vec<u16>,
+    attempted: Vec<(u16, ProviderKind)>,
     queues: Vec<Weak<Queue>>,
 }
 impl RegistrationScope {
-    fn attach(&self, handle: u16, queue: &Arc<Queue>) -> io::Result<()> {
+    fn attach(&self, handle: u16, kind: ProviderKind, queue: &Arc<Queue>) -> io::Result<()> {
         let mut s = self.state.lock().map_err(|_| io_error(nix::libc::EIO))?;
         if self.closed.load(Ordering::Acquire) {
             return Err(io_error(nix::libc::ESHUTDOWN));
         }
-        if s.attempted.contains(&handle) {
+        if s.attempted.contains(&(handle, kind)) {
             return Err(io_error(nix::libc::EALREADY));
         }
-        s.attempted.push(handle);
+        s.attempted.push((handle, kind));
         s.queues.push(Arc::downgrade(queue));
         Ok(())
     }
@@ -266,7 +266,7 @@ impl Dispatcher {
             q.stop();
         }
     }
-    /// Bind exactly once to an original read-only owned property. Success is a
+    /// Bind the READ direction once on an original readable type0 property. Success is a
     /// local broker commit, not RF publication. Any uncertain/cancelled bind
     /// closes the inbox and is never retried or given a stored-value fallback.
     pub async fn bind(
@@ -281,7 +281,7 @@ impl Dispatcher {
                 .await?,
         })
     }
-    /// Original write-only binding over the same finite dispatcher and stop domain.
+    /// Original WRITE direction over the same finite dispatcher and stop domain.
     /// No new queue budget, owner, deadline or callback execution thread.
     pub async fn bind_write(
         self: &Arc<Self>,
@@ -331,9 +331,9 @@ impl Dispatcher {
             return Err(io_error(nix::libc::EOPNOTSUPP).into());
         }
         let scope = registration.provider_scope();
-        let queue = self.reserve(controller, property, requirements, &scope)?;
+        let queue = self.reserve(controller, property, kind, requirements, &scope)?;
         let inbox = InboxCore { queue };
-        scope.attach(property, &inbox.queue)?;
+        scope.attach(property, kind, &inbox.queue)?;
         // Publish only after the original property has been claimed. A refused
         // duplicate bind must not momentarily shadow the already live inbox.
         self.publish(&inbox.queue)?;
@@ -365,6 +365,7 @@ impl Dispatcher {
         &self,
         controller: ControllerId,
         property: u16,
+        kind: ProviderKind,
         requirements: EntryRequirements,
         scope: &Arc<RegistrationScope>,
     ) -> io::Result<Arc<Queue>> {
@@ -381,6 +382,7 @@ impl Dispatcher {
         let queue = Arc::new(Queue {
             controller,
             property,
+            kind,
             requirements,
             daemon: self.daemon.clone(),
             lost: self.lost.clone(),
@@ -534,6 +536,7 @@ struct State {
 struct Queue {
     controller: ControllerId,
     property: u16,
+    kind: ProviderKind,
     requirements: EntryRequirements,
     daemon: String,
     lost: watch::Receiver<bool>,
@@ -557,7 +560,8 @@ impl Queue {
                 self.controller.generation,
                 self.property,
             )
-            && r.kind().supports(self.requirements)
+            && r.kind() == self.kind
+            && self.kind.supports(self.requirements)
             && self.open()
     }
     fn context(&self, s: &State) -> Option<ProviderContext<'_>> {

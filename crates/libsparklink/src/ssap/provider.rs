@@ -7,7 +7,6 @@ use request::{ProviderKind, RequestData};
 use slk_contract::ssap::{
     MAX_PROVIDER_VALUE_BYTES, PROVIDER_UNAVAILABLE, ReadProviderReply, ReadProviderRequest,
 };
-use slk_protocol::SsapOperations;
 use std::time::Instant;
 use tokio::sync::{oneshot, watch};
 
@@ -35,7 +34,7 @@ pub fn admit(
     if request.property == 0
         || request.identity.1 == 0
         || request.identity.3 > 0x0fff
-        || context.operations != SsapOperations::READ
+        || !slk_contract::ssap::local::read_provider_supported(context.operations)
         || usize::from(request.maximum_bytes) > MAX_PROVIDER_VALUE_BYTES
     {
         return Ok(None);
@@ -72,6 +71,7 @@ pub async fn await_reply(
 mod tests {
     use super::*;
     use slk_contract::ControllerId;
+    use slk_protocol::SsapOperations;
     use slk_protocol::ssap::access::SsapAccess;
     use std::time::Duration;
 
@@ -185,7 +185,7 @@ mod tests {
     }
 
     #[test]
-    fn admission_requires_exactly_read_and_preserves_security_requirements() {
+    fn admission_requires_read_capability_and_preserves_security_requirements() {
         for bits in 0..=SsapOperations::VALID_MASK {
             let Ok(operations) = SsapOperations::from_bits(bits) else {
                 continue;
@@ -194,7 +194,7 @@ mod tests {
             c.operations = operations;
             assert_eq!(
                 admit(&c, Some(":1.10"), &request()).unwrap().is_some(),
-                operations == SsapOperations::READ,
+                [1, 3, 5, 7].contains(&bits),
                 "operations {bits}"
             );
         }

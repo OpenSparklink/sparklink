@@ -158,6 +158,30 @@ pub mod ssap {
         pub const BIND_READ_PROVIDER_OWNED: &str = "BindOwnedReadProvider";
         pub const BIND_WRITE_PROVIDER_OWNED: &str = "BindOwnedWriteProvider";
         pub const BIND_METHOD_PROVIDER_OWNED: &str = "BindOwnedMethodProvider";
+        /// Dynamic type0 values only. Updating/configuration/descriptor modes
+        /// require their own contracts, never a stored-value fallback.
+        pub fn read_provider_supported(operations: slk_protocol::SsapOperations) -> bool {
+            operations.bits() & !0x07 == 0
+                && operations.contains(slk_protocol::SsapOperations::READ)
+        }
+        pub fn write_provider_supported(operations: slk_protocol::SsapOperations) -> bool {
+            operations.bits() & !0x07 == 0 && operations.bits() & 0x06 != 0
+        }
+        #[test]
+        fn provider_modes_exclude_updates_configuration_and_reserved_operations() {
+            for bits in 0..=0x7ff {
+                if let Ok(operations) = slk_protocol::SsapOperations::from_bits(bits) {
+                    assert_eq!(
+                        read_provider_supported(operations),
+                        [1, 3, 5, 7].contains(&bits)
+                    );
+                    assert_eq!(
+                        write_provider_supported(operations),
+                        [2, 3, 4, 5, 6, 7].contains(&bits)
+                    );
+                }
+            }
+        }
         /// Implementation bound in UTF-8 bytes, not a standard maximum.
         pub const MAX_DESCRIPTION_BYTES: usize = 244;
         pub type PropertyDefinition = (Vec<u8>, u32, u32, Vec<u8>);

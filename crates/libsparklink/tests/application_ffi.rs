@@ -13,6 +13,8 @@ mod method_provider;
 mod method_requester;
 #[path = "application_ffi/pending_owner.rs"]
 mod pending_owner;
+#[path = "application_ffi/provider_composition.rs"]
+mod provider_composition;
 #[path = "application_ffi/read_provider.rs"]
 mod read_provider;
 #[path = "application_ffi/subscription.rs"]
@@ -506,6 +508,7 @@ impl Link {
 // Finite metadata and callback sender fixture,not a DB,wire or Native Engine.
 #[derive(Default)]
 struct OwnedMetadata {
+    provider_directions: AtomicUsize,
     method_entry: AtomicBool,
     events_registered: AtomicUsize,
     owner: Mutex<String>,
@@ -593,6 +596,7 @@ impl OwnedServices {
         );
         *self.0.authorizer.lock().unwrap() = authorizer.to_string();
         self.0.provider.lock().unwrap().clear();
+        self.0.provider_directions.store(0, Ordering::SeqCst);
         self.0
             .operations
             .store(properties[0].1 as usize, Ordering::SeqCst);
@@ -628,11 +632,16 @@ impl OwnedServices {
         slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
             .unwrap();
         assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
-        assert_eq!(self.0.operations.load(Ordering::SeqCst), 1);
+        assert!(matches!(self.0.operations.load(Ordering::SeqCst), 1 | 5));
         assert_eq!(handle, 17);
         assert_eq!(provider.as_str(), "/org/sparklink/sdk/ssap_read_provider");
         let mut current = self.0.provider.lock().unwrap();
-        assert!(current.is_empty(), "one bind per original registration");
+        assert_eq!(
+            self.0.provider_directions.fetch_or(1, Ordering::SeqCst) & 1,
+            0,
+            "one READ bind per registration"
+        );
+        assert!(current.is_empty() || current.as_str() == provider.as_str());
         *current = provider.to_string();
         self.0.provider_binds.fetch_add(1, Ordering::SeqCst);
     }
@@ -646,11 +655,16 @@ impl OwnedServices {
         slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(original))
             .unwrap();
         assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
-        assert_eq!(self.0.operations.load(Ordering::SeqCst), 6);
+        assert!(matches!(self.0.operations.load(Ordering::SeqCst), 5 | 6));
         assert_eq!(handle, 17);
         assert_eq!(provider.as_str(), "/org/sparklink/sdk/ssap_read_provider");
         let mut current = self.0.provider.lock().unwrap();
-        assert!(current.is_empty(), "one bind per original registration");
+        assert_eq!(
+            self.0.provider_directions.fetch_or(2, Ordering::SeqCst) & 2,
+            0,
+            "one WRITE bind per registration"
+        );
+        assert!(current.is_empty() || current.as_str() == provider.as_str());
         *current = provider.to_string();
         self.0.provider_binds.fetch_add(1, Ordering::SeqCst);
     }
@@ -1755,6 +1769,17 @@ async fn actual_c_and_python_application_clients_share_broker_and_fd_rejection()
     method_provider::exercise(
         &root,
         &method_probe,
+        &runtime_library,
+        &directory,
+        &bus.address,
+        &server,
+        &owned,
+    )
+    .await?;
+    provider_composition::exercise(
+        &root,
+        &compiler,
+        &library,
         &runtime_library,
         &directory,
         &bus.address,

@@ -155,7 +155,7 @@ Native 可在内核取出 RX 消息时重验；其后已开始的用户复制也
 
 事件元数据与属性、方法共用Owned数据库、成员预算、handle分配及撤回；事件关联数据不存储在条目，属性CPCD不隐式适用于事件。事件发送由原事件Owner提供显式有限载荷及机制minimum，复用原Update/Pending/提交/ACK；不创建属性CPCD。上层启停独立。单次接收共用ReceiveTransaction/RX，在真实Native查询后固定原身份/epoch/minimum；肯定ACK只表示入槽。持续事件租约/就绪及实际交付分别验收，不从登记、准入或ACK推导应用处理。
 
-当前已实现 method 路径优先取得真实新行为资格；不要重做。标准 event 不由属性通知替代。Provider 收件箱有界，等待 fd/HANDLE 仅通知，请求对象携带唯一回复权、原身份和期限；callback 生命周期结束之前不 Free。动态可读可写组合等缺口按当前源码修复，不依据旧快照机械扩展。
+当前已实现 method 路径优先取得真实新行为资格；不要重做。标准 event 不由属性通知替代。Provider 收件箱有界，等待 fd/HANDLE 仅通知，请求对象携带唯一回复权、原身份和期限；callback 生命周期结束之前不 Free。可读写属性的两种 Provider 共享原属性与 Owner，按操作种类独立绑定/分流，第一次绑定后整个值不回退 staging；不建立第二数据库或 Engine。操作/类型组合的实际范围与资格由接口参考和唯一能力入口维护，不依据旧快照机械扩展。
 
 Profile 顺序：DeviceInfo / Battery / HID 实际远端业务，再扩展音频服务。Profile 使用现有服务/通道，不能导入密钥、自造 trust 或另一套发送路径。本地登记、远端发现、远端协议完成、应用处理分别验收。
 

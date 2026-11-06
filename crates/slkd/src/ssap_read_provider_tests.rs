@@ -150,6 +150,8 @@ impl Fixture {
     }
 }
 
+#[path = "ssap_provider_composition_tests.rs"]
+mod composition_tests;
 #[path = "ssap_write_provider_tests.rs"]
 mod write_provider_tests;
 async fn manager(connection: &Connection) -> zbus::Proxy<'_> {
@@ -283,7 +285,7 @@ async fn binding_is_owner_scoped_once_only_and_description_and_write_permissions
         bind(&stranger, h, "/provider").await,
         "org.freedesktop.DBus.Error.AccessDenied",
     );
-    let (_, writable) = register_operations(&f.owner, 0, 5).await;
+    let (_, writable) = register_operations(&f.owner, 0, 4).await;
     refusal(
         bind(&f.owner, writable, "/provider").await,
         "org.freedesktop.DBus.Error.NotSupported",

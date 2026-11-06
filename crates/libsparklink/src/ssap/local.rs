@@ -303,7 +303,7 @@ impl ServiceRegistration {
         original.remaining()?;
         Ok(())
     }
-    /// Bind this owner's read-only property to a callback on the same caller
+    /// Bind this owner's readable type0 property to a callback on the same caller
     /// connection. The daemon permanently discards its stored value; there is
     /// no rebind, unbind or fallback. Timeout or a lost reply can follow commit,
     /// so an uncertain result must not be retried automatically.
@@ -317,7 +317,7 @@ impl ServiceRegistration {
         self.bind_provider(handle, provider, original, wire::BIND_READ_PROVIDER_OWNED)
             .await
     }
-    /// Delegate a write-only property to a WriteValue endpoint on the original
+    /// Delegate the write side of a type0 property to a WriteValue endpoint on the original
     /// caller connection. Bind once; no staging fallback or automatic retry.
     /// This low-level Rust surface does not install an inbox. The application
     /// owns its endpoint and must enforce original identity/deadline. A lost

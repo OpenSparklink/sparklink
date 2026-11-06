@@ -46,7 +46,7 @@ fn error(e: std::io::Error) -> c_int {
     -e.raw_os_error().unwrap_or(nix::libc::EIO)
 }
 
-/// Bind the original service's write-only type0 property once. Stored bytes
+/// Bind the original service's WRITE-capable type0 direction once. Stored bytes
 /// are discarded by the original broker: no rebind/unbind/fallback. A timeout
 /// can follow commit and is not retried. The original absolute CLOCK_MONOTONIC
 /// deadline includes executor admission. Success is local binding only, not RF.

@@ -23,6 +23,7 @@ struct State {
     provider_mode: AtomicU8,
     method_entry: AtomicBool,
     provider_bindings: Mutex<Vec<(u16, String, slk_contract::Deadline)>>,
+    provider_operations: Mutex<Vec<&'static str>>,
 }
 struct Manager;
 #[zbus::interface(name = "org.sparklink.Manager")]
@@ -108,6 +109,7 @@ impl Services {
         deadline: slk_contract::Deadline,
         #[zbus(header)] h: zbus::message::Header<'_>,
     ) -> zbus::fdo::Result<()> {
+        self.0.provider_operations.lock().unwrap().push("read");
         slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
             .unwrap();
         assert_eq!(handle, 17);
@@ -123,6 +125,25 @@ impl Services {
             _ => {}
         }
         Ok(())
+    }
+    fn bind_owned_write_provider(
+        &self,
+        handle: u16,
+        provider: OwnedObjectPath,
+        deadline: slk_contract::Deadline,
+        #[zbus(header)] h: zbus::message::Header<'_>,
+    ) {
+        // Metadata-only broker fixture; daemon/DB behavior is tested separately.
+        assert_eq!(handle, 17);
+        assert_eq!(*self.0.owner.lock().unwrap(), h.sender().unwrap().as_str());
+        slk_channel::deadline::Deadline::from_stamp(slk_contract::deadline_stamp(deadline))
+            .unwrap();
+        self.0.provider_operations.lock().unwrap().push("write");
+        self.0
+            .provider_bindings
+            .lock()
+            .unwrap()
+            .push((handle, provider.to_string(), deadline));
     }
     fn bind_owned_method_provider(
         &self,
@@ -587,3 +608,5 @@ async fn read_provider_binding_wait_is_bounded_without_retry_or_error_fallback()
 
 #[path = "owned_client/method_provider.rs"]
 mod method_provider;
+#[path = "owned_client/provider_composition.rs"]
+mod provider_composition;

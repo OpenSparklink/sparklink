@@ -17,7 +17,7 @@ pub(super) enum ProviderContext<'a> {
 use std::{io, time::Instant};
 use tokio::sync::{oneshot, watch};
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub(super) enum ProviderKind {
     Read,
     Write,
@@ -27,12 +27,10 @@ impl ProviderKind {
     pub(super) fn supports(self, requirements: EntryRequirements) -> bool {
         match (self, requirements) {
             (Self::Read, EntryRequirements::Property(operations, _)) => {
-                operations == SsapOperations::READ
+                slk_contract::ssap::local::read_provider_supported(operations)
             }
             (Self::Write, EntryRequirements::Property(operations, _)) => {
-                operations.bits() != 0
-                    && (SsapOperations::WRITE_WITH_RSP | SsapOperations::WRITE_NO_RSP)
-                        .contains(operations)
+                slk_contract::ssap::local::write_provider_supported(operations)
             }
             (Self::Method, EntryRequirements::Method(_)) => true,
             _ => false,

@@ -308,17 +308,17 @@ Owned通知/指示源码契约见[接口参考](interfaces.md#客户端配置与
 开始有效撤回后，SDK登记进入Withdrawing：后续本地替换被拒绝，即使撤回答复不确定；
 仍可观察本地值或显式重试原对象清理。Removed后不再读取/替换，不因新caller复活。
 
-### Owned read-only Provider
+### Owned READ Provider
 
 本节描述唯一 Engine 已接通的源码契约；准确产物的验证范围由资格记录维护，不继承旧存储值或
-授权回调的资格。仅支持 Owned 属性的 type0 动态读取；操作位必须恰为 READ（`0x01`）。
+授权回调的资格。仅支持 Owned 属性的 type0 动态读取；操作位为 `0x01`、`0x03`、`0x05` 或 `0x07`，必须包含 READ，且不能混入更新、配置或描述符模式。
 属性的加密、认证和本地授权要求仍分别适用，type1 公开说明保持独立。
 
 `ServiceManager.BindOwnedReadProvider(handle:q, provider:o, deadline:(ttttt))->()`
 由原登记的同一 unique caller 调用。`provider` 是该 caller 同一总线连接上导出的对象
 路径，必须非根路径且不超过255字节；不能指定另一 owner。原 controller、登记、管理
 租约及准入期限必须仍有效。绑定在同一数据库锁下提交，释放该属性原存储值占用，
-在本次登记内不可重复绑定、更换或解除。绑定后本地读取与替换返回 NotSupported，
+每个方向在本次登记内不可重复绑定、更换或解除。绑定后本地读取与替换返回 NotSupported，
 没有缓存值或原初值回退；type1 说明仍可按原接口设置和读取。
 
 零 handle、根路径或超长路径返回 InvalidArgs；未知非零 handle 或非原 owner 返回 AccessDenied；
@@ -382,16 +382,16 @@ Native 上下文失效则按原义务失败处理，不保证还能发送错误�
 Rust `ServiceRegistration.bind_read_provider` 封装原绑定方法；共享的
 `ssap::provider::frontend` 实现具体 dispatcher、inbox 与一次性 request，SDK、C/Python
 和 CLI 使用同一条值回调生命周期。`ssap::provider::admit` 复用 AuthorizationContext
-检查原 sender、type0 读取、恰好 READ 和预算，`await_reply` 保留原期限/owner 丢失
+检查原 sender、type0 读取、含 READ 的允许操作组合和预算，`await_reply` 保留原期限/owner 丢失
 等待；frontend 在答复前重新准入。它不授予审批，也不拥有协议 Engine。
 SDK 在原 Client 总线导出 callback，不另建 Python 总线或 codec。
-动态写入、描述符 provider 和主动更新仍不在本契约范围。
+动态写入使用下方独立 WRITE 回调；同一可读写属性可组合两种回调。描述符 provider 和主动更新不因此开放。
 
 C `slk_local_service_bind_read_provider`／Python `LocalService.bind_read_provider`
 返回原属性的 `SlkReadProvider`／`ReadProvider`。绑定仍要求原服务与明确的绝对
 单调期限；该期限不是服务 TTL，也不替换各次回调的期限。SDK 保留已尝试的绑定，
 同一登记内不自动重试，包括结果不确定的超时。SDK 重复尝试返回 EALREADY，
-预留容量用尽为 EAGAIN，非 READ-only 模式为 EOPNOTSUPP；不属于原登记的属性在
+预留容量用尽为 EAGAIN，不含 READ 或含其他不支持操作位为 EOPNOTSUPP；不属于原登记的属性在
 SDK 入口以 EINVAL 拒绝。绑定成功只表示本地 broker 接受。
 
 `slk_read_provider_next`／`next_request()` 非阻塞地取得一次性请求；未就绪为 EAGAIN。
@@ -463,7 +463,7 @@ SSAP stdin 管道单行上限4160字节，含换行。终端输入须少于4096�
 先读取数据库并提交响应，再通知应用。内部可选值字段不是公开动态 provider 契约。
 本实现据此区分授权与提供值，未将参考 Host 当作标准裁判，也不宣称完整符合性。
 
-### Owned write-only Provider（源码接线，待新产物实机验收）
+### Owned WRITE Provider（源码接线，待新产物实机验收）
 
 这一路径复用唯一 Engine、原 Owned 登记和同一连接的有界服务端义务队列。
 它与审批回调分开：审批 `true` 不执行应用写入，也不能生成写成功。
@@ -472,11 +472,22 @@ WRITE 收件箱；method 的daemon、Rust/C/Python共享收件箱和CLI服务端
 
 `ServiceManager.BindOwnedWriteProvider(handle:q, provider:o, deadline:(ttttt))->()`
 仅允许原登记的 unique caller，经 `sparklink-services` 权限调用。属性须为 type0
-写专用，操作位为 `0x02`、`0x04` 或 `0x06`；混合 READ/WRITE 属性不能绑定此 Provider。
+含至少一个写操作，操作位为 `0x02`、`0x03`、`0x04`、`0x05`、`0x06` 或 `0x07`；可同时包含 READ，不能混入更新、配置或描述符位。
 未知/外来 handle、根路径、超长路径与原期限按 Owned 规则拒绝。绑定在原数据库锁下
-一次提交，移除初始存储值；已绑定、重新绑定或不支持的模式返回 NotSupported。
+每个方向一次提交，首次绑定移除初始存储值；重复绑定同方向、重新绑定或不支持的模式返回 NotSupported。
 此后本地读取/替换均不支持，没有原值回退。原绑定超时或回复丢失不能证明未提交，
 不自动重试。撤回原登记仍使用现有卸载路径。
+
+同一可读写属性可按任意顺序调用原 `bind_read_provider` 和 `bind_write_provider`。
+第一次绑定使整个 type0 值转为应用提供，释放 staging 字节预算一次；第二个方向不得再次退款。
+未绑定方向返回 ProviderUnavailable（`0xAF`），写命令仍无线上响应；不得读取原初值、隐式存储写入或借用另一方向的结果。
+本地读取/替换继续 NotSupported，type1 说明独立。两种回调共享原 Owner、权限、controller/connection 身份和各次原期限，绑定本身不提供授权或远端发布资格。
+
+共享 Dispatcher 用 `(原登记, handle, READ/WRITE 种类)` 记录每方向一次尝试，并以完整 controller/generation/handle/种类分流。
+每方向一个独立 inbox，两者共同计入原 16 槽上限，不增加预算或执行线程；关闭一个 inbox 不关闭另一个方向，撤回登记/owner 丢失仍停止两者。
+重试不确定的原方向继续 EALREADY；绑定另一个方向不能复活旧方向、旧 owner 或晚到答复。
+`reply()` 只是本地接受：关闭前必须考虑 callback 尚未完成，不能据此承诺末次回复交付、回滚、Native drain 或 RF。
+当前组合契约的源码/离线和准确产物实机资格分别记录，原 READ-only 资格不转授。
 
 Rust `ServiceRegistration.bind_write_provider` 绑定同一 `Client::from_connection`
 连接上的应用对象，不自动创建回调收件箱。应用须先导出

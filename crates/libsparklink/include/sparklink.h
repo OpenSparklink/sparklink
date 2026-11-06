@@ -1254,7 +1254,7 @@ int slk_method_provider_request_arguments(const struct SlkMethodProviderRequest 
                                           uintptr_t *length);
 
 /**
- * Bind the original service's exactly READ type0 property once. Stored bytes
+ * Bind the original service's READ-capable type0 direction once. Stored bytes
  * are discarded by the original broker: no rebind/unbind/fallback. A timeout
  * can follow commit and is not retried. The original absolute CLOCK_MONOTONIC
  * deadline includes executor admission. Success is local binding only, not RF.
@@ -1326,7 +1326,7 @@ int slk_read_provider_request_reply(const struct SlkReadProviderRequest *request
 void slk_read_provider_request_free(struct SlkReadProviderRequest *request);
 
 /**
- * Bind the original service's write-only type0 property once. Stored bytes
+ * Bind the original service's WRITE-capable type0 direction once. Stored bytes
  * are discarded by the original broker: no rebind/unbind/fallback. A timeout
  * can follow commit and is not retried. The original absolute CLOCK_MONOTONIC
  * deadline includes executor admission. Success is local binding only, not RF.

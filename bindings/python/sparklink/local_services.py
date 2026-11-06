@@ -308,10 +308,11 @@ class LocalService:
                 len(value), deadline_ns))
 
     def bind_read_provider(self, handle, *, deadline_ns):
-        """Bind an exact READ property once and return its bounded value inbox.
+        """Bind the READ direction once and return its bounded value inbox.
 
-        The original stored value is discarded. This cannot be undone or
+        The original stored value is discarded. This direction cannot be undone or
         rebound within the registration; an uncertain bind must not be retried.
+        A READ/WRITE property may bind the other direction independently.
         Keep this service alive: the inbox and requests retain no owner/service.
         Authorization remains separate and uses the original callback deadline.
         """
@@ -320,7 +321,7 @@ class LocalService:
                                    'slk_local_service_bind_read_provider')
 
     def bind_write_provider(self, handle, *, deadline_ns):
-        """Bind an original write-only type0 property once. No stored fallback,
+        """Bind an original WRITE-capable type0 direction once. No stored fallback,
         rebind or automatic retry after uncertain commit. Apply the application
         effect before replying; callback expiry cannot reverse that effect.
         """

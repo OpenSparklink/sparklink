@@ -381,7 +381,7 @@ class WriteProviderRequest(_ProviderRequest):
 
 
 class WriteProvider(_ProviderInbox):
-    """Original write-only inbox. Same Dispatcher16 budget and stop/drain as READ;
+    """Original WRITE-direction inbox. Same Dispatcher16 budget and stop/drain as READ;
     use LocalService.bind_write_provider and keep the original service alive.
     """
     _prefix = 'slk_write_provider'

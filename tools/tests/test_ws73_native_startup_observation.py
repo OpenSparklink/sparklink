@@ -79,6 +79,17 @@ class StartupObservation(unittest.TestCase):
                     self.assertEqual(target.run_exit_code(record), 1)
                     self.assertEqual(target.run_exit_code(record, supervisor_pending=True), 1)
 
+    def test_diagnostic_flag_overrides_otherwise_accepted_terminal_shape(self):
+        from test_ws73_terminal_exit import TerminalExit
+        record = TerminalExit().special('early')
+        # Existing independent terminal-shape fixture, not RF or a dependency
+        # that always succeeds. The same unflagged record must still pass.
+        self.assertEqual(target.run_exit_code(record), 0)
+        for enabled in [True, False, None, 'forged']:
+            with self.subTest(enabled=enabled):
+                self.assertEqual(target.run_exit_code(dict(record,
+                    native_startup_observation_requested=enabled)), 1)
+
     def test_parser_help_and_actual_shell_syntax(self):
         self.assertIn('--native-startup-observe', target.argument_parser()._subparsers._group_actions[0].choices['run'].format_help())
         subprocess.run(['sh', '-n', str(Path(target.__file__).with_name('ws73_target_init.sh'))], check=True)

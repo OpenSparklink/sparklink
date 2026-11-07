@@ -9123,6 +9123,38 @@
       ],
       "closed": [],
       "qualification": "SOURCE_LIMITED_OFFLINE_ONLY_SINGLE_DIAGNOSTIC_NEVER_BUSINESS_OR_RECOVERY"
+    },
+    {
+      "id": "native-maintenance-loader-and-transport-contrast-20261107",
+      "source_commit": "0d5aaaf25d7d26ef5c0f753b2642f166a1117ec5",
+      "issues": [
+        {
+          "repository": "linux",
+          "number": 15,
+          "url": "https://github.com/OpenSparklink/linux/issues/15",
+          "state": "open",
+          "before_sha256": "ad69d7f2ed74e5a04aa06e64dbb51ba105b78b3b0ee9a226df7ed7abf1c319b9",
+          "body_sha256": "dad777af9ee5ff5aaa9b7d53ce78d84e53c4161a8aca1a46cb490e9edbf73a73",
+          "updated_at": "2026-11-07T01:04:25Z",
+          "original_scope_preserved": true,
+          "source_offline_only": true,
+          "private_execution_details_published": false
+        },
+        {
+          "repository": "linux",
+          "number": 19,
+          "url": "https://github.com/OpenSparklink/linux/issues/19",
+          "state": "open",
+          "before_sha256": "b63c66ab0bd01c4018cb33a7ad6decb635bab07c3a8a78b4bd54ded48065ec91",
+          "body_sha256": "8f9c8cd510758f8a45f53fd83d21a64751418f4311a7e632dadeb916e8e625c3",
+          "updated_at": "2026-11-07T01:04:28Z",
+          "original_scope_preserved": true,
+          "source_offline_only": true,
+          "private_execution_details_published": false
+        }
+      ],
+      "closed": [],
+      "qualification": "LIMITED_ABI_AND_DEVICE_FREE_LOADER_ONLY_NO_NEW_BUSINESS_OR_RECOVERY"
     }
   ]
 }

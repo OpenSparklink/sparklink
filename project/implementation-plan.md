@@ -48,6 +48,8 @@
 
 同一WP11/13/17、K#15/#19补充切片`native-single-startup-observation-20261107`：默认拒绝混用其他门禁的单端Native启动观察，使用已有生产状态/输入/捕获链，不新增协议实现。源码及73项相关离线、两项实际函数守卫负对照完成；观察模式始终非零/非资格，不能以Ready/USB/CLOSE局部结果结算双端业务或恢复。实际设备尝试/失败在授权本地索引关联，公开仅源码/离线，不复写原失败或转授新产物。后续真实method/event/combinedProvider与原门禁、同Engine ServiceChannel/C/D/E/W依赖不变，不把全控制面或本观察工具设为数据面前置。
 
+WP11/13/16/17、K#15/#19的维护消费者补充切片`native-maintenance-loader-and-transport-contrast-20261107`：显式Native库与缺初始导出的统一错误已实现；26项ABI、33项工具与无设备加载契约限定通过。旧变量、缺导出红测、沙箱原失败及实际设备诊断失败各自保留。驱动、Runtime、协议/credit/原期限/重试未变；库加载或控制完成不替代原双设备业务及自然恢复。下一条仍为实际method/event/组合Provider和原门禁，C/D/E/W并行，不原样重试已失败Native/PM路径或新增全控制面前置。
+
 ### BSLE 每次尝试诊断切片（2026-11-07）
 
 映射WP11/13/17、K#15/#19，复用原sequencer与phase mutex；源码[K796b11f7bc73](https://github.com/OpenSparklink/linux/commit/796b11f7bc734367494efbc456ed5ac9f1cbfcfe)及工具[6905999](https://github.com/OpenSparklink/sparklink/commit/690599983c627a532380350216890e216f490755)接通每USB接口前8次已完成调用的原模式/阶段/错误/时间/序号，明确省略计数；不改重试、期限、包顺序或Ready。
@@ -795,7 +797,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Native B still requires accurate-artifact methodv4/eventcontract2 and combinedOwned READ/WRITE real peer validation/reply plus original baseline,length,lifecycle/peer business gates. Bounded single-startup diagnostics do not qualify business or recovery;private attempts/failures retain accurate original compilation/execution/kernel provenance in the authorized local index. No unchanged E1/U2 retry:define a valid new condition from per-attempt CLOSE/control/RX/descriptor and resident-state evidence,without guessed wake,endpoint reroute,CLOSE bypass,extra retries or relaxed deadlines. Continue sameEngine ServiceChannel,typed DirectUSB/ownUserHost/Windows source and future service routes in parallel;only KernelPacket/vendor P4. Original complete S0-S6/19WP/10FV/12DG,budget,VM-only,port whitelist,source/offline-only public policy and natural-root/nonmanual-recovery open conditions remain unchanged.",
+  "next": "Native B still needs accurate-artifact two-peer methodv4/eventcontract2/combinedOwnedProvider and original discovery/connect/socket,length,lifecycle/peerbusiness. Maintenance Native library selection and missing-export errors are fixed with limited ABI/device-free loader checks;private transport attempts keep separate exact source/artifact/tool provenance and all failures. No unchanged failed Native or PM retry;control completion,raw memory count,probe support or partial ACK is not wake,Ready,firmware identity or recovery. Continue existing-Engine ServiceChannel and typed DirectUSB/ownUserHost/Windows C/D/E/W dependency work while justified startup investigation proceeds;only KernelPacket/vendor P4. Preserve full S0-S6/19WP/10FV/12DG,originalbudget/acceptance,VM-only,strict leaf allocation,source/offline-only public policy and natural-root/nonmanual-recovery OPEN conditions.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

@@ -65,6 +65,8 @@ contract2文件已与Btrfs镜像只读提取结果独立对照，内容/模式/�
 
 单端启动观察沿现有runner、Native驱动/daemon及Ready/HCC检查，源码[24fc96a](https://github.com/OpenSparklink/sparklink/commit/24fc96ad9e87bd049a17f136f7bc66b54c2f7c5f)；限定一个明确分配端口和匹配guest、runtime-observation120–240秒，所有其他公开选项保持实际CLI默认。未新增Host、复位、重试或期限修改；始终非零且不授业务、装载镜像或恢复资格。73项相关工具/终态/资源/固件回归与两项实际函数守卫变异负对照通过；[c71066d](https://github.com/OpenSparklink/sparklink/commit/c71066d7a76a5c9173e24c05733279e7b15ca3f5)保留原本可接受的终态fixture正向，避免缺材料已拒绝的记录掩盖诊断守卫缺陷。均不是实机、锁并发或形式化证明；初轮环境失败保留。唯一切片`native-single-startup-observation-20261107`，设备结果只通过授权本地索引关联，整项门禁及根因/非人工恢复继续开放。
 
+维护调用者与Native加载错误由[0d5aaaf](https://github.com/OpenSparklink/sparklink/commit/0d5aaaf25d7d26ef5c0f753b2642f166a1117ec5)收敛：固定NativeSONAME，移除无效应用库变量，缺最初open/free导出也统一OSError且不污染缓存，错误后正确显式库仍可重试。26项实际库/ctypes/devnull/无效fd ABI与33项相关工具检查通过；真实应用ELF负对照、缺free元数据fixture及无设备root实际加载/错库拒绝范围明确。原红测及沙箱EPERM差异失败保留，未放宽断言。只支持库/调用者契约，不授controller、普通用户权限、固件、业务、形式化或恢复；私有设备尝试保持独立身份和失败，唯一切片`native-maintenance-loader-and-transport-contrast-20261107`。
+
 ## BSLE 尝试观察：已实现与限定离线范围
 
 内核[796b11f7bc73](https://github.com/OpenSparklink/linux/commit/796b11f7bc734367494efbc456ed5ac9f1cbfcfe)在原sequencer外保留每USB接口前8次已完成调用的模式、原阶段/errno、单调时间和发送序号；满后饱和计数，不覆盖早期前缀。
@@ -267,7 +269,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Native B still requires accurate-artifact methodv4/eventcontract2 and combinedOwned READ/WRITE real peer validation/reply plus original baseline,length,lifecycle/peer business gates. Bounded single-startup diagnostics do not qualify business or recovery;private attempts/failures retain accurate original compilation/execution/kernel provenance in the authorized local index. No unchanged E1/U2 retry:define a valid new condition from per-attempt CLOSE/control/RX/descriptor and resident-state evidence,without guessed wake,endpoint reroute,CLOSE bypass,extra retries or relaxed deadlines. Continue sameEngine ServiceChannel,typed DirectUSB/ownUserHost/Windows source and future service routes in parallel;only KernelPacket/vendor P4. Original complete S0-S6/19WP/10FV/12DG,budget,VM-only,port whitelist,source/offline-only public policy and natural-root/nonmanual-recovery open conditions remain unchanged.",
+  "next": "Native B still needs accurate-artifact two-peer methodv4/eventcontract2/combinedOwnedProvider and original discovery/connect/socket,length,lifecycle/peerbusiness. Maintenance Native library selection and missing-export errors are fixed with limited ABI/device-free loader checks;private transport attempts keep separate exact source/artifact/tool provenance and all failures. No unchanged failed Native or PM retry;control completion,raw memory count,probe support or partial ACK is not wake,Ready,firmware identity or recovery. Continue existing-Engine ServiceChannel and typed DirectUSB/ownUserHost/Windows C/D/E/W dependency work while justified startup investigation proceeds;only KernelPacket/vendor P4. Preserve full S0-S6/19WP/10FV/12DG,originalbudget/acceptance,VM-only,strict leaf allocation,source/offline-only public policy and natural-root/nonmanual-recovery OPEN conditions.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

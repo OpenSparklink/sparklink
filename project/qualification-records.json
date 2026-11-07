@@ -55,7 +55,7 @@
       "Original scope retained for historical v1-v3",
       "Publish source/offline summary only"
     ],
-    "next": "Native B still requires accurate-artifact methodv4/eventcontract2 and combinedOwned READ/WRITE real peer validation/reply plus original baseline,length,lifecycle/peer business gates. Bounded single-startup diagnostics do not qualify business or recovery;private attempts/failures retain accurate original compilation/execution/kernel provenance in the authorized local index. No unchanged E1/U2 retry:define a valid new condition from per-attempt CLOSE/control/RX/descriptor and resident-state evidence,without guessed wake,endpoint reroute,CLOSE bypass,extra retries or relaxed deadlines. Continue sameEngine ServiceChannel,typed DirectUSB/ownUserHost/Windows source and future service routes in parallel;only KernelPacket/vendor P4. Original complete S0-S6/19WP/10FV/12DG,budget,VM-only,port whitelist,source/offline-only public policy and natural-root/nonmanual-recovery open conditions remain unchanged.",
+    "next": "Native B still needs accurate-artifact two-peer methodv4/eventcontract2/combinedOwnedProvider and original discovery/connect/socket,length,lifecycle/peerbusiness. Maintenance Native library selection and missing-export errors are fixed with limited ABI/device-free loader checks;private transport attempts keep separate exact source/artifact/tool provenance and all failures. No unchanged failed Native or PM retry;control completion,raw memory count,probe support or partial ACK is not wake,Ready,firmware identity or recovery. Continue existing-Engine ServiceChannel and typed DirectUSB/ownUserHost/Windows C/D/E/W dependency work while justified startup investigation proceeds;only KernelPacket/vendor P4. Preserve full S0-S6/19WP/10FV/12DG,originalbudget/acceptance,VM-only,strict leaf allocation,source/offline-only public policy and natural-root/nonmanual-recovery OPEN conditions.",
     "actor_obligation_regression": {
       "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
       "entry": "ssap_engine::exchange_loop",
@@ -529123,6 +529123,52 @@
               "before_sha256": "2453b3813792b38b82bb6a4537f7f42e606c64b39e1c16d748588d088a90b0a9",
               "body_sha256": "b63c66ab0bd01c4018cb33a7ad6decb635bab07c3a8a78b4bd54ded48065ec91",
               "updated_at": "2026-11-07T00:17:30Z",
+              "original_scope_preserved": true,
+              "source_offline_only": true,
+              "private_execution_details_published": false
+            }
+          ]
+        },
+        {
+          "id": "native-maintenance-loader-and-transport-contrast-20261107",
+          "source_commit": "0d5aaaf25d7d26ef5c0f753b2642f166a1117ec5",
+          "status": "IMPLEMENTED_LIMITED_ABI_NO_DEVICE_LOADER_VALIDATION_BUSINESS_AND_RECOVERY_PENDING",
+          "scope": "Actual Native library selection/ctypes error contract;real disjoint application ELF plus explicit missing-free metadata fixture,ordinary devnull/invalidfd ABI tests and device-free VM loader check. Hardware diagnostics retain separate private provenance and qualify neither business nor recovery.",
+          "checks": {
+            "loader": "Maintenancepinslibslk_native.so.0,oldapplicationoverride removed;allrequiredexports includingfirstopen/free shareOSError,errorcacheunpublished,correctexplicitretryretained",
+            "regression": "26actualELF/ctypes/devnull/invalidfdABIand33relatedtools pass;missing-free metadatafixtureexplicit,notkernel/device/proof",
+            "no_device_integration": "ActualNativeELFloaderpositive,foreignAppELFrejected/cacheNone. NoNativehandle,controller,WS73driverorbusinessqualification;compiled/executionidentities remainlocal",
+            "evidence": "OriginalAttributeErrorredtestsand3sandboxEPERMvsEBADF failures retained;ordinaryno-device replaydoesnotrelaxassertions. Privatecapturedcontrols/readtimeouts/supportresults do notupgrade business,recovery,firmwareidentityorphysicaldrain"
+          },
+          "qualification_transfer": false,
+          "new_real_device_qualification": false,
+          "new_accepted_proof": false,
+          "not_tested": [
+            "Accuratenewartifactactualtwodevice methodv4,eventcontract2,combinedOwnedProvider andoriginalbaseline,length,lifecycle/peerbusiness",
+            "Actualdeployedpermission/Kernelconcurrency/finaldrain andnatural-root/nonmanualrecovery",
+            "Full adoptedOwnHost/DirectUSB/Windows/ServiceChannel/future business andalloriginalscope"
+          ],
+          "issue_sync": [
+            {
+              "repository": "linux",
+              "number": 15,
+              "url": "https://github.com/OpenSparklink/linux/issues/15",
+              "state": "open",
+              "before_sha256": "ad69d7f2ed74e5a04aa06e64dbb51ba105b78b3b0ee9a226df7ed7abf1c319b9",
+              "body_sha256": "dad777af9ee5ff5aaa9b7d53ce78d84e53c4161a8aca1a46cb490e9edbf73a73",
+              "updated_at": "2026-11-07T01:04:25Z",
+              "original_scope_preserved": true,
+              "source_offline_only": true,
+              "private_execution_details_published": false
+            },
+            {
+              "repository": "linux",
+              "number": 19,
+              "url": "https://github.com/OpenSparklink/linux/issues/19",
+              "state": "open",
+              "before_sha256": "b63c66ab0bd01c4018cb33a7ad6decb635bab07c3a8a78b4bd54ded48065ec91",
+              "body_sha256": "8f9c8cd510758f8a45f53fd83d21a64751418f4311a7e632dadeb916e8e625c3",
+              "updated_at": "2026-11-07T01:04:28Z",
               "original_scope_preserved": true,
               "source_offline_only": true,
               "private_execution_details_published": false

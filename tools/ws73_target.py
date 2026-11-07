@@ -795,8 +795,31 @@ def validate_down_failure_inputs(package):
             raise ValueError('passive Down capture requires freshly matched guest input: '+name)
 
 
+def startup_observation_requested(args):
+    """One leaf, unchanged Native bootstrap; no application/recovery qualification."""
+    enabled = getattr(args, 'native_startup_observe', False)
+    if type(enabled) is not bool:
+        raise ValueError('boolean Native startup observation required')
+    if not enabled:
+        return False
+    if (args.command != 'run' or len(args.ports) != 1 or not args.qmp_hotplug
+            or args.firmware_evidence != 'runtime-observation'
+            or not math.isfinite(args.timeout) or not 120 <= args.timeout <= 240):
+        raise ValueError('single-leaf bounded runtime-observation Native QMP mode required')
+    # Compare every public option to the real CLI defaults. A newly added
+    # business/fault mode cannot silently enter this narrower diagnostic.
+    baseline = argument_parser().parse_args([
+        'run', '--prepared', str(args.prepared), '--output', str(args.output),
+        '--ports', *args.ports, '--qmp-hotplug', '--native-startup-observe',
+        '--firmware-evidence', 'runtime-observation', '--timeout', str(args.timeout)])
+    if {k: v for k, v in vars(args).items() if not k.startswith('_')} != vars(baseline):
+        raise ValueError('Native startup observation excludes all other nondefault options')
+    return True
+
+
 def _run(args):
     ordinary_identity()
+    startup_observe = startup_observation_requested(args)
     sibling_business=getattr(args,'managed_channel_sibling_business',False)
     if type(sibling_business)is not bool:raise ValueError('boolean Native sibling request required')
     if sibling_business:
@@ -980,7 +1003,7 @@ def _run(args):
         raise ValueError('initializer lifecycle requires separate real QMP-hotplug native VM')
     if parallel and (support or passthrough or recovery or any(getattr(args,k,False) for k in ['hotplug','warm','empty_bulk','event_copy_verify','diagnostic_verify','active_deadline_verify','active_close_verify','setup_release_verify','daemon_hold_case','daemon_cancel_remove','managed_partial_case','managed_queue_verify'])):
         raise ValueError('four-device parallel RF requires separate real VM without other gates')
-    selected_count=3 if early_fault else 4 if parallel or sibling_business else 2
+    selected_count=1 if startup_observe else 3 if early_fault else 4 if parallel or sibling_business else 2
     parallel_offset=getattr(args,'parallel_start_offset_ms',0)
     if type(parallel_offset) is not int or not 0 <= parallel_offset <= 125 or (parallel_offset and not parallel):
         raise ValueError('bounded parallel start offset requires explicit four-device diagnostic gate')
@@ -1110,6 +1133,9 @@ def _run(args):
        'synthetic_empty_bulk':bool(getattr(args,'empty_bulk',False)),
        'synthetic_hotplug':bool(getattr(args,'hotplug',False)),
        'synthetic_warm':bool(getattr(args,'warm',False))}
+    if startup_observe:
+        m['native_startup_observation_requested'] = True
+        m['scope'] = 'single-leaf Native startup diagnostics; no business or recovery qualification'
     m['runner_inputs']=[file_record(HERE/name) for name in ('ws73_target.py','ws73_vm_native_root.py','ws73_native_return.py','ws73_native_controller_return.py')]
     if not support:
         m['firmware_evidence_contract_version'] = 1
@@ -1456,6 +1482,10 @@ def _run(args):
     timeline=HostTimeline(output/'host-inventory.jsonl')
     try:
         package=prepared(args.prepared.resolve());m['prepared_manifest']=file_record(args.prepared.resolve()/'manifest.json')
+        if startup_observe:
+            entry = args.prepared.resolve()/'root/init'
+            if file_record(entry)['sha256'] != file_record(HERE/'ws73_target_init.sh')['sha256']:
+                raise ValueError('fresh matching Native startup guest required')
         retry_requested(args, package)
         if native_retry:m['native_event_retry_test']=package['native_event_retry_test']
         if description:
@@ -1733,6 +1763,7 @@ def _run(args):
                      (' ws73.firmware_profiles=1' if physical_boundary else '')+
                      (' ws73.runtime_addresses='+','.join(runtime_addresses) if runtime_addresses else '')+
                      (' ws73.prefix_geometry=1' if channel_revoke_prefix else '')+
+                     (' ws73.native_startup_observe=1' if startup_observe else '')+
                      (' ws73.support=1' if support else '')+
                      (' ws73.passthrough=1' if passthrough else '')+
                      (' ws73.parallel=1' if parallel else '')+
@@ -2063,7 +2094,19 @@ def _run(args):
                     if not channel_grant and (not re.search(r'^Name:\s+slkd$', status, re.M)
                             or not re.search(r'^Uid:\s+0\s+0\s+0\s+0$', status, re.M)):
                         raise ValueError('native module VM daemon is not root')
-                if early_fault:
+                if startup_observe:
+                    if active != 1 or text.splitlines().count('WS73_TARGET_STARTUP_OBSERVED: slot=0') != 1:
+                        raise ValueError('one actual Native startup observation required')
+                    identities = [json.loads((share/'ready-0.json').read_text())]
+                    m['physical_resource_allocation']['hcc_checks'] = resources.hcc_profile_checks(
+                        args.ports, physical_boundary.models, identities, identities)
+                    packets = check_capture_stats((share/'capture-stats.txt').read_text())
+                    capture = read_capture(share/'ws73.pcap', [(r['bus'], r['device']) for r in identities])
+                    if packets != capture['packet_count']:
+                        raise ValueError('sealed startup capture packet count mismatch')
+                    m.update(status='NATIVE_STARTUP_OBSERVED_NOT_QUALIFIED',
+                             guest_identities=identities, capture_packets=packets)
+                elif early_fault:
                     from ws73_early_fault import corroborate as early_corroborate
                     record=json.loads((share/'early-bootstrap-fault/run.json').read_text())
                     if hotplug_phase!=2 or text.count('WS73_TARGET_EARLY_FAULT_PASS')!=1:raise ValueError('complete controlled target-only fault/remove/readd gate required')
@@ -2891,7 +2934,7 @@ def _run(args):
         m['finished_at']=datetime.now(timezone.utc).isoformat();write_json(output/'manifest.json',m)
     code=run_exit_code(m, supervisor_pending=True, expected_firmware_mode=firmware_mode)
     m['supervisor_exit']=code
-    if code and m['status']!='FAIL':
+    if code and m['status']!='FAIL' and not startup_observe:
         if not firmware_evidence.exit_gate(m):
             m['behavior_status_before_firmware_gate'] = m['status']
             m['physical_acceptance'] = False
@@ -3120,6 +3163,9 @@ def valid_parallel_burst(proof):
 
 
 def run_exit_code(record, *, supervisor_pending=False, expected_firmware_mode=None):
+    # A diagnostic cannot qualify business/recovery, even with a forged PASS label.
+    if 'native_startup_observation_requested' in record:
+        return 1
     from ws73_native_event_retry import accepted as retry_accepted
     if not retry_accepted(record):return 1
     # One finalization contract for every mode, not just SSAP lifecycle gates.
@@ -3933,6 +3979,7 @@ def run(args):
         lab=lab_module()
         with lab.lab_lock(SimpleNamespace(action='target-support',build_dir=args.prepared)):
             return _run(args)
+    startup_observation_requested(args)
     allocation=resources.policy()
     resources.selected(args.ports, allocation)
     firmware_evidence.requested_mode(args)
@@ -3951,7 +3998,7 @@ def run(args):
                 return _run(args)
 
 
-def main():
+def argument_parser():
     parser=argparse.ArgumentParser(description=__doc__);commands=parser.add_subparsers(dest='command',required=True)
     pack=commands.add_parser('prepare')
     for name in ['kernel-build','qemu','busybox','dbus-daemon','firmware-dir','runtime-config-dir']:
@@ -3981,6 +4028,7 @@ def main():
         cmd.add_argument('--timeout',type=float,default=120 if name=='support' else 1800)
         if name=='run':
             cmd.add_argument('--ports',nargs='+',required=True)
+            cmd.add_argument('--native-startup-observe',action='store_true',help='single-leaf bounded Native startup diagnostics only; always exits nonzero and never qualifies application delivery or recovery')
             cmd.add_argument('--link-payload-preference',choices=['reported-acb-maximum'],help='one explicit Managed payload preference per controller/lifetime;acknowledgment is not effective length or performance')
             cmd.add_argument('--link-measurements',action='store_true',help='finite actual Managed RSSI/PHY observations before the ordinary workload;not RF policy or performance proof')
             cmd.add_argument('--runtime-addresses',nargs=2,help='explicit temporary volatile E pair addresses;Native setup before daemon,not official identity')
@@ -4130,6 +4178,11 @@ def main():
             cmd.add_argument('--empty-bulk',action='store_true',help='inject successful zero-length bulk IN before synthetic runtime replies; never a physical option')
             cmd.add_argument('--hotplug',action='store_true',help='run the full control orchestrator with explicitly synthetic USB removal/replug; never physical acceptance')
             cmd.add_argument('--warm',action='store_true',help='synthetic one-shot BSP already consumed; require warm restore')
+    return parser
+
+
+def main():
+    parser = argument_parser()
     args=parser.parse_args()
     if not math.isfinite(getattr(args,'timeout',1)) or getattr(args,'timeout',1)<=0:parser.error('timeout must be finite and positive')
     return prepare(args) if args.command=='prepare' else run(args)

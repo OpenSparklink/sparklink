@@ -299,6 +299,21 @@ root fd 可能不可见，不能把只读进程快照称作绝对独占证明。
 不得修改旧 manifest 来绕过检查。
 板级 `bsle_custom.bin`／`pm_config.bin` 仍须显式提供并记录，型号匹配不证明板级资格。
 
+### 单设备 Native 启动诊断
+
+`ws73_target.py run --native-startup-observe` 仅在专用 VM 内观察一个明确分配的
+端口；须同时选择 `--qmp-hotplug --firmware-evidence runtime-observation`，
+`--timeout` 范围为 120–240 秒，其余选项保持默认。拒绝混入业务、故障注入、
+地址修改或恢复门禁。载体必须含匹配的新 guest，逐设备 SDK110 输入及板型检查
+仍然适用；不会按扫描顺序选设备，也不新增复位、重试或更改协议原始期限。
+
+该模式复用原驱动、daemon 和 `ready()`，成功观察时保存实际 HCC、身份及完整捕获，
+然后停止本次 daemon 并封存；启动失败仍保留原失败及 `bsle_attempts`。它不进行
+双设备发现、连接、业务通信或同行隔离检查，不能作为这些能力或自动恢复的资格。
+无论是否观察到 Ready，监督器均返回非零；完成观察的状态为
+`NATIVE_STARTUP_OBSERVED_NOT_QUALIFIED`，真实启动或封存失败为 `FAIL`。
+不能把非零返回改成通过，也不能把 `runtime-observation` 当成本轮装载镜像的证明。
+
 ### BSLE 启动尝试观察
 
 新驱动的只读 `bsle_attempts` 保留同一 USB 接口实例前 8 次已完成的 BSLE 调用，

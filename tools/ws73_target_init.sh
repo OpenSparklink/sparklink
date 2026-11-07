@@ -371,11 +371,32 @@ if grep -qw ws73.early_bootstrap_fault=1 /proc/cmdline; then
     while :; do sleep 60; done
 fi
 last_slot=1
+if grep -qw ws73.native_startup_observe=1 /proc/cmdline; then last_slot=0; fi
 if grep -q 'ws73.parallel=1' /proc/cmdline; then last_slot=3; fi
 for slot in $(seq 0 $last_slot); do
     /bin/python3 /usr/share/sparklink/tools/ws73_target_guest.py ready "$slot" || fail "independent Ready slot=$slot"
     echo "WS73_TARGET_READY: slot=$slot"
 done
+if grep -qw ws73.native_startup_observe=1 /proc/cmdline; then
+    # Reuse the actual daemon and ready() contract. No traffic, alternate
+    # Host, extra retry/reset, or synthetic controller success is introduced.
+    cat "/proc/$daemon/status" > /evidence/slkd-process-status.txt || fail 'startup daemon credentials'
+    kill -TERM "$daemon"
+    for n in $(seq 1 100); do kill -0 "$daemon" 2>/dev/null || break; sleep 0.1; done
+    kill -0 "$daemon" 2>/dev/null && fail 'startup daemon cleanup timeout'
+    wait "$daemon"; daemon=''
+    kill -INT "$capture"; wait "$capture" || fail 'startup capture sealing'
+    capture=''
+    dmesg > /evidence/kernel.log
+    echo 0 > /sys/kernel/tracing/tracing_on
+    cat /sys/kernel/tracing/trace > /evidence/xhci-trace.log || fail 'startup trace sealing'
+    [ "$(cat /proc/sys/kernel/tainted)" = 0 ] || fail 'startup final kernel taint'
+    echo 'WS73_TARGET_NATIVE_VM_TAINT: 0'
+    echo 'WS73_TARGET_STARTUP_OBSERVED: slot=0'
+    echo 'WS73_TARGET_FINISHED'
+    sync; poweroff -f
+    while :; do sleep 60; done
+fi
 if grep -qw ws73.channel_daemon_crash=1 /proc/cmdline; then
     cat "/proc/$daemon/status" > /evidence/slkd-process-status.txt || fail 'original daemon credentials'
     death_index=$(awk '{for(i=1;i<=NF;i++)if($i~/^ws73.channel_daemon_index=/){sub(/^ws73.channel_daemon_index=/,"",$i);print $i}}' /proc/cmdline)

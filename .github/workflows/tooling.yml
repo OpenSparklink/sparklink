@@ -77,7 +77,10 @@ jobs:
           ref: 796b11f7bc734367494efbc456ed5ac9f1cbfcfe
           path: .kernel-authority
           sparse-checkout-cone-mode: false
-          sparse-checkout: net/sparklink/sle_grant.rs
+          sparse-checkout: |
+            net/sparklink/sle_grant.rs
+            drivers/sparklink/ws73/wire.c
+            drivers/sparklink/ws73/wire.h
       - name: Fixed isolated toolchain
         run: |
           rustup toolchain install 1.96.1 --profile minimal --component clippy --component rustfmt
@@ -91,7 +94,7 @@ jobs:
           cargo +1.96.1 test --locked --manifest-path tools/lab/ws73_directusb_rom/Cargo.toml
           cargo +1.96.1 check --locked --manifest-path tools/lab/ws73_directusb_rom/Cargo.toml --all-targets --target x86_64-pc-windows-msvc
           cargo +1.96.1 build --locked --manifest-path tools/lab/ws73_directusb_rom/Cargo.toml --bins --target-dir target/directusb-probes
-          python3 tools/check_directusb_probe_refusal.py --rom target/directusb-probes/debug/ws73-directusb-rom --control target/directusb-probes/debug/ws73-directusb-control --receive target/directusb-probes/debug/ws73-directusb-receive
+          python3 tools/check_directusb_probe_refusal.py --rom target/directusb-probes/debug/ws73-directusb-rom --control target/directusb-probes/debug/ws73-directusb-control --receive target/directusb-probes/debug/ws73-directusb-receive --packets target/directusb-probes/debug/ws73-directusb-packets
           PYTHONPATH=tools:tools/tests python3 -m unittest test_ws73_directusb_rom test_ws73_rom_chip test_ws73_rom_chip_evidence test_ws73_vm_register_reset test_ws73_prepare_inputs test_directusb_probe_refusal
 
   tooling-test:

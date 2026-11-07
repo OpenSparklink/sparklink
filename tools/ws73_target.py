@@ -383,7 +383,9 @@ def prepare_locked(args, build_fd):
         if getattr(args,'directusb_rom_probe',None) is not None:
             if not module_profile:raise ValueError('DirectUSB ROM executor requires explicit scratch native VM carrier')
             inputs.append(args.directusb_rom_probe)
-            inputs.extend(HERE/'lab/ws73_directusb_rom'/name for name in ['Cargo.toml','Cargo.lock','src/main.rs'])
+            directusb_package = HERE/'lab/ws73_directusb_rom'
+            inputs.extend(directusb_package/name for name in ['Cargo.toml','Cargo.lock','build.rs'])
+            inputs.extend(sorted((directusb_package/'src').rglob('*.rs')))
         manifest['inputs'] = [file_record(p) for p in inputs]
         for name in FIRMWARE_EVIDENCE_HELPERS:
             entry = file_record(HERE/name)

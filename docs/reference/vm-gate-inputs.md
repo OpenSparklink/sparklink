@@ -332,8 +332,18 @@ ROM原命令、schema和调用者保持，源码变化仍需各自准确artifact
 构建该独立包须显式设置`SPARKLINK_KERNEL_SOURCE=/path/to/linux`。构建器引用内核
 `net/sparklink/sle_grant.rs`的固定blob `3bfd18a8f6698fffc7be5601ecb7d01012261a33`
 （审阅基线K796b11f7bc73），不复制一套简化状态机；源码快照逐字节校验后原样进入
-构建目录。缺选择、内容变化、超限或路径逃逸必须拒绝，不回退旧产物。仅编译纯逻辑，
-不执行内核/设备；默认workspace/daemon依赖不变。MSVC检查仍不代表Windows运行。
+构建目录。另原样编译固定`drivers/sparklink/ws73/wire.c`与`wire.h`，blob分别为
+`7ed82b5448acd03b1126e3fe2649f50028fcc05b`和`d836b3055f4d82b7449ce19e6399c9384527f2b1`。
+全部输入先有界校验，再生成快照，避免校验后重新读取工作区。缺选择、内容变化、超限
+或路径逃逸必须拒绝，不回退旧产物。仅编译纯逻辑，不执行内核/设备；默认workspace/
+daemon依赖不变。实验包声明GPL-2.0-only，保留原源码许可证；未导入参考库实现。
+
+当前C执行适配限定Linux x86_64 native构建，要求C11编译器及ar；`CC`/`AR`选择单个
+可执行文件，不接受混入shell参数。受限环境可显式选择`CC=/usr/bin/clang`和
+`AR=/usr/bin/llvm-ar`，并记录实际工具版本；不要通过关闭警告掩盖失败。
+MSVC检查不编译/链接此C分支，非Linux实际codec与设备执行明确Unsupported，不能据此
+宣称Windows运行。ROM打包输入现包含独立包的全部Rust模块、build.rs和锁文件；这些
+打包时观察不能代替实际binary的编译来源、选中的C生产快照与执行hash。
 
 同一独立包的ROM与`ws73-directusb-receive EXPLICIT_GUEST_PORT`共用实际bulk交换；
 不进入默认daemon，不新增Host或协议Engine。接收模式必须使用
@@ -342,7 +352,7 @@ ROM原命令、schema和调用者保持，源码变化仍需各自准确artifact
 提交一次512字节接收；不发送寄存器setup OUT，不解释所收字节为寄存器值、HCC/DLI、
 Ready或协议credit，不复位/下载/唤醒，不按枚举顺序选设备。
 
-共用交换仅允许一个在途、每次至多512字节；IN还须满足实际max-packet的非零整数倍。
+这两种探针仅允许一个在途、每次至多512字节；IN还须满足实际max-packet的非零整数倍。
 记录必须fresh，忙、预算/原期限耗尽在调用nusb submit前拒绝。剩余等待时间在提交后
 按原2秒期限重算；无完成时请求一次取消，最多再观察1秒，取消调用也消耗该清理期限。
 只有真实取得completion后才观察pending；错误、部分、迟到和取消完成分别保留，
@@ -377,6 +387,35 @@ nusb submit或控制future构造在同一撤权锁内，等待completion在锁�
 请求、无伪造completion；仍须原始USB/主机证据独立核对。
 `transport_owner_epoch_*`和`transport_authority_origin`只描述该本地检查点，不能发布为
 原生Ready或可信安全状态。普通应用仍走既有授权通道，不使用此设备级实验入口。
+
+
+### HCC类型化包与有界接收窗口（实验消费者）
+
+`ws73-directusb-packets EXPLICIT_GUEST_PORT`必须在同一scratch VM内，显式选择
+`ws73.directusb_packets=1 ws73.directusb_guest=<端口>`，与ROM/控制/寄存器接收模式互斥。
+父runner仍须逐叶白名单、占用/型号/资源检查；设备须满足同一精确Runtime五端点边界。
+固定HCC IN端点为`0x81`，与只读寄存器探针的`0x82`分开；此工具不发送OUT、控制请求、
+固件、寄存器setup或reset，也不自动接管原生Host。最多8次聚合/160 KiB/192个已识别包，
+每次最多20 KiB，单在途；全部接收共享原2秒绝对期限，清理最多额外1秒。
+
+复用同一bulk准入/owner/原期限/取消完成逻辑，既有512字节探针预算不变。原生产C
+`ws73_wire_receive`先检查整个92字节头/24 slot聚合，再同步记录有限offset；callback
+不分配、不等待、不调用用户逻辑。C返回后才构造借用输入的类型化包，并在整批返回前
+校验所有slot。后部畸形不能发布前部包；未知HCC服务仍先校验，未支持SLE类型明确拒绝。
+
+TX构造器复用实际C Command/ACB编码，尚未接入真实TX；不因得到编码字节获得credit。
+RX Event仅检查type/length并保留原始包，事件schema、Complete关联、安全和credit仍归Host。
+ACB handle/PB经实际C解析，priority独立保留，不把handle当TCID；ICB未支持。
+诊断使用2047字节解码上界，并显式标记未验证协商限制；它不是当前controller的已协商MTU或发送许可。
+Platform allocation-padding差异留在原C codec，不放宽SLE边界；裸字节不等型号或有效访问。
+
+schema1 scope为`VM_RUNTIME_HCC_PACKETS_NOT_HOST_OR_RECOVERY`。只有有限窗口完成且
+存在已识别包时，才可记录`BOUNDED_DEVICE_PACKETS_OBSERVED_NOT_HOST_OR_RECOVERY`；
+部分观察、未知/畸形、超时、USB错误或取消仍退出1/`REFUSED_OR_FAILED`，保留每轮原记录。
+`receive_window.validated_transport_packets`不是应用交付、HostReady、可信安全或恢复。
+成功/失败、pending0和接口release均不授全OS/固件drain；完整连续actor、全局controller
+所有权/generation、真实TX、显式SDK110 E/US启动/HCC、Host及同行业务仍需独立门禁。
+此诊断记录包含字节与逐包元数据，不能作为低扰动时延/吞吐benchmark。
 
 ### 单设备 Native 启动诊断
 
@@ -435,6 +474,7 @@ bundle 与明确的五份输入后，生成独立 USB2 端口目录及 `ws73-fir
 未知型号、SDIO／UART、短／非法配置、缺文件、hash 不符或待重枚举闭包变化均拒绝；
 没有全局 U 回退。profile 不是冷 ROM 型号自动识别，也不认证芯片、地址或固件。
 宿主不安装实验驱动；该布局只说明明确配置如何进入现有 VM 原生路径。
+
 开发准备 API `ws73_lab_resources.prepare_device_inputs(root, selections)` 可以为新私有
 root 明确列出每个物理叶子、型号、SDK110目录和板级输入目录，复用同一五文件
 provisioner。列表顺序就是固定 guest USB2 端口顺序；不扫描挑选或按 device number
@@ -574,10 +614,14 @@ Agent 或其他生命周期选择器组合。QMP 拔插仅是 guest 控制对照
 共享 discovery 的 `--application-discovery-verify` 同样要求显式
 `--connection-advertising negotiable-t` 才能执行其连接／业务保持门禁。早期 Fixed-T
 尝试的失败仍是原条件下的真实失败；不能说成相同 Negotiable-T 条件的回归退化。
-`--application-discovery-case release|owner-loss` 只选择该门禁内的退出方式。
+`--application-discovery-case release|owner-loss|ttl|sdk-release`只选择门禁内的退出方式。
 后者仅SIGKILL本VM监督器启动的固定普通reader，不发管理STOP；需同一物理START、
 首名消失后同行新标识、最后消失后的真实STOP/Complete及五秒清理期限证据。
 该选项不表示TTL、管理撤销、完整生命周期或自然恢复已经验收。
+TTL另要求`prepare --discovery-lifetime-probe`的实际SDK示例：4/12秒租约失效后
+两名caller仍保持连接，捕获窗口完成后才允许旧close/退出。缺少产物、提前退出、
+以Timeout代替UnknownObject或STOP超原期限均拒绝。此处只描述工具契约；
+实机资格按独立准确记录核对，入口存在和离线通过均不能代替执行证据。
 `NativeConnectionResult` 的 `flags` 位1／2／4分别表示 Status／Outcome／handle
 存在；Status0不代表连接完成。成功还要求真正的终态和对应 Outcome／handle，
 USB提交、OUT完成及控制器Status不是这些字段的替代。
@@ -1387,10 +1431,47 @@ SSAP分片仍不超过2042字节物理MTU。起始/结束片各有独立双端US
 
 新prepare还记录`ssap_exchange_contract_version=2`，与真实协商输出的十字节序号能力
 格式一致；旧封存root缺字段时仅按历史六字节格式1核对，不转授新源码资格。
-原`--ssap-initialization-stage exchange`的QEMU selector精确匹配六字节回复，不能
-用于格式2；新入口在USB接管前明确NotSupported，等待替换selector和新原期限／撤权
-实机证据。原冻结selector、断言及失败/通过记录保留，CMTC专项和数据门禁继续并行；
-不把该工具迁移冒充生命周期验收完成，也不以退回旧协议offer绕过。
+`--ssap-initialization-stage exchange`按封存artifact的格式选择严格QEMU身份：格式1
+只匹配历史六字节回复，格式2只匹配十字节序号能力回复。交叉使用在USB接管前
+拒绝；未知或布尔版本不能回退。新版选择器仍只保留整个原始USB transfer，保留
+原2秒上限、显式释放、撤权后无新ACB、真实peer Down和双端原件断言。
+Host hold、guest观察、最终proof及prepare必须属于同一格式，旧证明不能仅改标签
+升级。原冻结selector、断言及失败/通过记录保留，准确新实机资格单独登记；
+工具接通不代表完整release／最后fd／dup／Down／原期限矩阵完成，不退回旧offer绕过。
+
+## 发送者原期限与晚到ACK门禁
+
+维护者选项 `--ssap-sender-deadline-verify` 要求同一真实 protected2 更新门禁、
+numeric-approve、61字节／4轮普通通道保持及明确的专用VM；不能与接收退出、
+Owner退出、初始化或 requester 退出门禁混用。只接受已封存的有界2秒真实IN81
+暂扣fixture，所有设备仍受显式端口、固件及占用守卫约束，无回退。
+
+测试应用在调用前选择一次1秒原申请期限，正常发送仍为原5秒；此选项不修改
+生产监督期限或首片排空策略，也不是降低时延的优化。API必须实际返回ETIMEDOUT，
+错误errno、意外成功和延长期限均失败。暂扣的整个原始aggregate可能包含NOCP，
+不能把它自动命名为ACK或认定为本次发送的credit完成。
+
+证据分别核对指示TX／对端RX／对端ACK TX、原作者终态，以及显式释放后ACK RX；
+使用guest内的时钟括号记录期限映射，不计算host／guest单向时延。对端C／Python
+应用须实际校验随机值并回写不同业务值，原Owner实际读到该回写，再通过同一Session
+完成正常更新与普通通道保持。协议ACK不能代替这项应用证据。
+
+默认 `deadline` 用例仅覆盖完整准入指示的原作者期限与晚ACK，不证明Owner突然退出、部分SSAP
+分片、全部fd／Grant／Down／NOCP复用或引用排空，也不重新验证5秒物理排空到期。
+实现、离线fixture及准确artifact实机资格分别读取唯一能力记录；源码接线不是PASS。
+
+同一维护者门禁可显式选择 `--ssap-sender-lifecycle-case owner-after-deadline`。
+它复用上述原期限、双端指示／ACK屏障和原始transfer保留流程；作者返回超时后，
+实际终止该服务Owner，确认本地注册撤回，再显式释放晚ACK。首次接收因远端
+CPCD清理遭拒而失败时，SDK的EIO仅为实际错误观察，必须另有双端Error4原包；
+随后旧服务的实际SDK写入也须有相同的准确协议拒绝。不能据此声称该接收调用
+已向对端应用交付业务值，也不能把通用EIO当成旧服务拒绝的充分证据。
+
+正常 `deadline` 用例的随机值校验／不同业务回写要求保持；Owner退出用例分别
+记接收拒绝和写入拒绝，不计入成功应用回复。两种用例都保留后续正常更新、
+普通通道及原5秒Down门禁，历史FAIL不被新运行覆盖。当前工具、guest脚本和
+C／Python消费程序必须来自同一次准备；缺少新selector的旧root在接管USB前拒绝。
+这仍不是部分SSAP准入、完整Owner／fd／Grant竞争、callback排空或自然恢复资格。
 
 
 ### 在途订阅的自然租约到期

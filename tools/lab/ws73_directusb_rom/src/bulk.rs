@@ -46,12 +46,17 @@ fn error(message: &str) -> io::Error {
     io::Error::other(message)
 }
 
-fn record_completion(endpoint: &impl BulkIo, completion: &Completion, row: &mut Value) {
+fn record_completion(
+    endpoint: &impl BulkIo,
+    completion: &Completion,
+    row: &mut Value,
+    maximum: usize,
+) {
     row["completion"] = json!({"actual":completion.actual_len,
         "status":format!("{:?}",completion.status),"buffer_length":completion.buffer.len()});
     row["pending_after"] = json!(endpoint.pending());
     if endpoint.direction() == Direction::In {
-        if completion.buffer.len() <= MAX_TRANSFER_BYTES {
+        if completion.buffer.len() <= maximum {
             row["received_data"] = json!(&completion.buffer[..]);
         } else {
             row["data_omitted_invalid_buffer_length"] = json!(true);
@@ -60,6 +65,7 @@ fn record_completion(endpoint: &impl BulkIo, completion: &Completion, row: &mut 
 }
 
 fn exchange_io(
+    maximum: usize,
     endpoint: &mut impl BulkIo,
     buffer: Buffer,
     deadline: Instant,
@@ -77,7 +83,7 @@ fn exchange_io(
     };
     let mps = endpoint.max_packet_size();
     if requested == 0
-        || requested > MAX_TRANSFER_BYTES
+        || requested > maximum
         || mps == 0
         || (incoming && requested % mps != 0)
         || endpoint.pending() != 0
@@ -111,7 +117,7 @@ fn exchange_io(
         ));
     }
     if let Some(completion) = endpoint.wait(deadline.saturating_duration_since(now())) {
-        record_completion(endpoint, &completion, row);
+        record_completion(endpoint, &completion, row, maximum);
         if endpoint.pending() != 0
             || completion.actual_len > requested
             || (incoming && completion.actual_len != completion.buffer.len())
@@ -142,7 +148,7 @@ fn exchange_io(
     row["cancel_requested"] = json!(true);
     endpoint.cancel();
     if let Some(completion) = endpoint.wait(drain_deadline.saturating_duration_since(now())) {
-        record_completion(endpoint, &completion, row);
+        record_completion(endpoint, &completion, row, maximum);
         if endpoint.pending() != 0
             || completion.actual_len > requested
             || (incoming && completion.actual_len != completion.buffer.len())
@@ -165,7 +171,31 @@ pub fn exchange<D: EndpointDirection>(
     deadline: Instant,
     row: &mut Value,
 ) -> io::Result<Completion> {
-    exchange_io(endpoint, buffer, deadline, Instant::now, row)
+    exchange_io(
+        MAX_TRANSFER_BYTES,
+        endpoint,
+        buffer,
+        deadline,
+        Instant::now,
+        row,
+    )
+}
+
+// HCC uses the existing lifecycle with its own finite codec budget. This never
+// changes the 512-byte ROM/register probe budget, or exposes arbitrary budgets.
+pub(crate) fn receive_hcc(
+    endpoint: &mut OwnedBulkEndpoint<'_, nusb::transfer::In>,
+    deadline: Instant,
+    row: &mut Value,
+) -> io::Result<Completion> {
+    exchange_io(
+        crate::wire::MAX_RX_BYTES,
+        endpoint,
+        Buffer::new(crate::wire::MAX_RX_BYTES),
+        deadline,
+        Instant::now,
+        row,
+    )
 }
 
 #[cfg(test)]
@@ -264,10 +294,30 @@ mod tests {
             let mut ep = Fixture::new(vec![Answer::Done(Ok(()), 4)]);
             ep.pending = pending;
             let mut row = json!({});
-            assert!(exchange_io(&mut ep, Buffer::new(size), deadline, || t, &mut row).is_err());
+            assert!(
+                exchange_io(
+                    MAX_TRANSFER_BYTES,
+                    &mut ep,
+                    Buffer::new(size),
+                    deadline,
+                    || t,
+                    &mut row
+                )
+                .is_err()
+            );
             assert_eq!((ep.submits, ep.cancels), (0, 0));
             let saved = row.clone();
-            assert!(exchange_io(&mut ep, Buffer::new(512), t + IO_LIMIT, || t, &mut row).is_err());
+            assert!(
+                exchange_io(
+                    MAX_TRANSFER_BYTES,
+                    &mut ep,
+                    Buffer::new(512),
+                    t + IO_LIMIT,
+                    || t,
+                    &mut row
+                )
+                .is_err()
+            );
             assert_eq!(row, saved);
         }
         let mut clock = vec![t, t + IO_LIMIT].into_iter();
@@ -275,6 +325,7 @@ mod tests {
         let mut row = json!({});
         assert!(
             exchange_io(
+                MAX_TRANSFER_BYTES,
                 &mut ep,
                 Buffer::new(512),
                 t + IO_LIMIT,
@@ -291,7 +342,15 @@ mod tests {
         let t = Instant::now();
         let mut ep = Fixture::new(vec![Answer::Done(Ok(()), 4)]);
         let mut row = json!({});
-        let c = exchange_io(&mut ep, Buffer::new(512), t + IO_LIMIT, || t, &mut row).unwrap();
+        let c = exchange_io(
+            MAX_TRANSFER_BYTES,
+            &mut ep,
+            Buffer::new(512),
+            t + IO_LIMIT,
+            || t,
+            &mut row,
+        )
+        .unwrap();
         assert_eq!(c.buffer.len(), 4);
         assert_eq!(c.actual_len, 4);
         assert_eq!((ep.submits, ep.cancels, ep.pending), (1, 0, 0));
@@ -306,6 +365,7 @@ mod tests {
         let mut row = json!({});
         assert!(
             exchange_io(
+                MAX_TRANSFER_BYTES,
                 &mut ep,
                 Buffer::from(vec![1; 18]),
                 t + IO_LIMIT,
@@ -329,7 +389,17 @@ mod tests {
             let t = Instant::now();
             let mut ep = Fixture::new(vec![Answer::Pending, Answer::Done(status, 3)]);
             let mut row = json!({});
-            assert!(exchange_io(&mut ep, Buffer::new(512), t + IO_LIMIT, || t, &mut row).is_err());
+            assert!(
+                exchange_io(
+                    MAX_TRANSFER_BYTES,
+                    &mut ep,
+                    Buffer::new(512),
+                    t + IO_LIMIT,
+                    || t,
+                    &mut row
+                )
+                .is_err()
+            );
             assert_eq!((ep.submits, ep.cancels, ep.pending), (1, 1, 0));
             assert_eq!(row["completion"]["actual"], 3);
             assert_eq!(row["stage"], "DEADLINE_COMPLETION_RETAINED_NOT_SUCCESS");
@@ -341,18 +411,48 @@ mod tests {
         let t = Instant::now();
         let mut ep = Fixture::new(vec![Answer::Pending, Answer::Pending]);
         let mut row = json!({});
-        assert!(exchange_io(&mut ep, Buffer::new(512), t + IO_LIMIT, || t, &mut row).is_err());
+        assert!(
+            exchange_io(
+                MAX_TRANSFER_BYTES,
+                &mut ep,
+                Buffer::new(512),
+                t + IO_LIMIT,
+                || t,
+                &mut row
+            )
+            .is_err()
+        );
         assert_eq!((ep.submits, ep.cancels, ep.pending), (1, 1, 1));
         assert!(ep.buffer.is_some());
         assert_eq!(row["stage"], "QUARANTINED_UNDRAINED");
         let saved = row.clone();
-        assert!(exchange_io(&mut ep, Buffer::new(512), t + IO_LIMIT, || t, &mut row).is_err());
+        assert!(
+            exchange_io(
+                MAX_TRANSFER_BYTES,
+                &mut ep,
+                Buffer::new(512),
+                t + IO_LIMIT,
+                || t,
+                &mut row
+            )
+            .is_err()
+        );
         assert_eq!(row, saved);
         assert_eq!(ep.submits, 1);
         let mut ep = Fixture::new(vec![Answer::Done(Ok(()), 4)]);
         ep.leave_pending = true;
         let mut row = json!({});
-        assert!(exchange_io(&mut ep, Buffer::new(512), t + IO_LIMIT, || t, &mut row).is_err());
+        assert!(
+            exchange_io(
+                MAX_TRANSFER_BYTES,
+                &mut ep,
+                Buffer::new(512),
+                t + IO_LIMIT,
+                || t,
+                &mut row
+            )
+            .is_err()
+        );
         assert_eq!(row["stage"], "QUARANTINED_COMPLETION_ACCOUNTING");
     }
     #[test]
@@ -363,6 +463,7 @@ mod tests {
         let mut clock = vec![t, t, t, t + IO_LIMIT].into_iter();
         assert!(
             exchange_io(
+                MAX_TRANSFER_BYTES,
                 &mut ep,
                 Buffer::new(512),
                 t + IO_LIMIT,
@@ -374,7 +475,17 @@ mod tests {
         assert_eq!(row["stage"], "LATE_COMPLETION_REJECTED");
         let mut ep = Fixture::new(vec![Answer::Done(Ok(()), 513)]);
         let mut row = json!({});
-        assert!(exchange_io(&mut ep, Buffer::new(512), t + IO_LIMIT, || t, &mut row).is_err());
+        assert!(
+            exchange_io(
+                MAX_TRANSFER_BYTES,
+                &mut ep,
+                Buffer::new(512),
+                t + IO_LIMIT,
+                || t,
+                &mut row
+            )
+            .is_err()
+        );
         assert_eq!(row["stage"], "QUARANTINED_COMPLETION_ACCOUNTING");
     }
 
@@ -397,6 +508,7 @@ mod tests {
         .into_iter();
         assert!(
             exchange_io(
+                MAX_TRANSFER_BYTES,
                 &mut ep,
                 Buffer::new(512),
                 t + IO_LIMIT,
@@ -409,7 +521,17 @@ mod tests {
         assert_eq!(row["stage"], "QUARANTINED_COMPLETION_ACCOUNTING");
         for mut row in [json!(null), json!([]), json!("not a receipt")] {
             let mut ep = Fixture::new(vec![]);
-            assert!(exchange_io(&mut ep, Buffer::new(512), t + IO_LIMIT, || t, &mut row).is_err());
+            assert!(
+                exchange_io(
+                    MAX_TRANSFER_BYTES,
+                    &mut ep,
+                    Buffer::new(512),
+                    t + IO_LIMIT,
+                    || t,
+                    &mut row
+                )
+                .is_err()
+            );
             assert_eq!(ep.submits, 0);
         }
     }
@@ -433,6 +555,7 @@ mod tests {
         .into_iter();
         assert!(
             exchange_io(
+                MAX_TRANSFER_BYTES,
                 &mut ep,
                 Buffer::new(512),
                 t + IO_LIMIT,

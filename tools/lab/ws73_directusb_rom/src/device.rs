@@ -16,6 +16,7 @@ pub enum ProbeKind {
     RomRead,
     MemoryBackpressure,
     RuntimeReceive,
+    RuntimePackets,
 }
 impl ProbeKind {
     fn token(self) -> &'static str {
@@ -23,6 +24,7 @@ impl ProbeKind {
             Self::RomRead => "ws73.directusb_rom=1",
             Self::MemoryBackpressure => "ws73.directusb_control=1",
             Self::RuntimeReceive => "ws73.directusb_receive=1",
+            Self::RuntimePackets => "ws73.directusb_packets=1",
         }
     }
 }
@@ -67,7 +69,7 @@ pub fn endpoint_layout(kind: ProbeKind, entries: &[(u8, TransferType, usize)]) -
         ProbeKind::RomRead => {
             addresses == [1, 129] && entries.iter().all(|e| e.1 == TransferType::Bulk)
         }
-        ProbeKind::MemoryBackpressure | ProbeKind::RuntimeReceive => {
+        ProbeKind::MemoryBackpressure | ProbeKind::RuntimeReceive | ProbeKind::RuntimePackets => {
             addresses == [1, 2, 129, 130, 131]
                 && entries.iter().all(|&(address, kind, size)| {
                     if address == 131 {
@@ -319,6 +321,7 @@ mod tests {
             ProbeKind::RomRead,
             ProbeKind::MemoryBackpressure,
             ProbeKind::RuntimeReceive,
+            ProbeKind::RuntimePackets,
         ] {
             let valid = format!("{} ws73.directusb_guest=1-1.2", kind.token());
             assert!(boot_allowed(kind, "QEMU\n", true, &valid, "1-1.2"));

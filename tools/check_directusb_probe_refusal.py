@@ -9,7 +9,8 @@ import subprocess
 
 SCOPES = {'rom': 'VM_ROM_READ_ONLY_NOT_HOST_OR_RECOVERY',
           'control': 'VM_RUNTIME_EP0_READ_ONLY_NOT_HOST_OR_RECOVERY',
-          'receive': 'VM_RUNTIME_BULK_IN_ONLY_NOT_HOST_OR_RECOVERY'}
+          'receive': 'VM_RUNTIME_BULK_IN_ONLY_NOT_HOST_OR_RECOVERY',
+          'packets': 'VM_RUNTIME_HCC_PACKETS_NOT_HOST_OR_RECOVERY'}
 
 
 def validate(result, kind):
@@ -34,8 +35,9 @@ def main():
     parser.add_argument('--rom', type=Path, required=True)
     parser.add_argument('--control', type=Path, required=True)
     parser.add_argument('--receive', type=Path, required=True)
+    parser.add_argument('--packets', type=Path, required=True)
     args = parser.parse_args()
-    for kind, binary in [('rom', args.rom), ('control', args.control), ('receive', args.receive)]:
+    for kind, binary in [('rom', args.rom), ('control', args.control), ('receive', args.receive), ('packets', args.packets)]:
         before = hashlib.sha256(binary.read_bytes()).hexdigest()
         result = subprocess.run([str(binary.resolve(strict=True))], capture_output=True,
                                 text=True, timeout=5, check=False)

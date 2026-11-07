@@ -46,6 +46,8 @@
 
 下一批B仍为有效新启动条件下的真实每次BSLE阶段与method v4/event contract2双端独立交付，以及原数据/长度/生命周期；不得原样重试既有失败或用局部CLOSE/USB完成替代。独立ServiceChannel/C/D/E/W继续并行，原完整范围、预算、VM-only及所有未闭合条件不变。
 
+同一WP11/13/17、K#15/#19补充切片`native-single-startup-observation-20261107`：默认拒绝混用其他门禁的单端Native启动观察，使用已有生产状态/输入/捕获链，不新增协议实现。源码及73项相关离线、两项实际函数守卫负对照完成；观察模式始终非零/非资格，不能以Ready/USB/CLOSE局部结果结算双端业务或恢复。实际设备尝试/失败在授权本地索引关联，公开仅源码/离线，不复写原失败或转授新产物。后续真实method/event/combinedProvider与原门禁、同Engine ServiceChannel/C/D/E/W依赖不变，不把全控制面或本观察工具设为数据面前置。
+
 ### BSLE 每次尝试诊断切片（2026-11-07）
 
 映射WP11/13/17、K#15/#19，复用原sequencer与phase mutex；源码[K796b11f7bc73](https://github.com/OpenSparklink/linux/commit/796b11f7bc734367494efbc456ed5ac9f1cbfcfe)及工具[6905999](https://github.com/OpenSparklink/sparklink/commit/690599983c627a532380350216890e216f490755)接通每USB接口前8次已完成调用的原模式/阶段/错误/时间/序号，明确省略计数；不改重试、期限、包顺序或Ready。
@@ -793,7 +795,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Native B remains exact-artifact real methodv4/eventcontract2 and original baseline,length,lifecycle/peer business;new Owned READ/WRITE composition is implemented and limited offline only,requires accurate userspace artifact and realNative combination gate. No new device operation or qualification transfer. Do not repeat unchanged U2 startup;new finite BSLE experiment needs valid new conditions,resident identity and actual per-attempt evidence without CLOSE bypass/guessed wake. Continue sameEngine ServiceChannel,typed DirectUSB/ownHost/Windows and remaining provider/update/descriptor/long-data/security/four-device/Profile work without a whole-control prerequisite. Preserve all original S0-S6/19WP/10FV/12DG,budget,VM-only and adopted scope;discoveryKani remains NOT_PROVEN,2realNative test gaps and natural roots/nonmanual recovery stay open;only KernelPacket/vendor P4.",
+  "next": "Native B still requires accurate-artifact methodv4/eventcontract2 and combinedOwned READ/WRITE real peer validation/reply plus original baseline,length,lifecycle/peer business gates. Bounded single-startup diagnostics do not qualify business or recovery;private attempts/failures retain accurate original compilation/execution/kernel provenance in the authorized local index. No unchanged E1/U2 retry:define a valid new condition from per-attempt CLOSE/control/RX/descriptor and resident-state evidence,without guessed wake,endpoint reroute,CLOSE bypass,extra retries or relaxed deadlines. Continue sameEngine ServiceChannel,typed DirectUSB/ownUserHost/Windows source and future service routes in parallel;only KernelPacket/vendor P4. Original complete S0-S6/19WP/10FV/12DG,budget,VM-only,port whitelist,source/offline-only public policy and natural-root/nonmanual-recovery open conditions remain unchanged.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

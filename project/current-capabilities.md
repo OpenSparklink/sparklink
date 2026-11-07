@@ -63,6 +63,8 @@ contract2文件已与Btrfs镜像只读提取结果独立对照，内容/模式/�
 首版归档遗漏压缩线程上限而不选用，后续受限归档替换；归档工具警告及审计路径/Python缓存失败保留，未放宽闭包断言。
 准确编译、VM执行与设备材料留授权本地索引，当前源码/准备/离线状态不授新probe、BSLE、Ready、最终drain或恢复资格。原真实失败、限定历史资格及全部未执行门禁不变。
 
+单端启动观察沿现有runner、Native驱动/daemon及Ready/HCC检查，源码[24fc96a](https://github.com/OpenSparklink/sparklink/commit/24fc96ad9e87bd049a17f136f7bc66b54c2f7c5f)；限定一个明确分配端口和匹配guest、runtime-observation120–240秒，所有其他公开选项保持实际CLI默认。未新增Host、复位、重试或期限修改；始终非零且不授业务、装载镜像或恢复资格。73项相关工具/终态/资源/固件回归与两项实际函数守卫变异负对照通过；[c71066d](https://github.com/OpenSparklink/sparklink/commit/c71066d7a76a5c9173e24c05733279e7b15ca3f5)保留原本可接受的终态fixture正向，避免缺材料已拒绝的记录掩盖诊断守卫缺陷。均不是实机、锁并发或形式化证明；初轮环境失败保留。唯一切片`native-single-startup-observation-20261107`，设备结果只通过授权本地索引关联，整项门禁及根因/非人工恢复继续开放。
+
 ## BSLE 尝试观察：已实现与限定离线范围
 
 内核[796b11f7bc73](https://github.com/OpenSparklink/linux/commit/796b11f7bc734367494efbc456ed5ac9f1cbfcfe)在原sequencer外保留每USB接口前8次已完成调用的模式、原阶段/errno、单调时间和发送序号；满后饱和计数，不覆盖早期前缀。
@@ -265,7 +267,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Native B remains exact-artifact real methodv4/eventcontract2 and original baseline,length,lifecycle/peer business;new Owned READ/WRITE composition is implemented and limited offline only,requires accurate userspace artifact and realNative combination gate. No new device operation or qualification transfer. Do not repeat unchanged U2 startup;new finite BSLE experiment needs valid new conditions,resident identity and actual per-attempt evidence without CLOSE bypass/guessed wake. Continue sameEngine ServiceChannel,typed DirectUSB/ownHost/Windows and remaining provider/update/descriptor/long-data/security/four-device/Profile work without a whole-control prerequisite. Preserve all original S0-S6/19WP/10FV/12DG,budget,VM-only and adopted scope;discoveryKani remains NOT_PROVEN,2realNative test gaps and natural roots/nonmanual recovery stay open;only KernelPacket/vendor P4.",
+  "next": "Native B still requires accurate-artifact methodv4/eventcontract2 and combinedOwned READ/WRITE real peer validation/reply plus original baseline,length,lifecycle/peer business gates. Bounded single-startup diagnostics do not qualify business or recovery;private attempts/failures retain accurate original compilation/execution/kernel provenance in the authorized local index. No unchanged E1/U2 retry:define a valid new condition from per-attempt CLOSE/control/RX/descriptor and resident-state evidence,without guessed wake,endpoint reroute,CLOSE bypass,extra retries or relaxed deadlines. Continue sameEngine ServiceChannel,typed DirectUSB/ownUserHost/Windows source and future service routes in parallel;only KernelPacket/vendor P4. Original complete S0-S6/19WP/10FV/12DG,budget,VM-only,port whitelist,source/offline-only public policy and natural-root/nonmanual-recovery open conditions remain unchanged.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

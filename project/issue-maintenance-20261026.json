@@ -9090,6 +9090,39 @@
       ],
       "closed": [],
       "qualification": "SOURCE_LIMITED_OFFLINE_ONLY_TWO_NATIVE_VM_GAPS_NO_NEW_REAL_DEVICE_OR_RECOVERY"
+    },
+    {
+      "id": "native-single-startup-observation-20261107",
+      "source_commit": "24fc96ad9e87bd049a17f136f7bc66b54c2f7c5f",
+      "validation_source_commit": "c71066d7a76a5c9173e24c05733279e7b15ca3f5",
+      "issues": [
+        {
+          "repository": "linux",
+          "number": 15,
+          "url": "https://github.com/OpenSparklink/linux/issues/15",
+          "state": "open",
+          "before_sha256": "6d5752f80d6c24d3373e9b5fef179332af554972ec91ddeb36baff2a9cefe706",
+          "body_sha256": "ad69d7f2ed74e5a04aa06e64dbb51ba105b78b3b0ee9a226df7ed7abf1c319b9",
+          "updated_at": "2026-11-07T00:17:28Z",
+          "original_scope_preserved": true,
+          "source_offline_only": true,
+          "private_execution_details_published": false
+        },
+        {
+          "repository": "linux",
+          "number": 19,
+          "url": "https://github.com/OpenSparklink/linux/issues/19",
+          "state": "open",
+          "before_sha256": "2453b3813792b38b82bb6a4537f7f42e606c64b39e1c16d748588d088a90b0a9",
+          "body_sha256": "b63c66ab0bd01c4018cb33a7ad6decb635bab07c3a8a78b4bd54ded48065ec91",
+          "updated_at": "2026-11-07T00:17:30Z",
+          "original_scope_preserved": true,
+          "source_offline_only": true,
+          "private_execution_details_published": false
+        }
+      ],
+      "closed": [],
+      "qualification": "SOURCE_LIMITED_OFFLINE_ONLY_SINGLE_DIAGNOSTIC_NEVER_BUSINESS_OR_RECOVERY"
     }
   ]
 }

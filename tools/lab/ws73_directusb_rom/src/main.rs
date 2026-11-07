@@ -4,10 +4,9 @@
 use nusb::transfer::{Buffer, Bulk, Completion, EndpointDirection, In, Out};
 use nusb::{Endpoint, MaybeFuture};
 use serde_json::{Value, json};
-use std::fs::{self, OpenOptions};
 use std::io;
-use std::path::Path;
 use std::time::{Duration, Instant};
+use ws73_directusb_rom::device::{ProbeKind, open_vm_interface};
 
 const COMMAND: &[u8] = b"READM 0x40019000 4 ";
 const IO_LIMIT: Duration = Duration::from_secs(2);
@@ -15,36 +14,6 @@ const DRAIN_LIMIT: Duration = Duration::from_secs(1);
 
 fn refuse(reason: &str) -> io::Error {
     io::Error::other(reason)
-}
-
-fn selected_port(port: &str) -> bool {
-    // Guest topology only. Host leaf authorization remains in the VM runner.
-    let Some((bus, chain)) = port.split_once('-') else {
-        return false;
-    };
-    let component = |s: &str| {
-        !s.is_empty()
-            && s.len() <= 3
-            && s.bytes().all(|b| b.is_ascii_digit())
-            && s.parse::<u16>().is_ok_and(|v| v > 0 && v <= 255)
-    };
-    component(bus) && chain.split('.').count() <= 7 && chain.split('.').all(component)
-}
-
-fn boot_allowed(vendor: &str, scratch: bool, cmdline: &str, port: &str) -> bool {
-    vendor.trim() == "QEMU"
-        && scratch
-        && selected_port(port)
-        && cmdline
-            .split_whitespace()
-            .filter(|t| t.starts_with("ws73.directusb_rom="))
-            .collect::<Vec<_>>()
-            == ["ws73.directusb_rom=1"]
-        && cmdline
-            .split_whitespace()
-            .filter(|t| t.starts_with("ws73.directusb_guest="))
-            .collect::<Vec<_>>()
-            == [format!("ws73.directusb_guest={port}")]
 }
 
 fn completion_record(c: &Completion) -> Value {
@@ -94,48 +63,8 @@ fn exchange<D: EndpointDirection>(
 }
 
 fn run(port: &str, report: &mut Value) -> Result<(), Box<dyn std::error::Error>> {
-    if !boot_allowed(
-        &fs::read_to_string("/sys/class/dmi/id/sys_vendor")?,
-        Path::new("/scratch-root-uuid").is_file(),
-        &fs::read_to_string("/proc/cmdline")?,
-        port,
-    ) {
-        return Err(refuse("explicit selected scratch QEMU VM only").into());
-    }
-    let path = Path::new("/sys/bus/usb/devices").join(port);
-    let interface = Path::new("/sys/bus/usb/devices").join(format!("{port}:1.0"));
-    if interface.join("driver").exists() {
-        return Err(refuse("device already owned; no detach").into());
-    }
-    let bus: u8 = fs::read_to_string(path.join("busnum"))?.trim().parse()?;
-    let address: u8 = fs::read_to_string(path.join("devnum"))?.trim().parse()?;
-    if fs::read_to_string(path.join("idVendor"))?.trim() != "ffff"
-        || fs::read_to_string(path.join("idProduct"))?.trim() != "3733"
-    {
-        return Err(refuse("selected USB identity mismatch").into());
-    }
-    let file = OpenOptions::new()
-        .read(true)
-        .write(true)
-        .open(format!("/dev/bus/usb/{bus:03}/{address:03}"))?;
-    let device = nusb::Device::from_fd(file.into()).wait()?;
-    let d = device.device_descriptor();
-    if (d.vendor_id(), d.product_id()) != (0xffff, 0x3733) {
-        return Err(refuse("opened USB identity changed").into());
-    }
-    let intf = device.claim_interface(0).wait()?;
-    let desc = intf
-        .descriptor()
-        .ok_or_else(|| refuse("missing interface descriptor"))?;
-    let endpoints: Vec<_> = desc.endpoints().map(|e| e.address()).collect();
-    if desc.interface_number() != 0
-        || desc.alternate_setting() != 0
-        || endpoints.len() != 2
-        || !endpoints.contains(&1)
-        || !endpoints.contains(&0x81)
-    {
-        return Err(refuse("two-endpoint ROM interface required before download").into());
-    }
+    let opened = open_vm_interface(ProbeKind::RomRead, port)?;
+    let (intf, bus, address) = (opened.interface, opened.bus, opened.address);
     let mut output = intf.endpoint::<Bulk, Out>(1)?;
     let mut input = intf.endpoint::<Bulk, In>(0x81)?;
     if input.max_packet_size() == 0 || 512 % input.max_packet_size() != 0 {
@@ -187,32 +116,5 @@ fn main() {
     println!("{report}");
     if result.is_err() {
         std::process::exit(1);
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[test]
-    fn rejects_missing_duplicate_mismatched_and_host_inputs() {
-        let valid = "ws73.directusb_rom=1 ws73.directusb_guest=1-1.2";
-        assert!(boot_allowed("QEMU\n", true, valid, "1-1.2"));
-        for (vendor, scratch, tokens, port) in [
-            ("host", true, valid, "1-1.2"),
-            ("QEMU", false, valid, "1-1.2"),
-            ("QEMU", true, valid, "1-1.3"),
-            ("QEMU", true, "ws73.directusb_rom=1", "1-1.2"),
-            (
-                "QEMU",
-                true,
-                "ws73.directusb_rom=1 ws73.directusb_rom=1 ws73.directusb_guest=1-1.2",
-                "1-1.2",
-            ),
-        ] {
-            assert!(!boot_allowed(vendor, scratch, tokens, port));
-        }
-        for port in ["", "../1-1", "1-0", "1-1:1.0", "1-256", "1-1/../2"] {
-            assert!(!selected_port(port));
-        }
     }
 }

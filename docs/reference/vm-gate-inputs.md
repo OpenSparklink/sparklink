@@ -304,6 +304,29 @@ root fd 可能不可见，不能把只读进程快照称作绝对独占证明。
 Native库或WS73驱动，文件系统/9p模块仍按scratch root正常装入。加载库/绑定符号不等于
 打开controller、Setup、Ready或对端业务；缺导出必须拒绝并保留原错误。
 
+### DirectUSB运行期固定控制读取（实验消费者）
+
+独立未发布包`tools/lab/ws73_directusb_rom`的`ws73-directusb-control EXPLICIT_GUEST_PORT`
+与原ROM binary共用设备打开/VM guard，不进入默认daemon依赖。必须在专用Linux scratch
+QEMU guest中同时明确`ws73.directusb_control=1 ws73.directusb_guest=<端口>`；混合/重复
+DirectUSB选择器、已有driver、错误接口/描述符均拒绝，不自动detach/reset或枚举回退。
+仅接受活动配置1、唯一接口0/alt0、class e0/2/2及合格五端点；不会凭VID/PID判断E/U。
+父runner仍须执行主机叶端口白名单、身份、占用、锁和逐设备输入校验；guest端口不是主机授权。
+
+唯一请求为`bmRequestType=0xa1,bRequest=5,wValue=0,wIndex=0,wLength=4`
+（原始setup为`a105000000000400`），没有OUT状态命令、寄存器写、
+固件下载或后续Host包。控制I/O使用原2秒期限；打开阶段和父监督器的环境期限另记。
+同一操作记录只准入一次；错误、短/超长回复或迟到均拒绝成功，原回复/错误保留。
+控制future可在构造时提交，准入/记录必须在构造前；此消费者等待请求结果后单独记录
+接口release，release不代表固件/物理drain。无设备、超时或不支持平台不得填零或回退。
+
+schema1的本操作报告与原ROM报告分开：成功状态
+`RUNTIME_EP0_BYTES_OBSERVED_NOT_HOST_OR_PROTOCOL_CREDIT`，保留四字节`control.reply`
+和`raw_memory_backpressure_word_le`解释值。零是允许观察的原始值，不是芯片身份、
+DLI命令/data credit、ACK、Ready、安全或对端交付；零回复也不能实证硬件字节序。
+MSVC目标仅检查实际源代码类型；非Linux入口明确拒绝执行，Windows设备运行尚未实现。
+ROM原命令、schema和调用者保持，源码变化仍需各自准确artifact资格，不继承历史PASS。
+
 ### 单设备 Native 启动诊断
 
 `ws73_target.py run --native-startup-observe` 仅在专用 VM 内观察一个明确分配的

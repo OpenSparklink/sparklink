@@ -10,3 +10,7 @@ publish = false
 [dependencies]
 nusb = "=0.2.9"
 serde_json = "1"
+
+[[bin]]
+name = "ws73-directusb-control"
+path = "src/bin/control.rs"

@@ -5,9 +5,9 @@
 | 路线 | 当前状态 | 必须取得的独立证据 |
 |---|---|---|
 | Linux Native及现有method/发现/Provider | 已有生产实现；准确资格仍由下方结构化记录表达 | v4准确产物真实method短长交付/生命周期待完成；旧PASS不转授 |
-| 项目自有UserHost＋DirectUSB | 规划采用，未实现/未证明/未取得离线集成或实机资格 | USB库提交/取消、SDK110 E/US、Host信用/Session、双端应用 |
+| 项目自有UserHost＋DirectUSB | 完整Host未完成/未证明；已有固定ROM/Runtime只读实验消费者，不能转授Host或业务资格 | USB库提交/取消、SDK110 E/US、Host信用/Session、双端应用 |
 | ServiceChannel共用服务与UserHost端点 | 目标契约，现有Engine仍有Native查询和元数据依赖 | 原Native回归、独立authority/检查点、同一Engine互通 |
-| Windows 11 x64/MSVC | 首个目标平台，未实现/未验收 | 原生构建与IPC、WinUSB、Service/SDK、VM与跨系统业务 |
+| Windows 11 x64/MSVC | 首个目标平台；有限类型检查通过，平台执行/互通未实现或验收 | 原生构建与IPC、WinUSB、Service/SDK、VM与跨系统业务 |
 | 标准event完整矩阵、QoS/ISO/PCM及系统HID/音频 | 未完成；不能用现有method/普通通道/SDK符号推导 | 按标准版本、实际能力、双端SDU/应用及系统设备分别验收 |
 | KernelPacket、所选厂商Host | P4规划，未实现/未证明/未验收 | 独占/切换屏障/权限/库适配/Native重初始化 |
 
@@ -86,6 +86,20 @@ KCFLAGS=-Werror模块构建通过，保留1条子make警告；checkpatch为0erro
 启动门禁逐项区分 BSP、真实 CLOSE ACK、配置 TX、型号、Ready 与业务交付；任一局部观察不替代后续状态。
 来源为结构化切片 `native-startup-gate-boundaries-20261107`；未完成项和下一步由生成的 `batch.next` 维护，不据规划或准备产物授资格。
 
+## DirectUSB固定只读消费者：实现与限定离线范围
+
+源码[c22607b](https://github.com/OpenSparklink/sparklink/commit/c22607b707e25e21a478c213c4613a4e8c1ba8fb)复用同一ROM工具及显式scratch VM/guest边界，接通一个固定Runtime class-IN读。
+唯一配置/接口/五端点、原期限、fresh记录/构造前准入及短/长/错/晚/重复拒绝已实现；
+release只记其结果，不制造drain、DLIcredit或Ready。默认生产依赖、ROM命令/schema不变。
+7项实际guard/nusb parser/生产转换、50项工具、严格Clippy和冻结二进制拒绝通过；时钟/
+I/O是明确fixture。MSVC all-targets仅类型检查，非Linux执行明确Unsupported。
+
+私有Linux VM的实际消费者、原始捕获/完成核对、六项证据负对照及所有失败单独索引；
+公开仅源码/离线摘要，不在此转授完整Host、Windows、Native双端业务、固件身份、物理
+drain、形式化或恢复资格。连续传输/owner与epoch、显式固件/HCC、提交取消/排空、
+ServiceChannel/共享Engine与全平台业务仍缺失，原S0–S6及全部新增范围不减。
+唯一结构化切片`directusb-runtime-control-consumer-20261107`；历史报告和失败保持原身份，下一步见生成的batch.next。
+
 ## 平台与通道边界：限定离线通过
 
 | 生产范围／准确源码 | 已取得的检查 | 尚未取得 |
@@ -93,7 +107,7 @@ KCFLAGS=-Werror模块构建通过，保留1条子make警告；checkpatch为0erro
 | [a72dd32](https://github.com/OpenSparklink/sparklink/commit/a72dd32ba08ab906023334d4e76937f2d82b5f08)：类型化值校验、Native原errno；纯协议普通依赖不含nix，Linux编号测试保留dev依赖 | Linux严格构建/Clippy、协议/Channel/工具与Engine回归；Rust1.96.1纯协议MSVC all-targets cargo check | Windows链接/运行、原生CI、SDK/Host/IPC、实机资格 |
 | [92a7522](https://github.com/OpenSparklink/sparklink/commit/92a752223a770de139b8ffbc0b05c5113b4ace29)：Wire同fd快照/收发/Session TX；send与Pending解耦，保留Native查询/原期限 | 严格Clippy、78项Engine回归；伪快照负对照拒绝，还原重跑通过 | 完整ServiceChannel/UserHost、Native排空证明、新artifact VM实机回归 |
 
-USB依赖研究：nusb0.2.9固定源码审查、3项实际上游状态转换测试及MSVC库编译检查完成；仍是有条件原型候选，无项目DirectUSB实现或OS/USB/Windows运行资格。见[审计范围](reference/architecture/directusb-library-audit-20261101.json)及ADR0003。根生产依赖、冻结实机产物不变。
+USB依赖研究：nusb0.2.9固定源码审查、3项实际上游状态转换测试及MSVC库编译检查完成；仍是有条件候选；已有独立固定只读实验消费者，完整设备适配/Host及Windows运行资格未取得。见[审计范围](reference/architecture/directusb-library-audit-20261101.json)及ADR0003。根生产依赖、冻结实机产物不变。
 
 实验工具 [efb962c](https://github.com/OpenSparklink/sparklink/commit/efb962c575dbafa387ef79fb0120ac61c7d1fa85) 已接入现有 VM ROM 观察消费者，独立 nusb 锁文件；
 严格构建、输入 guard、46项 receipt/工具负对照及实际二进制无参数拒绝通过。
@@ -269,7 +283,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Native B still needs accurate-artifact two-peer methodv4/eventcontract2/combinedOwnedProvider and original discovery/connect/socket,length,lifecycle/peerbusiness. Maintenance Native library selection and missing-export errors are fixed with limited ABI/device-free loader checks;private transport attempts keep separate exact source/artifact/tool provenance and all failures. No unchanged failed Native or PM retry;control completion,raw memory count,probe support or partial ACK is not wake,Ready,firmware identity or recovery. Continue existing-Engine ServiceChannel and typed DirectUSB/ownUserHost/Windows C/D/E/W dependency work while justified startup investigation proceeds;only KernelPacket/vendor P4. Preserve full S0-S6/19WP/10FV/12DG,originalbudget/acceptance,VM-only,strict leaf allocation,source/offline-only public policy and natural-root/nonmanual-recovery OPEN conditions.",
+  "next": "Native B still needs accurate-artifact two-peer methodv4/eventcontract2/combinedOwnedProvider and original discovery/connect/socket,length,lifecycle/peerbusiness;no unchanged failed Native,PM or register retries. C now has one shared guarded ROM/Runtime fixed-read experimental consumer with limited offline validation;private actual device observations remain separately bound and are not Host,Ready,protocolcredit,drain or recovery. Continue bounded typed DirectUSB submit/cancel/drain and same-Engine ServiceChannel/ownHost/Windows C/D/E/W along actual consumers;only KernelPacket/vendor P4. Preserve full S0-S6/19WP/10FV/12DG,originalbudget/acceptance,VM-only,strict per-leaf allocation and public source/offline-only policy;natural-root/nonmanual-recovery OPEN.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

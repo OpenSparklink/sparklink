@@ -107,24 +107,24 @@ python3 tools/build_resources.py --with-vm -- cargo +1.96.1 check --locked --off
 ```
 归档使用[固定官方来源](https://static.crates.io/crates/nusb/nusb-0.2.9.crate)并由工具核对hash；依赖首次须按归档Cargo.lock准备缓存，缺失不得记PASS。构建仍共用锁和总预算；无平台运行或生产资格推导。
 
-### C 的最小消费者：VM ROM 观察（2026-11-01）
+### C 的实际实验消费者：ROM与Runtime只读边界
 
-[源码 efb962c](https://github.com/OpenSparklink/sparklink/commit/efb962c575dbafa387ef79fb0120ac61c7d1fa85) 接通现有 `rom_observations` / scratch VM 打包器，
-独立未发布工具固定 nusb0.2.9，仅执行固定 READM。默认生产依赖及冻结 v4 产物不变。
-复用原型号解析与证据，不新增 Host、启动引擎或自动镜像选择。旧 usbfs 观察仅保留为
-现有诊断对照；显式选新执行器后绝不回退，完成 VM 对照后再决定旧传输分支退休。
+源码[c22607b](https://github.com/OpenSparklink/sparklink/commit/c22607b707e25e21a478c213c4613a4e8c1ba8fb)在同一独立未发布nusb0.2.9包内复用原ROM消费者，新增固定Runtime class-IN读。
+显式scratch QEMU/guest选择、无driver、唯一Runtime配置与五端点、fresh记录、原2秒I/O
+期限及构造提交前准入接通；错误/短/长/晚到/重复拒绝，release不当作drain。ROM原
+READM/schema/2秒和额外最多1秒取消观察不变；默认生产依赖无新增，不复制Host/Engine。
 
-本批源码退出：显式 guest 拓扑和 VM/scratch guard、已有 driver 拒绝、两端点检查、
-单个在途、原 2 秒 I/O 期限、额外最多 1 秒取消完成观察；停止后不再提交，未知/未排空
-不宣布成功。原报告失败、短回复、晚到、hash变化和监督器超时保持失败。已通过严格
-Clippy、1项实际输入guard测试、46项工具/receipt/staging回归和实际二进制无参数拒绝；
-fixture不执行USB，新增独立锁定CI检查尚不能称在线运行通过。
+本批相关源码退出：7项实际guard/nusb描述符parser/生产转换、50项工具回归、严格Clippy、
+实际冻结二进制无参数拒绝及MSVC all-targets类型检查通过；I/O/时钟是明确fixture。
+Windows执行Unsupported，未链接/运行WinUSB；无新形式化或Host/业务资格。历史ROM
+消费者[efb962c](https://github.com/OpenSparklink/sparklink/commit/efb962c575dbafa387ef79fb0120ac61c7d1fa85)的原检查范围及失败保留，新检查不转授。
+实际VM/设备观察和失败按准确编译/执行身份只入授权本地索引，不把四字节或release当作
+Ready、DLIcredit、最终排空、冷ROM有效性、唤醒/自然恢复或双端应用处理。
 
-下一硬件退出：新产物/工具身份封存，核对占用和逐叶白名单后，仅专用VM比较明确E/U的
-读取/长度/字节序和现有原始USB证据；注入或自然取消/拔出分别验证completion/drain与
-同行隔离。此前离线批次不具备该工具VM运行或冷ROM可读性资格；后续观察另按准确身份限定。原软件复位流程
-不冒充冷断电；全零有效性未证明，不允许自动选U。Windows、包适配、启动、Host信用及
-Session仍缺失，U#24/#25/#27不关闭；Native method v4继续独立推进。
+下一C退出：沿当前消费者扩展有界类型化传输，明确controller所有权/epoch、实际提交、
+取消晚完成/buffer/drain与单侧隔离；显式E/US三镜像/HCC及原始门禁逐步接通，不预造完整
+框架。B的准确产物methodv4/eventcontract2/组合Provider与原数据/生命周期继续，失败路径
+只在有新依据时重试。唯一切片`directusb-runtime-control-consumer-20261107`，U#24/#27保持开放；KernelPacket/厂商P4不成为前置。
 
 ### C 的单次只读交换证据门禁（2026-11-01）
 
@@ -797,7 +797,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Native B still needs accurate-artifact two-peer methodv4/eventcontract2/combinedOwnedProvider and original discovery/connect/socket,length,lifecycle/peerbusiness. Maintenance Native library selection and missing-export errors are fixed with limited ABI/device-free loader checks;private transport attempts keep separate exact source/artifact/tool provenance and all failures. No unchanged failed Native or PM retry;control completion,raw memory count,probe support or partial ACK is not wake,Ready,firmware identity or recovery. Continue existing-Engine ServiceChannel and typed DirectUSB/ownUserHost/Windows C/D/E/W dependency work while justified startup investigation proceeds;only KernelPacket/vendor P4. Preserve full S0-S6/19WP/10FV/12DG,originalbudget/acceptance,VM-only,strict leaf allocation,source/offline-only public policy and natural-root/nonmanual-recovery OPEN conditions.",
+  "next": "Native B still needs accurate-artifact two-peer methodv4/eventcontract2/combinedOwnedProvider and original discovery/connect/socket,length,lifecycle/peerbusiness;no unchanged failed Native,PM or register retries. C now has one shared guarded ROM/Runtime fixed-read experimental consumer with limited offline validation;private actual device observations remain separately bound and are not Host,Ready,protocolcredit,drain or recovery. Continue bounded typed DirectUSB submit/cancel/drain and same-Engine ServiceChannel/ownHost/Windows C/D/E/W along actual consumers;only KernelPacket/vendor P4. Preserve full S0-S6/19WP/10FV/12DG,originalbudget/acceptance,VM-only,strict per-leaf allocation and public source/offline-only policy;natural-root/nonmanual-recovery OPEN.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

@@ -9155,6 +9155,38 @@
       ],
       "closed": [],
       "qualification": "LIMITED_ABI_AND_DEVICE_FREE_LOADER_ONLY_NO_NEW_BUSINESS_OR_RECOVERY"
+    },
+    {
+      "id": "directusb-runtime-control-consumer-20261107",
+      "source_commit": "c22607b707e25e21a478c213c4613a4e8c1ba8fb",
+      "issues": [
+        {
+          "repository": "sparklink",
+          "number": 24,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/24",
+          "state": "open",
+          "before_sha256": "6ee67756371b993d096339ed225b224f02a1b24ea68f91e921dac98bd0bade28",
+          "body_sha256": "1f1b71ba57acd221ea4d3cd123a46e268bb864be92d68db535b47d7f692f710a",
+          "updated_at": "2026-11-07T01:46:13Z",
+          "original_scope_preserved": true,
+          "source_offline_only": true,
+          "private_execution_details_published": false
+        },
+        {
+          "repository": "sparklink",
+          "number": 27,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/27",
+          "state": "open",
+          "before_sha256": "bef9a8841435f49c990136fcd658cccbdbfddd907e60db2092aa1ca5f55a3d0a",
+          "body_sha256": "59da6ee65764fbf1121e31b4d92b7b9bfb84b214b6584b590d433f529e748841",
+          "updated_at": "2026-11-07T01:46:16Z",
+          "original_scope_preserved": true,
+          "source_offline_only": true,
+          "private_execution_details_published": false
+        }
+      ],
+      "closed": [],
+      "qualification": "LIMITED_SOURCE_OFFLINE_ONLY_PRIVATE_RUNTIME_OBSERVATION_NOT_HOST_BUSINESS_OR_RECOVERY"
     }
   ]
 }

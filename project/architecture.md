@@ -4,7 +4,7 @@
 用户正式采用交接输入（SHA256 `d0ff6f757eb59af63725441e66a502beb8c6e215d271a2da0d85add22222877e`），合入本唯一架构；交接不是第二套计划或资格报告。
 原 S0–S6、19WP、10FV、12DG、预算和全部原验收保留，**有效目标新增**自有 UserHost/DirectUSB、Windows及QoS/ISO/音频/系统集成，不能再笼统称scope完全未变。
 本节修订早期“所有UserHost均P4、内核始终负责固件/HCC、Host含SSAP”的概括；历史批次中的UserHost P4仅指旧KernelPacket/厂商分支。当前Native路径和未提交工作不被替换。
-状态：已采用设计；新增路线未实现、未证明、未取得平台或实机资格。当前method/发现/Provider/VM v4及唯一Engine已有实现，复用而不重做。
+状态：完整新增路线尚未完成、证明或取得平台/业务资格；C已有独立ROM/Runtime固定只读实验消费者，不是完整设备适配或Host。当前method/发现/Provider/VM v4及唯一Engine已有实现，复用而不重做。
 批次及可关闭范围以[唯一计划](implementation-plan.md)与各子项为准；权限、锁、系统调用及USB执行适配不能因共享codec而宣称等价。
 
 ### 核心决策及相对旧规划的变化

@@ -35,12 +35,21 @@ DirectUSB的固件/USB/HCC/BSLE在用户态设备适配；Native/KernelPacket在
 
 ### 最小消费者边界
 
-独立 `tools/lab/ws73_directusb_rom` 是库审查后的实际实验消费者：复用现有 VM ROM
-观察流程、固定读命令和原 decoder，不作为默认 daemon 或 Host 后端。独立 Cargo.lock
-防止未接通依赖进入生产；禁止接管已有 driver、隐式扫描和失败回退。每次低层提交前
-核对原期限/无在途，取消后只收完成，超限记隔离；进程退出不证明 drain。
-先取得专用 VM 的真实提交与取消证据，再扩大到连续设备 actor、固件/HCC/BSLE和包接口。
-这项有界实验不会削减 controller 所有权、generation、命令/数据 credit 或正式实机门禁。
+独立 `tools/lab/ws73_directusb_rom` 固定 nusb0.2.9，是实际实验消费者，不进入默认
+daemon/Host依赖。ROM固定READM与Runtime固定memory-backpressure class-IN读共享
+显式guest拓扑、scratch QEMU、无driver和选定接口边界，禁止扫描后任选、detach、reset
+或失败回退。ROM原两端点/2秒I/O及额外最多1秒取消观察保持；Runtime要求唯一配置1、
+接口0/alt0、class/subclass/protocol与完整五端点几何，并只读四字节。
+
+每次调用control构造器前先检查原期限并记录已开始的提交；过期不调用。fresh记录只准入
+一次，错误/短/长/晚到不成功，接口release与请求结果分记，不能用release/drop/进程退出
+证明OS最终排空或固件状态清除。全零是原始传输字节，不能推导有效访问、型号、固件、
+DLI信用、Ready或恢复。接口claim只排他当前接口，不证明完整controller所有权。
+
+实际生产函数回归显式替换时钟/I/O，限定离线、Linux VM观察和Windows编译须分开。
+非Linux执行当前明确Unsupported；MSVC类型检查不授WinUSB或平台运行资格。
+连续设备actor仍须原owner/generation/预算、提交/取消/drain、显式E/US三镜像/HCC、
+类型化包与真实业务门禁；原Native主线、S0–S6/19WP/10FV/12DG和VM-only不削减。
 
 ## 2026-10-13 原决定的保留部分（KernelPacket分支）
 

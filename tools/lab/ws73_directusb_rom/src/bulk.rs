@@ -184,6 +184,7 @@ mod tests {
         submits: usize,
         cancels: usize,
         leave_pending: bool,
+        waits: Vec<Duration>,
     }
     impl Fixture {
         fn new(answers: Vec<Answer>) -> Self {
@@ -195,6 +196,7 @@ mod tests {
                 submits: 0,
                 cancels: 0,
                 leave_pending: false,
+                waits: vec![],
             }
         }
     }
@@ -218,7 +220,8 @@ mod tests {
             self.pending += 1;
             self.submits += 1;
         }
-        fn wait(&mut self, _: Duration) -> Option<Completion> {
+        fn wait(&mut self, duration: Duration) -> Option<Completion> {
+            self.waits.push(duration);
             match self.answers.pop_front().expect("explicit endpoint answer") {
                 Answer::Pending => None,
                 Answer::Done(status, actual_len) => {
@@ -249,10 +252,11 @@ mod tests {
             (0, 512, t),
             (1, 512, t + IO_LIMIT),
             (0, 513, t + IO_LIMIT),
+            (0, 1024, t + IO_LIMIT),
             (0, 4, t + IO_LIMIT),
             (0, 0, t + IO_LIMIT),
         ] {
-            let mut ep = Fixture::new(vec![]);
+            let mut ep = Fixture::new(vec![Answer::Done(Ok(()), 4)]);
             ep.pending = pending;
             let mut row = json!({});
             assert!(exchange_io(&mut ep, Buffer::new(size), deadline, || t, &mut row).is_err());
@@ -403,5 +407,40 @@ mod tests {
             assert!(exchange_io(&mut ep, Buffer::new(512), t + IO_LIMIT, || t, &mut row).is_err());
             assert_eq!(ep.submits, 0);
         }
+    }
+
+    #[test]
+    fn wait_budgets_consume_submit_and_cancel_time_without_resetting_deadlines() {
+        let t = Instant::now();
+        let mut ep = Fixture::new(vec![
+            Answer::Pending,
+            Answer::Done(Err(TransferError::Cancelled), 0),
+        ]);
+        let mut row = json!({});
+        let mut clock = vec![
+            t,
+            t + Duration::from_millis(100),
+            t + Duration::from_millis(500),
+            t + IO_LIMIT,
+            t + IO_LIMIT + Duration::from_millis(250),
+            t + IO_LIMIT + Duration::from_millis(500),
+        ]
+        .into_iter();
+        assert!(
+            exchange_io(
+                &mut ep,
+                Buffer::new(512),
+                t + IO_LIMIT,
+                || clock.next().unwrap(),
+                &mut row
+            )
+            .is_err()
+        );
+        assert_eq!(
+            ep.waits,
+            [Duration::from_millis(1500), Duration::from_millis(750)]
+        );
+        assert_eq!(row["stage"], "DEADLINE_COMPLETION_RETAINED_NOT_SUCCESS");
+        assert_eq!((ep.submits, ep.cancels, ep.pending), (1, 1, 0));
     }
 }

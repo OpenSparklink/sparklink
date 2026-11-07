@@ -86,20 +86,25 @@ KCFLAGS=-Werror模块构建通过，保留1条子make警告；checkpatch为0erro
 启动门禁逐项区分 BSP、真实 CLOSE ACK、配置 TX、型号、Ready 与业务交付；任一局部观察不替代后续状态。
 来源为结构化切片 `native-startup-gate-boundaries-20261107`；未完成项和下一步由生成的 `batch.next` 维护，不据规划或准备产物授资格。
 
-## DirectUSB实验消费者：共用bulk与限定离线范围
+## DirectUSB实验消费者：本地owner门禁与限定离线范围
 
-源码[f42ce48](https://github.com/OpenSparklink/sparklink/commit/f42ce48411bb0edf1201b87f25d369e33791f6f2)保留固定控制读取，ROM与Runtime单IN消费者共用实际有界bulk交换：
-fresh记录、单在途/至多512字节、submit/wait原2秒期限及额外1秒清理；部分/错误/迟到与
-未排空分记，取消完成或release不把原超时变成功。原ROM命令/schema、默认daemon/Host不变。
-验证[f26445f](https://github.com/OpenSparklink/sparklink/commit/f26445f870b2cece09c54d0660d142e5698bc1bf)覆盖独立字节预算及submit/cancel耗时，15项生产函数/guard/parser、50项工具、
-严格Clippy、三种冻结binary拒绝和MSVC类型检查通过；端点/时钟是明确fixture，非Linux执行仍Unsupported。
-三个生产源码变异由实际测试拒绝，隔离缓存/库身份后重新编译原包的15项通过；首轮缓存
-污染的恢复失败保留且整轮未接受。测试提交不当编译/执行身份，实际VM仍按原精确产物记录。
+源码[1778353](https://github.com/OpenSparklink/sparklink/commit/177835332aa12fbaf58110069f4c098b6d4b21d8)把同一ROM、固定控制读取及被动IN82消费者接入本地owner/token提交门禁。
+构建有界校验固定内核LeaseAuthority原字节快照并直接编译；实际submit/control构造与撤销
+同Mutex，等待在锁外。token绑定存活对象/本地epoch；外来/退休、原期限及poison检查拒绝
+新提交；Busy尚未完成撤销。control分型未调用/已调用错误，不从errno推物理义务。
+原单在途/512字节、2秒I/O/最多1秒清理与失败保留，默认daemon/Native/唯一Engine不变。
 
-私有VM、原始USB/主机完成及证据负对照另索引；公开仅源码/离线摘要，不授完整Host、
-Native双端业务、Windows运行、最终OS/固件drain、形式化、自然根因或非人工恢复资格。
-controller所有权/epoch、连续包传输/stop-drain、显式启动/HCC和同行业务、UserHost与共用
-Engine仍缺失；原完整S0–S6/19WP/10FV/12DG和新增范围保留。切片`directusb-shared-bulk-lifecycle-20261107`，后续仅见生成batch.next。
+22项实际纯转换/guard/执行适配、50项Python、严格Clippy、3种冻结binary拒绝和MSVC类型
+检查通过；5组实际build.rs输入含4组拒绝，源pin不能静默回退。线程/时钟/端点fixture
+边界显式，不授内核/OS并发或形式化资格。非Linux执行仍Unsupported；Windows运行未验。
+[d897658](https://github.com/OpenSparklink/sparklink/commit/d897658b1d7d18f5e598fc57176fb44fedbcd03e)对齐CI两路预算，同环境实际源pin重放通过；首轮在线预算拒绝保留，后续结果单独核对。
+
+实机尝试、准确编译/执行身份、原始USB/主机完成及证据负对照留授权本地索引。不得把
+原I/O超时改写为成功，pending0/free/release不等最终OS/固件drain；本地epoch不授Native
+Grant/generation、全局controller排他/安全/Ready。完整owner/EP0/reset/进程隔离、连续
+类型化包、stop/drain、显式E/US启动/HCC、同行业务及完整Host仍缺失，Native双端业务
+须按自己的准确artifact验收；自然根因/非人工恢复开放。原资格/失败不转授当前HEAD。
+切片`directusb-local-owner-submit-gate-20261107`；完整原范围/预算与新增C/D/E/W保留，下一批见生成batch.next。
 
 ## 平台与通道边界：限定离线通过
 
@@ -284,7 +289,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Native B still needs accurate-artifact two-peer methodv4/eventcontract2/combinedOwnedProvider and original discovery/connect/socket,length,lifecycle/peerbusiness;do not repeat unchanged failed Native/PM/register attempts. C now shares actual bounded ROM/Runtime bulk exchange with limited offline validation and separately bound private controlled cancellation observation;original IO failure remains failure,no Host/credit/drain/recovery qualification. Next C:controller owner/epoch and typed continuous transport/stop-drain,explicit E/US boot/HCC before ownHost D;reuse actual consumers and production codecs,not another Engine. Continue sameEngine ServiceChannel/Windows C/D/E/W without whole-control prerequisite;only KernelPacket/vendor P4. Preserve S0-S6/19WP/10FV/12DG,originalbudget/acceptance,VM-only,leaf allocation,public source/offline-only policy,and natural-root/nonmanual-recovery OPEN.",
+  "next": "Native B still needs accurate-artifact two-peer methodv4/eventcontract2/combinedOwnedProvider and original discovery/connect/socket,length,lifecycle/peerbusiness;no unchanged failed Native/PM/register repeats. C now has exact production LeaseAuthority-backed local-process transport owner/token submit gate,limited offline and separately indexed private controlled observations;original IO failure remains failure. Next C:reuse actual portable production wire codec for typed Command/Event/ACB and finite continuous transport,full owner/generation/stop-drain,explicit SDK110 E/US boot/HCC before ownHost D;local epoch is not global controller identity or Native Grant. Continue unique Engine/ServiceChannel and Windows C/D/E/W without whole-control prerequisite;only KernelPacket/vendor P4. Preserve S0-S6/19WP/10FV/12DG,originalbudget/acceptance,VM-only,leaf allocation,public source/offline policy,and natural-root/nonmanual-recovery OPEN.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

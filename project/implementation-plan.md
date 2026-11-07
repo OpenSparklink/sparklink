@@ -107,26 +107,30 @@ python3 tools/build_resources.py --with-vm -- cargo +1.96.1 check --locked --off
 ```
 归档使用[固定官方来源](https://static.crates.io/crates/nusb/nusb-0.2.9.crate)并由工具核对hash；依赖首次须按归档Cargo.lock准备缓存，缺失不得记PASS。构建仍共用锁和总预算；无平台运行或生产资格推导。
 
-### C 的实际实验消费者：ROM、固定控制与有界bulk
+### C 的实际实验消费者：本地owner与有界提交
 
-源码[f42ce48](https://github.com/OpenSparklink/sparklink/commit/f42ce48411bb0edf1201b87f25d369e33791f6f2)把原ROM单在途交换收敛为同一有界bulk实现，新增固定Runtime IN82只接收消费者。
-原READM/schema、控制读取和VM/guest/无driver/精确描述符继续；仅一个在途、至多512字节、
-fresh记录、submit前与wait前原2秒期限检查，额外最多1秒清理包含取消调用。部分/错/晚/
-未排空保持原结果，不以cancel/release成功退款或制造Host/Ready。默认生产依赖不变。
+源码[1778353](https://github.com/OpenSparklink/sparklink/commit/177835332aa12fbaf58110069f4c098b6d4b21d8)迁移同一ROM、固定Runtime控制读取及IN82消费者到TransportOwner门禁。
+构建显式选固定内核LeaseAuthority，验证有界字节快照再原样编译；不另造权限算法。
+raw interface不外泄，endpoint借用设备、token持有原owner对象/epoch；撤销和实际nusb
+调用同Mutex。外国/退休token、过期及poison拒绝新提交；Busy不代表已撤销。
+control区分未调用与已调用失败，不从errno退款；等待/取消在锁外。原单在途/512字节、
+2秒I/O和额外最多1秒清理、原ROM命令/schema及失败语义不变。默认生产依赖/Engine不变。
 
-验证[f26445f](https://github.com/OpenSparklink/sparklink/commit/f26445f870b2cece09c54d0660d142e5698bc1bf)只改测试，生产段字节不变；15项实际guard/parser/生产函数、50项Python、
-严格Clippy、MSVC all-targets类型检查和三种冻结binary无参数拒绝通过。时钟/端点是fixture，
-不授OS并发、Host、Windows、形式化或业务资格。三项实际生产变异在独立缓存/库身份下
-拒绝，重新编译原包的正向15项通过；首轮共享缓存误用变异binary的恢复失败保留，整轮未接受。
+离线22项实际生产纯转换/guard及执行适配、50项Python、严格Clippy、3种冻结binary拒绝
+和MSVC all-targets类型检查通过；时钟/端点/线程fixture与覆盖边界显式，非Linux执行仍Unsupported。
+实际build.rs的5组输入含4组拒绝，覆盖缺选择、错hash、超限及根外symlink。
+[d897658](https://github.com/OpenSparklink/sparklink/commit/d897658b1d7d18f5e598fc57176fb44fedbcd03e)对齐CI的两路Cargo/共享预算；同环境实际源pin重放通过，首次在线预算拒绝保留，
+后续线上结果按准确提交另核。原变异缓存恢复失败及历史失败保留，不靠重跑覆盖。
 
-实际VM尝试/原始USB/native callback及失败只入准确编译/执行身份的授权本地索引。
-原I/O失败不升级成功；endpoint零pending/free/release不证明完整OS或固件drain，控制字节
-不证明型号、DLIcredit、冷ROM有效性、自然恢复或对端应用。旧消费者/qualification保留原身份。
+真实VM/USB/native完成、编译/执行身份与证据负对照仅在授权本地索引；原I/O失败不升级。
+本地epoch不等Native generation/Grant/global身份，claim不授controller/EP0/reset排他；
+pending0/free/release不授最终OS/固件drain、HostReady、credit、对端业务或自然恢复。
 
-下一C退出：controller所有权/epoch、连续有界类型化传输、stop/drain及同行隔离，显式
-E/US三镜像/HCC后才进入Host最小链路。B的methodv4/eventcontract2/组合Provider及原数据/
-生命周期继续，只在有新启动依据后重试；不造完整通用框架或复制Engine，不增加全控制面前置。
-切片`directusb-shared-bulk-lifecycle-20261107`，U#24保持开放；完整原范围和C/D/E/W不减，KernelPacket/厂商单独P4。
+下一C退出：复用实际可移植wire.c/h的生产codec接通类型化Command/Event/ACB，完成有界
+连续传输、完整owner/generation及stop/drain/同行隔离，显式SDK110 E/US三镜像/HCC后
+进入自有Host最小通道。B的methodv4/eventcontract2/组合Provider及原数据/生命周期继续，
+只在有新启动依据后重试；不复制Engine或等待全控制面。切片`directusb-local-owner-submit-gate-20261107`，U#24开放；
+原S0–S6/19WP/10FV/12DG/预算/验收和新增C/D/E/W完整保留，KernelPacket/厂商单独P4。
 
 ### C 的单次只读交换证据门禁（2026-11-01）
 
@@ -799,7 +803,7 @@ R4f2e有限14门禁已经封存，当前进入WP18/R5应用客户端／共享契
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Native B still needs accurate-artifact two-peer methodv4/eventcontract2/combinedOwnedProvider and original discovery/connect/socket,length,lifecycle/peerbusiness;do not repeat unchanged failed Native/PM/register attempts. C now shares actual bounded ROM/Runtime bulk exchange with limited offline validation and separately bound private controlled cancellation observation;original IO failure remains failure,no Host/credit/drain/recovery qualification. Next C:controller owner/epoch and typed continuous transport/stop-drain,explicit E/US boot/HCC before ownHost D;reuse actual consumers and production codecs,not another Engine. Continue sameEngine ServiceChannel/Windows C/D/E/W without whole-control prerequisite;only KernelPacket/vendor P4. Preserve S0-S6/19WP/10FV/12DG,originalbudget/acceptance,VM-only,leaf allocation,public source/offline-only policy,and natural-root/nonmanual-recovery OPEN.",
+  "next": "Native B still needs accurate-artifact two-peer methodv4/eventcontract2/combinedOwnedProvider and original discovery/connect/socket,length,lifecycle/peerbusiness;no unchanged failed Native/PM/register repeats. C now has exact production LeaseAuthority-backed local-process transport owner/token submit gate,limited offline and separately indexed private controlled observations;original IO failure remains failure. Next C:reuse actual portable production wire codec for typed Command/Event/ACB and finite continuous transport,full owner/generation/stop-drain,explicit SDK110 E/US boot/HCC before ownHost D;local epoch is not global controller identity or Native Grant. Continue unique Engine/ServiceChannel and Windows C/D/E/W without whole-control prerequisite;only KernelPacket/vendor P4. Preserve S0-S6/19WP/10FV/12DG,originalbudget/acceptance,VM-only,leaf allocation,public source/offline policy,and natural-root/nonmanual-recovery OPEN.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

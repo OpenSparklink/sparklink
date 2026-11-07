@@ -9208,6 +9208,27 @@
       ],
       "closed": [],
       "qualification": "LIMITED_SOURCE_OFFLINE_PRIVATE_CONTROLLED_OBSERVATION_NOT_HOST_OR_RECOVERY"
+    },
+    {
+      "id": "directusb-local-owner-submit-gate-20261107",
+      "source_commit": "177835332aa12fbaf58110069f4c098b6d4b21d8",
+      "ci_budget_source_commit": "d897658b1d7d18f5e598fc57176fb44fedbcd03e",
+      "issues": [
+        {
+          "repository": "sparklink",
+          "number": 24,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/24",
+          "state": "open",
+          "before_sha256": "f5d3042426d9cd693d9d862e7a8e70ee654d17739ff1cf4ba2da206e6ac980ce",
+          "body_sha256": "0e4bf019b86f9b610cdd6d3ec58576ec968502665262a2ddb01d5cb1831ead1f",
+          "updated_at": "2026-11-07T03:30:22Z",
+          "original_scope_preserved": true,
+          "source_offline_only": true,
+          "private_execution_details_published": false
+        }
+      ],
+      "closed": [],
+      "qualification": "LIMITED_LOCAL_OWNER_SOURCE_OFFLINE_PRIVATE_CONTROLLED_OBSERVATIONS_NOT_HOST_OR_RECOVERY"
     }
   ]
 }

@@ -55,7 +55,7 @@
       "Original scope retained for historical v1-v3",
       "Publish source/offline summary only"
     ],
-    "next": "Native B still needs accurate-artifact two-peer methodv4/eventcontract2/combinedOwnedProvider and original discovery/connect/socket,length,lifecycle/peerbusiness;do not repeat unchanged failed Native/PM/register attempts. C now shares actual bounded ROM/Runtime bulk exchange with limited offline validation and separately bound private controlled cancellation observation;original IO failure remains failure,no Host/credit/drain/recovery qualification. Next C:controller owner/epoch and typed continuous transport/stop-drain,explicit E/US boot/HCC before ownHost D;reuse actual consumers and production codecs,not another Engine. Continue sameEngine ServiceChannel/Windows C/D/E/W without whole-control prerequisite;only KernelPacket/vendor P4. Preserve S0-S6/19WP/10FV/12DG,originalbudget/acceptance,VM-only,leaf allocation,public source/offline-only policy,and natural-root/nonmanual-recovery OPEN.",
+    "next": "Native B still needs accurate-artifact two-peer methodv4/eventcontract2/combinedOwnedProvider and original discovery/connect/socket,length,lifecycle/peerbusiness;no unchanged failed Native/PM/register repeats. C now has exact production LeaseAuthority-backed local-process transport owner/token submit gate,limited offline and separately indexed private controlled observations;original IO failure remains failure. Next C:reuse actual portable production wire codec for typed Command/Event/ACB and finite continuous transport,full owner/generation/stop-drain,explicit SDK110 E/US boot/HCC before ownHost D;local epoch is not global controller identity or Native Grant. Continue unique Engine/ServiceChannel and Windows C/D/E/W without whole-control prerequisite;only KernelPacket/vendor P4. Preserve S0-S6/19WP/10FV/12DG,originalbudget/acceptance,VM-only,leaf allocation,public source/offline policy,and natural-root/nonmanual-recovery OPEN.",
     "actor_obligation_regression": {
       "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
       "entry": "ssap_engine::exchange_loop",
@@ -529251,6 +529251,42 @@
               "before_sha256": "1f1b71ba57acd221ea4d3cd123a46e268bb864be92d68db535b47d7f692f710a",
               "body_sha256": "f5d3042426d9cd693d9d862e7a8e70ee654d17739ff1cf4ba2da206e6ac980ce",
               "updated_at": "2026-11-07T02:26:15Z",
+              "original_scope_preserved": true,
+              "source_offline_only": true,
+              "private_execution_details_published": false
+            }
+          ]
+        },
+        {
+          "id": "directusb-local-owner-submit-gate-20261107",
+          "source_commit": "177835332aa12fbaf58110069f4c098b6d4b21d8",
+          "ci_budget_source_commit": "d897658b1d7d18f5e598fc57176fb44fedbcd03e",
+          "status": "IMPLEMENTED_LIMITED_OFFLINE_LOCAL_OWNER_GATE_PRIVATE_CONTROLLED_OBSERVATIONS_SEPARATE",
+          "scope": "Existing standalone ROM/control/passive-IN consumers share a local transport owner submit gate using exact pinned production LeaseAuthority bytes;not global controller ownership,Native Grant/generation,full Host,OS/firmware drain or business qualification.",
+          "checks": {
+            "implementation": "ExactboundedKernelLeaseAuthoritysourcehash/snapshot;private rawinterface,borrowedendpoint/tokenboundtoliveownerobjectandepoch,samestdMutexrevoke/actualnusbconstructor,no waitunderlock. Originaldeadlineandboundedbulk preserved;controltypednotcalled/submitted errors,no errno inference. DefaultNative/Host/Engine/credit unchanged.",
+            "tests": "22 actualproductionprimitive/adapter/guard tests,50Python,strictClippy,MSVCalltargetstypecheck,3actualbinarynoargrefusals;5actualbuild.rsinputs incl4rejections. Explicitclock/endpoint/threadfixtures andbounds,not kernel/OSconcurrencyproof.",
+            "CI": "Initialisolatedjobbudgetmismatch correctlyrefused beforecompile. SameCARGO_BUILD_JOBS/SPARKLINK_BUILD_JOBS=2 actualsourcepin/sparseinput replaypassed;onlineCIboundtoitsowncommit,notassumed.",
+            "evidence": "ControlledVMandindependentcompleteUSB/nativecallbackevidence indexedprivately;8saved-inputnegativesrejected inv2,originalv1failedinjectionretained. OriginalIOfailure remainsfailure,pending0/free/release notphysicaldrain. Publicsource/offlineonly."
+          },
+          "qualification_transfer": false,
+          "new_real_device_qualification": false,
+          "new_accepted_proof": false,
+          "previous_goal_turn_classification": "PROGRESS",
+          "not_tested": [
+            "Globalcontrollerexclusion/EP0/reset/otherprocesspermissions/fork/fdpassing,fullDeviceRuntimegeneration,continuousactor/typedCommandEventACB/stopdrain,explicitE/USboot/HCC andpeerbusinessisolation",
+            "AccurateNative2peermethodv4/eventcontract2/combinedProvider andoriginaldiscovery/connect/socket/length/lifetimebusiness",
+            "Windowsruntime/WinUSB/IPC/permissions,UserHostSession/protocolcredit andsharedSSAPinterop;alloriginalsecurity/fourdevice/Profile/deploy/recovery/release"
+          ],
+          "issue_sync": [
+            {
+              "repository": "sparklink",
+              "number": 24,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/24",
+              "state": "open",
+              "before_sha256": "f5d3042426d9cd693d9d862e7a8e70ee654d17739ff1cf4ba2da206e6ac980ce",
+              "body_sha256": "0e4bf019b86f9b610cdd6d3ec58576ec968502665262a2ddb01d5cb1831ead1f",
+              "updated_at": "2026-11-07T03:30:22Z",
               "original_scope_preserved": true,
               "source_offline_only": true,
               "private_execution_details_published": false

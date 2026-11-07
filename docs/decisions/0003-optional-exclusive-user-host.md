@@ -45,6 +45,16 @@ daemon/Host依赖。ROM固定READM与Runtime固定memory-backpressure class-IN�
 一次，错误/短/长/晚到不成功，接口release与请求结果分记，不能用release/drop/进程退出
 证明OS最终排空或固件状态清除。全零是原始传输字节，不能推导有效访问、型号、固件、
 DLI信用、Ready或恢复。接口claim只排他当前接口，不证明完整controller所有权。
+当前ROM/控制读取/被动IN消费者使用同一本地TransportOwner：构建校验固定内核
+LeaseAuthority生产文件，将有界原字节快照编译进独立实验包，不维护权限算法副本。
+endpoint借用已打开设备，token保留同一owner对象与本地epoch；同epoch的其他/新对象
+不能取得旧权限。撤销与实际nusb调用用同一stdMutex，锁内重验原期限，等待/取消在锁外；
+Busy只表示撤销尚未完成，poison拒绝新提交。控制构造器未调用与已调用后失败分型，
+不能以errno相同推断物理义务相同。release/Drop退休本地权限，不制造物理排空证明。
+这是进程/接口提交门禁，**不是**controller全局身份、Native Grant/generation或可信安全。
+EP0/reset/其他进程排他、fork/fd传递、DeviceRuntime身份、连续actor及最终drain仍须实施；
+实际纯转换的复用不转授内核IRQ锁、USB/OS或固件性质。原始期限和失败继续保留。
+
 ROM与固定Runtime IN82复用同一实际bulk交换，单在途/每次至多512字节；原2秒期限
 在submit前重验、提交后重算等待，额外1秒清理消耗取消调用时间。真实completion、
 部分/错误/迟到与隔离分别保留；即使取消后返回成功completion，原超时仍失败。

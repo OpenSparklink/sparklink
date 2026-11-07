@@ -35,6 +35,8 @@ enum Command {
         #[arg(value_enum)]
         query: NativeQuery,
     },
+    /// Experimental volatile address setup;Diagnostic lease,untouched Setup only
+    RuntimeAddress { address: String },
     /// Show adapter information
     Info,
 
@@ -106,7 +108,10 @@ fn run(cli: Cli) -> anyhow::Result<()> {
         print_registration(&adapter.registration_snapshot(index, cli.generation.unwrap_or(0))?);
         return Ok(());
     }
-    if matches!(cli.command, Command::Query { .. }) {
+    if matches!(
+        cli.command,
+        Command::Query { .. } | Command::RuntimeAddress { .. }
+    ) {
         anyhow::ensure!(
             cli.generation.is_some(),
             "native query requires --generation from controller/adapters"
@@ -144,6 +149,10 @@ fn run(cli: Cli) -> anyhow::Result<()> {
                 query,
             );
         }
+        Command::RuntimeAddress { ref address } => {
+            let address = parse_addr(address).map_err(anyhow::Error::msg)?;
+            return cmd_runtime_address(&adapter, &snapshot, index, address);
+        }
         _ => {}
     }
     let result = match cli.command {
@@ -151,7 +160,8 @@ fn run(cli: Cli) -> anyhow::Result<()> {
         | Command::Registration
         | Command::Controller
         | Command::Management
-        | Command::Query { .. } => {
+        | Command::Query { .. }
+        | Command::RuntimeAddress { .. } => {
             unreachable!()
         }
         Command::Info => cmd_info(&adapter),
@@ -192,10 +202,10 @@ fn print_controller(s: &slk_protocol::SleControllerSnapshot) {
 }
 
 fn validate_reply(
-    query: NativeQuery,
+    expected: (u16, usize),
     event: &slk_protocol::SleDiagnosticResult,
 ) -> anyhow::Result<Option<&[u8]>> {
-    let (opcode, len) = query.wire();
+    let (opcode, len) = expected;
     anyhow::ensure!(
         event.opcode == opcode,
         "unexpected diagnostic opcode=0x{:04x}",
@@ -230,50 +240,64 @@ fn validate_reply(
     Ok(Some(&event.data[..len]))
 }
 
-fn cmd_native_query(
+fn wait_native_reply(
     adapter: &Adapter,
     generation: u64,
-    index: u16,
-    profile: u32,
+    seq: u32,
+    expected: (u16, usize),
+    deadline: std::time::Instant,
+) -> anyhow::Result<Vec<u8>> {
+    loop {
+        if let Some(event) = adapter.diagnostic_result(generation, seq)?
+            && let Some(data) = validate_reply(expected, &event)?
+        {
+            return Ok(data.to_vec());
+        }
+        anyhow::ensure!(
+            std::time::Instant::now() < deadline,
+            "diagnostic reply timeout"
+        );
+        std::thread::sleep(std::time::Duration::from_millis(10));
+    }
+}
+
+fn submit_native_query(
+    adapter: &Adapter,
+    generation: u64,
+    request_id: u64,
     query: NativeQuery,
-) -> anyhow::Result<()> {
+    timeout_ms: u32,
+    deadline: std::time::Instant,
+) -> anyhow::Result<(u32, Vec<u8>)> {
+    use slk_protocol::SleDiagnosticSubmit;
+    let mut cmd = SleDiagnosticSubmit {
+        version: 1,
+        generation,
+        request_id,
+        opcode: query.wire().0,
+        timeout_ms,
+        action: 1,
+        ..Default::default()
+    };
+    adapter.diagnostic_submit(&mut cmd)?;
+    anyhow::ensure!(cmd.seq != 0, "diagnostic admission has no sequence");
+    Ok((
+        cmd.seq,
+        wait_native_reply(adapter, generation, cmd.seq, query.wire(), deadline)?,
+    ))
+}
+
+fn with_diagnostic_lease<T>(
+    adapter: &Adapter,
+    generation: u64,
+    operation: impl FnOnce() -> anyhow::Result<T>,
+) -> anyhow::Result<T> {
     use slk_protocol::*;
     use std::time::{Duration, Instant};
-    anyhow::ensure!(
-        matches!(profile, 0 | 1),
-        "diagnostic query requires a registered standard or WS73 profile"
-    );
     let lease = adapter.acquire_management(generation, MANAGEMENT_DIAGNOSTIC)?;
-    let result = (|| -> anyhow::Result<_> {
-        // Result ownership and captured Host sequence establish provenance;
-        // observation does not steal data from any controller subscription.
-        // Exclusive Diagnostic lease and Host admission own the transaction;
-        // a legacy private queue counter cannot prove Native quiescence.
-        let (opcode, _) = query.wire();
-        let mut cmd = SleDiagnosticSubmit {
-            version: 1,
-            generation,
-            request_id: 1, // This CLI opens a new author fd and submits once.
-            opcode,
-            timeout_ms: 5000,
-            action: 1,
-            ..Default::default()
-        };
-        adapter.diagnostic_submit(&mut cmd)?;
-        anyhow::ensure!(cmd.seq != 0, "diagnostic admission has no sequence");
-        let deadline = Instant::now() + Duration::from_secs(6);
-        loop {
-            if let Some(event) = adapter.diagnostic_result(generation, cmd.seq)?
-                && let Some(data) = validate_reply(query, &event)?
-            {
-                return Ok((opcode, cmd.seq, data.to_vec()));
-            }
-            anyhow::ensure!(Instant::now() < deadline, "diagnostic reply timeout");
-            std::thread::sleep(Duration::from_millis(10));
-        }
-    })();
-    // Release even on malformed/error replies; last-close remains a crash
-    // fallback. Never print a successful query if its cleanup did not settle.
+    let result = operation();
+    // Shared original cleanup;never print successful query/configuration if
+    // the old File's lease did not settle. Preserve the original failure too.
     let cleanup = (|| -> anyhow::Result<()> {
         adapter.release_management(generation, lease, MANAGEMENT_DIAGNOSTIC)?;
         let deadline = Instant::now() + Duration::from_secs(6);
@@ -301,10 +325,127 @@ fn cmd_native_query(
             Ok(_) => Err(error),
         };
     }
-    let (opcode, seq, data) = result?;
+    result
+}
+
+fn cmd_native_query(
+    adapter: &Adapter,
+    generation: u64,
+    index: u16,
+    profile: u32,
+    query: NativeQuery,
+) -> anyhow::Result<()> {
+    anyhow::ensure!(
+        matches!(profile, 0 | 1),
+        "diagnostic query requires a registered standard or WS73 profile"
+    );
+    let (seq, data) = with_diagnostic_lease(adapter, generation, || {
+        submit_native_query(
+            adapter,
+            generation,
+            1,
+            query,
+            5000,
+            std::time::Instant::now() + std::time::Duration::from_secs(6),
+        )
+    })?;
+    let opcode = query.wire().0;
     let hex: String = data.iter().map(|b| format!("{b:02x}")).collect();
     println!(
         "NativeDiagnosticQuery: index={index} generation={generation} opcode=0x{opcode:04x} admission_seq={seq} status=0x00 data={hex}"
+    );
+    Ok(())
+}
+
+fn cmd_runtime_address(
+    adapter: &Adapter,
+    snapshot: &slk_protocol::SleControllerSnapshot,
+    index: u16,
+    address: [u8; 6],
+) -> anyhow::Result<()> {
+    use slk_protocol::*;
+    use std::io::Write;
+    use std::time::{Duration, Instant};
+    anyhow::ensure!(
+        snapshot.profile == 1 && snapshot.flags == CONTROLLER_SETUP && snapshot.valid_fields == 1,
+        "volatile address setup requires fresh WS73 Setup before radio/daemon management"
+    );
+    anyhow::ensure!(
+        address != [0; 6] && address != [255; 6],
+        "invalid Native metadata address"
+    );
+    let generation = snapshot.generation;
+    let (before, seq, read_seq, observed) = with_diagnostic_lease(adapter, generation, || {
+        let (before_seq, before) = submit_native_query(
+            adapter,
+            generation,
+            1,
+            NativeQuery::Mac,
+            5000,
+            Instant::now() + Duration::from_secs(6),
+        )?;
+        println!(
+            "NativeRuntimeAddressOriginal: index={index} generation={generation} opcode=0x0406 admission_seq={before_seq} data={}",
+            before
+                .iter()
+                .map(|b| format!("{b:02x}"))
+                .collect::<String>()
+        );
+        std::io::stdout().flush()?;
+        anyhow::ensure!(
+            before != address,
+            "requested address already observed;no new setting claimed"
+        );
+        let deadline = Instant::now() + Duration::from_millis(5000);
+        let mut request = SleRuntimeAddressSubmit {
+            version: 1,
+            generation,
+            request_id: 2,
+            timeout_ms: 5000,
+            action: 1,
+            address,
+            ..Default::default()
+        };
+        adapter.runtime_address_submit(&mut request)?;
+        wait_native_reply(adapter, generation, request.seq, (0x0405, 0), deadline)?;
+        println!(
+            "NativeRuntimeAddressSetComplete: index={index} generation={generation} opcode=0x0405 admission_seq={} status=0x00",
+            request.seq
+        );
+        std::io::stdout().flush()?;
+        let remaining = deadline
+            .saturating_duration_since(Instant::now())
+            .as_millis();
+        anyhow::ensure!(remaining > 0, "original volatile address deadline expired");
+        let (read_seq, observed) = submit_native_query(
+            adapter,
+            generation,
+            3,
+            NativeQuery::Mac,
+            remaining.min(5000) as u32,
+            deadline,
+        )?;
+        anyhow::ensure!(
+            observed == address,
+            "actual controller readback differs from requested address"
+        );
+        let current = adapter.controller_snapshot(generation)?;
+        anyhow::ensure!(
+            current.generation == generation
+                && current.dev_index == index
+                && current.profile == 1
+                && current.flags == CONTROLLER_SETUP
+                && current.valid_fields == 1
+                && current.address == address,
+            "current Runtime metadata is not verified address Setup"
+        );
+        Ok((before, request.seq, read_seq, observed))
+    })?;
+    let hex = |v: &[u8]| v.iter().map(|b| format!("{b:02x}")).collect::<String>();
+    println!(
+        "NativeRuntimeAddressVerified: index={index} generation={generation} setter_seq={seq} readback_seq={read_seq} original={} readback={} runtime_only=true official_identity=false",
+        hex(&before),
+        hex(&observed)
     );
     Ok(())
 }
@@ -382,7 +523,6 @@ fn cmd_connections(adapter: &Adapter) -> slk_native::Result<()> {
     Ok(())
 }
 
-#[cfg(test)]
 fn parse_addr(s: &str) -> Result<[u8; 6], &'static str> {
     let parts: Vec<&str> = s.split(':').collect();
     if parts.len() != 6 {
@@ -390,6 +530,9 @@ fn parse_addr(s: &str) -> Result<[u8; 6], &'static str> {
     }
     let mut addr = [0u8; 6];
     for (i, part) in parts.iter().enumerate() {
+        if part.len() != 2 {
+            return Err("address bytes must contain exactly two hex digits");
+        }
         addr[i] = u8::from_str_radix(part, 16).map_err(|_| "invalid hex byte")?;
     }
     Ok(addr)
@@ -426,6 +569,36 @@ mod tests {
     use super::*;
 
     #[test]
+    fn volatile_address_entry_and_setter_reply_are_explicit() {
+        let cli = Cli::try_parse_from([
+            "slkconfig",
+            "--adapter",
+            "0",
+            "--generation",
+            "7",
+            "runtime-address",
+            "A6:7B:73:10:E0:01",
+        ])
+        .unwrap();
+        assert!(matches!(cli.command, Command::RuntimeAddress { .. }));
+        assert!(Cli::try_parse_from(["slkconfig", "runtime-address"]).is_err());
+        assert!(parse_addr("A:7B:73:10:E0:01").is_err());
+        assert!(parse_addr("A6:7B:73:10:E0:1").is_err());
+        let mut event = slk_protocol::SleDiagnosticResult {
+            state: 2,
+            opcode: 0x0405,
+            ..Default::default()
+        };
+        assert_eq!(validate_reply((0x0405, 0), &event).unwrap(), Some(&[][..]));
+        event.data_len = 1;
+        assert!(validate_reply((0x0405, 0), &event).is_err());
+        event.data_len = 0;
+        event.state = 3;
+        event.status = 15;
+        assert!(validate_reply((0x0405, 0), &event).is_err());
+    }
+
+    #[test]
     fn retired_security_spellings_are_rejected_by_actual_clap_parser() {
         for command in [
             vec!["security"],
@@ -451,27 +624,30 @@ mod tests {
             ..Default::default()
         };
         assert_eq!(
-            validate_reply(NativeQuery::Features, &event).unwrap(),
+            validate_reply(NativeQuery::Features.wire(), &event).unwrap(),
             Some(&[0x80; 10][..])
         );
         for len in [0, 9, 11, 64, 65535] {
             event.data_len = len;
-            assert!(validate_reply(NativeQuery::Features, &event).is_err());
+            assert!(validate_reply(NativeQuery::Features.wire(), &event).is_err());
         }
         event.data_len = 10;
         event.state = 1;
-        assert!(validate_reply(NativeQuery::Features, &event).is_err());
+        assert!(validate_reply(NativeQuery::Features.wire(), &event).is_err());
         event.data_len = 0;
-        assert_eq!(validate_reply(NativeQuery::Features, &event).unwrap(), None);
+        assert_eq!(
+            validate_reply(NativeQuery::Features.wire(), &event).unwrap(),
+            None
+        );
         event.data_len = 10;
         event.state = 2;
         event.opcode = 0x0404;
-        assert!(validate_reply(NativeQuery::Features, &event).is_err());
+        assert!(validate_reply(NativeQuery::Features.wire(), &event).is_err());
         event.opcode = 0x0403;
         event.state = 3;
         event.status = 0xfd;
         assert!(
-            validate_reply(NativeQuery::Features, &event)
+            validate_reply(NativeQuery::Features.wire(), &event)
                 .unwrap_err()
                 .to_string()
                 .contains("status=0xfd")
@@ -479,13 +655,13 @@ mod tests {
         event.status = 0;
         event.error = -110;
         assert!(
-            validate_reply(NativeQuery::Features, &event)
+            validate_reply(NativeQuery::Features.wire(), &event)
                 .unwrap_err()
                 .to_string()
                 .contains("error=-110")
         );
         event.state = 2;
-        assert!(validate_reply(NativeQuery::Features, &event).is_err());
+        assert!(validate_reply(NativeQuery::Features.wire(), &event).is_err());
     }
 
     #[test]

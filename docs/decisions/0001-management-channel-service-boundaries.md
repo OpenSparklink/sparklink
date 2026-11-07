@@ -79,6 +79,24 @@ socket 门禁覆盖消息边界、超长拒绝、持续发送/背压、取消/�
 [14 项整改](../../history/cleanup/review-remediation-20261011.md)、[联合方案](../../project/implementation-plan.md)。
 
 
+## 连接级类型化管理命令
+
+连接观察与发送载荷偏好复用同一 Managed author、物理 Session、Host 命令队列、
+命令 credit 和实际提交票据。每次准入、选择及 USB 提交验证同一 generation、
+connection lifetime、lease epoch 和原始期限；不通过安静 Diagnostic 租约或 raw USB
+绕过活动 Native Host，也不建立第二个协议 Engine。
+
+理由：只读查询的名字和结果不能诚实表达控制器参数修改。未发布查询 ioctl 迁移为
+类型化 link command，调用者、绑定及退休负对照同步，旧编号不复用。payload 偏好
+必须是显式请求；SDK110 E 成功 Complete 精确回显 handle LE16，而没有请求长度回显。
+必须匹配原 handle，空数据、错误 handle 和其他长度均拒绝。参考库关于成功 status
+的说明不能替代线格式；固定 Host 的回调与实际捕获分别核对。
+
+确认不表示生效长度或对端业务收到，不能改写 ACB 容量、data credit、DTAP／SSAP
+MTU、Ready 或安全事实。控制器回显仍没有 generation／lifetime，迟到、重复及复用
+屏障的硬件假设继续开放。匹配失败不抹去实际在途义务；默认初始化与效果验收是
+独立后续决策。实现、离线、有限证明及真实设备范围只在唯一资格入口维护。
+
 ## 标准核对与旧 Engine 开放条件
 
 T/XS 20001-2025表72/75/76规定分片消息控制码；旧内核offset/短包结束格式不符合

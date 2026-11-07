@@ -12,8 +12,8 @@ class RawUapi(unittest.TestCase):
             owners=[dict(owner=dict(index=2))])], retired_uapi_refusals=[dict(exit=0,
             stderr='', args=['/bin/retired-uapi-probe', '2'], pid=100,
             start_wall_ns=2, end_wall_ns=3, stdout=(
-                'RETIRED_UAPI_ENOTTY_PASS: uid=1000 cases=101 unchanged=101 '
-                'checks=303 invalid_user_address=1 mixed_stats=ENOTTY'))])
+                'RETIRED_UAPI_ENOTTY_PASS: uid=1000 cases=103 unchanged=103 '
+                'checks=309 invalid_user_address=1 mixed_stats=ENOTTY'))])
 
     def test_complete_receipt_only(self):
         self.assertEqual(verify(self.record)['receipts'], 1)

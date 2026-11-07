@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Board exporter tests use an explicit synthetic INI, never real RF input."""
 import configparser
+import copy
 import importlib.util
 import json
 from pathlib import Path
@@ -36,6 +37,65 @@ def fixture():
 
 
 class BoardConfigTests(unittest.TestCase):
+    def test_verify_reencodes_the_actual_source_for_both_link_inputs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); ini = root / 'source.ini'; ini.write_text(fixture())
+            for flag in (0, 1):
+                out = root / str(flag)
+                original = board.export(ini, out, 'unqualified-board-label', flag)
+                # A recorded exporter pathname is not executable input.
+                original['exporter']['path'] = '/must/never/execute'
+                (out / 'ws73-board-config.json').write_text(json.dumps(original))
+                proof = board.verify(out)
+                self.assertEqual(proof['images'], original['images'])
+                self.assertEqual(proof['usb_link_check'], flag)
+                self.assertEqual(proof['exporter']['path'], str(SCRIPT.resolve()))
+                self.assertEqual(proof['scope'], 'INPUT_PROVENANCE_ONLY_NO_HARDWARE_ACCEPTANCE')
+
+    def test_verify_rejects_inconsistent_provenance_and_payload(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp); ini = root / 'source.ini'; ini.write_text(fixture())
+            out = root / 'candidate'; original = board.export(ini, out, 'synthetic', 0)
+            path = out / 'ws73-board-config.json'
+            mutations = [
+                ('schema_version', True), ('status', 'qualified'), ('profile', 'other'),
+                ('board', ''), ('source.sha256', '0' * 64), ('source.size', float(ini.stat().st_size)),
+                ('exporter.sha256', '0' * 64), ('usb_link_check.value', True),
+                ('usb_link_check.value', 1), ('selected_values.DEVICE_BT.bt_coex_mode', 9),
+                ('images.bsle_custom.bin.sha256', '0' * 64), ('images.pm_config.bin.size', 4.0),
+            ]
+            # Keys containing dots in the selected value map are intentional.
+            for dotted, value in mutations:
+                changed = copy.deepcopy(original)
+                if dotted.startswith('selected_values.'):
+                    keys = ['selected_values', dotted[len('selected_values.'):]]
+                elif dotted.startswith('images.'):
+                    name, field = dotted[len('images.'):].rsplit('.', 1)
+                    keys = ['images', name, field]
+                else:
+                    keys = dotted.split('.')
+                target = changed
+                for key in keys[:-1]: target = target[key]
+                target[keys[-1]] = value
+                path.write_text(json.dumps(changed))
+                with self.subTest(field=dotted, value=value), self.assertRaises(ValueError): board.verify(out)
+            path.write_text(json.dumps(original))
+            ini.write_text(fixture() + '\n# changed\n')
+            with self.assertRaises(ValueError): board.verify(out)
+            ini.write_text(fixture())
+            for name in original['images']:
+                payload = out / name; good = payload.read_bytes()
+                payload.write_bytes(good[:-1])
+                with self.assertRaises(ValueError): board.verify(out)
+                payload.unlink(); payload.symlink_to(ini)
+                with self.assertRaises(ValueError): board.verify(out)
+                payload.unlink(); payload.write_bytes(good)
+            for raw in ['{"schema_version":1,"schema_version":1}', '{"x":NaN}']:
+                path.write_text(raw)
+                with self.assertRaises(ValueError): board.verify(out)
+            path.unlink()
+            with self.assertRaises(ValueError): board.verify(out)
+
     def test_complete_golden_layout(self):
         data, word, selected = board.read_values(fixture().encode())
         # Hand-written byte oracle from the SDK's offsets and field values,

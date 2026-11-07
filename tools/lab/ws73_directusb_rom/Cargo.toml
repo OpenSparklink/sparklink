@@ -1,0 +1,25 @@
+[package]
+name = "ws73-directusb-rom"
+version = "0.1.0"
+edition = "2024"
+publish = false
+license = "GPL-2.0-only"
+
+# Explicit VM maintenance consumer, outside default production dependencies.
+[workspace]
+
+[dependencies]
+nusb = "=0.2.9"
+serde_json = "1"
+
+[[bin]]
+name = "ws73-directusb-control"
+path = "src/bin/control.rs"
+
+[[bin]]
+name = "ws73-directusb-receive"
+path = "src/bin/receive.rs"
+
+[[bin]]
+name = "ws73-directusb-packets"
+path = "src/bin/packets.rs"

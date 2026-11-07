@@ -109,7 +109,7 @@ def corroborate(r, capture):
         matches = [v for v in capture['native_events'] if same(v) and v['event'] == event['event'] and v['params'] == event['params'] and row['cleanup_before_wall_ns'] <= v['wall_ns'] <= row['cleanup_after_wall_ns']]
         if len(matches) != 1 or event['generation'] != owner['generation'] or event['lost'] or len(raw) != 4 or raw[0] or int.from_bytes(raw[1:3], 'little') != owner['handle']:
             raise CaptureError('actual later cleanup Down required on both sides')
-    control(capture,r['usb'][i],0x1403,g['owners'][i]['handle'].to_bytes(2,'little')+b'\x13',row['cleanup_before_wall_ns'],row['cleanup_after_wall_ns'],status=True)
+    control(capture,r['usb'][i],0x1403,g['owners'][i]['handle'].to_bytes(2,'little')+b'\x10',row['cleanup_before_wall_ns'],row['cleanup_after_wall_ns'],status=True)
     for enabled in [True,False]: control(capture,r['usb'][1-i],0x1002,bytes([enabled,0]),row['cleanup_after_wall_ns'],row['scan_checked_wall_ns'])
     return dict(status='REAL_SECURITY_ORIGINAL_DEADLINE_CORROBORATED' if r.get('security_original_deadline',False) else 'REAL_PASSIVE_AUTHOR_CANCEL_CORROBORATED', business_legs=legs,
         business_round_trips=4, in_flight_installation_qualified=False,

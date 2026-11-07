@@ -92,7 +92,7 @@ def execute(run, row, business):
                     raise CaptureError('business did not complete inside original peer prompt deadline')
                 i['approval'] = dict(token=checked['token'],wall_ns=time.time_ns(),monotonic_ns=time.monotonic_ns())
                 owner.stdin.write(f'yes {checked["token"]}\n');owner.stdin.flush()
-                pattern = rf'^SsapAuthorizationDecision: request={checked["request"]} property={i["handle"]} write=true security=0 approved=true; local policy only$'
+                pattern = rf'^SsapAuthorizationDecision: request={checked["request"]} property={i["handle"]} data_type=0 write=true security=0 approved=true; local policy only$'
                 wait_text(owner,Path(i['output_files'][0]),pattern,min(time.monotonic()+2,checked['deadline']/1e9))
                 observation_deadline = min(time.monotonic()+2,checked['deadline']/1e9)
                 i['next_read_attempts'] = []
@@ -159,7 +159,7 @@ def corroborate(row, matched, sdus):
     from ws73_ssap_owner_lifecycle import PROMPT
     if re.findall(PROMPT,i['stdout'],re.M)!=[tuple(e['fields'])]:
         raise CaptureError('sealed original prompt transcript differs')
-    decision=rf'^SsapAuthorizationDecision: request={p["request"]} property={i["handle"]} write=true security=0 approved=true; local policy only$'
+    decision=rf'^SsapAuthorizationDecision: request={p["request"]} property={i["handle"]} data_type=0 write=true security=0 approved=true; local policy only$'
     if len(re.findall(decision,i['stdout'],re.M))!=1:
         raise CaptureError('exact original policy approval required;not peer or app success')
     attempts=i.get('next_read_attempts',[])

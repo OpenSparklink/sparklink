@@ -10,16 +10,39 @@ import os
 from pathlib import Path
 import re
 import shutil
+import stat
 import subprocess
+import tempfile
 import uuid
 
 from ws73_native_root_smoke import digest
 from ws73_native_service_bundle import PROGRAMS, source_state
 from ws73_north_star import file_record
+import ws73_firmware_profile as firmware_profile
 from ws73_discovery_policy_capture import normalized_dump
 from install_layout import LIBRARIES
 
 OPTIONS = ('native_module_tree', 'native_boot_smoke', 'native_service_bundle')
+# External SDK consumers have deployed names distinct from their verifier.
+# Carrier refresh must keep their frozen bytes, not replace them with a verifier.
+STAGED_PYTHON_CLIENTS = {
+    'ws73-application-client.py': Path('testing/application_client/client.py'),
+    'ws73_controller_directory_client.py': Path('testing/controller_events/client.py'),
+}
+
+
+def compiler_invocation():
+    """Keep the executable's invocation name (e.g. cc -> ccache).
+
+    file_record still hashes the resolved executable image separately. Executing
+    that resolved image directly changes argv[0] dispatch for compiler wrappers.
+    CC is one explicit executable, not a shell command or an implicit fallback.
+    """
+    selected = os.environ.get('CC', 'cc')
+    found = shutil.which(selected) if selected else None
+    if found is None:
+        raise ValueError('selected C compiler executable not found')
+    return Path(found).absolute()
 
 
 def stage_runtime_libraries(root, libraries, copy_elf):
@@ -61,29 +84,14 @@ def stage_runtime_libraries(root, libraries, copy_elf):
 
 
 def enabled(args):
+    if getattr(args, 'native_runtime_only', False):
+        raise ValueError('runtime-only preparation is retired;explicit per-device boot inputs required')
     supplied = [getattr(args, name, None) is not None for name in OPTIONS]
     if any(supplied) and not all(supplied):
         raise ValueError('native VM profile requires module tree, boot smoke and service bundle together')
     if getattr(args, 'native_discovery_config', None) is not None and not all(supplied):
         raise ValueError('discovery config requires the complete native VM profile')
-    if getattr(args, 'native_runtime_only', False) and not all(supplied):
-        raise ValueError('runtime-only requires the complete native VM profile')
     return all(supplied)
-
-
-def remove_boot_images(root):
-    """Mixed-board adoption must fail on ROM, never download a wrong variant."""
-    removed = []
-    for directory in ['lib/firmware/sparklink/ws73', 'usr/lib/firmware/sparklink/ws73']:
-        for name in ['ws73.bin', 'wifi_cali.bin', 'btc_cali.bin']:
-            path = root / directory / name
-            if not path.is_file() or path.is_symlink():
-                raise ValueError('exact regular staged boot image required: ' + str(path))
-            removed.append(dict(path='/' + str(path.relative_to(root)), sha256=digest(path)))
-    # Validate the entire set before removing anything. Board inputs remain.
-    for row in removed:
-        (root / row['path'].lstrip('/')).unlink()
-    return removed
 
 
 def check_runtime_only(package, devices, ports):
@@ -142,12 +150,74 @@ def freeze_policy_expectation(daemon, target, root, manifest, custom, command=No
     data = {'custom_configuration': custom, 'config_sha256': before,
             'daemon_dump': result.stdout, 'policies': normalized_dump(result.stdout)}
     path = root / 'expected-discovery-policies.json'
-    path.write_text(json.dumps(data, indent=2) + '\n')
-    path.chmod(0o444)
+    if path.is_symlink():
+        raise ValueError('policy expectation must not be a symlink')
+    # A retained carrier seals this receipt read-only. Replace it in the new
+    # private root instead of opening it for write or changing the old inode.
+    fd, temporary = tempfile.mkstemp(prefix='.expected-discovery-', dir=root)
+    try:
+        with os.fdopen(fd, 'w') as stream:
+            stream.write(json.dumps(data, indent=2) + '\n')
+            os.fchmod(stream.fileno(), 0o444)
+        os.replace(temporary, path)
+    finally:
+        Path(temporary).unlink(missing_ok=True)
     manifest['policy_expectation'] = {'data': data, 'guest_sha256': digest(path),
                                       'validator': file_record(daemon), 'validation_command': command,
                                       'validation_exit': result.returncode}
     (root / 'expected-discovery-config-sha256').write_text(before + '\n')
+
+
+def retained_daemon(root):
+    """Resolve the versioned guest alias inside a sealed private root."""
+    entry=root/'bin/slkd'
+    if not entry.is_symlink():raise ValueError('retained versioned daemon alias required')
+    target=os.readlink(entry)
+    if not re.fullmatch(r'/usr/libexec/opensparklink/native-lab/[0-9a-f]{12}/slkd',target):
+        raise ValueError('retained daemon must use the Native bundle prefix')
+    from ws73_firmware_profile import inside
+    daemon=inside(root,Path(target.lstrip('/')))
+    if daemon.is_symlink()or not daemon.is_file()or not daemon.stat().st_mode&0o111:
+        raise ValueError('retained executable daemon required')
+    return daemon
+
+
+def stage_numeric_verifier(source, root, manifest, copy_elf):
+    """Stage an explicit offline CMAC oracle without replacing frozen libraries."""
+    source=source.resolve(strict=True)
+    if not source.is_file()or not source.stat().st_mode&0o111:
+        raise ValueError('executable OpenSSL verifier required')
+    before=file_record(source)
+    version=subprocess.run([str(source),'version'],capture_output=True,text=True,check=True,timeout=15)
+    command=[str(source),'mac','-macopt','cipher:AES-128-CBC','-macopt',
+             'hexkey:2b7e151628aed2a6abf7158809cf4f3c','CMAC']
+    result=subprocess.run(command,input=b'',capture_output=True,check=True,timeout=15)
+    if result.stdout.strip().lower()!=b'bb1d6929e95937287fa37d129b756746':
+        raise ValueError('OpenSSL empty-message CMAC vector mismatch')
+    if file_record(source)!=before:raise ValueError('OpenSSL changed during validation')
+    with tempfile.TemporaryDirectory(prefix='ws73-verifier-')as tmp:
+        staged=Path(tmp)
+        copy_elf(source,staged/'usr/bin/openssl',staged)
+        files=sorted(p for p in staged.rglob('*')if p.is_file())
+        records=[];inputs=[]
+        for path in files:
+            relative=path.relative_to(staged);target=firmware_profile.inside(root,relative)
+            origin=source if relative==Path('usr/bin/openssl')else Path('/')/relative
+            identity=file_record(origin)
+            if digest(path)!=identity['sha256']:raise ValueError('verifier dependency changed')
+            if target.exists()and digest(target)!=identity['sha256']:
+                raise ValueError('verifier must not replace a frozen runtime library: '+str(relative))
+            records.append(dict(guest_path='/'+str(relative),sha256=identity['sha256']))
+            inputs.append(identity)
+        for path in files:
+            target=firmware_profile.inside(root,path.relative_to(staged))
+            if not target.exists():checked_copy(path,target)
+        if any(file_record(v['path'])!=v for v in inputs):raise ValueError('verifier inputs changed')
+    manifest['inputs'].extend(inputs)
+    manifest['native_verification_openssl']=dict(source=before,guest_path='/usr/bin/openssl',
+        files=records,version=version.stdout,validation_command=command,
+        validation_exit=result.returncode,validation_stdout=result.stdout.decode(),
+        scope='Independent public-transcript CMAC oracle only;not protocol/firmware or security qualification')
 
 
 def stage_discovery_config(source, daemon, root, manifest):
@@ -191,6 +261,13 @@ def check_discovery_config_gate(package, args):
     """
     if 'discovery_config' not in package:
         return
+    if getattr(args,'four_device_update_delivery',False)or getattr(args,'four_device_shared_subscription',False):
+        key='four_subscription_contract_version'if getattr(args,'four_device_shared_subscription',False)else'four_delivery_contract_version'
+        if (args.command!='run'or type(package.get(key))is not int
+                or package[key]!=1
+                or package.get('policy_expectation',{}).get('data',{}).get('custom_configuration')is not True):
+            raise ValueError('protected parallel delivery requires explicit validated current configuration')
+        return
     if (args.command != 'run'
             or not (getattr(args, 'qmp_hotplug', False) or getattr(args, 'parallel_pairs', False))
             or any(getattr(args, flag, False) for flag in (
@@ -204,6 +281,8 @@ def check_discovery_config_gate(package, args):
 
 
 def stage(args, manifest, root, source, copy_elf):
+    if getattr(args, 'native_runtime_only', False):
+        raise ValueError('runtime-only preparation is retired')
     smoke_path = args.native_boot_smoke.resolve(strict=True)
     smoke = json.loads(smoke_path.read_text())
     if smoke.get('status') != 'PASS_ISOLATED_NATIVE_ROOT_SMOKE':
@@ -230,7 +309,11 @@ def stage(args, manifest, root, source, copy_elf):
     service_path = args.native_service_bundle.resolve(strict=True)
     service = json.loads((service_path / 'manifest.json').read_text())
     if (service.get('status') != 'PRIVATE_NATIVE_SERVICE_FILES_STAGED'
-            or service['kernel_release'] != release or service['kernel_head'] != smoke['source_head']):
+            or not re.fullmatch('[0-9a-f]{40}', service.get('userspace_head',''))
+            or service['kernel_release'] != release or service['kernel_head'] != smoke['source_head']
+            or service.get('firmware_input_contract_version') != 1
+            or service.get('explicit_firmware') != manifest.get('explicit_firmware')
+            or service.get('board_configuration') != manifest.get('board_configuration')):
         raise ValueError('verified matching service bundle required')
     if source_state(source)[1] != service['source_hashes']:
         raise ValueError('compiled/policy sources differ from service bundle')
@@ -264,7 +347,7 @@ def stage(args, manifest, root, source, copy_elf):
     fixtures = source / 'tools/testing/application_client'
     c_probe = root / 'bin/ws73-application-client-c'
     compiled_probe = root.parent / 'application-client-c'
-    compiler = Path(shutil.which(os.environ.get('CC', 'cc'))).resolve(strict=True)
+    compiler = compiler_invocation()
     command = [str(compiler), '-std=c11', '-O2', '-Wall', '-Wextra', '-Werror',
                '-I' + str(source / 'crates/libsparklink/include'),
                str(fixtures / 'client.c'), str(library), '-Wl,-rpath,/usr/lib',
@@ -272,7 +355,7 @@ def stage(args, manifest, root, source, copy_elf):
     subprocess.run(command, check=True)
     copy_elf(compiled_probe, c_probe, root)
     python_probe = root / 'usr/share/sparklink/tools/ws73-application-client.py'
-    checked_copy(fixtures / 'client.py', python_probe)
+    checked_copy(source / 'tools' / STAGED_PYTHON_CLIENTS[python_probe.name], python_probe)
     checked_copy(source / 'tools/ws73_application_client.py',
                  root / 'usr/share/sparklink/tools/ws73_application_client.py')
     checked_copy(source / 'tools/ws73_application_role.py',
@@ -281,7 +364,7 @@ def stage(args, manifest, root, source, copy_elf):
         sources=[file_record(fixtures / name) for name in ('client.c', 'client.py')],
         verifier=file_record(source / 'tools/ws73_application_client.py'),
         role_supervisor=file_record(source / 'tools/ws73_application_role.py'),
-        c_compile=command, compiler=file_record(compiler),
+        c_compile=command, compiler_invocation=str(compiler), compiler=file_record(compiler),
         compiler_version=subprocess.check_output([str(compiler), '--version'],text=True),
         c=file_record(c_probe), python=file_record(python_probe))
     custom_config = getattr(args, 'native_discovery_config', None)
@@ -290,10 +373,8 @@ def stage(args, manifest, root, source, copy_elf):
     else:
         freeze_policy_expectation(service_path / 'payload' / prefix / 'slkd',
                                   root / 'etc/sparklink/main.conf', root, manifest, False)
-    for name in ('ws73.bin', 'wifi_cali.bin', 'btc_cali.bin', 'bsle_custom.bin', 'pm_config.bin'):
-        if digest(root / 'lib/firmware/sparklink/ws73' / name) != digest(
-                root / 'usr/lib/firmware/sparklink/ws73' / name):
-            raise ValueError('target firmware differs from service bundle: ' + name)
+    manifest['firmware_profiles'] = firmware_profile.provision(root, args.board_model, service)
+    manifest['firmware_input_contract_version'] = 1
     instructions = []
     inputs = []
     for module in modules:
@@ -326,6 +407,10 @@ def stage(args, manifest, root, source, copy_elf):
         qemu_data.append(file_record(target))
     if not qemu_data:
         raise ValueError('explicit verified QEMU data snapshot required')
+    # This is the verified service build identity, not the current stager HEAD.
+    # A fresh Native carrier must satisfy the same reuse contract as a retained
+    # one without callers manually relabelling its manifest.
+    manifest['compiled_userspace_identity'] = service['userspace_head']
     manifest['native_vm'] = {'release': release, 'root_uuid': root_uuid,
                              'kernel_head': smoke['source_head'],
                              'qemu_data': qemu_data,
@@ -334,11 +419,18 @@ def stage(args, manifest, root, source, copy_elf):
                              'userspace_head': service['userspace_head'],
                              'host_installation': False, 'native_host_acceptance': False,
                              'systemd_sandbox_acceptance': False, 'board_qualification': 'NOT_ASSERTED'}
-    if getattr(args, 'native_runtime_only', False):
-        manifest['native_vm'].update(runtime_only=True, removed_boot_images=remove_boot_images(root))
 
 
 def pack(args, manifest, root):
+    # This profile boots exactly init=/init. Reject a bad staged entry before
+    # allocating an image or invoking mkfs; source hashes alone miss chmod.
+    entry = root / 'init'
+    try:
+        mode = entry.lstat().st_mode
+    except FileNotFoundError as error:
+        raise ValueError('native VM root/init must be a nonempty executable regular file') from error
+    if not stat.S_ISREG(mode) or not mode & 0o111 or not entry.stat().st_size:
+        raise ValueError('native VM root/init must be a nonempty executable regular file')
     disk = args.output / 'root.btrfs'
     with disk.open('xb') as stream:
         stream.truncate(1024 * 1024 * 1024)

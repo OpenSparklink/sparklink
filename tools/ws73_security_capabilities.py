@@ -231,6 +231,6 @@ def corroborate(r,capture):
         if len(matches)!=1 or event['generation']!=owner['generation'] or event['lost'] or len(raw)!=4 or raw[0] or int.from_bytes(raw[1:3],'little')!=owner['handle']:raise CaptureError('actual current-lifetime cleanup Down required')
     if not proof[i]['command']['wall_ns']<=proof[1-i]['peer_rx']['wall_ns']<=proof[1-i]['command']['wall_ns']<=proof[i]['peer_rx']['wall_ns']:raise CaptureError('actual134/135 cross-device causal order required')
     from ws73_channel_deadline import control
-    control(capture,r['usb'][i],0x1403,g['owners'][i]['handle'].to_bytes(2,'little')+b'\x13',row['cleanup_before_wall_ns'],row['cleanup_after_wall_ns'],status=True)
+    control(capture,r['usb'][i],0x1403,g['owners'][i]['handle'].to_bytes(2,'little')+b'\x10',row['cleanup_before_wall_ns'],row['cleanup_after_wall_ns'],status=True)
     for enabled in [True,False]:control(capture,r['usb'][1-i],0x1002,bytes([enabled,0]),row['cleanup_after_wall_ns'],row['scan_checked_wall_ns'])
     return dict(status='REAL_APPROVED_LIMITED134_135_CORROBORATED',controllers=proof,business_legs=legs,business_round_trips=4,scope='Explicit admin capability-only approval, actual stock transport/peer RX and same-Session ordinary before/after business; NOT Agent/pairing/authentication/key install/encryption/Bond/standard interoperability or natural recovery')

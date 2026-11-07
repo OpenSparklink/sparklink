@@ -3,25 +3,13 @@
   "thread_id": "01a120fe-1165-7c50-9d9f-56e0b8355c3c",
   "goal_status": "active",
   "objective_unchanged": "完整实现 https://github.com/OpenSparklink/sparklink/issues/8 中的 SparkLink/Linux 联合方案及两个仓库全部关联 issues：按 S0–S6 依赖顺序持续开发，自行维护 issues 与验收证据，完成 WS73 原生 USB/SLE/DLI/RF、per-controller Backend/Host/生命周期、事件与权限、用户态 SSAP/Profile、配对加密/Bond/PHY policy、slk-vendord Proxy 和故障/PM/兼容/发布矩阵；仅全部原验收条件满足后关闭对应 issue，并在完整目标真正达成时标记 goal complete。",
-  "budget_unchanged": {
-    "token_budget": null,
-    "remaining_tokens": null,
-    "budgeted": false
-  },
+  "budget_unchanged": true,
   "goal_api_objective_edit_available": false,
-  "sync_method": "Existing active goal retained;canonical plan and generated qualification_view remain execution/qualification authority,no duplicate goal.",
+  "sync_method": "Original goal scope restored after API returned no goal; canonical plan and generated qualification_view remain execution/qualification authority.",
   "canonical_plan": "project/implementation-plan.md",
   "capabilities": "project/current-capabilities.md",
   "adoption": "history/architecture/architecture-adoption-20261013.json",
-  "scope_unchanged": [
-    "S0",
-    "S1",
-    "S2",
-    "S3",
-    "S4",
-    "S5",
-    "S6"
-  ],
+  "scope_unchanged": false,
   "original_issue_count": 28,
   "hardware_constraint": {
     "historical_snapshot": {
@@ -254,7 +242,7 @@
       ],
       "dependency_kind": "minimum applicable interface/gate, not whole issue closure",
       "completion": false,
-      "status": "DEFERRED_PLANNING_ONLY: optional exclusive UserHost + separate vendor Host adaptation replaces fixed vendord/native Proxy; not implemented/proven/VM accepted; not a current WS73/lifecycle/SSAP prerequisite.",
+      "status": "Planning adopted: project Host/DirectUSB/ServiceChannel/Windows C/D/E/W P2; KernelPacket/vendor H P4. None newly implemented or qualified.",
       "priority": "P4"
     },
     {
@@ -320,47 +308,29 @@
   "original_issues_open": true,
   "natural_fault_root_cause_closed": false,
   "non_manual_automatic_recovery_qualified": false,
-  "effective_task_scope": "完整实现 https://github.com/OpenSparklink/sparklink/issues/8 中的 SparkLink/Linux 联合方案及两个仓库全部关联 issues：按 S0–S6 依赖顺序持续开发，自行维护 issues 与验收证据，完成 WS73 原生 USB/SLE/DLI/RF、per-controller Backend/Host/生命周期、事件与权限、用户态 SSAP/Profile、配对加密/Bond/PHY policy、可选UserHost接管及厂商Host适配（P4延期） 和故障/PM/兼容/发布矩阵；仅全部原验收条件满足后关闭对应 issue，并在完整目标真正达成时标记 goal complete。",
-  "goal_api_scope_amendment_record": "Existing active goal API objective is immutable; user-authorized WP14 adjustment is authoritative in canonical plan/ADR0003 and this effective scope. No duplicate goal, completion or budget change.",
+  "effective_task_scope": "完整实现 https://github.com/OpenSparklink/sparklink/issues/8 中的 SparkLink/Linux 联合方案及两个仓库全部关联 issues：按 S0–S6 依赖顺序持续开发，自行维护 issues 与验收证据，完成 WS73 原生 USB/SLE/DLI/RF、per-controller Backend/Host/生命周期、事件与权限、用户态 SSAP/Profile、配对加密/Bond/PHY policy、可选UserHost接管及厂商Host适配（P4延期） 和故障/PM/兼容/发布矩阵；仅全部原验收条件满足后关闭对应 issue，并在完整目标真正达成时标记 goal complete。 2026-11-01正式增量：完成面向应用的完整服务API、自有跨平台UserHost/DirectUSB、Windows 11 x64/MSVC、同一服务核心/SSAP/DB/Profile、安全策略、QoS/ISO/数字PCM及平台系统集成；KernelPacket/厂商Host单独P4。原范围和预算保留，完整完成需原与正式新增适用验收全部满足。",
+  "goal_api_scope_amendment_record": "Existing active goal objective API cannot edit description. User 2026-11-01 formally extends effective_task_scope per canonical architecture/ADR0003/plan. Original scope and budget preserved; new scope is additional, no duplicate goal or premature completion.",
   "userhost_planning": {
-    "priority": "P4 low, deferred, planning-only this round",
     "decision": "docs/decisions/0003-optional-exclusive-user-host.md",
-    "audit": "docs/evidence/userhost-planning-audit-20261013.json",
-    "implemented": false,
-    "formal_proven": false,
-    "vm_real_accepted": false,
-    "not_prerequisite_for": [
-      "Current WS73 data loop",
-      "Lifecycle remediation",
-      "Native userspace SSAP",
-      "WP02-WP08"
-    ],
-    "preserved_requirements": [
-      "permissions/LSM/library ABI/path",
-      "per-controller isolation",
-      "finite resources/partial/EAGAIN/fault/crash/stale",
-      "benchmark/real evidence"
-    ],
-    "future_scope": [
-      "mutually exclusive Native/UserHost",
-      "shared DeviceRuntime vs NativeHostRuntime",
-      "typed bounded packet socket/lease",
-      "idle-only switching/verified hardware barriers",
-      "new Native generation/reinit/no inherited link-credit-key",
-      "SDK packet compatibility and slctl/slkd adaptation separately audited"
-    ],
-    "code_changed_or_deleted": false,
-    "issue_updates": {
-      "count": 14,
-      "readback_verified": true,
-      "receipt": "docs/evidence/userhost-issues-scope-20261013.json",
-      "vendor_scope_adjusted_as_authorized": true,
-      "native_scope_history_preserved": true,
-      "issues_open": true
-    }
+    "kernelpacket_vendor": {
+      "priority": "P4",
+      "implemented": false,
+      "formal_proven": false,
+      "vm_real_accepted": false,
+      "issue": "U#7"
+    },
+    "project_host_directusb_windows": {
+      "priority": "P2 staged future; audit parallel",
+      "implemented": false,
+      "formal_proven": false,
+      "vm_real_accepted": false,
+      "routes_ref": "qualification-records.json#/scope_extensions (userhost-windows-20261101)"
+    },
+    "not_prerequisite_for_current_native": true,
+    "scope_ref": "effective_scope_extension"
   },
   "deferred_work": [
-    "WP14 optional UserHost/vendor Host adaptation: low priority, not started this round."
+    "WP14-H KernelPacket/vendor Host adaptation: P4; not prerequisite for project UserHost/DirectUSB/Windows."
   ],
   "documentation_workstream": {
     "status": "partial; physical source migration and exact local/browser/documentation-CI gates passed; content extraction and publishing remain open",
@@ -686,7 +656,7 @@
       "Boot downloader workspace and allowed load segment boundaries; runtime layout and file bound are insufficient"
     ]
   },
-  "updated_at_utc": "2026-10-18T14:13:08.540297+00:00",
+  "updated_at_utc": "2026-10-27T03:24:10.998312+00:00",
   "historical_state": {
     "url": "https://github.com/OpenSparklink/sparklink/blob/c590576bcc61755f2493cbac57f017ec23ec3379/project/goal-execution-state.json",
     "sha256": "46b1b28d2ff473964647dcc38e9342d397079cfbbcf2234fe34bfe08a264f3a8",
@@ -800,26 +770,24 @@
       ]
     }
   },
-  "execution_phase": "ARCHITECTURE_FIRST_R5F11_C_PYTHON_DIRECTORY_SCOPED_REAL_PASS_FULL_SCOPE_OPEN",
+  "execution_phase": "FOLLOW_qualification_view.current_batch_WITH_20261101_FORMAL_SCOPE_EXTENSION",
   "next_resume_tasks": [
-    "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
-    "R6:finite0.1.0-1/db724-2/rollback pair qualified;broader migration/debug/dwz/usrmerge/dependencies/supportmatrix/license/SBOM/provenance/CI release remain. New package actual-kernel/WS73 gates separate.",
-    "Continue original full architecture andfeature scope;not allcontrol permutations as dataplane prerequisite."
+    "Follow qualification_view.current_batch.next for Native method v4 and parallel existing work; implement adopted effective_scope_extension by C→D→E with Windows audit in parallel. Retain original plus formally added acceptance; KernelPacket/vendor H remains P4.",
+    "Recheck source, dirty changes, actual artifacts, tool identities, per-leaf device ownership and shared build budget before VM-only work."
   ],
-  "issue_sync_status": "FiveexistingOPEN issues preserveoriginalbodiesandcommentprefixes;actualExchangeInfo finitequalification,auditno-opfailureandnextunpublishedownercompositionwork synchronized;no issueclosed.",
+  "issue_sync_status": "BOUNDED_28_BODY_UPDATES_7_CHILDREN_VERIFIED_ORIGINALS_OPEN",
   "issue_sync_receipt": {
-    "path": ".dev/main-thread-01a120fe/native-publication-issue-receipts-v1.json",
-    "sha256": "d19bbde6ea92187febda533d8121c2074b8ff7630e717b3a60df8928ffb9842f",
-    "comments": [
-      "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6245729849",
-      "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6245730189",
-      "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6245730503",
-      "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6245730823",
-      "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6245731128"
-    ]
+    "version": 1,
+    "action": "body_replacement_and_child_creation",
+    "source_only": true,
+    "record": "project/issue-maintenance-20261026.json",
+    "original_count": 28,
+    "closed": 0,
+    "children_created": 7,
+    "body_and_parent_readback": true
   },
-  "previous_goal_turn_classification": "PROGRESS_ARCHITECTURE_CANONICAL_DEPLOYMENT_AND_ACTUAL_PACKAGE_BASE_SCOPED_VM_EVIDENCE_FULL_ARCHITECTURE_OPEN",
-  "current_goal_turn_classification": "PROGRESS_SHARED_RESOURCE_ALLOCATION_RECHECK_AND_ACTUAL_DISTINCT_VERSION_DEPLOYMENT_SCOPE",
+  "previous_goal_turn_classification": "progress",
+  "current_goal_turn_classification": "progress",
   "goal_api_status_observed": "active",
   "goal_api_update_limitation": "API now reports active after explicit continuation;objective-edit unavailable,full original objective/budget retained through canonical plan andADR scope updates.",
   "issue_sync_receipt_previous": ".dev/architecture-r6a-issue-receipts-v1.json",
@@ -1089,7 +1057,7 @@
       }
     }
   ],
-  "execution_status": "ACTIVE_USER_AUTHORIZED_CONTINUE;full original scope INCOMPLETE",
+  "execution_status": "ACTIVE_FOLLOW_qualification_view.current_batch_FULL_SCOPE_OPEN",
   "quality_engineering": {
     "scope": "All12 requested quality areas adopted in sole implementation-plan; not a new phase, goal or prerequisite to all real delivery",
     "baseline_review": {
@@ -2014,18 +1982,91 @@
     },
     "overall": "INCOMPLETE",
     "current_batch": {
-      "id": "WP03-WP18-R5f12-application-discovery",
-      "production_behavior": "Per-controller caller-owned bounded scanner leases through existing Native management guard/recipes/results. Rust Client and slctl own filtering/read/release,not management credentials. Last lease requests actual STOP; manager handoff/retirement fences late work; unknown cleanup staysFault,notOff/Free.",
-      "state": "NEGOTIABLE_BASELINE_AND_EXPLICIT_DISCOVERY_SCOPED_PASS_FIXED_T_FAIL_RETAINED_FULL_LIFECYCLE_OPEN",
-      "records": [
-        "application-discovery-offline-r5f12",
-        "application-discovery-fence-r5f12",
-        "application-discovery-real-r5f12",
-        "application-discovery-negotiable-r5f12"
+      "id": "WP08-SSAP-METHOD-LONG-GATE-v4",
+      "state": "RUNNER_PAIRED_CORROBORATOR_OFFLINE_PASS_FRESH_ARTIFACT_REAL_DELIVERY_PENDING",
+      "implementation_sources": {
+        "public": "14621593fe911b544634cd7097570a1fb5606d9c"
+      },
+      "production_behavior": "Existing method VM runner adds independent 2045-byte result through the same SDK supervisor. Original discovery/short/command/withdrawal retained. Shared physical fragment verifier checks exact two-way sequence negotiation, complete paired data, causal prefixes and actual TX count. No Host or runtime protocol change.",
+      "offline_checks": {
+        "related_regressions": 144,
+        "result": "PASS",
+        "strict_html_inventory_examples": "PASS",
+        "negative_controls": "missing/duplicate/corrupt/foreign/ordered SSAP and ACB evidence, original deadline, stale negotiation, historical version, incomplete saved window; executor callback and valid overlapping causal prefixes"
+      },
+      "offline_scope": "Actual Python executor/verifier with explicit process, negotiation and physical-packet fixtures. No actual VM, hardware, deployment, concurrency, firmware or formal qualification.",
+      "formal_status": "NO_NEW_PROOF",
+      "hardware_status": "NO_PUBLIC_HARDWARE_VERDICT; exact execution attempts and outcomes are maintained in the authorized local registry; no new method qualification asserted",
+      "preparation_status": "V4_EXACT_INPUTS_VALIDATED_NO_USB_VM_SMOKE_PASS; REAL_DELIVERY_PENDING",
+      "source_audit": "SDK GET_VERSION is distinct from chip query; fixed host text/shared static version cannot attest resident image. Native queue9 query runs after BSLE; moving it may consume unmatched boot/ACK messages. Streaming-only EP0 observation is not a pre-start fallback. Safe diagnosis must retain events, original deadlines, queue/sequence ownership and stop/drain. Root cause and natural recovery remain unverified.",
+      "issue_sync": [
+        {
+          "repository": "linux",
+          "number": 15,
+          "state": "open",
+          "body_sha256": "0c5848333e45b8009d65ad0adcc8fee5d6f51622094a45478a2f3c22074bd274",
+          "original_checklist_unchanged": true,
+          "source_offline_planning_only": true
+        },
+        {
+          "repository": "sparklink",
+          "number": 22,
+          "state": "open",
+          "body_sha256": "372092987782a6a1e91cc83d7761c5bd02d84f13d04a83bfdb896ec434936def",
+          "original_checklist_unchanged": true,
+          "source_offline_planning_only": true
+        }
       ],
-      "exit_ref": "application-discovery-real-r5f12.required_gates; see canonical implementation-plan R5f12 for steps",
-      "next": "Continue bounded real caller-loss/TTL/manager-stop/original-deadline/partial-init andpeerbusiness isolation/permissions,newC-Python discoveryAPI. Preserve source-bound successfulNegT baseline;FixedT failures remain valid separateunqualified contrast,not same-condition regression or provenfirmwareRCA. Data/security/SSAP/multichannel/fourdevice andcleanup/recovery continue inparallel;no controlcensus prerequisite.",
-      "scope": "Complete originalS0-S6/19WP/10FV/12DG/VM-only/strictallocation/SDK110/shared12or8 unchanged. Data/security/SSAP/multichannel/fourdevice/lifecycle/cleanup/recovery/deployment remainOPEN in parallel;not all control permutations as prerequisites. UserHostP4;E/mixed/coldROM/naturalRCA/nonmanualrecovery not qualified."
+      "exit_conditions": [
+        "Reuse sole SDK supervisor and original deadline",
+        "Preserve discovery/short/command/withdrawal assertions",
+        "2045-byte independent result linked to both endpoints and all physical fragments",
+        "Original scope retained for historical v1-v3",
+        "Publish source/offline summary only"
+      ],
+      "next": "Native B still needs accurate-artifact two-peer methodv4/eventcontract2/combinedOwnedProvider and original discovery/connect/socket,length,lifecycle/peerbusiness;no unchanged failed Native/PM/register repeats. C now has exact production LeaseAuthority-backed local-process transport owner/token submit gate,limited offline and separately indexed private controlled observations;original IO failure remains failure. Next C:reuse actual portable production wire codec for typed Command/Event/ACB and finite continuous transport,full owner/generation/stop-drain,explicit SDK110 E/US boot/HCC before ownHost D;local epoch is not global controller identity or Native Grant. Continue unique Engine/ServiceChannel and Windows C/D/E/W without whole-control prerequisite;only KernelPacket/vendor P4. Preserve S0-S6/19WP/10FV/12DG,originalbudget/acceptance,VM-only,leaf allocation,public source/offline policy,and natural-root/nonmanual-recovery OPEN.",
+      "actor_obligation_regression": {
+        "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
+        "entry": "ssap_engine::exchange_loop",
+        "scenarios": [
+          "pending response prevents Negotiated despite peer reply",
+          "actual socket pressure drain admits exact response",
+          "original initialization deadline remains terminal",
+          "stop emits no pending response"
+        ],
+        "result": "OFFLINE_SCOPED_PASS",
+        "checks": {
+          "engine_tests": 76,
+          "clippy": "PASS",
+          "strict_html_inventory_examples": "PASS",
+          "premature_ready_mutation": "REJECTED_SOURCE_RESTORED"
+        },
+        "scope": "Real Tokio/UnixDatagram scheduling; explicit AF_UNIX receipt bypass and extra descriptor for bounded queue pressure. No full method business actor, Native Grant/credit, hardware isolation, USB/RF or formal proof. cfg(test) and explanation only; existing compiled artifact not rebuilt or upgraded."
+      },
+      "method_argument_regression": {
+        "source_public": "f6c2cf3c88154ba79a865cc55303b5fa464bd62f",
+        "entry": "ValuePdu encode, Plan/Reassembly, resolve_server, actual private-D-Bus MethodProvider, complete_server/client decoder",
+        "scenarios": "44 request19/command18 cases, physical MTU249/2042, parameter lengths0/245/246/249/250/253/254/255/2038/2039/2043; independent literal headers/handle/payload, full Provider arguments/identity/deadline, independent response or no command reply; two2044-byte encoder refusals before output modification.",
+        "result": "OFFLINE_SCOPED_PASS",
+        "checks": {
+          "engine_tests": 77,
+          "strict_clippy": "PASS",
+          "argument_truncation_mutation": "REJECTED_SOURCE_RESTORED"
+        },
+        "scope": "Actual production functions/private bus. Native identity, negotiation and Wire transport explicit fixtures; not full method actor scheduling, Native credit/USB/peer RF or formal proof. cfg(test) only; original v4 compiled/prepared identities unchanged."
+      },
+      "actor_native_boundary_regression": {
+        "source_public": "c2642d7abc9e164f6b1d12495e42813be583a888",
+        "entry": "two actual exchange_loop actors, ClientAdmission and Native query, actual private-D-Bus Owned provider registration",
+        "scenarios": "method request19/command18, 2/2043byte arguments, 249physical MTU; actual negotiation followed by local Native query refusal; explicit peer injection then RX query refusal before policy/provider effects; remaining actor stop/join",
+        "result": "OFFLINE_SCOPED_PASS",
+        "checks": {
+          "engine_tests": 78,
+          "strict_clippy": "PASS",
+          "admission_query_removal_mutation": "REJECTED_SOURCE_RESTORED"
+        },
+        "scope": "AF_UNIX transport/capability fixtures; no successful Native receipt fabricated. Refusal integration, not positive method delivery, kernel concurrency/credit/USB/RF or formal proof. Existing Virtual backend is query-only; no additional Host/Engine. v4 compiled/prepared identities unchanged."
+      }
     },
     "selected_qualification": {
       "version": 1,
@@ -2192,13 +2233,7 @@
     "issues_receipt": "docs/evidence/codec-fuzz-and-retained-issues-20261016.json"
   },
   "next_real_vertical_slice": {
-    "work_package": "WP09/WP08,WP06/07/16/17 parallel",
-    "state": "SOLE_SSAPPERMISSIONS_NEXT_PROTECTED_LIFECYCLE_EXIT_MET",
-    "behavior": "Reuse soleEngine andexistingSMTCpath:fix Service security propagation and freeze requirement/defer before firstautoplainbind;not secondEngine/late-rebind/cachedAgentgrade",
-    "first_exit": "ExactnewprotectedSMTC/SSAPpeer-validatedreadwrite plusoriginalplainregression;strongerunsupportedexplicit,CPCDnotweakened,relatedinvariantsonly",
-    "report": "docs/evidence/protected-channel-lifecycle-20261017.json",
-    "parallel": "NumericCLI/humanbudget andcallbackloss/cancel/Down/inflight;fullnewsevenlength/tenlifecycle,fairness/resources,fourdevice,naturalRCA/nonmanualrecovery remainOPEN,noallcontrolprerequisite",
-    "architecture": "Existingdrivers/net/slkd/Session/Grant/credit/Ticket;VM-only,U2/3,E1excluded,UserHostP4"
+    "authority": "project/qualification-records.json:batch.next"
   },
   "issue_sync_receipts_history": [
     "docs/evidence/qualification-quality-issues-20261015.json",
@@ -2237,7 +2272,43 @@
     ".dev/architecture-r5d-issue-receipts-v1.json",
     ".dev/main-thread-01a120fe/allocation-r5f9-issue-receipts-v1.json",
     ".dev/main-thread-01a120fe/ssap-init-issue-receipts-v1.json",
-    ".dev/main-thread-01a120fe/ssap-exchange-issue-receipts-v1.json"
+    ".dev/main-thread-01a120fe/ssap-exchange-issue-receipts-v1.json",
+    {
+      "superseded_for_current_body_maintenance": "R160_SOURCE_OFFLINE_SUMMARIES_SYNCED_PRIVATE_RESULTS_LOCAL",
+      "receipt": {
+        "source_only": true,
+        "comments": [
+          {
+            "repo": "sparklink",
+            "issue": 3,
+            "id": 6398991554,
+            "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6398991554",
+            "body_verified": true
+          },
+          {
+            "repo": "sparklink",
+            "issue": 8,
+            "id": 6398995318,
+            "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6398995318",
+            "body_verified": true
+          },
+          {
+            "repo": "linux",
+            "issue": 17,
+            "id": 6398997462,
+            "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6398997462",
+            "body_verified": true
+          },
+          {
+            "repo": "linux",
+            "issue": 19,
+            "id": 6399034236,
+            "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6399034236",
+            "body_verified": true
+          }
+        ]
+      }
+    }
   ],
   "dynamic_cmtc_batch": {
     "implementation_kernel": "400bd6812608935e2845d6d2b80ec58e7a6a6415",
@@ -4689,5 +4760,649 @@
       },
       "offline_scope": "915 test methods including literal output/USB/death/TTL-confusion negatives and strict117 HTML PASS. No new production Rust/kernel change,realdevice orformalqualification. Original v1 offline log retained."
     }
-  }
+  },
+  "batch_transition_history": [
+    {
+      "from_batch": "WP08-WP16-WP17-R5f156-owned-read-provider",
+      "to_batch": "WP08-WP16-WP17-R5f157-provider-error-empty-continued-read",
+      "prior_aliases": {
+        "execution_phase": "ARCHITECTURE_FIRST_R5F11_C_PYTHON_DIRECTORY_SCOPED_REAL_PASS_FULL_SCOPE_OPEN",
+        "execution_status": "ACTIVE_USER_AUTHORIZED_CONTINUE;full original scope INCOMPLETE",
+        "next_resume_tasks": [
+          "Follow canonical qualification_view.current_batch.next;do not independently maintain current qualification here.",
+          "R6:finite0.1.0-1/db724-2/rollback pair qualified;broader migration/debug/dwz/usrmerge/dependencies/supportmatrix/license/SBOM/provenance/CI release remain. New package actual-kernel/WS73 gates separate.",
+          "Continue original full architecture andfeature scope;not allcontrol permutations as dataplane prerequisite."
+        ],
+        "next_real_vertical_slice": {
+          "work_package": "WP09/WP08,WP06/07/16/17 parallel",
+          "state": "SOLE_SSAPPERMISSIONS_NEXT_PROTECTED_LIFECYCLE_EXIT_MET",
+          "behavior": "Reuse soleEngine andexistingSMTCpath:fix Service security propagation and freeze requirement/defer before firstautoplainbind;not secondEngine/late-rebind/cachedAgentgrade",
+          "first_exit": "ExactnewprotectedSMTC/SSAPpeer-validatedreadwrite plusoriginalplainregression;strongerunsupportedexplicit,CPCDnotweakened,relatedinvariantsonly",
+          "report": "docs/evidence/protected-channel-lifecycle-20261017.json",
+          "parallel": "NumericCLI/humanbudget andcallbackloss/cancel/Down/inflight;fullnewsevenlength/tenlifecycle,fairness/resources,fourdevice,naturalRCA/nonmanualrecovery remainOPEN,noallcontrolprerequisite",
+          "architecture": "Existingdrivers/net/slkd/Session/Grant/credit/Ticket;VM-only,U2/3,E1excluded,UserHostP4"
+        },
+        "current_goal_turn_classification": "PROGRESS_SHARED_RESOURCE_ALLOCATION_RECHECK_AND_ACTUAL_DISTINCT_VERSION_DEPLOYMENT_SCOPE",
+        "issue_sync_status": "FiveexistingOPEN issues preserveoriginalbodiesandcommentprefixes;actualExchangeInfo finitequalification,auditno-opfailureandnextunpublishedownercompositionwork synchronized;no issueclosed.",
+        "issue_sync_receipt": {
+          "path": ".dev/main-thread-01a120fe/native-publication-issue-receipts-v1.json",
+          "sha256": "d19bbde6ea92187febda533d8121c2074b8ff7630e717b3a60df8928ffb9842f",
+          "comments": [
+            "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6245729849",
+            "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6245730189",
+            "https://github.com/OpenSparklink/linux/issues/6#issuecomment-6245730503",
+            "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6245730823",
+            "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6245731128"
+          ]
+        }
+      },
+      "scope": "Preserve prior execution observations; the new current batch is the generated qualification view."
+    },
+    {
+      "from_batch": "WP08-WP16-WP17-R5f157-provider-error-empty-continued-read",
+      "to_batch": "WP08-WP16-WP17-R5f158-provider-owner-exit",
+      "prior_aliases": {
+        "current_goal_turn_classification": {
+          "classification": "PROGRESS",
+          "goal_complete": false,
+          "authority": "qualification_view.current_batch",
+          "reason": "Published bounded Provider caller/gate source and scoped offline checks; actual execution qualification remains with the authorized local record. Non-disclosure is not a pending-execution assertion; the full goal remains active."
+        },
+        "execution_phase": "FOLLOW_qualification_view.current_batch_FULL_ORIGINAL_SCOPE_OPEN",
+        "execution_status": "ACTIVE_FOLLOW_qualification_view.current_batch_FULL_SCOPE_OPEN",
+        "issue_sync_receipt": {
+          "public_comments": [
+            {
+              "repo": "sparklink",
+              "issue": 3,
+              "id": 6396248344,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6396248344",
+              "body_verified": true
+            },
+            {
+              "repo": "sparklink",
+              "issue": 8,
+              "id": 6396248739,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6396248739",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 17,
+              "id": 6396249071,
+              "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6396249071",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 19,
+              "id": 6396249350,
+              "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6396249350",
+              "body_verified": true
+            }
+          ],
+          "scope": "Source/offline summaries only; actual device details stay local."
+        },
+        "issue_sync_status": "R157_PUBLIC_SOURCE_OFFLINE_SUMMARIES_POSTED_PRIVATE_HARDWARE_LOCAL_FULL_SCOPE_OPEN",
+        "next_real_vertical_slice": {
+          "authority": "project/qualification-records.json:batch.next",
+          "scope": "R157 same-Owner Provider error/empty/continued-read; full original scope remains unchanged."
+        },
+        "next_resume_tasks": [
+          "Follow qualification_view.current_batch.next; it is the unique current batch plan.",
+          "Recheck exact source, dirty changes, artifacts, execution tools, resource ownership and shared build budget before any VM-only device work; preserve all previous results and incomplete original scope."
+        ],
+        "source_issue_sync_receipt": {
+          "public_comments": [
+            {
+              "repo": "sparklink",
+              "issue": 3,
+              "id": 6396248344,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6396248344",
+              "body_verified": true
+            },
+            {
+              "repo": "sparklink",
+              "issue": 8,
+              "id": 6396248739,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6396248739",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 17,
+              "id": 6396249071,
+              "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6396249071",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 19,
+              "id": 6396249350,
+              "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6396249350",
+              "body_verified": true
+            }
+          ],
+          "scope": "Source/offline summaries only; actual device details stay local."
+        }
+      },
+      "scope": "Archive the exact prior current aliases; the generated qualification_view owns the new batch."
+    },
+    {
+      "from_batch": "WP08-WP16-WP17-R5f158-provider-owner-exit",
+      "to_batch": "WP08-WP16-WP17-R5f159-provider-original-deadline-late-reply",
+      "prior_aliases": {
+        "current_goal_turn_classification": {
+          "classification": "PROGRESS",
+          "goal_complete": false,
+          "authority": "qualification_view.current_batch",
+          "reason": "Next bounded Owner-exit slice planned on the existing Provider path; this transition creates no source/offline, actual-device or formal qualification."
+        },
+        "execution_phase": "FOLLOW_qualification_view.current_batch_FULL_ORIGINAL_SCOPE_OPEN",
+        "execution_status": "ACTIVE_FOLLOW_qualification_view.current_batch_FULL_SCOPE_OPEN",
+        "issue_sync_receipt": {
+          "source_only": true,
+          "comments": [
+            {
+              "repo": "sparklink",
+              "issue": 3,
+              "id": 6397019931,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6397019931",
+              "body_verified": true
+            },
+            {
+              "repo": "sparklink",
+              "issue": 8,
+              "id": 6397020709,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6397020709",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 17,
+              "id": 6397021567,
+              "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6397021567",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 19,
+              "id": 6397084190,
+              "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6397084190",
+              "body_verified": true
+            }
+          ]
+        },
+        "issue_sync_status": "R158_SOURCE_OFFLINE_SUMMARIES_SYNCED_PRIVATE_RESULTS_LOCAL",
+        "next_real_vertical_slice": {
+          "authority": "project/qualification-records.json:batch.next",
+          "scope": "R158 two actual Provider prompts followed by Owner SIGKILL, timely actual AF-or4, retired4 and independent Owner/ordinary continuity; deadline expiry/late reply is separate."
+        },
+        "next_resume_tasks": [
+          "Follow qualification_view.current_batch.next; retain the full S0-S6/19WP/10FV/12DG and original acceptance scope.",
+          "Recheck source, dirty changes, actual artifacts, tool identities, per-leaf device ownership and shared build budget before VM-only work."
+        ],
+        "source_issue_sync_receipt": {
+          "source_only": true,
+          "comments": [
+            {
+              "repo": "sparklink",
+              "issue": 3,
+              "id": 6397019931,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6397019931",
+              "body_verified": true
+            },
+            {
+              "repo": "sparklink",
+              "issue": 8,
+              "id": 6397020709,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6397020709",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 17,
+              "id": 6397021567,
+              "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6397021567",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 19,
+              "id": 6397084190,
+              "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6397084190",
+              "body_verified": true
+            }
+          ]
+        }
+      },
+      "scope": "Archive the exact prior current aliases; the generated qualification_view owns the new batch."
+    },
+    {
+      "from_batch": "WP08-WP16-WP17-R5f159-provider-original-deadline-late-reply",
+      "to_batch": "WP08-WP16-WP17-R5f160-provider-sdk-shared-frontend",
+      "prior_aliases": {
+        "current_goal_turn_classification": {
+          "classification": "PROGRESS",
+          "goal_complete": false,
+          "authority": "qualification_view.current_batch",
+          "reason": "Next bounded Provider original-deadline/late-reply slice planned on the existing path; this transition creates no source/offline, actual-device or formal qualification."
+        },
+        "execution_phase": "FOLLOW_qualification_view.current_batch_FULL_ORIGINAL_SCOPE_OPEN",
+        "execution_status": "ACTIVE_FOLLOW_qualification_view.current_batch_FULL_SCOPE_OPEN",
+        "issue_sync_receipt": {
+          "source_only": true,
+          "comments": [
+            {
+              "repo": "sparklink",
+              "issue": 3,
+              "id": 6397850132,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6397850132",
+              "body_verified": true
+            },
+            {
+              "repo": "sparklink",
+              "issue": 8,
+              "id": 6397884112,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6397884112",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 17,
+              "id": 6397885039,
+              "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6397885039",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 19,
+              "id": 6397885858,
+              "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6397885858",
+              "body_verified": true
+            }
+          ]
+        },
+        "issue_sync_status": "R159_SOURCE_OFFLINE_SUMMARIES_SYNCED_PRIVATE_RESULTS_LOCAL",
+        "next_real_vertical_slice": {
+          "authority": "project/qualification-records.json:batch.next",
+          "scope": "R159 bounded Provider original-deadline expiry, late original-token refusal and ordinary CUTC continuity, with separate SDK/Provider/drain deadlines and only an observed outer new-lifetime witness; no same-actor recovery or late-response promise."
+        },
+        "next_resume_tasks": [
+          "Follow qualification_view.current_batch.next; retain the full S0-S6/19WP/10FV/12DG and original acceptance scope.",
+          "Recheck source, dirty changes, actual artifacts, tool identities, per-leaf device ownership and shared build budget before VM-only work."
+        ],
+        "source_issue_sync_receipt": {
+          "source_only": true,
+          "comments": [
+            {
+              "repo": "sparklink",
+              "issue": 3,
+              "id": 6397850132,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/3#issuecomment-6397850132",
+              "body_verified": true
+            },
+            {
+              "repo": "sparklink",
+              "issue": 8,
+              "id": 6397884112,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/8#issuecomment-6397884112",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 17,
+              "id": 6397885039,
+              "url": "https://github.com/OpenSparklink/linux/issues/17#issuecomment-6397885039",
+              "body_verified": true
+            },
+            {
+              "repo": "linux",
+              "issue": 19,
+              "id": 6397885858,
+              "url": "https://github.com/OpenSparklink/linux/issues/19#issuecomment-6397885858",
+              "body_verified": true
+            }
+          ]
+        }
+      },
+      "scope": "Archive the exact prior current aliases; the generated qualification_view owns the new batch."
+    },
+    {
+      "from_batch": "WP08-WP16-WP17-R5f160-provider-sdk-shared-frontend",
+      "to_batch": "WP08-WP16-WP17-U22-owned-type0-write-provider",
+      "prior_aliases": {
+        "next_real_vertical_slice": {
+          "authority": "project/qualification-records.json:batch.next",
+          "scope": "R160 bounded shared Provider frontend, slctl migration and real C/Python Provider public entry points over the sole existing Engine; exact error/empty/random remote results with unchanged ownership/deadline and ordinary business scope."
+        },
+        "next_batch_contract": null
+      },
+      "scope": "Finite maintenance completed and U21 closed; continue original U22 vertical work without new goal/scope reduction."
+    },
+    {
+      "from_batch": "WP08-WP16-WP17-U22-owned-type0-write-provider",
+      "to_batch": "WP08-WP16-WP17-U22-shared-write-sdk",
+      "scope": "Bounded issue maintenance and source/offline status reconciliation; original goal, budget and qualification unchanged."
+    },
+    {
+      "from_batch": "WP08-WP16-WP17-U22-shared-write-sdk",
+      "to_batch": "WP08-WP16-WP17-U22-shared-write-callers",
+      "scope": "Source/offline caller progression only; full goal/budget and original qualification unchanged."
+    },
+    {
+      "from_batch": "WP08-WP16-WP17-U22-shared-write-callers",
+      "to_batch": "WP08-WP16-WP17-U22-sdk-write-vm-gate",
+      "scope": "Existing WRITE VM gate progressed; full goal/budget/acceptance unchanged. Private real qualification is not public source status."
+    },
+    {
+      "from_batch": "WP08-WP16-WP17-U22-sdk-write-vm-gate",
+      "to_batch": "WP08-WP16-WP17-U22-write-pending-withdrawal",
+      "scope": "Actual WRITE caller pending withdrawal advanced; full goal, budget and original acceptance unchanged. New VM qualification still required."
+    }
+  ],
+  "source_issue_sync_receipt": {
+    "authority": "project/qualification-records.json:batch.issue_sync"
+  },
+  "source_offline_sync_history": [
+    {
+      "batch": "WP08-WP16-WP17-R5f158-provider-owner-exit",
+      "prior_aliases": {
+        "issue_sync_status": "R158_PUBLIC_SOURCE_OFFLINE_SUMMARY_NOT_YET_RECORDED_PRIVATE_DETAILS_STAY_LOCAL",
+        "issue_sync_receipt": null,
+        "source_issue_sync_receipt": null
+      }
+    },
+    {
+      "batch": "WP08-WP16-WP17-R5f159-provider-original-deadline-late-reply",
+      "prior_aliases": {
+        "issue_sync_status": "R159_PUBLIC_SOURCE_OFFLINE_SUMMARY_NOT_YET_RECORDED_PRIVATE_DETAILS_STAY_LOCAL",
+        "issue_sync_receipt": null,
+        "source_issue_sync_receipt": null
+      }
+    },
+    {
+      "batch": "WP08-WP16-WP17-R5f160-provider-sdk-shared-frontend",
+      "prior_aliases": {
+        "issue_sync_status": "R160_PUBLIC_SOURCE_OFFLINE_SUMMARY_NOT_YET_RECORDED_PRIVATE_DETAILS_STAY_LOCAL",
+        "issue_sync_receipt": null,
+        "source_issue_sync_receipt": null,
+        "current_validation_ref": null,
+        "current_batch_validation_receipt": null,
+        "current_goal_turn_classification": {
+          "classification": "PROGRESS",
+          "goal_complete": false,
+          "authority": "qualification_view.current_batch",
+          "reason": "Next bounded shared SDK Provider frontend and language-provider slice planned on the existing path; this transition creates no source/offline, actual-device or formal qualification."
+        }
+      }
+    }
+  ],
+  "issue_maintenance": {
+    "record": "project/issue-maintenance-20261026.json",
+    "state": "BOUNDED_MAINTENANCE_COMPLETE_U1_U21_CLOSED",
+    "execution_dependency": "Bounded issue maintenance complete. Resume existing method delivery and data/security/SSAP work using exact artifacts; retain startup failure and CLOSE barrier, do not bypass ACK or repeat unchanged attempts. Natural recovery and complete control-plane combinations are not a new prerequisite for independent work.",
+    "followup_readback": "project/issue-maintenance-20261026.json#/followup_readback",
+    "latest_readback_at": "2026-10-27T19:31:11.588828+00:00",
+    "latest_actions": {
+      "reviewed": 35,
+      "updated": [
+        "U#3",
+        "K#17",
+        "K#19"
+      ],
+      "newly_closed": [],
+      "new_children": [],
+      "retained_closed": [
+        "U#1",
+        "U#21"
+      ],
+      "note": "Parent summaries consolidated; seven existing children reused; all original acceptance retained. Bounded maintenance complete, resume original functionality."
+    },
+    "source_followup": {
+      "issue": "sparklink#1",
+      "source": "bac12d127cd4d32874949b61b0088baa0c0fe9e8",
+      "state": "ORIGINAL_SIX_CRITERIA_CLOSED",
+      "observed_at": "2026-10-27T01:01:48.727620+00:00"
+    },
+    "historical_ci_failures": [
+      {
+        "source": "b154c99215c616c060a6da45350bf4baea1923d2",
+        "run_url": "https://github.com/OpenSparklink/sparklink/actions/runs/40419316081",
+        "tested_kernel_pin": "c39a1765fc6036da0a635a755cbd2022de4f0b28",
+        "status": "FAILED_OR_UNVERIFIED",
+        "phase": "source-worktree",
+        "error": "git status --porcelain metadata timeout (30 s); compilation/corpus/exploration not executed",
+        "accepted_exploration": false,
+        "issue": "linux#24"
+      }
+    ],
+    "current_source_ci": {
+      "source": "bac12d127cd4d32874949b61b0088baa0c0fe9e8",
+      "run_url": "https://github.com/OpenSparklink/sparklink/actions/runs/40427029632",
+      "tested_kernel_pin": "c39a1765fc6036da0a635a755cbd2022de4f0b28",
+      "status": "BOUNDED_FUZZ_COMPLETED_NO_FINDING",
+      "proof": false,
+      "physical_acceptance": false,
+      "old_timeout_root_cause": "UNPROVEN",
+      "issue": "linux#24"
+    },
+    "latest_ci_observation_ref": "project/issue-maintenance-20261026.json#/followup_readback/ci_observation"
+  },
+  "historical_goal_turn_audits": [
+    {
+      "classification": "PROGRESS",
+      "goal_complete": false,
+      "authority": "project/issue-maintenance-20261026.json",
+      "reason": "28 issue bodies and 7 scoped child relationships verified online; original acceptance retained, qualification records unchanged, feature work resumes after bounded maintenance."
+    },
+    {
+      "classification": "PROGRESS",
+      "goal_complete": false,
+      "authority": "qualification_view.current_batch.followups.sdk_provider_unregister_v1",
+      "reason": "Distinct pending unregister runner and fail-closed verifier implemented using existing SDK/shared peer helpers; named offline checks pass, exact-artifact VM execution pending."
+    }
+  ],
+  "sdk_provider_issue_closure": {
+    "state": "CLOSED_ORIGINAL_SIX_ITEMS_REVIEWED",
+    "issue": "https://github.com/OpenSparklink/sparklink/issues/21",
+    "parent_state": "OPEN",
+    "source_commit": "792c56e99bdc6eaf16070c188c6031d459458e53",
+    "production_changed": false,
+    "offline_checks": {
+      "sdk_provider_tests": 10,
+      "daemon_provider_tests": 10,
+      "actual_external_C_Python_integration": 1,
+      "strict_clippy": "PASS"
+    },
+    "failed_attempt": "daemon-provider-v1 selected zero tests: NOT_PASS; actual module-name v2 independently ran ten cases.",
+    "scope": "Only original U21 READ Provider lifecycle. Public source/offline and disposition; exact private qualification remains separately indexed, no current HEAD artifact transfer.",
+    "remaining": "U22 remaining SSAP operations/long values, U23 Profile and original data/security/recovery/deployment scope remain open.",
+    "private_hardware_published": false
+  },
+  "next_batch_contract": {
+    "work_package": "WP08/U#22",
+    "production_behavior": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently.",
+    "exit_conditions": [
+      "Original owned method handle/operation/arguments/security/deadline reach same shared Provider Dispatcher",
+      "Method request returns independently produced application result; command has no protocol reply",
+      "Wrong owner/handle, expiry, cancellation, owner exit and bounded queues have definite failure; no implicit effect retry",
+      "Accurate signed source gets real dual-device new-behavior and original preservation gates"
+    ],
+    "not_prerequisite": "Full unrelated control-plane matrix, UserHost, Bond/release or complete recovery",
+    "authority_ref": "qualification-records.json#/batch/next"
+  },
+  "validation_reference_history": [
+    {
+      "replaced_by_batch": "WP08-WP16-WP17-U22-shared-write-callers",
+      "previous": {
+        "current_batch_validation_receipt": null,
+        "current_validation_ref": null
+      },
+      "scope": "Historical validation identity retained; no new artifact qualification"
+    }
+  ],
+  "current_batch_validation_receipt": {
+    "authority": "project/qualification-records.json:batch.offline_checks",
+    "scope": "Only named current offline checks; exact retained artifact qualification remains qualification_view.selected_qualification."
+  },
+  "current_validation_ref": {
+    "authority": "project/qualification-records.json:batch.offline_checks",
+    "scope": "Only named current offline checks; exact retained artifact qualification remains qualification_view.selected_qualification."
+  },
+  "next_batch_contract_history": [
+    {
+      "authority": "project/qualification-records.json:batch.next"
+    }
+  ],
+  "method_requester_execution": {
+    "authority": "project/qualification-records.json:batch",
+    "next": "Existing unique method Provider vertical slice; no new Engine",
+    "hardware_details": "authorized local evidence only"
+  },
+  "method_discovery_execution": {
+    "authority": "project/qualification-records.json:batch_history",
+    "status": "Historical discovery slice; superseded for current execution by method_server_execution"
+  },
+  "method_server_execution": {
+    "authority": "project/qualification-records.json:batch_history",
+    "status": "Daemon slice retained; current SDK execution tracked by method_sdk_execution"
+  },
+  "method_sdk_execution": {
+    "authority": "project/qualification-records.json:batch_history",
+    "status": "Rust SDK slice retained; language slice tracked by method_language_execution"
+  },
+  "method_language_execution": {
+    "authority": "project/qualification-records.json:batch_history",
+    "status": "C/Python slice retained; CLI tracked by method_cli_execution"
+  },
+  "method_cli_execution": {
+    "authority": "project/qualification-records.json:batch_history",
+    "status": "CLI source/offline slice retained; current VM requester tracked by method_vm_requester_execution"
+  },
+  "method_vm_requester_execution": {
+    "authority": "project/qualification-records.json:batch_history",
+    "status": "Requester source/offline scope retained; existing scenario is now ready for accurate artifact gates."
+  },
+  "method_vm_scenario_execution": {
+    "authority": "project/qualification-records.json:batch_history",
+    "status": "Method v2 request and command scenario implemented; finite offline checks only; original hardware attempts and failures retained.",
+    "next": "Add bounded startup diagnostic submission/cancellation/callback/free observations before another hardware attempt; then exact-artifact v2 paired method delivery and preservation. Continue discovery, long results and lifecycle gates; no CLOSE bypass, unchanged startup retry or all-control-plane prerequisite."
+  },
+  "method_command_tools_execution": {
+    "authority": "project/qualification-records.json:batch_history",
+    "next": "Extend the existing method VM scenario for command peer processing and paired USB evidence, then discovery/long result/lifecycle gates. Diagnose startup with bounded submit/cancel/callback ownership observations; no CLOSE bypass, unchanged retry or all-control-plane prerequisite.",
+    "scope": "Actual SDK tools/offline slice retained; current command scenario is v2."
+  },
+  "usb_request_observer_execution": {
+    "authority": "project/qualification-records.json:batch",
+    "status": "PREPARATION_IDENTITY_RECHECKED_REAL_METHOD_DELIVERY_UNQUALIFIED",
+    "next": "Continue fixed SDK notification/power-state/bootstrap call-chain and matching SDK110 firmware audit without speculative wake, CLOSE bypass or unchanged retry. In parallel connect method discovery SDK callers and original long-result/lifecycle gates through the unique Engine; exact-artifact method v2 paired delivery remains required. No full recovery/control-plane prerequisite."
+  },
+  "goal_resume_record": {
+    "date": "2026-10-29",
+    "user_request": "Restore previous goal and continue",
+    "api_before": "no goal returned",
+    "api_after": "active",
+    "restored_from": "Existing effective_task_scope and canonical implementation-plan",
+    "budget_unchanged": true,
+    "no_completion_or_scope_reduction": true,
+    "latest_recheck": {
+      "date": "2026-10-29",
+      "api_status": "active",
+      "duplicate_goal_created": false,
+      "current_batch": "WP08-SSAP-METHOD-LONG-GATE-v4",
+      "scope_and_budget_unchanged": true
+    }
+  },
+  "discovery_original_deadline": {
+    "authority": "project/qualification-records.json:batch",
+    "status": "IMPLEMENTED_OFFLINE_PASS_REAL_DISCOVERY_AND_METHOD_DELIVERY_UNQUALIFIED"
+  },
+  "discovery_language_delivery": {
+    "authority": "project/qualification-records.json:batch",
+    "status": "IMPLEMENTED_OFFLINE_PASS_VM_CALLER_AND_REAL_DELIVERY_PENDING"
+  },
+  "discovery_vm_consumer": {
+    "authority": "project/qualification-records.json:batch",
+    "status": "RUNNER_PAIRED_CORROBORATOR_OFFLINE_PASS_EXACT_ARTIFACT_REAL_DELIVERY_PENDING"
+  },
+  "artifact_preparation": {
+    "authority": "project/qualification-records.json:batch",
+    "status": "V4_EXACT_INPUTS_VALIDATED_NO_USB_VM_SMOKE_PASS; REAL_DELIVERY_PENDING"
+  },
+  "startup_diagnostic_scope": {
+    "authority": "project/qualification-records.json:batch",
+    "state": "STATIC_CALL_PATH_AUDITED_RESIDENT_IDENTITY_AND_ROM_BEHAVIOR_UNVERIFIED"
+  },
+  "effective_scope_history": [
+    {
+      "date": "2026-11-01",
+      "effective_task_scope": "完整实现 https://github.com/OpenSparklink/sparklink/issues/8 中的 SparkLink/Linux 联合方案及两个仓库全部关联 issues：按 S0–S6 依赖顺序持续开发，自行维护 issues 与验收证据，完成 WS73 原生 USB/SLE/DLI/RF、per-controller Backend/Host/生命周期、事件与权限、用户态 SSAP/Profile、配对加密/Bond/PHY policy、可选UserHost接管及厂商Host适配（P4延期） 和故障/PM/兼容/发布矩阵；仅全部原验收条件满足后关闭对应 issue，并在完整目标真正达成时标记 goal complete。",
+      "userhost_planning": {
+        "priority": "P4 low, deferred, planning-only this round",
+        "decision": "docs/decisions/0003-optional-exclusive-user-host.md",
+        "audit": "docs/evidence/userhost-planning-audit-20261013.json",
+        "implemented": false,
+        "formal_proven": false,
+        "vm_real_accepted": false,
+        "not_prerequisite_for": [
+          "Current WS73 data loop",
+          "Lifecycle remediation",
+          "Native userspace SSAP",
+          "WP02-WP08"
+        ],
+        "preserved_requirements": [
+          "permissions/LSM/library ABI/path",
+          "per-controller isolation",
+          "finite resources/partial/EAGAIN/fault/crash/stale",
+          "benchmark/real evidence"
+        ],
+        "future_scope": [
+          "mutually exclusive Native/UserHost",
+          "shared DeviceRuntime vs NativeHostRuntime",
+          "typed bounded packet socket/lease",
+          "idle-only switching/verified hardware barriers",
+          "new Native generation/reinit/no inherited link-credit-key",
+          "SDK packet compatibility and slctl/slkd adaptation separately audited"
+        ],
+        "code_changed_or_deleted": false,
+        "issue_updates": {
+          "count": 14,
+          "readback_verified": true,
+          "receipt": "docs/evidence/userhost-issues-scope-20261013.json",
+          "vendor_scope_adjusted_as_authorized": true,
+          "native_scope_history_preserved": true,
+          "issues_open": true
+        }
+      },
+      "next_batch_contract": {
+        "work_package": "WP08/U#22",
+        "production_behavior": "Exact v4 inputs staged and no-USB VM smoke passed. Review nondestructive bootstrap observation preserving status/ACK ownership before another distinct hardware attempt; real method discovery/short/long delivery and lifecycle remain pending. Continue SSAP/data/security independently.",
+        "exit_conditions": [
+          "Original owned method handle/operation/arguments/security/deadline reach same shared Provider Dispatcher",
+          "Method request returns independently produced application result; command has no protocol reply",
+          "Wrong owner/handle, expiry, cancellation, owner exit and bounded queues have definite failure; no implicit effect retry",
+          "Accurate signed source gets real dual-device new-behavior and original preservation gates"
+        ],
+        "not_prerequisite": "Full unrelated control-plane matrix, UserHost, Bond/release or complete recovery",
+        "authority_ref": "qualification-records.json#/batch/next"
+      },
+      "reason": "Formal user-authorized scope extension; prior status retained, not completion"
+    }
+  ],
+  "original_scope_preserved": true,
+  "effective_scope_extension": {
+    "registry": "project/qualification-records.json",
+    "id": "userhost-windows-20261101",
+    "decision": "docs/decisions/0003-optional-exclusive-user-host.md",
+    "source_sha256": "d0ff6f757eb59af63725441e66a502beb8c6e215d271a2da0d85add22222877e",
+    "effective_scope_extended": true,
+    "original_scope_preserved": true,
+    "budget_unchanged": true,
+    "execution_plan": "project/implementation-plan.md",
+    "status_source": "scope_extensions entry is authoritative; issue receipt in issue-maintenance registry",
+    "implementation_status_ref": "scope_extensions[userhost-windows-20261101].implementation_slices"
+  },
+  "objective_unchanged_explanation": "Goal API objective has no edit operation; original objective text/budget retained. Effective scope formally extended by user instruction and canonical plan, not a duplicate goal."
 }

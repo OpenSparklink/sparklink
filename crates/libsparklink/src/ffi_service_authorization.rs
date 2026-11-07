@@ -31,9 +31,12 @@ pub struct SlkAuthorizationRequestInfo {
     pub local_tcid: u8,
     pub remote_tcid: u8,
     pub pi: u8,
-    pub reserved: [u8; 2],
-    pub value: [u8; 2042],
-    pub tail: [u8; 6],
+    /// Authorization target kind: property0, authenticated CPCD2, method3.
+    /// Kind3 is not an SSAP wire data_type.
+    pub data_type: u8,
+    pub reserved: [u8; 1],
+    pub value: [u8; 2043],
+    pub tail: [u8; 5],
 }
 /// Duplicate a CLOEXEC notification fd;caller closes it. Poll only,never
 /// read/write its counter. Before waiting,try next;after readiness retry next.
@@ -123,9 +126,10 @@ pub unsafe extern "C" fn slk_authorization_request_info(
         local_tcid: id.6,
         remote_tcid: id.7,
         pi: id.8,
-        reserved: [0; 2],
-        value: [0; 2042],
-        tail: [0; 6],
+        data_type: p.6,
+        reserved: [0; 1],
+        value: [0; 2043],
+        tail: [0; 5],
     };
     value.value[..p.5.len()].copy_from_slice(&p.5);
     unsafe { output.write(value) };

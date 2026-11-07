@@ -1,7 +1,7 @@
 # ADR 0004：应用资源、管理权限与交付阶段
 
 状态：采用；实现和验收范围独立记录。完整 S0–S6、drivers/net/slkd、VM-only 和
-WS73 路径不变；UserHost 仍 P4 规划，不是数据或安全 relay 的前置条件。
+WS73 路径不变；KernelPacket/厂商仍 P4；自有UserHost/DirectUSB与Windows按ADR0003修订推进，不是数据或安全 relay 的前置条件。
 
 ## 依据与适用范围
 
@@ -19,12 +19,52 @@ WS73 路径不变；UserHost 仍 P4 规划，不是数据或安全 relay 的前�
 
 ## 决策
 
+同一通道owner执行快照、准备、收发和发送状态观察，不由调用者另传fd；协议队列/片游标仍由Engine拥有。停止任务和物理排空分别记录，无法观察的完成阶段不得由本地join补成成功。
+
+纯值校验与平台错误映射分开：协议值返回类型化失败，Native边界保持原errno与真实查询。不可用类型正确替代权限/来源检查，也不因MSVC编译通过宣称Windows运行。此调整复用现有校验与Engine，不增加另一套状态。
+
 同步 C/Python 应用边界复用唯一 Rust Client；为持续运行 owner 观察而采用每客户端
 一个本地异步执行线程及有界请求队列，避免在未知调用者 runtime 中嵌套 block_on。
 这不是 Host/授权 actor，不持 Native lease，也不新增 Engine。绝对单调期限覆盖
 排队和等待，超时仅取消本地等待，不声称撤销远端/物理义务；最后释放停止并 join。
 仅开放已接通的类型化方法，高阶 API 分批迁移，不以空门面补齐目标树。
 完整参数/错误、fork 与 fd 生命周期见[接口参考](../reference/interfaces.md)。
+
+持续 SSAP 更新使用同一物理 Engine 的 caller-owned 接收租约，不能给每种语言另建
+收发循环或协议状态。它固定原 daemon／controller generation／connection lifetime
+及 Native 安全 epoch，有限队列在满时区分通知丢弃与指示拒绝；协议确认只是队列
+准入，不是应用处理。配置／清理占用原客户端事务序列，持续等待期间让出普通读写。
+资源租期与各次请求、包和首次清理期限分开，续租不刷新后者。
+
+派生订阅保留原 caller，释放父 Client／Connection 观察不隐式断链或撤回其他资源。
+Rust显式close、C／Python显式release才观察自己租约的配置引用清理；本地free、Python
+context 退出或 Rust Drop 不构成清理收据。Drop 的尽力撤回、owner-loss 与有限租期
+也不能当作所有 callback／Native 引用已排空。opaque 租约不继承 socket 的 dup／
+SCM_RIGHTS契约。原单租约切片、共享CPCD多应用分配及同lifetime在途更新的
+交付边界分别验收；不能从一次停用回复推导所有旧消息都已排空或已被应用处理。
+共享接收首先支持已经启用组内的相同属性集合／模式，至多8个caller-owned租约，
+每个独立owner／token／队列／期限；不恢复按语言或应用建立另一套wire Engine。
+关闭一个租约只撤销其路由及引用，最后一个有效引用才通过原事务序列停用CPCD。
+此时共享保留的终态必须有显式REMOTE_RETAINED位，不能伪装成远端停用成功；
+flags=3与最后实际停用后的flags=1分别验收。旧终态只是完成当时的观察，不是当前
+硬件或安全授权。读取消不撤回租约；未知物理清理继续保留义务并隔离actor。
+
+RX在唯一actor解析一次后分流到独立有限队列。ACK1是至少一个有效接收队列准入，
+不表示所有订阅者收到或应用处理；一个队列满不影响另一个。动态过滤／模式集合的
+增减必须另有受控配置事务和授权，不能因共享框架存在就开放；保持原完整目标。
+参考固定NearLink Host f0872df 的按地址／handle保存appId配置与清理路径，但其appId
+不是Linux凭据、generation／lifetime或授权。源码映射、bounded model与准确VM门禁
+分别记录；不将缓存、引用数或模型通过当作真实远端配置／交付证明。
+
+普通应用总线准入、服务拥有者权限与 controller 管理权限仍分别门禁，接口出现不
+构成 apps-only 资格。逐方法迁移已有原期限的远端读写、单次接收及持续租约，不使用
+整个 Connection 接口的 broad allow。发现／UUID／信息等尚未完成原期限审计的入口
+继续留在原角色范围，后续整改不成为先验收受约束业务的全控制面前置。
+
+权限探针必须区分总线准入与协议成功：非法参数到达真实 daemon 预检而被拒绝，只
+说明策略路径；正向数据仍需真实 SDK 应用、原凭据及对端处理证据。新版本门禁固定
+应用组身份、无额外管理组和零 capabilities，不能继承旧管理组记录。服务拥有者的
+本地审批／数据库观察与远端应用分别记录，协议 ACK 也不充当独立业务回复。
 
 派生C/Python Connection引用与Client引用共享原caller／执行器；关闭Client不关闭仍
 被Connection引用的caller，最后本地引用才join。Connection固定现有Rust视图的
@@ -322,6 +362,23 @@ USB drain 和固件假设仍保持原未决条件。私有 D-Bus 测试中的 Re
 是明确 fixture，不能升级为真实内核并发或安全证明。
 
 
+## 可读写属性的 Provider 组合
+
+一个 Owned type0 属性可以同时声明 READ 和 WRITE，而不拆成两个属性或两套数据库。
+复用同一 Owner、权限类型、原请求上下文和唯一 Engine；原 READ/WRITE Provider 各绑定
+一次，允许任意顺序。首次绑定把整个值交给应用并消费 staging 字节一次，缺少对应
+回调时明确不可用，不从初始值、另一方向或 daemon 缓存制造成功。第二方向不再次
+退款；描述符、更新/CPCD 与其他操作组合不能因此自动开放。
+
+SDK 的绑定尝试和收件箱身份包含操作种类，分流必须同时核对原 controller、generation、
+handle 与 READ/WRITE 种类；相同属性的两个 inbox 共用现有总容量，不新增无限队列、
+执行线程或协议循环。关闭一个 inbox 只停止自己的方向；原登记撤回或 Owner 丢失
+仍停止两者。绑定不确定不能重试原方向，新增另一方向不能复活旧请求或授权。
+
+`reply()` 仅表示本地接受；callback 归还与应用视图释放分别完成，不能由此推出
+最后回复已交付、远端副作用回滚、Native/USB drain 或 RF 成功。测试与真实行为
+资格各自记录，原 READ-only 限定资格不转授组合模式。
+
 ## 2026-10-17：退休历史门面
 
 采用“一状态一权威、一协议一实现、入口全链退休”。Powered的本地布尔量没有电源
@@ -553,3 +610,96 @@ callback，授权位明确拒绝；后续审批接口需复用现有验证和原
 新role结果回传预算512KiB，原不可信请求仍131072字节；不得成为安装的任意命令broker。
 本地观察不伪造子进程exit或Complete；原输出、实际凭据及两端USB分别校验。
 工具重组不授予整个权限、生命周期、安全或自然恢复资格，仍须新artifact实机证据。
+
+### Owned 属性说明的独立权限
+
+type1 说明是原 Owned 属性的显式公开只读元数据；上层权限与属性值、type2 CPCD
+分别表达。选择只开放有界 UTF-8 的原因是形成最小真实发现/读取链路，不默认开放
+远端可写说明或推断属性的本地授权批准同样覆盖描述符。原 caller 在同一 DB 锁内
+设置，复用总字节预算和 owner/管理租约/期限，删除登记同时回收；不增新 handle。
+ReadSsapDescription 仍经过唯一 actor、Query::Value、原 Session 和 Grant；不新建
+codec、授权状态机或 Provider。公开说明不是安全身份，minimum 只约束请求通道。
+源码契约见[只读说明参考](../reference/ssap-permissions.md#显式公开的只读属性说明)，
+准确资格另见唯一能力入口；此决策不缩减完整服务、权限和恢复验收。
+
+### R156：同一 Owned 登记内的动态只读值
+
+动态值由原服务 owner 的 `org.sparklink.SsapReadProvider.ReadValue` 提供，唯一
+Engine 继续负责协议解析、访问检查、请求顺序及受约束发送。首批只接受操作位
+恰好 READ 的 type0 属性；授权先完成且与提供值分离，type1 说明保持原有独立语义。
+这使应用可以按请求生成值，同时保留现有服务器义务、owner 和 Native 边界。
+
+绑定复用原 caller、数据库锁和 owner watch，不建立第二个数据库或 Engine。一次
+绑定消耗原存储值，登记内不能更换或解除；本地读取/替换返回 NotSupported，失败
+不回退缓存。callback 等待不持数据库锁，使用原期限和原8条义务预算；消费结果前
+复核原 Native 身份、安全观察、登记及同一绑定对象。单值与每义务动态结果累计预算
+均为2042字节，UUID 多项共享；静态预算、完整 PDU 与 MTU 限制另行检查。
+已经编码进入 Pending 的响应字节不可变，后续注销不撤回该响应；它与既有存储值
+读取一样继续受原 Native 上下文及期限限制，不承诺注销能阻止已接受响应交付。
+
+应用错误保留 `0xAF..0xFF`；畸形、超限或不可调用的 provider 映射为 `0xAF`，原期限
+耗尽仍沿用 Engine 失败。callback 成功只提供响应候选值，不授予访问权限、发送
+资格或对端完成。标准 §7.3 的实现内接口自由度及 §7.4.4.5 的应用错误语义为设计
+边界；固定 Host `f0872dfaac33ffa99b80b352f6c05fba2df6414e` 的普通通知与布尔授权
+接口不是动态 provider 契约，不能照搬为符合性判据。
+
+Rust SDK 增加薄绑定及复用原授权准入/等待的 provider helper，实际 CLI frontend
+分别以一个槽位等待审批和显式值，不让批准隐含提供值。进程内 token 不复用，退出
+先停止共享 handle 和本地答复，再尝试撤回并移除端点。完整 C/Python Provider 收件箱、动态写入和其他目标
+仍缺；既有 C/Python 远端读取可消费动态值。源码契约见
+[动态只读值参考](../reference/ssap-permissions.md#owned-read-provider)。
+本批实现中，离线及实机待验；完整服务、多应用、生命周期、自然根因与恢复范围不缩减。
+
+## 2026-11-01 增量：ConnectionUse、端点与交付检查点
+
+复用DiscoverySession，核对PublicationSession资源与调度；最小ConnectionUse释放只是放弃使用，不越权断共享Session。originating owner/ConnectionUse/Channel/Grant epoch及原期限绑定派生别名；独立委托要新scope，fd/HANDLE复制不自动新授权，排队引用、最终释放、owner失联、管理撤权分别处理。当前Native行为须逐入口核对迁移，不能仅改目标文字宣称达成。
+
+UserHost IPC准入不等于Host准入，更不等于USB、controller或peer应用完成；Operation预留有限结果槽，未知结果OutcomeUnknown，未观察阶段NotObservable，取消不抹物理债务。prepare不授永久资格，实际提交重验；短缓冲完整消息/所需长度、有限内部暂存和平台底层语义分别公开。
+
+Native取RX时检查与已开始用户复制的边界明确；UserHost明文进入应用IPC后不能追溯撤回，EAGAIN重试仍检查。authority origin/validation checkpoint区别于安全等级，严格读取时保证无实现则拒绝。Windows ACL/Token/SID/会话和Unix凭据各自验收，不将自报PID或SDK检查当内核强制。全部目标门禁归唯一计划及新增端点子项，不改变已有资格。
+
+### Owned 事件条目与属性配置分开（2026-11-01）
+
+事件 UUID 进入现有 Owned 服务、数据库预算、handle 分配与 owner 撤回；不另建事件
+数据库或 Engine。条目不保存事件关联数据。属性客户端配置描述符仅适用于属性，
+不因更新 codec 有 event 位就自动给事件创建 CPCD 或复用属性批准。
+
+当前登记和发现使用标准/自定义类别4/12、Primary成员bit8；属性读写、说明及
+READ/WRITE/method Provider拒绝事件handle。未发布 D-Bus/Rust/C/Python签名同批迁移，
+旧二进制重编。`ListLocalServices`属性staging用途不变。
+
+发送端沿同一Update/Pending/fragment/ACK增加Event输入：当前事件Owner、显式有限
+关联数据与最低安全机制。原始唯一调用者和活跃Owner均须通过；每片复核、原期限、
+Native约束和物理义务保持，不从上层取消退款，不将属性CPCD或批准套用到事件。
+通知只返回准入，指示只返回匹配event类型、epoch和minimum的队列ACK，均不是应用处理。
+单次事件接收沿同一ReceiveTransaction安装原Native身份/epoch/minimum绑定的有限槽，
+跳过不适用事件的CPCD阶段；肯定ACK只在入槽后生成，取消只撤销本地监听。
+属性路径保持原配置/清理。持续事件租约复用同一事务/共享队列，路由安装先于就绪结果；上层Profile启停继续同一Session扩展；
+单次接收不提供就绪屏障，不用固定sleep替代确定性启动验收。
+函数/私有总线/语言fixture检查不授双端Native、UserHost、Windows或形式化资格。
+
+### 事件租约就绪与属性配置分开
+
+复用 ReceiveTransaction/CallerLease/Queue；公开 Info v2 明确 kind/minimum。
+事件不产生 CPCD 债务，第一次监听及共享加入均在实际 Sink 安装后发布 ACTIVE。
+结束只清理自己的本地路由和队列，不能报告远端停发；属性原配置/清理义务不变。
+安全来源仍是真实 Native 查询及逐包收据，不由就绪结果授予。
+共享组只允许相同类型/身份/过滤/模式/minimum；未知范围拒绝，不用多实例 Engine 规避。
+限定离线/正式Native双端/上层Profile分别验收；保持全部原范围与失败证据。
+
+### 单端 Native 启动观察不结算应用交付
+
+复用现有runner和生产启动/daemon/Ready/HCC，不引入另一Host或成功来源。
+严格一个分配端口、匹配guest和独立有限监督界限，其他门禁保持默认；不改协议原期限、
+CLOSE、重试预算或固件选择。观察完成仍非零/非资格；不能代替双端应用校验回复、
+同行业务、装载镜像或自动恢复。保留原本可接受终态的负对照，不能仅靠其他缺材料条件
+碰巧拒绝。源码/限定离线、实际设备材料及根因/非人工恢复分别维护，不因单端观察
+或模型通过关闭业务整项；完整Native与采用的UserHost/Windows/服务范围及依赖不变。
+
+### Native维护调用者的库身份不产生控制器资格
+
+维护入口与普通应用SDK依赖分开，明确选择封存Native SONAME，不依赖旧应用库变量
+或默认搜索选出另一产物。必需导出验证覆盖最初open/free，失败保留错误且不发布缓存，
+不以应用库/旧系统库补齐；正确显式加载可以重试。真实ELF/ctypes及无设备root加载检查
+只证明该调用者契约，不能制造controller、Ready、固件、安全、业务或drain资格。
+USB控制完成、只读值及支持探针与实际唤醒/业务恢复各自记录，失败读不能触发写或Native准入。

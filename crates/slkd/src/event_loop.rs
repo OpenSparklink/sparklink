@@ -72,10 +72,30 @@ impl EventTask {
 
     /// Native subscribers preserve full parameters and never use the legacy ring.
     pub(crate) fn start_native(
+        receiver: slk_native::ControllerEventReceiver,
+        state: SharedState,
+        connection: zbus::Connection,
+        expected: slk_protocol::SleControllerSnapshot,
+    ) -> Self {
+        Self::start_native_inner(
+            receiver,
+            state,
+            connection,
+            expected,
+            #[cfg(test)]
+            None,
+            #[cfg(test)]
+            None,
+        )
+    }
+
+    fn start_native_inner(
         mut receiver: slk_native::ControllerEventReceiver,
         state: SharedState,
         connection: zbus::Connection,
         expected: slk_protocol::SleControllerSnapshot,
+        #[cfg(test)] mut retry_probe: Option<tests::NativeRetryProbe>,
+        #[cfg(test)] receive_probe: Option<std::sync::Arc<tests::NativeReceiveProbe>>,
     ) -> Self {
         let (cancel, mut cancelled) = oneshot::channel();
         let task = tokio::spawn(async move {
@@ -87,13 +107,18 @@ impl EventTask {
                 _ = refresh_native(&state, &connection, expected, 0) => {},
             }
             loop {
+                let receive = receiver.next_event();
+                #[cfg(test)]
+                let receive = tests::observe_native_receive(receive, receive_probe.as_deref());
                 let event = tokio::select! {
                     biased;
                     _ = &mut cancelled => break,
                     _ = retry.tick() => {
-                        let retry_needed = {
-                            let st = state.lock().await;
-                            !st.native_links_known() || st.connection_publication_pending()
+                        let wait = native_retry_needed(&state, &mut cancelled);
+                        #[cfg(test)]
+                        let wait = tests::observe_native_retry(wait, retry_probe.take());
+                        let Some(retry_needed) = wait.await else {
+                            break;
                         };
                         if retry_needed {
                             tokio::select! {
@@ -109,7 +134,7 @@ impl EventTask {
                         }
                         continue;
                     },
-                    event = receiver.next_event() => event,
+                    event = receive => event,
                 };
                 tokio::select! {
                     biased;
@@ -132,6 +157,21 @@ impl EventTask {
             .take()
             .expect("task is owned until shutdown")
             .await
+    }
+}
+
+/// Cancellation must also cover the lock wait after the retry tick was selected.
+/// Returning None stops the owning Native task; no refresh or maintenance follows.
+async fn native_retry_needed(
+    state: &SharedState,
+    cancelled: &mut oneshot::Receiver<()>,
+) -> Option<bool> {
+    tokio::select! {
+        biased;
+        _ = cancelled => None,
+        st = state.lock() => {
+            Some(!st.native_links_known() || st.connection_publication_pending())
+        },
     }
 }
 
@@ -161,7 +201,7 @@ pub(crate) async fn start_ssap_after_security(
             _ => return,
         }
     };
-    if let Err(error) = owner.start_ssap().await {
+    if let Err(error) = owner.start_ssap_after_security().await {
         tracing::warn!(%error, "SMTC security requirement not satisfied; no fallback or rebind");
     }
 }

@@ -142,6 +142,62 @@ def export(ini, output, board, usb_link_check):
     return manifest
 
 
+def verify(directory):
+    """Reproduce the input bytes; labels never establish board compatibility."""
+    directory = Path(directory)
+    path = directory / 'ws73-board-config.json'
+    if path.is_symlink() or not path.is_file() or path.stat().st_size > 65536:
+        raise ValueError('bounded regular board provenance manifest required')
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError('duplicate board provenance field: ' + key)
+            result[key] = value
+        return result
+    raw = path.read_bytes()
+    def nonfinite(name):
+        raise ValueError('nonfinite board provenance field: ' + name)
+    manifest = json.loads(raw, object_pairs_hook=unique, parse_constant=nonfinite)
+    if (type(manifest.get('schema_version')) is not int or manifest['schema_version'] != 1
+            or manifest.get('profile') != 'ws73-sdk-efuse-customization-v1'
+            or manifest.get('status') != 'configuration-candidate'
+            or not isinstance(manifest.get('board'), str) or not manifest['board'].strip()):
+        raise ValueError('explicit SDK efuse board candidate provenance required')
+    source = Path(manifest['source']['path'])
+    if source.is_symlink() or not source.is_file() or source.stat().st_size > 1024 * 1024:
+        raise ValueError('bounded regular source INI required')
+    data = source.read_bytes()
+    if (type(manifest['source']['size']) is not int
+            or manifest['source'] != dict(path=str(source.resolve()), size=len(data), sha256=sha256(data))):
+        raise ValueError('source INI differs from board provenance')
+    exporter = dict(path=str(Path(__file__).resolve()), sha256=sha256(Path(__file__).read_bytes()))
+    # The recorded path is a provenance label, never code to import/execute.
+    if manifest['exporter']['sha256'] != exporter['sha256']:
+        raise ValueError('board exporter changed; export a fresh candidate')
+    link = manifest['usb_link_check']['value']
+    if type(link) is not int or link not in (0, 1):
+        raise ValueError('explicit USB link-check input required')
+    custom, pm, selected = read_values(data)
+    expected = {'bsle_custom.bin': custom, 'pm_config.bin': struct.pack('<I', pm | link << 10)}
+    if manifest['selected_values'] != selected or set(manifest['images']) != set(expected):
+        raise ValueError('board selected values/images differ from source encoder')
+    images = {}
+    for name, encoded in expected.items():
+        p = directory / name
+        if (p.is_symlink() or not p.is_file() or p.stat().st_size != len(encoded)
+                or p.read_bytes() != encoded):
+            raise ValueError('board payload differs from source encoder: ' + name)
+        record = dict(size=len(encoded), sha256=sha256(encoded))
+        if type(manifest['images'][name]['size']) is not int or manifest['images'][name] != record:
+            raise ValueError('board payload hash/size differs: ' + name)
+        images[name] = record
+    return dict(version=1, profile=manifest['profile'], board_label=manifest['board'],
+                manifest=dict(path=str(path.resolve()), size=len(raw), sha256=sha256(raw)),
+                source=manifest['source'], exporter=exporter, usb_link_check=link, images=images,
+                scope='INPUT_PROVENANCE_ONLY_NO_HARDWARE_ACCEPTANCE')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--ini', type=Path, required=True)

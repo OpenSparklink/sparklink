@@ -7,10 +7,42 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from ws73_vm_register_reset import Bulk, Control, Urb, setup_packet, checked_reset_value, route_packet, read_usb_configuration, checked_single_runtime_interface, clear_runtime_endpoints, async_register_read, read_credit_control, run
+from ws73_vm_register_reset import Bulk, Control, Urb, setup_packet, checked_reset_value, route_packet, read_usb_configuration, checked_single_runtime_interface, clear_runtime_endpoints, async_register_read, read_credit_control, wait_interface, run
 
 class RegisterResetTests(unittest.TestCase):
     descriptor=bytes.fromhex('09023500010100c0010904000005e00202010705810200020007050102000200070583030800010705020200020007058202000200')
+
+    def test_descriptor_removal_between_attributes_retries_exact_guest_leaf(self):
+        # Actual wait function; sysfs and monotonic clock are fixtures. This is
+        # not USB/drain or controller recovery qualification.
+        for code in (errno.ENOENT, errno.ENODEV):
+            values=['ffff', OSError(code,'instance removed'), 'ffff','3733','02']
+            with self.subTest(code=code),patch.object(Path,'read_text',side_effect=values) as read,patch('ws73_vm_register_reset.time.monotonic',side_effect=[0,0,.02]),patch('ws73_vm_register_reset.time.sleep') as sleep:
+                interface,device=wait_interface(2,15)
+                self.assertEqual(str(interface),'/sys/bus/usb/devices/1-1:1.0')
+                self.assertEqual(str(device),'/sys/bus/usb/devices/1-1')
+                self.assertEqual(read.call_count,5)
+                sleep.assert_called_once_with(.02)
+
+    def test_descriptor_removal_does_not_renew_original_timeout(self):
+        with patch.object(Path,'read_text',side_effect=OSError(errno.ENODEV,'gone')),patch('ws73_vm_register_reset.time.monotonic',side_effect=[0,0,14.99,15]),patch('ws73_vm_register_reset.time.sleep') as sleep:
+            with self.assertRaisesRegex(TimeoutError,'exact guest port 1-1'):
+                wait_interface(2,15)
+            self.assertEqual(sleep.call_count,2)
+
+    def test_descriptor_other_errors_are_not_retried_or_synthesized(self):
+        for code in (errno.EACCES,errno.EIO,errno.EPIPE):
+            error=OSError(code,'original error')
+            with self.subTest(code=code),patch.object(Path,'read_text',side_effect=error),patch('ws73_vm_register_reset.time.monotonic',side_effect=[0,0]),patch('ws73_vm_register_reset.time.sleep') as sleep:
+                with self.assertRaises(OSError) as caught:
+                    wait_interface(2,15)
+                self.assertIs(caught.exception,error)
+                sleep.assert_not_called()
+
+    def test_runtime_descriptor_never_satisfies_ROM_wait(self):
+        with patch.object(Path,'read_text',side_effect=['ffff','3733','05']),patch('ws73_vm_register_reset.time.monotonic',side_effect=[0,0,15]),patch('ws73_vm_register_reset.time.sleep'):
+            with self.assertRaises(TimeoutError):
+                wait_interface(2,15)
 
     def state_reader(self,fd,request,argument):
         self.assertEqual(fd,77);self.assertEqual(request,0xc0185500)

@@ -1,5 +1,75 @@
 # SparkLink 验证边界与可复现入口
 
+## 当前 method／event 发现 codec 的直接有界检查
+
+沿用现有 `ssap_value` runner，直接编译生产 `ssap.rs` 及其 discovery 模块，
+没有替代 parser、成功依赖桩或第二个 Engine：
+
+```sh
+python3 formal/ssap_value/check.py --discovery --discovery-unwindset formal/ssap_value/discovery-unwindset-0.68.json --budget-seconds 180 --output /path/to/new-discovery-check
+python3 formal/ssap_value/check.py --negative-discovery --budget-seconds 180 --output /path/to/new-discovery-negative
+```
+
+输出必须是新目录。runner 使用全局构建锁和既有预算，锁定的独立 manifest
+没有外部依赖，Cargo 仅用离线缓存；源码、lock 和报告 hash 分别保存。
+每项必要断言必须为实际可达的 Success；未知、缺失、展开失败、超时仍未证明。
+负对照只接受真实 decoder 对错误 opcode 的指定断言反例，不能把任意崩溃当作成功。
+请求及负对照仅逐项接受三种已审阅的标准库不可达安全检查（literal formatting、
+合法常量 alignment、unsigned abs_diff）。接收页另列真实 Entry 的非零 stride、
+grow size 和两个已核对的 decoder 安全分支；页往返尚无 opt-in。必要业务
+断言一律不能不可达。原始编译警告不屏蔽：Kani 对不可达 unsupported 代码的规则
+见[官方说明](https://model-checking.github.io/kani/rust-feature-support.html#code-generation-for-unsupported-features)，
+实际可达 unsupported、未知检查或不完整输出仍拒绝；不宣称整个 crate 已证明。
+Kani/CBMC、其标准库模型及编译链属于受信任基础，不证明实际分配器、OOM unwind、
+操作系统或固件；结果状态语义见[官方文档](https://model-checking.github.io/kani/verification-results.html)。
+
+| 检查 | 输入与生产映射 | 不包含 |
+|---|---|---|
+| 请求往返／拒绝原子性 | `FindRequest::decode/encode`，任意 0–22 字节、u16 MTU、0–22 输出容量；成功保持精确字节及尾部，拒绝不修改输出 | IPC 原期限、取消、调用者退出、allocator/OS 实现正确性 |
+| 接收页原请求 schema | `decode_page`，任意 0–32 字节、method/event、三种 UUID 类别、u16 MTU 和句柄范围；检查顺序、类别、有效 metadata 及有限输出 | 完整 80 条目或最大 MTU、UUID 查询的服务/成员匹配语义、旧回复归属与对端语义真实性 |
+| 发送页往返／容量 | `encode_page/decode_page`，单条合法非零句柄、2/16 字节任意 UUID、合法 operation bits、0–4 任意描述符字节和 u16 MTU | 完整分页、所有描述符长度或业务权限策略 |
+
+method/event 的响应 opcode 可以相同；页中省略的类别由原请求解释。
+因此“保留原请求 schema”不等于证明远端确实执行了该操作，也不证明迟到回复
+与新请求可区分。唯一 actor 的原请求、事务串行、原期限及 Native 生命周期仍需
+各自实现回归和真实双设备校验。unwind26/40 是显式边界，不关闭展开断言。
+可选 loop-bound 输入绑定准确生产/harness 源码及 Kani0.68 的实际编译符号。
+32字节页最多三个成功成员；parser5、Entry迭代/drop4，单条往返的encoder/drop2、
+parser3减少无用展开，其他循环保留global40。输入域未缩小，过小上界必须由展开
+断言拒绝；旧源码、缺harness、非正整数和任何关闭检查的参数均在运行前拒绝。
+展开配置采用语义JSON hash固定已审阅的符号/上界组合；即使是语法合法的新符号
+或不同的正整数上界，也须重新审阅后更新pin，不能静默落回global40。
+不提供该输入时仍按原global40运行，超时不记通过；源码变更后须重新核对符号和hash。
+
+本节说明可重放范围，不声明当前 PASS；实际结果、反例和未证明项从唯一资格
+入口的源码映射读取。工具、模型或字节检查不能替代真实对端应用交付。
+
+## SSAP 客户端部分准入与作者终态
+
+`tools/run_formal.py --ssap-client-only --output NEW_DIRECTORY` 使用现有 TLC
+入口运行 `lifecycle/SSAPClientObligation.tla`，以及过早接受回复、重复启动排空
+期限两项弱化负对照。独立 worktree 可显式设置 `SPARKLINK_KERNEL_SOURCE`；
+报告绑定该 checkout，不静默改用另一个内核。缺失任一规定性质、改变边界、工具
+超时、unsupported 或未完成时序检查，都不能记为通过。
+
+映射到 `crates/slkd/src/ssap_engine.rs` 的实际生产转换：
+
+| 模型动作／性质 | 生产对应 | 明确未覆盖 |
+| --- | --- | --- |
+| Admit、DrainNotRenewed | `ClientRequest::admit_part`、首个 `cleanup_deadline` | Native 票据／USB／控制器完成 |
+| Withdraw、Cancel、AuthorTimeout | `retire_client_wait`、oneshot 作者关闭与原期限 | Tokio、D-Bus 或 VFS 的完整调度／引用 refinement |
+| OriginalAdmissionBound | `Pending.deadline` 和实际 writable 分支的提交前检查 | 调用检查到 syscall 的全部组合线性化 |
+| Response、NoPrematureSuccess、NoLateSuccess | `ClientRequest::validate_reply` 及其后的原作者过滤 | wire decoder、Native receipt 身份认证、旧 lifetime 复用 |
+| EventuallyResolved | 原期限／首片排空到期后的 actor 退休 | 物理 drain 完成、NOCP 准确性、实际秒数内调度保证 |
+
+边界为一个已经固定身份的请求、两片、作者期限 3 个离散时间单位、首片排空
+预算 5、时钟 0–8；两片不代表所有最大分片数已被检查。时序性质只在时钟和
+到期处理弱公平的假设下成立，不假设固件必然响应，不证明实时调度上界。
+模型通过不是实现 refinement 通过；实际生产方法／codec 与 AF_UNIX 背压回归
+从已固定 Native 身份后的状态开始，保留 Native ioctl 对该 fixture 的拒绝，
+不能宣称完整 actor、内核并发、安全、credit、USB 或 WS73 部分流已通过。
+弱化反例对应实际方法的固定回归；准确源码与结果只从资格入口及绑定报告读取。
+
 本目录补充 ADR 0002 和完整 S0–S6。形式化验证与真实数据面纵向开发并行，
 只将本次改动相关的不变量作为门禁。VM-only 适用于实验驱动和真实设备 I/O；
 这些纯模型/编译工具在主机运行，不安装内核、不加载模块、不操作 WS73。
@@ -272,3 +342,20 @@ python3 tools/build_resources.py -- cargo kani -Z unstable-options --manifest-pa
 unsupported/timeout/未展开均未证明。源码hash、工具版本、原始导出及实际回归另行记录。
 旧 `formal/ssap_value/check.py` 的“两项codec摘要”判据不适用于现有全部harness，不能
 用它升级新预算或其他codec资格；安装检查不等于这段实现已证明。
+
+### SSAP共享租约：有限所有权／物理义务模型
+
+`run_formal.py --ssap-shared-only` 复用既有TLC执行与fail-closed结果判定。模型是一个
+已完成Native身份／安全绑定的同过滤／模式组，三个不同token、两个同时租约和两个
+抽象清理时钟步；生产上限8由实际Rust容量回归另验，模型不声称覆盖全部上限。
+Start／Enable映射`ReceiveTransaction.next/submitted/apply`，Join映射`can_join/join`，
+Close映射独立owner/expiry/close及路由移除，最后Disable映射原物理清理及未知结果隔离。
+已释放token不可重新准入；部分关闭保留兄弟拥有者；未知物理效果保留debt。
+终态flags是完成当时的观察，不能反推当前远端配置。弱close-any控制必须产生
+`NoSiblingClear`反例；它是故意削弱多拥有者规则，不是旧单租约实现的实机缺陷。
+
+七项安全性质及在弱公平worker／timer调度下最终成功或失败的终态性质分开记录。
+没有假定固件一定回复；未知结果和到期均可进入Retired且不抹去物理义务。
+这不是Rust refinement、实际5秒墙钟证明、队列／锁／引用排空、Native权限／credit／
+Ticket、USB／NOCP、generation复用或安全／硬件证明。实际生产分流、私有总线、SDK
+及VM双端捕获／应用回写是独立门禁；timeout、unsupported或缺少完整性质均未证明。

@@ -28,6 +28,30 @@ def fixture(rounds=4,message_bytes=61,boundaries=False):
     return dict(rounds=rounds,message_bytes=message_bytes,boundary_check=boundaries,applications=apps)
 
 
+class ResidualSsapAttribution(unittest.TestCase):
+    def test_current_update_and_sequence_contracts_reject_unclaimed_parts(self):
+        from ws73_channel_socket import reject_unattributed_ssap
+        for contract in [{'ssap_update_delivery_version':2}, {'ssap_value_lengths_version':4}]:
+            row=dict(start_wall_ns=10,end_wall_ns=20,**contract)
+            for opcode in (8,9,13,14,15,16,17,0x88,0x89,0x8d,0x8e,0x8f,0x90,0x91):
+                packet=dict(data=(b'\x0a\0\x02\0'+bytes([opcode,3])).hex(),wall_ns=15)
+                with self.subTest(contract=contract,opcode=opcode),self.assertRaises(CaptureError):
+                    reject_unattributed_ssap(row,[packet])
+            for raw,time in [('0a0002000203',15),('0a0002000303',15),
+                             ('1f0002000f03',15),('0a000200',15),
+                             ('0a0002000f03',9),('0a0002000f03',21)]:
+                reject_unattributed_ssap(row,[dict(data=raw,wall_ns=time)])
+            reject_unattributed_ssap(row,[])
+
+    def test_legacy_contract_retains_original_opcode_interpretation(self):
+        from ws73_channel_socket import reject_unattributed_ssap
+        row=dict(start_wall_ns=10,end_wall_ns=20,ssap_update_delivery_version=1)
+        for opcode in (15,16,17,0x8d,0x8f):
+            reject_unattributed_ssap(row,[dict(data=f'0a000200{opcode:02x}03',wall_ns=15)])
+        with self.assertRaises(CaptureError):
+            reject_unattributed_ssap(row,[dict(data='0a0002000d03',wall_ns=15)])
+
+
 class ApplicationProof(unittest.TestCase):
     def test_relative_artifact_root_keeps_exact_sealed_file_and_hash_checks(self):
         import os
@@ -179,6 +203,45 @@ class PrefixApplicationProof(unittest.TestCase):
             if kind=='credentials':source['credentials']['uids']=[0]*4
             with self.subTest(kind=kind),self.assertRaises(CaptureError):prefix_application_frames(changed)
 
+    def test_post_close_dispatch_validates_prefix_and_propagates_ssap_failure(self):
+        """Actual coordinator; child/credentials are explicit offline fixtures.
+
+        The real prefix parser runs. The SSAP dependency deliberately fails;
+        this does not grant Native, app-binary or remote SSAP qualification.
+        """
+        from contextlib import ExitStack
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        import subprocess
+        import tempfile
+        import ws73_channel_socket as channel
+        import ws73_ssap_value as ssap
+        real_popen=subprocess.Popen
+        for corrupt in [False,True]:
+            with self.subTest(corrupt=corrupt),tempfile.TemporaryDirectory() as directory:
+                fixture_row=self.prefix();outputs={}
+                for app in fixture_row['applications']:
+                    value=app['stdout']+'NativeChannelDup: original_closed=1 duplicate_live=1\n'
+                    if app['role']=='peer':value+='NativeChannelLastClose: same_lifetime_reopen=NotSupported\n'
+                    if corrupt and app['role']=='peer':value=value.replace('NativeChannelReceived:','InvalidPrefix:')
+                    outputs[app['role']]=value
+                row=copy.deepcopy(fixture_row);row.update(applications=[],burst=False,phase=0,
+                    security_requirement=0,message_security_required=False,
+                    application_tool=dict(path='/bin/slktest',sha256='0'*64),
+                    owners=[dict(owner=dict(path=f'/org/sparklink/slk{i}_g{i+1}'),
+                                 object=dict(path=f'/org/sparklink/fixture/link_{i+1:016x}'))for i in range(2)])
+                credentials=fixture_row['applications'][0]['credentials']
+                def child(args,*,stdout,stderr):
+                    role='peer'if args[4]=='peer'else'initiator'
+                    return real_popen([sys.executable,'-c','import sys;sys.stdout.write(sys.argv[1])',outputs[role]],stdout=stdout,stderr=stderr)
+                run=SimpleNamespace(output=Path(directory),save=lambda:None)
+                error='one original prefix receipt required'if corrupt else'explicit offline SSAP dependency failure'
+                with ExitStack()as files,patch.object(channel.subprocess,'Popen',side_effect=child),patch.object(channel,'credentials',return_value=credentials),patch.object(ssap,'execute',side_effect=CaptureError('explicit offline SSAP dependency failure'))as execute:
+                    with self.assertRaisesRegex(CaptureError,error):
+                        channel.run_applications(run,row,[],files)
+                    self.assertEqual(execute.call_count,0 if corrupt else 1)
+                    if not corrupt:self.assertGreater(row['after_close_ssap_start_wall_ns'],row['end_wall_ns'])
+
 
 class IndependentUSBProof(unittest.TestCase):
     def fixture(self,rounds=4,boundaries=False,message_bytes=61):
@@ -279,6 +342,42 @@ class IndependentUSBProof(unittest.TestCase):
             if kind=='wrong_nocp':events['native_events'][0]['params']='000025'
             if kind=='missing_peer':packets.pop(1)
             with self.subTest(kind=kind),patch('ws73_channel_socket.reassemble_acb',return_value=packets),self.assertRaises(CaptureError):corroborate(run,events)
+
+    def test_actual_sender_bound_distinguishes_U_and_E_fragment_thresholds(self):
+        from ws73_channel_socket import physical_tx_fragments
+        for maximum,app_bytes,packets in [(254,249,1),(254,250,2),(1526,250,1),
+                                          (1526,1521,1),(1526,1522,2),(1526,2042,2)]:
+            raw=bytes((n%251 for n in range(app_bytes+5)))
+            parts=[raw[i:i+maximum] for i in range(0,len(raw),maximum)]
+            pieces=[dict(data=p.hex(),boundary=0 if packets==1 else 1 if i==0 else 3 if i==packets-1 else 2)for i,p in enumerate(parts)]
+            row=dict(owners=[dict(owner=dict(bus=1,device=2,buffers=[maximum,6,0,0]))])
+            leg=dict(tx=dict(bus=1,device=2,data=raw.hex(),fragments=pieces))
+            with self.subTest(maximum=maximum,app_bytes=app_bytes):
+                result=physical_tx_fragments(row,leg)
+                self.assertEqual((result['packet_count'],result['fragmented']),(packets,packets>1))
+                for mutation in ['missing','pb','bytes','budget','identity']:
+                    badrow,badleg=copy.deepcopy(row),copy.deepcopy(leg)
+                    if mutation=='missing':badleg['tx']['fragments']=[]
+                    elif mutation=='pb':badleg['tx']['fragments'][-1]['boundary']=2
+                    elif mutation=='bytes':badleg['tx']['fragments'][-1]['data']='00'
+                    elif mutation=='budget':badrow['owners'][0]['owner']['buffers'][0]=1
+                    else:badrow['owners'][0]['owner']['device']=3
+                    with self.subTest(mutation=mutation),self.assertRaises(CaptureError):physical_tx_fragments(badrow,badleg)
+
+    def test_fitting_E_PDU_is_not_fragmented_long_qualification(self):
+        from unittest.mock import patch
+        from ws73_channel_socket import corroborate
+        run,capture,sdus=self.fixture(message_bytes=250)
+        for row in run['channel_socket']:
+            for owner in row['owners']:owner['owner']['buffers']=[1526,6,0,0]
+        with patch('ws73_channel_socket.reassemble_acb',return_value=sdus):
+            result=corroborate(run,capture)
+            self.assertEqual(result['round_trips'],8)
+            self.assertFalse(result['long_pdu_acceptance'])
+        changed=copy.deepcopy(run)
+        for row in changed['channel_socket']:
+            for owner in row['owners']:owner['owner']['buffers']=[254,5,0,0]
+        with patch('ws73_channel_socket.reassemble_acb',return_value=sdus),self.assertRaises(CaptureError):corroborate(changed,capture)
 
     def test_boundary_rejections_require_no_matching_usb_data(self):
         from unittest.mock import patch

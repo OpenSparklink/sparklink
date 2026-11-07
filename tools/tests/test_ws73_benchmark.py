@@ -13,7 +13,7 @@ import ws73_benchmark as gate
 from ws73_capture import CaptureError
 
 
-def fixture(mode='rate', count=3):
+def fixture(mode='rate', count=3, size=61):
     """Explicit JSON fixture, not socket/Host behavior or measured performance."""
     peer='duplex' if mode=='duplex' else 'peer'
     reports=[]
@@ -24,7 +24,7 @@ def fixture(mode='rate', count=3):
                 direction=side if lane=='outgoing' else 1-side
                 nonce=bytes([direction+1])*15+bytes([i+1]);seq=100*direction+i
                 raw=b'SLKSOCK1'+nonce+seq.to_bytes(4,'little')+bytes([lane=='incoming'])
-                raw+=bytes(nonce[j%16]^((seq+j)&255) for j in range(32))
+                raw+=bytes(nonce[j%16]^((seq+j)&255) for j in range(size-29))
                 planned=i*1_000_000
                 common=dict(index=i,send_attempts=1,would_block=0,errno=None,timed_out=False,frame_hex=raw.hex())
                 if lane=='outgoing':
@@ -33,13 +33,57 @@ def fixture(mode='rate', count=3):
                     rows.append(dict(common,read_ns=planned+10,validated_ns=planned+20,deadline_ns=planned+10+gate.REQUEST_NS,reply_syscall_ns=planned+30,reply_admitted_ns=planned+40))
         nout=len(outgoing);nin=len(incoming);active=count*1_000_000
         endpoint=dict(user_cpu_ns=100,system_cpu_ns=100,process_lifetime_maxrss_kib=1000,open_fds=4,resident_pages=10,page_bytes=4096)
-        summary=dict(scheduled=nout,dispatched=nout,unattempted=0,admitted=nout,validated_replies=nout,timed_out=0,late=0,local_budget_rejected=0,kernel_rejected=0,missing_admitted_replies=0,expired_before_admission=0,admitted_reply_timeouts=0,successful_timely_replies=nout,peer_reply_deadline_exceeded=0,peer_validated_requests=nin,peer_reply_admissions=nin,peer_validated_application_bytes=nin*61)
+        summary=dict(scheduled=nout,dispatched=nout,unattempted=0,admitted=nout,validated_replies=nout,timed_out=0,late=0,local_budget_rejected=0,kernel_rejected=0,missing_admitted_replies=0,expired_before_admission=0,admitted_reply_timeouts=0,successful_timely_replies=nout,peer_reply_deadline_exceeded=0,peer_validated_requests=nin,peer_reply_admissions=nin,peer_validated_application_bytes=nin*size)
         counters=dict(rx_packets=nout+nin,duplicate_requests=0,duplicate_replies=0,reordered_replies=0,corrupt_packets=0,unknown_replies=0,unsolicited_requests=0,receiver_record_overflow=0,reply_queue_overflow=0,inflight_peak=1 if nout else 0,reply_queue_peak=1 if nin else 0,poll_calls=3,iterations=3)
-        reports.append(dict(schema_version=2,status='LOAD_OBSERVED_NOT_QUALIFIED',correctness=True,performance_qualified=False,clock='process-local-Rust-Instant-relative-nanoseconds',wait_backend='ppoll-relative-nanoseconds',window_domain='application-awaiting-validated-reply-not-protocol-credit',rtt_definition='successful send syscall entry to validated reply;success-only excludes timed-out/late;no cross-clock arithmetic',percentile_method='nearest-rank;p99.9 requires10000 successes',request_deadline_ns=gate.REQUEST_NS,late_observation_grace_ns=gate.GRACE_NS,maximum_run_ns=gate.RUN_NS,config=dict(mode=m,count=count,bytes=61,window=count,interval_us=1000 if m=='rate' else 0),finalization=dict(completed=True,budget_ns=30_000_000_000,elapsed_ns=50,error=None),observation=dict(active_elapsed_ns=active,elapsed_ns=active+gate.GRACE_NS,error=None),unmeasured=['explicit fixture only'],channel_identity=dict(controller=side,generation=7+side,lifetime=11+side,handle=0,local_tcid=31,remote_tcid=31,pi=241,mtu=2042,mps=2047,mode=0,directions=3),outgoing=outgoing,incoming=incoming,summary=summary,counters=counters,success_only_rtt=dict(successful_samples=nout,min_ns=30,p50_ns=30,p90_ns=30,p95_ns=30,p99_ns=30,p999_ns=None,max_ns=30) if nout else None,rates=dict(denominator='own-process active_elapsed_ns before late-observation grace;includes timeouts and failures',requested_messages_per_second=1000 if m=='rate' else None,admitted_messages_per_second=nout*1e9/active,local_verified_datagram_goodput_Bps=nin*61*1e9/active,local_verified_pattern_payload_goodput_Bps=nin*32*1e9/active,benchmark_header_bytes_per_datagram=29,USB_bytes=None,USB_bytes_per_second=None),process_resources=dict(scope='process-wide snapshots bracketing drive;includes endpoint probe overhead;maxrss is process lifetime,not interval peak',before=endpoint.copy(),after=endpoint.copy(),user_cpu_delta_ns=0,system_cpu_delta_ns=0,kernel_workers=None,kernel_timers=None,URBs=None,protocol_credit_peak=None)))
+        reports.append(dict(schema_version=2,status='LOAD_OBSERVED_NOT_QUALIFIED',correctness=True,performance_qualified=False,clock='process-local-Rust-Instant-relative-nanoseconds',wait_backend='ppoll-relative-nanoseconds',window_domain='application-awaiting-validated-reply-not-protocol-credit',rtt_definition='successful send syscall entry to validated reply;success-only excludes timed-out/late;no cross-clock arithmetic',percentile_method='nearest-rank;p99.9 requires10000 successes',request_deadline_ns=gate.REQUEST_NS,late_observation_grace_ns=gate.GRACE_NS,maximum_run_ns=gate.RUN_NS,config=dict(mode=m,count=count,bytes=size,window=count,interval_us=1000 if m=='rate' else 0),finalization=dict(completed=True,budget_ns=30_000_000_000,elapsed_ns=50,error=None),observation=dict(active_elapsed_ns=active,elapsed_ns=active+gate.GRACE_NS,error=None),unmeasured=['explicit fixture only'],channel_identity=dict(controller=side,generation=7+side,lifetime=11+side,handle=0,local_tcid=31,remote_tcid=31,pi=241,mtu=2042,mps=2047,mode=0,directions=3),outgoing=outgoing,incoming=incoming,summary=summary,counters=counters,success_only_rtt=dict(successful_samples=nout,min_ns=30,p50_ns=30,p90_ns=30,p95_ns=30,p99_ns=30,p999_ns=None,max_ns=30) if nout else None,rates=dict(denominator='own-process active_elapsed_ns before late-observation grace;includes timeouts and failures',requested_messages_per_second=1000 if m=='rate' else None,admitted_messages_per_second=nout*1e9/active,local_verified_datagram_goodput_Bps=nin*size*1e9/active,local_verified_pattern_payload_goodput_Bps=nin*(size-29)*1e9/active,benchmark_header_bytes_per_datagram=29,USB_bytes=None,USB_bytes_per_second=None),process_resources=dict(scope='process-wide snapshots bracketing drive;includes endpoint probe overhead;maxrss is process lifetime,not interval peak',before=endpoint.copy(),after=endpoint.copy(),user_cpu_delta_ns=0,system_cpu_delta_ns=0,kernel_workers=None,kernel_timers=None,URBs=None,protocol_credit_peak=None)))
     return reports
 
 
 class Schema2Reports(unittest.TestCase):
+    def dynamic_pair(self, mode='window'):
+        pair = fixture(mode)
+        for i,report in enumerate(pair):
+            report['channel_request'] = dict(version=1,kind='dynamic_basic',source_port=24576+i,
+                destination_port=24577-i,aid=29441,mtu=249,mps=254,slqi=1,passive=bool(i))
+            report['channel_identity'].update(local_tcid=0x81+i,remote_tcid=0x82-i,mtu=249,mps=254)
+        return pair
+
+    def test_dynamic_requests_are_separate_from_actual_cross_end_tcids(self):
+        for mode in ['rate','window','duplex']:
+            pair = self.dynamic_pair(mode)
+            for reports in [pair,pair[::-1]]:
+                out = gate.load_application_reports(*reports)
+                self.assertEqual(out['channel_requests'],[r['channel_request'] for r in reports])
+                self.assertIn('wire CMTC routing',out['remaining'][-1])
+                self.assertIs(out['performance_qualified'],False)
+
+    def test_dynamic_metadata_cannot_downgrade_or_grant_actual_negotiation(self):
+        changes = {
+            'missing-left-tag':lambda a,b:a.pop('channel_request'),
+            'missing-both-tags':lambda a,b:(a.pop('channel_request'),b.pop('channel_request')),
+            'unknown-kind':lambda a,b:a['channel_request'].update(kind='reliable'),
+            'boolean-version':lambda a,b:a['channel_request'].update(version=True),
+            'zero-port':lambda a,b:a['channel_request'].update(source_port=0),
+            'port-is-tcid':lambda a,b:a['channel_request'].update(destination_port=0x82),
+            'aid-mismatch':lambda a,b:b['channel_request'].update(aid=29442),
+            'same-negotiation-role':lambda a,b:b['channel_request'].update(passive=False),
+            'numeric-role':lambda a,b:b['channel_request'].update(passive=1),
+            'changed-budget':lambda a,b:a['channel_request'].update(mps=255),
+            'changed-slqi':lambda a,b:a['channel_request'].update(slqi=0),
+            'extra-field':lambda a,b:a['channel_request'].update(ready=True),
+            'fixed-under-dynamic':lambda a,b:a['channel_identity'].update(local_tcid=31),
+            'outside-tcid':lambda a,b:b['channel_identity'].update(remote_tcid=0xe0),
+            'cross-tcid-mismatch':lambda a,b:b['channel_identity'].update(remote_tcid=0x84),
+            'budget-escalation':lambda a,b:a['channel_identity'].update(mtu=250,mps=255),
+        }
+        for name,change in changes.items():
+            a,b = self.dynamic_pair(); change(a,b)
+            with self.subTest(name=name),self.assertRaises(CaptureError):
+                gate.load_application_reports(a,b)
+        a,b = fixture()
+        a['channel_request'] = None; b['channel_request'] = None
+        with self.assertRaises(CaptureError): gate.load_application_reports(a,b)
+
     def test_complementary_roles_and_direction_swap(self):
         for mode in ['rate','window','duplex']:
             for pair in [fixture(mode),fixture(mode)[::-1]]:

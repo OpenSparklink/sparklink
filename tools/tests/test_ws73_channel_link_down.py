@@ -54,7 +54,7 @@ def fixture():
                 capture['acb_packets'].append(dict(**r['usb'][n],handle=0,direction=direction,data=data.hex(),boundary=0,wall_ns=100,record=ordinal));ordinal+=1
     data=b'\x1f\0\xfb\x07\xf1'+bytes.fromhex(g['armed']['prefix'])
     capture['acb_packets'].append(dict(**r['usb'][0],handle=0,direction='out',data=data[:254].hex(),boundary=1,completion={'record':20},record=19,wall_ns=225))
-    capture['commands'].append(dict(**r['usb'][0],opcode=0x1403,params='000013',wall_ns=235,record=21,completion={'record':22}))
+    capture['commands'].append(dict(**r['usb'][0],opcode=0x1403,params='000010',wall_ns=235,record=21,completion={'record':22}))
     capture['native_events'].append(dict(**r['usb'][0],event=1,params='03140100',wall_ns=245,record=23))
     for n,e in enumerate(row['down']):capture['native_events'].append(dict(**r['usb'][n],**e,record=24+n))
     for enabled,when in [(True,270),(False,290)]:
@@ -64,6 +64,16 @@ def fixture():
 
 
 class DirectLinkDown(unittest.TestCase):
+    def test_missing_or_extra_application_receipt_cannot_qualify_down_business(self):
+        for count in [0,1,3]:
+            r,c=fixture();apps=r['channel_grant']['business'][0]['applications']
+            r['channel_grant']['business'][0]['applications']=(apps*2)[:count]
+            # Extra entries may fail earlier in the existing payload oracle;
+            # missing entries must reach the new shared completeness check.
+            pattern='two actual business application receipts' if count<2 else '.+'
+            with self.subTest(count=count),self.assertRaisesRegex(ValueError,pattern):
+                corroborate(r,c)
+
     def test_scoped_receipts_and_actual_packet_paths(self):
         r,c=fixture();verify(r);p=corroborate(r,c)
         self.assertEqual(p['submitted_bytes'],254)

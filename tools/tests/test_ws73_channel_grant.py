@@ -12,8 +12,33 @@ import select
 import socket
 import sys
 import unittest
+from types import SimpleNamespace
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from ws73_channel_grant import Address, message, validate, verify, pass_channel, take_channel
+from ws73_channel_grant import controller_ids, checked_controller_ids
+
+
+class SelectedControllerIdentity(unittest.TestCase):
+    def test_selected_ids_are_not_pair_local_indices_or_enumeration_order(self):
+        for ids in ([0,1],[2,3],[3,2],[15,0]):
+            self.assertEqual(controller_ids([SimpleNamespace(dev_index=n)for n in ids]),ids)
+        for ids in ([0,0],[2,True],[2,16],[-1,3],[2],(2,3)):
+            with self.subTest(ids=ids),self.assertRaises(ValueError):checked_controller_ids(ids)
+
+    def test_existing_receipt_checks_require_actual_declared_pair_identity(self):
+        row,outer=fixture();outer['controller_ids']=[2,3];row['controller_ids']=[2,3]
+        for n,owner in enumerate(row['owners']):
+            address=Address.from_buffer_copy(bytes.fromhex(owner['address']));address.controller=2+n
+            owner.update(index=2+n,address=bytes(address).hex())
+        verify(row,outer)
+        for mutation in ('outer-missing','row-missing','pair-local','duplicate','bool'):
+            bad=copy.deepcopy(row);context=copy.deepcopy(outer)
+            if mutation=='outer-missing':context.pop('controller_ids')
+            elif mutation=='row-missing':bad.pop('controller_ids')
+            elif mutation=='pair-local':bad['owners'][0]['index']=0
+            elif mutation=='duplicate':context['controller_ids']=[2,2]
+            else:bad['controller_ids']=[True,3]
+            with self.subTest(mutation=mutation),self.assertRaises(ValueError):verify(bad,context)
 
 
 class FdTransfer(unittest.TestCase):

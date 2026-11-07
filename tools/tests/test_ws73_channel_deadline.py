@@ -42,6 +42,16 @@ def fixture():
 
 
 class OriginalDeadline(unittest.TestCase):
+    def test_missing_or_extra_application_receipt_cannot_qualify_deadline_business(self):
+        for count in [0,1,3]:
+            r,c,h,s,e=fixture();apps=r['channel_grant']['business'][0]['applications']
+            r['channel_grant']['business'][0]['applications']=(apps*2)[:count]
+            # Extra entries may fail earlier in the existing payload oracle;
+            # missing entries must reach the new shared completeness check.
+            pattern='two actual business application receipts' if count<2 else '.+'
+            with self.subTest(count=count),self.assertRaisesRegex(ValueError,pattern):
+                corroborate(r,c,h,s,e)
+
     def test_exact_original_five_seconds_and_actual_wire_requirements(self):
         r,c,h,s,e=fixture();verify(r);v=corroborate(r,c,h,s,e)
         self.assertEqual(v['elapsed_monotonic_ns'],5_000_000_000)

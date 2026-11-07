@@ -76,10 +76,9 @@ def verify(record,snapshot):
         raise ValueError('peer lease release only after successful activity and real Off required')
 
 
-def corroborate(record,snapshot,capture):
-    verify(record,snapshot)
+def corroborate_activity_rows(peer,snapshot,capture,owner):
+    """Actual peer wire rows only;caller must verify its lifecycle scope."""
     from ws73_capture import command_reply
-    peer=record['ready_peer'];owner=dict(bus=1,device=3)
     proofs=[]
     for phase in ['bootstrap','before','during','after']:
         for row in peer[phase]:
@@ -87,7 +86,7 @@ def corroborate(record,snapshot,capture):
             op=command.operation
             sequence=[(0xc02,None,bytes([result.selected_power & 255]).hex()),(0xc05,b'\0'*5,'')] if op==5 else (
                 [(0x1001,bytes.fromhex('0000010040062003'),''),(0x1002,b'\1\0','')]+([(0x1002,b'\0\0','')] if op==6 else []) if op in (3,6) else [(0x1002,b'\0\0','')])
-            commands=[v for v in capture['commands'] if (v['bus'],v['device'])==(1,3)
+            commands=[v for v in capture['commands'] if (v['bus'],v['device'])==(owner['bus'],owner['device'])
                 and row['start_wall_ns']<=v['wall_ns']<=row['end_wall_ns']]
             if [v['opcode'] for v in commands]!=[v[0] for v in sequence]:
                 raise ValueError('exact Ready peer command sequence required')
@@ -103,8 +102,15 @@ def corroborate(record,snapshot,capture):
                 previous=proof['reply']['wall_ns'];proofs.append(dict(phase=phase,**proof))
     start=peer['bootstrap'][0]['start_wall_ns'];end=peer['after'][-1]['end_wall_ns']
     for key,part in [('commands','command'),('complete','reply')]:
-        actual=[v for v in capture[key] if (v['bus'],v['device'])==(1,3) and start<=v['wall_ns']<=end]
+        actual=[v for v in capture[key] if (v['bus'],v['device'])==(owner['bus'],owner['device']) and start<=v['wall_ns']<=end]
         if actual!=[v[part] for v in proofs]:raise ValueError('unmatched peer command/reply or cross-device STOP')
+    return proofs
+
+
+def corroborate(record,snapshot,capture):
+    verify(record,snapshot)
+    peer=record['ready_peer']
+    proofs=corroborate_activity_rows(peer,snapshot,capture,dict(bus=1,device=3))
     return dict(scope='real Ready peer Managed scan On spans target cancellation, original late reply and Free',
         proofs=proofs,on_before_cancel=peer['on_before_cancel'],on_after_free=peer['on_after_free'],
         active_ready_peer_isolation_case_acceptance=True,whole_managed_acceptance=False,

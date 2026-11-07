@@ -15,6 +15,8 @@ from types import SimpleNamespace
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import ws73_lab_resources as resource
 import build_resources as build
+import ws73_firmware_profile as profile
+from test_ws73_firmware_profile import inputs as profile_inputs
 from ws73_target import usb_properties
 
 
@@ -102,22 +104,28 @@ class AllocatedResources(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp)
             expected=data['firmware']['U']
+            blobs=profile_inputs();(root/'root').mkdir()
             for name in resource.IMAGES:
-                raw=('fixture-only-'+name).encode()
+                raw=blobs[name]
                 expected['images'][name]=dict(sha256=hashlib.sha256(raw).hexdigest(),bytes=len(raw))
-                for directory in ['lib','usr/lib']:
-                    p=root/'root'/directory/'firmware/sparklink/ws73'/name
-                    p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(raw)
-            firmware_dir=root/'root/lib/firmware/sparklink/ws73'
+            plan=profile.stage(root/'root',{'1':('U',blobs),'2':('U',blobs)})
+            firmware_dir=root/'root/lib/firmware'/plan['entries']['1']['directory']
             explicit=resource.explicit_firmware('U',firmware_dir,data)
-            package={'explicit_firmware':explicit}
+            package={'explicit_firmware':explicit,'firmware_input_contract_version':1,'firmware_profiles':plan}
             self.assertEqual(resource.check_firmware(package,['1-1.1.1','1-1.1.2'],root,data),explicit)
             for ports, bad in [(['1-1.1.1','1-2.1.1'],package),(['1-1.1.1'],{}),
                                (['1-1.1.1'],dict(package,native_vm={'runtime_only':True})),
                                (['1-2.1.2'],package)]:
                 with self.assertRaises(ValueError):resource.check_firmware(bad,ports,root,data)
-            (root/'root/usr/lib/firmware/sparklink/ws73/btc_cali.bin').write_bytes(b'wrong calibration')
+            old=root/'root/usr/lib/firmware/sparklink/ws73/btc_cali.bin'
+            old.parent.mkdir(parents=True);old.write_bytes(blobs['btc_cali.bin'])
             with self.assertRaises(ValueError):resource.check_firmware(package,['1-1.1.1'],root,data)
+            old.unlink()
+            # A corrupt unselected closure must not poison a different device.
+            second=root/'root/lib/firmware'/plan['entries']['2']['directory']/'btc_cali.bin'
+            second.write_bytes(b'wrong calibration')
+            self.assertEqual(resource.check_firmware(package,['1-1.1.1'],root,data),explicit)
+            with self.assertRaises(ValueError):resource.check_firmware(package,['1-1.1.1','1-1.1.2'],root,data)
             (firmware_dir/'wifi_cali.bin').write_bytes(b'wrong variant')
             with self.assertRaises(ValueError):resource.explicit_firmware('U',firmware_dir,data)
             with self.assertRaises(ValueError):resource.explicit_firmware(None,firmware_dir,data)
@@ -220,16 +228,56 @@ class AllocatedResources(unittest.TestCase):
             run.assert_called_once_with(args)
 
     def test_every_monitor_attach_including_reenumeration_is_rechecked(self):
-        with patch.object(resource,'check_firmware',return_value={}),patch.object(resource.PhysicalBoundary,'check') as check:
+        # QMP dispatch fixture only, not a successful firmware/board/USB gate.
+        with patch.object(resource,'check_firmware',return_value={}),\
+             patch.object(resource,'check_board_configuration',return_value={}) as board,\
+             patch.object(resource.PhysicalBoundary,'check') as check:
             boundary=resource.PhysicalBoundary(['1-1.1.1'],{},Path('/fixture'))
             actual=Mock();monitor=boundary.monitor(actual);args=usb_properties('1-1.1.1',0)
             monitor.execute('device_add',args);monitor.execute('device_del',{'id':'ws73_0'});monitor.execute('device_add',args)
             self.assertEqual(check.call_count,3)
+            self.assertEqual(board.call_count,3)  # Constructor plus every attach.
             for bad in [usb_properties('1-1.1.3',0),dict(args,**{'host-reset':True}),
                         dict(args,driver='vfio-pci'),dict(args,hostport='1.1'),dict(args,hostaddr=16)]:
                 with self.assertRaises(ValueError):monitor.execute('device_add',bad)
             with self.assertRaises(ValueError):monitor.execute('device_del',{'id':'ws73_1'})
             self.assertEqual(actual.execute.call_count,3)
+
+    def test_board_inputs_actual_export_and_prepared_root_fail_closed(self):
+        import importlib.util
+        spec=importlib.util.spec_from_file_location('board_fixtures',Path(__file__).with_name('test_ws73_board_config.py'))
+        fixtures=importlib.util.module_from_spec(spec);spec.loader.exec_module(fixtures)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);ini=root/'source.ini';ini.write_text(fixtures.fixture())
+            candidate=root/'candidate';fixtures.board.export(ini,candidate,'not-a-hardware-claim',0)
+            proof=resource.board_configuration(candidate,'E')
+            package=dict(board_configuration_contract_version=1,board_configuration=proof)
+            prepared=root/'prepared'
+            destination=prepared/'root';destination.mkdir(parents=True)
+            blobs=profile_inputs()
+            for name in proof['images']:blobs[name]=(candidate/name).read_bytes()
+            plan=profile.stage(destination,{'1':('E',blobs),'2':('E',blobs)})
+            package.update(firmware_input_contract_version=1,firmware_profiles=plan)
+            self.assertEqual(resource.check_board_configuration(package,['1-2.1.1','1-2.1.2'],prepared),proof)
+            for ports in [['1-1.1.1'],['1-1.1.1','1-2.1.1']]:
+                with self.assertRaises(ValueError):resource.check_board_configuration(package,ports,prepared)
+            for version in [None,True,2]:
+                with self.assertRaises(ValueError):resource.check_board_configuration(dict(package,board_configuration_contract_version=version),['1-2.1.1'],prepared)
+            receipt=dict(board_configuration_contract_version=1,physical_resource_allocation=dict(firmware=dict(model='E'),board_configuration=proof))
+            self.assertTrue(resource.board_configuration_exit_gate(receipt))
+            import ws73_target as target
+            # Test the real finalizer, without inventing successful hardware evidence.
+            for bad in [dict(receipt,board_configuration_contract_version=True),
+                        dict(receipt,physical_resource_allocation=dict(firmware=dict(model='U'),board_configuration=proof))]:
+                self.assertFalse(resource.board_configuration_exit_gate(bad))
+                self.assertEqual(target.run_exit_code(bad),1)
+            payload=destination/'lib/firmware'/plan['entries']['1']['directory']/'pm_config.bin'
+            payload.write_bytes(b'bad!')
+            with self.assertRaises(ValueError):resource.check_board_configuration(package,['1-2.1.1'],prepared)
+            payload.unlink();payload.symlink_to(candidate/'pm_config.bin')
+            with self.assertRaises(ValueError):resource.check_board_configuration(package,['1-2.1.1'],prepared)
+            ini.write_text(fixtures.fixture()+'\n# stale\n')
+            with self.assertRaises(ValueError):resource.board_configuration(candidate,'E')
 
     def test_real_port_lock_process_and_independent_leaf(self):
         with tempfile.TemporaryDirectory() as tmp,patch.object(resource,'workspace',return_value=Path(tmp)):
@@ -258,6 +306,28 @@ class AllocatedResources(unittest.TestCase):
             for bad in [raw.replace('USB','UART'),raw.replace('bus_id=0','bus_id=2'), 'ffff:3733', '', 'Ready']:
                 with self.assertRaises(ValueError):resource.check_hcc(bad,model)
             with self.assertRaises(ValueError):resource.check_hcc(raw,'E' if model=='U' else 'U')
+
+    def test_standalone_hcc_binds_registration_and_rejects_change_or_missing_metadata(self):
+        # Real metadata reader/checker; registration is a visible fixture here,
+        # not actual kernel concurrency, firmware provenance or RF acceptance.
+        identity=dict(port='1-1',index=0,generation=7,bus=1,device=2,address='00:01:09:32:54:CD')
+        current=dict(identity,path='/org/sparklink/slk0_g7',version='00'*5,features='00'*10)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);interface=root/'1-1/1-1:1.0';interface.mkdir(parents=True)
+            chip=interface/'chip_information'
+            chip.write_text('source=HCC_GET_CHIP_TYPE model=WS73U model_id=0 bus=USB bus_id=0\n')
+            with patch('ws73_north_star.registration',return_value=current):
+                observed=resource.observe_guest_hcc(identity,'U',root)
+                self.assertEqual(observed['generation'],7)
+                self.assertEqual(observed['hcc_chip']['model'],'U')
+                for key,value in [('generation',8),('device',3),('index',1),('address','00:01:09:32:54:F9')]:
+                    with self.assertRaises(ValueError):resource.observe_guest_hcc(dict(identity,**{key:value}),'U',root)
+                with self.assertRaises(ValueError):resource.observe_guest_hcc(identity,'E',root)
+                chip.unlink()
+                with self.assertRaises(FileNotFoundError):resource.observe_guest_hcc(identity,'U',root)
+            chip.write_text('source=HCC_GET_CHIP_TYPE model=WS73U model_id=0 bus=USB bus_id=0')
+            with patch('ws73_north_star.registration',side_effect=[current,dict(current,generation=8)]):
+                with self.assertRaises(ValueError):resource.observe_guest_hcc(identity,'U',root)
 
 
 if __name__=='__main__':unittest.main()

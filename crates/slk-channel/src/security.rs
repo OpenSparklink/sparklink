@@ -3,6 +3,16 @@
 pub use slk_protocol::message_security::*;
 use std::{io, mem, os::fd::RawFd};
 
+/// Preserve the Native Linux errno contract at the syscall adapter boundary.
+/// A valid value still requires the actual fd/Grant query and submit checks.
+pub fn validation_error(error: ValidationError) -> io::Error {
+    io::Error::from_raw_os_error(match error {
+        ValidationError::InvalidReceipt => nix::libc::EPROTO,
+        ValidationError::InvalidConstraint => nix::libc::EINVAL,
+        ValidationError::ReceiptRestriction => nix::libc::EACCES,
+    })
+}
+
 /// Convert once from a local original Instant into the kernel CLOCK_MONOTONIC
 /// domain. Sampling before computing remaining time avoids extending the budget.
 /// The first TX constraint slice accepts at most five seconds remaining.
@@ -31,7 +41,7 @@ pub fn prepare(
     };
     unsafe { sl_channel_prepare_tx(fd, &mut c) }
         .map_err(|e| io::Error::from_raw_os_error(e as i32))?;
-    c.validate()?;
+    c.validate().map_err(validation_error)?;
     if c.minimum != minimum || c.deadline_monotonic_ns != deadline_monotonic_ns {
         return Err(io::Error::from_raw_os_error(nix::libc::EPROTO));
     }
@@ -46,7 +56,7 @@ pub fn send(
     flags: i32,
     constraint: &SleSendConstraint,
 ) -> io::Result<usize> {
-    constraint.validate()?;
+    constraint.validate().map_err(validation_error)?;
     if flags & !(nix::libc::MSG_DONTWAIT | nix::libc::MSG_NOSIGNAL) != 0 {
         return Err(io::Error::from_raw_os_error(nix::libc::EOPNOTSUPP));
     }
@@ -153,7 +163,7 @@ fn decode(control: &[u64; 8], length: usize, flags: i32) -> io::Result<SleMessag
                 .cast::<SleMessageSecurity>()
                 .read_unaligned()
         };
-        value.validate()?;
+        value.validate().map_err(validation_error)?;
         found = Some(value);
         let alignment = mem::size_of::<usize>();
         offset = offset
@@ -294,6 +304,46 @@ mod tests {
             deadline_at(std::time::Instant::now() + std::time::Duration::from_secs(1)).unwrap() > 0
         );
     }
+    #[test]
+    fn typed_value_errors_preserve_native_errno_without_fd_fallback() {
+        let (raw, size) = encoded(SleMessageSecurity {
+            generation: 0,
+            ..value()
+        });
+        assert_eq!(
+            decode(&raw, size, 0).unwrap_err().raw_os_error(),
+            Some(nix::libc::EPROTO)
+        );
+        // Invalid value is rejected before looking up this deliberately bad fd.
+        assert_eq!(
+            send(-1, b"x", 0, &SleSendConstraint::default())
+                .unwrap_err()
+                .raw_os_error(),
+            Some(nix::libc::EINVAL)
+        );
+        assert_eq!(
+            SleSendConstraint::from_receipt(
+                SleMessageSecurity {
+                    flags: 1,
+                    ..value()
+                },
+                0,
+                123
+            )
+            .map_err(validation_error)
+            .unwrap_err()
+            .raw_os_error(),
+            Some(nix::libc::EACCES)
+        );
+        assert_eq!(
+            SleSendConstraint::from_receipt(value(), 0, 0)
+                .map_err(validation_error)
+                .unwrap_err()
+                .raw_os_error(),
+            Some(nix::libc::EINVAL)
+        );
+    }
+
     #[test]
     fn actual_decoder_checks_complete_control_and_frozen_facts() {
         let v = value();

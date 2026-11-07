@@ -9,6 +9,7 @@ import stat
 import time
 
 from ws73_north_star import Run, daemon_identity, file_record, ordinary_identity, parse_result, stable
+from ws73_target_guest import observe_bsle_attempts
 
 
 def recovery_budget(value):
@@ -45,6 +46,7 @@ class RecoveryRun(Run):
                          'warm_recovery', 'recovery_budget'):
                 if (interface / name).exists():
                     result[name] = (interface / name).read_text().strip()
+            observe_bsle_attempts(interface,result)
         return result
 
     def wait_stable_budget(self, a, b):

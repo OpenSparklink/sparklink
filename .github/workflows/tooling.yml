@@ -42,6 +42,61 @@ permissions:
   contents: read
 
 jobs:
+  protocol-portability:
+    name: Protocol values/codecs Linux tests and MSVC cross-check (not Windows runtime)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Fixed protocol toolchain and cross target
+        run: |
+          rustup toolchain install 1.96.1 --profile minimal
+          rustup target add --toolchain 1.96.1 x86_64-pc-windows-msvc
+          rustc +1.96.1 -vV
+      - name: Actual protocol tests and MSVC type check
+        run: |
+          cargo +1.96.1 test --locked -p slk-protocol
+          cargo +1.96.1 check --locked -p slk-protocol --all-targets --target x86_64-pc-windows-msvc
+          python3 -m unittest discover -s tools/tests -p test_production_dependencies.py -v
+          python3 tools/check_production_dependencies.py
+
+  directusb-rom-source:
+    name: Isolated VM ROM executor source checks (no USB)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      CARGO_BUILD_JOBS: '2'
+      SPARKLINK_BUILD_JOBS: '2'
+      SPARKLINK_KERNEL_SOURCE: ${{ github.workspace }}/.kernel-authority
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Exact production authority source (no kernel build or execution)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: OpenSparklink/linux
+          ref: 796b11f7bc734367494efbc456ed5ac9f1cbfcfe
+          path: .kernel-authority
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            net/sparklink/sle_grant.rs
+            drivers/sparklink/ws73/wire.c
+            drivers/sparklink/ws73/wire.h
+      - name: Fixed isolated toolchain
+        run: |
+          rustup toolchain install 1.96.1 --profile minimal --component clippy --component rustfmt
+          rustup target add x86_64-pc-windows-msvc --toolchain 1.96.1
+      - name: Actual production source-pin refusal controls (no USB)
+        run: python3 tools/check_directusb_authority_source.py --kernel-source "$SPARKLINK_KERNEL_SOURCE" --output "$RUNNER_TEMP/directusb-authority-source"
+      - name: Check shared ROM and Runtime consumers without opening USB
+        run: |
+          cargo +1.96.1 fmt --manifest-path tools/lab/ws73_directusb_rom/Cargo.toml -- --check
+          cargo +1.96.1 clippy --locked --manifest-path tools/lab/ws73_directusb_rom/Cargo.toml --all-targets -- -D warnings
+          cargo +1.96.1 test --locked --manifest-path tools/lab/ws73_directusb_rom/Cargo.toml
+          cargo +1.96.1 check --locked --manifest-path tools/lab/ws73_directusb_rom/Cargo.toml --all-targets --target x86_64-pc-windows-msvc
+          cargo +1.96.1 build --locked --manifest-path tools/lab/ws73_directusb_rom/Cargo.toml --bins --target-dir target/directusb-probes
+          python3 tools/check_directusb_probe_refusal.py --rom target/directusb-probes/debug/ws73-directusb-rom --control target/directusb-probes/debug/ws73-directusb-control --receive target/directusb-probes/debug/ws73-directusb-receive --packets target/directusb-probes/debug/ws73-directusb-packets
+          PYTHONPATH=tools:tools/tests python3 -m unittest test_ws73_directusb_rom test_ws73_rom_chip test_ws73_rom_chip_evidence test_ws73_vm_register_reset test_ws73_prepare_inputs test_directusb_probe_refusal
+
   tooling-test:
     name: WS73 tooling and evidence validation (no hardware)
     runs-on: ubuntu-24.04
@@ -52,7 +107,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: OpenSparklink/linux
-          ref: c41fd4e698ef6d86cd921fa677269b5c62102bb0
+          ref: fb31bb43240e1a370e886f9fd2acf0b899619386
           path: .kernel-tools
           sparse-checkout: |
             tools/testing/selftests/sparklink
@@ -60,10 +115,116 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.12'
+      - name: Prepare fixed compiler before bounded codec tests
+        run: |
+          rustup toolchain install 1.96.1 --profile minimal
+          rustc +1.96.1 -vV
       - name: Run existing tooling tests, including rejection controls
         env:
           SPARKLINK_KERNEL_SOURCE: ${{ github.workspace }}/.kernel-tools
+          RUSTUP_TOOLCHAIN: '1.96.1'
         run: python3 -m unittest discover -s tools/tests -v
+      - name: Check out exact WS73 receive and boot observation selftest sources
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: OpenSparklink/linux
+          # Exact query/RX/diagnostic functions; UAPI/SDK pins stay independent.
+          ref: 796b11f7bc734367494efbc456ed5ac9f1cbfcfe
+          path: .kernel-rx-functions
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            drivers/sparklink/ws73/usb.c
+            drivers/sparklink/ws73/wire.c
+            drivers/sparklink/ws73/wire.h
+            drivers/sparklink/ws73/bsle.h
+            drivers/usb/core/message.c
+            tools/testing/selftests/sparklink/run_connection_tx.py
+            tools/testing/selftests/sparklink/usb_source_paths.py
+            tools/testing/selftests/sparklink/run_ws73_runtime_rx.py
+            tools/testing/selftests/sparklink/run_ws73_hcc_memory.py
+            tools/testing/selftests/sparklink/run_native_ticket_driver.py
+            tools/testing/selftests/sparklink/run_ws73_boot_attempts.py
+            tools/testing/selftests/sparklink/ws73-runtime-rx
+      - name: Run actual RX functions with detector and mutation controls (no USB)
+        working-directory: .kernel-rx-functions
+        env:
+          CC: clang
+        run: |
+          clang --version
+          python3 tools/testing/selftests/sparklink/run_ws73_runtime_rx.py --output "$RUNNER_TEMP/ws73-runtime-rx.json" --artifacts "$RUNNER_TEMP/ws73-runtime-rx-artifacts"
+      - name: Run actual fixed HCC query and exact-response helper (no USB)
+        working-directory: .kernel-rx-functions
+        env:
+          CC: clang
+        run: python3 tools/testing/selftests/sparklink/run_ws73_hcc_memory.py --output "$RUNNER_TEMP/ws73-hcc-memory.json" --artifacts "$RUNNER_TEMP/ws73-hcc-memory-artifacts"
+      - name: Run actual bounded BSLE attempt wrapper and getter (no USB)
+        working-directory: .kernel-rx-functions
+        env:
+          CC: clang
+        run: python3 tools/testing/selftests/sparklink/run_ws73_boot_attempts.py --output "$RUNNER_TEMP/ws73-boot-attempts.json" --artifacts "$RUNNER_TEMP/ws73-boot-attempts-artifacts"
+      - name: Retain bounded boot observation function evidence,including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ws73-boot-attempts-offline-functions
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            ${{ runner.temp }}/ws73-boot-attempts.json
+            ${{ runner.temp }}/ws73-boot-attempts-artifacts/
+      - name: Retain bounded HCC function evidence, including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ws73-hcc-memory-offline-functions
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            ${{ runner.temp }}/ws73-hcc-memory.json
+            ${{ runner.temp }}/ws73-hcc-memory-artifacts/
+      - name: Retain bounded function evidence, including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ws73-runtime-rx-offline-functions
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            ${{ runner.temp }}/ws73-runtime-rx.json
+            ${{ runner.temp }}/ws73-runtime-rx-artifacts/
+
+  ws73-input-profiles:
+    name: WS73 per-device input production functions (no hardware)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Check out the exact profile and boot production sources
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: OpenSparklink/linux
+          # New file-input dependency;existing ABI/RX pins retain their scopes.
+          ref: 1e0667dd7b075c1340ca2fa5304e556327611dbe
+          path: .kernel-input-profiles
+          sparse-checkout: |
+            drivers/sparklink/ws73
+            tools/testing/selftests/sparklink
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Install host fixture dependencies
+        run: sudo apt-get update && sudo apt-get install -y clang libssl-dev
+      - name: Run actual codec and boot failure boundaries
+        working-directory: .kernel-input-profiles
+        env:
+          ASAN_OPTIONS: detect_leaks=1:abort_on_error=1
+          UBSAN_OPTIONS: halt_on_error=1
+        run: |
+          clang -std=c11 -Wall -Wextra -Werror -fsanitize=address,undefined -fno-omit-frame-pointer tools/testing/selftests/sparklink/ws73_fw_profile_test.c drivers/sparklink/ws73/fw_profile.c -o /tmp/ws73-fw-profile-test
+          /tmp/ws73-fw-profile-test
+          python3 tools/testing/selftests/sparklink/run_ws73_fw_profile.py
 
   application-sdk:
     name: Application SDK ABI and private-bus contracts (no hardware)
@@ -78,7 +239,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: OpenSparklink/linux
-          ref: c41fd4e698ef6d86cd921fa677269b5c62102bb0
+          ref: fb31bb43240e1a370e886f9fd2acf0b899619386
           path: .kernel-tools
           sparse-checkout: |
             tools/testing/selftests/sparklink

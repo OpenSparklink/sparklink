@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-only
 # Dedicated VM maintenance, never a production boot or Managed acceptance.
-export PATH=/bin:/usr/bin PYTHONHOME=/usr LIBSPARKLINK_PATH=/usr/lib/libsparklink.so
+export PATH=/bin:/usr/bin PYTHONHOME=/usr LIBSLK_NATIVE_PATH=/usr/lib/libslk_native.so.0
 fail() {
     echo "WS73_RESET_LAB_FAILURE: $*"
     if [ -n "${capture:-}" ]; then kill -INT "$capture" 2>/dev/null; wait "$capture"; fi
@@ -40,14 +40,16 @@ if grep -q 'ws73.usb_credit_lab=1' /proc/cmdline; then credit_arg='--usb-credit-
 rom_arg=''
 if grep -q 'ws73.rom_chip_expected=E' /proc/cmdline; then rom_arg='--rom-chip-expected E'; fi
 if grep -q 'ws73.rom_chip_expected=U' /proc/cmdline; then rom_arg='--rom-chip-expected U'; fi
-/bin/python3 /usr/share/sparklink/tools/ws73_vm_register_reset.py $rom_arg $credit_arg $reset_arg $wake_arg $async_arg $route_arg $interface_arg $clear_halt_arg --output /evidence/maintenance/reset > /evidence/maintenance/probe.log 2>&1
+directusb_arg=''
+if grep -q 'ws73.directusb_rom=1' /proc/cmdline; then directusb_arg='--directusb-rom'; fi
+/bin/python3 /usr/share/sparklink/tools/ws73_vm_register_reset.py $directusb_arg $rom_arg $credit_arg $reset_arg $wake_arg $async_arg $route_arg $interface_arg $clear_halt_arg --output /evidence/maintenance/reset > /evidence/maintenance/probe.log 2>&1
 result=$?
 dmesg > /evidence/maintenance/kernel.log
 for interface in /sys/bus/usb/devices/*:*; do
     [ -f "$interface/boot_stage" ] || continue
     name=${interface##*/}
-    for attribute in boot_stage boot_error warm_recovery recovery_budget failure_diagnostics native_runtime controller_information; do
-        cat "$interface/$attribute" > "/evidence/maintenance/$name-$attribute.txt"
+    for attribute in boot_stage boot_error warm_recovery recovery_budget failure_diagnostics bsle_attempts native_runtime controller_information; do
+        [ -f "$interface/$attribute" ] && cat "$interface/$attribute" > "/evidence/maintenance/$name-$attribute.txt"
     done
 done
 kill -INT "$capture"

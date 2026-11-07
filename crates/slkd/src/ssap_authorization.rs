@@ -113,6 +113,13 @@ impl Owner {
     pub(crate) fn current(&self) -> bool {
         *self.active.borrow()
     }
+    /// Notification only: admission must still recheck under the DB mutex.
+    /// Subscribe before checking the value so an earlier or concurrent revoke
+    /// cannot leave an existing operation asleep until its original deadline.
+    pub(crate) async fn withdrawn(&self) {
+        let mut active = self.active.subscribe();
+        let _ = active.wait_for(|current| !*current).await;
+    }
     /// Database removal/owner loss call this under the SAME database mutex as
     /// value admission. Revocation does not undo already committed writes.
     pub(crate) fn revoke(&self) {
@@ -133,25 +140,48 @@ impl Owner {
         prompt: slk_contract::ssap::SsapAuthorizationPrompt,
         deadline: Instant,
     ) -> bool {
-        if !self.current() || !self.supports_authorization() || Instant::now() >= deadline {
+        if !self.supports_authorization() {
             return false;
         }
+        self.callback(
+            self.path.as_str(),
+            "org.sparklink.SsapAuthorizer",
+            "AuthorizeValue",
+            &(prompt,),
+            deadline,
+        )
+        .await
+        .is_some_and(|message| matches!(message.body().deserialize::<bool>(), Ok(true)))
+    }
+    /// One original owner/deadline contract for policy and value callbacks.
+    /// Neither callback grants Native permission or prolongs a protocol debt.
+    pub(crate) async fn callback<B>(
+        &self,
+        path: &str,
+        interface: &str,
+        method: &str,
+        body: &B,
+        deadline: Instant,
+    ) -> Option<zbus::Message>
+    where
+        B: serde::Serialize + zbus::zvariant::DynamicType + Sync,
+    {
         let mut revoked = self.active.subscribe();
-        let Some(connection) = self.connection.upgrade() else {
-            return false;
-        };
+        if !self.current() || Instant::now() >= deadline {
+            return None;
+        }
+        let connection = self.connection.upgrade()?;
         let callback = async {
             let message = connection
                 .call_method(
                     Some(self.name.as_str()),
-                    self.path.as_str(),
-                    Some("org.sparklink.SsapAuthorizer"),
-                    "AuthorizeValue",
-                    &(prompt,),
+                    path,
+                    Some(interface),
+                    method,
+                    body,
                 )
                 .await
                 .ok()?;
-            // Do not accept a method return from another bus participant.
             if message
                 .header()
                 .sender()
@@ -159,7 +189,6 @@ impl Owner {
             {
                 return None;
             }
-            let allow: bool = message.body().deserialize().ok()?;
             let bus = zbus::fdo::DBusProxy::new(&connection).await.ok()?;
             if !bus
                 .name_has_owner(self.name.as_str().try_into().ok()?)
@@ -168,13 +197,15 @@ impl Owner {
             {
                 return None;
             }
-            Some(allow)
+            Some(message)
         };
         tokio::select! {
             biased;
-            _ = revoked.changed() => false,
-            _ = tokio::time::sleep_until(deadline) => false,
-            decision = callback => self.current() && decision == Some(true),
+            _ = revoked.changed() => None,
+            _ = tokio::time::sleep_until(deadline) => None,
+            result = callback => {
+                if self.current() && Instant::now() < deadline { result } else { None }
+            },
         }
     }
 }
@@ -202,9 +233,12 @@ fn revoke(database: &Weak<Mutex<crate::ssap_database::Database>>, owner: &Weak<O
 
 pub(crate) struct Target {
     pub(crate) handle: u16,
+    pub(crate) data_type: u8,
     pub(crate) owner: Arc<Owner>,
 }
 pub(crate) struct Approval {
     pub(crate) handle: u16,
+    pub(crate) data_type: u8,
+    pub(crate) write: bool,
     pub(crate) owner: Arc<Owner>,
 }

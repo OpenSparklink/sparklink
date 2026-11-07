@@ -1,13 +1,77 @@
-# ADR 0003：可选 controller 独占 UserHost
+# ADR 0003：Host模式、设备接入与唯一服务核心
 
-日期：2026-10-13。状态：**采纳目标规划；P4/低优先级，本轮不实现、不删代码。**
-本决定调整WP14的固定`UserspaceProxyBackend → slk-vendord`方案，不表示原issue完成。
-ARCHITECTURE仍定义目标分层，IMPLEMENTATION_PLAN仍为唯一执行计划，CURRENT_CAPABILITIES
-仍是唯一资格入口。完整S0–S6、19工作包/10类形式化/12组数据门禁保留；Native WS73数据、
-生命周期整改及用户态SSAP不依赖UserHost完成。本ADR只替换厂商代理分支的所有权设计，
-不追溯扩大旧证据、不恢复旧SSAP wire Engine。
+原决定：2026-10-13；修订采用：2026-11-01。状态：架构采用，新增实现/证明/资格未完成。
 
-## 最新源码及参考边界
+## 2026-11-01 修订及理由
+
+原P4独占接管/厂商分支保留，现命名KernelPacket；不再将全部用户态Host延期。正式新增项目自有Rust UserHost＋DirectUSB（Linux usbfs、Windows WinUSB），Windows首个目标11 x64/MSVC。完整Host由Host进程与服务核心共同组成；Host负责DLI/协议credit/连接/CMTC/DTAP/协议安全，SSAP/DB/Profile/Agent/Bond策略复用同一服务核心，不复制Engine。每controller一个Host进程，单controller仅一owner，活动路径不竞争两套状态机。
+
+DirectUSB的固件/USB/HCC/BSLE在用户态设备适配；Native/KernelPacket在内核设备层。原“内核始终负责固件”和“UserHost拥有SSAP”概括被本修订替代。Native查询/SCM/授权不因跨平台而放宽；UserHost独立证明来源和提交/读取检查点，明文入IPC队列后不可追溯撤回。库drop/取消/重枚举不证明控制器状态清除；Native返回仍要求真实屏障和新身份。
+
+服务核心不依赖自己的SDK；Linux D-Bus/Windows本地IPC只是同一handler前端。窄ServiceChannel及ConnectionUse按现有实际调用逐批收敛，拒绝机械拆crate、通用万能Adapter或成功依赖桩。Windows权限/HANDLE/IOCP、系统HID/音频分别验收；纯用户态Host不意味着系统集成无驱动。
+
+采用原因：完整服务与Windows需要与内核机制分开的执行适配；DirectUSB无需先完成KernelPacket。复用生产纯逻辑能减少分叉，但锁/引用/USB/取消不等价，必须映射实测。nusb低层Endpoint为候选，先锁版本审查隐藏提交队列与drain；未完成前不承诺撤销后无物理提交。
+
+完整三视图/状态所有权/安全差异见[唯一架构](../../project/architecture.md)，批次A–I/W、WP映射和新增验收见[唯一计划](../../project/implementation-plan.md)；本ADR不复制第二套规划。原S0–S6/19WP/10FV/12DG/预算和VM-only保留，有效范围明确增加；当前Native method v4不等待本扩展，U#7仅原KernelPacket/厂商scope，新增子项归U#8。
+
+## DirectUSB库版本与提交边界审查（2026-11-01）
+
+固定候选nusb **0.2.9**，归档SHA256 `1de8b6d15f559f50760dad6c1b56fde4041f99dc96a08e55c2b41f44c7417ad9`，上游提交[5dfee4c](https://github.com/kevinmehall/nusb/tree/5dfee4c1f82a1fdf019c3b5935ee4cd887908093)，双许可Apache-2.0/MIT。这是下一适配原型的审计pin，不是默认生产依赖；根Cargo.lock未改，未宣称完整依赖漏洞/许可或发布审查完成。文件hash、实际测试边界见[结构化审计](../../project/reference/architecture/directusb-library-audit-20261101.json)。
+
+| 源码事实 | 实施约束／未证明项 |
+|---|---|
+| `Endpoint::submit`→Linux `USBDEVFS_SUBMITURB`／Windows `WinUsb_ReadPipe/WritePipe`，当前低层调用栈直接提交；错误延迟至Completion | actor持最终提交gate；调用后不能仅凭普通错误/零字节确认“从未提交”。OS请求提交与RF发送不是同一阶段 |
+| control `TransferFuture::new`构造即调用submit，未poll也发生 | 权限、generation、原期限检查必须先于control方法调用；不能预建future后才检查，drop不能取消/证明排空 |
+| Endpoint pending队列保留提交顺序；只取队首完成；没有项目预算 | 每controller明确包/字节/在途上限，初期单TX；排队头阻塞不解释为空口重排；单RX/多RX取舍须实测 |
+| `cancel_all`仅请求取消；Endpoint drop发取消后Pending可转ABANDONED，payload留给completion释放 | 停准入、保留身份和buffer、逐个收取completion；期限耗尽隔离并保留义务，不宣布Free，不用drop/re-enumeration替代drain |
+| WinUSB仅IN尝试RAW_IO，设置失败仅warn；OUT不能套用该策略 | 必须核对每方向实际OS队列语义及策略生效，当前不能宣称Windows无隐藏排队或取消总成功 |
+| `transfer_blocking`超时后仍循环等待完成；reader/writer有额外缓冲 | 不作为有界actor执行路径；用低层Endpoint和原期限监督，明确请求结束与资源排空分离 |
+
+优先继续低层Endpoint原型；libusb异步API保留备选，其submit返回值能提供另一种同步错误观测，但尚未完成固定版本后端源码审计，不能据API说明自动授予更强语义。Microsoft明确CancelIoEx不等待完成、可能正常完成，OVERLAPPED完成前不可释放；RAW_IO只适用IN且影响WinUSB排队。[取消契约](https://learn.microsoft.com/en-us/windows/win32/api/ioapiset/nf-ioapiset-cancelioex)、[管道策略](https://learn.microsoft.com/en-us/windows-hardware/drivers/usbcon/winusb-functions-for-pipe-policy-modification)、[libusb异步接口](https://libusb.sourceforge.io/api-1.0/group__libusb__asyncio.html)。
+
+只在适配器预校验拒绝、尚未调用提交时确认NotSubmitted。已经调用且提交/执行失败无法区分时保留Unknown/物理义务，USB成功也不归还DLI credit。当前公开API不提供细粒度提交来源；需要更强分类则扩展可审查的适配或上游接口，不能用errno猜测。完成一次、OS不再访问buffer、内存序、调度及故障下最终回调都是信任基础/待验证条件，三项顺序离线测试不是并发或硬件证明。
+
+固定NearLink Host与libws73-usb版本保持；前者LOCAL_TEST数据stub不用于真实性依据。后者`ws73_evt_stop`在有限等待后继续free，超限时未强制pending为零；这是静态风险而非本项目实机UAF证据，不复制成成功drain。参考源码许可/封装分别核对，未导入其业务实现。SDK110 E/US与四叶白名单、VM-only不变。
+
+### 最小消费者边界
+
+独立 `tools/lab/ws73_directusb_rom` 固定 nusb0.2.9，是实际实验消费者，不进入默认
+daemon/Host依赖。ROM固定READM与Runtime固定memory-backpressure class-IN读共享
+显式guest拓扑、scratch QEMU、无driver和选定接口边界，禁止扫描后任选、detach、reset
+或失败回退。ROM原两端点/2秒I/O及额外最多1秒取消观察保持；Runtime要求唯一配置1、
+接口0/alt0、class/subclass/protocol与完整五端点几何，并只读四字节。
+
+每次调用control构造器前先检查原期限并记录已开始的提交；过期不调用。fresh记录只准入
+一次，错误/短/长/晚到不成功，接口release与请求结果分记，不能用release/drop/进程退出
+证明OS最终排空或固件状态清除。全零是原始传输字节，不能推导有效访问、型号、固件、
+DLI信用、Ready或恢复。接口claim只排他当前接口，不证明完整controller所有权。
+当前ROM/控制读取/被动IN消费者使用同一本地TransportOwner：构建校验固定内核
+LeaseAuthority生产文件，将有界原字节快照编译进独立实验包，不维护权限算法副本。
+endpoint借用已打开设备，token保留同一owner对象与本地epoch；同epoch的其他/新对象
+不能取得旧权限。撤销与实际nusb调用用同一stdMutex，锁内重验原期限，等待/取消在锁外；
+Busy只表示撤销尚未完成，poison拒绝新提交。控制构造器未调用与已调用后失败分型，
+不能以errno相同推断物理义务相同。release/Drop退休本地权限，不制造物理排空证明。
+这是进程/接口提交门禁，**不是**controller全局身份、Native Grant/generation或可信安全。
+EP0/reset/其他进程排他、fork/fd传递、DeviceRuntime身份、连续actor及最终drain仍须实施；
+实际纯转换的复用不转授内核IRQ锁、USB/OS或固件性质。原始期限和失败继续保留。
+
+ROM与固定Runtime IN82复用同一实际bulk交换，单在途/每次至多512字节；原2秒期限
+在submit前重验、提交后重算等待，额外1秒清理消耗取消调用时间。真实completion、
+部分/错误/迟到与隔离分别保留；即使取消后返回成功completion，原超时仍失败。
+只取回自身endpoint completion、零pending、free或release不授完整OS/固件drain，
+不生成Host credit/Ready。变异实验与普通构建缓存/库身份隔离，避免错误复用测试产物；
+恢复失败不能被局部红测覆盖，正向须确认重新编译准确源码。
+
+实际生产函数回归显式替换时钟/I/O，限定离线、Linux VM观察和Windows编译须分开。
+非Linux执行当前明确Unsupported；MSVC类型检查不授WinUSB或平台运行资格。
+连续设备actor仍须原owner/generation/预算、提交/取消/drain、显式E/US三镜像/HCC、
+类型化包与真实业务门禁；原Native主线、S0–S6/19WP/10FV/12DG和VM-only不削减。
+
+## 2026-10-13 原决定的保留部分（KernelPacket分支）
+
+下列源码审计是历史身份；包接管、租约、真实屏障及厂商适配原门禁保留，不代表最新实现或资格。术语UserHost在本历史分支中指KernelPacket用户态Host。
+
+### 历史源码及参考边界
 
 审计K`88372a9b7cbcea7fcbca4f34cc9d5707488be46e`、U`b967674dede65884ac7fe0248fe6195bc082badd`，
 两仓库clean。Cargo workspace无slk-vendord/Host-adapter crate；Kernel ControllerBackend
@@ -28,7 +92,7 @@ user channel绑定要求权限与设备状态检查、设置独占标志，最�
 |---|---|---|
 | DLI命令/事件、协议credit | 内核Native Host | 唯一用户态Host |
 | connection/DTAP/TCID/协议安全 | 内核Native Host与Session | 用户态Host |
-| SSAP/Profile/业务策略 | slkd/用户态；应用每逻辑通道socket | 用户态Host及独立上层适配 |
+| SSAP/Profile/业务策略 | slkd/用户态；应用每逻辑通道socket | 同一服务核心/唯一SSAP Engine |
 | 固件、USB/HCC/BSLE、传输资源/访问权限 | 共享内核设备/驱动层 | 同一共享内核设备/驱动层 |
 | 可信原生Ready/link/security | 内核真实Native状态 | 不发布；用户态声明不得冒充原生可信状态 |
 

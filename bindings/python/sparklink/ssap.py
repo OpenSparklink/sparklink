@@ -75,3 +75,17 @@ class SsapAccess:
         result=_get_channel_lib().slk_ssap_access_error(self.bits,level,int(write))
         if result<0:raise ValueError('invalid access context')
         return result
+
+
+@dataclass(frozen=True)
+class MethodAccess:
+    """Invocation requirements1/2/4, distinct from property operation bits.
+
+    Uses the existing SsapAccess validation; this value is not authorization.
+    """
+    bits: int
+
+    def __post_init__(self):
+        SsapAccess(self.bits)
+        if self.bits & ~7:
+            raise ValueError('reserved method access bits')

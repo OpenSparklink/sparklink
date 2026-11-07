@@ -31,6 +31,27 @@ impl Link {
     fn get_info(&self) -> (u64, u64, u16, u8, u8, String, bool, bool) {
         (7, 11, 3, 0, 1, "01:02:03:04:05:06".into(), true, true)
     }
+    fn discover_ssap(
+        &self,
+        uuid: Vec<u8>,
+        kind: u8,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<slk_contract::ssap::Discovery> {
+        libsparklink::Deadline::from_stamp(slk_contract::deadline_stamp(original)).unwrap();
+        self.calls.fetch_add(1, Ordering::SeqCst);
+        if uuid != [1, 2] || !matches!(kind, 4 | 5) {
+            return Err(zbus::fdo::Error::NotSupported(
+                "finite discovery fixture".into(),
+            ));
+        }
+        Ok((
+            vec![(if kind == 5 { 4 } else { 3 }, 17, 17, uuid, 0, vec![], 0)],
+            vec![(
+                vec![6, 16 | kind, 1, 0, 255, 255, 1, 2],
+                vec![7, 3, 17, 0, 1, 2, 0, 0, 0, 0, 0],
+            )],
+        ))
+    }
     fn read_ssap_value(
         &self,
         handle: u16,
@@ -50,6 +71,33 @@ impl Link {
             )),
         }
     }
+
+    fn call_ssap_method(
+        &self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<Vec<u8>> {
+        libsparklink::Deadline::from_stamp(slk_contract::deadline_stamp(original)).unwrap();
+        self.calls.fetch_add(1, Ordering::SeqCst);
+        if (handle, minimum, arguments) != (17, 1, vec![0x56, 0x12]) {
+            return Err(zbus::fdo::Error::NotSupported(
+                "finite method fixture".into(),
+            ));
+        }
+        Ok(vec![0x90, 0x78, 0x34])
+    }
+    fn call_ssap_method_command(
+        &self,
+        handle: u16,
+        arguments: Vec<u8>,
+        minimum: u32,
+        original: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<()> {
+        self.call_ssap_method(handle, arguments, minimum, original)
+            .map(|_| ())
+    }
     fn write_ssap_value(
         &self,
         handle: u16,
@@ -63,6 +111,22 @@ impl Link {
             return Err(zbus::fdo::Error::InvalidArgs("exact fixture write".into()));
         }
         Ok(vec![0x90])
+    }
+    fn write_ssap_command(
+        &self,
+        handle: u16,
+        value: Vec<u8>,
+        minimum: u32,
+        deadline: slk_contract::Deadline,
+    ) -> zbus::fdo::Result<()> {
+        libsparklink::Deadline::from_stamp(slk_contract::deadline_stamp(deadline)).unwrap();
+        self.calls.fetch_add(1, Ordering::SeqCst);
+        if (handle, minimum, value) != (17, 1, vec![0x56, 0x12]) {
+            return Err(zbus::fdo::Error::NotSupported(
+                "exact fixture command".into(),
+            ));
+        }
+        Ok(())
     }
 }
 #[tokio::test]
@@ -87,6 +151,27 @@ async fn actual_cli_uses_sdk_and_refuses_late_identity_without_relabelling_succe
     for (command, handle, rest, expected) in [
         ("ssap-read", "17", vec!["2"], Some("value=3478")),
         ("ssap-write", "17", vec!["5612", "1"], Some("value=90")),
+        (
+            "ssap-write-command",
+            "17",
+            vec!["5612", "1"],
+            Some("stage=software_socket_admission peer_delivery=unconfirmed"),
+        ),
+        ("ssap-write-command", "18", vec!["5612", "1"], None),
+        (
+            "ssap-call-method",
+            "17",
+            vec!["5612", "1"],
+            Some("value=907834"),
+        ),
+        (
+            "ssap-call-method-command",
+            "17",
+            vec!["5612", "1"],
+            Some("stage=software_socket_admission peer_delivery=unconfirmed"),
+        ),
+        ("ssap-call-method", "18", vec!["5612", "1"], None),
+        ("ssap-call-method-command", "18", vec!["5612", "1"], None),
         ("ssap-read", "18", vec!["2"], None),
         ("ssap-read", "99", vec!["2"], None),
     ] {
@@ -104,9 +189,19 @@ async fn actual_cli_uses_sdk_and_refuses_late_identity_without_relabelling_succe
         if let Some(value) = expected {
             assert!(result.status.success(), "{stderr}");
             assert!(stdout.contains(value), "{stdout}");
+            if command == "ssap-write-command" {
+                assert!(stdout.contains("SsapCommandAdmission:"), "{stdout}");
+                assert!(
+                    !stdout.contains("SsapPeerValue:") && !stdout.contains("value="),
+                    "{stdout}"
+                );
+            }
         } else {
             assert!(!result.status.success());
-            assert!(!stdout.contains("SsapPeerValue:"), "{stdout}");
+            assert!(
+                !stdout.contains("SsapPeerValue:") && !stdout.contains("SsapCommandAdmission:"),
+                "{stdout}"
+            );
             assert!(
                 stderr.contains(if handle == "99" {
                     "controller generation"
@@ -117,6 +212,64 @@ async fn actual_cli_uses_sdk_and_refuses_late_identity_without_relabelling_succe
             );
         }
     }
-    assert_eq!(calls.load(Ordering::SeqCst), 4);
+    assert_eq!(calls.load(Ordering::SeqCst), 10);
+    Ok(())
+}
+
+#[tokio::test]
+async fn actual_cli_event_discovery_uses_same_sdk_and_rejects_unknown_kind() -> anyhow::Result<()> {
+    let bus = support::Bus::start();
+    let generation = Arc::new(AtomicU64::new(7));
+    let calls = Arc::new(AtomicUsize::new(0));
+    let _server = zbus::connection::Builder::address(bus.address.as_str())?
+        .name("org.sparklink")?
+        .serve_at("/org/sparklink", Manager)?
+        .serve_at(BASE, Adapter(generation.clone()))?
+        .serve_at(
+            PATH,
+            Link {
+                generation,
+                calls: calls.clone(),
+            },
+        )?
+        .build()
+        .await?;
+    for (kind, uuid, category) in [
+        ("method", "0102", Some(3)),
+        ("event", "0102", Some(4)),
+        ("event", "0304", None),
+        ("unknown", "0102", None),
+    ] {
+        let output = tokio::time::timeout(
+            std::time::Duration::from_secs(5),
+            tokio::process::Command::new(env!("CARGO_BIN_EXE_slctl"))
+                .env("DBUS_SESSION_BUS_ADDRESS", &bus.address)
+                .args([
+                    "--session",
+                    "--adapter",
+                    BASE,
+                    "ssap-discover",
+                    PATH,
+                    kind,
+                    uuid,
+                ])
+                .output(),
+        )
+        .await??;
+        let text = String::from_utf8(output.stdout)?;
+        if let Some(category) = category {
+            assert!(
+                output.status.success(),
+                "{}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            assert!(text.contains(&format!("category={category} handle=17")));
+            assert!(text.contains(if kind == "event" { "kind=5" } else { "kind=4" }));
+        } else {
+            assert!(!output.status.success());
+            assert!(!text.contains("SsapRemoteDiscovery:"));
+        }
+    }
+    assert_eq!(calls.load(Ordering::SeqCst), 3);
     Ok(())
 }

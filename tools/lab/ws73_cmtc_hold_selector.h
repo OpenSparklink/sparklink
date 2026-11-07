@@ -82,10 +82,12 @@ static bool ws73_test_is_cmtc_capability_reply(const unsigned char *data, size_t
 
 static bool ws73_test_is_ssap_exchange_reply(const unsigned char *data, size_t size)
 {
-    /* SMTC TCID10, ordinary ExchangeInfo Response, MTU2042/version1.2.
+    /* SMTC TCID10, current ten-byte ExchangeInfo Response,
+     * MTU2042/version1.2, sequence fragments only. The archived six-byte
+     * selector remains in its frozen binary; never accept it as this offer.
      * Request opcode2 and response opcode3 are deliberately distinct. */
     static const unsigned char response[] = {
-        10, 0, 6, 0, 3, 3, 0xfa, 7, 1, 2
+        10, 0, 10, 0, 3, 7, 0xfa, 7, 1, 2, 4, 0, 0, 0
     };
     return ws73_test_has_reply(data, size, response, sizeof(response));
 }

@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 from pathlib import Path
+import os
+import shutil
 import sys
 import tempfile
 from types import SimpleNamespace
@@ -9,11 +11,158 @@ import subprocess
 
 sys.path.insert(0, str(Path(__file__).parents[1]))
 from ws73_target import config_required
-from ws73_vm_native_root import OPTIONS, enabled, module_plan, stage_discovery_config, check_discovery_config_gate, remove_boot_images, check_runtime_only, stage_runtime_libraries
+from ws73_vm_native_root import OPTIONS, enabled, module_plan, stage_discovery_config, check_discovery_config_gate, check_runtime_only, stage_runtime_libraries, compiler_invocation, pack, freeze_policy_expectation, stage_numeric_verifier
 from ws73_north_star import file_record
+import ws73_firmware_profile as profile
+from test_ws73_firmware_profile import inputs as profile_inputs
+
+
+def remove_boot_images(root):
+    """Historical fixture producer only; no live preparation emits this format."""
+    import json
+    plan = json.loads((root / profile.PLAN).read_text())
+    paths = profile.boot_paths(root, plan)  # whole closure before any mutation
+    rows = [dict(path='/' + str(p.relative_to(root)), sha256=file_record(p)['sha256']) for p in paths]
+    for path in paths:
+        path.unlink()
+    return rows
 
 
 class NativeVMProfile(unittest.TestCase):
+    def test_actual_openssl_vector_closure_and_frozen_conflict(self):
+        # Actual installed OpenSSL/ldd/file copies;not Native/RF/security proof.
+        from ws73_target import copy_elf
+        selected=shutil.which('openssl');self.assertIsNotNone(selected)
+        with tempfile.TemporaryDirectory()as tmp:
+            root=Path(tmp);manifest={'inputs':[]}
+            stage_numeric_verifier(Path(selected),root,manifest,copy_elf)
+            proof=manifest['native_verification_openssl']
+            self.assertEqual(proof['validation_exit'],0)
+            self.assertEqual(proof['validation_stdout'].strip().lower(),'bb1d6929e95937287fa37d129b756746')
+            self.assertTrue((root/'usr/bin/openssl').is_file())
+            before={p:file_record(p)for p in root.rglob('*')if p.is_file()}
+            stage_numeric_verifier(Path(selected),root,{'inputs':[]},copy_elf)
+            self.assertEqual(before,{p:file_record(p)for p in root.rglob('*')if p.is_file()})
+            library=next(root/r['guest_path'].lstrip('/')for r in proof['files']if r['guest_path']!='/usr/bin/openssl')
+            library.write_bytes(b'explicit frozen mismatch')
+            bad={'inputs':[]}
+            with self.assertRaisesRegex(ValueError,'must not replace'):
+                stage_numeric_verifier(Path(selected),root,bad,copy_elf)
+            self.assertEqual(library.read_bytes(),b'explicit frozen mismatch')
+            self.assertNotIn('native_verification_openssl',bad)
+            with self.assertRaises(subprocess.CalledProcessError):
+                stage_numeric_verifier(Path('/bin/false'),root,{'inputs':[]},copy_elf)
+
+    def test_readonly_policy_receipt_is_replaced_without_touching_old_inode(self):
+        # Pure file/receipt test with an explicit prevalidated-result fixture;
+        # no daemon, Native command, policy authority or successful peer stub.
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);config=root/'main.conf';config.write_text('[ssap]\nchannel_security=2\n')
+            daemon=root/'daemon';daemon.write_bytes(b'identity fixture never executed')
+            path=root/'expected-discovery-policies.json';path.write_text('old frozen receipt');path.chmod(0o444)
+            old=root/'old-inode';os.link(path,old)
+            result=subprocess.CompletedProcess(['explicit-receipt-fixture'],0,
+                stdout='Ws73DefaultPolicy: version=3 adv_slots=1200..1200 tx_power_dbm=127 scan_slots=1600/800\n')
+            manifest={};freeze_policy_expectation(daemon,config,root,manifest,True,result=result)
+            self.assertEqual(old.read_text(),'old frozen receipt')
+            self.assertEqual(path.stat().st_mode&0o777,0o444)
+            self.assertNotEqual(path.stat().st_ino,old.stat().st_ino)
+            self.assertEqual(manifest['policy_expectation']['guest_sha256'],file_record(path)['sha256'])
+            self.assertFalse(list(root.glob('.expected-discovery-*')))
+            path.unlink();path.symlink_to(old)
+            with self.assertRaisesRegex(ValueError,'symlink'):
+                freeze_policy_expectation(daemon,config,root,{},True,result=result)
+            self.assertEqual(old.read_text(),'old frozen receipt')
+
+    def test_nonexecutable_init_is_rejected_before_image_or_formatter(self):
+        # Real filesystem mode reproduces the staged 0644 failure. No guest,
+        # USB, firmware or fake boot success is involved.
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp); root = base / 'root'; root.mkdir()
+            output = base / 'out'; output.mkdir()
+            entry = root / 'init'; entry.write_text('#!/bin/sh\nexit 0\n')
+            for mode in (0o644, 0o600, 0o000):
+                entry.chmod(mode)
+                with self.subTest(mode=oct(mode)), patch('ws73_vm_native_root.subprocess.run') as run:
+                    with self.assertRaisesRegex(ValueError, 'root/init.*executable'):
+                        pack(SimpleNamespace(output=output), {'native_vm': {'root_uuid': 'fixture'}}, root)
+                    run.assert_not_called()
+                    self.assertEqual(list(output.iterdir()), [])
+
+    def test_missing_empty_directory_or_symlink_init_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp); root = base / 'root'; root.mkdir()
+            output = base / 'out'; output.mkdir(); entry = root / 'init'
+            for kind in ('missing', 'empty', 'directory', 'symlink'):
+                if kind == 'empty':
+                    entry.touch(); entry.chmod(0o755)
+                elif kind == 'directory':
+                    entry.mkdir(mode=0o755)
+                elif kind == 'symlink':
+                    target = base / 'host-entry'; target.write_text('not a guest entry'); target.chmod(0o755)
+                    entry.symlink_to(target)
+                with self.subTest(kind=kind), patch('ws73_vm_native_root.subprocess.run') as run:
+                    with self.assertRaisesRegex(ValueError, 'root/init.*executable'):
+                        pack(SimpleNamespace(output=output), {'native_vm': {'root_uuid': 'fixture'}}, root)
+                    run.assert_not_called()
+                    self.assertEqual(list(output.iterdir()), [])
+                if entry.is_dir():
+                    entry.rmdir()
+                elif entry.exists():
+                    entry.unlink()
+
+    def test_valid_init_keeps_existing_pack_command_and_formatter_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp); root = base / 'root'; root.mkdir()
+            output = base / 'out'; output.mkdir()
+            entry = root / 'init'; entry.write_text('#!/bin/sh\nexit 0\n'); entry.chmod(0o755)
+            # The external formatter is a visible failing dependency, not an
+            # image/boot fixture upgraded to qualification.
+            with patch('ws73_vm_native_root.subprocess.run', side_effect=subprocess.CalledProcessError(9, 'mkfs.btrfs')) as run:
+                with self.assertRaises(subprocess.CalledProcessError):
+                    pack(SimpleNamespace(output=output), {'native_vm': {'root_uuid': 'fixture'}}, root)
+                self.assertEqual(run.call_args.args[0], ['mkfs.btrfs', '-U', 'fixture', '--rootdir', str(root), str(output / 'root.btrfs')])
+                self.assertTrue(run.call_args.kwargs['check'])
+                self.assertEqual((output / 'root.btrfs').stat().st_size, 1024 ** 3)
+
+    def test_compiler_symlink_invocation_reaches_real_compiler_and_old_resolution_fails(self):
+        # Real process/compiler with a synthetic argv[0] dispatcher; no kernel
+        # fixture or firmware. Like ccache,its basename selects the compiler.
+        actual = shutil.which('cc', path=os.defpath)
+        self.assertIsNotNone(actual)
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp); launcher = base/'compiler-cache'; alias = base/'cc'
+            launcher.write_text(f'#!{sys.executable}\nimport os,sys\n'
+                'if os.path.basename(sys.argv[0]) != "cc": sys.exit(81)\n'
+                f'os.execv({actual!r}, [{actual!r}, *sys.argv[1:]])\n')
+            launcher.chmod(0o755); alias.symlink_to(launcher.name)
+            with patch.dict(os.environ, {'CC': 'cc', 'PATH': str(base)+os.pathsep+os.defpath}):
+                compiler = compiler_invocation()
+                self.assertEqual(compiler, alias)
+                self.assertNotEqual(compiler, compiler.resolve())
+                old = subprocess.run([str(compiler.resolve()), '--version'], capture_output=True)
+                self.assertEqual(old.returncode, 81)
+                program = base/'consumer'
+                subprocess.run([str(compiler), '-std=c11', '-Wall', '-Wextra', '-Werror',
+                    '-x', 'c', '-', '-o', str(program)], input='int main(void) { return 0; }\n',
+                    text=True, capture_output=True, check=True)
+                subprocess.run([str(program)], check=True)
+                self.assertTrue(subprocess.check_output([str(compiler), '--version'], text=True).strip())
+                # Image identity and invocation identity stay distinct.
+                self.assertEqual(file_record(compiler), file_record(launcher))
+
+    def test_compiler_explicit_missing_empty_or_shell_command_never_falls_back(self):
+        for selected in ['', '/no-such-compiler-fixture', 'cc -m64']:
+            with self.subTest(CC=selected), patch.dict(os.environ, {'CC': selected}), self.assertRaisesRegex(ValueError, 'selected C compiler'):
+                compiler_invocation()
+
+    def test_compiler_explicit_absolute_launcher_name_is_preserved(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp)/'compiler-cache'; alias = Path(tmp)/'cc'
+            target.write_text('#!/bin/sh\nexit 0\n'); target.chmod(0o755); alias.symlink_to(target.name)
+            with patch.dict(os.environ, {'CC': str(alias)}):
+                self.assertEqual(compiler_invocation(), alias)
+
     def test_runtime_major_names_share_canonical_identity_and_validate_before_copy(self):
         import shutil
         from install_layout import LIBRARIES
@@ -52,18 +201,16 @@ class NativeVMProfile(unittest.TestCase):
                 stage_runtime_libraries(root,libraries,lambda *args:calls.append(args))
             self.assertEqual(calls,[])
 
-    def test_runtime_only_profile_keeps_board_bytes_and_omits_both_boot_search_paths(self):
+    def test_runtime_only_profile_keeps_board_bytes_and_omits_each_device_boot_images(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            for folder in ['lib/firmware/sparklink/ws73', 'usr/lib/firmware/sparklink/ws73']:
-                p = root / folder
-                p.mkdir(parents=True)
-                for name in ['ws73.bin', 'wifi_cali.bin', 'btc_cali.bin', 'bsle_custom.bin', 'pm_config.bin']:
-                    (p / name).write_bytes(b'explicit-fixture')
+            blobs=profile_inputs()
+            plan=profile.stage(root,{'1':('U',blobs),'2':('U',blobs)})
             rows = remove_boot_images(root)
             self.assertEqual(len(rows), 6)
             self.assertFalse(any((root / row['path'].lstrip('/')).exists() for row in rows))
-            self.assertEqual((root / 'lib/firmware/sparklink/ws73/bsle_custom.bin').read_bytes(), b'explicit-fixture')
+            self.assertEqual((root / 'lib/firmware'/plan['entries']['1']['directory']/'bsle_custom.bin').read_bytes(), blobs['bsle_custom.bin'])
+            profile.verify(root,plan,boot=False)
             package = dict(native_vm=dict(runtime_only=True))
             check_runtime_only(package, {'port': dict(interfaces=[dict(endpoints=5)])}, ['port'])
             for interfaces in [[], [dict(endpoints=2)], [dict(endpoints=5), dict(endpoints=5)]]:
@@ -75,15 +222,12 @@ class NativeVMProfile(unittest.TestCase):
     def test_runtime_only_missing_image_is_failure_atomic(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            for folder in ['lib/firmware/sparklink/ws73', 'usr/lib/firmware/sparklink/ws73']:
-                p = root / folder
-                p.mkdir(parents=True)
-                for name in ['ws73.bin', 'wifi_cali.bin', 'btc_cali.bin']:
-                    (p / name).write_bytes(b'fixture')
-            (root / 'usr/lib/firmware/sparklink/ws73/btc_cali.bin').unlink()
+            plan=profile.stage(root,{'1':('U',profile_inputs()),'2':('E',profile_inputs(b'E'))})
+            (root/'lib/firmware'/plan['entries']['2']['directory']/'btc_cali.bin').unlink()
+            before={str(p.relative_to(root)):p.read_bytes()for p in root.rglob('*')if p.is_file()}
             with self.assertRaises(ValueError):
                 remove_boot_images(root)
-            self.assertEqual(len(list(root.rglob('*.bin'))), 5)
+            self.assertEqual({str(p.relative_to(root)):p.read_bytes()for p in root.rglob('*')if p.is_file()},before)
 
     def test_partial_profile_cannot_fall_back_to_builtin_guest(self):
         self.assertFalse(enabled(SimpleNamespace()))

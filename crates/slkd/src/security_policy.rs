@@ -90,7 +90,7 @@ pub(crate) fn sender(header: &zbus::message::Header<'_>) -> zbus::fdo::Result<St
         .map(ToString::to_string)
         .ok_or_else(|| failed("missing unique caller"))
 }
-fn monotonic_ns() -> zbus::fdo::Result<u64> {
+pub(crate) fn monotonic_ns() -> zbus::fdo::Result<u64> {
     let mut time = nix::libc::timespec {
         tv_sec: 0,
         tv_nsec: 0,

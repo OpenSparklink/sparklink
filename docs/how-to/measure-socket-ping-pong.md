@@ -155,10 +155,28 @@ python3 tools/ws73_target.py run --prepared "$PREPARED" --ports "$PORT_A" "$PORT
 python3 tools/ws73_rx_gap.py "$NEW_RUN_DIRECTORY" > "$NEW_RX_OBSERVATION"
 ```
 
+若原轮次已整体失败，但保留了完整失败阶段快照、原请求和零丢包捕获，使用独立
+诊断入口，并给输出选择尚不存在的新文件：
+
+```bash
+python3 tools/ws73_rx_gap.py "$NEW_RUN_DIRECTORY" --failed-phase 0 > "$NEW_RX_OBSERVATION"
+```
+
+阶段只能显式选择0或1；工具从全部实际启动屏障观测到原失败阶段结束，不允许手选
+较短的成功窗口。输出必须是`OBSERVED_FAILED_RUN_NOT_QUALIFIED`、原结果`FAIL`、
+`original_gate_qualified=false`。普通入口仍拒绝失败轮次；诊断退出成功不改变原资格。
+如果快照、请求、原文件或捕获不完整，保留错误，不转用另一条入口规避检查。
+
 该命令重放应用/USB证据后输出相同 guest 时钟的完成→重提交间隔；不操作硬件。
 时间含 callback、USB core 和 VM 调度，不能等同 callback CPU 时间或 RF 时延。
 诊断失败保留 stderr 和原文件；缺失输入、配对错误或掉包不生成完整观测。
 结果字段和限制见[指标参考](../reference/socket-benchmark.md)。
+
+Session 分段分析的完整/失败入口还会输出 `nocp_observation`。先比较拒绝→候选
+NOCP、候选→worker、候选→实际提交，再决定下一次测量；存在未匹配或时钟边界
+重叠时保留不确定性。它不证明 NOCP 支付了哪一笔 debt，不能据此修正 credit、
+放宽期限或宣称固件/无线瓶颈。连接参数对照需独立冻结配置并核对完整 USB 命令
+和两端原始参数；不要仅改标签或沿用旧配置的资格。
 
 
 ## 在封存VM门禁上做同口径对照
@@ -220,15 +238,178 @@ python3 tools/ws73_target.py run --prepared "$PREPARED" --ports "$PORT_A" "$PORT
 
 ## 准备相同口径的 Native 对照
 
-先列出两个内核 artifact 与同一用户态 bundle/执行工具、SDK111、VM/QEMU、USB端口、
-CPU及Kconfig，保留完整 hash。现有硬件组合以U2/3为选定对象；第1口Hi3873E排除，
-不能使用旧U1/4结果充当前测。默认USB捕获保持开启，分别记录可选xHCI及Session追踪。
+先列出两个内核 artifact 与同一用户态 bundle／执行工具、明确板型对应的 SDK110
+镜像及校准、VM／QEMU、USB 拓扑、CPU 和 Kconfig，保留完整 hash。设备选择必须
+遵循本线程当前资源配置及每次接入检查，不能继承历史端口的型号或任选枚举设备。
+默认 USB 捕获保持开启，分别记录可选 xHCI 及 Session 追踪；暖态接入不证明本轮
+上传或执行了 staged 镜像。混合板型仍受现有逐设备固件来源门禁约束。
 
 Native runner 可显式设置 count/bytes/window/interval，详见[参数参考](../reference/socket-benchmark.md#native-vm-可变负载请求)。
 先用每角色128条、61字节、window1/4的有限对照验证完整配置透传、计时和双端证据；
-该配方已按[当前资格入口](../../project/current-capabilities.md)取得有限实机证据。采用预先确定的平衡顺序与重复次数，保留全部尝试。
+该配方是否已通过，须按[当前资格入口](../../project/current-capabilities.md)的准确
+artifact 和限定范围核对，旧结果不转授新产物。采用预先确定的平衡顺序与重复次数，保留全部尝试。
 复用同一个slktest二进制，不更改生产协议或消息期限。核对双方真实校验回复及两端USB，
 按物理发送端/连接角色分别汇总，同一发起进程的单调时钟计算RTT；不相减不同进程时钟。
 
 随后才按实际结果增加长包、负载扫描和观测开销对照；样本量不足时不发布P99.9，
 不预设性能阈值。端点CPU/RSS/fd与内核峰值、队列/credit、URB资源分别列出；未测量项保留缺失。
+
+要取得应用进程检查点，重新 prepare 含资源契约版本1的镜像，再执行原 benchmark
+入口。用现有时间线工具重放 run，核对 `process_resource_observations` 的四个应用结果，
+并同时核对双端应用／USB 的全部请求。缺材料、PID 身份不一致、读取失败或屏障越界
+都应保留失败；旧镜像没有该观测，不要把缺失改成零。具体单位及高水位边界见
+[指标参考](../reference/socket-benchmark.md#vm-应用进程资源检查点)。
+
+若长包等待需要进一步定位，可在独立 Native benchmark 运行中添加
+`--session-service-observe`。先核对当前工具与 prepared 镜像的来源，选择有限 count，
+保留原业务参数、期限和失败记录。该追踪仅在 VM 内启用；不要在宿主配置 tracefs。
+运行结束后执行：
+
+```sh
+python3 tools/ws73_session_service.py analyze-benchmark "$RUN_DIRECTORY" > session-timings.json
+```
+
+先检查原 manifest 的业务与 Session 观测都通过，再查看每 phase、请求／回复的
+入队到出队、首次接受与分片跨度。缺数据、丢失追踪或重放失败时保留失败，减少下一次
+明确负载或检查捕获预算，不能屏蔽断言或覆盖原件。分析结果不是性能资格，具体时钟、
+USB 关联与 credit 含义见[指标参考](../reference/socket-benchmark.md#session-入队与提交时间)。
+
+## 收集四应用、双通道负载
+
+在前面的来源、SDK110 板型及端口检查完成后，用包含当前监督器的全新 prepared
+镜像执行独立门禁。该模式不与旧动态正确性或其它应用矩阵混跑：
+
+```sh
+python3 tools/ws73_target.py run --prepared "$PREPARED" --ports "$PORT_A" "$PORT_B" \
+  --firmware-evidence runtime-observation \
+  --qmp-hotplug --connection-verify --connection-advertising negotiable-t \
+  --channel-benchmark window --channel-benchmark-parallel \
+  --channel-benchmark-active-endpoint 0 --timeout 900 --output "$NEW_RUN_DIRECTORY"
+```
+
+查看目标版本2中的 short／long 配置与原八份报告，确认每连接角色都有四端启动和
+结束屏障、两条独立 CMTC／TCID 归属、长消息 PB 分片及两个方向的短包进展。
+随后用同一时间线工具重放双端证据。缺一端、任一失败或未实际交叠时保留整轮
+失败，先定位原件，不能只取另一条通道的成功计数。需要对照时另用新运行目录执行
+原单通道门禁；不能将其通过替代双通道验收。
+
+这只覆盖[参考中的有限负载](../reference/socket-benchmark.md#四应用双动态通道的有限负载)。
+准确实机范围仍以当前资格为准；不授予完整公平性、四设备或稳定性能资格。
+
+若任务是验证关闭隔离，保留上面的显式来源与两端端口，在新运行目录中追加
+`--channel-benchmark-close-short`。预期目标／监督摘要为版本3；检查短通道两端先完成
+并退出、真实CMTC关闭完成，以及长通道在此后仍有新的实际校验回复。失败时保留
+原目录及全部报告，不通过删掉关闭证明或只统计另一方向取得成功。
+该场景包含退出和报告写出开销，参数及限定范围见
+[关闭隔离负载](../reference/socket-benchmark.md#版本3短通道关闭期间长通道继续业务)；
+入口接通不表示当前artifact已经取得实机资格。
+
+## 检查服务与通道同时进展
+
+使用新 prepared、明确板型和专用叶子端口，先核对 SSAP 策略为基础等级0。
+此门禁复用现有 Root、SDK 和 slktest，不与上面的四应用或关闭场景组合：
+
+```sh
+python3 tools/ws73_target.py run --prepared "$PREPARED" --ports "$PORT_A" "$PORT_B" \
+  --firmware-evidence runtime-observation \
+  --qmp-hotplug --connection-verify --connection-advertising negotiable-t \
+  --channel-benchmark window --channel-benchmark-count 128 \
+  --channel-benchmark-bytes 2042 --channel-benchmark-window 8 \
+  --channel-benchmark-dynamic --channel-benchmark-active-endpoint 0 \
+  --channel-benchmark-ssap-owned --timeout 900 --output "$NEW_RUN_DIRECTORY"
+```
+
+检查两种连接角色的原始应用报告、Owned发布者与48次 C／Python SDK调用、实际审批
+及本地值观察，再重放两端USB。在 `ssap_concurrent_progress` 中，before／during／
+after 三段均需有完整普通通道往返；动态TCID和SMTC应分别归属原lifetime。
+Root在何时读取stdout不能代替真实USB业务窗口，旧的顺序执行记录不能换标签。
+
+任一段无进展、SDK／审批失败、缺原文件、丢包或最终Down失败时保留整轮失败，
+先定位原件；不删断言或把单条业务的通过当作完整并发结果。该负载有服务与证据IO，
+指标含义和未覆盖范围见[并发正确性参考](../reference/socket-benchmark.md#动态通道与-owned-ssap-并发正确性)。
+
+验证两端SSAP请求同时在途时，在上述命令中额外指定
+`--channel-benchmark-ssap-duplex`并选择另一个新输出目录。总负载、发现和所有原期限
+保持；每角色的12对SDK步骤还必须在`ssap.proofs[].duplex`中具备实际USB请求交叠，
+并完成全部随机值校验与Owned撤回。若只有进程交叠或一个方向完成，保留失败。
+这个版本2场景不能代替版本1顺序门禁或抹去其历史30秒期限失败。
+
+为复核器做负对照时，先确认各检查消费的输入及其契约。业务收发检查证明实际
+载荷交付；只读 transport 观察检查快照收集，不能据此证明 NOCP 归属。删除 NOCP
+的负对照应交给独立的 credit 记账检查，并关联同一原始捕获，不能要求不消费该
+输入的业务检查拒绝，也不能把它接受输入解释为 credit 已通过。直接重放生产
+ledger 时，仍须列明初始状态、观测顺序、身份及回调假设；它不证明硬件完成事件
+准确、内核并发线性化或实现 refinement。选错检查入口的失败应保留并说明更正。
+
+
+## 定位失败负载中的 Session 等待
+
+若整轮应用门禁失败，使用独立诊断入口；不要把失败目录交给成功分析器，亦不要
+修改 manifest 或快照来伪造成功：
+
+```bash
+python3 tools/ws73_session_service.py analyze-failed-benchmark "$RUN" --failed-phase 0
+```
+
+该入口要求原 FAIL、失败 phase 的完整关闭快照、原请求／身份、零丢失捕获和
+`ABORTED_NOT_QUALIFIED` 追踪。它读取整个原始区间，核对全部观测到的提交与 USB；
+入队后没有退休事件的操作仍保留，`retirement_ns` 和对应间隔为 `null`。
+这可能来自追踪结束或没有事件的队列清除，不能据此宣称泄漏、Free 或物理 drain。
+结果固定为 `FAILED_GATE_TRANSPORT_TIMINGS_NOT_QUALIFIED`，不赋予业务、性能或
+完整生命周期资格。成功入口继续要求全部操作闭合，原整轮 FAIL 和缺失门禁保持。
+
+需要定位首个未完成业务与主机 USB 的关系时，先保存原失败导出以及主机的 QMP、
+USB lifecycle 原件；将 `NEW_HOST_USB_OBSERVATION` 设为尚不存在的输出路径，再执行
+显式只读分析：
+
+```bash
+python3 tools/ws73_session_service.py analyze-failed-benchmark "$RUN" --failed-phase 0 \
+  --pending-rx-tail --application-progress --host-usb > "$NEW_HOST_USB_OBSERVATION"
+```
+
+检查 `host_usb_observation` 的原载荷片段、Session 操作、首个软件错误与 Down。
+比较缺包区间的 guest／host 重提交间隔时，各用各自时钟；主机长度候选不证明跨域
+包身份或固件／空口根因。缺文件、hash／身份不符或长度序列歧义时保留错误，补取
+原件或记录未证明；不要修改旧 manifest、填零或重跑直到通过。完整约束见
+[主机候选关联参考](../reference/socket-benchmark.md#失败业务与主机-usb-候选关联)。
+
+
+若捕获声明queue退休契约版本2，分析还会核对显式的排队清除stage3：未曾出队的
+工作可直接从入队到本地清除，已出队重排的工作须有确定未提交的EAGAIN。观察到的
+清除标记为 `retirement_kind=queued_discard_no_physical_prefix`；没有该原始事件的
+旧捕获仍保留null。两者均不能说明controller credit或物理引用已经排空。
+
+### 在专用 VM 中观察满负载 Session
+
+先保留一次完整原业务命令、准确 artifact、追踪丢失计数及失败结果，再根据捕获
+估算容量。需要新预算时，在现有专用 VM runner 的原命令后显式增加：
+
+```text
+--session-service-observe --session-service-profile full-load-v2
+```
+
+这两个选项属于 `tools/ws73_target.py run`，不能传给 `slktest`，也不能在宿主执行
+追踪配置。保留原业务参数、消息／Owner 期限、普通用户凭据和端口白名单。运行后
+核对 `session-service/run.json` 的 `collector_profile`、实际 buffer readback、两端
+原始捕获与整轮业务结果；判定与预算见[参考契约](../reference/socket-benchmark.md#有界满负载-session-观测配置)。
+
+任何非零丢失、超预算、缺 marker 或未闭合操作都保留为失败。不要修改旧收据的
+buffer／计数，或只截取有利区间；需要下一次实验时使用新目录和准确工具身份。
+
+
+## 在 Owned 并发负载失败时观察 Session
+
+先按[输入参考](../reference/socket-benchmark.md#显式只读-transport-快照)准备新工具
+及明确板型的独立双设备 VM；不能把旧 prepared 补上标记便当作新输入。保留原
+顺序／duplex 选择、随机载荷、窗口、Owner 和调用期限，再显式加入
+`--channel-benchmark-credit-observe --session-service-observe
+--session-service-profile full-load-v2`。
+
+执行后检查每个原 phase 的 `transport_observation`：两端完整身份、实际收据、
+失败及缺测槽位、停止与线程 join 都必须可追溯。成功收集不是业务通过；先看原
+manifest 的整轮结论。若原 role 失败，保留原目录，使用 reference 中的失败诊断
+命令读取封存快照；缺失材料或原请求不匹配时停止分析，不能截取有利窗口。
+
+将同 guest 的快照与现有 Session／USB／NOCP 追踪比较时，明确它们是离散观察，
+不能据此假定两次采样间状态不变。该工具的查询和记录增加扰动；性能基线继续
+使用原低扰动业务路径。真实测试仍 VM-only，仅操作已分配的逐设备端口。

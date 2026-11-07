@@ -15,6 +15,7 @@ from sparklink.structs import (
     SleControllerSnapshot, SleManagementQuery, SleDiscoverySubmit,
     SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,
     SleDiagnosticResult, SleDiagnosticSubmit, SleConnectionSubmit, SleConnectionResult,
+    SleLinkCommandSubmit, SleLinkCommandResult,
     SleLinkSnapshot, SleRegistrationSnapshot, SleChannelInfo, SleChannelTxStatus, SleSessionTxStatus,
     SleSecurityNegotiationSubmit, SleSecurityNegotiationResult, SleSecurityNegotiationCancel, SleSecurityNumericConfirm, SleConnectionSecurity,
 )
@@ -29,6 +30,23 @@ class NativeBindingTests(unittest.TestCase):
         self.handle = self.lib.slk_adapter_open(b"/dev/null")
         self.assertTrue(self.handle)
         self.addCleanup(self.lib.slk_adapter_free, self.handle)
+
+    def test_managed_link_query_is_real_ioctl_and_preserves_failed_outputs(self):
+        request = SleLinkCommandSubmit(version=1, action=1, generation=2, lease_epoch=3,
+                                     request_id=4, lifetime=5, deadline_monotonic_ns=100_000_000, timeout_ms=100, kind=1)
+        request.address[:] = [1] * 6
+        original = bytes(request)
+        self.assertEqual(self.lib.slk_link_command_submit(self.handle, ctypes.byref(request)), -errno.ENOTTY)
+        self.assertEqual(bytes(request), original)
+        self.assertEqual(self.lib.slk_link_command_submit(None, ctypes.byref(request)), -errno.EINVAL)
+        self.assertEqual(self.lib.slk_link_command_submit(self.handle, None), -errno.EINVAL)
+        result = SleLinkCommandResult(request_id=77)
+        canary = bytes(result)
+        self.assertEqual(self.lib.slk_link_command_result(self.handle, 2, 0, 4, ctypes.byref(result)), -errno.ENOTTY)
+        self.assertEqual(bytes(result), canary)
+        self.assertEqual(self.lib.slk_link_command_result(self.handle, 2, 0, 0, ctypes.byref(result)), -errno.EINVAL)
+        self.assertEqual(self.lib.slk_link_command_result(None, 2, 1, 0, ctypes.byref(result)), -errno.EINVAL)
+        self.assertEqual(self.lib.slk_link_command_result(self.handle, 2, 1, 0, None), -errno.EINVAL)
 
     def test_limited_security_submit_is_real_ioctl_not_local_success(self):
         request=SleSecurityNegotiationSubmit(version=2,deadline_monotonic_ns=1,profile=1,flags=1,action=2,generation=1,lifetime=1,request_id=1,timeout_ms=5000)
@@ -341,6 +359,29 @@ class ApplicationNativeBoundary(unittest.TestCase):
             self.assertFalse(hasattr(structs,name))
         for name in app_names:
             with self.subTest(name=name),self.assertRaises(AttributeError):getattr(native,name)
+
+    def test_foreign_or_incomplete_first_symbols_raise_native_load_error(self):
+        # The ordinary SDK is a real ELF with deliberately disjoint exports.
+        # The second case supplies a real Native open symbol but omits free;
+        # that metadata fixture is not a controller or syscall implementation.
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        import sparklink.native as module
+        real = module._get_native_lib()
+        wrong = [_get_channel_lib(), SimpleNamespace(slk_adapter_open=real.slk_adapter_open)]
+        for candidate in wrong:
+            with self.subTest(candidate=type(candidate).__name__), patch.object(module, '_native_library', None):
+                with patch.object(module, 'load_library', return_value=candidate) as load:
+                    for _ in range(2):
+                        with self.assertRaisesRegex(OSError, 'matching explicit slk-native symbols required'):
+                            module._get_native_lib()
+                        self.assertIsNone(module._native_library)
+                    self.assertEqual(load.call_count, 2)
+                # A rejected load cannot poison the later real Native loader.
+                with patch.object(module, 'load_library', return_value=real):
+                    self.assertIs(module._get_native_lib(), real)
+                    self.assertEqual(real.slk_adapter_open.restype, ctypes.c_void_p)
+                    self.assertEqual(real.slk_device_count.argtypes, [ctypes.c_void_p])
 
     def test_concurrent_first_native_load_never_publishes_untyped_pointer_calls(self):
         import concurrent.futures

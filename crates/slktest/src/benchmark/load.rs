@@ -110,6 +110,7 @@ struct Counters {
 }
 struct State {
     config: LoadConfig,
+    route: Option<crate::channel::DynamicRoute>,
     prepared: Prepared,
     peer: Prepared,
     outgoing: Vec<Outgoing>,
@@ -151,6 +152,7 @@ impl State {
         };
         Ok(Self {
             config,
+            route: None,
             prepared,
             peer,
             outgoing: (0..config.count)
@@ -820,7 +822,7 @@ fn report(
         (observation.active_elapsed_ns > 0)
             .then(|| bytes as f64 * 1_000_000_000.0 / observation.active_elapsed_ns as f64)
     };
-    serde_json::json!({"schema_version":2,"status":if observation.error.is_some() || !finalization.completed {"INCOMPLETE"}else if !correctness {"LOAD_OBSERVED_WITH_FAILURES_NOT_QUALIFIED"}else{"LOAD_OBSERVED_NOT_QUALIFIED"},"performance_qualified":false,
+    let mut value = serde_json::json!({"schema_version":2,"status":if observation.error.is_some() || !finalization.completed {"INCOMPLETE"}else if !correctness {"LOAD_OBSERVED_WITH_FAILURES_NOT_QUALIFIED"}else{"LOAD_OBSERVED_NOT_QUALIFIED"},"performance_qualified":false,
         "correctness":correctness,"finalization":finalization,"window_domain":"application-awaiting-validated-reply-not-protocol-credit",
         "clock":"process-local-Rust-Instant-relative-nanoseconds","wait_backend":"ppoll-relative-nanoseconds","config":config,"observation":observation,
         "request_deadline_ns":REQUEST_NS,"late_observation_grace_ns":GRACE_NS,"maximum_run_ns":RUN_NS,
@@ -841,7 +843,13 @@ fn report(
             "USB_bytes":null,"USB_bytes_per_second":null},"process_resources":resource_summary,
         "counters":state.counters,"outgoing":if config.active(){&state.outgoing[..]}else{&[]},"incoming":&state.incoming[..state.seen],
         "channel_identity":{"controller":info.controller,"generation":info.generation,"lifetime":info.lifetime,"handle":info.handle,"local_tcid":info.local_tcid,"remote_tcid":info.remote_tcid,"pi":info.pi,"mtu":info.mtu,"mps":info.mps,"mode":info.mode,"directions":info.directions},
-        "unmeasured":["artifact/source/firmware/peer/capture/supervisor closure","USB/Session/NOCP timeline and bytes","interval resource peaks/kernel worker/timer/URB/credit (only process endpoint snapshots collected)","trace overhead","stable VM/WS73 performance qualification"]})
+        "unmeasured":["artifact/source/firmware/peer/capture/supervisor closure","USB/Session/NOCP timeline and bytes","interval resource peaks/kernel worker/timer/URB/credit (only process endpoint snapshots collected)","trace overhead","stable VM/WS73 performance qualification"]});
+    if let Some(route) = state.route {
+        value["channel_request"] = route
+            .report(config.bytes)
+            .expect("validated original dynamic request");
+    }
+    value
 }
 
 fn resource_summary(
@@ -863,8 +871,14 @@ fn resource_summary(
 /// Load endpoints arm on `start`; stop reporting until paired `finish`.
 /// The supervisor checks both credentials/Ready before start and both quiescent
 /// markers before finish. Both control waits have independent finite budgets.
-pub(crate) fn run_load(fd: OwnedFd, config: LoadConfig, path: &Path) -> anyhow::Result<()> {
+pub(crate) fn run_load(
+    fd: OwnedFd,
+    config: LoadConfig,
+    path: &Path,
+    route: Option<crate::channel::DynamicRoute>,
+) -> anyhow::Result<()> {
     config.validate()?;
+    let request = route.map(|r| r.request(config.bytes)).transpose()?;
     let mut output = std::fs::OpenOptions::new()
         .write(true)
         .create_new(true)
@@ -873,22 +887,34 @@ pub(crate) fn run_load(fd: OwnedFd, config: LoadConfig, path: &Path) -> anyhow::
         b"{\"schema_version\":2,\"status\":\"INCOMPLETE\",\"performance_qualified\":false}\n",
     )?;
     let mut state = State::new(config)?;
+    state.route = route;
     let fd = crate::channel::prepare_application_fd(fd)?;
+    if let Some(route) = route {
+        println!(
+            "SocketBenchmarkStaged: source={} destination={} aid={} passive={}",
+            route.source_port, route.destination_port, route.aid, route.passive
+        );
+    }
     crate::channel::wait(
         &fd,
         nix::libc::POLLOUT,
         Instant::now() + Duration::from_secs(10),
     )?;
     let info = slk_channel::query(fd.as_raw_fd())?;
-    if info.mode != 0
-        || info.directions != 3
-        || info.local_tcid != 31
-        || info.remote_tcid != 31
-        || info.pi != 241
-        || usize::from(info.mtu) < config.bytes
-        || usize::from(info.mps) < config.bytes + 5
-    {
-        anyhow::bail!("load requires current bidirectional basic CUTC capabilities");
+    crate::channel::require_data_capabilities(
+        &info,
+        config.bytes,
+        if route.is_some() {
+            crate::channel::DataChannelKind::DynamicBasic
+        } else {
+            crate::channel::DataChannelKind::BasicCutc
+        },
+    )?;
+    if let Some((_, _, _, mtu, mps, _, _)) = request {
+        anyhow::ensure!(
+            info.mtu <= mtu && info.mps <= mps,
+            "dynamic capabilities exceed requested budgets"
+        );
     }
     println!(
         "SocketBenchmarkArmed: mode={:?} count={} bytes={} window={}",
@@ -1311,7 +1337,10 @@ mod tests {
     fn production_serializer_exports_real_local_pair_reports_for_independent_checker() {
         use std::io::Write;
         use std::os::unix::net::UnixStream;
-        for mode in [Mode::Rate, Mode::Window, Mode::Duplex] {
+        for (mode, dynamic) in [Mode::Rate, Mode::Window, Mode::Duplex]
+            .into_iter()
+            .flat_map(|mode| [(mode, false), (mode, true)])
+        {
             let (a, b) = pair();
             let cfg = LoadConfig {
                 count: 8,
@@ -1330,6 +1359,20 @@ mod tests {
                 }
             };
             let mut right = State::new(right_cfg).unwrap();
+            if dynamic {
+                left.route = Some(crate::channel::DynamicRoute {
+                    source_port: 24576,
+                    destination_port: 24577,
+                    aid: 29441,
+                    passive: false,
+                });
+                right.route = Some(crate::channel::DynamicRoute {
+                    source_port: 24577,
+                    destination_port: 24576,
+                    aid: 29441,
+                    passive: true,
+                });
+            }
             let before = resources();
             let gate = Arc::new(Barrier::new(2));
             let other = gate.clone();
@@ -1365,10 +1408,10 @@ mod tests {
                     generation: 7 + index as u64,
                     lifetime: 11 + index as u64,
                     handle: 0,
-                    mtu: 2042,
-                    mps: 2047,
-                    local_tcid: 31,
-                    remote_tcid: 31,
+                    mtu: if dynamic { 249 } else { 2042 },
+                    mps: if dynamic { 254 } else { 2047 },
+                    local_tcid: if dynamic { 0x81 + index as u8 } else { 31 },
+                    remote_tcid: if dynamic { 0x82 - index as u8 } else { 31 },
                     pi: 241,
                     directions: 3,
                     ..Default::default()
@@ -1388,7 +1431,8 @@ mod tests {
             if let Some(root) = std::env::var_os("SLKTEST_REPORT_FIXTURE_DIR") {
                 let root = std::path::PathBuf::from(root);
                 std::fs::create_dir_all(&root).unwrap();
-                let name = format!("{mode:?}").to_lowercase();
+                let name =
+                    format!("{}{mode:?}", if dynamic { "dynamic-" } else { "" }).to_lowercase();
                 for (n, value) in pair_reports.iter().enumerate() {
                     let mut file = std::fs::OpenOptions::new()
                         .write(true)

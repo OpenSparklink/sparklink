@@ -17,12 +17,15 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 
 from ws73_application_discovery import (corroborate, reader_args, receipt, requested,
     active_session, supervise, validate_request, validate_tool, valid_summary, verify_supervisor_artifacts,
-    case, departure_key, output_status, finished_status, boot_case, supervision_summary)
+    case, departure_key, output_status, finished_status, boot_case, supervision_summary,validate_probe,finish_reader)
+from ws73_daemon_hold import Invocation
+import subprocess
 from ws73_capture import CaptureError, marker_data
 from ws73_target import run_exit_code
 
 
 def fixture(termination='release'):
+    if termination=='ttl':return ttl_fixture()
     owners=[dict(index=i,generation=i+11,path=f'/org/sparklink/slk{i}_g{i+11}',
                  bus=1,device=i+3,address=f'00:01:02:03:04:0{i}') for i in (0,1)]
     tool=dict(path='/bin/slctl',sha256='a'*64)
@@ -81,6 +84,42 @@ def fixture(termination='release'):
     return run,capture
 
 
+def ttl_fixture():
+    """Literal output/timestamp fixtures, not a lease or controller model."""
+    run,capture=fixture();run['bus_before']={'owner':':1.0'}
+    def at(phase,seconds):return 1_000_000_000+phase*30_000_000_000+int(seconds*1_000_000_000)
+    def stamp(value):
+        phase=value//1000;t=value%1000
+        if 130<=t<=150:return at(phase,4+(t-70)/1000)
+        if 160<=t<=166:return at(phase,4+t/1000)
+        if 175<=t<=177:return at(phase,12+(t-125)/1000)
+        return at(phase,t/1000)
+    for collection in ['commands','complete','reports']:
+        for row in capture[collection]:
+            row['wall_ns']=stamp(row['wall_ns'])
+            if 'completion' in row:row['completion']['wall_ns']=stamp(row['completion']['wall_ns'])
+    for c in run['commands']:
+        c['start_wall_ns']=stamp(c['start_wall_ns']);c['end_wall_ns']=stamp(c['end_wall_ns'])
+    for phase,item in enumerate(run['application_discovery']):
+        source=item['request'];source['termination']='ttl';source['probe']={'path':'/bin/discovery-lifetime-probe','sha256':'c'*64}
+        row=item['supervision'];row.update(termination='ttl',probe=source['probe'],status=output_status(source));row.pop('first_released');item.pop('first_released')
+        row['ready']['active_wall_ns']=at(phase,.05)
+        for n,a in enumerate(row['readers']):
+            reports=a['stdout'].splitlines()[2:-1];before=at(phase,.02 if n==0 else .015);active=at(phase,.045);expired=at(phase,4.03 if n==0 else 12.03)
+            lines=a['stdout'].splitlines()[:2]
+            lines.append(f"DiscoveryLease: session={n+1} caller=:1.{100+phase*2+n} owner=:1.0 lease_ms={4000 if n==0 else 12000} before_wall_ns={before} active_wall_ns={active}")
+            lines+=reports
+            lines.append(f"DiscoveryExpired: session={n+1} caller_present=true owner_same=true read_error=org.freedesktop.DBus.Error.UnknownObject observed_wall_ns={expired}")
+            lines.append(f"DiscoveryLeaseExit: session={n+1} caller_present=true owner_same=true close_error=org.freedesktop.DBus.Error.UnknownObject")
+            a.update(args=reader_args(source,n),stdout='\n'.join(lines)+'\n',start_wall_ns=at(phase,.01+n*.001),active_wall_ns=at(phase,.049),
+                     expiry_observed_wall_ns=at(phase,4.04 if n==0 else 12.04),finish_requested_wall_ns=at(phase,17.08 if n==0 else 17.06),end_wall_ns=at(phase,17.09 if n==0 else 17.07))
+        row['first_expired']=dict(phase=phase,first_expired_wall_ns=at(phase,4.04),first_alive=True,survivor_alive=True,observed_wall_ns=at(phase,4.05))
+        item['first_expired']=row['first_expired']
+        row['cleanup_window']=dict(start_wall_ns=at(phase,12.04),deadline_wall_ns=at(phase,17.045),end_wall_ns=at(phase,17.05),end_monotonic_ns=at(phase,17.05),budget_ns=5_000_000_000,callers_alive=True)
+    capture['commands'].sort(key=lambda c:c['wall_ns'])
+    return run,capture
+
+
 def write_fixture_files(run, root):
     requests=root/'application/passthrough-control';requests.mkdir(parents=True)
     for phase,item in enumerate(run['application_discovery']):
@@ -97,6 +136,69 @@ def write_fixture_files(run, root):
 
 
 class DiscoveryGate(unittest.TestCase):
+    def test_actual_child_pipe_barriers_do_not_read_a_live_output_file(self):
+        # Real local process, explicit byte fixture. ENODATA is injected only
+        # into file reads; no VM/USB/daemon or physical TTL is claimed.
+        p=Invocation([sys.executable,'-c','import sys;print("first",flush=True);input();print("last",flush=True);print("err",file=sys.stderr)'],'pipe-fixture',stdin=subprocess.PIPE)
+        with tempfile.TemporaryDirectory()as temp:
+            out=Path(temp)/'stdout';err=Path(temp)/'stderr';app={}
+            try:
+                with patch.object(Path,'read_text',side_effect=OSError(61,'No data available')):
+                    self.assertEqual(p.until(rb'^first\n',timeout=1),b'first\n')
+                    self.assertFalse(out.exists());self.assertFalse(err.exists())
+                    p.process.stdin.write(b'finish\n');p.process.stdin.flush();p.process.stdin.close();p.process.stdin=None
+                    finish_reader(p,app,out,err)
+                self.assertEqual(app['stdout'],'first\nlast\n');self.assertEqual(app['stderr'],'err\n');self.assertEqual(app['exit'],0)
+                self.assertEqual(out.read_bytes(),b'first\nlast\n');self.assertEqual(err.read_bytes(),b'err\n')
+            finally:
+                if p.process.poll() is None:p.finish(kill=True)
+    def test_ttl_probe_requires_regular_pinned_elf_and_original_staging_record(self):
+        # File/provenance fixture only; this is not a compiled SDK consumer.
+        with tempfile.TemporaryDirectory()as temp:
+            root=Path(temp);p=root/'bin/discovery-lifetime-probe';p.parent.mkdir();raw=b'\x7fELF-provenance-fixture';p.write_bytes(raw)
+            tool={'path':'/bin/discovery-lifetime-probe','sha256':hashlib.sha256(raw).hexdigest()};record={'path':str(p),'sha256':tool['sha256']}
+            validate_probe(tool,root,[record])
+            for bad,files in [(tool,[]),(tool|{'path':'/bin/sh'},[record]),(tool|{'sha256':'0'*64},[record])]:
+                with self.assertRaises(CaptureError):validate_probe(bad,root,files)
+            p.write_bytes(b'not-an-ELF');changed={'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+            with self.assertRaises(CaptureError):validate_probe(tool|{'sha256':changed['sha256']},root,[changed])
+            p.unlink();p.symlink_to('/bin/sh')
+            with self.assertRaises(CaptureError):validate_probe(tool,root,[record])
+    def test_ttl_requires_live_original_callers_and_physical_stop_before_close(self):
+        run,capture=fixture('ttl');proof=corroborate(run,capture)
+        self.assertTrue(valid_summary(proof));self.assertEqual(case(proof),'ttl')
+        for kind in ['earlyexpiry','unknownread','unknownclose','samecaller','wrongowner','signal','earlyfinish','nohold','earlystop','latestop','noreply','norx','budget','window','probe','truncate']:
+            run,capture=fixture('ttl');item=run['application_discovery'][0];row=item['supervision'];a=row['readers'][0]
+            if kind=='earlyexpiry':a['stdout']=a['stdout'].replace('observed_wall_ns=5030000000','observed_wall_ns=5000000000')
+            elif kind=='unknownread':a['stdout']=a['stdout'].replace('read_error=org.freedesktop.DBus.Error.UnknownObject','read_error=org.freedesktop.DBus.Error.Timeout')
+            elif kind=='unknownclose':a['stdout']=a['stdout'].replace('close_error=org.freedesktop.DBus.Error.UnknownObject','close_error=success')
+            elif kind=='samecaller':row['readers'][1]['stdout']=row['readers'][1]['stdout'].replace('caller=:1.101','caller=:1.100')
+            elif kind=='wrongowner':a['stdout']=a['stdout'].replace('owner=:1.0','owner=:1.99')
+            elif kind=='signal':a['termination']={'signal':9}
+            elif kind=='earlyfinish':a['finish_requested_wall_ns']=row['cleanup_window']['end_wall_ns']-1
+            elif kind=='nohold':row['cleanup_window']['callers_alive']=False
+            elif kind in ['earlystop','latestop']:
+                c=next(c for c in capture['commands'] if c['device']==3 and c['opcode']==0x1002 and c['params']=='0000')
+                c['wall_ns']=row['readers'][0]['expiry_observed_wall_ns']+1 if kind=='earlystop' else row['cleanup_window']['deadline_wall_ns']+1
+                c['completion']['wall_ns']=c['wall_ns']+1;next(e for e in capture['complete'] if e['record']==c['record']+1)['wall_ns']=c['wall_ns']+2
+            elif kind=='noreply':capture['complete']=[]
+            elif kind=='norx':capture['reports']=[]
+            elif kind=='budget':row['cleanup_window']['budget_ns']+=1
+            elif kind=='window':row['cleanup_window']['end_wall_ns']=row['cleanup_window']['start_wall_ns']
+            elif kind=='probe':item['request']['probe']={'path':'/bin/sh','sha256':'c'*64}
+            elif kind=='truncate':a['stdout']=a['stdout'].rstrip('\n')
+            with self.subTest(kind=kind),self.assertRaises((CaptureError,ValueError)):corroborate(run,capture)
+
+    def test_ttl_manifest_requires_explicit_boot_and_actual_sdk_probe(self):
+        run,capture=fixture('ttl');proof=corroborate(run,capture)
+        record=dict(status='PASSTHROUGH_SUPPORT_PASS',qemu_exit=0,supervisor_exit=0,application_discovery_requested=True,
+                    application_discovery_case='ttl',application_discovery_probe=proof['probe'],application_discovery_acceptance=True,
+                    application_discovery_corroboration=proof,application_discovery_supervision=supervision_summary('ttl'),
+                    qemu_args=['ws73.application_discovery=1 ws73.application_discovery_case=ttl ws73.connection_advertising=negotiable-t'])
+        self.assertEqual(run_exit_code(record),0)
+        for changes in [dict(application_discovery_probe={}),dict(application_discovery_case='owner-loss'),dict(application_discovery_corroboration=corroborate(*fixture())),
+                        dict(application_discovery_supervision=supervision_summary('release')),dict(qemu_args=['ws73.application_discovery=1 ws73.connection_advertising=negotiable-t'])]:
+            with self.subTest(changes=changes):self.assertEqual(run_exit_code(record|changes),1)
     def test_owner_loss_needs_actual_survivor_new_data_and_last_stop(self):
         run,capture=fixture('owner-loss');proof=corroborate(run,capture)
         self.assertTrue(valid_summary(proof));self.assertEqual(case(proof),'owner-loss')
@@ -234,7 +336,7 @@ class DiscoveryGate(unittest.TestCase):
             with self.subTest(kind=kind),self.assertRaises((CaptureError,ValueError)):corroborate(run,capture)
 
     def test_original_supervisor_files_not_copied_summary_alone(self):
-        for termination in ['release','owner-loss']:
+        for termination in ['release','owner-loss','ttl']:
             run,_=fixture(termination);expected=run['application_discovery'][0]['supervision']['verifier']
             with self.subTest(termination=termination),tempfile.TemporaryDirectory()as temp:
                 root=Path(temp);requests=write_fixture_files(run,root)
@@ -273,7 +375,7 @@ class DiscoveryGate(unittest.TestCase):
             self.assertEqual(instance.args.ports,['1-1','1-2'])
             self.assertTrue(requested(instance.args))
             return 73
-        for termination in ['release','owner-loss']:
+        for termination in ['release','owner-loss','ttl']:
             with patch.object(sys,'argv',arguments+['--application-discovery-case',termination]),patch.object(control.ConnectionControlRun,'__init__',lambda instance,args:setattr(instance,'args',args)),patch.object(control.ConnectionControlRun,'execute',inspect):
                 self.assertEqual(control.main(),73)
 

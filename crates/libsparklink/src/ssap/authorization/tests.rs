@@ -27,6 +27,7 @@ fn prompt() -> Prompt {
             .stamp()
             .monotonic_ns,
         vec![],
+        0,
     )
 }
 
@@ -95,11 +96,27 @@ fn original_sender_identity_mode_value_and_original_deadline_are_required() {
 }
 
 #[test]
+fn a_property_approval_never_implicitly_covers_a_descriptor_or_unknown_data_type() {
+    for data_type in 1..=u8::MAX {
+        let mut p = prompt();
+        p.6 = data_type;
+        for write in [false, true] {
+            p.3 = write;
+            p.5 = if write { vec![1, 0] } else { vec![] };
+            assert!(
+                admit(&context(), Some(":1.10"), &p).unwrap().is_none(),
+                "unsupported target {data_type},write {write}"
+            );
+        }
+    }
+}
+
+#[test]
 fn approval_never_discharges_the_real_operation_or_security_requirements() {
     for bits in 0..=63 {
         for level in 0..=2 {
             for write in [false, true] {
-                for operations in [0, 1, 4, 5] {
+                for operations in 0..=7 {
                     let mut c = context();
                     c.access = SsapAccess::from_bits(bits).unwrap();
                     c.operations = SsapOperations::from_bits(operations).unwrap();
@@ -110,11 +127,11 @@ fn approval_never_discharges_the_real_operation_or_security_requirements() {
                         .access
                         .check_authorization_result(level, write, true)
                         .is_ok()
-                        && c.operations.contains(if write {
-                            SsapOperations::WRITE_WITH_RSP
+                        && if write {
+                            operations & 6 != 0
                         } else {
-                            SsapOperations::READ
-                        });
+                            operations & 1 != 0
+                        };
                     assert_eq!(
                         admit(&c, Some(":1.10"), &p).unwrap().is_some(),
                         expected,
@@ -123,6 +140,48 @@ fn approval_never_discharges_the_real_operation_or_security_requirements() {
                 }
             }
         }
+    }
+}
+
+#[test]
+fn command_only_property_writes_keep_value_identity_and_deadline_boundaries() {
+    // Actual shared admission function; these observation fixtures do not
+    // implement the daemon's separate opcode/registration/Native checks.
+    for operations in 0..=7 {
+        for length in [0, 32, 2042, 2043] {
+            let mut c = context();
+            c.operations = SsapOperations::from_bits(operations).unwrap();
+            let mut p = prompt();
+            p.3 = true;
+            p.5 = vec![0xa5; length];
+            assert_eq!(
+                admit(&c, Some(":1.10"), &p).unwrap().is_some(),
+                operations & 6 != 0 && length <= 2042,
+                "operations={operations} proposed_write_length={length}"
+            );
+            // Empty writes remain writes, never an implicit read permission.
+            p.3 = false;
+            assert_eq!(
+                admit(&c, Some(":1.10"), &p).unwrap().is_some(),
+                operations & 1 != 0 && length == 0,
+                "operations={operations} read_with_value_length={length}"
+            );
+        }
+    }
+    let mut c = context();
+    c.operations = SsapOperations::from_bits(3).unwrap();
+    for case in 0..6 {
+        let mut p = prompt();
+        p.3 = true;
+        match case {
+            0 => p.4 = 1, // Original deadline is not replaced for command writes.
+            1 => p.1.1 += 1,
+            2 => p.1.2 = 0,
+            3 => p.2 += 1,
+            4 => p.6 = 1,
+            _ => p.6 = 2, // Property capability is not a CPCD capability.
+        }
+        assert!(admit(&c, Some(":1.10"), &p).unwrap().is_none());
     }
 }
 
@@ -169,5 +228,50 @@ async fn wait_is_bounded_by_original_expiry_owner_loss_and_actual_reply() {
     let p = prompt();
     assert!(admit(&c, Some(":1.10"), &p).unwrap().is_some());
     c.owner_lost = true;
+    assert!(admit(&c, Some(":1.10"), &p).unwrap().is_none());
+}
+
+#[test]
+fn client_configuration_approval_is_typed_and_never_bypasses_authentication_or_operations() {
+    let mut c = context();
+    c.operations = SsapOperations::from_bits(5 | 8 | 16 | 512).unwrap();
+    // Property access requirements do not define the independent descriptor policy.
+    c.access = SsapAccess::from_bits(0).unwrap();
+    for data_type in 0..=255 {
+        for level in 0..=3 {
+            for (write, value) in [
+                (false, vec![]),
+                (true, vec![0, 0]),
+                (true, vec![1, 0]),
+                (true, vec![3, 0]),
+                (true, vec![4, 0]),
+                (true, vec![1]),
+            ] {
+                let mut p = prompt();
+                p.6 = data_type;
+                p.1.5 = level;
+                p.3 = write;
+                p.5 = value.clone();
+                let expected = level <= 2
+                    && (data_type == 0
+                        || data_type == 2
+                            && level == 2
+                            && write
+                            && value.len() == 2
+                            && value[0] & !3 == 0);
+                assert_eq!(
+                    admit(&c, Some(":1.10"), &p).unwrap().is_some(),
+                    expected,
+                    "type={data_type} level={level} write={write} value={value:?}"
+                );
+            }
+        }
+    }
+    c.operations = SsapOperations::from_bits(5 | 8 | 512).unwrap();
+    let mut p = prompt();
+    p.6 = 2;
+    p.1.5 = 2;
+    p.3 = true;
+    p.5 = vec![2, 0];
     assert!(admit(&c, Some(":1.10"), &p).unwrap().is_none());
 }

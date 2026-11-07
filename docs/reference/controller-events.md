@@ -107,3 +107,59 @@ Python `Client.controller_events(deadline_ns=...)`返回`ControllerEvents`，
 Python不自行调用D-Bus或解释另一套wire事件。畸形ABI输出明确报EPROTO并释放该
 观察，不自动重试。新增语言入口的有限实机门禁见[准确记录](../evidence/controller-language-observer-20261019.json)；
 它不补齐完整SDK或状态流，旧离线与新实机身份分开，离线不授RF资格。
+
+## daemon 退出与重试锁等待
+
+Native 事件任务的取消覆盖等待事件、状态刷新、对象维护，以及定时重试后的
+SharedState 锁等待。取消通知与可取得的锁同时就绪时优先取消；取消后不启动该次
+刷新或维护。`shutdown()` 等待任务结束，receiver 随拥有它的任务释放。停止等待
+不证明控制器在途物理义务已排空，也不替代 Runtime 的 stop/drain。
+
+`native_retry_needed` 是生产 retry 分支使用的同一等待函数。离线回归先确认该
+future 在业务锁仍被持有时返回 Pending，再经实际 `EventTask::shutdown()` 取消、
+join，并检查任务持有的 Unix socket fd 已关闭；另覆盖取消先到、发送端消失、
+正常取得状态和锁释放。这个 fd 是资源所有权 fixture，不是内核订阅，也不授予
+真实设备或完整 Native 事件循环的资格。故意保留旧不可取消等待时，取消优先检查
+失败且持锁关停超时；原失败单独保留。准确产物的 VM 回归另行登记。
+
+### 实际 Native 订阅的专用 VM 测试
+
+`event_loop::tests::native_retry_real_subscription_vm` 是默认忽略的 Rust 测试，
+只能由显式配置的专用 VM 运行。它按输入的两个 index/generation 打开真实
+`/dev/sparklink`，读取实际 Ready 和 LinkSnapshot，再把实际订阅交给同一个 Native
+EventTask 循环。测试屏障只在 `cfg(test)` 中存在：初次真实快照完成、进入 retry 后，
+测试持有 SharedState 锁，确认生产 future 返回 Pending，再发出原任务取消。
+断言包含 join、实际订阅 fd 关闭，以及两个 controller 原 generation/Ready 保持。
+它不取得管理租约，不生成事件或改变固件，也不证明物理在途义务已排空。
+
+测试使用独立私有 D-Bus 配置；这不是 VM system bus 权限验收。默认 daemon 没有
+该屏障、配置或测试开关。普通应用业务和双端捕获仍由既有门禁另行核对，不能以
+本测试的日志替代真实通信。编译或默认测试列表中的 ignored 不代表该 VM 测试通过。
+参数与准确 test artifact 要求见 [VM 门禁输入](vm-gate-inputs.md)。
+
+### 静默期测试的覆盖边界
+
+现有 `silent_30s_dbus_requests_and_event_dispatch_do_not_share_wait_lock` 使用测试专用
+`EventSource`/`EventTask::start`，虽调用现行 D-Bus handler，仍不能代表 Native 接收循环。
+它保留为明确边界的饥饿和拒绝回归。实际 Native 的持锁取消测试只覆盖相应退出交错；
+不能推导静默30秒、完整 Node 发布或 Runtime drain。原静默期要求需在同一 Native
+循环上补齐，再按 U#1 原条件验收；不增加另一套简化事件循环。
+
+
+### 实际 Native 静默期门禁（suite v2）
+
+`native_quiet_real_subscription_vm` 与持锁取消用例共用真实 controller 选择、
+内核 snapshot 和订阅准备，直接启动同一 `start_native_inner`。测试专用 observer
+只统计实际接收 future 的 Pending／完成，不替换事件、不暂停循环、不注入成功。
+初次 Pending 后至少30秒内，不允许实际接收完成；前后内核事件水位也必须一致。
+查询读取真实空连接快照；扫描及 typed connect 在测试未持有管理租约时必须返回
+准确的 `management unavailable`，不是硬件操作成功。各次 D-Bus 请求仍限2秒。
+
+suite v2 对两只显式设备分别执行原持锁取消测试和新静默期测试。前者监督期限仍为
+10秒、持锁 shutdown 仍为2秒；后者独立监督期限40秒。退出检查真实订阅fd释放、
+两设备身份及 Ready 保持。测试使用私有总线，不宣称 system bus 部署权限、完整
+Node 发布、物理 drain、RF、形式化证明或自动恢复。默认 daemon 不包含 observer。
+
+现有 v1 结果只具有原持锁取消含义，不能推导静默期；v2 缺任一测试、任一设备、
+实际30秒窗口或完整原输出时不得通过。编译成功及 ignored 列表不是实际 VM 验收；
+新测试必须绑定其准确 binary/source，原业务门禁继续独立运行。

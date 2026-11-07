@@ -368,6 +368,56 @@ typedef struct SPARKLINK_ALIGN(8) SleDiagnosticSubmit {
 } SleDiagnosticSubmit;
 
 /**
+ * Typed Managed link commands: immutable scope, no raw opcode API.
+ */
+typedef struct SPARKLINK_ALIGN(8) SleLinkCommandSubmit {
+    uint32_t version;
+    uint32_t action;
+    uint64_t generation;
+    uint64_t lease_epoch;
+    uint64_t request_id;
+    uint64_t lifetime;
+    uint64_t deadline_monotonic_ns;
+    uint32_t timeout_ms;
+    uint32_t seq;
+    uint16_t handle;
+    uint8_t role;
+    uint8_t address_type;
+    uint8_t address[6];
+    uint8_t kind;
+    uint8_t reserved;
+    uint16_t argument;
+    uint16_t reserved_tail;
+} SleLinkCommandSubmit;
+
+/**
+ * Same-File history; current identity and available value are separate bits.
+ * RSSI 127 is invalid; PHY bytes are SDK wire observations, not RF policy.
+ */
+typedef struct SPARKLINK_ALIGN(8) SleLinkCommandResult {
+    uint32_t version;
+    uint32_t flags;
+    uint64_t generation;
+    uint64_t lease_epoch;
+    uint64_t request_id;
+    uint64_t lifetime;
+    uint64_t deadline_monotonic_ns;
+    uint32_t seq;
+    uint32_t state;
+    int32_t error;
+    uint16_t handle;
+    uint8_t kind;
+    uint8_t status;
+    uint8_t role;
+    uint8_t address_type;
+    uint8_t address[6];
+    uint16_t data_len;
+    uint16_t argument;
+    uint8_t reserved[2];
+    uint8_t data[10];
+} SleLinkCommandResult;
+
+/**
  * Native connection parameters use the explicit controller profile dialect.
  */
 typedef struct SleConnectionParameters {
@@ -709,6 +759,26 @@ int slk_diagnostic_result(const struct SlkAdapter *adapter,
  * Non-null pointers are valid/aligned/nonoverlapping; request is writable.
  */
 int slk_diagnostic_submit(const struct SlkAdapter *adapter, struct SleDiagnosticSubmit *request);
+
+/**
+ * Typed Managed link command; returns 0 or -errno. Unchanged on failure.
+ * Admission is not completion; cancellation does not undo an on-wire preference.
+ * # Safety
+ * Non-null pointers are valid, aligned, nonoverlapping; request is writable.
+ */
+int slk_link_command_submit(const struct SlkAdapter *adapter, struct SleLinkCommandSubmit *request);
+
+/**
+ * Same-File nonconsuming result: 1=record (possibly pending),0=absent,-errno.
+ * Output is unchanged on absence/error. seq or original request_id required.
+ * # Safety
+ * Non-null pointers are valid, aligned, nonoverlapping; output is writable.
+ */
+int slk_link_command_result(const struct SlkAdapter *adapter,
+                            uint64_t generation,
+                            uint32_t seq,
+                            uint64_t request_id,
+                            struct SleLinkCommandResult *out);
 
 /**
  * Admit a typed Native connection procedure under this fd's Managed lease.

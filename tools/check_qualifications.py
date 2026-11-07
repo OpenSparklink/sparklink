@@ -3,6 +3,10 @@
 
 Metadata mode cannot verify private materials or certify current code. Local mode
 checks retained bytes; --require-current additionally checks scoped source bytes.
+Source maps retain Git blob hashes: a symlink hashes its target text, not the
+referent. Currentness also checks file/link type and rejects dangling/non-file
+links. Referent content must be covered by its own declared production scope;
+checking a symlink alone does not qualify the referenced implementation.
 Neither mode independently re-decodes RF captures or proves build reproducibility.
 """
 import argparse
@@ -48,6 +52,44 @@ def _scoped_files(repo, commit, paths):
     names = git(repo, 'ls-tree', '-r', '--name-only', commit, '--', *paths).decode().splitlines()
     return {name: hashlib.sha256(git(repo, 'show', f'{commit}:{name}')).hexdigest()
             for name in names}
+
+
+@lru_cache(maxsize=32)
+def _scoped_modes(repo, commit, paths):
+    entries = git(repo, 'ls-tree', '-r', '-z', commit, '--', *paths).split(b'\0')
+    result = {}
+    for entry in entries:
+        if entry:
+            metadata, name = entry.split(b'\t', 1)
+            result[os.fsdecode(name)] = metadata.split()[0].decode()
+    return result
+
+
+def current_source_files(repo, commit, paths):
+    """Compare Git objects without following links to hash unrelated bytes.
+
+    Keep the published files->hash contract unchanged. Git modes supply the
+    separate file/link identity check, including same-content replacements.
+    """
+    modes = _scoped_modes(repo, commit, tuple(paths))
+    names = git(repo, 'ls-files', '-z', '--cached', '--others', '--exclude-standard',
+                '--', *paths).split(b'\0')
+    actual, errors = {}, []
+    for name in sorted({os.fsdecode(name) for name in names if name}):
+        path = repo / name
+        try:
+            link = path.is_symlink()
+            if name in modes and link != (modes[name] == '120000'):
+                errors.append(f'source file/link type changed: {name}')
+            if link:
+                actual[name] = hashlib.sha256(os.fsencode(os.readlink(path))).hexdigest()
+                if not path.is_file():
+                    errors.append(f'source symlink target is missing or not a regular file: {name}')
+            elif path.is_file():
+                actual[name] = sha(path)
+        except OSError:
+            errors.append(f'source identity or content unreadable: {name}')
+    return actual, errors
 
 
 def material_binding_errors(record, report, materials):
@@ -158,6 +200,14 @@ def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=F
             report = documents.get(binding['material'])
             if report is not None:
                 errors.extend(material_binding_errors(record, report, materials))
+                # Declared evidence class is part of the report contract,
+                # not an independently editable summary label. Legacy reports
+                # without this declaration retain their original scope.
+                qualification = report.get('qualification') if isinstance(report, dict) else None
+                if isinstance(qualification, dict) and 'level' in qualification:
+                    level = qualification['level']
+                    if not isinstance(level, str) or level not in LEVELS or level != record['level']:
+                        errors.append(f'{ident}: evidence level/report mismatch')
                 if binding['verdict_results'].get(select(report, binding['verdict_pointer'])) != record['result']:
                     errors.append(f'{ident}: report/result mismatch')
                 if select(report, binding['scope_pointer']) != record['excluded']:
@@ -234,8 +284,8 @@ def validate(data, repo=ROOT, workspace=None, mode='metadata', require_current=F
                 if scoped_files(location, source['commit'], source['scopes']) != source['files']:
                     errors.append(f'{ident}/{role}: stale/incomplete source mapping')
                 if require_current:
-                    names = git(location, 'ls-files', '--cached', '--others', '--exclude-standard', '--', *source['scopes']).decode().splitlines()
-                    actual = {name: sha(location / name) for name in set(names) if (location / name).is_file()}
+                    actual, identity_errors = current_source_files(location, source['commit'], source['scopes'])
+                    errors.extend(f'{ident}/{role}: {error}' for error in identity_errors)
                     if actual != source['files']:
                         changed.append(f'{ident}/{role}')
             except subprocess.CalledProcessError:
@@ -334,6 +384,11 @@ def render(data):
                       '```json', json.dumps(record['bounds'], ensure_ascii=False,
                                            indent=2, sort_keys=True), '```']
         lines[2:2] = ['']+selection+['', '以下为全部限定/历史记录索引；旧 PASS 不转授选定产物。', '']
+    # The active execution plan is distinct from the retained qualification.
+    # Both human views must invalidate when only the batch/next action changes.
+    lines[2:2] = ['', '当前实施批次（不是新产物资格，直接读取唯一记录）：',
+                  '```json', json.dumps(data['batch'],ensure_ascii=False,indent=2),
+                  '```', '']
     for record in data['records']:
         lines.append(f'| {record["title"]} | `{record["level"]}` | `{record["result"]}` |')
     lines += ['', '历史registry基线（非当前资格）：K `' + data['baseline']['kernel'] + '`；编译 U `' + data['baseline']['compiled_userspace'] +

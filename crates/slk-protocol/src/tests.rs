@@ -381,6 +381,7 @@ fn complete_controller_event_abi_and_ws73_fields() {
     assert_eq!(align_of::<SleControllerEvent>(), 8);
     assert_eq!(offset_of!(SleControllerEvent, payload), 48);
     assert_eq!(offset_of!(SleControllerEventQuery, event), 24);
+    #[cfg(target_os = "linux")]
     assert_eq!(nix::request_code_readwrite!(b'S', 0x87, 360), 0xc1685387);
     let mut event: SleControllerEvent = unsafe { std::mem::zeroed() };
     event.seq = 9;
@@ -467,8 +468,10 @@ fn selected_controller_snapshot_abi() {
     assert_eq!(std::mem::offset_of!(SleControllerSnapshot, features), 39);
     assert_eq!(std::mem::offset_of!(SleControllerSnapshot, address), 49);
     assert_eq!(std::mem::offset_of!(SleControllerSnapshot, error), 56);
+    #[cfg(target_os = "linux")]
     assert_eq!(nix::request_code_readwrite!(b'S', 0x8a, 64), 0xc040538a);
     // Affinity uses a pointer to signed 16-bit, not ioctl_write_int's int size.
+    #[cfg(target_os = "linux")]
     assert_eq!(
         nix::request_code_write!(b'S', 7, std::mem::size_of::<i16>()),
         0x40025307
@@ -483,8 +486,11 @@ fn native_management_abi() {
     assert_eq!(std::mem::align_of::<SleManagementQuery>(), 8);
     assert_eq!(std::mem::offset_of!(SleManagementRequest, mode), 20);
     assert_eq!(std::mem::offset_of!(SleManagementQuery, error), 32);
+    #[cfg(target_os = "linux")]
     assert_eq!(nix::request_code_readwrite!(b'S', 0x8b, 32), 0xc020538b);
+    #[cfg(target_os = "linux")]
     assert_eq!(nix::request_code_write!(b'S', 0x8c, 32), 0x4020538c);
+    #[cfg(target_os = "linux")]
     assert_eq!(nix::request_code_readwrite!(b'S', 0x8d, 48), 0xc030538d);
 }
 

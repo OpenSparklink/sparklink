@@ -10,6 +10,8 @@ import argparse
 import hashlib
 import json
 import math
+import os
+import stat
 from pathlib import Path
 
 from ws73_capture import CaptureError
@@ -18,6 +20,9 @@ REQUEST_NS = 10_000_000_000
 GRACE_NS = 1_000_000_000
 RUN_NS = 612_000_000_000
 MAX_REPORT_BYTES = 256 * 1024 * 1024
+OUTGOING_FIELDS = {'index','planned_ns','dispatch_ns','first_syscall_ns','admitted_ns','syscall_ns','deadline_ns','read_ns','validated_ns','send_attempts','would_block','errno','local_budget_rejected','timed_out','late','reply_count','frame_hex'}
+INCOMING_FIELDS = {'index','read_ns','validated_ns','deadline_ns','reply_syscall_ns','reply_admitted_ns','send_attempts','would_block','errno','timed_out','frame_hex'}
+PACKET_FAILURES = ['duplicate_requests','duplicate_replies','reordered_replies','corrupt_packets','unknown_replies','unsolicited_requests','receiver_record_overflow','reply_queue_overflow']
 
 
 def require(condition, message):
@@ -85,7 +90,37 @@ def resource_check(value):
         require(name in value and value[name] is None, 'unmeasured kernel resource '+name)
 
 
-def load_application_reports(left, right, *, fixture=False):
+def channel_requests(reports, configs):
+    """Requested routing only; actual negotiated ports still need CMTC capture.
+
+    Legacy basic CUTC reports have no request tag. Never infer dynamic routing
+    from TCIDs or let a missing/one-sided tag downgrade a dynamic report.
+    """
+    present = ['channel_request' in report for report in reports]
+    require(present in ([False, False], [True, True]), 'paired channel request tags')
+    if not any(present):
+        return None
+    requests = [report['channel_request'] for report in reports]
+    fields = {'version','kind','source_port','destination_port','aid','mtu','mps','slqi','passive'}
+    for request, config in zip(requests, configs):
+        require(type(request) is dict and set(request) == fields, 'exact channel request')
+        require(type(request['version']) is int and request['version'] == 1
+                and request['kind'] == 'dynamic_basic', 'supported channel request kind/version')
+        require(all(integer(request[k],1,65535) for k in ('source_port','destination_port','aid')),
+                'nonzero dynamic routing fields')
+        mtu = max(249, config['bytes'])
+        require(type(request['mtu']) is int and request['mtu'] == mtu
+                and type(request['mps']) is int and request['mps'] == mtu+5
+                and type(request['slqi']) is int and request['slqi'] == 1
+                and type(request['passive']) is bool, 'original dynamic request budgets/role')
+    a,b = requests
+    require(a['source_port'] == b['destination_port'] and a['destination_port'] == b['source_port']
+            and a['aid'] == b['aid'] and a['passive'] != b['passive'],
+            'complementary dynamic routing/negotiation roles')
+    return requests
+
+
+def load_application_reports(left, right, *, fixture=False, backpressure=False):
     """Recompute successful schema2 application closure; not artifact/capture closure.
 
     fixture=True permits only explicitly marked AF_UNIX report fixtures and the
@@ -108,6 +143,7 @@ def load_application_reports(left, right, *, fixture=False):
     require(all(a[k] == b[k] for k in ('count','bytes','window')), 'matching offered workload')
     modes = (a['mode'], b['mode'])
     require(modes in (('rate','peer'),('window','peer'),('peer','rate'),('peer','window'),('duplex','duplex')), 'complementary endpoint roles')
+    requests = channel_requests(reports, configs)
     endpoints=[]
     for report, c in zip(reports, configs):
         require(type(report.get('schema_version')) is int and report['schema_version'] == 2, 'schema version')
@@ -138,15 +174,23 @@ def load_application_reports(left, right, *, fixture=False):
         require(type(identity) is dict and set(identity) == {'controller','generation','lifetime','handle','local_tcid','remote_tcid','pi','mtu','mps','mode','directions'}, 'exact identity')
         for k,lo,hi in [('controller',0,65535),('generation',1,(1<<64)-1),('lifetime',1,(1<<64)-1),('handle',0,4095),('mtu',size,2042),('mps',size+5,2047)]:
             require(integer(identity.get(k),lo,hi), 'identity/capability '+k)
-        require(all(type(identity[k]) is int and identity[k] == v for k,v in [('local_tcid',31),('remote_tcid',31),('pi',241),('mode',0),('directions',3)])
-                and identity['mtu']+5 <= identity['mps'], 'basic CUTC capability')
+        require(all(type(identity[k]) is int and identity[k] == v for k,v in [('pi',241),('mode',0),('directions',3)])
+                and identity['mtu']+5 <= identity['mps'], 'basic data capability')
+        if requests is None:
+            require(all(type(identity[k]) is int and identity[k] == 31 for k in ('local_tcid','remote_tcid')),
+                    'untagged report requires basic CUTC')
+        else:
+            request = requests[len(endpoints)]
+            require(all(integer(identity[k],0x80,0xdf) for k in ('local_tcid','remote_tcid'))
+                    and identity['mtu'] <= request['mtu'] and identity['mps'] <= request['mps'],
+                    'actual dynamic TCIDs/capabilities within requested budgets')
         rows=[];latencies=[]
         for lane,expected in [('outgoing',0 if mode=='peer' else count),('incoming',count if mode in ('peer','duplex') else 0)]:
             values=report.get(lane)
             require(type(values) is list and len(values) == expected, 'all '+lane+' records')
             frames=[];nonces=set();seqs=set();previous=0
             for index,row in enumerate(values):
-                expected_fields={'index','planned_ns','dispatch_ns','first_syscall_ns','admitted_ns','syscall_ns','deadline_ns','read_ns','validated_ns','send_attempts','would_block','errno','local_budget_rejected','timed_out','late','reply_count','frame_hex'} if lane=='outgoing' else {'index','read_ns','validated_ns','deadline_ns','reply_syscall_ns','reply_admitted_ns','send_attempts','would_block','errno','timed_out','frame_hex'}
+                expected_fields=OUTGOING_FIELDS if lane=='outgoing' else INCOMING_FIELDS
                 require(type(row) is dict and set(row)==expected_fields and type(row.get('index')) is int and row['index'] == index, 'all original typed row fields/indices')
                 require(row.get('errno') is None and row.get('timed_out') is False, 'no hidden failed row')
                 require(integer(row.get('send_attempts'),1) and integer(row.get('would_block'))
@@ -172,7 +216,7 @@ def load_application_reports(left, right, *, fixture=False):
         outgoing,incoming=rows;nout=len(outgoing);nin=len(incoming)
         expected=dict(scheduled=nout,dispatched=nout,unattempted=0,admitted=nout,validated_replies=nout,timed_out=0,late=0,local_budget_rejected=0,kernel_rejected=0,missing_admitted_replies=0,expired_before_admission=0,admitted_reply_timeouts=0,successful_timely_replies=nout,peer_reply_deadline_exceeded=0,peer_validated_requests=nin,peer_reply_admissions=nin,peer_validated_application_bytes=nin*size)
         exact_counts(report.get('summary'),expected,'summary')
-        counters=report.get('counters');failures=['duplicate_requests','duplicate_replies','reordered_replies','corrupt_packets','unknown_replies','unsolicited_requests','receiver_record_overflow','reply_queue_overflow']
+        counters=report.get('counters');failures=PACKET_FAILURES
         require(type(counters) is dict and set(counters) == set(failures+['rx_packets','inflight_peak','reply_queue_peak','poll_calls','iterations'])
                 and all(integer(v) for v in counters.values()), 'complete typed counters')
         require(all(counters[k] == 0 for k in failures) and counters['rx_packets'] == nout+nin, 'all actual receives and failures')
@@ -199,15 +243,33 @@ def load_application_reports(left, right, *, fixture=False):
     require(endpoints[0]['identity']['controller'] != endpoints[1]['identity']['controller'], 'distinct simultaneous controllers')
     for index,e in enumerate(endpoints):
         other=endpoints[1-index]
+        if requests is not None:
+            require(e['identity']['local_tcid'] == other['identity']['remote_tcid']
+                    and e['identity']['remote_tcid'] == other['identity']['local_tcid'],
+                    'cross-end negotiated TCID ownership')
         require(e['outgoing'] == other['incoming'], 'actual peer validated/replied every offered message in order')
     if modes == ('duplex','duplex'):
         require(not set(endpoints[0]['outgoing']) & set(endpoints[1]['outgoing']), 'independent duplex source payloads')
-    return dict(status='LOAD_APPLICATION_REPORTS_CONSISTENT_NOT_QUALIFIED',performance_qualified=False,
+    result = dict(status='LOAD_APPLICATION_REPORTS_CONSISTENT_NOT_QUALIFIED',performance_qualified=False,
                 modes=list(modes),messages=[len(e['outgoing']) for e in endpoints],
                 source_rtt=[e['rtt'] for e in endpoints],fixture=fixture,
                 remaining=['actual credential/Grant/owner topology','compiled source/artifact/tool/config/firmware closure',
                            'independent two-end USB/HCC capture coverage/drop checks and supervisor evidence',
                            'stable baseline/resources/trace overhead and performance qualification'])
+    if requests is not None:
+        result['channel_requests'] = requests
+        result['remaining'].append('wire CMTC routing/capability negotiation for requested ports/AID')
+    if type(backpressure)is not bool:raise CaptureError('explicit software backpressure scope required')
+    if backpressure:
+        require(modes==('window','peer')and a==dict(mode='window',count=64,bytes=2042,window=16,interval_us=0), 'canonical finite pressure workload')
+        recovered=[]
+        for row in left['outgoing']:
+            if not row['would_block']:continue
+            require(row['first_syscall_ns']<row['syscall_ns'], 'actual later admission after EAGAIN')
+            recovered.append({**{k:row[k]for k in ['index','planned_ns','first_syscall_ns','syscall_ns','admitted_ns','validated_ns','deadline_ns','would_block','send_attempts']},'frame_sha256':hashlib.sha256(bytes.fromhex(row['frame_hex'])).hexdigest()})
+        require(bool(recovered),'actual send EAGAIN followed by original timely peer reply required')
+        result['backpressure_recovery']=dict(version=1,kind='actual-software-send-EAGAIN-then-timely-peer-reply',source_identity=dict(left['channel_identity']),window=16,count=64,records=recovered,would_block_calls=sum(r['would_block']for r in recovered),controller_credit_truth=False)
+    return result
 
 
 def verify_vm_build(vm, build):
@@ -251,9 +313,17 @@ def verify_vm_build(vm, build):
                            'Native/realWS73/performance qualification'])
 
 
-def read_report(path):
-    with Path(path).open('rb') as stream:
-        raw=stream.read(MAX_REPORT_BYTES+1)
+def read_report(path,*,expected_uid=None):
+    fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)
+    try:
+        info=os.fstat(fd)
+        require(stat.S_ISREG(info.st_mode)and info.st_nlink==1 and 0<info.st_size<=MAX_REPORT_BYTES,'regular bounded unique report')
+        if expected_uid is not None:
+            require(type(expected_uid)is int and info.st_uid==expected_uid and info.st_gid==expected_uid and not info.st_mode&0o022,'actual application-owned report')
+        with os.fdopen(os.dup(fd),'rb')as stream:raw=stream.read(MAX_REPORT_BYTES+1)
+        after=os.fstat(fd)
+        require((info.st_dev,info.st_ino,info.st_size,info.st_mtime_ns)==(after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns),'closed report changed while reading')
+    finally:os.close(fd)
     require(len(raw) <= MAX_REPORT_BYTES,'report byte budget')
     def pairs(items):
         result={}
@@ -261,7 +331,9 @@ def read_report(path):
             require(k not in result,'duplicate JSON field');result[k]=v
         return result
     value=json.loads(raw,object_pairs_hook=pairs,parse_constant=lambda _: (_ for _ in ()).throw(CaptureError('nonfinite JSON number')))
-    return value,dict(path=str(path),sha256=hashlib.sha256(raw).hexdigest(),bytes=len(raw))
+    record=dict(path=str(path),sha256=hashlib.sha256(raw).hexdigest(),bytes=len(raw))
+    if expected_uid is not None:record.update(uid=info.st_uid,gid=info.st_gid,mode=info.st_mode&0o777,nlink=info.st_nlink)
+    return value,record
 
 
 def main():

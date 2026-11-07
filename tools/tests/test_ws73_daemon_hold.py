@@ -1,7 +1,9 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Reject weak daemon evidence; fixtures never qualify hardware or RF."""
 import copy
+import os
 import sys
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -43,6 +45,19 @@ def fixture(case='supersede'):
 
 
 class DaemonHoldTests(unittest.TestCase):
+    def test_actual_invocation_forwards_explicit_environment_and_stdin_without_recording_environment(self):
+        command=[sys.executable,'-c','import os,sys;print(os.environ["SPARKLINK_TEST_LITERAL"],flush=True);print(sys.stdin.readline().strip(),flush=True)']
+        invocation=Invocation(command,'explicit-process-fixture',stdin=subprocess.PIPE,
+            env=dict(os.environ,SPARKLINK_TEST_LITERAL='explicit-fixture'))
+        try:
+            self.assertEqual(invocation.until(rb'^explicit-fixture$',timeout=1,limit=4096),b'explicit-fixture')
+            invocation.process.stdin.write(b'original-input\n');invocation.process.stdin.flush()
+            record=invocation.finish(timeout=1)
+            self.assertEqual(record['exit'],0);self.assertEqual(record['stdout'],'explicit-fixture\noriginal-input\n')
+            self.assertEqual(record['stderr'],'');self.assertNotIn('env',record)
+        finally:
+            if invocation.process.poll()is None:invocation.finish(kill=True)
+
     def test_two_cases_require_actual_caller_lifetime_and_unchanged_daemon(self):
         for case in ['supersede','caller-exit']:
             r,h,c,l=fixture(case)
@@ -90,6 +105,19 @@ class DaemonHoldTests(unittest.TestCase):
         p=Invocation([sys.executable,'-c',script],'on')
         self.assertEqual(p.identifier(),7);r=p.finish();self.assertEqual(r['exit'],0);self.assertIn('done',r['stdout'])
         p=Invocation([sys.executable,'-c',script],'on');self.assertEqual(p.identifier(),7);self.assertEqual(p.finish(kill=True)['exit'],-9)
+
+    def test_cached_pipe_barrier_stdin_and_exact_final_prefix(self):
+        p=Invocation([sys.executable,'-c','import sys;print("first\\nheld",flush=True);input();print("tail",flush=True)'],'fixture',stdin=subprocess.PIPE)
+        try:
+            p.pump_until(lambda b:b'held\n' in b,timeout=1,limit=1024)
+            # No new output can arrive before stdin. A cached complete marker
+            # must be accepted without a file read, lost suffix or duplicate.
+            self.assertEqual(p.until(rb'^held\n',timeout=.1),b'held\n')
+            with self.assertRaises(ValueError):p.until(rb'^first\n',limit=1,timeout=.1)
+            p.process.stdin.write(b'finish\n');p.process.stdin.flush();p.process.stdin.close();p.process.stdin=None
+            self.assertEqual(p.finish()['stdout'],'first\nheld\ntail\n')
+        finally:
+            if p.process.poll() is None:p.finish(kill=True)
 
 class CancelAuthorTests(unittest.TestCase):
     @staticmethod

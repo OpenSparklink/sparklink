@@ -6,6 +6,21 @@ Native 双端证据闭包已接通，完整性能门禁仍缺。准确构建与�
 历史 channel-roundtrip／burst 与当前 slktest --check 是功能门禁，计时包含日志等开销，不能升级为基线。
 [接口支持范围](interfaces.md)继续适用；此页不新增 socket 能力。
 
+## 并行 Owned 发布者的生命周期诊断
+
+规范 Owned 并行门禁在开始消费者调用前，向原 C/Python 测试发布者发送一次
+`lifecycle` 命令。`SdkOwnedLifecycle` 保存该进程实际创建的 30 秒循环预算、审批
+API 调用开始／返回以及前端清理调用开始／返回，绑定 PID、controller generation、
+注册 start 和 property handle。它是测试客户端退出预算，不能描述为 daemon 服务租约。
+每条记录使用同一 guest 的 `CLOCK_MONOTONIC`；wall clock 样本另列，不作跨域单向时延。
+
+观察不重设预算，不改变原调用或增加协议 Engine。原成功／失败、20 次审批、对端
+业务校验、双端字节和 finish 屏障仍独立必需。缺失、重复、身份不符、预算被续期或
+API 返回无法关联原 token／request 时，完整门禁拒绝；旧报告保留其原工具身份。
+失败运行可单独保留结构化时间线，不能因此变成成功。清理调用返回只表示前端 API
+返回，不证明 daemon 数据库已移除、内核引用已排空或对端已完成；C 的 void free
+也不提供远端清理结果。这是带观察开销的正确性诊断，不是低扰动性能基线。
+
 ## 负载与时间
 
 | 模式 | 负载约束 | 主要测量 |
@@ -20,10 +35,55 @@ Native 双端证据闭包已接通，完整性能门禁仍缺。准确构建与�
 超时仍保留记录并观察迟到；重复、乱序、损坏单列。发端随机输入计时前准备，
 对端真实校验，保留可核对的接收/回复记录。证据有界、不逐包输出或同步落盘。
 
+## 显式双通道软件背压用例
+
+VM runner 的 `--channel-benchmark window --channel-benchmark-parallel
+--channel-benchmark-pressure` 选择独立v4 profile；不能与短通道关闭、四设备或并发SSAP
+选择器混用。默认v2／v3及普通slktest命令保持。它复用现有应用收发循环、schema2、
+Root开始／结束屏障及唯一Session，不增加Host或协议Engine。
+
+| 通道 | 每物理角色发起数 | 应用字节／窗口 |
+| --- | --- | --- |
+| short | 20 | 61／4 |
+| long | 64 | 2042／16 |
+
+两种物理连接角色共168次真实校验回复、8个普通应用进程。完整门禁要求每角色长发起端
+至少一条实际`EAGAIN`，同一预生成载荷后来成功准入并在原10秒期限内收到对端校验回复；
+只提高窗口而没有观察到背压也拒绝该资格。`send_attempts = would_block + 1`、原始计划／
+首次syscall／成功syscall／准入／校验／期限、原连接身份与两端USB载荷hash均须一致。
+短长业务继续使用原并发进展检查。所有64条长请求仍须实际回复，不隐藏超时、丢失或拒绝。
+
+`backpressure_recovery`只在该profile的长通道校验摘要出现，schema2原始报告不改版。
+它记录有限恢复journal与原controller／generation／lifetime身份；进程内时间只作同域
+比较，不能与USB墙钟相减。应用窗口不是controller credit；当前内核每通道TX预算8、
+RX队列16，不能仅凭`EAGAIN`宣布实际queue峰值、NOCP准确、硬件credit耗尽或完整公平性。
+Basic接收队列满可能丢弃；暂停应用读取不能被当成对端流控。撤权、断链、旧lifetime、
+不确定提交记账及callback排空仍按各自门禁验证，不因本用例成功获得资格。
+
+新profile明确启用xHCI追踪，请求16MiB／CPU并保留64MiB文本上限；根据既有v3同量级
+长包实测的282,882事件／48,293,549字节对有界观测存储定界，仍需新artifact实测确认，
+不预设性能收益。原普通双设备预算、四设备v2／v3预算各保持；精确页布局、全部marker、
+完整计数和零overrun／drop均为必需。实现及离线fixture通过不表示已取得实机或性能资格；
+准确结果只见唯一资格入口，失败保留原身份。
+
+四设备使用独立的显式入口 `--four-device-dynamic-benchmark
+--four-device-benchmark-case pressure`，不能与上述双设备选择器混用。它要求新准备清单
+的 `four_dynamic_benchmark_pressure_contract_version=1`，启动参数、两个worker、两个
+Root和聚合中的case及v4目标必须一致。默认四设备v2和短关闭v3不改变。
+
+两组各自交换物理连接角色，共336次对端校验回复、16个普通应用进程。四个“组／角色”
+分别要求长发起端实际EAGAIN、原载荷及时恢复、全部长请求回复及短通道进展；另核对
+两组实际USB业务区间重叠。xHCI仍为16MiB／CPU、64MiB文本上限和双组原始mono marker，
+缺失、覆盖、错组或旧预算不能通过。它不新增硬件credit、完整公平性或恢复承诺，不能
+从源码支持或离线fixture推导实机资格；SDK110每设备输入、HCC和E运行期临时地址保存／
+配置／读回／恢复仍独立验证。
+
 ## 报告字段与单位
 
 schema 版本、run id、源角色及 controller/generation/lifetime/channel 身份；
-编译源码/dirty 指纹、artifact、执行工具、报告提交分开。记录 SDK111 固件 hash、
+编译源码/dirty 指纹、artifact、执行工具、报告提交分开。记录实际 SDK 版本及主固件、
+两份校准的 hash；本线程按资源策略使用 SDK110 和明确的 E／US 板型，不能将历史
+SDK111 结果转授新固件或混合型号。记录
 两端连接角色/参数/PHY/MTU/MPS/PDU/分片、VM/QEMU/CPU/USB 拓扑、捕获和队列配置。
 请求参数与实际生效参数分开；不能取得的值标 unknown 和剩余条件。
 
@@ -40,6 +100,31 @@ schema 版本、run id、源角色及 controller/generation/lifetime/channel 身
 时间线：应用计划→syscall/准入→Session 出队→credit/Ticket→USB submit/complete→
 对端 USB RX→Session 分流→应用读取/校验→回复；NOCP 独立。无 RF 观测时，中间
 区间写作包含固件/调度/无线的合并区间，不能宣称独立空口时延。
+
+### NOCP 与配置观测的限定范围
+
+Session 的完整及失败诊断入口增加 `nocp_observation`，复用已核对的 trace/USB
+关联。它报告实际 data-credit 拒绝后，后续提交之前最近一条同 handle 的线上 NOCP
+候选，以及候选到 worker/提交的时间上下界、未匹配项和原始记录号。边界来自同一
+guest 的 wall/mono 锚点及 trace 量化；已在运行的 worker 可出现负值，不裁成零。
+原失败入口仍保持 FAIL，不因诊断完成转成资格。
+
+NOCP 只有 handle/count。观测窗口不证明 generation/lifetime、完成准确性、重复/
+迟到处理、复用屏障或某条 credit 的因果归属；工具不重演 CreditLedger，也没有
+精确 Runtime 通知时刻。分布只是本次候选关联，不是独立空口时延或性能资格。
+
+若另行用生产 CreditLedger 回放，须单列原输入顺序、初始 debt、预留／USB提交
+及捕获／Host处理顺序的假设；不要把本节候选分析改称实际记账回放。查询失败
+不是零 debt，断链附近的批量 NOCP 也不是业务送达或引用排空证明。详见
+[算术一致与完成归属](../explanation/qualification-boundaries.md#credit-算术一致为何仍不证明完成归属)。
+
+连接参数实验另外核对：明确写全的 `ws73.connection` 配置，经准确 staged daemon
+验证并冻结 hash，再用独立参考编码核对 SDK110 的完整 27 字节 Create 命令和两端
+30 字节成功事件。记录原始 interval/latency/supervision 字段及未知尾字节；实际
+interval 必须在请求范围内，两端字段及角色须一致。`timeout_ms` 是 Host 请求，
+不能声称由线上字段证实。该观测不提供默认值，也不能用捕获内容反推期望值。
+标准时隙、SDK 方言单位及实际 RF 调度须分别核对；字段名、结构相似或测得间隔
+不能证明单位。新参数下通过不修复或覆盖原配置失败，不改变默认策略或原期限。
 
 ## Fail-closed 与版本边界
 
@@ -67,7 +152,7 @@ schema 版本、run id、源角色及 controller/generation/lifetime/channel 身
 | slktest channel peer --load | CONNECTION --count N --bytes B --window W --report FILE | schema2，应答rate/window |
 
 
-count 1..10000，bytes 29..2042 且匹配实际基本 CUTC MTU/MPS。window 1..min(count,256)，
+count 1..10000，bytes 29..2042 且匹配实际通道 MTU/MPS。window 1..min(count,256)，
 interval 10..1000000 µs，总计划不超过600秒；其它模式 interval 为0。schema2 等待
 原30秒 `start\n` 屏障，消息原10秒期限，1秒尾部观察，测量循环上限612秒。
 循环结束输出Quiescent，双方到达后监督器各发 `finish\n`，结束等待另有原30秒预算；
@@ -102,13 +187,92 @@ schema1 双端核对含迟到拒绝；schema2 已有独立应用报告核对（�
 实现；`slctl` 不再接受旧测试命令，负责管理、连接、授权和日常交互。--adapter
 必须给出当前完整对象路径，与 CONNECTION 的 generation/lifetime 一起核对。
 `ping/peer --check` 保留原正确性门禁和 stdout receipts；测量不加 --check 且须 --report。
---exercise boundaries/prefix-close/burst 保留原约束；动态只在 --check 下提供完整的
---source-port/--destination-port/--aid，--hold 仍等显式close，不承诺动态 benchmark。
+--exercise boundaries/prefix-close/burst 保留原约束；动态 --check 提供完整的
+--source-port/--destination-port/--aid，--hold 仍等显式close。
 动态正确性可选 `--start-barrier`：真实协商和能力/授权核对后输出
 `NativeDynamicArmed: count=N bytes=B`，复用已有输入解析器等待精确 `start\n`，
 原期限30秒，部分输入不续期、EOF撤回；等待期间不开始业务循环。该应用启动等待
 不延长内核协商、队列或已准入PDU的原期限，不授予credit/Ready。固定CUTC和测量
 入口拒绝此参数；默认行为不变，随机载荷与收发仍用同一正确性实现。
+
+### 动态 basic 负载：实现入口与未验收边界
+
+`rate`、`window`、`duplex` 与 `peer --load` 可同时指定三个非零 u16 路由参数
+`--source-port`、`--destination-port`、`--aid`，并必须显式给出
+`--channel-role active|passive`。两端源／目的端口互换、AID 相同，协商角色一主动
+一被动；业务发起／应答、duplex 方向和物理连接角色与这个协商角色独立。
+未指定路由仍使用基本 CUTC；缺字段、零值、单独角色、动态 schema1 ping 或
+protected 动态测量都明确拒绝。旧 `--check` 继续从 ping／peer 推导协商角色，
+拒绝该新增角色参数，原 stdout 契约不变。
+
+复用现有应用 SDK `PrepareDynamicChannel` 和同一负载循环。请求 MTU 为
+`max(bytes,249)`、MPS 为 MTU+5、SLQI 为1；这些是请求预算，不是已生效能力。
+实际 fd 必须报告 basic／双向、PI241、两个动态 TCID（0x80..0xdf）、当前身份和
+足够的 MTU/MPS，且不能超过请求预算。端口／AID 不是 TCID、身份或认证。
+
+动态 schema2 新增可选 `channel_request`，仅记录原请求：version1、
+kind=`dynamic_basic`、source_port、destination_port、aid、mtu、mps、slqi、passive。
+`channel_identity` 仍取实际 fd。核对器要求两份请求同时出现、路由互补及实际
+local／remote TCID 交叉一致；不能删除 tag 将动态结果降为普通 CUTC。基本 CUTC
+报告不增加该字段，历史报告身份不变。业务记录、计时、失败记账和 schema 版本不变。
+
+创建 fd 后、等待协商 Ready 前输出 `SocketBenchmarkStaged`。监督器需要先启动
+被动端并收到该标记，再启动主动端；双端仍须实际 Armed 后统一 start、Quiescent
+后统一 finish。Staged 只表示完成本地 fd 准备，不授予 Ready、credit 或对端存在。
+新入口的真实设备资格单独登记，不能继承原基本 CUTC。Native benchmark runner
+以 `--channel-benchmark-dynamic` 选择版本1目标：协议端口24576／24577、AID29441；
+可用 `--channel-benchmark-active-endpoint 0|1` 指定独立的协商主动端，动态模式默认0。
+未选动态时不接受主动端参数，原基本 CUTC 默认行为不变。目标跟随原连接拥有者
+顺序，物理连接交换角色时不按 USB 枚举顺序重新选择设备。复用原普通应用监督器，
+逐端记录实际 Staged、双端 Armed／start／Quiescent／finish，以及准确工具来源。
+host 请求、guest cmdline、控制角色、Root 请求和终态证据必须一致，不允许删 tag 降级。
+独立捕获门禁核对 CMTC 请求／回复、实际端口和能力，再核对
+动态 TCID 上的双端 USB 与应用回复；新运行同时要求原追踪与进程检查点契约。
+缺任一必要信令／对端数据、过早 Ready、错角色／路由或重复证据都失败。
+本地 AF_UNIX 报告只能检验循环／序列化和
+拒绝行为，不能替代这项实机门禁或完整多通道公平性／性能资格。
+
+### 四应用、双动态通道的有限负载
+
+专项 VM runner 的 `--channel-benchmark-parallel` 与单通道 `--channel-benchmark-dynamic`
+互斥，要求 `--channel-benchmark window` 的默认主负载。版本2目标显式包含两组：
+
+| 通道 | 协议端口 | AID | 每连接角色请求数 | 应用字节 | 应用窗口 |
+|---|---|---|---|---|---|
+| short | 24576／24577 | 29441 | 20 | 61 | 4 |
+| long | 24578／24579 | 29441 | 16 | 2042 | 8 |
+
+同一物理连接、每 controller 唯一 Session；四个普通应用复用同一 schema2 循环和
+原监督器。`--channel-benchmark-active-endpoint 0|1` 同时选择两条通道的协商主动端，
+不改变业务请求方向。先暂存每条通道的被动端，再启动对应主动端；全部四端 Armed
+后才能释放任何 start，全部四端 Quiescent 后才能释放任何 finish。长负载先收到
+start，仍须以捕获证明实际交叠，不能从释放顺序推导公平性。
+
+请求目标、启动参数、Root 准入、执行工具及终态必须一致。应用报告仍是原 schema2，
+没有新增业务 Engine。监督摘要版本2要求两连接角色共八个应用报告和检查点；旧版本1
+四报告不能代替。逐通道核对原 CMTC 路由／能力、独立实际 TCID、随机业务及两端
+USB；长消息须取得实际 PB 分片。复用既有短／长捕获判据，要求两个方向均有短 PDU
+在长发送流期间完成。缺任一通道、原期限超时、证据重复／错投、分片交错或无实际
+进展均失败。完整两角色共72次校验回复只是这项有限闭包，不能宣称稳定性能、完整
+公平性、单通道关闭隔离、credit 真值或四只物理设备资格。
+
+#### 版本3：短通道关闭期间长通道继续业务
+
+在上述命令显式追加 `--channel-benchmark-close-short`，选择独立版本3目标；short仍为
+20×61／窗口4，long改为64×2042／窗口8。四端全局Armed→start保持不变；short两端
+均Quiescent后才分别finish并回收进程，long两端均Quiescent后再finish。每端原30秒
+控制等待及消息期限不变，620秒业务监督预算不因短通道关闭续期。版本2仍要求四端
+全局Quiescent后才finish，不能用版本3记录改写历史资格。
+
+复用同一Root、普通应用UID1004、授权SDK、schema2收发循环与报告；没有新增协议
+Engine。监督摘要为版本3。原始双端USB须有真实CMTC关闭交换，且long完整随机
+请求／对端校验回复在短通道关闭前、关闭交换完成及短端进程退出后均存在。进入
+本地队列、Root标记或NOCP不能代替。两连接角色完整负载为168次校验回复，缺任一
+关闭后业务即失败。原应用开始／结束资源检查点按各自通道的双端屏障核对。
+
+这是关闭隔离的有限正确性负载。短应用在长负载运行期间写报告和退出，会产生
+观测及资源回收开销，不能当作原全局静止后写报告的低扰动性能基线。该入口不授予
+完整公平性、引用／callback排空、安全复用、NOCP真值、自然恢复或稳定性能资格。
 
 代码迁移不改 schema1/2、wire、socket/Grant/credit/Ticket 或原期限。历史证据中的
 slctl 命令和 artifact/hash 保持不动，由原提交工具复核；当前 verifier 的旧 argv 分支
@@ -134,6 +298,9 @@ CLI预算为30秒，显式本地fixture为1秒。旧schema2报告保持原身份
 请求与校验回复的USB TX/对端RX，并拒绝缺失、重复或无法归属的CUTC业务包。
 真实运行状态及准确资格由唯一能力入口记录；建立入口/合成fixture通过不代表实机通过。
 20条样本不是稳定性能阈值，完整追踪的干扰、分段时钟映射、资源峰值及长期压测仍需另验。
+
+这里的“动态通道门禁分开”指原 `--dynamic-channel-verify` 正确性矩阵；动态测量使用
+上述独立目标参数，不能同时打开旧矩阵或把旧正确性资格视为新测量结果。
 
 ## 单 bulk RX URB 空窗诊断
 
@@ -168,6 +335,9 @@ header_page有效载荷、subbuffer大小及该内核DIV_ROUND_UP/读回KiB取�
 
 `tools/ws73_benchmark_timeline.py RUN_DIRECTORY`只读重放原双端证明，输出每条请求
 的OUT提交/完成、对端首/末片RX、对端回复OUT及源端首/末片RX间隔和原record索引。
+分片 TX 使用原重组证明的首片提交作为起点，全部片的最后 USB 完成为完成点；另记
+首末提交跨度及末片提交到对端完整 RX 的区间。检查每片身份、PB 顺序、时间及自身
+完成，不把最后一片时间误作整条消息的发送起点。单片旧结果的字段含义保持原样。
 61字节应用消息也可由SDK111分成28/28/10字节RX，必须沿原DLI PB重组证明处理，
 不能假定短包单片。应用自己的单调时钟RTT/准入和guest usbmon墙钟间隔分开，
 不跨时钟相减，不用RTT/2。OUT完成允许晚于对端IN，不表示协议credit归还。
@@ -253,3 +423,497 @@ Host、guest cmdline、控制器监督器、实际 slktest argv、两端 schema2
 测试旧epoch、旧lifetime及过期期限的真实拒绝及对应载荷无USB。正常响应使用一次
 确定的原期限；不增加收发循环或协议Engine。此检查不是属性级授权、完整密码证明
 或性能资格。
+
+## RX 重提交观测契约
+
+`ws73_rx_gap.py RUN`仅接受原完整成功门禁。独立的`--failed-phase 0|1`只接受
+QEMU正常退出且控制测试流程、指定阶段均为FAIL的原件；阶段快照必须明确
+`success=false`，原始请求、owner与配置匹配，文件清单／长度／hash和零丢包捕获完整。
+成功和失败快照校验入口互斥；失败诊断不能生成成功门禁回执。
+
+失败诊断覆盖所有应用实际start至原阶段end，输出原FAIL、原错误、请求／控制／快照／
+捕获hash及两个独立端点的样本。它不补造未完成应用报告、quiescent、清理或第二角色。
+`window_fraction_without_submitted_rx`只统计已配对完成的间隔；边缘未闭合样本另列，
+不能把被截取部分当作零。completion→submit含callback、USB core与VM调度，
+不等于callback CPU、完整硬件无URB区间或独立RF时延。诊断退出0只表示取得限定
+观测，不能解释为原业务通过或多URB优化收益。
+
+结构化报告若声明`qualification.level`，摘要必须保持同一证据等级；不能只改标签把
+`offline`改成`real_device`。私有原件不可取得的元数据检查仍不是本地字节复核。
+
+新准备产物的 `benchmark_trace_contract_version=1` 显式选择 ftrace `mono`，
+在开始与结束分别保存并校验时钟 readback。Root 监督器在应用 `start` 前、双方
+`Quiescent` 后写入本 boot cookie 和 phase 的固定 marker；写标记及读取配置均
+在应用计时热循环之外。两个连接角色各有一对 marker，不能跨 boot 或 phase 配对。
+旧捕获缺少这些材料时仍可按原契约重放，但不能获得此 RX 间隔资格。
+
+`tools/ws73_benchmark_timeline.py RUN` 复用双端 schema2／USB 校验，再对开启追踪
+的业务区间输出 `rx_resubmit_observation`。当前固定驱动的 bulk IN 请求容量为
+20480 字节；每个端点、每个 phase 只接受一个观察到的 URB 身份。重复提交、重复
+完成、区间内取消、指针混用、时间倒序或缺失端点会拒绝该间隔结果。首个完成可能
+对应区间开始前的提交；末尾提交／完成可能尚未配对，分别计为 censored，不补造样本。
+空完成单列；每个样本保留原时间及文本时间戳分辨率，不把量化后的零解释为零开销。
+
+该数值是 **xHCI giveback 事件到下一次 enqueue 入口事件** 的观测间隔。前者在
+USB core 分派 callback 前，后者在 HCD 加锁和实际入队前，并仍可能提交失败。
+它包含 USB core 分派、callback 处理及部分重新提交准备，不能描述为精确 callback
+耗时、完整的硬件无 URB 空窗或 RF 时延。generation／lifetime 来自已经独立校验的
+本轮连接身份，trace 本身没有这些标签，也不证明引用排空或全部并发交错。
+
+追踪关闭时输出 `NOT_OBSERVED_TRACE_OFF`，没有 RX 间隔样本。重复试验按 run 和
+物理源方向分别报告，保留所有失败和未完成尝试；追踪开关比较仍包含 usbmon 开销，
+不能升级为零观测开销、稳定性能阈值或多 URB 优化收益。源码、准确资格与剩余条件
+仍由唯一能力入口记录。
+
+## VM 应用进程资源检查点
+
+新 Native benchmark 准备产物使用 `benchmark_process_resource_contract_version=1`。
+既有 Root 监督器在双方 armed 后、写入任一 start 前读取两只实际 `slktest` 子进程，
+在双方 quiescent 后、写入任一 finish 前再次读取。热循环内不增加采样线程或磁盘写入；
+普通 CLI 的 schema2 应用报告和业务收发不变。
+
+原始 `/proc` stat/status、fd 编号、可执行文件身份和单调时钟读取区间随既有 Root
+phase receipt 封存。校验 PID、父进程、start tick、UID/GID1004、空附加组、零能力及
+实际 executable；旧 PID 复用、计数回退、单位错误、缺失／超限或跨越业务屏障均失败。
+新 live 入口要求新 proof 及准确 helper 来源，历史捕获不能补字段升级资格。
+
+- CPU 记录 user/system tick 差和实际 `SC_CLK_TCK`，不是纳秒精度的逐消息耗时。
+- Linux status 的 `kB` 按1024字节转换。VmHWM／VmPeak 是截至读取时的进程高水位，
+  包含载荷预生成与准备，不能称为纯业务区间或进程退出时的最终峰值。
+- RSS 和 fd 数量是两个检查点的快照；fd 相同不证明没有中间峰值或引用泄漏。
+- 这些数据不覆盖 daemon、整个 VM／宿主、内核对象、worker、timer、URB、队列或 credit
+  峰值，不授予性能阈值、完整压力、公平性、资源收敛或恢复资格。
+
+时间线的 `process_resource_observations` 保留每 phase／每应用的独立结果。
+观测开销和功能正确性仍需按准确产物分别验收；未测量的其他层资源保持缺失。
+
+## Session 入队与提交时间
+
+对已有 `--session-service-observe` 的成功 Native benchmark 捕获，可只读执行：
+
+```sh
+python3 tools/ws73_session_service.py analyze-benchmark RUN_DIRECTORY
+```
+
+该入口先重放原双端应用、角色、屏障、捕获及 USB 门禁，再重放原 Session 追踪校验。
+原门禁失败、trace 丢失、缺少阶段、身份不符、USB 顺序或时间不符均拒绝输出完整结果。
+分析不操作设备，不改原 manifest，不为旧 artifact 添加新功能资格；分析器与执行工具的
+源码身份须分别记录。默认生产路径不启用该追踪。
+
+每个操作保留 controller／generation／lifetime／epoch、slot、入队观察序号、DTAP
+字节数、原 jiffies 期限及各阶段的单调时间。观察序号不是应用序号；仅通过原 USB
+fragment record 的完整有序匹配关联业务 phase、源方向、请求／回复和应用序号。
+建链后的其他受控通道数据保留为未关联业务，不能冒充 benchmark 请求。
+
+- 入队到出队、首次尝试、首次原子接受分别记录；本地退休不是对端交付。
+- 每次同步调用返回及实际接受分开；不确定失败仍保留已经接受的 USB 义务。
+- 分片接受跨度、重试间隔和 worker 预算分开。`wait=credit` 是 Native 返回的原因，
+  不是独立验证的控制器 credit 真值；其后到下一次尝试的间隔也含调度及其他工作。
+- 时间差给出原观测值与按 trace 分辨率计算的上下界。量化后的零不能称为零耗时。
+  jiffies 期限不当作纳秒，未取得首次接受时保持 null，不补零。
+
+这些观测不能隔离固件、RF 或 USB 延迟，不证明 NOCP 准确性、完整 credit 守恒、
+引用排空、公平性或性能阈值。需要优化时，应先定位等待段，再用准确新 artifact
+重新验收原业务及相关生命周期门禁。
+
+动态 CMTC 的建立、回复和关闭也须进入同一提交观测命名空间，分别记录尝试、
+实际 Runtime／Ticket consent 结果及同步返回。成功 USB 接受必须有对应 consent；
+失败 consent 不能作为成功提交。核对器仍要求记录身份上的全部已接受 USB 包与
+trace 逐项对应，不因它是动态信令而过滤。新记录按实际匹配的 CMTC envelope
+说明覆盖范围；旧基本通道记录保留原 scope 与源码身份。观测覆盖不证明协商成功、
+硬件 credit 真值或对端交付，这些仍由各自原门禁核对。
+
+控制面失败后，可以只读核对已闭合的应用快照及同一份 CMTC／载荷匹配结果；
+这类诊断使用独立的 `DIAGNOSTIC_CLOSED_PAYLOAD_COMPONENT_ONLY` 状态，明确
+`overall_run_acceptance=false`。它不补造缺失的 daemon-after 观察，不恢复 Ready，
+不放宽原 Down 期限，也不授完整连接生命周期、追踪或整轮资格。正常验收入口仍
+要求原控制角色完成和真实 daemon-after 身份；终态核对器拒绝将诊断状态当作成功。
+
+## 动态通道与 Owned SSAP 并发正确性
+
+显式 `--channel-benchmark-ssap-owned` 要求 `window`、`--channel-benchmark-dynamic`、
+128条／2042字节／窗口8，以及原动态端点角色0或1。它与 parallel、close、rate、
+普通通道的`duplex`负载和安全 Agent 场景分开，当前要求预先冻结的 SSAP `channel_security=0`；
+本地 Owned 审批不能描述为认证、加密或 Bond。新 prepared 必须声明
+`benchmark_ssap_contract_version=2`，boot、原请求、helper、C／Python消费者及
+SDK库均按准确输入绑定。旧 benchmark 不因新标识取得服务并发资格。
+
+每连接角色仍由两个 UID1004／空附加组／零能力的实际 slktest 进程完成128条长消息
+校验回复；同一 Session 的两个 UID1005 Owned 服务，由现有 C／Python客户端以
+UID1004执行四轮、两个方向的读／写／读。管理 UID1000 只承担原有发现／UUID观察。
+两个连接角色共256次通道往返、48次 SDK 读写调用、16个值周期及80个实际审批；
+Owner 本地值检查、真实收据、源文件关闭与退出仍必须完整。
+
+可额外显式指定`--channel-benchmark-ssap-duplex`，选择版本2的Owned SDK请求编排；
+不指定时仍是原版本1顺序入口。每轮的读前／写／读后分别将两端实际C／Python进程
+同时置于原启动屏障后释放，12对请求／角色、24对／两角色。每对必须以两端USB
+证明两个完整请求已提交、首个完整回复尚未接收的交叠区间；仅进程同时运行不够。
+单次与成对调用复用一个有限监督器，成对等待只有一个原始7秒监督期限，子进程
+原5秒期限、Owner原30秒、消息／结束屏障期限均不重置。服务发现仍在原普通负载
+期间，UUID、审批、值检查、撤回和总调用数不减少。
+
+该双向场景是新增能力切片，不是原顺序场景、30秒失败、性能或恢复验收的替代。
+新名称、boot标识或元数据不能把版本1原件重新分类为版本2；二者分别记录准确来源。
+
+原全端 Armed→start／Quiescent→finish 屏障和原始期限不变。监督器在业务期间执行
+真实 SDK／审批和证据写入，因此它是正确性负载，不能作为低扰动性能基线。
+接收和业务发送继续使用原 Session／Grant／credit／Ticket 与唯一 SSAP Engine。
+
+重放必须在同一 guest USB wall 时钟下，找到 SSAP 实际读写窗口之前、期间、之后的
+完整通道请求和对端校验回复；仅应用存活、Root事件或 NOCP 不够。普通动态TCID与
+SMTC10必须不同，长PDU按完整分片末尾判定时序。缺真实交叠则失败，不增加负载或
+插入延时直到通过。该门禁不覆盖通知／指示并发、完整公平性、credit真值、引用排空、
+安全撤销、四设备、冷启动或自然恢复；准确实机范围仍只由资格入口记录。
+
+
+## 失败 Session 追踪的独立诊断契约
+
+`ws73_session_service.py analyze-failed-benchmark RUN --failed-phase 0|1` 只接受已终结的
+失败 VM／control 与对应失败快照；成功目录、运行中数据、缺失 phase 和不一致身份
+均拒绝。它共用原文件、时钟、事件格式、计数和 USB 关联检查，不改写原追踪状态。
+所有入队操作均在输出中，不按有利区间截取：
+
+- `unclosed_software_operations`：未观察到本地退休的原始身份、阶段和前缀字节数。
+- `operations[].retirement_ns`／`admission_to_retirement`：缺少事件时为 `null`，不能填零。
+- `original_gate_qualified=false`、`original_result=FAIL`：诊断成功执行不改变整轮结果。
+
+观测到的软件等待、实际提交、USB 完成、NOCP 和对端应用交付继续分开。实际提交
+缺失或矛盾、错误时钟、捕获／追踪丢失、错误 PB、旧身份及改变的原期限都拒绝；
+只有未观察到的退休端点可明确列作未知。该输出不构成完整追踪、引用排空、安全复用、
+性能或恢复资格。原 `analyze-benchmark` 及生产验收仍要求所有操作闭合。
+
+### 失败业务与主机 USB 候选关联
+
+额外指定 `--application-progress --host-usb`，才读取固定的 `usb-lifecycle.log`、
+`usb-lifecycle.events` 和 `qmp.jsonl`。首版限原双设备 QMP 直通失败快照；按记录中的
+明确端口与 inventory 关联，不查找或打开当前 USB。前两份材料须符合原 manifest
+hash；QMP 的实际 hash 单列，由外层证据封存核对，不能认证可修改 manifest。
+交换连接角色后，按原 guest 端口关联 QMP 记录；应用端列表顺序不是设备身份。
+两端仍须完整覆盖原明确端口集合，重复、越界端口和复位／解绑配置继续拒绝。
+失败业务载荷关联使用包含原应用起点的完整原始 Up→Down 区间，核对真实 peer、角色、
+handle 与对象身份，避免角色交换时同 handle／TCID 的上一轮数据混入。区间内的未知
+载荷仍按原断言拒绝；这不是硬件排除晚到旧 RX 的证明，也不是截短失败窗口。
+
+主机请求按设备／packet pointer 配对，取消、仿真和真实完成分开；pointer 在终态后
+可重用。空输入、未闭合请求、错误身份、长度、时序、重复及超预算拒绝。文件限64MiB、
+50万行、10万个请求；分析不触发驱动、固件或设备操作。
+
+`host_usb_observation.business_legs` 复用原随机载荷解码、严格 ACB 重组与失败报告，
+把实际 TX 片段绑定原 Session 操作；application index 与 admission sequence 分开。
+退休前缀继续标为不完整，未提交队列项不获虚构的载荷身份。首个软件错误、两端原始
+Down 和主机退出事件独立保留，不能由同一日志的相邻行推导因果。
+
+主机日志不含载荷或 guest URB ID。`host_candidates` 仅在完整、有序、单请求流的
+长度序列有唯一匹配时输出候选；拒绝歧义。等长丢失／重复互抵不能独立排除，不能
+将此字段称为跨域包身份或安全证明。主机请求、主机重提交及 guest 重提交间隔各在
+原时钟中计算；不相减 host／guest 时间，不把待数据时间或重提交间隔称为callback
+CPU时间、纯空口时延或性能资格。单完成无配对样本时明确记不足，不填零。
+
+若完整保留的 trace 没有该 connection lifetime 的 `Session work.error`，默认分析仍
+拒绝套用“首个软件错误”模型。只有显式增加 `--observe-without-work-error` 才生成诊断
+v2：`first_software_fault` 和以它为起点的区间均为 `null`，并记录
+`NO_MATCHING_SESSION_WORK_ERROR_OBSERVED_IN_RETAINED_TRACE`。这不排除 daemon 的事务
+超时、其他错误或未插桩路径。已有匹配错误不得被该选项隐藏；两端真实 Down、完整
+原失败窗口、原 trace／USB 关联和材料封存仍是必需条件，不能产生业务 PASS。
+
+
+## 排队清除的观测终态
+
+新采集器声明 `queue_retirement_contract_version=2`。Session queue 的 stage 0／1／2
+仍表示入队、出队、Session 持有操作的本地退休；stage 3 单独表示尚在作者队列中的
+对象被清除。阶段 3 不归还 controller credit，也不代表 USB、控制器、对端完成或
+引用排空。已开始的 PB 操作由 Session 的 `tx_inflight` 保留，不在该队列清除范围。
+
+分析器只在明确版本2的 queue 事件中接受 stage 3，并要求该对象没有实际接受的
+物理前缀；曾出队后重新排队的对象必须逐次对应确定未提交的 EAGAIN。任何接受
+证据、不确定失败、缺少入队、改变的期限或双重终态均拒绝。此前缺少版本的捕获
+继续按版本1校验，不能补造清除事件。`queued_discarded_operations` 仅在实际观察到
+该终态时出现；它不是业务丢包、协议 debt 清零或 Free 的证明。
+
+VM失败路径先尝试停止自己拥有的应用监督器及daemon，再封存ABORTED追踪，捕获
+清理期间的本地队列退休。停止等待有原上限，失败追踪始终不变成成功；未观察到的
+端点继续为null，不能因为调整封存位置便宣称callback／物理排空。
+
+## intent 过期与 binding 退休的错误阶段
+
+当前 deadline 场景显式声明 `intent_phase_contract_version=2`，分别严格检查：
+
+- 同一有效 binding 上已过期的 intent：普通用户实际 `sendmsg` 返回 `ETIMEDOUT`；
+  前后 channel-info 相同，重新 prepare 成功；随机拒绝标识不得出现在 USB 捕获中。
+- 原已开始 PDU 超时、Session 已 Failed 后：原 Runtime／Grant 仍有效时，裸收发、
+  新 prepare 和原缓存 intent 重试均返回 `ENOTCONN`。Binding 可仍存在；首次发送
+  准入和最终入队都先检查 Session 活动性与 Binding 存活，再检查 intent。
+  不能用过期错误代替终态；更早的撤权／旧 lifetime 拒绝仍保留。
+
+第一项使用独立的 100 ms 原始 setup 期限，在被持有 PDU 准入前结束，不延长或
+续期后者的 5 秒期限。两项不是任选错误码；缺少任一阶段、旧 boot、身份变化或
+拒绝载荷到达 USB 都失败。历史版本1保留原命令和精确断言；版本2不改写历史
+失败、扩大历史资格或证明物理义务已排空。
+
+## 有界满负载 Session 观测配置
+
+`--session-service-observe --session-service-profile full-load-v2` 显式选择 VM 工具的
+新观测配置，不能替代业务模式、授权或完整门禁。默认仍是原 2048 KiB／CPU 与
+8 MiB 文本预算；历史记录按其原配置解码，不补填新配置或改写丢失计数。
+
+| 配置项 | `full-load-v2` |
+| --- | --- |
+| VM CPU 数 | 2 |
+| 请求 ring buffer | 8192 KiB／CPU |
+| trace 文本读取上限 | 32 MiB |
+| Session 事件上限 | 100000，另有两个边界 marker |
+
+实际 KiB readback 由捕获的 subbuffer／header 布局精确核对，不能只比较请求值。
+版本2配置必须贯通请求、boot token、原始 trace 收据、分析与最终摘要；缺失、重复
+或不一致均拒绝。读取器在解码及 hash 前只读字节预算加一，超预算直接失败；事件
+预算、原完整 header 计数、零 overrun／commit overrun／drop、双 CPU、时钟、身份及
+全部业务／USB 检查均保留。增加预算不保证不丢失，也不构成追踪或性能资格。
+
+配置依据须绑定实际捕获和容量估算假设，分别记录 kernel ring 内存、文本与解析
+事件预算。编码开销和页尾浪费的估算不是内核 ring-buffer 正确性证明。不同配置的
+失败与成功分别封存；满负载追踪未通过时，独立业务子检查不能把整轮升级为通过。
+
+
+## 显式只读 transport 快照
+
+`--channel-benchmark-credit-observe` 只能附加到原固定的动态通道
+`128 × 2042` 字节、窗口8、Owned SSAP 场景（顺序或显式 duplex）。还要求独立
+QMP 双设备 VM 与 `--session-service-observe --session-service-profile full-load-v2`。
+默认场景及历史 boot 标识不变；新场景使用 `owned-credit`／`owned-duplex-credit`，
+prepared 明确声明 `benchmark_credit_observation_contract_version=1`。
+
+观察器通过现有 `slctl --adapter PATH transport-status CONNECTION` 和生产
+`GetTransportStatus` 查询同一物理 Session。调用者是 VM 内 UID/GID1000、无附加组
+和 capabilities 的获准管理观察者；业务应用仍是独立的 UID1004。它复用现有
+snapshot decoder，不创建 Engine、不发送 DLI、不更新 credit，也不使用“已排空”判据。
+
+| 限制 | 契约 |
+| --- | --- |
+| 采样 | 每秒一对，两端串行，最多128对／128秒；落后时记缺测，不突发补采 |
+| 查询 | 生产原1秒期限，外层监督1.25秒；只允许固定只读命令与原完整连接身份 |
+| 输出 | stdout／stderr 各8192字节，读取时限额；报告最多32 MiB |
+| 生命周期 | 一个拥有的后台线程，停止后有界 join；每个自有 CLI 子进程回收后才准入下一个 |
+| 结果 | 实际快照、拒绝、超时、停止取消、缺测分别保留；失败不得填零或制造 values |
+
+后台线程只维护私有有界收据，join 后交给原监督器封存。缺少两端有效观察、错误
+身份、源文件不一致、输出超限、预算耗尽或未完成 join 均不能通过集合完整性检查。
+正常业务门禁和原期限不变。这是带 D-Bus 查询及记录开销的正确性诊断，不能作为
+低扰动性能结果，也不能证明 NOCP 真实性、旧 debt 归属或 callback／物理排空。
+
+`python3 tools/ws73_transport_watch.py RUN --failed-phase 0|1` 是另一个只读失败诊断
+入口。它要求原 VM/control/role 均失败、原请求与 boot 一致及封存文件校验通过；
+不要求伪造成功的 quiescent 屏障，也不删除失败。输出固定为未取得资格，不能替代
+原成功分析、RX 全区间覆盖检查或对端应用验收。历史资料按原工具身份重放。
+
+
+## 失败捕获的显式 pending RX 尾段
+
+默认失败分析仍要求每个 endpoint 的事件覆盖原完整失败 phase。显式
+`--pending-rx-tail` 只适用于 `ws73_rx_gap.py RUN --failed-phase N` 或
+`ws73_session_service.py analyze-failed-benchmark RUN --failed-phase N` 的离线诊断，
+输出 `rx_coverage_contract_version=2`；正常成功入口和旧默认输出保持原样。
+
+该契约要求原冻结 manifest 中的捕获与 stats hash 匹配、完整停止统计与零丢失、
+原全部应用 start 到失败 role end 的窗口。parser 只为本次明确选择的目标 USB
+事件计算 span，不能用无关设备或未校验的 pcap 时间戳延长范围；首尾须在窗口外
+至少1µs。每端单 URB 的顺序、原提交、完成和重提交仍由原 `observe` 检查。
+若一端最后事件早于窗口终点，还须是同一 RX URB 的有效 pending 提交，不能是
+错误、完成后未提交、换 URB 或没有原始提交。尾段长度和原始 record／offset 保留。
+
+这是完整捕获内的“已提交但没有新事件”观测，不能表示硬件仍健康、callback 已执行、
+设备状态已清除或引用已排空。它信任捕获完整性及无跳变的 guest wall clock；
+pcap 内容不具备身份认证。历史默认拒绝和整个业务失败保留，不因新诊断升级为
+当前镜像资格。两端应用实际校验、协议时限、NOCP 归属和自然恢复仍各自验收。
+
+
+## QEMU 请求的逻辑终态
+
+新 lifecycle 采集器在原 metadata 事件之外同时启用已有的
+`usb_host_req_control`、`usb_host_req_emulated`、`usb_host_req_canceled`。准备时
+通过实际 QEMU `-trace help` 核对支持，不更换 QEMU、不生成 DLI／业务回复。
+控制请求与数据请求使用不同类型，同一 packet 指针每次 admission 都是新实例。
+
+`python3 tools/ws73_usb_lifecycle.py RUN` 只读分析已终结的原 VM 目录；捕获事件
+声明与日志须匹配冻结 hash，不能将旧日志补上事件名冒充新采集。限制为32 MiB
+日志、25万行、10万请求、64个同时 pending 与64 MiB结果；读取时先限制字节。
+原请求、取消、完成、同步返回、缺失和未知终态分别保留，不能静默覆盖活跃指针。
+
+| 观察 | 含义与限制 |
+| --- | --- |
+| `QEMU_COMPLETION` | QEMU callback 或同步返回元数据；保留原status／length，不是对端应用交付 |
+| `LOGICAL_CANCEL` | 撤销packet关联；原libusb callback／buffer释放及物理义务可能仍未观察到 |
+| `EMULATED_CONTROL_RETURN` | QEMU对标准USB控制请求的虚拟返回，不是物理数据或SparkLink Complete |
+| pending／未关联终态 | 整体逻辑关联不完整；不猜测为控制请求，也不升级为成功 |
+
+`LOGICAL_USB_REQUESTS_CLOSED` 仅表示该有限日志中的请求都有唯一可观察逻辑终态。
+它不授credit退款、物理callback／引用drain、硬件清除、NOCP真值、RF或业务资格。
+Host／guest绝对时间不得直接相减；长度／顺序相同仍不是带认证的包身份。默认业务
+门禁、普通用户fd、Session／Grant／Ticket、原期限与VM-only均不变。
+
+
+分析器退出码只表示命令是否完成解析，不能单独作为关联门禁。调用者须核对
+`logical.status == LOGICAL_USB_REQUESTS_CLOSED`、零pending及零未关联终态；即使
+满足这些条件，`original_gate_qualified`仍为false，原业务与物理drain门禁另行判断。
+
+### 专用 QEMU 的原生回调观察
+
+`tools/ws73_qemu_event_observer.py --source BASELINE --output NEW_SOURCE`
+只生成独立实验 QEMU 源码；它要求工具中固定的完整 baseline hash，目标文件必须
+不存在。原 source／binary／prepared image 不得替换。这不是普通运行选项，也不是
+默认驱动的新能力；编译、准备和实际执行身份均须单独封存。
+
+该 fixture 以100 ms心跳记录现有libusb event-pump入口／返回、原生callback入口、
+取消后callback、request分配／释放及pending数量。每设备最多4096 tick，最多扫描
+128 pending；无payload、密钥、USB操作或协议结果注入。已有hold／error／reset
+设施仍须由实际QMP记录证明未启用。选择此二进制本身就是显式实验接入。
+
+离线函数`ws73_usb_lifecycle.parse_native(text, explicit_targets)`仅检查有界闭合日志。
+`closing`表示观察timer已退休，`drained`表示原libusb abort loop已返回，均不自动
+证明物理drain、NOCP正确归属或对端交付。缺少终态、错误身份、重复／倒退计数、
+预算耗尽及注入标记拒绝；原业务FAIL不得因计数完整变为PASS。新增心跳会影响调度，
+不能用于授予性能收益或精确RF时延资格。主机内时间线与guest时钟仍分开核对。
+
+`tools/ws73_qemu_poll_observer.py --source NATIVE_BASELINE --output NEW_SOURCE`
+只生成另一个固定源码的实验fixture，复用上述原timer。每份原生快照后对最多8个
+libusb fd执行`poll(..., 0)`，通过本进程fd链接及匹配的`fstat/stat`识别USB节点。
+不read／reap URB，不打开设备，不调用event pump，不新增协议或恢复操作。
+`parse_native_poll(text, explicit_targets)`要求逐份原native／poll配对、完整fd集合、
+返回数量、就绪位及所属USB身份；lookup／syscall／身份错误、溢出或缺测不能填零。
+错误／hangup位保留，不能解释成数据完成。
+
+这些是离散的fd级就绪快照：不能分辨具体endpoint，不能证明两次采样之间一直没有
+完成，不能认证generation或对端交付。宿主usbfs实现及内核来源单独记录，不能用
+实验VM内核的源码冒充宿主实现证明。新增元数据系统调用影响调度，不授性能资格；
+原应用门禁、有限队列、credit／Ticket／Grant及原期限保持不变。
+
+### 受控取消时的 RX 长度诊断
+
+`ws73_qemu_rx_terminal_observer.py`从固定的poll-observer源码生成独立fixture。
+它在原data callback的空packet分支之前记录bulk IN `0x81`的非成功status、
+`actual_length`和有效前缀SHA256，不保存payload。每设备最多128条，摘要最多20KiB；
+无效长度、错误身份、缺终态、重复实例或预算耗尽保持未证明。
+
+`ws73_target.py run --usb-partial-rx-target 0`（或`1`）是独立诊断入口，仅接受准确
+新fixture及原顺序Owned／window负载。选择器要求phase1的真实未完成应用PB前缀、
+两设备各一条pending RX、2至4秒静默和新鲜的完整native／poll快照。guest端口映射
+与连接角色顺序分开核对。条件不满足时不执行，不扩大期限或重试追逐样本。
+
+`--usb-partial-rx-target peer-of-unfinished`可在原命令明确指定的两个白名单slot中，
+选择唯一未完成应用PB的对端。它不发现设备，不按枚举顺序挑选，不回退到其他端口；
+两个方向均未完成或都无候选时不操作。选择、原guest映射、实际host叶节点及原pending
+请求分别留证，实际动作前仍重新检查。固定`0`／`1`语义保持，不因未命中临时改目标。
+
+`source-of-unfinished`选择同一唯一PB的发送端，测其IN上可能尚未完成的反馈；
+`peer-of-unfinished`测接收端数据。两者只选择测量端点，不判断缓冲中的内容是NOCP
+或业务数据；原取消callback仅报告长度／摘要，不能据此授予credit或交付资格。
+
+`--usb-partial-rx-phase`接受`0`、`1`、`active`，必须与明确target同时使用。默认`1`
+保留旧命令范围。`active`只检查原phase0／1的固定请求及终态路径，恰好一个请求
+已创建且未终结时才选择；完成的phase0不妨碍明确的phase1，无请求或两份活跃请求
+不操作。不是目录扫描、缺失场景回退或扩大业务验收；原阶段、角色、请求hash均留证。
+
+执行时仅通过既有QMP `device_del`移除指定VM leaf，由原teardown取消及排空；不
+re-add、reset或切电。权限及白名单仍由原runner强制。该行政动作不是应用撤权或
+generation准入证明，另一只设备的保留状态和业务须分别验证。
+
+显式live-prefix解析只返回未具资格的候选；默认闭合日志检查不变。终态必须关联
+决策时原pending packet／分配实例及实际取消callback。零长度不证明硬件未收到
+部分数据，非零不证明完整HCC或对端应用交付。选择此选项的原业务／自然恢复门禁
+始终失败；观测完成只允许报告原始长度，不归还credit或宣称根因已查明。
+
+SSAP子进程回执分别拒绝staged SDK环境不符、非整数／非零exit及非空／非字符串
+stderr。子进程失败须检查原exit／stderr，不能仅由上层success-receipt错误猜测为
+环境问题。完整回执和原失败保留；正常结果仍需原凭据、屏障、完整值及精确参数检查。
+
+## 原失败窗口的应用与传输进展
+
+完整 checkout 的离线分析入口支持 `analyze-failed-benchmark --application-progress`。
+输入是原失败 VM 的完整输出目录及 `--failed-phase 0|1`；必须包含原 manifest、控制
+请求、已校验的失败快照、两份 schema2 应用报告及完整 USB 捕获。它复用现有失败
+窗口门禁，不接受调用者裁剪时间区间，也不执行设备操作。
+
+目前该切片只支持动态基本通道的 window／peer 配对、socket 故障终止、逐消息无
+errno／超时／损坏的已观察前缀。其他失败形状明确拒绝，不能把拒绝或缺失原件当成
+成功。报告字节须与原闭合快照的长度／hash 一致，不能仅因 JSON 可解析就接受。
+
+结果分别重算软件准入、实际应用校验回复、已准入未回复及尚未尝试的请求。
+`timed_out=0` 也可能同时存在故障终止和未回复请求：不能从零超时推导全部交付。
+本进展摘要不发布时延／吞吐资格；成功检查入口继续拒绝 `INCOMPLETE`。
+
+传输关联使用同一 ACB 重组器，保留被实际连接事件退休的未完成前缀。退休按 USB
+设备、connection handle 和方向区分；其他 handle 的断链不能抹去未完成流。
+前缀只能关联原已准入请求的随机序号／载荷目录中的候选，分别记录对端完整 USB 提交是否
+存在、已观察字节数和断链事件。前缀不是完整 PDU，对端 USB 完成不是本端应用收到。
+相同的字节边界也不能单独证明固件缓冲区所有权、credit 正确性、空口丢失或根因。
+
+## 子进程 stdout 的闭合与失败尾部
+
+新的 VM 监督结果带 `benchmark_stdout_capture_contract_version=1`，每应用包含
+`stdout_capture`。正常收尾和失败清理共用同一个非阻塞读取器；回收子进程后继续
+读取其原管道，直至 EOF、原期限或 65,536 字节上限，不因退出码为零就认为输出完整。
+正常收尾沿用原 15 秒阶段期限；失败清理每子进程另外最多申请 1 秒采集预算，
+只读剩余输出，不释放业务屏障、重试请求或延长协议期限。调度延迟越过该期限也
+不能获得完整采集资格，预算不是实时响应承诺。
+
+原始 `.stdout` 文件保留字节，收据记录长度、SHA256、EOF、UTF-8 有效性、超限及
+错误。后代仍持有写端、输出超限、读／写错误或非法 UTF-8 均明确未闭合；不会
+用替换字符后的 JSON 字符串冒充原始文件。管道读取结束后关闭读端。
+
+完整采集与应用成功分开：非零退出也可取得完整原输出，但原业务仍失败。失败后
+补收的 `Quiescent` 文本不补造已观察屏障，不覆盖原异常、失败或缺失场景。成功
+校验要求选定契约下每应用的完整收据与原字节吻合；历史结果保留原工具、命令及
+原始字节，不倒填新收据。此整改不改变 schema2 应用报告、Session、credit 或 Ticket，
+也不代表新工具 artifact 已通过真实设备门禁。
+
+## 固定时刻的连接级查询
+
+VM runner 的 `--channel-benchmark-link-probe` 是独立、默认关闭的正确性诊断选项。
+它要求原有动态 window8／128×2042／Owned 并发负载、credit 观察及
+`--link-measurements`，不改变 `slktest` 的业务循环或 schema2。
+每阶段从两端实际 start 屏障的较晚时刻起算 6 秒，顺序对每端最多执行一次
+`slctl link-measurement <connection-path> rssi 5000`，不重试。
+
+查询复用管理角色、当前 generation／connection lifetime、Native 命令 credit 及
+提交票据。每请求仍为原 5000 ms 协议期限；外层子进程最多 7 秒只用于采集和回收。
+业务、SSAP 和 Down 的原始期限不变。提前退出或停止时保留未尝试、失败、超时及
+取消收据，停止线程并回收自己的子进程；这些动作不证明物理命令／USB callback
+已经排空，也不归还协议 credit。
+
+成功证据要求实际普通用户凭据、完整身份与原始期限、类型化回复，以及双端捕获中
+对应的 `0x180c`／Complete。缺失、缓存值、取消后的伪结果或仅有软件日志不够。
+RSSI 回复也不证明读取时刻的新 RF 状态或对端业务交付。本配置含管理干预，不能称为
+低扰动性能基线。未选此选项的原负载和失败校验行为保持原范围。
+若查询干预后业务恢复，也只记录该配置下的结果；不能把定时查询加入默认生产路径
+充当修复，或免除不含该干预的原业务门禁。
+
+原业务失败时，可对保留的完整运行目录执行纯离线查询分析：
+
+```sh
+python3 tools/ws73_link_measurement.py diagnose-load --directory "$RUN" --phase 1
+```
+
+它保留原 FAIL，只核对原请求／boot／phase、有限采集及真实 DLI 回复，不裁剪失败窗口，
+不执行设备操作，不把两个查询成功升级为整个业务门禁通过。
+
+## 配置对照与阶段归因
+
+比较两次运行前，分别绑定冻结配置、实际编译二进制、执行 helper 和原始 DLI。
+相同 helper 不保证相同请求参数；输入通过配置校验也不代表控制器已采用。连接参数
+需要将独立配置生成的完整 Create 请求与两端实际成功事件对应，分别记录请求值和
+返回的原始值。不同配置的运行不能直接作为纯型号、固件或语言对照。只改变一个配置
+项的有限探索仍受调度、设备和环境条件影响，不自动建立因果关系，也不修改原失败。
+
+SSAP 阶段分析应区分应用放行、请求 USB 提交、对端接收、授权决定、Session 软件
+准入与出队、回复 USB 提交、调用端接收、API 返回及进程退出。未记录的时点保持缺失。
+授权决定打印在调用 `reply` 之前时，其后到 USB 的间隔包含后续 SDK、daemon 和内核
+处理；若已有严格关联的 Session 追踪，应继续拆分软件排队及真实 credit 等待。
+不要将该整个间隔归给绑定语言，也不要将进程结束时刻当成 API 返回时刻。
+
+同一 guest 内的 wall 与 monotonic 时间仍须通过原始采集映射及误差界关联，不能直接
+相减。跨端 USB 区间包含固件、传输和调度，不单独表示 RF 时延。publisher 的进程启动
+不是内部租约计时器的准确创建点；只有对应原始时点才能支持准确期限判断。
+
+未完成运行可保留有限的逐调用诊断，但不能放宽完整门禁的调用数量、原期限、双角色
+范围或收尾屏障。基本失败追踪可用，不代表更严格的应用窗口、完整授权决定或业务
+校验器也接受该失败形状。缺少其中一个必需条件时，分别标明诊断范围和仍未证明项，
+不得补造错误字段或成功回执来适配校验器。

@@ -55,7 +55,7 @@
       "Original scope retained for historical v1-v3",
       "Publish source/offline summary only"
     ],
-    "next": "Native B still needs accurate-artifact two-peer methodv4/eventcontract2/combinedOwnedProvider and original discovery/connect/socket,length,lifecycle/peerbusiness;no unchanged failed Native,PM or register retries. C now has one shared guarded ROM/Runtime fixed-read experimental consumer with limited offline validation;private actual device observations remain separately bound and are not Host,Ready,protocolcredit,drain or recovery. Continue bounded typed DirectUSB submit/cancel/drain and same-Engine ServiceChannel/ownHost/Windows C/D/E/W along actual consumers;only KernelPacket/vendor P4. Preserve full S0-S6/19WP/10FV/12DG,originalbudget/acceptance,VM-only,strict per-leaf allocation and public source/offline-only policy;natural-root/nonmanual-recovery OPEN.",
+    "next": "Native B still needs accurate-artifact two-peer methodv4/eventcontract2/combinedOwnedProvider and original discovery/connect/socket,length,lifecycle/peerbusiness;do not repeat unchanged failed Native/PM/register attempts. C now shares actual bounded ROM/Runtime bulk exchange with limited offline validation and separately bound private controlled cancellation observation;original IO failure remains failure,no Host/credit/drain/recovery qualification. Next C:controller owner/epoch and typed continuous transport/stop-drain,explicit E/US boot/HCC before ownHost D;reuse actual consumers and production codecs,not another Engine. Continue sameEngine ServiceChannel/Windows C/D/E/W without whole-control prerequisite;only KernelPacket/vendor P4. Preserve S0-S6/19WP/10FV/12DG,originalbudget/acceptance,VM-only,leaf allocation,public source/offline-only policy,and natural-root/nonmanual-recovery OPEN.",
     "actor_obligation_regression": {
       "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
       "entry": "ssap_engine::exchange_loop",
@@ -529215,6 +529215,42 @@
               "before_sha256": "bef9a8841435f49c990136fcd658cccbdbfddd907e60db2092aa1ca5f55a3d0a",
               "body_sha256": "59da6ee65764fbf1121e31b4d92b7b9bfb84b214b6584b590d433f529e748841",
               "updated_at": "2026-11-07T01:46:16Z",
+              "original_scope_preserved": true,
+              "source_offline_only": true,
+              "private_execution_details_published": false
+            }
+          ]
+        },
+        {
+          "id": "directusb-shared-bulk-lifecycle-20261107",
+          "source_commit": "f42ce48411bb0edf1201b87f25d369e33791f6f2",
+          "validation_source_commit": "f26445f870b2cece09c54d0660d142e5698bc1bf",
+          "status": "IMPLEMENTED_LIMITED_OFFLINE_SHARED_BULK_PRIVATE_CONTROLLED_OBSERVATION_SEPARATE",
+          "scope": "Actual ROM and fixed Runtime passive-IN consumers share one bounded bulk exchange. Production function tests substitute only endpoint/clock,strict/MSVC/refusal and source mutants are limited offline checks;private controlled USB cancellation remains separately identified,not Host/drain/business/recovery proof.",
+          "checks": {
+            "implementation": "OneactualROM/Runtimebulkexchange,freshreceipt,onepending,512bytebudget,original2secsubmit/waitand1seccleanupbound,partial/error/lateoutcomesretained;cancel/releaseneverturnoriginaldeadlineintosuccess. NoNativeHost/Engine/protocolcredit/defaultproductiondependencychange.",
+            "tests": "14initial/15strengthenedactualguard/parser/productionfunction tests,50Python,strictClippy,MSVCalltargetstypecheckand3frozenbinarynoargrefusals. Explicitendpoint/clockfixtures,notOSconcurrencyproof.",
+            "negative_controls": "3actualproductionmutantsrejectedwithuniquelibidentities/separatestablemutationcache;freshrecompiledrestored15pass. Firstsharedcachev1wrongtestbinaryrestorefailure retainedandunaccepted;targetedcachecleanunderlockdidnotchangefrozenartifacts.",
+            "evidence": "ActualVMconsumer/rawUSB/nativecallbackandpersistentverifiernegatives separatelyindexedwithoriginalIOerrorretained.No hardwaredetailsorprivatecompileidentitiespublished;zeropending/free/release notfullOSorfirmwaredrain."
+          },
+          "qualification_transfer": false,
+          "new_real_device_qualification": false,
+          "new_accepted_proof": false,
+          "previous_goal_turn_classification": "PROGRESS",
+          "not_tested": [
+            "FullDirectUSBcontrollerownership/epoch,continuousactor/typedCommandEventACB,explicitE/USfirmwareboot/HCC,physicaldrain/OSconcurrencyandpeerbusinessisolation",
+            "AccurateNative2peermethodv4/eventcontract2/combinedProviderandoriginaldiscovery/connect/socket/length/lifecycle/peerbusiness",
+            "Windowsruntime/WinUSB/IPC/permissions,UserHostSession/creditandsharedSSAPinterop,fulloriginalsecurity/fourdevice/Profile/deploy/recovery/release"
+          ],
+          "issue_sync": [
+            {
+              "repository": "sparklink",
+              "number": 24,
+              "url": "https://github.com/OpenSparklink/sparklink/issues/24",
+              "state": "open",
+              "before_sha256": "1f1b71ba57acd221ea4d3cd123a46e268bb864be92d68db535b47d7f692f710a",
+              "body_sha256": "f5d3042426d9cd693d9d862e7a8e70ee654d17739ff1cf4ba2da206e6ac980ce",
+              "updated_at": "2026-11-07T02:26:15Z",
               "original_scope_preserved": true,
               "source_offline_only": true,
               "private_execution_details_published": false

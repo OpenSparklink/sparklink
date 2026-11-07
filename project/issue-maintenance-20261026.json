@@ -9187,6 +9187,27 @@
       ],
       "closed": [],
       "qualification": "LIMITED_SOURCE_OFFLINE_ONLY_PRIVATE_RUNTIME_OBSERVATION_NOT_HOST_BUSINESS_OR_RECOVERY"
+    },
+    {
+      "id": "directusb-shared-bulk-lifecycle-20261107",
+      "source_commit": "f42ce48411bb0edf1201b87f25d369e33791f6f2",
+      "validation_source_commit": "f26445f870b2cece09c54d0660d142e5698bc1bf",
+      "issues": [
+        {
+          "repository": "sparklink",
+          "number": 24,
+          "url": "https://github.com/OpenSparklink/sparklink/issues/24",
+          "state": "open",
+          "before_sha256": "1f1b71ba57acd221ea4d3cd123a46e268bb864be92d68db535b47d7f692f710a",
+          "body_sha256": "f5d3042426d9cd693d9d862e7a8e70ee654d17739ff1cf4ba2da206e6ac980ce",
+          "updated_at": "2026-11-07T02:26:15Z",
+          "original_scope_preserved": true,
+          "source_offline_only": true,
+          "private_execution_details_published": false
+        }
+      ],
+      "closed": [],
+      "qualification": "LIMITED_SOURCE_OFFLINE_PRIVATE_CONTROLLED_OBSERVATION_NOT_HOST_OR_RECOVERY"
     }
   ]
 }

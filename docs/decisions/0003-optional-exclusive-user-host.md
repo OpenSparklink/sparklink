@@ -45,6 +45,12 @@ daemon/Host依赖。ROM固定READM与Runtime固定memory-backpressure class-IN�
 一次，错误/短/长/晚到不成功，接口release与请求结果分记，不能用release/drop/进程退出
 证明OS最终排空或固件状态清除。全零是原始传输字节，不能推导有效访问、型号、固件、
 DLI信用、Ready或恢复。接口claim只排他当前接口，不证明完整controller所有权。
+ROM与固定Runtime IN82复用同一实际bulk交换，单在途/每次至多512字节；原2秒期限
+在submit前重验、提交后重算等待，额外1秒清理消耗取消调用时间。真实completion、
+部分/错误/迟到与隔离分别保留；即使取消后返回成功completion，原超时仍失败。
+只取回自身endpoint completion、零pending、free或release不授完整OS/固件drain，
+不生成Host credit/Ready。变异实验与普通构建缓存/库身份隔离，避免错误复用测试产物；
+恢复失败不能被局部红测覆盖，正向须确认重新编译准确源码。
 
 实际生产函数回归显式替换时钟/I/O，限定离线、Linux VM观察和Windows编译须分开。
 非Linux执行当前明确Unsupported；MSVC类型检查不授WinUSB或平台运行资格。

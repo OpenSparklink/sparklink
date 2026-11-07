@@ -86,19 +86,20 @@ KCFLAGS=-Werror模块构建通过，保留1条子make警告；checkpatch为0erro
 启动门禁逐项区分 BSP、真实 CLOSE ACK、配置 TX、型号、Ready 与业务交付；任一局部观察不替代后续状态。
 来源为结构化切片 `native-startup-gate-boundaries-20261107`；未完成项和下一步由生成的 `batch.next` 维护，不据规划或准备产物授资格。
 
-## DirectUSB固定只读消费者：实现与限定离线范围
+## DirectUSB实验消费者：共用bulk与限定离线范围
 
-源码[c22607b](https://github.com/OpenSparklink/sparklink/commit/c22607b707e25e21a478c213c4613a4e8c1ba8fb)复用同一ROM工具及显式scratch VM/guest边界，接通一个固定Runtime class-IN读。
-唯一配置/接口/五端点、原期限、fresh记录/构造前准入及短/长/错/晚/重复拒绝已实现；
-release只记其结果，不制造drain、DLIcredit或Ready。默认生产依赖、ROM命令/schema不变。
-7项实际guard/nusb parser/生产转换、50项工具、严格Clippy和冻结二进制拒绝通过；时钟/
-I/O是明确fixture。MSVC all-targets仅类型检查，非Linux执行明确Unsupported。
+源码[f42ce48](https://github.com/OpenSparklink/sparklink/commit/f42ce48411bb0edf1201b87f25d369e33791f6f2)保留固定控制读取，ROM与Runtime单IN消费者共用实际有界bulk交换：
+fresh记录、单在途/至多512字节、submit/wait原2秒期限及额外1秒清理；部分/错误/迟到与
+未排空分记，取消完成或release不把原超时变成功。原ROM命令/schema、默认daemon/Host不变。
+验证[f26445f](https://github.com/OpenSparklink/sparklink/commit/f26445f870b2cece09c54d0660d142e5698bc1bf)覆盖独立字节预算及submit/cancel耗时，15项生产函数/guard/parser、50项工具、
+严格Clippy、三种冻结binary拒绝和MSVC类型检查通过；端点/时钟是明确fixture，非Linux执行仍Unsupported。
+三个生产源码变异由实际测试拒绝，隔离缓存/库身份后重新编译原包的15项通过；首轮缓存
+污染的恢复失败保留且整轮未接受。测试提交不当编译/执行身份，实际VM仍按原精确产物记录。
 
-私有Linux VM的实际消费者、原始捕获/完成核对、六项证据负对照及所有失败单独索引；
-公开仅源码/离线摘要，不在此转授完整Host、Windows、Native双端业务、固件身份、物理
-drain、形式化或恢复资格。连续传输/owner与epoch、显式固件/HCC、提交取消/排空、
-ServiceChannel/共享Engine与全平台业务仍缺失，原S0–S6及全部新增范围不减。
-唯一结构化切片`directusb-runtime-control-consumer-20261107`；历史报告和失败保持原身份，下一步见生成的batch.next。
+私有VM、原始USB/主机完成及证据负对照另索引；公开仅源码/离线摘要，不授完整Host、
+Native双端业务、Windows运行、最终OS/固件drain、形式化、自然根因或非人工恢复资格。
+controller所有权/epoch、连续包传输/stop-drain、显式启动/HCC和同行业务、UserHost与共用
+Engine仍缺失；原完整S0–S6/19WP/10FV/12DG和新增范围保留。切片`directusb-shared-bulk-lifecycle-20261107`，后续仅见生成batch.next。
 
 ## 平台与通道边界：限定离线通过
 
@@ -283,7 +284,7 @@ Clippy通过，owner-loss通知负对照检出失败。旧请求不能随同名 
     "Original scope retained for historical v1-v3",
     "Publish source/offline summary only"
   ],
-  "next": "Native B still needs accurate-artifact two-peer methodv4/eventcontract2/combinedOwnedProvider and original discovery/connect/socket,length,lifecycle/peerbusiness;no unchanged failed Native,PM or register retries. C now has one shared guarded ROM/Runtime fixed-read experimental consumer with limited offline validation;private actual device observations remain separately bound and are not Host,Ready,protocolcredit,drain or recovery. Continue bounded typed DirectUSB submit/cancel/drain and same-Engine ServiceChannel/ownHost/Windows C/D/E/W along actual consumers;only KernelPacket/vendor P4. Preserve full S0-S6/19WP/10FV/12DG,originalbudget/acceptance,VM-only,strict per-leaf allocation and public source/offline-only policy;natural-root/nonmanual-recovery OPEN.",
+  "next": "Native B still needs accurate-artifact two-peer methodv4/eventcontract2/combinedOwnedProvider and original discovery/connect/socket,length,lifecycle/peerbusiness;do not repeat unchanged failed Native/PM/register attempts. C now shares actual bounded ROM/Runtime bulk exchange with limited offline validation and separately bound private controlled cancellation observation;original IO failure remains failure,no Host/credit/drain/recovery qualification. Next C:controller owner/epoch and typed continuous transport/stop-drain,explicit E/US boot/HCC before ownHost D;reuse actual consumers and production codecs,not another Engine. Continue sameEngine ServiceChannel/Windows C/D/E/W without whole-control prerequisite;only KernelPacket/vendor P4. Preserve S0-S6/19WP/10FV/12DG,originalbudget/acceptance,VM-only,leaf allocation,public source/offline-only policy,and natural-root/nonmanual-recovery OPEN.",
   "actor_obligation_regression": {
     "source_public": "226c31bae2f3f889d664ee795efe55722144de42",
     "entry": "ssap_engine::exchange_loop",

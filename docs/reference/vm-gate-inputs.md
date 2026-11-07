@@ -327,6 +327,30 @@ DLI命令/data credit、ACK、Ready、安全或对端交付；零回复也不能
 MSVC目标仅检查实际源代码类型；非Linux入口明确拒绝执行，Windows设备运行尚未实现。
 ROM原命令、schema和调用者保持，源码变化仍需各自准确artifact资格，不继承历史PASS。
 
+### DirectUSB有界bulk与运行期只接收（实验消费者）
+
+同一独立包的ROM与`ws73-directusb-receive EXPLICIT_GUEST_PORT`共用实际bulk交换；
+不进入默认daemon，不新增Host或协议Engine。接收模式必须使用
+`ws73.directusb_receive=1 ws73.directusb_guest=<端口>`，与其他DirectUSB模式互斥；
+沿用上述精确Runtime配置/五端点与父runner资源检查。只对固定寄存器IN端点`0x82`
+提交一次512字节接收；不发送寄存器setup OUT，不解释所收字节为寄存器值、HCC/DLI、
+Ready或协议credit，不复位/下载/唤醒，不按枚举顺序选设备。
+
+共用交换仅允许一个在途、每次至多512字节；IN还须满足实际max-packet的非零整数倍。
+记录必须fresh，忙、预算/原期限耗尽在调用nusb submit前拒绝。剩余等待时间在提交后
+按原2秒期限重算；无完成时请求一次取消，最多再观察1秒，取消调用也消耗该清理期限。
+只有真实取得completion后才观察pending；错误、部分、迟到和取消完成分别保留，
+原操作的超时不会因cancel/release成功变成成功。未取回或记账不一致进入隔离，不再提交。
+
+schema1接收报告的scope为`VM_RUNTIME_BULK_IN_ONLY_NOT_HOST_OR_RECOVERY`；
+及时完成仅可标记`RUNTIME_BULK_BYTES_OBSERVED_NOT_HOST_OR_REGISTER_VALUE`。
+超时/取消仍`REFUSED_OR_FAILED`、退出1，`receive.completion`和`received_data`
+仅记录实际结果；OUT的原buffer长度不得被当成已交付字节。端点仍有pending时不请求
+显式接口release；进程/依赖drop、零pending或release均不宣称最终OS/固件drain。
+接口claim也不证明controller级所有权、generation或Host撤权，完整适配仍需后续门禁。
+默认接收报告不能当作业务或恢复通过；取消/期限的受控实验须独立核对原始USB和主机
+callback、身份、捕获丢失及实际完成范围。单测仅替代时钟/端点I/O，不证明内核并发。
+
 ### 单设备 Native 启动诊断
 
 `ws73_target.py run --native-startup-observe` 仅在专用 VM 内观察一个明确分配的

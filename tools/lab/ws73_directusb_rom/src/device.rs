@@ -8,12 +8,14 @@ use std::io;
 pub enum ProbeKind {
     RomRead,
     MemoryBackpressure,
+    RuntimeReceive,
 }
 impl ProbeKind {
     fn token(self) -> &'static str {
         match self {
             Self::RomRead => "ws73.directusb_rom=1",
             Self::MemoryBackpressure => "ws73.directusb_control=1",
+            Self::RuntimeReceive => "ws73.directusb_receive=1",
         }
     }
 }
@@ -58,7 +60,7 @@ pub fn endpoint_layout(kind: ProbeKind, entries: &[(u8, TransferType, usize)]) -
         ProbeKind::RomRead => {
             addresses == [1, 129] && entries.iter().all(|e| e.1 == TransferType::Bulk)
         }
-        ProbeKind::MemoryBackpressure => {
+        ProbeKind::MemoryBackpressure | ProbeKind::RuntimeReceive => {
             addresses == [1, 2, 129, 130, 131]
                 && entries.iter().all(|&(address, kind, size)| {
                     if address == 131 {
@@ -155,7 +157,7 @@ pub fn open_vm_interface(
     if (d.vendor_id(), d.product_id()) != (0xffff, 0x3733) {
         return Err(refuse("opened USB identity changed").into());
     }
-    if kind == ProbeKind::MemoryBackpressure
+    if kind != ProbeKind::RomRead
         && (d.num_configurations() != 1
             || device.configurations().count() != 1
             || !runtime_configuration_allowed(&device.active_configuration()?))
@@ -200,7 +202,11 @@ mod tests {
     use super::*;
     #[test]
     fn actual_shared_guard_rejects_host_missing_duplicate_mixed_and_foreign_guest() {
-        for kind in [ProbeKind::RomRead, ProbeKind::MemoryBackpressure] {
+        for kind in [
+            ProbeKind::RomRead,
+            ProbeKind::MemoryBackpressure,
+            ProbeKind::RuntimeReceive,
+        ] {
             let valid = format!("{} ws73.directusb_guest=1-1.2", kind.token());
             assert!(boot_allowed(kind, "QEMU\n", true, &valid, "1-1.2"));
             for (vendor, scratch, tokens, port) in [

@@ -29,10 +29,13 @@ def _get_native_lib():
     # Publish only after every prototype is initialized. ctypes can release
     # the GIL; another thread must never observe a half-initialized loader.
     lib = load_library("slk_native", "LIBSLK_NATIVE_PATH")
-    lib.slk_adapter_open.argtypes = [ctypes.c_char_p]
-    lib.slk_adapter_open.restype = ctypes.c_void_p
-    lib.slk_adapter_free.argtypes = [ctypes.c_void_p]
-    lib.slk_adapter_free.restype = None
+    try:
+        lib.slk_adapter_open.argtypes = [ctypes.c_char_p]
+        lib.slk_adapter_open.restype = ctypes.c_void_p
+        lib.slk_adapter_free.argtypes = [ctypes.c_void_p]
+        lib.slk_adapter_free.restype = None
+    except AttributeError as error:
+        raise OSError("matching explicit slk-native symbols required") from error
     if any(ctypes.alignment(t) != 8 for t in (
         SleControllerSnapshot, SleRegistrationSnapshot, SleManagementQuery, SleDiscoverySubmit,
         SleDiscoveryResult, SleDiscoveryTiming, SleControllerEventQuery, SleSnoopQuery,

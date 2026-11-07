@@ -360,6 +360,29 @@ class ApplicationNativeBoundary(unittest.TestCase):
         for name in app_names:
             with self.subTest(name=name),self.assertRaises(AttributeError):getattr(native,name)
 
+    def test_foreign_or_incomplete_first_symbols_raise_native_load_error(self):
+        # The ordinary SDK is a real ELF with deliberately disjoint exports.
+        # The second case supplies a real Native open symbol but omits free;
+        # that metadata fixture is not a controller or syscall implementation.
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        import sparklink.native as module
+        real = module._get_native_lib()
+        wrong = [_get_channel_lib(), SimpleNamespace(slk_adapter_open=real.slk_adapter_open)]
+        for candidate in wrong:
+            with self.subTest(candidate=type(candidate).__name__), patch.object(module, '_native_library', None):
+                with patch.object(module, 'load_library', return_value=candidate) as load:
+                    for _ in range(2):
+                        with self.assertRaisesRegex(OSError, 'matching explicit slk-native symbols required'):
+                            module._get_native_lib()
+                        self.assertIsNone(module._native_library)
+                    self.assertEqual(load.call_count, 2)
+                # A rejected load cannot poison the later real Native loader.
+                with patch.object(module, 'load_library', return_value=real):
+                    self.assertIs(module._get_native_lib(), real)
+                    self.assertEqual(real.slk_adapter_open.restype, ctypes.c_void_p)
+                    self.assertEqual(real.slk_device_count.argtypes, [ctypes.c_void_p])
+
     def test_concurrent_first_native_load_never_publishes_untyped_pointer_calls(self):
         import concurrent.futures
         import sparklink.native as module

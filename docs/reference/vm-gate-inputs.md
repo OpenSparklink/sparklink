@@ -299,6 +299,11 @@ root fd 可能不可见，不能把只读进程快照称作绝对独占证明。
 不得修改旧 manifest 来绕过检查。
 板级 `bsle_custom.bin`／`pm_config.bin` 仍须显式提供并记录，型号匹配不证明板级资格。
 
+维护guest中的Native调用者显式选择`LIBSLK_NATIVE_PATH=/usr/lib/libslk_native.so.0`，
+与冻结的Native库身份一致；旧应用库变量不控制Native绑定。只读USB探针可以不执行
+Native库或WS73驱动，文件系统/9p模块仍按scratch root正常装入。加载库/绑定符号不等于
+打开controller、Setup、Ready或对端业务；缺导出必须拒绝并保留原错误。
+
 ### 单设备 Native 启动诊断
 
 `ws73_target.py run --native-startup-observe` 仅在专用 VM 内观察一个明确分配的

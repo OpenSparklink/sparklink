@@ -353,9 +353,11 @@ method处理，不将参数echo成结果。离线私有总线使用显式固定�
 Python默认导出当前 Client/ControllerId、访问要求和授权fd操作；旧`Adapter`及默认`NativeAdapter`导出已删除。
 Native需显式`from sparklink.native import NativeAdapter`并加载`libslk_native.so.0`；应用
 fd操作用`libsparklink.so.0`。Python使用运行库major，不要求开发包的无版本链接。
-`LIBSPARKLINK_PATH`与`LIBSLK_NATIVE_PATH`指定准确产物，
-错误覆盖路径直接失败，不静默回退。两库C头/符号分别检查。**C/Python尚无完整broker、
-远端SSAP或回调客户端**；不得从新库名称推导已实现所有目标API。Native旧不支持入口
+`LIBSPARKLINK_PATH`与`LIBSLK_NATIVE_PATH`指定准确产物；错误覆盖路径直接失败，
+不静默回退。两库C头/符号分别检查。Native绑定缺少任一必需导出（包括最初open/free）
+时统一抛出`OSError`，失败不发布库缓存；不会用应用库或系统旧库补齐，后续显式正确加载仍可重试。
+C/Python的Client、远端SSAP与Provider/回调入口按本参考逐项列出的支持范围开放；
+不从库名推导完整权限、协议或实机资格。Native旧不支持入口
 仍按R4全链清单退休，不以移动文件表示整改全部完成。
 
 基础绑定在准确668的干净Debian VM中已通过安装后的外部C/Native及Python wheel

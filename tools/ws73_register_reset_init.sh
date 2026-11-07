@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-only
 # Dedicated VM maintenance, never a production boot or Managed acceptance.
-export PATH=/bin:/usr/bin PYTHONHOME=/usr LIBSPARKLINK_PATH=/usr/lib/libsparklink.so
+export PATH=/bin:/usr/bin PYTHONHOME=/usr LIBSLK_NATIVE_PATH=/usr/lib/libslk_native.so.0
 fail() {
     echo "WS73_RESET_LAB_FAILURE: $*"
     if [ -n "${capture:-}" ]; then kill -INT "$capture" 2>/dev/null; wait "$capture"; fi

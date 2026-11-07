@@ -24,7 +24,7 @@ class ProbeRefusal(unittest.TestCase):
             for changes in [dict(schema=True), dict(status='PASS'), dict(status='SKIP'),
                             dict(scope=SCOPES['control' if kind == 'rom' else 'rom']),
                             dict(error='device already opened'), dict(error=None),
-                            *[{key: 0} for key in ['bus', 'guest_port', 'reply', 'control', 'raw_memory_backpressure_word_le', 'receive', 'endpoint_pending_after', 'interface_release']]]:
+                            *[{key: 0} for key in ['bus', 'guest_port', 'reply', 'control', 'raw_memory_backpressure_word_le', 'receive', 'endpoint_pending_after', 'interface_release', 'transport_owner_epoch_before', 'transport_owner_epoch_after', 'unexpected']]]:
                 with self.subTest(kind=kind, changes=changes), self.assertRaises(ValueError):
                     validate(self.result(kind, **changes), kind)
             for code, output, error in [(0, self.result(kind).stdout, ''), (-9, '', ''),

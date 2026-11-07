@@ -7,12 +7,20 @@ use std::time::{Duration, Instant};
 
 pub const IO_LIMIT: Duration = Duration::from_secs(2);
 
+pub enum ControlFailure {
+    /// The local authority gate did not invoke the nusb constructor.
+    NotSubmitted(io::Error),
+    /// Construction/submission was called; errno cannot prove non-submission.
+    Submitted(io::Error),
+}
+
 /// Production admission/receipt function. Tests substitute only the clock and
-/// one I/O completion; the real caller constructs the nusb future inside `perform`.
+/// one I/O completion; `perform` receives the unchanged absolute deadline and
+/// constructs the nusb future inside the actual owner submission gate.
 pub fn observe_memory_control(
     deadline: Instant,
     mut now: impl FnMut() -> Instant,
-    perform: impl FnOnce(ControlIn, Duration) -> io::Result<Vec<u8>>,
+    perform: impl FnOnce(ControlIn, Instant) -> Result<Vec<u8>, ControlFailure>,
     row: &mut Value,
 ) -> io::Result<u32> {
     if !row.is_object() || row.get("stage").is_some() {
@@ -35,7 +43,7 @@ pub fn observe_memory_control(
             index: 0,
             length: 4,
         },
-        deadline.saturating_duration_since(start),
+        deadline,
     );
     row["elapsed_ns"] = json!(
         now()
@@ -45,8 +53,17 @@ pub fn observe_memory_control(
     );
     let data = match result {
         Ok(data) => data,
-        Err(error) => {
-            row["stage"] = json!("TRANSPORT_ERROR_NOT_SUCCESS");
+        Err(failure) => {
+            let error = match failure {
+                ControlFailure::NotSubmitted(error) => {
+                    row["stage"] = json!("NOT_SUBMITTED_OWNER_GATE");
+                    error
+                }
+                ControlFailure::Submitted(error) => {
+                    row["stage"] = json!("TRANSPORT_ERROR_NOT_SUCCESS");
+                    error
+                }
+            };
             row["error"] = json!(error.to_string());
             return Err(error);
         }
@@ -69,6 +86,31 @@ pub fn observe_memory_control(
 mod tests {
     use super::*;
     #[test]
+    fn gate_denial_and_called_transport_error_are_not_inferred_from_errno() {
+        let t = Instant::now();
+        for not_submitted in [true, false] {
+            let mut row = json!({});
+            let error = io::Error::new(io::ErrorKind::PermissionDenied, "same errno");
+            let failure = if not_submitted {
+                ControlFailure::NotSubmitted(error)
+            } else {
+                ControlFailure::Submitted(error)
+            };
+            assert!(
+                observe_memory_control(t + IO_LIMIT, || t, |_, _| Err(failure), &mut row).is_err()
+            );
+            assert_eq!(
+                row["stage"],
+                if not_submitted {
+                    "NOT_SUBMITTED_OWNER_GATE"
+                } else {
+                    "TRANSPORT_ERROR_NOT_SUCCESS"
+                }
+            );
+            assert!(row.get("reply").is_none());
+        }
+    }
+    #[test]
     fn expired_admission_never_constructs_or_submits_the_transfer() {
         let t = Instant::now();
         let mut row = json!({});
@@ -88,7 +130,7 @@ mod tests {
                 assert_eq!(r.control_type, ControlType::Class);
                 assert_eq!(r.recipient, Recipient::Interface);
                 assert_eq!((r.request, r.value, r.index, r.length), (5, 0, 0, 4));
-                assert_eq!(budget, IO_LIMIT);
+                assert_eq!(budget, t + IO_LIMIT);
                 Ok(vec![0x12, 0x34, 0x56, 0x78])
             },
             &mut row,
@@ -145,10 +187,10 @@ mod tests {
             t + IO_LIMIT,
             || t,
             |_, _| {
-                Err(io::Error::new(
+                Err(ControlFailure::Submitted(io::Error::new(
                     io::ErrorKind::TimedOut,
                     "original completion failure",
-                ))
+                )))
             },
             &mut row,
         )

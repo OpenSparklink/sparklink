@@ -1,8 +1,15 @@
 // SPDX-License-Identifier: GPL-2.0-only
 //! One exclusive interface opener, shared by ROM and Runtime control consumers.
+use crate::authority::{OwnerToken, TransportOwner};
+use crate::memory_control::ControlFailure;
 use nusb::Interface;
 use nusb::descriptors::{ConfigurationDescriptor, TransferType};
+use nusb::transfer::{Buffer, Bulk, Completion, EndpointDirection};
+use nusb::transfer::{ControlIn, ControlType, Recipient};
+use nusb::{Endpoint, MaybeFuture};
 use std::io;
+use std::marker::PhantomData;
+use std::time::{Duration, Instant};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ProbeKind {
@@ -112,10 +119,115 @@ pub fn runtime_configuration_allowed(config: &ConfigurationDescriptor<'_>) -> bo
 }
 
 pub struct OpenedVmInterface {
-    pub interface: Interface,
+    interface: Option<Interface>,
+    owner: TransportOwner,
     pub bus: u8,
     /// Observation only; never a controller generation or a model identity.
     pub address: u8,
+}
+
+pub struct OwnedBulkEndpoint<'device, D: EndpointDirection> {
+    endpoint: Endpoint<Bulk, D>,
+    owner: TransportOwner,
+    token: OwnerToken,
+    _device: PhantomData<&'device OpenedVmInterface>,
+}
+impl<D: EndpointDirection> OwnedBulkEndpoint<'_, D> {
+    pub fn pending(&self) -> usize {
+        self.endpoint.pending()
+    }
+    pub fn max_packet_size(&self) -> usize {
+        self.endpoint.max_packet_size()
+    }
+    pub(crate) fn submit(&mut self, buffer: Buffer, deadline: Instant) -> io::Result<()> {
+        self.owner
+            .submit(&self.token, deadline, || self.endpoint.submit(buffer))
+    }
+    pub(crate) fn wait(&mut self, timeout: Duration) -> Option<Completion> {
+        self.endpoint.wait_next_complete(timeout)
+    }
+    pub(crate) fn cancel(&mut self) {
+        self.endpoint.cancel_all();
+    }
+}
+impl OpenedVmInterface {
+    pub fn owner(&self) -> TransportOwner {
+        self.owner.clone()
+    }
+    pub fn endpoint<D: EndpointDirection>(
+        &self,
+        address: u8,
+    ) -> io::Result<OwnedBulkEndpoint<'_, D>> {
+        let token = self.owner.token()?;
+        let endpoint = self
+            .interface
+            .as_ref()
+            .expect("live interface")
+            .endpoint::<Bulk, D>(address)?;
+        Ok(OwnedBulkEndpoint {
+            endpoint,
+            owner: self.owner.clone(),
+            token,
+            _device: PhantomData,
+        })
+    }
+    pub fn release(mut self) -> io::Result<()> {
+        self.owner.try_revoke()?;
+        self.interface
+            .take()
+            .expect("live interface")
+            .release()
+            .wait()
+            .map_err(io::Error::from)
+    }
+    pub fn read_memory_control(
+        &self,
+        request: ControlIn,
+        deadline: Instant,
+    ) -> Result<Vec<u8>, ControlFailure> {
+        if request.control_type != ControlType::Class
+            || request.recipient != Recipient::Interface
+            || (
+                request.request,
+                request.value,
+                request.index,
+                request.length,
+            ) != (5, 0, 0, 4)
+        {
+            return Err(ControlFailure::NotSubmitted(io::Error::other(
+                "only fixed memory control is allowed",
+            )));
+        }
+        let token = self.owner.token().map_err(ControlFailure::NotSubmitted)?;
+        // Linux nusb constructs/submits immediately. Keep the original absolute
+        // deadline, and never hold the authority guard across completion wait.
+        let future = self
+            .owner
+            .submit(&token, deadline, || {
+                let timeout = deadline
+                    .checked_duration_since(Instant::now())
+                    .filter(|duration| !duration.is_zero())
+                    .ok_or_else(|| {
+                        io::Error::new(io::ErrorKind::TimedOut, "not submitted: original deadline")
+                    })?;
+                Ok::<_, io::Error>(
+                    self.interface
+                        .as_ref()
+                        .expect("live interface")
+                        .control_in(request, timeout),
+                )
+            })
+            .map_err(ControlFailure::NotSubmitted)?
+            .map_err(ControlFailure::NotSubmitted)?;
+        future
+            .wait()
+            .map_err(|error| ControlFailure::Submitted(error.into()))
+    }
+}
+impl Drop for OpenedVmInterface {
+    fn drop(&mut self) {
+        self.owner.retire_on_drop();
+    }
 }
 
 #[cfg(target_os = "linux")]
@@ -179,7 +291,8 @@ pub fn open_vm_interface(
         return Err(refuse("exact selected ROM/Runtime interface required").into());
     }
     Ok(OpenedVmInterface {
-        interface: intf,
+        interface: Some(intf),
+        owner: TransportOwner::new(),
         bus,
         address,
     })

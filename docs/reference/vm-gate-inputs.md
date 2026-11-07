@@ -329,6 +329,12 @@ ROM原命令、schema和调用者保持，源码变化仍需各自准确artifact
 
 ### DirectUSB有界bulk与运行期只接收（实验消费者）
 
+构建该独立包须显式设置`SPARKLINK_KERNEL_SOURCE=/path/to/linux`。构建器引用内核
+`net/sparklink/sle_grant.rs`的固定blob `3bfd18a8f6698fffc7be5601ecb7d01012261a33`
+（审阅基线K796b11f7bc73），不复制一套简化状态机；源码快照逐字节校验后原样进入
+构建目录。缺选择、内容变化、超限或路径逃逸必须拒绝，不回退旧产物。仅编译纯逻辑，
+不执行内核/设备；默认workspace/daemon依赖不变。MSVC检查仍不代表Windows运行。
+
 同一独立包的ROM与`ws73-directusb-receive EXPLICIT_GUEST_PORT`共用实际bulk交换；
 不进入默认daemon，不新增Host或协议Engine。接收模式必须使用
 `ws73.directusb_receive=1 ws73.directusb_guest=<端口>`，与其他DirectUSB模式互斥；
@@ -350,6 +356,27 @@ schema1接收报告的scope为`VM_RUNTIME_BULK_IN_ONLY_NOT_HOST_OR_RECOVERY`；
 接口claim也不证明controller级所有权、generation或Host撤权，完整适配仍需后续门禁。
 默认接收报告不能当作业务或恢复通过；取消/期限的受控实验须独立核对原始USB和主机
 callback、身份、捕获丢失及实际完成范围。单测仅替代时钟/端点I/O，不证明内核并发。
+
+#### 传输本地owner与撤权
+
+设备对象封装原始接口；端点借用该对象并持有同一owner/token，跨对象即使epoch值相同
+也不能混用。共用实际生产`LeaseAuthority`纯转换，新执行适配使用每对象独立std Mutex；
+nusb submit或控制future构造在同一撤权锁内，等待completion在锁外。提交前核对原绝对
+期限；锁忙返回WouldBlock、poison返回故障，`try_revoke`锁忙不代表已撤权。
+正常释放/对象退出先撤掉本地准入；清理/旧completion不被当成新授权。
+
+这仅是进程内传输authority，不是Native Grant、controller generation、身份认证或
+整个controller的EP0/reset排他。epoch不是全局唯一设备ID，不解决fork/其他进程持fd、
+控制器模式切换或固件状态屏障；完整DeviceRuntime、stop/drain与权限门禁仍未完成。
+控制I/O明确区分构造前拒绝和已经调用后失败，不能根据相同errno猜测是否提交。
+
+专用VM实验入口`ws73-directusb-receive --revoke-before-submit EXPLICIT_GUEST_PORT`
+在端点/token创建后、bulk提交前显式撤掉本地owner，用于核对预先取得的token也被拒绝。
+它沿用`ws73.directusb_receive=1`及同一资源/描述符限制，不自动重试或清除硬件状态。
+预期为退出1/`REFUSED_OR_FAILED`，`receive.stage=NOT_SUBMITTED_OWNER_GATE`，无真实bulk
+请求、无伪造completion；仍须原始USB/主机证据独立核对。
+`transport_owner_epoch_*`和`transport_authority_origin`只描述该本地检查点，不能发布为
+原生Ready或可信安全状态。普通应用仍走既有授权通道，不使用此设备级实验入口。
 
 ### 单设备 Native 启动诊断
 

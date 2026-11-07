@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 //! One fixed read-only ROM exchange in an explicitly selected scratch VM.
 //! No enumeration fallback, detach/reset, firmware download or Host/Ready claim.
-use nusb::MaybeFuture;
-use nusb::transfer::{Buffer, Bulk, In, Out};
+use nusb::transfer::{Buffer, In, Out};
 use serde_json::{Value, json};
 use std::io;
 use std::time::Instant;
@@ -17,9 +16,9 @@ fn refuse(reason: &str) -> io::Error {
 
 fn run(port: &str, report: &mut Value) -> Result<(), Box<dyn std::error::Error>> {
     let opened = open_vm_interface(ProbeKind::RomRead, port)?;
-    let (intf, bus, address) = (opened.interface, opened.bus, opened.address);
-    let mut output = intf.endpoint::<Bulk, Out>(1)?;
-    let mut input = intf.endpoint::<Bulk, In>(0x81)?;
+    let (bus, address) = (opened.bus, opened.address);
+    let mut output = opened.endpoint::<Out>(1)?;
+    let mut input = opened.endpoint::<In>(0x81)?;
     if input.max_packet_size() == 0 || 512 % input.max_packet_size() != 0 {
         return Err(refuse("unsupported ROM max packet size").into());
     }
@@ -56,10 +55,10 @@ fn run(port: &str, report: &mut Value) -> Result<(), Box<dyn std::error::Error>>
     drop(input);
     drop(output);
     let release = if pending == 0 {
-        let release = intf.release().wait();
+        let release = opened.release();
         report["interface_release"] =
             json!({"result":format!("{release:?}"),"physical_drain_proven":false});
-        release.map_err(io::Error::from)
+        release
     } else {
         report["interface_release"] =
             json!({"result":"NOT_REQUESTED_UNDRAINED_ENDPOINT","physical_drain_proven":false});

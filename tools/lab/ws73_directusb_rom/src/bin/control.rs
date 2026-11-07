@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
 //! Fixed Runtime memory-backpressure read; never Native Ready or Host traffic.
-use nusb::MaybeFuture;
 use serde_json::{Value, json};
 use std::io;
 use std::time::Instant;
@@ -16,18 +15,12 @@ fn run(port: &str, report: &mut Value) -> Result<(), Box<dyn std::error::Error>>
     let result = observe_memory_control(
         Instant::now() + IO_LIMIT,
         Instant::now,
-        |request, timeout| {
-            opened
-                .interface
-                .control_in(request, timeout)
-                .wait()
-                .map_err(io::Error::from)
-        },
+        |request, deadline| opened.read_memory_control(request, deadline),
         &mut report["control"],
     );
     // wait() has returned the request result. Release is separate evidence,
     // never a firmware reset/drain or readiness barrier and never masks I/O error.
-    let release = opened.interface.release().wait();
+    let release = opened.release();
     report["interface_release"] =
         json!({"result":format!("{release:?}"),"physical_drain_proven":false});
     let word = result?;

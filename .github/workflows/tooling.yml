@@ -66,12 +66,23 @@ jobs:
     timeout-minutes: 10
     env:
       CARGO_BUILD_JOBS: '2'
+      SPARKLINK_KERNEL_SOURCE: ${{ github.workspace }}/.kernel-authority
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Exact production authority source (no kernel build or execution)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: OpenSparklink/linux
+          ref: 796b11f7bc734367494efbc456ed5ac9f1cbfcfe
+          path: .kernel-authority
+          sparse-checkout-cone-mode: false
+          sparse-checkout: net/sparklink/sle_grant.rs
       - name: Fixed isolated toolchain
         run: |
           rustup toolchain install 1.96.1 --profile minimal --component clippy --component rustfmt
           rustup target add x86_64-pc-windows-msvc --toolchain 1.96.1
+      - name: Actual production source-pin refusal controls (no USB)
+        run: python3 tools/check_directusb_authority_source.py --kernel-source "$SPARKLINK_KERNEL_SOURCE" --output "$RUNNER_TEMP/directusb-authority-source"
       - name: Check shared ROM and Runtime consumers without opening USB
         run: |
           cargo +1.96.1 fmt --manifest-path tools/lab/ws73_directusb_rom/Cargo.toml -- --check

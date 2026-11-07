@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-only
 //! One bounded experimental USB transfer, shared by ROM and Runtime consumers.
 //! No controller identity, protocol credit, retry, or firmware-drain authority.
-use nusb::Endpoint;
-use nusb::transfer::{Buffer, Bulk, Completion, Direction, EndpointDirection};
+use crate::device::OwnedBulkEndpoint;
+use nusb::transfer::{Buffer, Completion, Direction, EndpointDirection};
 use serde_json::{Value, json};
 use std::io;
 use std::time::{Duration, Instant};
@@ -17,11 +17,11 @@ trait BulkIo {
     fn direction(&self) -> Direction;
     fn max_packet_size(&self) -> usize;
     fn pending(&self) -> usize;
-    fn submit(&mut self, buffer: Buffer);
+    fn submit(&mut self, buffer: Buffer, deadline: Instant) -> io::Result<()>;
     fn wait(&mut self, duration: Duration) -> Option<Completion>;
     fn cancel(&mut self);
 }
-impl<D: EndpointDirection> BulkIo for Endpoint<Bulk, D> {
+impl<D: EndpointDirection> BulkIo for OwnedBulkEndpoint<'_, D> {
     fn direction(&self) -> Direction {
         D::DIR
     }
@@ -31,14 +31,14 @@ impl<D: EndpointDirection> BulkIo for Endpoint<Bulk, D> {
     fn pending(&self) -> usize {
         self.pending()
     }
-    fn submit(&mut self, buffer: Buffer) {
-        self.submit(buffer);
+    fn submit(&mut self, buffer: Buffer, deadline: Instant) -> io::Result<()> {
+        self.submit(buffer, deadline)
     }
     fn wait(&mut self, duration: Duration) -> Option<Completion> {
-        self.wait_next_complete(duration)
+        self.wait(duration)
     }
     fn cancel(&mut self) {
-        self.cancel_all();
+        self.cancel();
     }
 }
 
@@ -98,7 +98,11 @@ fn exchange_io(
         row["stage"] = json!("NOT_SUBMITTED_ORIGINAL_DEADLINE");
         return Err(error("not submitted: original deadline"));
     };
-    endpoint.submit(buffer);
+    if let Err(error) = endpoint.submit(buffer, deadline) {
+        row["stage"] = json!("NOT_SUBMITTED_OWNER_GATE");
+        row["error"] = json!(error.to_string());
+        return Err(error);
+    }
     if endpoint.pending() != 1 {
         row["pending_after"] = json!(endpoint.pending());
         row["stage"] = json!("QUARANTINED_SUBMIT_ACCOUNTING");
@@ -156,7 +160,7 @@ fn exchange_io(
 }
 
 pub fn exchange<D: EndpointDirection>(
-    endpoint: &mut Endpoint<Bulk, D>,
+    endpoint: &mut OwnedBulkEndpoint<'_, D>,
     buffer: Buffer,
     deadline: Instant,
     row: &mut Value,
@@ -214,11 +218,12 @@ mod tests {
         fn pending(&self) -> usize {
             self.pending
         }
-        fn submit(&mut self, buffer: Buffer) {
+        fn submit(&mut self, buffer: Buffer, _: Instant) -> io::Result<()> {
             assert!(self.buffer.is_none());
             self.buffer = Some(buffer);
             self.pending += 1;
             self.submits += 1;
+            Ok(())
         }
         fn wait(&mut self, duration: Duration) -> Option<Completion> {
             self.waits.push(duration);

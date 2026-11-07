@@ -17,7 +17,8 @@ def validate(result, kind):
             or result.stderr or len(result.stdout.encode()) > 65536):
         raise ValueError('exact refusal exit/complete bounded output required')
     value = json.loads(result.stdout)
-    if (not isinstance(value, dict) or type(value.get('schema')) is not int
+    if (not isinstance(value, dict) or set(value) != {'schema', 'status', 'scope', 'error'}
+            or type(value.get('schema')) is not int
             or value['schema'] != 1 or value.get('status') != 'REFUSED_OR_FAILED'
             or value.get('scope') != SCOPES[kind]
             or not isinstance(value.get('error'), str) or not value['error'].startswith('usage: ')
